@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#020608">
+<title>JM Living Cursor & ContactBody v0.10D — Contact Grammar</title>
+<style>
+:root{
+  --bg:#010304;--panel:#071017;--panel2:#0a1821;--panel3:#0d202b;
+  --line:#17384a;--line2:#2a6884;--text:#f2fbff;--muted:#88a6b7;
+  --yellow:#ffd73a;--cyan:#55ddff;--green:#73edaa;--orange:#ffa24d;--red:#ff657c;
+  --shadow:0 18px 55px rgba(0,0,0,.55);--radius:18px;--cursor:34px;
+  --dock-h:148px;--cursor-color:#ffd73a;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit;color:inherit}button{border:0}
+.app{width:100%;min-width:0;height:100dvh;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;background:radial-gradient(circle at 50% -20%,rgba(85,221,255,.14),transparent 34%),linear-gradient(180deg,#071019,#010304 64%)}
+.topbar{min-height:54px;padding:calc(6px + env(safe-area-inset-top)) 10px 6px;display:flex;align-items:center;gap:9px;background:rgba(2,6,8,.94);border-bottom:1px solid rgba(85,221,255,.16);backdrop-filter:blur(14px);z-index:80}
+.brand{min-width:0;flex:1;display:flex;align-items:center;gap:9px}.orb{width:36px;height:36px;flex:0 0 36px;border-radius:50%;display:grid;place-items:center;font-weight:1000;font-size:10px;color:#201700;background:radial-gradient(circle at 34% 29%,#fff8ad 0 10%,var(--yellow) 30%,#ad7800 72%,#2d1d00);box-shadow:0 0 0 2px rgba(255,215,58,.18),0 0 22px rgba(255,215,58,.23)}
+.brand-text{min-width:0}.brand h1{margin:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand p{margin:2px 0 0;font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-actions{display:flex;gap:6px}.icon-btn{width:40px;height:40px;border-radius:13px;border:1px solid rgba(136,166,183,.23);background:linear-gradient(180deg,#102330,#061018);display:grid;place-items:center;box-shadow:inset 0 1px rgba(255,255,255,.05);touch-action:manipulation}.icon-btn:active{transform:translateY(1px)}.icon-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.icon-btn.active{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(85,221,255,.1),0 0 18px rgba(85,221,255,.16)}
+.workspace{width:100%;min-width:0;min-height:0;padding:8px 8px 6px;display:block;overflow:hidden}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;border:1px solid rgba(85,221,255,.25);border-radius:22px;background:#000;touch-action:none;user-select:none;box-shadow:var(--shadow),inset 0 0 120px rgba(24,65,86,.17);isolation:isolate}
+.stage[data-scene="grid"]{background:linear-gradient(rgba(85,221,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(85,221,255,.045) 1px,transparent 1px),radial-gradient(circle at 50% 46%,#091821,#010203 70%);background-size:30px 30px,30px 30px,auto}
+.stage[data-scene="blueprint"]{background:linear-gradient(rgba(85,221,255,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(85,221,255,.075) 1px,transparent 1px),radial-gradient(circle at 50% 46%,#08273c,#02070a 72%);background-size:22px 22px,22px 22px,auto}
+.stage[data-scene="code"]{background:radial-gradient(circle at 50% 40%,rgba(100,51,168,.27),transparent 49%),#020205}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:70;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 16%,transparent 82%,rgba(0,0,0,.3))}
+.stage-head{position:absolute;left:8px;right:8px;top:8px;z-index:68;display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}.chip{pointer-events:auto;min-height:34px;max-width:48%;padding:7px 10px;border-radius:12px;border:1px solid rgba(85,221,255,.18);background:rgba(2,7,10,.83);backdrop-filter:blur(10px);font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chip b{color:var(--text)}
+.metrics{position:absolute;z-index:69;left:50%;top:48px;transform:translateX(-50%);display:none;gap:5px;pointer-events:none}.metrics.show{display:flex}.metric{padding:6px 7px;border-radius:10px;border:1px solid rgba(85,221,255,.18);background:rgba(2,7,10,.76);font-size:8px;color:#bfefff;backdrop-filter:blur(8px)}
+.object{position:absolute;z-index:14;display:grid;place-items:center;border:1px solid rgba(136,166,183,.34);background:linear-gradient(180deg,#142936,#07141b);color:#d5e8f0;box-shadow:0 12px 30px rgba(0,0,0,.38);transition:border-color .1s,box-shadow .1s,transform .1s,filter .1s;touch-action:none}.object .mark{font-weight:1000;font-size:18px}.object .name{position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);padding:2px 5px;border-radius:6px;background:rgba(0,0,0,.68);font-size:8px;color:var(--muted);white-space:nowrap;opacity:.78}.object.hover{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(85,221,255,.1),0 0 25px rgba(85,221,255,.25)}.object.selected{border-color:var(--yellow);color:#fff8c7;box-shadow:0 0 0 3px rgba(255,215,58,.1),0 0 24px rgba(255,215,58,.18)}.object.grabbed{border-color:var(--orange);transform:scale(1.035);box-shadow:0 0 0 3px rgba(255,162,77,.1),0 0 26px rgba(255,162,77,.25)}.object.bound{outline:2px solid rgba(115,237,170,.35);outline-offset:3px}
+.object.soft{width:78px;height:68px;border-radius:38% 62% 52% 48% / 48% 39% 61% 52%;left:18%;top:24%}.object.node{width:66px;height:66px;border-radius:18px;right:16%;top:23%}.object.socket{width:64px;height:64px;border-radius:14px;border-style:dashed;left:17%;bottom:24%;background:rgba(7,20,27,.7)}.object.anchor{width:58px;height:58px;border-radius:50%;left:46%;top:51%;background:radial-gradient(circle,#102b39,#06131a)}.object.seed{width:58px;height:74px;border-radius:48% 52% 55% 45% / 62% 61% 39% 38%;right:17%;bottom:20%;background:linear-gradient(180deg,#1b3526,#08150e)}
+.object.socket.hidden-spot{opacity:.22}.stage.mode-seek .hidden-spot{opacity:.78;border-color:rgba(85,221,255,.4)}.object.found{border-style:solid;border-color:var(--green);box-shadow:0 0 22px rgba(115,237,170,.27)}
+.touch-ghost{position:absolute;z-index:52;width:18px;height:18px;margin:-9px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);pointer-events:none;opacity:0;transition:opacity .12s}.touch-ghost.show{opacity:1}.touch-ghost::after{content:attr(data-label);position:absolute;left:50%;top:calc(100% + 5px);transform:translateX(-50%);min-width:max-content;padding:2px 5px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(2,7,10,.9);color:#d9edf5;font-size:6px;font-weight:950;letter-spacing:.06em}.offset-line{position:absolute;z-index:51;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.2),rgba(255,215,58,.65));transform-origin:0 50%;pointer-events:none;opacity:0}.offset-line.show{opacity:1}
+.cursor{position:absolute;z-index:58;width:var(--cursor);height:var(--cursor);margin:calc(var(--cursor)/-2);border-radius:50%;border:3px solid color-mix(in srgb,var(--cursor-color) 38%,white);background:radial-gradient(circle,rgba(255,255,255,.96) 0 7%,color-mix(in srgb,var(--cursor-color) 55%,transparent) 10% 44%,transparent 46% 66%,color-mix(in srgb,var(--cursor-color) 92%,transparent) 68% 75%,transparent 77%);box-shadow:0 0 0 3px color-mix(in srgb,var(--cursor-color) 13%,transparent),0 0 24px color-mix(in srgb,var(--cursor-color) 58%,transparent);pointer-events:none;transition:opacity .18s,filter .12s,box-shadow .12s,border-color .12s}.cursor::before,.cursor::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.88)}.cursor::before{width:58%;height:1px}.cursor::after{height:58%;width:1px}.cursor .tag{position:absolute;left:calc(100% + 7px);top:50%;transform:translateY(-50%);padding:2px 6px;border-radius:6px;background:var(--cursor-color);color:#071014;font-size:8px;font-weight:1000;white-space:nowrap}.cursor .aperture-core{position:absolute;left:50%;top:50%;width:calc(5px + var(--depth-core,0)*.06px);height:calc(5px + var(--depth-core,0)*.06px);transform:translate(-50%,-50%);border-radius:50%;background:#fffde4;box-shadow:0 0 calc(4px + var(--act-core,0)*.08px) rgba(255,162,77,.9);z-index:2}.cursor[data-effect="pulse"]{animation:cursorPulse 1.25s ease-in-out infinite}.cursor[data-state="hover"]{filter:drop-shadow(0 0 9px var(--cyan))}.cursor[data-state="selected"]{box-shadow:0 0 0 5px rgba(255,215,58,.17),0 0 26px rgba(255,215,58,.55)}.cursor[data-state="grabbed"],.cursor[data-state="transforming"],.cursor[data-state="grab"]{filter:drop-shadow(0 0 10px var(--orange));border-color:var(--orange)}.cursor[data-state="snap"]{filter:drop-shadow(0 0 10px var(--green));border-style:dashed}.cursor[data-state="pinned"]{filter:drop-shadow(0 0 12px var(--green))}.cursor[data-state="committed"]{filter:drop-shadow(0 0 13px var(--yellow))}.cursor[data-state="cancelled"],.cursor[data-state="blocked"]{filter:grayscale(.45) drop-shadow(0 0 8px var(--red));border-color:var(--red)}.cursor.cursor-idle{opacity:.28}.cursor.cursor-hidden{opacity:0;visibility:hidden}
+.cursor .hold-ring{position:absolute;inset:-13px;border-radius:50%;background:conic-gradient(var(--activation-colour,var(--yellow)) var(--activation-angle,0deg),rgba(136,166,183,.12) 0);opacity:0;transform:rotate(-90deg);transition:opacity .08s;mask:radial-gradient(circle,transparent 57%,#000 59%);-webkit-mask:radial-gradient(circle,transparent 57%,#000 59%)}.cursor .activation-tag{position:absolute;left:50%;bottom:calc(100% + 17px);transform:translateX(-50%);display:none;min-width:max-content;padding:3px 7px;border-radius:7px;border:1px solid var(--activation-colour,var(--yellow));background:#05090b;color:var(--activation-colour,var(--yellow));font-size:7px;font-weight:1000;letter-spacing:.05em}.cursor[data-activation="click-candidate"]{--activation-colour:var(--yellow)}.cursor[data-activation="hold-arming"],.cursor[data-activation="hold-active"]{--activation-colour:var(--orange)}.cursor[data-activation]:not([data-activation="idle"]) .hold-ring,.cursor[data-activation]:not([data-activation="idle"]) .activation-tag{opacity:1;display:block}.cursor[data-activation="hold-arming"],.cursor[data-activation="hold-active"]{border-color:var(--orange);filter:drop-shadow(0 0 10px rgba(255,162,77,.8))}.object.hold-ready,.contact.hold-ready{outline:2px solid var(--orange);outline-offset:4px;box-shadow:0 0 0 4px rgba(255,162,77,.12),0 0 28px rgba(255,162,77,.28)}
+.click-echo{position:absolute;z-index:57;width:22px;height:22px;margin:-11px;border:2px solid var(--yellow);border-radius:50%;pointer-events:none;animation:clickEcho .52s ease-out forwards;box-shadow:0 0 16px rgba(255,215,58,.7)}.click-echo::after{content:attr(data-label);position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);padding:2px 6px;border-radius:6px;background:var(--yellow);color:#071014;font-size:7px;font-weight:1000;white-space:nowrap}
+.cursor.secondary{display:none;border-color:#c7f6ff;background:radial-gradient(circle,rgba(255,255,255,.96) 0 7%,rgba(85,221,255,.52) 10% 44%,transparent 46% 66%,rgba(85,221,255,.92) 68% 75%,transparent 77%);box-shadow:0 0 0 3px rgba(85,221,255,.1),0 0 23px rgba(85,221,255,.48)}.cursor.secondary.show{display:block}.cursor.secondary .tag{background:var(--cyan);color:#03171d}
+.cursor.tag-right .tag{left:calc(100% + 7px);right:auto;top:50%;bottom:auto;transform:translateY(-50%)}.cursor.tag-left .tag{left:auto;right:calc(100% + 7px);top:50%;bottom:auto;transform:translateY(-50%)}.cursor.tag-above .tag{left:50%;right:auto;top:auto;bottom:calc(100% + 7px);transform:translateX(-50%)}.cursor.tag-below .tag{left:50%;right:auto;top:calc(100% + 7px);bottom:auto;transform:translateX(-50%)}
+.relation-line,.tension-line{display:none!important}.vector-layer{position:absolute;inset:0;z-index:42;width:100%;height:100%;overflow:hidden;pointer-events:none}.vector-relation{stroke:url(#liveGradient);stroke-width:2.3;filter:drop-shadow(0 0 5px rgba(85,221,255,.55))}.vector-tension{stroke:var(--orange);stroke-width:1.2;stroke-dasharray:6 5;opacity:.9}.stored-route{stroke:url(#routeGradient);stroke-width:2;filter:drop-shadow(0 0 4px rgba(85,221,255,.35))}.stored-route.bind{stroke:var(--green)}
+.possibilities{position:absolute;inset:0;z-index:11;pointer-events:none}.possibility{position:absolute;width:28px;height:28px;margin:-14px;border-radius:50%;border:1px dashed rgba(85,221,255,.36);background:radial-gradient(circle,rgba(85,221,255,.18),transparent 62%);opacity:.16;transform:scale(.78);transition:opacity .16s,transform .16s,border-color .16s,box-shadow .16s;pointer-events:none}.stage.route-cloud-off .possibility:not(.settled){display:none}.possibility::after{content:attr(data-role);position:absolute;left:50%;top:calc(100% + 5px);transform:translateX(-50%);padding:2px 5px;border-radius:6px;background:rgba(1,4,6,.86);border:1px solid rgba(85,221,255,.16);font-size:7px;color:#a8c8d7;white-space:nowrap;opacity:0}.possibility.hot{opacity:1;transform:scale(1.12);border-color:var(--cyan);box-shadow:0 0 22px rgba(85,221,255,.45)}.possibility.hot::after,.possibility.settled::after{opacity:1}.possibility.tested{border-color:var(--orange);box-shadow:0 0 22px rgba(255,162,77,.35)}.possibility.settled{pointer-events:auto;opacity:1;transform:scale(1);border-style:solid;border-color:var(--green);background:radial-gradient(circle,rgba(115,237,170,.45),rgba(10,35,23,.25) 54%,transparent 68%);box-shadow:0 0 20px rgba(115,237,170,.3)}.possibility.settled::before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--green)}
+.field-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px}.field-step{padding:7px 3px;border-radius:9px;border:1px solid rgba(85,221,255,.14);background:#07131a;text-align:center;font-size:7px;color:var(--muted)}.field-step.active{border-color:var(--yellow);color:#fff2a4}
+.contact{position:absolute;z-index:38;width:var(--cb-size,28px);height:var(--cb-size,28px);margin:calc(var(--cb-size,28px)/-2);border-radius:50%;border:2px solid var(--c,var(--cyan));background:radial-gradient(circle,rgba(255,255,255,.86) 0 7%,color-mix(in srgb,var(--c) 48%,transparent) 10% 48%,transparent 50%);box-shadow:0 0 16px color-mix(in srgb,var(--c) 55%,transparent)}.contact::after{content:attr(data-label);position:absolute;left:50%;top:calc(100% + 5px);transform:translateX(-50%);white-space:nowrap;padding:2px 5px;border-radius:6px;background:#020608;border:1px solid color-mix(in srgb,var(--c) 44%,transparent);font-size:8px;color:#fff}.contact::before{content:attr(data-role);position:absolute;right:-7px;top:-7px;min-width:14px;height:14px;padding:0 3px;border-radius:8px;background:#061118;border:1px solid var(--c,var(--cyan));display:grid;place-items:center;font-size:6px;color:#fff}.contact.selected{outline:3px solid rgba(255,255,255,.2);outline-offset:3px}.contact.locked{border-style:double}.contact.locked::before{content:"LOCK";color:#ffd0d7;border-color:var(--red)}.contact.grabbed{filter:drop-shadow(0 0 8px var(--orange))}.contact[data-effect="pulse"]{animation:contactPulse 1.35s ease-in-out infinite}.contact[data-effect="halo"]{box-shadow:0 0 0 8px color-mix(in srgb,var(--c) 12%,transparent),0 0 24px color-mix(in srgb,var(--c) 66%,transparent)}.contact[data-effect="solid"]{background:var(--c)}.contact[data-effect="trail"]{filter:drop-shadow(-10px 7px 0 color-mix(in srgb,var(--c) 20%,transparent))}.object.activated{box-shadow:0 0 0 4px rgba(115,237,170,.16),0 0 26px rgba(115,237,170,.4)}.object.code-bound::before{content:"CODE";position:absolute;right:-7px;top:-7px;padding:2px 4px;border-radius:6px;border:1px solid var(--cyan);background:#020608;color:#c7f6ff;font-size:6px;font-weight:1000}
+.route-line{position:absolute;z-index:32;height:2px;background:linear-gradient(90deg,var(--cyan),var(--yellow));transform-origin:0 50%;box-shadow:0 0 11px rgba(85,221,255,.35);pointer-events:none}.route-line::after{content:"";position:absolute;right:-2px;top:-3px;border-left:7px solid var(--yellow);border-top:4px solid transparent;border-bottom:4px solid transparent}.projectile{position:absolute;z-index:48;width:14px;height:14px;border-radius:50%;background:var(--yellow);box-shadow:0 0 20px var(--yellow);pointer-events:none}
+.assignment-rail{position:absolute;left:8px;right:8px;width:calc(100% - 16px);min-width:0;bottom:56px;z-index:67;min-height:38px;display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);align-items:stretch;border:1px solid rgba(85,221,255,.24);border-radius:12px;background:rgba(3,10,14,.93);backdrop-filter:blur(12px);overflow:hidden}.assignment-slot,.assignment-swap{min-width:0;background:transparent;color:var(--muted);touch-action:manipulation}.assignment-slot{display:flex;align-items:center;justify-content:center;gap:5px;padding:0 6px;font-size:7px;white-space:nowrap;overflow:hidden}.assignment-slot b,.assignment-slot span{min-width:0;overflow:hidden;text-overflow:ellipsis}.assignment-slot b{font-size:8px;color:#fff}.assignment-slot .order{font-weight:1000;color:var(--yellow)}.assignment-slot.second .order{color:var(--cyan)}.assignment-slot.active{background:rgba(255,215,58,.08);box-shadow:inset 0 -2px var(--yellow)}.assignment-slot.second.active{background:rgba(85,221,255,.08);box-shadow:inset 0 -2px var(--cyan)}.assignment-swap{width:58px;border-left:1px solid rgba(85,221,255,.15);border-right:1px solid rgba(85,221,255,.15);font-size:7px;font-weight:1000;color:#b6d4e1}.context-strip{position:absolute;left:8px;right:8px;bottom:8px;z-index:67;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;pointer-events:auto;overscroll-behavior-x:contain}.context-strip::-webkit-scrollbar{display:none}.context-action{flex:0 0 94px;min-height:42px;border-radius:13px;border:1px solid rgba(136,166,183,.2);background:rgba(7,17,24,.9);backdrop-filter:blur(12px);font-size:8px;font-weight:900;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:6px;color:#d7e9f1;touch-action:manipulation}.context-action svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.context-action.active,.context-action.primary{border-color:rgba(255,215,58,.55);color:#fff5b3}.context-action.cyan{border-color:rgba(85,221,255,.42);color:#c5f5ff}.context-action.green{border-color:rgba(115,237,170,.42);color:#c8ffdc}
+.assignment-rail{min-height:48px}.assignment-slot{flex-direction:column;gap:2px;padding:4px 6px}.assignment-main{display:flex;align-items:center;justify-content:center;gap:5px;max-width:100%;font-size:7px}.assignment-slot small{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis}.assignment-route{display:block;color:#9bb6c3;font-size:5.8px;font-weight:900;letter-spacing:.02em}.context-action.target-action{border-color:rgba(255,162,77,.44);color:#ffd9b7}.context-action.target-action.active{background:rgba(255,162,77,.14);box-shadow:inset 0 -2px var(--orange)}.context-action.context-pin{border-color:rgba(115,237,170,.45);color:#c8ffdc}.context-action.context-back{border-style:dashed;color:#b5ced9}
+.dock{padding:7px 8px calc(7px + env(safe-area-inset-bottom));border-top:1px solid rgba(85,221,255,.16);background:rgba(2,6,8,.96);backdrop-filter:blur(15px);z-index:90}.dock-primary{display:grid;grid-template-columns:.92fr 1.08fr 1.36fr 1.02fr;gap:6px}.dock-secondary{margin-top:6px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}.dock-btn{min-width:0;min-height:52px;border-radius:15px;border:1px solid rgba(136,166,183,.24);background:linear-gradient(180deg,#102430,#061018);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px;font-weight:950;letter-spacing:.035em;touch-action:manipulation;box-shadow:inset 0 1px rgba(255,255,255,.045)}.dock-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dock-btn:active{transform:translateY(1px)}.dock-btn.active{border-color:var(--cyan);color:#c6f6ff;box-shadow:0 0 0 2px rgba(85,221,255,.1),0 0 16px rgba(85,221,255,.15)}.dock-btn.act{min-height:58px;border-color:rgba(255,215,58,.58);background:linear-gradient(180deg,#352b08,#141006);color:#fff3a8;box-shadow:0 0 22px rgba(255,215,58,.12)}.dock-btn.act.held{border-color:var(--orange);background:linear-gradient(180deg,#472307,#1b0d04);color:#ffd2a7;box-shadow:0 0 24px rgba(255,162,77,.25)}.dock-btn.pin{border-color:rgba(115,237,170,.3)}.dock-small{min-width:0;min-height:36px;padding:0 2px;border-radius:11px;border:1px solid rgba(136,166,183,.17);background:#08141c;display:flex;align-items:center;justify-content:center;gap:3px;color:var(--muted);font-size:8px;font-weight:900;touch-action:manipulation}.dock-small svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}.dock-small span{min-width:0;overflow:hidden;text-overflow:ellipsis}.dock-small.active{color:#fff3a8;border-color:rgba(255,215,58,.45)}.dock-small.danger{color:#ffd0d7;border-color:rgba(255,101,124,.33)}
+.sheet{position:fixed;z-index:120;left:0;right:0;bottom:0;max-height:min(80dvh,720px);transform:translateY(105%);transition:transform .22s ease;border-radius:24px 24px 0 0;border:1px solid rgba(85,221,255,.23);border-bottom:0;background:linear-gradient(180deg,#0b1b25,#03080b 68%);box-shadow:0 -28px 70px rgba(0,0,0,.65);padding-bottom:env(safe-area-inset-bottom);overflow:hidden}.sheet.open{transform:translateY(0)}.sheet-handle{width:44px;height:4px;border-radius:4px;background:#375466;margin:8px auto}.sheet-head{padding:0 12px 9px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(85,221,255,.13)}.sheet-head h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0}.sheet-close{width:36px;height:36px;border-radius:11px;border:1px solid rgba(136,166,183,.18);background:#0a1821;display:grid;place-items:center}.sheet-tabs{display:flex;gap:4px;padding:7px;border-bottom:1px solid rgba(85,221,255,.11);overflow-x:auto;scrollbar-width:none}.sheet-tabs::-webkit-scrollbar{display:none}.sheet-tab{flex:0 0 72px;min-width:0;min-height:36px;padding:0 5px;border-radius:10px;background:transparent;border:1px solid transparent;color:var(--muted);font-size:8px;font-weight:900;overflow:hidden;text-overflow:ellipsis}.sheet-tab.active{background:#10232e;border-color:rgba(85,221,255,.22);color:#fff}.sheet-body{max-height:calc(min(80dvh,720px) - 104px);overflow:auto;padding:10px 12px 18px}.pane{display:none}.pane.active{display:block}.section{margin-bottom:14px}.section h3{margin:0 0 8px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:#c1d8e3}.card{padding:10px;border-radius:14px;border:1px solid rgba(136,166,183,.16);background:rgba(9,22,30,.78);margin-bottom:8px}.card p,.card small{margin:0;color:var(--muted);font-size:9px;line-height:1.45}.card b{color:var(--text)}.field{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;margin:9px 0}.field label,.field output{font-size:9px;color:var(--muted)}.field output{color:#fff;font-weight:900}.field input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--yellow)}.field select,.field input[type=text],.field textarea{grid-column:1/-1;width:100%;min-height:38px;border-radius:11px;border:1px solid rgba(136,166,183,.19);background:#061119;padding:9px;font-size:9px;resize:vertical}.row{display:flex;gap:6px;align-items:center}.row.wrap{flex-wrap:wrap}.sheet-btn{min-height:38px;padding:0 10px;border-radius:11px;border:1px solid rgba(136,166,183,.2);background:#0c1c26;font-size:8px;font-weight:900}.sheet-btn.active{border-color:var(--yellow);color:#fff3a8}.sheet-btn.danger{border-color:rgba(255,101,124,.38);color:#ffd0d7}.action-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.action-grid .sheet-btn{padding:0 4px;min-height:36px}.nudge-pad{display:grid;grid-template-columns:42px 42px 42px;grid-template-rows:38px 38px 38px;gap:4px;justify-content:center}.nudge-pad button:nth-child(1){grid-column:2}.nudge-pad button:nth-child(2){grid-column:1;grid-row:2}.nudge-pad button:nth-child(3){grid-column:2;grid-row:2}.nudge-pad button:nth-child(4){grid-column:3;grid-row:2}.nudge-pad button:nth-child(5){grid-column:2;grid-row:3}.depth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.depth-cell{padding:9px;border-radius:11px;border:1px solid rgba(85,221,255,.14);background:#061118}.depth-cell span{display:block;font-size:7px;color:var(--muted);letter-spacing:.08em}.depth-cell b{display:block;margin-top:4px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.contact-row{padding:8px;border-radius:11px;border:1px solid rgba(136,166,183,.14);background:#061118;margin-bottom:6px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:center}.contact-row.selected{border-color:var(--yellow)}.contact-row .meta{font-size:8px;color:var(--muted);min-width:0}.contact-row .meta b{color:#fff}.contact-row .row{gap:3px}.contact-row button{min-height:30px;padding:0 7px}.trace-item{padding:8px 9px;border-radius:11px;border:1px solid rgba(136,166,183,.13);background:#061118;margin-bottom:6px;font-size:8px;color:var(--muted)}.trace-item b{color:#e6f7ff}.license{display:inline-block;margin-top:6px;padding:2px 6px;border-radius:7px;border:1px solid rgba(115,237,170,.25);color:#c3ffda;font-size:7px;font-weight:900}.program-jumps{display:flex;gap:5px;overflow-x:auto;margin:0 0 9px}.program-jumps button{flex:1 0 92px}.program-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.program-field{padding:8px;border-radius:11px;border:1px solid rgba(85,221,255,.13);background:#061118}.program-field label{display:block;margin-bottom:5px;color:var(--muted);font-size:7px;letter-spacing:.06em}.program-field select,.program-field input{width:100%;min-height:34px;padding:7px;border-radius:9px;border:1px solid rgba(136,166,183,.2);background:#040b10;font-size:8px}.gesture-list{border:1px solid rgba(85,221,255,.14);border-radius:12px;overflow:hidden}.gesture-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(118px,.8fr);align-items:center;gap:8px;min-height:42px;padding:5px 8px;border-bottom:1px solid rgba(85,221,255,.11)}.gesture-row:last-child{border-bottom:0}.gesture-row label{font-size:8px;font-weight:900;letter-spacing:.04em}.gesture-row select{min-width:0;width:100%;height:32px;border-radius:8px;border:1px solid rgba(136,166,183,.18);background:#040b10;padding:0 7px;color:#fff;font-size:8px}.threshold-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.threshold-card{padding:8px;border-radius:11px;border:1px solid rgba(85,221,255,.13);background:#061118;text-align:center}.threshold-card label{display:block;font-size:7px;color:var(--muted)}.threshold-card output{display:block;margin:5px 0;color:#fff;font-size:11px;font-weight:1000}.threshold-card input{width:100%;accent-color:var(--orange)}.threshold-preview{margin-top:7px;height:6px;border-radius:5px;background:linear-gradient(90deg,var(--cyan),var(--yellow) 38%,var(--orange) 68% 100%);position:relative}.threshold-preview::before,.threshold-preview::after{content:"";position:absolute;top:50%;width:12px;height:12px;margin:-6px;border-radius:50%;border:2px solid #071017;background:currentColor}.threshold-preview::before{left:32%;color:var(--yellow)}.threshold-preview::after{right:1%;color:var(--orange)}.program-status{font-size:8px;color:var(--muted)}.magnifier{position:absolute;right:10px;top:76px;z-index:66;width:86px;height:86px;border-radius:18px;border:1px solid rgba(85,221,255,.35);background:radial-gradient(circle at 50% 50%,rgba(255,215,58,.14),transparent 24%),linear-gradient(90deg,transparent 49%,rgba(85,221,255,.35) 50%,transparent 51%),linear-gradient(transparent 49%,rgba(85,221,255,.35) 50%,transparent 51%),rgba(2,7,10,.94);box-shadow:0 12px 28px rgba(0,0,0,.45);display:none;grid-template-rows:1fr auto;place-items:center;padding:7px;font-size:7px;color:#c7f6ff;pointer-events:none}.magnifier b{align-self:center;font-size:28px;line-height:1;color:#fff;text-shadow:0 0 14px var(--yellow)}.magnifier.show{display:grid}.backdrop{position:fixed;z-index:110;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s}.backdrop.show{opacity:1;pointer-events:auto}.toast{position:fixed;z-index:150;left:50%;bottom:calc(var(--dock-h) + env(safe-area-inset-bottom) + 10px);transform:translate(-50%,12px);opacity:0;pointer-events:none;padding:8px 11px;border-radius:12px;background:rgba(2,7,10,.94);border:1px solid rgba(85,221,255,.24);font-size:9px;color:#eefaff;transition:.16s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.guide-card{position:absolute;z-index:67;left:50%;top:50px;width:min(330px,calc(100% - 16px));min-height:65px;transform:translate(-50%,-8px);opacity:0;visibility:hidden;display:grid;grid-template-columns:30px minmax(0,1fr) 28px;gap:8px;align-items:center;padding:8px;border-radius:15px;border:1px solid rgba(255,215,58,.38);background:linear-gradient(135deg,rgba(20,17,4,.96),rgba(3,12,17,.96));box-shadow:0 16px 34px rgba(0,0,0,.5),0 0 24px rgba(255,215,58,.09);backdrop-filter:blur(12px);pointer-events:none;transition:opacity .2s,transform .2s,visibility .2s}.guide-card.show{opacity:1;visibility:visible;transform:translate(-50%,0)}.guide-card.complete{border-color:rgba(115,237,170,.55);background:linear-gradient(135deg,rgba(6,27,17,.97),rgba(3,12,17,.96))}.guide-count{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--yellow);background:rgba(255,215,58,.1);color:#fff5b3;font-size:9px;font-weight:1000}.guide-card.complete .guide-count{border-color:var(--green);color:#c8ffdc}.guide-copy{min-width:0}.guide-copy strong{display:block;font-size:8px;letter-spacing:.08em;color:#fff;text-transform:uppercase}.guide-copy p{margin:3px 0 0;color:#a9c0ca;font-size:8px;line-height:1.35}.guide-close{width:28px;height:28px;border-radius:9px;border:1px solid rgba(136,166,183,.18);background:#07131a;color:#b5ced9;font-size:14px;pointer-events:auto}.guide-dots{display:flex;gap:3px;margin-top:5px}.guide-dot{width:14px;height:2px;border-radius:2px;background:#24404e}.guide-dot.done{background:var(--green)}.guide-dot.current{background:var(--yellow);box-shadow:0 0 8px rgba(255,215,58,.6)}.fluency-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.fluency-grid .sheet-btn{width:100%}.fluency-status{margin-top:7px}.fluency-status b{color:#fff}.chip #hookReadout{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+.grammar-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:7px}.grammar-switch .sheet-btn{min-width:0;padding:4px 6px;line-height:1.25}.grammar-switch small{display:block;margin-top:2px;color:var(--muted);font-size:6px}.grammar-presets{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:7px}.grammar-preview{margin-bottom:7px;border-color:rgba(255,215,58,.22)}.grammar-preview p{color:#c1d8e3}
+@keyframes cursorPulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--cursor-color) 8%,transparent),0 0 30px color-mix(in srgb,var(--cursor-color) 75%,transparent)}}@keyframes contactPulse{50%{transform:scale(1.12);box-shadow:0 0 26px color-mix(in srgb,var(--c) 80%,transparent)}}@keyframes clickEcho{0%{opacity:1;transform:scale(.75)}100%{opacity:0;transform:scale(2.35)}}
+@media (max-width:420px){
+  .brand h1{font-size:11px}.brand p{font-size:8px}.topbar{padding-left:8px;padding-right:8px}.workspace{padding:6px 6px 5px}.stage{border-radius:19px}.chip{font-size:8px;padding:6px 8px}.guide-card{top:48px;width:calc(100% - 12px)}.assignment-rail{left:6px;right:6px;width:calc(100% - 12px);grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);bottom:51px}.assignment-slot{font-size:6.5px;padding:0 4px}.assignment-swap{width:52px}.context-strip{left:6px;right:6px;bottom:6px}.context-action{min-height:39px;font-size:8px}.dock{padding-left:6px;padding-right:6px}.dock-primary{gap:5px}.dock-btn{min-height:50px;font-size:8px}.dock-btn.act{min-height:56px}.dock-secondary{gap:3px}.dock-small{font-size:6.5px}.cursor .tag{font-size:7px}.object.soft{left:14%}.object.node{right:13%}.object.socket{left:14%}.object.seed{right:13%}
+}
+@media (max-width:360px){.brand h1{font-size:10px}.brand p{font-size:7px}.chip{max-width:47%;padding:5px 7px}.metric{font-size:7px;padding:5px}.dock-btn{font-size:7px}.dock-small span{display:none}.dock-small svg{width:16px;height:16px}}
+@media (max-height:620px){
+  .topbar{min-height:48px}.orb{width:32px;height:32px;flex-basis:32px}.icon-btn{width:36px;height:36px}.dock-btn{min-height:46px}.dock-btn.act{min-height:50px}.dock-small{min-height:32px}.context-action{min-height:36px}.assignment-rail{min-height:34px;bottom:48px}.object .name{display:none}.guide-card{min-height:56px;padding:6px}.guide-copy p{font-size:7px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="orb">JM</div>
+      <div class="brand-text">
+        <h1>JM LIVING CURSOR &amp; CONTACTBODY</h1>
+        <p id="profileHeader">v0.10D · contact grammar</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="sceneBtn" aria-label="Change field">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16"></path></svg>
+      </button>
+      <button class="icon-btn" id="sheetBtn" aria-label="Open controls">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none"></circle><circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"></circle></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="stage" id="stage" data-scene="black" aria-label="Contact field">
+      <div class="stage-head">
+        <div class="chip"><b id="sceneName">ESTATE SOURCE FIELD</b><br><span id="modeReadout">LIVING · free</span> · <span id="fieldReadout">hand.contact</span></div>
+        <div class="chip" id="depthChip">Target: <b id="targetName">none</b><br><span id="hookReadout">MOVE TO AIM · HOLD FOR PRECISION</span></div>
+      </div>
+      <div class="guide-card" id="guideCard" role="status" aria-live="polite">
+        <div class="guide-count" id="guideCount">1/3</div>
+        <div class="guide-copy">
+          <strong id="guideTitle">Move to aim</strong>
+          <p id="guideText">Slide anywhere. The yellow cursor stays above your finger and shows the exact target.</p>
+          <div class="guide-dots" id="guideDots" aria-hidden="true"></div>
+        </div>
+        <button class="guide-close" id="guideClose" aria-label="Hide contact guide">×</button>
+      </div>
+      <div class="metrics" id="metrics">
+        <div class="metric" id="distanceMetric">0px</div>
+        <div class="metric" id="angleMetric">0°</div>
+        <div class="metric" id="tensionMetric">0%</div>
+      </div>
+      <div class="magnifier" id="magnifier"><b id="magnifierMark">·</b><span id="magnifierText">NO TARGET</span></div>
+
+      <div class="object soft" data-key="OBJ_SOFT" data-id="SOFT BODY" data-kind="soft" data-actions="move,mould,inspect">
+        <span class="mark">S</span><span class="name">soft / mould</span>
+      </div>
+      <div class="object node" data-key="OBJ_NODE" data-id="ROUTE NODE" data-kind="node" data-actions="move,turn,bind">
+        <span class="mark">N</span><span class="name">route / turn</span>
+      </div>
+      <div class="object socket hidden-spot" data-key="OBJ_SOCKET" data-id="SQUARE SOCKET" data-kind="socket" data-actions="seek,snap,bind">
+        <span class="mark">□</span><span class="name">seek / snap</span>
+      </div>
+      <div class="object anchor" data-key="OBJ_ANCHOR" data-id="ANCHOR" data-kind="anchor" data-actions="hold,bind,orbit">
+        <span class="mark">◎</span><span class="name">anchor / orbit</span>
+      </div>
+      <div class="object seed" data-key="OBJ_SEED" data-id="DELIVERY SEED" data-kind="seed" data-actions="pull,deliver,slingshot">
+        <span class="mark">•</span><span class="name">pull / deliver</span>
+      </div>
+      <div class="possibilities" id="possibilities" aria-hidden="true">
+        <div class="possibility" data-pid="P1" data-role="route" style="left:27%;top:19%"></div>
+        <div class="possibility" data-pid="P2" data-role="turn" style="left:72%;top:37%"></div>
+        <div class="possibility" data-pid="P3" data-role="link" style="left:31%;top:61%"></div>
+        <div class="possibility" data-pid="P4" data-role="pulse" style="left:68%;top:69%"></div>
+        <div class="possibility" data-pid="P5" data-role="return" style="left:50%;top:42%"></div>
+      </div>
+
+      <div class="touch-ghost" id="touchGhost"></div>
+      <div class="offset-line" id="offsetLine"></div>
+      <div class="cursor" id="cursor" data-state="free" data-activation="idle"><span class="hold-ring"></span><span class="activation-tag" id="activationTag">CLICK CANDIDATE</span><span class="aperture-core" id="apertureCore"></span><span class="tag">ACTIVE</span></div>
+      <div class="cursor secondary" id="cursor2"><span class="tag">SECOND</span></div>
+      <svg class="vector-layer" id="vectorLayer" aria-hidden="true">
+        <defs>
+          <linearGradient id="liveGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#55ddff"/><stop offset="1" stop-color="#ffd73a"/></linearGradient>
+          <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#55ddff"/><stop offset="1" stop-color="#73edaa"/></linearGradient>
+          <marker id="liveArrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#ffd73a"/></marker>
+          <marker id="routeArrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#73edaa"/></marker>
+        </defs>
+        <g id="storedRoutes"></g>
+        <line id="relationVector" class="vector-relation" marker-end="url(#liveArrow)" visibility="hidden"/>
+        <line id="tensionVector" class="vector-tension" visibility="hidden"/>
+      </svg>
+      <div class="relation-line" id="relationLine"></div><div class="tension-line" id="tensionLine"></div>
+      <div id="routes" hidden></div><div id="contacts"></div><div id="projectiles"></div>
+
+      <div class="assignment-rail" id="assignmentRail" aria-label="Programmable contact order">
+        <button class="assignment-slot active" id="firstAssignmentBtn"><span class="assignment-main"><b id="firstHandRail">RIGHT</b><span><span class="order">FIRST</span> · <span id="firstRoleRail">AIM</span></span></span><small class="assignment-route" id="firstRouteRail">TAP SELECT · HOLD GRAB</small></button>
+        <button class="assignment-swap" id="swapRailBtn" aria-label="Swap first and second contacts">⇄ SWAP</button>
+        <button class="assignment-slot second" id="secondAssignmentBtn"><span class="assignment-main"><b id="secondHandRail">LEFT</b><span><span class="order">SECOND</span> · <span id="secondRoleRail">ACT</span></span></span><small class="assignment-route" id="secondRouteRail">TAP SELECT · HOLD GRAB</small></button>
+      </div>
+      <div class="context-strip" id="contextStrip" aria-label="Contact modules">
+        <button class="context-action primary active" data-module="cursor"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="2"></circle></svg><span>LIVING</span></button>
+        <button class="context-action cyan" data-module="dotdot"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="12" r="3"></circle><path d="M9 12h6"></path></svg><span>DOTDOT</span></button>
+        <button class="context-action primary" data-module="sling"><svg viewBox="0 0 24 24"><path d="M5 5 12 12 19 5M12 12v8"></path></svg><span>SLING</span></button>
+        <button class="context-action green" data-module="position"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"></path><circle cx="12" cy="12" r="4"></circle></svg><span>POSITION</span></button>
+        <button class="context-action cyan" data-module="seek"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4M11 8v6M8 11h6"></path></svg><span>SEEK</span></button>
+        <button class="context-action green" data-module="dual"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"></circle><circle cx="16" cy="12" r="4"></circle></svg><span>SECOND</span></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dock">
+    <div class="dock-primary">
+      <button class="dock-btn" id="secondBtn">
+        <svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"></circle><circle cx="16" cy="12" r="4"></circle></svg><span>SECOND</span>
+      </button>
+      <button class="dock-btn" id="selectBtn">
+        <svg viewBox="0 0 24 24"><path d="m5 3 14 9-6 2-2 6-6-17Z"></path></svg><span>CLICK</span>
+      </button>
+      <button class="dock-btn act" id="actBtn">
+        <svg viewBox="0 0 24 24"><path d="M8 11V6a2 2 0 0 1 4 0v5M12 9a2 2 0 0 1 4 0v3M16 10a2 2 0 0 1 4 0v4c0 4-3 7-7 7h-1c-3 0-5-2-6-4l-2-4a2 2 0 0 1 3-2l1 1"></path></svg><span>HOLD GRAB</span>
+      </button>
+      <button class="dock-btn pin" id="pinBtn">
+        <svg viewBox="0 0 24 24"><path d="m14 4 6 6-3 1-4 4-1 5-2-2-4 4-2-2 4-4-2-2 5-1 4-4 1-3Z"></path></svg><span>PIN</span>
+      </button>
+    </div>
+    <div class="dock-secondary">
+      <button class="dock-small" id="precisionBtn">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="2"></circle></svg><span>PRECISE</span>
+      </button>
+      <button class="dock-small" id="undoBtn">
+        <svg viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"></path><path d="M5 12h8a6 6 0 0 1 6 6"></path></svg><span>UNDO</span>
+      </button>
+      <button class="dock-small danger" id="cancelBtn">
+        <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg><span>CANCEL</span>
+      </button>
+      <button class="dock-small" id="resetBtn">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2 5"></path><path d="M20 5v6h-6"></path></svg><span>RESET</span>
+      </button>
+      <button class="dock-small" id="cursorVisibilityBtn">
+        <svg viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M9.9 4.3A10.8 10.8 0 0 1 12 4c6 0 9.5 8 9.5 8a16 16 0 0 1-2.1 3.2M6.2 6.2C3.8 8.1 2.5 12 2.5 12S6 20 12 20a9.8 9.8 0 0 0 3.1-.5"></path></svg><span>HIDE</span>
+      </button>
+      <button class="dock-small" id="modeBtn">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"></path></svg><span>MORE</span>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<section class="sheet" id="sheet" aria-hidden="true">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><h2>JM CONTACT ENGINE · v0.10D</h2><button class="sheet-close" id="sheetClose" aria-label="Close">×</button></div>
+  <div class="sheet-tabs">
+    <button class="sheet-tab active" data-tab="program">PROGRAM</button>
+    <button class="sheet-tab" data-tab="control">CONTROL</button>
+    <button class="sheet-tab" data-tab="depth">DEPTH</button>
+    <button class="sheet-tab" data-tab="field">FIELD</button><button class="sheet-tab" data-tab="chassis">CHASSIS</button>
+    <button class="sheet-tab" data-tab="trace">TRACE</button>
+    <button class="sheet-tab" data-tab="donors">ESTATE</button>
+  </div>
+  <div class="sheet-body">
+    <section class="pane active" data-pane="program">
+      <div class="program-jumps"><button class="sheet-btn active" data-program-jump="fluencySection">FLUENCY</button><button class="sheet-btn" data-program-jump="contactMapSection">CONTACT MAP</button><button class="sheet-btn" data-program-jump="gesturesSection">GESTURES</button><button class="sheet-btn" data-program-jump="thresholdsSection">THRESHOLDS</button></div>
+      <div class="section" id="fluencySection"><h3>Natural Contact Fluency</h3>
+        <div class="card"><p><b>The field teaches through real contact.</b> Guidance advances only when MOVE, TAP and HOLD + MOVE actually happen. Once learned, it retires without removing any mechanism.</p></div>
+        <div class="fluency-grid">
+          <button class="sheet-btn active" id="guideToggleBtn">GUIDANCE ON</button>
+          <button class="sheet-btn" id="restartGuideBtn">RESTART 3 STEPS</button>
+          <button class="sheet-btn active" id="hapticsBtn">HAPTICS ON</button>
+          <div class="program-field"><label>EXPLANATION LEVEL</label><select id="hintLevel"><option value="natural">NATURAL</option><option value="quiet">QUIET</option><option value="full">FULL DETAIL</option></select></div>
+        </div>
+        <div class="card fluency-status"><p id="fluencyStatus"><b>Step 1 of 3:</b> Move to aim.</p></div>
+      </div>
+      <div class="section" id="contactMapSection"><h3>Contact Map</h3>
+        <div class="field"><label>Profile</label><select id="profileSelect"></select></div>
+        <div class="field"><label>Profile name</label><input id="profileName" type="text" value="JM · LEFT DOMINANT / RIGHT PHONE" maxlength="52"></div>
+        <div class="program-grid">
+          <div class="program-field"><label>DOMINANT HAND</label><select id="dominantHand"><option value="left">LEFT</option><option value="right">RIGHT</option><option value="mixed">MIXED / NONE</option></select></div>
+          <div class="program-field"><label>PHONE HAND</label><select id="phoneHand"><option value="right">RIGHT</option><option value="left">LEFT</option><option value="both">BOTH / SUPPORT</option></select></div>
+          <div class="program-field"><label>FIRST CONTACT</label><select id="firstContactHand"><option value="right">RIGHT</option><option value="left">LEFT</option><option value="unassigned">UNASSIGNED</option></select></div>
+          <div class="program-field"><label>PRIMARY CURSOR</label><select id="primaryCursorChannel"><option value="first">FIRST CONTACT</option><option value="second">SECOND CONTACT</option></select></div>
+          <div class="program-field"><label>SECOND CONTACT</label><select id="secondContactHand"><option value="left">LEFT</option><option value="right">RIGHT</option><option value="unassigned">UNASSIGNED</option></select></div>
+          <div class="program-field"><label>CONTACT CLAIM</label><select id="contactClaim"><option value="screen-side">SCREEN SIDE</option><option value="arrival-order">ARRIVAL ORDER</option></select></div>
+          <div class="program-field"><label>FIRST ROLE</label><select id="firstRole"><option value="aim">AIM</option><option value="act">ACT</option><option value="anchor">ANCHOR</option><option value="modifier">MODIFIER</option><option value="inspect">INSPECT</option></select></div>
+          <div class="program-field"><label>SECOND ROLE</label><select id="secondRole"><option value="act">ACT</option><option value="aim">AIM</option><option value="anchor">ANCHOR</option><option value="modifier">MODIFIER</option><option value="inspect">INSPECT</option></select></div>
+        </div>
+        <button class="sheet-btn active" id="swapContactsBtn" style="width:100%;margin-top:7px">SWAP FIRST / SECOND</button>
+        <div class="card" style="margin-top:7px"><p class="program-status" id="programStatus"><b>Declared profile:</b> left-dominant · right-phone · screen-side claim. Screen side is an inference, not hardware hand detection.</p></div>
+      </div>
+      <div class="section" id="gesturesSection"><h3>Per-Contact Grammar</h3>
+        <div class="card"><p><b>FIRST and SECOND are separate operating contacts.</b> Choose one below, then program what its tap, hold, movement and release mean. The live rail in the field shows both grammars before contact.</p></div>
+        <div class="grammar-switch">
+          <button class="sheet-btn active" id="editFirstGrammarBtn">FIRST · RIGHT<small>AIM CONTACT</small></button>
+          <button class="sheet-btn" id="editSecondGrammarBtn">SECOND · LEFT<small>ACT CONTACT</small></button>
+        </div>
+        <div class="grammar-presets"><button class="sheet-btn active" id="splitGrammarBtn">SPLIT AIM / ACT</button><button class="sheet-btn" id="unifiedGrammarBtn">BOTH FULL CONTROL</button></div>
+        <div class="card grammar-preview"><p id="grammarPreview"><b>FIRST · RIGHT · AIM</b><br>Tap target → select · hold target → grab.</p></div>
+        <div class="gesture-list">
+          <div class="gesture-row"><label>TAP TARGET</label><select id="gestureTapTarget"><option value="click-select">CLICK / SELECT</option><option value="activate">ACTIVATE</option><option value="inspect">INSPECT</option><option value="pin">PIN</option><option value="none">NO ACTION</option></select></div>
+          <div class="gesture-row"><label>TAP EMPTY</label><select id="gestureTapEmpty"><option value="aim-only">AIM ONLY</option><option value="pin">PIN</option><option value="second">SECOND TOGGLE</option><option value="menu">OPEN PROGRAM</option><option value="none">NO ACTION</option></select></div>
+          <div class="gesture-row"><label>HOLD TARGET</label><select id="gestureHoldTarget"><option value="grab">GRAB</option><option value="inspect">INSPECT</option><option value="pin">PIN</option><option value="precision">PRECISION</option><option value="none">NO ACTION</option></select></div>
+          <div class="gesture-row"><label>HOLD EMPTY</label><select id="gestureHoldEmpty"><option value="precision">PRECISION</option><option value="menu">OPEN PROGRAM</option><option value="pin">PIN</option><option value="second">SECOND TOGGLE</option><option value="none">NO ACTION</option></select></div>
+          <div class="gesture-row"><label>HOLD + MOVE</label><select id="gestureHoldMove"><option value="alter">ALTER</option><option value="route">ROUTE</option><option value="measure">MEASURE</option><option value="aim-only">AIM ONLY</option></select></div>
+          <div class="gesture-row"><label>RELEASE AFTER HOLD</label><select id="gestureReleaseHold"><option value="commit">COMMIT</option><option value="preserve">COMMIT + PIN</option><option value="fire">COMMIT + FIRE</option><option value="cancel">CANCEL</option></select></div>
+          <div class="gesture-row"><label>DOUBLE TAP</label><select id="gestureDoubleTap"><option value="open-activate">OPEN / ACTIVATE</option><option value="inspect">INSPECT</option><option value="pin">PIN</option><option value="second">SECOND TOGGLE</option><option value="none">NO ACTION</option></select></div>
+        </div>
+      </div>
+      <div class="section" id="thresholdsSection"><h3>Click / Hold Thresholds</h3>
+        <div class="threshold-grid">
+          <div class="threshold-card"><label>TAP SLOP</label><output id="tapSlopOut">8px</output><input id="tapSlopRange" type="range" min="4" max="24" value="8"></div>
+          <div class="threshold-card"><label>HOLD TIME</label><output id="holdTimeOut">420ms</output><input id="holdTimeRange" type="range" min="220" max="900" step="20" value="420"></div>
+          <div class="threshold-card"><label>DOUBLE TAP</label><output id="doubleTimeOut">320ms</output><input id="doubleTimeRange" type="range" min="180" max="520" step="20" value="320"></div>
+        </div>
+        <div class="threshold-preview" aria-label="Click candidate to hold active threshold"></div>
+        <div class="row wrap" style="margin-top:10px"><button class="sheet-btn active" id="saveProfileBtn">SAVE PROFILE</button><button class="sheet-btn" id="duplicateProfileBtn">DUPLICATE</button><button class="sheet-btn danger" id="resetProfileBtn">RESET</button></div>
+      </div>
+    </section>
+    <section class="pane" data-pane="control">
+      <div class="section"><h3>RouteSense Calibration</h3>
+        <div class="card">
+          <div class="field"><label>Vertical cursor offset</label><output id="offsetOut">-68px</output><input id="offsetY" type="range" min="-130" max="20" value="-68"></div>
+          <div class="field"><label>Horizontal cursor offset</label><output id="offsetXOut">0px</output><input id="offsetX" type="range" min="-100" max="100" value="0"></div>
+          <div class="field"><label>Sensitivity</label><output id="sensitivityOut">1.00×</output><input id="sensitivity" type="range" min="0.35" max="1.8" step="0.05" value="1"></div>
+          <div class="field"><label>Cursor size</label><output id="cursorOut">34px</output><input id="cursorSize" type="range" min="24" max="56" value="34"></div>
+          <div class="field"><label>Movement profile</label><select id="movementProfile"><option value="coarse">Coarse</option><option value="balanced" selected>Balanced</option><option value="precision">Precision</option></select></div>
+          <div class="field"><label>Snap radius</label><output id="snapRadiusOut">28px</output><input id="snapRadius" type="range" min="8" max="72" value="28"></div>
+          <div class="field"><label>Cursor label</label><input id="cursorLabel" type="text" value="LIVING" maxlength="18"></div>
+          <div class="field"><label>Cursor colour</label><select id="cursorColor"><option value="#ffd73a">Yellow · operational</option><option value="#55ddff">Cyan · route</option><option value="#73edaa">Green · retained</option><option value="#ffa24d">Orange · transform</option><option value="#ff657c">Red · boundary</option></select></div>
+          <div class="field"><label>Cursor effect</label><select id="cursorEffect"><option value="steady">Steady</option><option value="pulse">Pulse</option></select></div>
+          <div class="row wrap"><button class="sheet-btn" id="snapBtn">AIM SNAP ON</button><button class="sheet-btn" id="smoothBtn">AIM SMOOTH ON</button><button class="sheet-btn" id="dragMagnetBtn">DRAG MAGNET OFF</button><button class="sheet-btn" id="magnifyBtn">MAGNIFY OFF</button><button class="sheet-btn" id="centreBtn">CENTRE</button></div>
+          <div class="card" style="margin-top:8px"><p><b>Truthful drag:</b> grabbed bodies follow the Living Cursor directly and preserve the pickup point. Aim snap and aim smoothing never pull an ordinary drag. DRAG MAGNET deliberately re-enables attraction to nearby destination bodies.</p></div>
+          <div class="nudge-pad" aria-label="Cursor nudge">
+            <button class="sheet-btn" data-nudge="0,-1">↑</button><button class="sheet-btn" data-nudge="-1,0">←</button><button class="sheet-btn" data-nudge="0,0">◎</button><button class="sheet-btn" data-nudge="1,0">→</button><button class="sheet-btn" data-nudge="0,1">↓</button>
+          </div>
+        </div>
+      </div>
+      <div class="section"><h3>Universal Action Families</h3>
+        <div class="action-grid" id="modeGrid">
+          <button class="sheet-btn" data-mode="move">MOVE</button><button class="sheet-btn" data-mode="turn">TURN</button><button class="sheet-btn" data-mode="pull">PULL</button><button class="sheet-btn" data-mode="push">PUSH</button>
+          <button class="sheet-btn" data-mode="scale">SCALE</button><button class="sheet-btn" data-mode="mould">MOULD</button><button class="sheet-btn" data-mode="divide">DIVIDE</button><button class="sheet-btn" data-mode="connect">CONNECT</button>
+          <button class="sheet-btn" data-mode="bind">BIND</button><button class="sheet-btn" data-mode="measure">MEASURE</button><button class="sheet-btn" data-mode="inspect">INSPECT</button><button class="sheet-btn" data-mode="label">LABEL</button>
+          <button class="sheet-btn" data-mode="activate">ACTIVATE</button><button class="sheet-btn" data-mode="fire">FIRE</button><button class="sheet-btn" data-mode="place">PLACE</button><button class="sheet-btn" data-mode="delete">DELETE</button>
+          <button class="sheet-btn" data-mode="code">CODE</button><button class="sheet-btn" data-mode="route">ROUTE</button><button class="sheet-btn" data-mode="seek">SEEK</button><button class="sheet-btn" data-mode="position">POSITION</button>
+        </div>
+        <div class="field"><label>Target label for LABEL action</label><input id="targetLabelInput" type="text" value="Living body" maxlength="42"></div>
+      </div>
+    </section>
+    <section class="pane" data-pane="depth">
+      <div class="section"><h3>Depth-in-Point Aperture</h3>
+        <div class="card"><p><b>A tiny 2D contact carries a full operational state.</b> X/Y are live position. Z is deliberate depth. Hold time and route are measured. Physical force and support remain explicitly unsensed unless compatible hardware reports them.</p></div>
+        <div class="depth-grid">
+          <div class="depth-cell"><span>POSITION</span><b id="depthXY">X 0 · Y 0</b></div>
+          <div class="depth-cell"><span>DEPTH</span><b id="depthZ">Z 0</b></div>
+          <div class="depth-cell"><span>HOLD</span><b id="depthHold">0 ms</b></div>
+          <div class="depth-cell"><span>ROUTE</span><b id="depthRoute">0 px</b></div>
+          <div class="depth-cell"><span>ACTION</span><b id="depthAction">AIM</b></div>
+          <div class="depth-cell"><span>FORCE</span><b id="depthForce">UNSENSED</b></div>
+        </div>
+        <div class="field"><label>Deliberate Z depth</label><output id="depthOut">0</output><input id="depthRange" type="range" min="-100" max="100" value="0"></div>
+        <div class="field"><label>Intent carried by the aperture</label><select id="intentSelect"><option value="inspect">Inspect</option><option value="transform">Transform</option><option value="measure">Measure</option><option value="connect">Connect</option><option value="deliver">Deliver</option><option value="prove">Proof contact</option></select></div>
+        <div class="row wrap"><button class="sheet-btn active" id="persistBtn">PERSIST</button><button class="sheet-btn" id="fadeBtn">FADE WHEN IDLE</button><button class="sheet-btn" id="wakeBtn">SHOW CURSOR</button></div>
+        <div class="card" style="margin-top:8px"><p><b>Preview:</b> <span id="depthConsequence">No target. Movement only aims.</span><br><b>Support:</b> <span id="supportSense">Declared physical chassis · unsensed</span></p></div>
+      </div>
+      <div class="section"><h3>Pinned ContactBodies</h3>
+        <div class="card" id="contactEditor">
+          <p id="contactEditorState"><b>No ContactBody selected.</b> Pin deliberately; ordinary SELECT never leaves a mark.</p>
+          <div class="field"><label>Label</label><input id="contactLabel" type="text" value="" placeholder="Select a ContactBody" disabled></div>
+          <div class="field"><label>Role / meaning</label><select id="contactRole" disabled><option value="anchor">Anchor</option><option value="measurement">Measurement point</option><option value="instruction">Instruction</option><option value="waypoint">Waypoint</option><option value="code-link">Coding connection</option><option value="comment">Comment</option><option value="trigger">Trigger</option><option value="proof">Proof contact</option><option value="signal">Collaborative signal</option><option value="route">Route point</option></select></div>
+          <div class="field"><label>Role colour</label><select id="contactColor" disabled><option value="#55ddff">Cyan · route</option><option value="#73edaa">Green · retained</option><option value="#ffd73a">Yellow · operational</option><option value="#ffa24d">Orange · action</option><option value="#ff657c">Red · proof / boundary</option></select></div>
+          <div class="field"><label>Size</label><output id="contactSizeOut">28px</output><input id="contactSize" type="range" min="20" max="64" value="28" disabled></div>
+          <div class="field"><label>Effect</label><select id="contactEffect" disabled><option value="steady">Steady</option><option value="pulse">Pulse</option><option value="halo">Halo</option><option value="trail">Trail</option><option value="solid">Solid</option></select></div>
+          <div class="field"><label>Owner</label><input id="contactOwner" type="text" value="local operator" maxlength="40" disabled></div>
+          <div class="field"><label>Note / intention</label><textarea id="contactNote" rows="3" maxlength="240" disabled></textarea></div>
+          <div class="row wrap"><button class="sheet-btn" id="saveContactBtn" disabled>SAVE</button><button class="sheet-btn" id="lockContactBtn" disabled>LOCK</button><button class="sheet-btn" id="duplicateContactBtn" disabled>DUPLICATE</button><button class="sheet-btn danger" id="deleteContactBtn" disabled>DELETE</button></div>
+        </div>
+        <div id="contactList"></div>
+      </div>
+    </section>
+    <section class="pane" data-pane="field">
+      <div class="section"><h3>NAEIO Relation Field</h3>
+        <div class="card"><p><b>Nowhere and everywhere in one:</b> possible routes stay dispersed until contact selects one. The field does not decide for the hand; it reveals what can be enacted from the current position.</p>
+          <div class="field-mini"><div class="field-step active">POSSIBLE</div><div class="field-step">CONTACT</div><div class="field-step">CHOSEN</div><div class="field-step">TESTED</div><div class="field-step">TRACE</div></div>
+        </div>
+        <div class="row wrap"><button class="sheet-btn" id="routeCloudBtn">ROUTE CLOUD ON</button><button class="sheet-btn" id="clearFieldBtn">RESET FIELD</button></div>
+        <div class="card" style="margin-top:8px"><p id="fieldStatus"><b>Field state:</b> possible routes dispersed.</p></div>
+      </div>
+      <div class="section"><h3>Internal route</h3><div class="card"><p><b>Hypergrid possibility → Choice contact → Empiramid test → release or carry → TraceBox receipt.</b><br><br>These are internal engines, not extra front-door controls.</p></div></div>
+    </section>
+    <section class="pane" data-pane="chassis">
+      <div class="section"><h3>Handprint / CodeHand Roles</h3>
+        <div class="card"><p><b>Driver contact:</b> left index joint / over-screen index<br><b>Action contact:</b> right thumb HOLD ACT<br><b>Support contacts:</b> right pinky shelf + rear fingers + cross-hand bridge<br><b>Secondary contact:</b> second thumb or index when available<br><br><b>Sensing boundary:</b> the profile records the physical chassis; this phone surface does not claim to sense rear fingers, palm pressure or side brace.</p></div>
+        <div class="field"><label>Driver</label><select id="driverRole"><option>Left index joint</option><option>Over-screen index probe</option><option>Right thumb</option><option>Stylus / mouse</option></select></div>
+        <div class="field"><label>Action</label><select id="actionRole"><option>Right thumb HOLD ACT</option><option>Left thumb HOLD ACT</option><option>Visible ACT button</option><option>External switch</option></select></div>
+        <div class="field"><label>Support</label><select id="supportRole"><option>Right pinky shelf + rear arc</option><option>Cross-hand bridge</option><option>Side brace + rear counterpressure</option><option>Table / stand support</option></select></div>
+        <button class="sheet-btn" id="applyChassis">APPLY DECLARED CHASSIS</button>
+      </div>
+      <div class="section"><h3>Compatibility Hooks</h3><div class="card"><p><b>Target → Preview → Select → Grab → Transform → Commit → Cancel → Receipt</b><br><br>Every interactive body exposes these hooks. The Contact Engine identifies the target. The active mode decides the transformation.</p></div></div>
+      <div class="section"><h3>Future Support Sensing</h3><div class="card"><p><b>Currently declared, not invented.</b><br>Squeeze cases, side pressure rails, rear touch, camera hand detection, wearable finger sensors and motion/tilt may later turn support contacts into sensed modifiers. Until compatible hardware reports them, palm, middle-finger and rear-finger support remain honestly unsensed.</p></div></div>
+    </section>
+    <section class="pane" data-pane="trace">
+      <div class="section"><h3>TraceBox Receipts</h3><div class="row"><button class="sheet-btn" id="copyTrace">COPY JSON</button><button class="sheet-btn" id="clearTrace">CLEAR</button></div><div id="traceList" style="margin-top:8px"></div></div>
+    </section>
+    <section class="pane" data-pane="donors">
+      <div class="section"><h3>Estate Reunion</h3>
+        <div class="card"><p><b>HAND / INPUT ≠ CURSOR ≠ TARGET ≠ ACTION ≠ CONTACTBODY ≠ TRACE</b><br><br>GUIDE → AIM → TARGET → CLICK / GRAB → ALTER → RELEASE → PRESERVE → REPLAY</p></div>
+        <div class="card"><p><b>Living bodies in this proof:</b><br>Handprint supplies physical intention. CodeHand parses operational grammar. Visualang makes state and consequence visible. Tongueview exposes meaning for inspection. X-Form declares target geometry and accepted transforms. LDML carries portable state. RouteOS delivers, cancels and recovers. TraceBox preserves receipts and replay lineage.</p></div>
+        <div class="row wrap"><button class="sheet-btn" id="exportLdmlBtn">EXPORT LDML</button><button class="sheet-btn" id="importLdmlBtn">IMPORT LDML</button><input id="importLdmlFile" type="file" accept=".json,application/json" hidden></div>
+      </div>
+      <div class="section"><h3>NA/NA Contactfield Donor Intake</h3>
+        <div class="card"><p><b>No third-party library is bundled.</b> Public mechanisms were inspected and independently rewritten through Cading, CodeHand, RouteSense, RouteOS, JMLogic, PLAYFORM and TraceBox.</p></div>
+        <div class="card"><p><b>W3C Pointer Events</b><br>Hardware-neutral pointer IDs, capture/cancel, coalesced samples and independent contact roles.</p><span class="license">W3C specification</span></div>
+        <div class="card"><p><b>interact.js</b><br>Explicit interaction phases, simultaneous contacts and snapping concepts.</p><span class="license">MIT</span></div>
+        <div class="card"><p><b>Konva / Fabric.js</b><br>Scene-body hit testing, transforms and serialisable object state.</p><span class="license">MIT</span></div>
+        <div class="card"><p><b>xyflow</b><br>Persistent endpoints and editable relations.</p><span class="license">MIT</span></div>
+        <div class="card"><p><b>CSSOM View / VisualViewport</b><br>Viewport changes are treated as live chassis changes rather than resetting the work.</p><span class="license">Web platform specification</span></div><div class="card"><p><b>WAI-ARIA / WCAG operation guidance</b><br>Visible alternatives and keyboard-operable routes.</p><span class="license">W3C guidance</span></div>
+      </div>
+    </section>
+  </div>
+</section>
+<div class="toast" id="toast">Ready</div>
+
+<script>
+(() => {
+  'use strict';
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const stage=$('#stage'),cursor=$('#cursor'),cursor2=$('#cursor2'),touchGhost=$('#touchGhost'),offsetLine=$('#offsetLine');
+  const targetName=$('#targetName'),modeReadout=$('#modeReadout'),hookReadout=$('#hookReadout');
+  const relationLine=$('#relationLine'),tensionLine=$('#tensionLine'),metrics=$('#metrics');
+  const relationVector=$('#relationVector'),tensionVector=$('#tensionVector'),storedRoutes=$('#storedRoutes'),fieldReadout=$('#fieldReadout'),contextStrip=$('#contextStrip');
+  const fullGestureTemplate={tapTarget:'click-select',tapEmpty:'aim-only',holdTarget:'grab',holdEmpty:'precision',holdMove:'alter',releaseHold:'commit',doubleTap:'open-activate'};
+  const aimGestureTemplate={...fullGestureTemplate,doubleTap:'inspect'};
+  const actGestureTemplate={...fullGestureTemplate,tapTarget:'activate',tapEmpty:'none'};
+  const profileTemplate={
+    id:'jm-left-right',name:'JM · LEFT DOMINANT / RIGHT PHONE',
+    dominantHand:'left',phoneHand:'right',firstContactHand:'right',primaryCursorChannel:'first',secondContactHand:'left',contactClaim:'screen-side',firstRole:'aim',secondRole:'act',
+    grammarStyle:'split',gestures:{...fullGestureTemplate},channelGestures:{first:{...aimGestureTemplate},second:{...actGestureTemplate}},
+    thresholds:{tapSlop:8,holdTime:420,doubleTime:320}
+  };
+  const profilePresets=[
+    profileTemplate,
+    {...profileTemplate,id:'right-phone',name:'RIGHT PHONE · THUMB FIRST',dominantHand:'right'},
+    {...profileTemplate,id:'left-phone-mirror',name:'LEFT PHONE · MIRROR',phoneHand:'left',firstContactHand:'left',secondContactHand:'right'},
+    {...profileTemplate,id:'two-hand-manual',name:'TWO-HAND · ARRIVAL ORDER',dominantHand:'mixed',phoneHand:'both',contactClaim:'arrival-order'}
+  ].map(profile=>JSON.parse(JSON.stringify(profile)));
+  const state={
+    mode:'cursor',scene:'black',cursor:{x:0,y:0,target:null,state:'free',label:'LIVING',color:'#ffd73a',effect:'steady'},second:{x:0,y:0,target:null,visible:false},
+    touch:{x:0,y:0,visible:false},offsetX:0,offsetY:-68,sensitivity:1,cursorSize:34,snap:true,snapRadius:28,smooth:true,dragMagnet:false,precision:false,movementProfile:'balanced',magnify:false,acting:false,
+    selected:null,grabbed:null,actPointer:null,gestureActPointer:null,pointers:new Map(),contacts:[],routes:[],traces:[],history:[],binding:null,transform:null,lastTap:null,
+    selectedContactId:null,cursorVisible:true,cursorPolicy:'persist',idleAfter:2600,lastInput:performance.now(),tapSlop:8,holdThreshold:420,doubleThreshold:320,removedObjectIds:[],
+    inputProfiles:profilePresets,activeProfileId:'jm-left-right',editingGestureChannel:'first',contextView:'modules',activation:{phase:'idle',progress:0,pointerId:null,target:null,holdRoute:null,source:null,channel:'first'},momentaryPrecision:null,
+    aperture:{z:0,intent:'inspect',action:'aim',holdStarted:null,holdMs:0,routeLength:0,lastPoint:null,force:null,forceSource:'unsensed',before:null,after:null,consequence:'No target. Movement only aims.'},
+    chassis:{driver:'Left index joint',action:'Right thumb HOLD ACT',support:'Right pinky shelf + rear arc',sense:'declared physical chassis · unsensed'},
+    naeio:{active:true,candidate:null,settled:[],phase:'possible'},
+    fluency:{guideEnabled:true,guideStep:0,guideComplete:false,hintLevel:'natural',haptics:true,completedAt:null}
+  };
+  const targetContracts=new WeakMap();
+  const scenes=[['black','ESTATE SOURCE FIELD'],['grid','CONTACT GRID'],['blueprint','X-FORM BLUEPRINT'],['code','CODEHAND FIELD']];
+  const actionFamilies=Object.freeze(['cursor','move','turn','pull','push','scale','mould','divide','connect','bind','measure','inspect','label','activate','fire','place','delete','code','route','seek','position','dotdot','sling']);
+  const moduleDeckMarkup=contextStrip.innerHTML;
+  const actionAliases=Object.freeze({snap:'seek',hold:'move',orbit:'position',deliver:'dotdot',slingshot:'sling'});
+  let sceneIndex=0,toastTimer,guideTimer,lastRaw=null,previewTarget=null,activationFrame=null,contextSignature='';
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const now=()=>new Date().toISOString();
+  const rect=()=>stage.getBoundingClientRect();
+  const idOf=el=>el?.dataset?.id||el?.dataset?.label||el?.textContent?.trim()||'none';
+  const save=()=>{try{localStorage.setItem('jm-living-cursor-v010d',JSON.stringify({version:'0.10D',contacts:state.contacts,routes:state.routes,traces:state.traces.slice(0,160),history:state.history.slice(-80),scene:state.scene,chassis:state.chassis,inputProfiles:state.inputProfiles,activeProfileId:state.activeProfileId,fluency:{...state.fluency},aperture:{z:state.aperture.z,intent:state.aperture.intent},naeio:{active:state.naeio.active,settled:state.naeio.settled,phase:state.naeio.phase},removedObjectIds:state.removedObjectIds,settings:{offsetX:state.offsetX,offsetY:state.offsetY,sensitivity:state.sensitivity,cursorSize:state.cursorSize,snap:state.snap,snapRadius:state.snapRadius,smooth:state.smooth,dragMagnet:state.dragMagnet,precision:state.precision,movementProfile:state.movementProfile,magnify:state.magnify,cursorPolicy:state.cursorPolicy,cursorVisible:state.cursorVisible,cursor:{x:state.cursor.x,y:state.cursor.y,state:state.cursor.state,label:state.cursor.label,color:state.cursor.color,effect:state.cursor.effect}},objects:$$('.object',stage).map(el=>{const clean=el.cloneNode(true);clean.classList.remove('hover','selected','grabbed','hold-ready');return{key:el.dataset.key,id:el.dataset.id,style:el.getAttribute('style')||'',className:[...el.classList].filter(name=>!['hover','selected','grabbed','hold-ready'].includes(name)).join(' '),html:el.innerHTML,outerHTML:clean.outerHTML}})}))}catch(e){console.warn('Save skipped',e)}};
+  const toast=(m,duration=1400)=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),duration)};
+
+  class Fluency{
+    static accept(route,detail={}){
+      const f=state.fluency;if(!f.guideEnabled||f.guideComplete)return false;
+      const passed=
+        (f.guideStep===0&&((route==='CLICK_HOLD_CANCELLED_BY_MOVE')||(route==='AIM_RELEASE'&&detail.moved)||(route==='CONTACT_UP'&&detail.moved&&detail.runtimeCursor==='primary')))||
+        (f.guideStep===1&&route==='GESTURE_TAP'&&Boolean(detail.target))||
+        (f.guideStep===2&&route==='GESTURE_HOLD_RELEASE'&&Boolean(detail.moved)&&detail.releaseRoute!=='cancel');
+      if(!passed)return false;
+      f.guideStep+=1;
+      if(f.guideStep>=3){
+        f.guideStep=3;f.guideComplete=true;f.completedAt=Date.now();haptic([18,35,28]);toast('Core contact learned · guidance will retire',2400);
+        clearTimeout(guideTimer);guideTimer=setTimeout(renderGuide,3300)
+      }else{
+        haptic(10);toast(f.guideStep===1?'Aim understood · now tap a body':'Selection understood · now hold, move, release',2000)
+      }
+      renderGuide();return true
+    }
+  }
+
+  class TraceBox{
+    static write(route,detail={}){const p=activeProfile(),receipt={id:'T'+Date.now().toString(36),time:now(),source:'hand.contact',route,mode:state.mode,cursor:{x:Math.round(state.cursor.x),y:Math.round(state.cursor.y),visible:state.cursorVisible,policy:state.cursorPolicy},second:state.second.visible?{x:Math.round(state.second.x),y:Math.round(state.second.y)}:null,profile:p?{id:p.id,name:p.name,dominantHand:p.dominantHand,phoneHand:p.phoneHand,firstContactHand:p.firstContactHand,secondContactHand:p.secondContactHand,firstRole:p.firstRole,secondRole:p.secondRole,primaryCursorChannel:p.primaryCursorChannel,grammarStyle:p.grammarStyle,claim:p.contactClaim}:null,aperture:apertureSnapshot(),chassis:{driver:state.chassis.driver,action:state.chassis.action,support:state.chassis.support,sense:state.chassis.sense},detail};state.traces.unshift(receipt);state.traces=state.traces.slice(0,160);Fluency.accept(route,detail);renderTrace();save();window.dispatchEvent(new CustomEvent('jmcontactreceipt',{detail:receipt}));return receipt}
+  }
+  class RouteSense{
+    static calibrate(sample){const factor=state.momentaryPrecision ? 0.25 : (state.precision ? 0.25 : state.sensitivity);return{x:sample.x*factor,y:sample.y*factor}}
+    static snap(point,{dragging=false}={}){
+      state.snapActive=false;
+      if(!state.snap||(dragging&&!state.dragMagnet))return point;
+      let best=null,dist=state.snapRadius;const r=rect();
+      $$('.object,.contact,[data-contact-target="true"]',stage).forEach(el=>{
+        if(dragging&&el===state.grabbed)return;
+        const b=el.getBoundingClientRect(),x=b.left+b.width/2-r.left,y=b.top+b.height/2-r.top,d=Math.hypot(point.x-x,point.y-y);
+        if(d<dist){dist=d;best={x,y,target:el}}
+      });
+      state.snapActive=Boolean(best);return best?{x:best.x,y:best.y}:point
+    }
+  }
+  class CodeHand{
+    static parse(packet){return packet}
+  }
+  class RouteOS{
+    static dispatch(packet){return JMLogic.reduce(CodeHand.parse(packet))}
+  }
+  class JMLogic{
+    static reduce(command){switch(command.type){
+      case 'SELECT':return selectTarget(command.target);
+      case 'PIN':return pinContact(command.label);
+      case 'ACT_START':return actStart();
+      case 'ACT_END':return actEnd();
+      case 'CANCEL':return cancelAction();
+      case 'UNDO':return undo();
+      case 'MODE':return setMode(command.mode);
+      case 'SECOND':return toggleSecond(command.visible);
+      case 'CURSOR_VISIBILITY':return setCursorVisible(command.visible,command.reason);
+      case 'CONTEXT':return PLAYFORM.enact(command.name);
+      case 'RESET':return centreCursors(true);
+    }}
+  }
+  class PLAYFORM{
+    static enact(name){
+      if(name==='seek')return seekNearest();
+      if(name==='inspect')return inspectTarget();
+      if(name==='place')return placeSeed();
+      if(name==='dotdot')return createRoute();
+      if(name==='sling')return fireSlingshot();
+      if(name==='position')return positionSelected();
+      if(name==='bind')return bindTargets();
+      if(name==='turn'){setMode('turn');return toast('TURN armed')}
+      if(name==='mould'){setMode('mould');return toast('MOULD armed')}
+      if(name==='choose')return choosePossibleRoute();
+      if(name==='test')return testPossibleRoute();
+      if(name==='release')return releasePossibleRoute();
+    }
+  }
+  const Cading=(type,extra={})=>({type,source:'hand.contact',route:'living.cursor.engine',time:performance.now(),...extra});
+  const guideSteps=[
+    {title:'Move to aim',text:'Slide anywhere. The yellow cursor stays above your finger and shows the exact target.'},
+    {title:'Tap to select',text:'Aim at a body, then touch and lift. A tap selects; it never leaves a permanent mark.'},
+    {title:'Hold · move · release',text:'Hold on the selected body until orange, move to transform it, then release to commit.'}
+  ];
+  function haptic(pattern){
+    if(!state.fluency.haptics||typeof navigator.vibrate!=='function')return false;
+    try{return Boolean(navigator.vibrate(pattern))}catch{return false}
+  }
+  function renderGuide(){
+    const f=state.fluency,card=$('#guideCard'),celebrating=f.guideComplete&&f.completedAt&&Date.now()-Number(f.completedAt)<3200,show=f.guideEnabled&&(!f.guideComplete||celebrating);
+    card.classList.toggle('show',Boolean(show));card.classList.toggle('complete',Boolean(f.guideComplete));card.setAttribute('aria-hidden',show?'false':'true');
+    const step=guideSteps[Math.min(f.guideStep,guideSteps.length-1)],holdLive=f.guideStep===2&&state.activation.phase==='hold-active';
+    $('#guideCount').textContent=f.guideComplete?'✓':`${f.guideStep+1}/3`;
+    $('#guideTitle').textContent=f.guideComplete?'Core contact learned':holdLive?'Hold is active':step.title;
+    $('#guideText').textContent=f.guideComplete?'Aim, select and transform are now yours. The deeper controls remain in MORE.':holdLive?'Move the yellow cursor to transform. Release commits; CANCEL restores.':step.text;
+    $('#guideDots').innerHTML=guideSteps.map((_,index)=>`<span class="guide-dot ${index<f.guideStep||f.guideComplete?'done':index===f.guideStep?'current':''}"></span>`).join('');
+    renderFluencyControls()
+  }
+  function renderFluencyControls(){
+    const f=state.fluency,toggle=$('#guideToggleBtn'),haptics=$('#hapticsBtn'),status=$('#fluencyStatus');
+    if(!toggle||!haptics||!status)return;
+    toggle.textContent='GUIDANCE '+(f.guideEnabled?'ON':'OFF');toggle.classList.toggle('active',f.guideEnabled);
+    haptics.textContent='HAPTICS '+(f.haptics?'ON':'OFF');haptics.classList.toggle('active',f.haptics);
+    $('#hintLevel').value=f.hintLevel;
+    const support=typeof navigator.vibrate==='function'?'device route available':'visual fallback active';
+    status.innerHTML=f.guideComplete?`<b>Core learned.</b> Guidance is retired and can be restarted. Haptics: ${support}.`:f.guideEnabled?`<b>Step ${f.guideStep+1} of 3:</b> ${escapeHtml(guideSteps[f.guideStep].title)}. Progress comes from actual contact receipts. Haptics: ${support}.`:`<b>Guidance off.</b> Natural consequence cues remain ${escapeHtml(f.hintLevel)}. Haptics: ${support}.`
+  }
+  function setGuideEnabled(enabled){
+    state.fluency.guideEnabled=Boolean(enabled);TraceBox.write(state.fluency.guideEnabled?'GUIDE_ENABLED':'GUIDE_DISABLED',{step:state.fluency.guideStep,complete:state.fluency.guideComplete});renderGuide();toast(state.fluency.guideEnabled?(state.fluency.guideComplete?'Guide ready to restart':'Contact guide shown'):'Guide hidden · mechanics unchanged')
+  }
+  function restartGuide(){
+    state.fluency.guideEnabled=true;state.fluency.guideStep=0;state.fluency.guideComplete=false;state.fluency.completedAt=null;TraceBox.write('GUIDE_RESTART',{steps:guideSteps.map(step=>step.title)});renderGuide();toast('Three contact steps restarted')
+  }
+
+  function cloneProfile(profile){return JSON.parse(JSON.stringify(profile))}
+  function normaliseGestures(gestures={}){return{...fullGestureTemplate,...gestures}}
+  function normaliseProfile(profile,index=0){
+    const source=profile&&typeof profile==='object'?profile:{};
+    const legacy=normaliseGestures(source.gestures||profileTemplate.gestures),provided=source.channelGestures&&typeof source.channelGestures==='object';
+    const firstFallback=source.firstRole==='act'?{...legacy,tapTarget:'activate',tapEmpty:'none'}:{...legacy,doubleTap:'inspect'};
+    const secondFallback=source.secondRole==='act'?{...legacy,tapTarget:'activate',tapEmpty:'none'}:{...legacy};
+    return{...cloneProfile(profileTemplate),...source,id:String(source.id||('profile-'+index)),name:String(source.name||('CONTACT PROFILE '+(index+1))),grammarStyle:String(source.grammarStyle||(provided?'custom':'split')),gestures:legacy,channelGestures:{first:normaliseGestures(provided?source.channelGestures.first:firstFallback),second:normaliseGestures(provided?source.channelGestures.second:secondFallback)},thresholds:{...profileTemplate.thresholds,...(source.thresholds||{})}}
+  }
+  function activeProfile(){
+    return state.inputProfiles.find(profile=>profile.id===state.activeProfileId)||state.inputProfiles[0]||profileTemplate
+  }
+  function profileRole(channel,profile=activeProfile()){return channel==='first'?profile.firstRole:profile.secondRole}
+  function profileHand(channel,profile=activeProfile()){return channel==='first'?profile.firstContactHand:profile.secondContactHand}
+  function channelForRole(role,profile=activeProfile()){return profile.firstRole===role?'first':profile.secondRole===role?'second':profile.primaryCursorChannel||'first'}
+  function gestureMap(channel='first',profile=activeProfile()){return normaliseGestures(profile?.channelGestures?.[channel]||profile?.gestures)}
+  const gestureWords=Object.freeze({'click-select':'SELECT','aim-only':'AIM','open-activate':'OPEN','activate':'ACTIVATE','inspect':'INSPECT','grab':'GRAB','precision':'PRECISION','menu':'PROGRAM','second':'SECOND','pin':'PIN','none':'NONE','alter':'ALTER','route':'ROUTE','measure':'MEASURE','commit':'COMMIT','preserve':'COMMIT + PIN','fire':'COMMIT + FIRE','cancel':'CANCEL'});
+  function gestureWord(route){return gestureWords[route]||String(route||'none').replaceAll('-',' ').toUpperCase()}
+  function grammarSummary(channel='first',profile=activeProfile()){const g=gestureMap(channel,profile);return`TAP ${gestureWord(g.tapTarget)} · HOLD ${gestureWord(g.holdTarget)}`}
+  function runtimeChannel(channel,profile=activeProfile()){return channel===profile.primaryCursorChannel?'primary':'secondary'}
+  function baseChannelForEvent(event){
+    const profile=activeProfile(),claimed=new Set([...state.pointers.values()].map(pointer=>pointer.baseChannel)),available=['first','second'].filter(channel=>!claimed.has(channel));
+    if(profile.contactClaim==='screen-side'){
+      const field=rect(),side=event.clientX-field.left<field.width/2?'left':'right';
+      const preferred=profile.firstContactHand===side?'first':profile.secondContactHand===side?'second':null,channel=preferred&&!claimed.has(preferred)?preferred:(available[0]||preferred||(state.pointers.size%2?'second':'first'));
+      return{channel,inferredHand:side,claim:'screen-zone channel routing · inferred, not hardware hand detection'}
+    }
+    const channel=available[0]||(state.pointers.size%2?'second':'first');
+    return{channel,inferredHand:profileHand(channel,profile),claim:'arrival order declaration'}
+  }
+  function profileSummary(profile=activeProfile()){
+    return`${profile.dominantHand.toUpperCase()} DOMINANT · ${profile.phoneHand.toUpperCase()} PHONE · ${profile.contactClaim==='screen-side'?'SCREEN-SIDE INFERENCE':'ARRIVAL ORDER'}`
+  }
+  function gestureFormSnapshot(){return normaliseGestures({tapTarget:$('#gestureTapTarget').value,tapEmpty:$('#gestureTapEmpty').value,holdTarget:$('#gestureHoldTarget').value,holdEmpty:$('#gestureHoldEmpty').value,holdMove:$('#gestureHoldMove').value,releaseHold:$('#gestureReleaseHold').value,doubleTap:$('#gestureDoubleTap').value})}
+  function renderGestureEditor(profile=activeProfile()){
+    if(!profile)return;const channel=state.editingGestureChannel,g=gestureMap(channel,profile),hand=profileHand(channel,profile),role=profileRole(channel,profile),other=channel==='first'?'second':'first';
+    const values={gestureTapTarget:g.tapTarget,gestureTapEmpty:g.tapEmpty,gestureHoldTarget:g.holdTarget,gestureHoldEmpty:g.holdEmpty,gestureHoldMove:g.holdMove,gestureReleaseHold:g.releaseHold,gestureDoubleTap:g.doubleTap};
+    Object.entries(values).forEach(([id,value])=>{const el=$('#'+id);if(el)el.value=value});
+    $('#editFirstGrammarBtn').innerHTML=`FIRST · ${escapeHtml(profile.firstContactHand).toUpperCase()}<small>${escapeHtml(profile.firstRole).toUpperCase()} CONTACT</small>`;$('#editSecondGrammarBtn').innerHTML=`SECOND · ${escapeHtml(profile.secondContactHand).toUpperCase()}<small>${escapeHtml(profile.secondRole).toUpperCase()} CONTACT</small>`;
+    $('#editFirstGrammarBtn').classList.toggle('active',channel==='first');$('#editSecondGrammarBtn').classList.toggle('active',channel==='second');
+    $('#splitGrammarBtn').classList.toggle('active',profile.grammarStyle==='split');$('#unifiedGrammarBtn').classList.toggle('active',profile.grammarStyle==='unified');
+    $('#grammarPreview').innerHTML=`<b>${channel.toUpperCase()} · ${escapeHtml(hand).toUpperCase()} · ${escapeHtml(role).toUpperCase()}</b><br>Tap target → ${gestureWord(g.tapTarget).toLowerCase()} · hold target → ${gestureWord(g.holdTarget).toLowerCase()} · move → ${gestureWord(g.holdMove).toLowerCase()} · release → ${gestureWord(g.releaseHold).toLowerCase()}. <b>${other.toUpperCase()}</b> keeps its own grammar.`
+  }
+  function selectGestureChannel(channel){
+    if(!['first','second'].includes(channel)||channel===state.editingGestureChannel)return;const profile=activeProfile(),index=state.inputProfiles.findIndex(item=>item.id===profile.id),next=cloneProfile(profile),editedChannel=state.editingGestureChannel,snapshot=gestureFormSnapshot(),changed=JSON.stringify(snapshot)!==JSON.stringify(gestureMap(editedChannel,profile));next.channelGestures[editedChannel]=snapshot;if(changed)next.grammarStyle='custom';state.inputProfiles[index]=normaliseProfile(next,index);state.editingGestureChannel=channel;renderProgram();save()
+  }
+  function applyGrammarPreset(style){
+    if(!['split','unified'].includes(style))return;const profile=readProgramForm(activeProfile()),index=state.inputProfiles.findIndex(item=>item.id===profile.id);profile.grammarStyle=style;
+    if(style==='split'){profile.firstRole='aim';profile.secondRole='act';profile.channelGestures={first:{...aimGestureTemplate},second:{...actGestureTemplate}}}
+    else profile.channelGestures={first:{...fullGestureTemplate},second:{...fullGestureTemplate}};
+    profile.gestures={...profile.channelGestures.first};state.inputProfiles[index]=normaliseProfile(profile,index);applyActiveProfile();TraceBox.write('CONTACT_GRAMMAR_PRESET',{style,first:cloneProfile(profile.channelGestures.first),second:cloneProfile(profile.channelGestures.second)});toast(style==='split'?'Aim and act contacts separated':'Both contacts now have full control')
+  }
+  function renderProgram(){
+    const profile=activeProfile();if(!profile)return;
+    const select=$('#profileSelect');
+    select.innerHTML=state.inputProfiles.map(item=>`<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join('');
+    select.value=profile.id;
+    const values={profileName:profile.name,dominantHand:profile.dominantHand,phoneHand:profile.phoneHand,firstContactHand:profile.firstContactHand,primaryCursorChannel:profile.primaryCursorChannel,secondContactHand:profile.secondContactHand,contactClaim:profile.contactClaim,firstRole:profile.firstRole,secondRole:profile.secondRole,tapSlopRange:profile.thresholds.tapSlop,holdTimeRange:profile.thresholds.holdTime,doubleTimeRange:profile.thresholds.doubleTime};
+    Object.entries(values).forEach(([id,value])=>{const el=$('#'+id);if(el)el.value=value});
+    $('#tapSlopOut').textContent=profile.thresholds.tapSlop+'px';$('#holdTimeOut').textContent=profile.thresholds.holdTime+'ms';$('#doubleTimeOut').textContent=profile.thresholds.doubleTime+'ms';
+    $('#firstHandRail').textContent=String(profile.firstContactHand).toUpperCase();$('#firstRoleRail').textContent=String(profile.firstRole).toUpperCase();$('#secondHandRail').textContent=String(profile.secondContactHand).toUpperCase();$('#secondRoleRail').textContent=String(profile.secondRole).toUpperCase();$('#firstRouteRail').textContent=grammarSummary('first',profile);$('#secondRouteRail').textContent=grammarSummary('second',profile);
+    $('#firstAssignmentBtn').classList.toggle('active',profile.primaryCursorChannel==='first');$('#secondAssignmentBtn').classList.toggle('active',profile.primaryCursorChannel==='second');
+    $('#profileHeader').textContent='v0.10D · '+profileSummary(profile);
+    $('#programStatus').innerHTML=`<b>Declared profile:</b> ${escapeHtml(profile.dominantHand)}-dominant · ${escapeHtml(profile.phoneHand)}-phone · ${escapeHtml(profile.firstContactHand)} first / ${escapeHtml(profile.firstRole)} · ${escapeHtml(profile.secondContactHand)} second / ${escapeHtml(profile.secondRole)}. ${profile.contactClaim==='screen-side'?'Screen side is an inference, not hardware hand detection.':'Contacts are assigned by arrival order.'}`;
+    renderGestureEditor(profile);renderFluencyControls()
+  }
+  function readProgramForm(profile=activeProfile()){
+    const next=cloneProfile(profile);next.channelGestures=next.channelGestures||{};next.channelGestures[state.editingGestureChannel]=gestureFormSnapshot();if(next.grammarStyle!=='unified'&&JSON.stringify(next.channelGestures)!==JSON.stringify(profile.channelGestures))next.grammarStyle='custom';next.gestures={...next.channelGestures.first};return normaliseProfile({...next,name:$('#profileName').value.trim()||profile.name,dominantHand:$('#dominantHand').value,phoneHand:$('#phoneHand').value,firstContactHand:$('#firstContactHand').value,primaryCursorChannel:$('#primaryCursorChannel').value,secondContactHand:$('#secondContactHand').value,contactClaim:$('#contactClaim').value,firstRole:$('#firstRole').value,secondRole:$('#secondRole').value,thresholds:{tapSlop:Number($('#tapSlopRange').value),holdTime:Number($('#holdTimeRange').value),doubleTime:Number($('#doubleTimeRange').value)}})
+  }
+  function applyActiveProfile({write=false,route='PROFILE_APPLY'}={}){
+    state.inputProfiles=state.inputProfiles.map(normaliseProfile);const profile=activeProfile();
+    state.tapSlop=Number(profile.thresholds.tapSlop);state.holdThreshold=Number(profile.thresholds.holdTime);state.doubleThreshold=Number(profile.thresholds.doubleTime);
+    renderProgram();
+    if(write){TraceBox.write(route,{profile:cloneProfile(profile),hardwareHandDetection:false});toast(profile.name+' applied')}
+    save();return profile
+  }
+  function saveProgram(){
+    const index=state.inputProfiles.findIndex(profile=>profile.id===state.activeProfileId);if(index<0)return;
+    state.inputProfiles[index]=readProgramForm(state.inputProfiles[index]);applyActiveProfile();TraceBox.write('PROFILE_SAVE',{profile:cloneProfile(activeProfile()),hardwareHandDetection:false});toast('Contact profile saved')
+  }
+  function duplicateProgram(){
+    const source=readProgramForm(activeProfile()),copy={...cloneProfile(source),id:'profile-'+Date.now().toString(36),name:source.name+' COPY'};state.inputProfiles.push(copy);state.activeProfileId=copy.id;applyActiveProfile();TraceBox.write('PROFILE_DUPLICATE',{source:source.id,created:copy.id});toast('Programmable profile duplicated')
+  }
+  function resetProgram(){
+    const current=activeProfile(),preset=profilePresets.find(profile=>profile.id===current.id),reset=preset?cloneProfile(preset):{...cloneProfile(profileTemplate),id:current.id,name:current.name};
+    const index=state.inputProfiles.findIndex(profile=>profile.id===current.id);state.inputProfiles[index]=reset;applyActiveProfile();TraceBox.write('PROFILE_RESET',{profile:reset.id});toast('Profile reset')
+  }
+  function swapContacts(){
+    const current=readProgramForm(activeProfile()),swapped={...current,firstContactHand:current.secondContactHand,secondContactHand:current.firstContactHand,firstRole:current.secondRole,secondRole:current.firstRole,channelGestures:{first:cloneProfile(current.channelGestures.second),second:cloneProfile(current.channelGestures.first)},grammarStyle:'custom'};
+    const index=state.inputProfiles.findIndex(profile=>profile.id===current.id);state.inputProfiles[index]=swapped;applyActiveProfile();TraceBox.write('CONTACT_ORDER_SWAP',{before:{firstHand:current.firstContactHand,firstRole:current.firstRole,secondHand:current.secondContactHand,secondRole:current.secondRole},after:{firstHand:swapped.firstContactHand,firstRole:swapped.firstRole,secondHand:swapped.secondContactHand,secondRole:swapped.secondRole},dominantHand:swapped.dominantHand,phoneHand:swapped.phoneHand});toast('First and second contacts swapped')
+  }
+  function setPrimaryCursorChannel(channel){
+    if(!['first','second'].includes(channel))return;const current=readProgramForm(activeProfile()),index=state.inputProfiles.findIndex(profile=>profile.id===current.id);current.primaryCursorChannel=channel;state.inputProfiles[index]=current;applyActiveProfile();TraceBox.write('PRIMARY_CURSOR_ASSIGN',{channel,hand:profileHand(channel,current),role:profileRole(channel,current)});toast(channel.toUpperCase()+' contact drives Living Cursor')
+  }
+  function clickEcho(label='CLICK'){
+    const echo=document.createElement('span');echo.className='click-echo';echo.dataset.label=label;echo.style.left=state.cursor.x+'px';echo.style.top=state.cursor.y+'px';stage.appendChild(echo);setTimeout(()=>echo.remove(),560)
+  }
+  function clearHoldReady(){$$('.hold-ready',stage).forEach(el=>el.classList.remove('hold-ready'))}
+  function renderActivation(){
+    const activation=state.activation,progress=clamp(Number(activation.progress)||0,0,1);cursor.dataset.activation=activation.phase;cursor.style.setProperty('--activation-angle',(progress*360)+'deg');clearHoldReady();
+    const tag=$('#activationTag'),profile=activeProfile(),target=activation.target,g=gestureMap(activation.channel||profile.primaryCursorChannel,profile);
+    if(activation.phase==='click-candidate')tag.textContent='CLICK CANDIDATE';
+    else if(activation.phase==='hold-arming')tag.textContent='HOLD '+Math.round(progress*100)+'% · '+gestureWord(target?g.holdTarget:g.holdEmpty);
+    else if(activation.phase==='hold-active')tag.textContent='HOLD ACTIVE · RELEASE '+gestureWord(g.releaseHold);
+    if(target&&['hold-arming','hold-active'].includes(activation.phase)&&target.isConnected)target.classList.add('hold-ready');
+    renderNaturalCue(target||state.cursor.target);renderGuide()
+  }
+  function resetActivation(){
+    if(activationFrame)cancelAnimationFrame(activationFrame);activationFrame=null;clearHoldReady();state.activation={phase:'idle',progress:0,pointerId:null,target:null,holdRoute:null,source:null,channel:activeProfile()?.primaryCursorChannel||'first'};renderActivation()
+  }
+  function beginMomentaryPrecision(){
+    if(state.momentaryPrecision)return;state.momentaryPrecision={startedAt:performance.now()};TraceBox.write('PRECISION_MOMENTARY_START',{factor:.25});toast('Hold precision active')
+  }
+  function restoreMomentaryPrecision(){
+    if(!state.momentaryPrecision)return;const heldMs=Math.round(performance.now()-state.momentaryPrecision.startedAt);state.momentaryPrecision=null;TraceBox.write('PRECISION_MOMENTARY_END',{heldMs})
+  }
+  function activateHold(pointer){
+    const profile=activeProfile(),g=gestureMap(pointer.baseChannel,profile),target=state.activation.target,route=target?g.holdTarget:g.holdEmpty;
+    state.activation.phase='hold-active';state.activation.progress=1;state.activation.holdRoute=route;renderActivation();haptic(18);
+    TraceBox.write('HOLD_THRESHOLD',{thresholdMs:state.holdThreshold,target:target?idOf(target):null,route,contact:{channel:pointer.baseChannel,hand:pointer.hand,role:pointer.role,claim:pointer.claim}});
+    if(route==='grab'){state.selected=null;state.cursor.target=target;RouteOS.dispatch(Cading('ACT_START',{input:'programmed hold',contact:pointer.baseChannel}))}
+    else if(route==='inspect'){if(target)selectTarget(target);inspectTarget();openSheet(target?.classList.contains('contact')?'depth':'trace')}
+    else if(route==='pin')pinContact('hold contact');
+    else if(route==='precision')beginMomentaryPrecision();
+    else if(route==='menu')openSheet('program');
+    else if(route==='second')toggleSecond();
+    else TraceBox.write('HOLD_NO_ACTION',{target:target?idOf(target):null})
+  }
+  function beginActivation(pointer,source='field'){
+    if(state.activation.pointerId!=null)return false;
+    state.activation={phase:'click-candidate',progress:0,pointerId:pointer.pointerId,target:state.cursor.target||null,holdRoute:null,source,channel:pointer.baseChannel};renderActivation();
+    const tick=()=>{
+      const active=state.pointers.get(pointer.pointerId);if(!active||active.moved){resetActivation();return}
+      const elapsed=performance.now()-active.downAt,progress=clamp(elapsed/state.holdThreshold,0,1);state.activation.progress=progress;state.activation.phase=progress<.34?'click-candidate':'hold-arming';renderActivation();
+      if(progress>=1){activateHold(active);activationFrame=null;return}activationFrame=requestAnimationFrame(tick)
+    };
+    activationFrame=requestAnimationFrame(tick);return true
+  }
+  function simpleActivate(target){
+    if(!target)return false;const before=snapshotBody(target),active=!target.classList.contains('activated');target.classList.toggle('activated',active);const after=snapshotBody(target);state.history.push({type:'TRANSFORM',target:idOf(target),before,after});TraceBox.write('TAP_ACTIVATE',{target:idOf(target),active});toast(active?'Target activated':'Target released');save();return true
+  }
+  function runTapRoute(target,source='field',pointer={baseChannel:activeProfile().primaryCursorChannel,hand:'visible',role:'visible'}){
+    const profile=activeProfile(),g=gestureMap(pointer.baseChannel,profile),route=target?g.tapTarget:g.tapEmpty;clickEcho(pointer.baseChannel==='second'?'SECOND TAP':'CLICK');haptic(8);TraceBox.write('GESTURE_TAP',{route,target:target?idOf(target):null,source,channel:pointer.baseChannel,hand:pointer.hand,role:pointer.role,markCreated:route==='pin'});
+    if(route==='click-select')RouteOS.dispatch(Cading('SELECT',{target}));
+    else if(route==='activate')simpleActivate(target);
+    else if(route==='inspect'){if(target)selectTarget(target);inspectTarget()}
+    else if(route==='pin')pinContact('tap contact');
+    else if(route==='second')toggleSecond();
+    else if(route==='menu')openSheet('program');
+    else if(route==='aim-only')toast('Aim retained · no action');
+    else toast('Tap route has no action')
+  }
+  function runDoubleRoute(target,pointer={baseChannel:activeProfile().primaryCursorChannel,hand:'visible',role:'visible'}){
+    const route=gestureMap(pointer.baseChannel).doubleTap;TraceBox.write('GESTURE_DOUBLE_TAP',{route,target:target?idOf(target):null,channel:pointer.baseChannel,hand:pointer.hand,role:pointer.role,thresholdMs:state.doubleThreshold});
+    if(route==='open-activate')doubleActivate(target);
+    else if(route==='inspect'){if(target)selectTarget(target);inspectTarget()}
+    else if(route==='pin')pinContact('double contact');
+    else if(route==='second')toggleSecond();
+    else toast('Double tap route has no action')
+  }
+  function handleTap(target,source='field',pointer={baseChannel:activeProfile().primaryCursorChannel,hand:'visible',role:'visible'}){
+    const previous=state.lastTap,time=performance.now();
+    if(previous&&previous.target===target&&previous.channel===pointer.baseChannel&&time-previous.time<state.doubleThreshold){state.lastTap=null;clickEcho('DOUBLE');runDoubleRoute(target,pointer)}
+    else{state.lastTap={target,time,channel:pointer.baseChannel};runTapRoute(target,source,pointer)}
+  }
+  function finishHold(pointer,cancelled=false){
+    const profile=activeProfile(),g=gestureMap(pointer.baseChannel,profile),release=g.releaseHold,route=state.activation.holdRoute,target=state.activation.target,moveRoute=g.holdMove;
+    if(cancelled){if(state.acting)RouteOS.dispatch(Cading('CANCEL',{input:'programmed hold'}));restoreMomentaryPrecision();TraceBox.write('GESTURE_HOLD_CANCEL',{route,target:target?idOf(target):null});return}
+    let moveHandled=false;
+    if(pointer.moved&&moveRoute!=='alter'){
+      if(state.acting)RouteOS.dispatch(Cading('CANCEL',{input:'programmed hold move reroute'}));
+      if(moveRoute==='route'){moveHandled=createRoute('programmed route')}
+      else if(moveRoute==='measure'){moveHandled=measureField()}
+      else if(moveRoute==='aim-only'){moveHandled=true;TraceBox.write('HOLD_MOVE_AIM_ONLY',{target:target?idOf(target):null})}
+    }
+    if(release==='cancel'){if(state.acting)RouteOS.dispatch(Cading('CANCEL',{input:'programmed release'}));restoreMomentaryPrecision()}
+    else{
+      if(state.acting)RouteOS.dispatch(Cading('ACT_END',{input:'programmed release'}));
+      restoreMomentaryPrecision();
+      if(release==='preserve')pinContact('preserved hold');
+      else if(release==='fire')fireSlingshot()
+    }
+    TraceBox.write('GESTURE_HOLD_RELEASE',{holdRoute:route,holdMoveRoute:moveRoute,moveHandled,moved:Boolean(pointer.moved),releaseRoute:release,target:target?idOf(target):null,contact:{channel:pointer.baseChannel,hand:pointer.hand,role:pointer.role,claim:pointer.claim}})
+  }
+
+  function apertureSnapshot(){
+    return{
+      x:Math.round(state.cursor.x),y:Math.round(state.cursor.y),z:Number(state.aperture.z),
+      target:state.cursor.target?idOf(state.cursor.target):null,intent:state.aperture.intent,action:state.aperture.action,
+      holdMs:Math.round(state.aperture.holdStarted?performance.now()-state.aperture.holdStarted:state.aperture.holdMs),
+      routePx:Math.round(state.aperture.routeLength),force:state.aperture.force,forceSource:state.aperture.forceSource,
+      consequence:state.aperture.consequence,before:state.aperture.before,after:state.aperture.after
+    }
+  }
+  function targetHook(el,name,payload={}){
+    const hook=targetContracts.get(el)?.[name];if(typeof hook!=='function')return undefined;
+    try{return hook({target:el,aperture:apertureSnapshot(),mode:state.mode,...payload})}catch(error){console.warn('Contact target hook skipped',name,error);return undefined}
+  }
+  function snapshotBody(el){
+    if(!el)return null;
+    const box=el.getBoundingClientRect(),field=rect();
+    const contact=el.classList.contains('contact')?state.contacts.find(c=>c.id===el.dataset.contactId):null;
+    const persistentClasses=[...el.classList].filter(name=>!['hover','selected','grabbed'].includes(name)).join(' ');
+    const key=el.dataset.key||(el.dataset.key='K'+Math.random().toString(36).slice(2,10));
+    return{id:idOf(el),key,contactId:el.dataset.contactId||null,style:el.getAttribute('style')||'',className:persistentClasses,html:el.innerHTML,geometry:{left:Math.round(box.left-field.left),top:Math.round(box.top-field.top),width:Math.round(box.width),height:Math.round(box.height),rotation:readRotation(el)},contact:contact?JSON.parse(JSON.stringify(contact)):null}
+  }
+  function restoreBody(snap){
+    if(!snap)return;
+    if(snap.contact){
+      const index=state.contacts.findIndex(c=>c.id===snap.contact.id);
+      if(index<0)state.contacts.push(JSON.parse(JSON.stringify(snap.contact)));else state.contacts[index]=JSON.parse(JSON.stringify(snap.contact));
+      renderContacts();
+      return;
+    }
+    const el=snap.key?$(`[data-key="${CSS.escape(snap.key)}"]`,stage):$(`[data-id="${CSS.escape(snap.id)}"]`,stage);
+    if(el){el.dataset.id=snap.id;if(snap.style)el.setAttribute('style',snap.style);else el.removeAttribute('style');if(snap.className)el.className=snap.className;if(Object.hasOwn(snap,'html'))el.innerHTML=snap.html}
+  }
+  function syncContactFromElement(el){
+    if(!el?.classList.contains('contact'))return;
+    const c=state.contacts.find(item=>item.id===el.dataset.contactId);
+    if(!c)return;
+    c.x=parseFloat(el.style.left)||c.x;c.y=parseFloat(el.style.top)||c.y;
+  }
+  function consequenceFor(target){
+    if(!target)return'No target. Movement only aims.';
+    const locked=target.classList.contains('contact')&&state.contacts.find(c=>c.id===target.dataset.contactId)?.locked;
+    if(locked)return`${idOf(target)} is locked. ACT will be blocked until unlocked.`;
+    const available=(target.dataset.actions||'inspect').split(',');
+    const chosen=state.mode==='cursor'?(available.includes('move')?'move':available[0]):state.mode;
+    return`${chosen.toUpperCase()} ${idOf(target)} · HOLD ACT begins · release commits · CANCEL restores.`;
+  }
+  function naturalCueFor(target=state.cursor.target){
+    const level=state.fluency.hintLevel,phase=state.activation.phase,profile=activeProfile(),channel=state.activation.channel||profile.primaryCursorChannel,g=gestureMap(channel,profile),channelName=channel.toUpperCase();
+    if(phase==='hold-arming')return`${channelName} · KEEP HOLDING ${Math.round(clamp(state.activation.progress,0,1)*100)}% → ${gestureWord(target?g.holdTarget:g.holdEmpty)}`;
+    if(phase==='hold-active'){
+      if(!state.acting)return`${channelName} ${gestureWord(target?g.holdTarget:g.holdEmpty)} ACTIVE · MOVE OR RELEASE`;
+      const action=['cursor','move','seek'].includes(state.mode)?(state.dragMagnet?'DRAG MAGNET':'DIRECT DRAG 1:1'):state.mode.toUpperCase();return`${channelName} ${action} · RELEASE ${gestureWord(g.releaseHold)} · CANCEL RESTORES`
+    }
+    if(phase==='click-candidate')return`${channelName} · LIFT ${gestureWord(target?g.tapTarget:g.tapEmpty)} · HOLD ${gestureWord(target?g.holdTarget:g.holdEmpty)}`;
+    if(state.acting)return state.dragMagnet?'DRAG MAGNET · NEAR DESTINATIONS ATTRACT · CANCEL RESTORES':'DIRECT DRAG · BODY FOLLOWS 1:1 · CANCEL RESTORES';
+    if(level==='full')return consequenceFor(target);
+    if(level==='quiet')return target?'TAP · HOLD':'MOVE · AIM';
+    const primary=profile.primaryCursorChannel,actChannel=channelForRole('act',profile),primaryHand=profileHand(primary,profile).toUpperCase(),actHand=profileHand(actChannel,profile).toUpperCase(),primaryGrammar=gestureMap(primary,profile),actGrammar=gestureMap(actChannel,profile);
+    if(!target)return`${primaryHand} ${primary.toUpperCase()} MOVES · ${actHand} ${actChannel.toUpperCase()} ACTS`;
+    const locked=target.classList.contains('contact')&&state.contacts.find(c=>c.id===target.dataset.contactId)?.locked;
+    if(locked)return'LOCKED · TAP INSPECTS · UNLOCK TO CHANGE';
+    if(state.selected===target&&state.contextView==='target')return`${state.mode==='cursor'?'ACTION DECK OPEN':state.mode.toUpperCase()+' CHOSEN'} · HOLD ${gestureWord(actGrammar.holdTarget)} · RELEASE ${gestureWord(actGrammar.releaseHold)}`;
+    return`${primaryHand} TAP ${gestureWord(primaryGrammar.tapTarget)} · ${actHand} HOLD ${gestureWord(actGrammar.holdTarget)}`
+  }
+  function renderNaturalCue(target=state.cursor.target){
+    if(!hookReadout)return;const cue=naturalCueFor(target);hookReadout.textContent=cue;hookReadout.title=cue
+  }
+  function renderDepth(){
+    const a=apertureSnapshot();
+    $('#depthXY').textContent=`X ${a.x} · Y ${a.y}`;$('#depthZ').textContent=`Z ${a.z}`;$('#depthHold').textContent=a.holdMs+' ms';$('#depthRoute').textContent=a.routePx+' px';
+    $('#depthAction').textContent=String(a.action||'aim').toUpperCase();$('#depthForce').textContent=a.force==null?'UNSENSED':Math.round(a.force*100)+'% '+a.forceSource.toUpperCase();
+    $('#depthConsequence').textContent=a.consequence;$('#supportSense').textContent=state.chassis.sense;$('#depthOut').textContent=state.aperture.z;
+    cursor.style.setProperty('--depth-core',Math.abs(state.aperture.z));cursor.style.setProperty('--act-core',state.acting?100:0);document.documentElement.style.setProperty('--cursor-color',state.cursor.color);cursor.dataset.effect=state.cursor.effect;cursor.querySelector('.tag').textContent=state.cursor.label;
+    $('#persistBtn').classList.toggle('active',state.cursorPolicy==='persist');$('#fadeBtn').classList.toggle('active',state.cursorPolicy==='fade');
+    const vb=$('#cursorVisibilityBtn');vb.classList.toggle('active',!state.cursorVisible);vb.querySelector('span').textContent=state.cursorVisible?'HIDE':'SHOW'
+    const mag=$('#magnifier'),target=state.cursor.target;mag.classList.toggle('show',state.magnify);$('#magnifierText').textContent=target?idOf(target).slice(0,22):`X${a.x} Y${a.y} Z${a.z}`;
+    const targetMark=target?.querySelector?.('.mark')?.textContent?.trim()||target?.dataset?.role?.slice(0,1)||'·';$('#magnifierMark').textContent=targetMark;
+  }
+  function noteInput(){
+    state.lastInput=performance.now();cursor.classList.remove('cursor-idle');if(!state.cursorVisible)setCursorVisible(true,'field contact')
+  }
+  function setCursorVisible(visible,reason='control',write=true){
+    state.cursorVisible=Boolean(visible);cursor.classList.toggle('cursor-hidden',!state.cursorVisible);if(write)TraceBox.write(state.cursorVisible?'CURSOR_SHOW':'CURSOR_HIDE',{reason,positionRetained:true});
+    renderDepth();save();toast(state.cursorVisible?'Living Cursor shown':'Living Cursor hidden; position retained')
+  }
+  function setCursorPolicy(policy){
+    state.cursorPolicy=policy==='fade'?'fade':'persist';cursor.classList.remove('cursor-idle');TraceBox.write('CURSOR_POLICY',{policy:state.cursorPolicy});renderDepth();save();toast(state.cursorPolicy==='fade'?'Cursor will fade when idle':'Cursor remains visible')
+  }
+  function safeBounds(){const r=rect(),m=Math.max(18,state.cursorSize/2+5);return{left:m,right:r.width-m,top:52,bottom:r.height-58}}
+  function safePoint(p){const b=safeBounds();return{x:clamp(p.x,b.left,b.right),y:clamp(p.y,b.top,b.bottom)}}
+  function centreCursors(write=false){const r=rect();Object.assign(state.cursor,safePoint({x:r.width*.55,y:r.height*.48}));Object.assign(state.second,safePoint({x:r.width*.31,y:r.height*.58}));paint();updateHover();if(write)TraceBox.write('CURSOR_RESET')}
+  function placeTag(el,x,y,secondary=false){const r=rect();el.classList.remove('tag-left','tag-right','tag-above','tag-below');let pos=secondary?'tag-left':'tag-right';if(x<72)pos='tag-right';else if(x>r.width-72)pos='tag-left';else if(y<78)pos='tag-below';else if(y>r.height-88)pos='tag-above';el.classList.add(pos)}
+  function paint(){
+    const cp=safePoint(state.cursor),sp=safePoint(state.second);Object.assign(state.cursor,cp);Object.assign(state.second,sp);
+    cursor.style.left=state.cursor.x+'px';cursor.style.top=state.cursor.y+'px';cursor.dataset.state=state.cursor.state;cursor.classList.toggle('cursor-hidden',!state.cursorVisible);placeTag(cursor,state.cursor.x,state.cursor.y,false);
+    cursor2.style.left=state.second.x+'px';cursor2.style.top=state.second.y+'px';cursor2.classList.toggle('show',state.second.visible);placeTag(cursor2,state.second.x,state.second.y,true);
+    touchGhost.style.left=state.touch.x+'px';touchGhost.style.top=state.touch.y+'px';touchGhost.classList.toggle('show',state.touch.visible);
+    if(state.touch.visible){const dx=state.cursor.x-state.touch.x,dy=state.cursor.y-state.touch.y,d=Math.hypot(dx,dy);offsetLine.style.left=state.touch.x+'px';offsetLine.style.top=state.touch.y+'px';offsetLine.style.width=d+'px';offsetLine.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;offsetLine.classList.add('show')}else offsetLine.classList.remove('show');
+    paintRelationship();renderDepth();
+  }
+  function setLine(el,a,b,visible=true){el.setAttribute('x1',a.x);el.setAttribute('y1',a.y);el.setAttribute('x2',b.x);el.setAttribute('y2',b.y);el.setAttribute('visibility',visible?'visible':'hidden')}
+  function paintRelationship(){
+    const visible=state.second.visible;metrics.classList.toggle('show',visible);if(!visible){relationVector.setAttribute('visibility','hidden');tensionVector.setAttribute('visibility','hidden');return}
+    const a=safePoint(state.second),b=safePoint(state.cursor),dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI;
+    setLine(relationVector,a,b,true);$('#distanceMetric').textContent=Math.round(d)+'px';$('#angleMetric').textContent=Math.round(ang)+'°';$('#tensionMetric').textContent=Math.min(100,Math.round(d/2.4))+'%';
+    const tense=state.mode==='sling'||(state.acting&&state.second.visible);setLine(tensionVector,a,b,tense)
+  }
+  function targetAt(x,y){const r=rect(),cx=r.left+x,cy=r.top+y;return $$('.object,.contact,.possibility.settled,[data-contact-target="true"]',stage).find(el=>{const b=el.getBoundingClientRect(),pad=el.classList.contains('object')?12:8;return cx>=b.left-pad&&cx<=b.right+pad&&cy>=b.top-pad&&cy<=b.bottom+pad})||null}
+  function updateRouteCandidate(){
+    $$('.possibility.hot',stage).forEach(el=>el.classList.remove('hot'));state.naeio.candidate=null;if(!state.naeio.active)return null;
+    const r=rect();let best=null,dist=76;$$('.possibility:not(.settled)',stage).forEach(el=>{const b=el.getBoundingClientRect(),x=b.left+b.width/2-r.left,y=b.top+b.height/2-r.top,d=Math.hypot(state.cursor.x-x,state.cursor.y-y);if(d<dist){dist=d;best=el}});if(best){best.classList.add('hot');state.naeio.candidate=best}return best
+  }
+  function updateHover(){
+    $$('.hover',stage).forEach(el=>el.classList.remove('hover'));
+    $$('.possibility.hot',stage).forEach(el=>el.classList.remove('hot'));state.naeio.candidate=null;const t=targetAt(state.cursor.x,state.cursor.y),possible=t?null:updateRouteCandidate();state.cursor.target=t;
+    if(t!==previewTarget){if(previewTarget)targetHook(previewTarget,'preview',{active:false});if(t)targetHook(t,'preview',{active:true});previewTarget=t}
+    if(t){const locked=t.classList.contains('contact')&&state.contacts.find(c=>c.id===t.dataset.contactId)?.locked;t.classList.add('hover');state.cursor.state=locked?'blocked':state.acting?'transforming':state.snapActive?'snap':state.selected===t?'selected':'hover';targetName.textContent=idOf(t);state.aperture.consequence=consequenceFor(t);renderNaturalCue(t);fieldReadout.textContent='target contacted'}
+    else if(possible){state.cursor.state='possible';targetName.textContent='POSSIBLE '+possible.dataset.role.toUpperCase();state.aperture.consequence='Possible '+possible.dataset.role+' route · choose, test or release before commitment.';hookReadout.textContent=state.fluency.hintLevel==='quiet'?'CHOOSE · TEST':'POSSIBLE ROUTE · CHOOSE, TEST OR RELEASE';hookReadout.title=hookReadout.textContent;fieldReadout.textContent='route near contact'}
+    else{state.cursor.state=state.acting?'transforming':'free';targetName.textContent='none';state.aperture.consequence='No target. Movement only aims.';renderNaturalCue(null);fieldReadout.textContent=state.naeio.active?'hand.contact · routes possible':'route cloud off'}
+    state.aperture.action=state.acting?state.mode:(t?'preview':'aim');
+    modeReadout.textContent=(state.mode==='cursor'?'LIVING':state.mode.toUpperCase())+' · '+state.cursor.state;updateContext();paint()
+  }
+  function canonicalAction(action){const mode=actionAliases[action]||action;return actionFamilies.includes(mode)?mode:null}
+  function targetActionEntries(target){const raw=(target?.dataset?.actions||'move,inspect').split(',').map(item=>item.trim()).filter(Boolean),seen=new Set();return raw.map(label=>({label,mode:canonicalAction(label)})).filter(item=>item.mode&&!seen.has(item.mode)&&seen.add(item.mode)).slice(0,5)}
+  function renderContextDeck(){
+    const selected=state.selected?.isConnected?state.selected:null,targetView=Boolean(selected&&state.contextView==='target'),entries=targetView?targetActionEntries(selected):[],signature=targetView?`target:${idOf(selected)}:${entries.map(item=>item.label+':'+item.mode).join('|')}`:'modules';
+    if(signature!==contextSignature){contextSignature=signature;if(!targetView)contextStrip.innerHTML=moduleDeckMarkup;else contextStrip.innerHTML=entries.map(item=>`<button class="context-action target-action" data-context-mode="${escapeHtml(item.mode)}"><span>${escapeHtml(item.label).toUpperCase()}</span></button>`).join('')+`<button class="context-action context-pin" data-context-pin="true"><span>PIN HERE</span></button><button class="context-action context-back" data-context-back="true"><span>MODULES</span></button>`}
+    $$('[data-context-mode]',contextStrip).forEach(button=>button.classList.toggle('active',button.dataset.contextMode===state.mode))
+  }
+  function updateContext(){
+    renderContextDeck();const moduleMap={move:'cursor',fire:'sling',route:'dotdot',connect:'dotdot',bind:'dotdot',measure:'position'};const active=moduleMap[state.mode]||state.mode;$$('[data-module]',contextStrip).forEach(b=>b.classList.toggle('active',b.dataset.module==='dual'?state.second.visible:b.dataset.module===active));
+  }
+  function movePointer(which,clientX,clientY,pointerMeta={}){
+    const r=rect(),raw={x:clientX-r.left,y:clientY-r.top};
+    if(which==='primary'){
+      noteInput();
+      state.touch={x:clamp(raw.x,5,r.width-5),y:clamp(raw.y,5,r.height-5),visible:true};
+      let target={x:raw.x+state.offsetX,y:raw.y+state.offsetY};
+      if(lastRaw){const delta=RouteSense.calibrate({x:target.x-lastRaw.x,y:target.y-lastRaw.y});target={x:state.cursor.x+delta.x,y:state.cursor.y+delta.y}}
+      const dragging=Boolean(state.acting&&state.grabbed);
+      lastRaw={x:raw.x+state.offsetX,y:raw.y+state.offsetY};target=RouteSense.snap(safePoint(target),{dragging});
+      const before={x:state.cursor.x,y:state.cursor.y};
+      if(state.smooth&&!dragging){state.cursor.x+=(target.x-state.cursor.x)*.52;state.cursor.y+=(target.y-state.cursor.y)*.52}else{state.cursor.x=target.x;state.cursor.y=target.y}
+      state.aperture.routeLength+=Math.hypot(state.cursor.x-before.x,state.cursor.y-before.y);
+      if(pointerMeta.pointerType==='pen'&&Number(pointerMeta.pressure)>0){state.aperture.force=Number(pointerMeta.pressure);state.aperture.forceSource='pen sensor'}else{state.aperture.force=null;state.aperture.forceSource='unsensed'}
+      const programmedMove=state.activation.phase==='hold-active'?gestureMap(state.activation.channel||activeProfile().primaryCursorChannel).holdMove:'alter';
+      if(state.acting&&state.grabbed&&programmedMove==='alter')transformGrabbed();
+      updateHover();
+    }else{
+      const sp=safePoint(raw);state.second.x=sp.x;state.second.y=sp.y;state.second.visible=true;$('#secondBtn').classList.add('active');paint();updateContext()
+    }
+  }
+  function selectTarget(target=state.cursor.target){
+    $$('.selected',stage).forEach(el=>el.classList.remove('selected'));state.selected=target||null;state.selectedContactId=target?.dataset?.contactId||null;
+    if(target){state.contextView='target';contextSignature='';target.classList.add('selected');state.cursor.state='selected';targetHook(target,'select');TraceBox.write('PRIMARY_CLICK',{target:idOf(target),kind:target.dataset.kind||'body',markCreated:false,actionDeck:targetActionEntries(target)});toast('Selected '+idOf(target)+' · choose an action or hold')}
+    else{state.contextView='modules';contextSignature='';TraceBox.write('SELECT_EMPTY',{markCreated:false});toast('No target beneath cursor')}
+    renderContactEditor();renderNaturalCue(target);updateContext()
+  }
+  function transientCursorState(name,duration=420){state.cursor.state=name;paint();clearTimeout(transientCursorState.timer);transientCursorState.timer=setTimeout(updateHover,duration)}
+  function pinContact(label='contact'){
+    const id='C'+Date.now().toString(36),created=now(),roleMap={prove:'proof',measure:'measurement',connect:'code-link',deliver:'route',inspect:'anchor',transform:'anchor'},c={id,label,x:state.cursor.x,y:state.cursor.y,z:state.aperture.z,color:state.contacts.length%2?'#73edaa':'#55ddff',size:34,effect:'steady',role:roleMap[state.aperture.intent]||'anchor',note:'',locked:false,purpose:state.aperture.intent,behaviour:'editable retained contact aperture',ownership:'local operator',evidence:apertureSnapshot(),createdAt:created,updatedAt:created,jmTrace:null,replayPotential:true,history:[]};
+    state.contacts.push(c);state.history.push({type:'PIN',id});state.selectedContactId=id;renderContacts();const receipt=TraceBox.write('PIN_CONTACTBODY',{id,label,role:c.role,purpose:c.purpose,ordinaryClick:false,contactBody:true});c.jmTrace=receipt.id;c.history.push({time:created,route:'PIN_CONTACTBODY',trace:receipt.id});renderContacts();transientCursorState('pinned');save();toast('ContactBody pinned deliberately')
+  }
+  function actStart(){
+    if(state.acting)return;noteInput();const target=state.selected||state.cursor.target;
+    const locked=target?.classList.contains('contact')&&state.contacts.find(c=>c.id===target.dataset.contactId)?.locked;
+    if(locked){state.cursor.state='blocked';state.aperture.action='blocked';TraceBox.write('ACT_BLOCKED',{target:idOf(target),reason:'ContactBody locked'});toast('ContactBody locked');updateHover();return}
+    state.acting=true;$('#actBtn').classList.add('held');state.grabbed=target;state.aperture.holdStarted=performance.now();state.aperture.holdMs=0;state.aperture.routeLength=0;state.aperture.action=state.mode;
+    if(target){
+      target.classList.add('grabbed');const b=target.getBoundingClientRect(),r=rect(),before=snapshotBody(target),bodyCentre={x:b.left+b.width/2-r.left,y:b.top+b.height/2-r.top},grabOffset={x:state.cursor.x-bodyCentre.x,y:state.cursor.y-bodyCentre.y};
+      state.transform={startCursor:{x:state.cursor.x,y:state.cursor.y},startLeft:b.left-r.left,startTop:b.top-r.top,startW:b.width,startH:b.height,startRot:readRotation(target),grabOffset,before};
+      state.aperture.before=before;state.aperture.after=null;targetHook(target,'grab',{before,grabOffset});TraceBox.write('ACT_START',{target:idOf(target),mode:state.mode,before,dragLaw:state.dragMagnet?'deliberate-magnet':'direct-1-to-1',grabOffset})
+    }else TraceBox.write('ACT_START_EMPTY',{mode:state.mode});
+    updateHover()
+  }
+  function cloneTarget(target){
+    if(!target)return false;
+    if(target.classList.contains('contact')){state.selectedContactId=target.dataset.contactId;duplicateContact();return true}
+    const clone=target.cloneNode(true),id=idOf(target)+' COPY '+Date.now().toString(36).slice(-3).toUpperCase(),key='K'+Math.random().toString(36).slice(2,10);clone.classList.remove('hover','selected','grabbed');clone.dataset.id=id;clone.dataset.key=key;stage.appendChild(clone);placeElement(clone,state.cursor.x+28,state.cursor.y+28);state.history.push({type:'BODY_CREATE',id,key});TraceBox.write('DIVIDE',{source:idOf(target),created:id,key});return true
+  }
+  function deleteTargetRecoverably(target){
+    if(!target)return false;
+    if(target.classList.contains('contact')){state.selectedContactId=target.dataset.contactId;deleteContact();return true}
+    const clean=target.cloneNode(true);clean.classList.remove('hover','selected','grabbed');const id=idOf(target),outerHTML=clean.outerHTML;state.history.push({type:'BODY_DELETE',id,outerHTML});state.removedObjectIds.push(id);target.remove();state.selected=null;state.contextView='modules';contextSignature='';TraceBox.write('DELETE_BODY',{id,recoverableByUndo:true});updateContext();return true
+  }
+  function setTargetClass(target,className,active){
+    if(!target)return false;target.classList.toggle(className,active);return true
+  }
+  function measureField(){
+    const a=state.second.visible?state.second:(state.selected?centerOf(state.selected):state.cursor),b=state.cursor,dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),angle=Math.atan2(dy,dx)*180/Math.PI;
+    TraceBox.write('MEASURE',{from:[Math.round(a.x),Math.round(a.y)],to:[Math.round(b.x),Math.round(b.y)],distancePx:Math.round(d),angleDeg:Math.round(angle),z:state.aperture.z});toast(`${Math.round(d)}px · ${Math.round(angle)}°`);return true
+  }
+  function labelTarget(target){
+    if(!target)return false;
+    if(target.classList.contains('contact')){state.selectedContactId=target.dataset.contactId;renderContactEditor();openSheet('depth');return true}
+    const before=snapshotBody(target),label=$('#targetLabelInput').value.trim()||'Living body';target.dataset.id=label;const name=$('.name',target);if(name)name.textContent=label;const after=snapshotBody(target);state.history.push({type:'TRANSFORM',target:label,before,after});TraceBox.write('LABEL',{before:before.id,after:label});return true
+  }
+  function commitActionFamily(target){
+    if(state.mode==='dotdot')return createRoute('dotdot');
+    if(state.mode==='sling'){fireSlingshot();return true}
+    if(state.mode==='divide')return cloneTarget(target);
+    if(state.mode==='connect')return bindTargets('connect');
+    if(state.mode==='bind')return bindTargets('bind');
+    if(state.mode==='measure')return measureField();
+    if(state.mode==='inspect'){inspectTarget();openSheet(target?.classList.contains('contact')?'depth':'trace');return true}
+    if(state.mode==='label')return labelTarget(target);
+    if(state.mode==='activate'){const active=!target?.classList.contains('activated');return setTargetClass(target,'activated',active)}
+    if(state.mode==='fire'){fireSlingshot();return true}
+    if(state.mode==='place'){placeSeed();return true}
+    if(state.mode==='delete')return deleteTargetRecoverably(target);
+    if(state.mode==='code'){const active=!target?.classList.contains('code-bound');const changed=setTargetClass(target,'code-bound',active);if(changed)TraceBox.write('CODE_ATTACH',{target:idOf(target),active});return changed}
+    if(state.mode==='route'){createRoute('route');return true}
+    return false
+  }
+  function actEnd(){
+    if(!state.acting)return;const target=state.grabbed,transaction=state.transform;state.aperture.holdMs=Math.round(performance.now()-(state.aperture.holdStarted||performance.now()));state.aperture.holdStarted=null;state.acting=false;$('#actBtn').classList.remove('held');
+    if(target){
+      target.classList.remove('grabbed');const before=transaction?.before||null,handled=commitActionFamily(target);syncContactFromElement(target);const after=target.isConnected?snapshotBody(target):null;state.aperture.after=after;
+      if(after&&JSON.stringify(before)!==JSON.stringify(after))state.history.push({type:'TRANSFORM',target:idOf(target),before,after});
+      const receipt=TraceBox.write('ACT_COMMIT',{target:before?.id||idOf(target),mode:state.mode,handled,before,after,holdMs:state.aperture.holdMs,routePx:Math.round(state.aperture.routeLength),dragLaw:state.dragMagnet?'deliberate-magnet':'direct-1-to-1'});
+      targetHook(target,'commit',{before,after,receipt});targetHook(target,'receipt',{receipt});
+      if(target.classList.contains('contact')){const c=state.contacts.find(item=>item.id===target.dataset.contactId);if(c){c.updatedAt=now();c.jmTrace=receipt.id;c.history.push({time:c.updatedAt,route:'ACT_COMMIT',trace:receipt.id})}}
+    }else if(!commitActionFamily(null))TraceBox.write('ACT_COMMIT_EMPTY',{holdMs:state.aperture.holdMs});
+    state.grabbed=null;state.transform=null;state.aperture.action='aim';haptic([12,28,16]);renderContacts();updateHover();save()
+    transientCursorState('committed')
+  }
+  function readRotation(el){const m=(el.style.transform||'').match(/rotate\(([-\d.]+)deg\)/);return m?Number(m[1]):0}
+  function transformGrabbed(){const el=state.grabbed,t=state.transform;if(!el||!t)return;if(targetHook(el,'transform',{before:t.before})===true)return;const r=rect();if(state.mode==='turn'){
+      const b=el.getBoundingClientRect(),cx=b.left+b.width/2-r.left,cy=b.top+b.height/2-r.top,ang=Math.atan2(state.cursor.y-cy,state.cursor.x-cx)*180/Math.PI;el.style.transform=`rotate(${ang}deg)`;
+    }else if(state.mode==='mould'||state.mode==='scale'){
+      const d=Math.hypot(state.cursor.x-t.startCursor.x,state.cursor.y-t.startCursor.y),scale=clamp(1+d/180,.65,1.8);el.style.width=t.startW*scale+'px';el.style.height=t.startH*scale+'px';
+    }else if(state.mode==='pull'||state.mode==='push'){
+      const sign=state.mode==='pull'?1:-1,dx=(state.cursor.x-t.startCursor.x)*.58*sign,dy=(state.cursor.y-t.startCursor.y)*.58*sign;placeElement(el,t.startLeft+t.startW/2+dx,t.startTop+t.startH/2+dy);
+    }else if(state.mode==='position'&&state.second.visible){const x=(state.cursor.x+state.second.x)/2,y=(state.cursor.y+state.second.y)/2;placeElement(el,x,y)}
+    else if(['cursor','move','seek'].includes(state.mode)){const offset=t.grabOffset||{x:0,y:0};placeElement(el,state.cursor.x-offset.x,state.cursor.y-offset.y)}
+  }
+  function placeElement(el,x,y){const r=rect(),w=el.offsetWidth,h=el.offsetHeight;const b=safeBounds();el.style.left=clamp(x-w/2,b.left-w/2,b.right-w/2)+'px';el.style.top=clamp(y-h/2,b.top-h/2,b.bottom-h/2)+'px';el.style.right='auto';el.style.bottom='auto'}
+  function cancelAction(){
+    let restored=null;const cancelledTarget=state.grabbed;
+    if(state.acting){state.aperture.holdMs=Math.round(performance.now()-(state.aperture.holdStarted||performance.now()));state.aperture.holdStarted=null;state.acting=false;$('#actBtn').classList.remove('held');state.grabbed?.classList.remove('grabbed');restored=state.transform?.before||null;targetHook(cancelledTarget,'cancel',{restored});if(restored)restoreBody(restored);state.aperture.after=restored;state.grabbed=null;state.transform=null}
+    state.binding=null;state.aperture.action='cancelled';haptic([22,18,22]);TraceBox.write(restored?'ACT_CANCEL_ROLLBACK':'CANCEL',{restored,committed:false});toast(restored?'Action cancelled · body restored':'Uncommitted action cancelled');renderContacts();updateHover();transientCursorState('cancelled');save()
+  }
+  function undo(){
+    const last=state.history.pop();if(!last){toast('Nothing to undo');return}
+    if(last.type==='PIN'||last.type==='CONTACT_DUPLICATE'){state.contacts=state.contacts.filter(c=>c.id!==last.id);if(state.selectedContactId===last.id)state.selectedContactId=null;renderContacts()}
+    else if(last.type==='ROUTE'){state.routes=state.routes.filter(r=>r.id!==last.id);renderRoutes();renderBoundState()}
+    else if(last.type==='TRANSFORM')restoreBody(last.before);
+    else if(last.type==='CONTACT_DELETE'){state.contacts.push(last.contact);renderContacts()}
+    else if(last.type==='CONTACT_UPDATE'){const index=state.contacts.findIndex(c=>c.id===last.before.id);if(index<0)state.contacts.push(last.before);else state.contacts[index]=last.before;state.selectedContactId=last.before.id;renderContacts()}
+    else if(last.type==='OBJECT'){$(`.object[data-id="${CSS.escape(last.id)}"]`,stage)?.remove()}
+    else if(last.type==='BODY_CREATE'){const el=last.key?$(`[data-key="${CSS.escape(last.key)}"]`,stage):$(`[data-id="${CSS.escape(last.id)}"]`,stage);el?.remove()}
+    else if(last.type==='BODY_DELETE'){$('#possibilities').insertAdjacentHTML('beforebegin',last.outerHTML);state.removedObjectIds=state.removedObjectIds.filter(id=>id!==last.id)}
+    TraceBox.write('UNDO',{operation:last.type,target:last.target||last.id||last.contact?.id||null,restored:last.before||last.contact||null});toast('Undone · '+last.type.toLowerCase());renderContactEditor();updateHover();save()
+  }
+  function moduleCue(mode){
+    const cues={
+      cursor:'LIVING · slide to aim · tap selects · hold grabs',
+      dotdot:'DOTDOT · SECOND marks source · LIVING chooses destination',
+      sling:'SLING · SECOND anchors · LIVING pulls · release fires',
+      position:'POSITION · two points place the selected body between them',
+      seek:'SEEK · the cursor finds and reveals the hidden socket',
+      dual:'SECOND · wakes an independent contact point'
+    };
+    return cues[mode]||`${String(mode).toUpperCase()} armed · aim, preview, then commit`
+  }
+  function setMode(mode){if(!actionFamilies.includes(mode))return false;state.mode=mode;if(['dotdot','sling','position','connect','bind','measure','route'].includes(mode)&&!state.second.visible)toggleSecond(true);stage.classList.toggle('mode-seek',mode==='seek');$$('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));TraceBox.write('MODE',{mode});toast(moduleCue(mode),2300);updateHover();closeSheet();return true}
+  function toggleSecond(visible=!state.second.visible){state.second.visible=visible;$('#secondBtn').classList.toggle('active',visible);TraceBox.write('DUAL_CONTACT',{visible});updateContext();paint();toast(visible?moduleCue('dual'):'SECOND hidden · Living Cursor remains primary',2100)}
+  function inspectTarget(){const t=state.selected||state.cursor.target;if(!t){toast('Aim at or select a body');return}TraceBox.write('INSPECT',{target:idOf(t),kind:t.dataset.kind,actions:t.dataset.actions});toast(`${idOf(t)} · ${t.dataset.actions}`)}
+  function seekNearest(){setMode('seek');const hidden=$('.hidden-spot',stage);hidden.classList.add('found');state.cursor.x=hidden.offsetLeft+hidden.offsetWidth/2;state.cursor.y=hidden.offsetTop+hidden.offsetHeight/2;TraceBox.write('SEEK_FOUND',{target:idOf(hidden)});toast('Square socket found');updateHover()}
+  function placeSeed(){const id='P'+Date.now().toString(36),el=document.createElement('div');el.className='object seed';el.dataset.key='K'+Math.random().toString(36).slice(2,10);el.dataset.id='PLACED SEED '+id.slice(-3);el.dataset.kind='seed';el.dataset.actions='move,pull,push,scale,mould,deliver,slingshot,code,delete';el.innerHTML='<span class="mark">•</span><span class="name">placed seed</span>';stage.appendChild(el);placeElement(el,state.cursor.x,state.cursor.y);state.history.push({type:'BODY_CREATE',id:el.dataset.id,key:el.dataset.key});TraceBox.write('PLACE_SEED',{id:el.dataset.id,key:el.dataset.key});toast('Seed placed');updateHover()}
+  function candidateCenter(el){const b=el.getBoundingClientRect(),r=rect();return{x:b.left+b.width/2-r.left,y:b.top+b.height/2-r.top}}
+  function setFieldPhase(phase,message){state.naeio.phase=phase;$$('.field-step').forEach(el=>el.classList.toggle('active',el.textContent.toLowerCase()===phase));const out=$('#fieldStatus');if(out)out.innerHTML='<b>Field state:</b> '+message}
+  function choosePossibleRoute(){const el=state.naeio.candidate;if(!el){toast('No possible route in reach');return}el.classList.add('settled');el.classList.remove('hot');el.dataset.id='ROUTE '+el.dataset.role.toUpperCase();el.dataset.actions='inspect,bind,deliver';const c=candidateCenter(el),entry={id:el.dataset.pid,role:el.dataset.role,x:c.x,y:c.y,left:el.style.left,top:el.style.top,status:'chosen'};state.naeio.settled.push(entry);state.naeio.candidate=null;setFieldPhase('chosen',entry.role+' route chosen and retained.');TraceBox.write('NAEIO_CHOOSE',entry);toast(entry.role.toUpperCase()+' route chosen');updateHover();save()}
+  function testPossibleRoute(){const el=state.naeio.candidate||$('.possibility.settled.hover',stage);if(!el){toast('Aim at a possible route');return}el.classList.add('tested');const detail={id:el.dataset.pid,role:el.dataset.role,result:'responded to contact'};setFieldPhase('tested',detail.role+' route responded; not yet crowned.');TraceBox.write('NAEIO_TEST',detail);toast('Route pressure-tested')}
+  function releasePossibleRoute(){const el=state.naeio.candidate;if(!el){toast('No possible route in reach');return}el.classList.remove('hot','tested');const x=15+Math.random()*70,y=18+Math.random()*60;el.style.left=x+'%';el.style.top=y+'%';state.naeio.candidate=null;setFieldPhase('possible','route released back into the field.');TraceBox.write('NAEIO_RELEASE',{id:el.dataset.pid,to:[Math.round(x),Math.round(y)]});toast('Route released');updateHover()}
+  function resetRelationField(){state.naeio.settled=[];$$('.possibility',stage).forEach((el,i)=>{el.classList.remove('settled','tested','hot');el.dataset.id='';el.dataset.actions='';const coords=[[27,19],[72,37],[31,61],[68,69],[50,42]][i];el.style.left=coords[0]+'%';el.style.top=coords[1]+'%'});setFieldPhase('possible','possible routes dispersed.');TraceBox.write('NAEIO_FIELD_RESET');updateHover();save()}
+  function createRoute(label='dotdot'){if(!state.second.visible){toast('Wake SECOND first');return false}const id='R'+Date.now().toString(36),r={id,x1:state.second.x,y1:state.second.y,x2:state.cursor.x,y2:state.cursor.y,label};state.routes.push(r);state.history.push({type:'ROUTE',id});renderRoutes();TraceBox.write(label==='dotdot'?'DOTDOT_DELIVERANCE':'ROUTE_PRESERVE',{id,label,from:[r.x1,r.y1],to:[r.x2,r.y2]});toast(label+' route preserved');return true}
+  function positionSelected(){
+    if(!state.second.visible){toast('Wake SECOND first');return}const el=state.selected||state.cursor.target;if(!el){toast('Select a body first');return}
+    const locked=el.classList.contains('contact')&&state.contacts.find(c=>c.id===el.dataset.contactId)?.locked;if(locked){TraceBox.write('POSITION_BLOCKED',{target:idOf(el),reason:'ContactBody locked'});toast('ContactBody locked');return}
+    const before=snapshotBody(el),x=(state.cursor.x+state.second.x)/2,y=(state.cursor.y+state.second.y)/2;placeElement(el,x,y);syncContactFromElement(el);const after=snapshotBody(el);state.history.push({type:'TRANSFORM',target:idOf(el),before,after});state.aperture.before=before;state.aperture.after=after;TraceBox.write('POINTER_POINT_POSITION',{target:idOf(el),midpoint:[Math.round(x),Math.round(y)],before,after});renderContacts();toast('Positioned between pointers');save()
+  }
+  function bodyReference(el){return el?.classList.contains('contact')?{contactId:el.dataset.contactId}:{key:el?.dataset?.key,id:idOf(el)}}
+  function referencedBody(ref){if(!ref)return null;if(ref.contactId)return $(`.contact[data-contact-id="${CSS.escape(ref.contactId)}"]`,stage);if(ref.key)return $(`[data-key="${CSS.escape(ref.key)}"]`,stage);return $(`[data-id="${CSS.escape(ref.id||'')}"]`,stage)}
+  function renderBoundState(){$$('.bound',stage).forEach(el=>el.classList.remove('bound'));state.routes.filter(r=>r.label==='bind'||r.label==='connect').forEach(r=>{referencedBody(r.aRef)?.classList.add('bound');referencedBody(r.bRef)?.classList.add('bound')})}
+  function bindTargets(label='bind'){const a=state.selected||state.cursor.target,b=state.second.visible?targetAt(state.second.x,state.second.y):null;if(!a||!b||a===b){toast('Aim each cursor at a different body');return false}const ar=centerOf(a),br=centerOf(b),id='B'+Date.now().toString(36),route={id,x1:ar.x,y1:ar.y,x2:br.x,y2:br.y,label,aRef:bodyReference(a),bRef:bodyReference(b)};state.routes.push(route);state.history.push({type:'ROUTE',id});renderRoutes();renderBoundState();TraceBox.write(label==='connect'?'CONNECT':'BIND',{a:idOf(a),b:idOf(b),id});toast(label==='connect'?'Bodies connected':'Bodies bound');return true}
+  function centerOf(el){const b=el.getBoundingClientRect(),r=rect();return{x:b.left+b.width/2-r.left,y:b.top+b.height/2-r.top}}  function fireSlingshot(){if(!state.second.visible){toast('Wake SECOND first');return}const dx=state.cursor.x-state.second.x,dy=state.cursor.y-state.second.y,d=Math.hypot(dx,dy);if(d<30){toast('Pull farther before release');return}const p=document.createElement('div');p.className='projectile';p.style.left=state.second.x-7+'px';p.style.top=state.second.y-7+'px';$('#projectiles').appendChild(p);const endX=clamp(state.second.x+dx*2.1,0,rect().width),endY=clamp(state.second.y+dy*2.1,0,rect().height),start=performance.now(),dur=clamp(650-d,180,520);const sx=state.second.x-7,sy=state.second.y-7;function frame(t){const q=Math.min(1,(t-start)/dur),e=1-Math.pow(1-q,3);p.style.left=sx+(endX-sx)*e+'px';p.style.top=sy+(endY-sy)*e+'px';if(q<1)requestAnimationFrame(frame);else p.remove()}requestAnimationFrame(frame);TraceBox.write('SLINGSHOT',{distance:Math.round(d),vector:[Math.round(dx),Math.round(dy)]});toast('Slingshot delivered')}
+  function selectedContact(){return state.contacts.find(c=>c.id===state.selectedContactId)||null}
+  function focusContact(id){
+    const c=state.contacts.find(item=>item.id===id);if(!c)return;state.selectedContactId=id;state.cursor.x=c.x;state.cursor.y=c.y;if(!state.cursorVisible)setCursorVisible(true,'ContactBody focus');renderContacts();const el=$(`.contact[data-contact-id="${CSS.escape(id)}"]`,stage);selectTarget(el);TraceBox.write('CONTACT_FOCUS',{id});closeSheet();updateHover()
+  }
+  function saveSelectedContact(){
+    const c=selectedContact();if(!c)return;const before=JSON.parse(JSON.stringify(c));c.label=$('#contactLabel').value.trim()||'contact';c.role=$('#contactRole').value;c.color=$('#contactColor').value;c.size=Number($('#contactSize').value);c.effect=$('#contactEffect').value;c.ownership=$('#contactOwner').value.trim()||'local operator';c.note=$('#contactNote').value;c.updatedAt=now();c.history.push({time:c.updatedAt,route:'CONTACT_EDIT'});const after=JSON.parse(JSON.stringify(c));state.history.push({type:'CONTACT_UPDATE',before,after});const receipt=TraceBox.write('CONTACT_EDIT',{id:c.id,before:{label:before.label,role:before.role,color:before.color,size:before.size,effect:before.effect,note:before.note,ownership:before.ownership},after:{label:c.label,role:c.role,color:c.color,size:c.size,effect:c.effect,note:c.note,ownership:c.ownership}});c.jmTrace=receipt.id;renderContacts();save();toast('ContactBody updated')
+  }
+  function toggleContactLock(){
+    const c=selectedContact();if(!c)return;const before=JSON.parse(JSON.stringify(c));c.locked=!c.locked;c.updatedAt=now();c.history.push({time:c.updatedAt,route:c.locked?'CONTACT_LOCK':'CONTACT_UNLOCK'});const after=JSON.parse(JSON.stringify(c));state.history.push({type:'CONTACT_UPDATE',before,after});const receipt=TraceBox.write(c.locked?'CONTACT_LOCK':'CONTACT_UNLOCK',{id:c.id,before:before.locked,after:c.locked});c.jmTrace=receipt.id;renderContacts();save();toast(c.locked?'ContactBody locked':'ContactBody unlocked')
+  }
+  function duplicateContact(){
+    const source=selectedContact();if(!source)return;const id='C'+Date.now().toString(36),point=safePoint({x:source.x+24,y:source.y+24}),created=now(),copy={...JSON.parse(JSON.stringify(source)),id,label:source.label+' copy',x:point.x,y:point.y,locked:false,createdAt:created,updatedAt:created,jmTrace:null,history:[]};state.contacts.push(copy);state.history.push({type:'CONTACT_DUPLICATE',id});state.selectedContactId=id;const receipt=TraceBox.write('CONTACT_DUPLICATE',{source:source.id,id});copy.jmTrace=receipt.id;copy.history.push({time:created,route:'CONTACT_DUPLICATE',trace:receipt.id});renderContacts();save();toast('ContactBody duplicated')
+  }
+  function deleteContact(){
+    const c=selectedContact();if(!c)return;if(c.locked){TraceBox.write('CONTACT_DELETE_BLOCKED',{id:c.id,reason:'locked'});toast('Unlock ContactBody before delete');return}state.history.push({type:'CONTACT_DELETE',contact:JSON.parse(JSON.stringify(c))});state.contacts=state.contacts.filter(item=>item.id!==c.id);state.selectedContactId=null;if(state.selected?.dataset?.contactId===c.id){state.selected=null;state.contextView='modules';contextSignature=''}TraceBox.write('CONTACT_DELETE',{id:c.id,recoverableByUndo:true});renderContacts();updateHover();save();toast('ContactBody deleted · UNDO restores')
+  }
+  function renderContactEditor(){
+    const c=selectedContact(),disabled=!c,ids=['contactLabel','contactRole','contactColor','contactSize','contactEffect','contactOwner','contactNote','saveContactBtn','lockContactBtn','duplicateContactBtn','deleteContactBtn'];ids.forEach(id=>$('#'+id).disabled=disabled);
+    if(c){$('#contactEditorState').innerHTML=`<b>${escapeHtml(c.id)}</b> · ${c.locked?'locked':'editable'} · ${escapeHtml(c.role||c.purpose||'anchor')}<br>Owner ${escapeHtml(c.ownership||'local operator')} · Trace ${escapeHtml(c.jmTrace||'pending')} · replay ${c.replayPotential?'ready':'off'}`;$('#contactLabel').value=c.label;$('#contactRole').value=c.role||'anchor';$('#contactColor').value=c.color;$('#contactSize').value=c.size||28;$('#contactSizeOut').textContent=(c.size||28)+'px';$('#contactEffect').value=c.effect||'steady';$('#contactOwner').value=c.ownership||'local operator';$('#contactNote').value=c.note||'';$('#lockContactBtn').textContent=c.locked?'UNLOCK':'LOCK'}
+    else{$('#contactEditorState').innerHTML='<b>No ContactBody selected.</b> Pin deliberately; ordinary CLICK never leaves a mark.';$('#contactLabel').value='';$('#contactNote').value='';$('#lockContactBtn').textContent='LOCK'}
+    const list=$('#contactList');list.innerHTML=state.contacts.map(c=>`<div class="contact-row ${c.id===state.selectedContactId?'selected':''}" data-contact-row="${escapeHtml(c.id)}"><div class="meta"><b>${escapeHtml(c.label)}</b> · ${escapeHtml(c.id)}<br>${escapeHtml(c.role||'anchor')} · Z ${Number(c.z||0)} · ${c.size||28}px · ${escapeHtml(c.effect||'steady')} · ${c.locked?'locked':'editable'}</div><div class="row"><button class="sheet-btn" data-contact-action="select" data-contact-id="${escapeHtml(c.id)}">EDIT</button><button class="sheet-btn" data-contact-action="focus" data-contact-id="${escapeHtml(c.id)}">AIM</button></div></div>`).join('')||'<div class="card"><p>No pinned ContactBodies. Ordinary clicks remain temporary.</p></div>'
+  }
+  function renderContacts(){
+    const host=$('#contacts');host.innerHTML='';
+    state.contacts.forEach(c=>{const el=document.createElement('div');el.className='contact'+(c.locked?' locked':'')+(c.id===state.selectedContactId?' selected':'');el.dataset.id=c.label+' · '+c.id;el.dataset.contactId=c.id;el.dataset.label=c.label;el.dataset.role=(c.role||'anchor').slice(0,5).toUpperCase();el.dataset.effect=c.effect||'steady';el.dataset.kind='contact';el.dataset.actions=c.locked?'inspect,unlock,duplicate':'move,edit,lock,duplicate,delete,connect,measure,code';el.style.setProperty('--c',c.color);el.style.setProperty('--cb-size',(c.size||28)+'px');el.style.left=c.x+'px';el.style.top=c.y+'px';host.appendChild(el)});
+    if(state.selectedContactId){state.selected=$(`.contact[data-contact-id="${CSS.escape(state.selectedContactId)}"]`,stage)||state.selected}
+    renderContactEditor()
+  }
+  function renderRoutes(){storedRoutes.innerHTML='';state.routes.forEach(r=>{const a=safePoint({x:r.x1,y:r.y1}),b=safePoint({x:r.x2,y:r.y2}),el=document.createElementNS('http://www.w3.org/2000/svg','line');el.setAttribute('x1',a.x);el.setAttribute('y1',a.y);el.setAttribute('x2',b.x);el.setAttribute('y2',b.y);el.setAttribute('class','stored-route '+(['bind','connect'].includes(r.label)?'bind':''));el.setAttribute('marker-end','url(#routeArrow)');storedRoutes.appendChild(el)});renderBoundState()}
+  function renderTrace(){const host=$('#traceList');if(!host)return;host.innerHTML=state.traces.slice(0,24).map(t=>`<div class="trace-item"><b>${t.route}</b> · ${t.mode}<br>${new Date(t.time).toLocaleTimeString()} · ${escapeHtml(JSON.stringify(t.detail))}</div>`).join('')||'<div class="card"><p>No receipts yet.</p></div>'}
+  function ldmlSnapshot(){return{format:'JM-LDML',version:'0.10D',system:'JM Living Cursor & ContactBody System',crown:'The finger guides. The cursor aims. Contact acts. Meaningful contact remains alive.',separation:['HAND / INPUT','CURSOR','TARGET','ACTION','CONTACTBODY','TRACE'],route:['GUIDE','AIM','TARGET','CHOOSE','CLICK / GRAB','ALTER','RELEASE','PRESERVE','REPLAY'],cursor:{...state.cursor,target:null,size:state.cursorSize,offset:[state.offsetX,state.offsetY],sensitivity:state.sensitivity,snap:state.snap,snapRadius:state.snapRadius,smooth:state.smooth,dragMagnet:state.dragMagnet,precision:state.precision,policy:state.cursorPolicy,visible:state.cursorVisible},inputProfiles:JSON.parse(JSON.stringify(state.inputProfiles)),activeProfileId:state.activeProfileId,contactGrammar:{profile:state.activeProfileId,first:gestureMap('first'),second:gestureMap('second')},fluency:{...state.fluency},aperture:apertureSnapshot(),chassis:{...state.chassis},contacts:JSON.parse(JSON.stringify(state.contacts)),routes:JSON.parse(JSON.stringify(state.routes)),targets:$$('.object',stage).map(el=>({key:el.dataset.key,id:idOf(el),kind:el.dataset.kind,actions:(el.dataset.actions||'').split(',').filter(Boolean),style:el.getAttribute('style')||'',className:el.className})),receipts:JSON.parse(JSON.stringify(state.traces))}}
+  function exportLdml(){const data=JSON.stringify(ldmlSnapshot(),null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='JM_LIVING_CURSOR_CONTACTBODY_v0_10D.ldml.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);TraceBox.write('LDML_EXPORT',{contacts:state.contacts.length,routes:state.routes.length,profiles:state.inputProfiles.length});toast('LDML owner body exported')}
+  async function importLdml(file){try{const data=JSON.parse(await file.text());if(data.format!=='JM-LDML'||!Array.isArray(data.contacts)||!Array.isArray(data.routes))throw new Error('Not a JM-LDML ContactBody');state.contacts=data.contacts;state.routes=data.routes;if(data.chassis)state.chassis={...state.chassis,...data.chassis};if(data.fluency)state.fluency={...state.fluency,...data.fluency};if(Array.isArray(data.inputProfiles)&&data.inputProfiles.length)state.inputProfiles=data.inputProfiles.map(normaliseProfile);if(data.activeProfileId&&state.inputProfiles.some(profile=>profile.id===data.activeProfileId))state.activeProfileId=data.activeProfileId;if(data.cursor){state.cursor={...state.cursor,...data.cursor,target:null};state.cursorSize=Number(data.cursor.size||state.cursorSize);state.offsetX=Number(data.cursor.offset?.[0]??state.offsetX);state.offsetY=Number(data.cursor.offset?.[1]??state.offsetY);state.sensitivity=Number(data.cursor.sensitivity??state.sensitivity);state.snap=data.cursor.snap!==false;state.snapRadius=Number(data.cursor.snapRadius??state.snapRadius);state.smooth=data.cursor.smooth!==false;state.dragMagnet=Boolean(data.cursor.dragMagnet);state.precision=Boolean(data.cursor.precision);state.cursorPolicy=data.cursor.policy||state.cursorPolicy;state.cursorVisible=data.cursor.visible!==false}if(Array.isArray(data.receipts))state.traces=data.receipts.slice(0,160);applyActiveProfile();renderContacts();renderRoutes();renderTrace();renderDepth();renderGuide();fitGeometry();TraceBox.write('LDML_IMPORT',{version:data.version,contacts:state.contacts.length,routes:state.routes.length,profiles:state.inputProfiles.length});save();toast('LDML body mounted')}catch(error){console.warn(error);toast('LDML import blocked · invalid body')}}
+  function escapeHtml(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+  function switchScene(){sceneIndex=(sceneIndex+1)%scenes.length;const [id,name]=scenes[sceneIndex];state.scene=id;stage.dataset.scene=id;$('#sceneName').textContent=name;TraceBox.write('SCENE',{scene:id});toast(name);save()}
+  function openSheet(tab='program'){const sheet=$('#sheet');sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');$('#backdrop').classList.add('show');activateTab(tab);if(tab==='program')renderProgram()}
+  function closeSheet(){const sheet=$('#sheet');sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');$('#backdrop').classList.remove('show')}
+  function activateTab(name){$$('.sheet-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));$$('.pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===name))}
+  function load(){
+    try{
+      const current=localStorage.getItem('jm-living-cursor-v010d'),parent=localStorage.getItem('jm-living-cursor-v010c'),grandparent=localStorage.getItem('jm-living-cursor-v010b'),keeper=localStorage.getItem('jm-living-cursor-v010a'),anchor=localStorage.getItem('jm-living-cursor-v09r'),donor=localStorage.getItem('nana-v012d'),legacy=localStorage.getItem('nana-v011n'),source=localStorage.getItem('JM_LIVING_CURSOR_CONTACTBODY_v0_1'),s=JSON.parse(current||parent||grandparent||keeper||anchor||donor||legacy||source||'null');if(!s){applyActiveProfile();return}
+      const field=rect();if(s.contacts)state.contacts=s.contacts.map(c=>({...c,x:Number(c.x)<=1?Number(c.x)*field.width:Number(c.x),y:Number(c.y)<=1?Number(c.y)*field.height:Number(c.y),z:Number(c.z||0),role:c.role||'anchor',size:Number(c.size||28),effect:c.effect||'steady',note:c.note||'',purpose:c.purpose||'contact',behaviour:c.behaviour||'editable retained contact aperture',ownership:c.ownership||'local operator',evidence:c.evidence||null,createdAt:c.createdAt||now(),updatedAt:c.updatedAt||c.createdAt||now(),jmTrace:c.jmTrace||null,replayPotential:c.replayPotential!==false,history:Array.isArray(c.history)?c.history:[]}));
+      if(s.routes)state.routes=s.routes;if(s.traces)state.traces=s.traces;if(Array.isArray(s.history))state.history=s.history;if(s.chassis)state.chassis={...state.chassis,...s.chassis};if(s.aperture)state.aperture={...state.aperture,...s.aperture};if(s.fluency)state.fluency={...state.fluency,...s.fluency};if(Array.isArray(s.inputProfiles)&&s.inputProfiles.length)state.inputProfiles=s.inputProfiles.map(normaliseProfile);if(s.activeProfileId&&state.inputProfiles.some(profile=>profile.id===s.activeProfileId))state.activeProfileId=s.activeProfileId;
+      if(s.naeio){state.naeio={...state.naeio,...s.naeio};state.naeio.settled.forEach(item=>{const el=$(`.possibility[data-pid="${CSS.escape(item.id)}"]`,stage);if(el){el.classList.add('settled');if(item.left)el.style.left=item.left;if(item.top)el.style.top=item.top;el.dataset.id='ROUTE '+String(item.role).toUpperCase();el.dataset.actions='inspect,bind,deliver'}})}
+      if(s.settings){state.offsetX=Number(s.settings.offsetX??state.offsetX);state.offsetY=Number(s.settings.offsetY??state.offsetY);state.sensitivity=Number(s.settings.sensitivity??state.sensitivity);state.cursorSize=Number(s.settings.cursorSize??state.cursorSize);state.snap=s.settings.snap!==false;state.snapRadius=Number(s.settings.snapRadius??state.snapRadius);state.smooth=s.settings.smooth!==false;state.dragMagnet=Boolean(s.settings.dragMagnet);state.precision=Boolean(s.settings.precision);state.movementProfile=s.settings.movementProfile||state.movementProfile;state.magnify=Boolean(s.settings.magnify);state.cursorPolicy=s.settings.cursorPolicy||state.cursorPolicy;state.cursorVisible=s.settings.cursorVisible!==false;if(s.settings.cursor)state.cursor={...state.cursor,...s.settings.cursor,target:null}}
+      else if(s.cursor){state.offsetY=-Math.abs(Number(s.cursor.offset??68));state.sensitivity=Number(s.cursor.sensitivity??1);state.cursorSize=Number(s.cursor.size??34);state.snap=s.cursor.snap!==false}
+      if(s.scene){state.scene=s.scene;sceneIndex=Math.max(0,scenes.findIndex(item=>item[0]===state.scene));stage.dataset.scene=state.scene;$('#sceneName').textContent=scenes[sceneIndex]?.[1]||'TRUE BLACK FIELD'}
+      state.removedObjectIds=Array.isArray(s.removedObjectIds)?s.removedObjectIds:[];
+      document.documentElement.style.setProperty('--cursor',state.cursorSize+'px');$('#offsetY').value=state.offsetY;$('#offsetX').value=state.offsetX;$('#sensitivity').value=state.sensitivity;$('#cursorSize').value=state.cursorSize;$('#snapRadius').value=state.snapRadius;$('#movementProfile').value=state.movementProfile;$('#cursorLabel').value=state.cursor.label;$('#cursorColor').value=state.cursor.color;$('#cursorEffect').value=state.cursor.effect;$('#offsetOut').textContent=state.offsetY+'px';$('#offsetXOut').textContent=state.offsetX+'px';$('#sensitivityOut').textContent=state.sensitivity.toFixed(2)+'×';$('#cursorOut').textContent=state.cursorSize+'px';$('#snapRadiusOut').textContent=state.snapRadius+'px';$('#snapBtn').textContent='AIM SNAP '+(state.snap?'ON':'OFF');$('#smoothBtn').textContent='AIM SMOOTH '+(state.smooth?'ON':'OFF');$('#dragMagnetBtn').textContent='DRAG MAGNET '+(state.dragMagnet?'ON':'OFF');$('#dragMagnetBtn').classList.toggle('active',state.dragMagnet);$('#magnifyBtn').textContent='MAGNIFY '+(state.magnify?'ON':'OFF');$('#precisionBtn').classList.toggle('active',state.precision);
+      $('#depthRange').value=state.aperture.z;$('#depthOut').textContent=state.aperture.z;$('#intentSelect').value=state.aperture.intent;$('#driverRole').value=state.chassis.driver;$('#actionRole').value=state.chassis.action;$('#supportRole').value=state.chassis.support;
+      if(s.objects){s.objects.forEach(o=>{let el=o.key?$(`.object[data-key="${CSS.escape(o.key)}"]`,stage):$(`.object[data-id="${CSS.escape(o.id)}"]`,stage);if(!el&&o.outerHTML){$('#possibilities').insertAdjacentHTML('beforebegin',o.outerHTML);el=o.key?$(`.object[data-key="${CSS.escape(o.key)}"]`,stage):$(`.object[data-id="${CSS.escape(o.id)}"]`,stage)}if(!el)return;el.dataset.id=o.id||el.dataset.id;if(o.className)el.className=o.className;if(Object.hasOwn(o,'html'))el.innerHTML=o.html;if(Object.hasOwn(o,'style')){if(o.style)el.setAttribute('style',o.style);else el.removeAttribute('style');return}const changed=Boolean(o.left||o.top||o.width||o.height||o.transform);if(changed){if(o.left)el.style.left=o.left;if(o.top)el.style.top=o.top;if(o.width)el.style.width=o.width;if(o.height)el.style.height=o.height;if(o.transform)el.style.transform=o.transform;if(o.left||o.top){el.style.right='auto';el.style.bottom='auto'}}})}
+      state.removedObjectIds.forEach(id=>$$('.object',stage).find(el=>idOf(el)===id)?.remove());renderBoundState();applyActiveProfile();
+    }catch(e){console.warn('Load skipped',e)}
+  }
+
+  function doubleActivate(target){
+    if(!target)return;selectTarget(target);
+    if(target.classList.contains('contact')){state.selectedContactId=target.dataset.contactId;renderContactEditor();openSheet('depth');TraceBox.write('DOUBLE_TAP_OPEN',{target:idOf(target)});return}
+    const before=snapshotBody(target),active=!target.classList.contains('activated');target.classList.toggle('activated',active);const after=snapshotBody(target);state.history.push({type:'TRANSFORM',target:idOf(target),before,after});TraceBox.write('DOUBLE_TAP_ACTIVATE',{target:idOf(target),active});toast(active?'Target activated':'Target released');save()
+  }
+  stage.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button,.chip'))return;try{stage.setPointerCapture?.(e.pointerId)}catch{}
+    const assignment=baseChannelForEvent(e),profile=activeProfile(),which=runtimeChannel(assignment.channel,profile),pointer={pointerId:e.pointerId,type:e.pointerType,which,baseChannel:assignment.channel,hand:profileHand(assignment.channel,profile),inferredHand:assignment.inferredHand,claim:assignment.claim,role:profileRole(assignment.channel,profile),downAt:performance.now(),downX:e.clientX,downY:e.clientY,moved:false};
+    state.pointers.set(e.pointerId,pointer);
+    if(which==='primary'){state.aperture.routeLength=0;state.aperture.lastPoint={x:state.cursor.x,y:state.cursor.y};touchGhost.dataset.label=String(pointer.hand+' · '+pointer.role).toUpperCase()}
+    movePointer(which,e.clientX,e.clientY,{pointerType:e.pointerType,pressure:e.pressure});
+    if(pointer.role==='act'&&state.activation.pointerId!=null){const incumbent=state.pointers.get(state.activation.pointerId);if(incumbent?.role!=='act')resetActivation()}
+    if(pointer.role==='act'||which==='primary')beginActivation(pointer,pointer.role==='act'?'action contact':'primary cursor contact');
+    TraceBox.write('CONTACT_DOWN',{channel:pointer.baseChannel,runtimeCursor:which,declaredHand:pointer.hand,inferredHand:pointer.inferredHand,role:pointer.role,claim:pointer.claim,hardwareHandDetection:false});
+    e.preventDefault()
+  });
+  stage.addEventListener('pointermove',e=>{
+    const pointer=state.pointers.get(e.pointerId);if(!pointer)return;const samples=e.getCoalescedEvents?.()||[e],last=samples[samples.length-1]||e,distance=Math.hypot(last.clientX-pointer.downX,last.clientY-pointer.downY);
+    if(distance>state.tapSlop&&!pointer.moved){pointer.moved=true;if(state.activation.pointerId===e.pointerId&&state.activation.phase!=='hold-active'){TraceBox.write('CLICK_HOLD_CANCELLED_BY_MOVE',{distancePx:Math.round(distance),tapSlop:state.tapSlop});resetActivation()}}
+    movePointer(pointer.which,last.clientX,last.clientY,{pointerType:last.pointerType||e.pointerType,pressure:last.pressure??e.pressure});e.preventDefault()
+  });
+  const endPointer=(e,cancelled=false)=>{
+    const pointer=state.pointers.get(e.pointerId);if(!pointer)return;
+    if(state.activation.pointerId===e.pointerId){
+      if(state.activation.phase==='hold-active')finishHold(pointer,cancelled);
+      else if(!cancelled&&!pointer.moved)handleTap(state.activation.target,state.activation.source,pointer);
+      else TraceBox.write(cancelled?'CONTACT_CANCEL':'AIM_RELEASE',{channel:pointer.baseChannel,role:pointer.role,moved:pointer.moved});
+      resetActivation()
+    }
+    state.pointers.delete(e.pointerId);
+    TraceBox.write('CONTACT_UP',{channel:pointer.baseChannel,runtimeCursor:pointer.which,declaredHand:pointer.hand,role:pointer.role,claim:pointer.claim,cancelled,moved:pointer.moved});
+    if(pointer.which==='primary'){state.touch.visible=false;state.aperture.force=null;state.aperture.forceSource='unsensed';lastRaw=null;paint()}
+    e.preventDefault()
+  };
+  stage.addEventListener('pointerup',e=>endPointer(e,false));stage.addEventListener('pointercancel',e=>endPointer(e,true));
+  $('#selectBtn').addEventListener('click',()=>{updateHover();const profile=activeProfile(),baseChannel=profile.primaryCursorChannel;handleTap(state.cursor.target,'visible CLICK button',{baseChannel,hand:profileHand(baseChannel,profile),role:profileRole(baseChannel,profile)})});
+  $('#pinBtn').addEventListener('click',()=>RouteOS.dispatch(Cading('PIN',{label:'contact'})));
+  $('#secondBtn').addEventListener('click',()=>RouteOS.dispatch(Cading('SECOND',{visible:!state.second.visible})));
+  $('#precisionBtn').addEventListener('click',()=>{state.precision=!state.precision;state.movementProfile=state.precision?'precision':'balanced';state.sensitivity=state.precision?.45:1;$('#movementProfile').value=state.movementProfile;$('#sensitivity').value=state.sensitivity;$('#sensitivityOut').textContent=state.sensitivity.toFixed(2)+'×';$('#precisionBtn').classList.toggle('active',state.precision);TraceBox.write('PRECISION',{active:state.precision});toast(state.precision?'Precision on':'Balanced movement');save()});
+  $('#undoBtn').addEventListener('click',()=>RouteOS.dispatch(Cading('UNDO')));$('#cancelBtn').addEventListener('click',()=>{RouteOS.dispatch(Cading('CANCEL'));restoreMomentaryPrecision();resetActivation()});$('#resetBtn').addEventListener('click',()=>RouteOS.dispatch(Cading('RESET')));
+  $('#cursorVisibilityBtn').addEventListener('click',()=>RouteOS.dispatch(Cading('CURSOR_VISIBILITY',{visible:!state.cursorVisible,reason:'visible dock control'})));
+  const act=$('#actBtn');act.addEventListener('pointerdown',e=>{const profile=activeProfile(),baseChannel=channelForRole('act',profile);state.actPointer=e.pointerId;state.actContact={pointerId:e.pointerId,baseChannel,hand:profileHand(baseChannel,profile),role:'act',claim:'visible button equivalent',moved:false};state.activation={phase:'hold-active',progress:1,pointerId:'button',target:state.cursor.target||null,holdRoute:null,source:'visible HOLD ACT button',channel:baseChannel};activateHold(state.actContact);e.preventDefault()});window.addEventListener('pointerup',e=>{if(e.pointerId===state.actPointer){finishHold(state.actContact,false);resetActivation();state.actPointer=null;state.actContact=null}});window.addEventListener('pointercancel',e=>{if(e.pointerId===state.actPointer){finishHold(state.actContact,true);resetActivation();state.actPointer=null;state.actContact=null}});
+  contextStrip.addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;if(button.dataset.contextBack){state.contextView='modules';contextSignature='';renderContextDeck();updateContext();toast('Estate modules restored');return}if(button.dataset.contextPin){pinContact('action-deck contact');return}if(button.dataset.contextMode){state.contextView='target';RouteOS.dispatch(Cading('MODE',{mode:button.dataset.contextMode}));return}const module=button.dataset.module;if(!module)return;if(module==='dual')return RouteOS.dispatch(Cading('SECOND',{visible:!state.second.visible}));if(module==='seek')return PLAYFORM.enact('seek');RouteOS.dispatch(Cading('MODE',{mode:module}))});
+  $('#sceneBtn').addEventListener('click',switchScene);$('#sheetBtn').addEventListener('click',()=>openSheet('control'));$('#modeBtn').addEventListener('click',()=>openSheet('program'));$('#depthChip').addEventListener('click',()=>openSheet('depth'));$('#sheetClose').addEventListener('click',closeSheet);$('#backdrop').addEventListener('click',closeSheet);
+  $$('.sheet-tab').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));$$('[data-mode]').forEach(b=>b.addEventListener('click',()=>RouteOS.dispatch(Cading('MODE',{mode:b.dataset.mode}))));
+  $('#profileSelect').addEventListener('change',e=>{state.activeProfileId=e.target.value;applyActiveProfile({write:true})});
+  $('#guideClose').addEventListener('click',()=>setGuideEnabled(false));
+  $('#guideToggleBtn').addEventListener('click',()=>setGuideEnabled(!state.fluency.guideEnabled));
+  $('#restartGuideBtn').addEventListener('click',restartGuide);
+  $('#hapticsBtn').addEventListener('click',()=>{state.fluency.haptics=!state.fluency.haptics;TraceBox.write('HAPTICS_POLICY',{enabled:state.fluency.haptics,supported:typeof navigator.vibrate==='function'});if(state.fluency.haptics)haptic(12);renderFluencyControls();toast(state.fluency.haptics?'Haptics on where the device permits':'Haptics off · visual states remain')});
+  $('#hintLevel').addEventListener('change',e=>{state.fluency.hintLevel=e.target.value;TraceBox.write('HINT_LEVEL',{level:state.fluency.hintLevel});renderNaturalCue();renderGuide();toast(state.fluency.hintLevel.toUpperCase()+' explanation level')});
+  $('#editFirstGrammarBtn').addEventListener('click',()=>selectGestureChannel('first'));$('#editSecondGrammarBtn').addEventListener('click',()=>selectGestureChannel('second'));$('#splitGrammarBtn').addEventListener('click',()=>applyGrammarPreset('split'));$('#unifiedGrammarBtn').addEventListener('click',()=>applyGrammarPreset('unified'));
+  $$('#gesturesSection select').forEach(select=>select.addEventListener('change',()=>{const profile=cloneProfile(activeProfile());profile.channelGestures[state.editingGestureChannel]=gestureFormSnapshot();profile.grammarStyle='custom';renderGestureEditor(profile)}));
+  $('#saveProfileBtn').addEventListener('click',saveProgram);$('#duplicateProfileBtn').addEventListener('click',duplicateProgram);$('#resetProfileBtn').addEventListener('click',resetProgram);
+  $('#swapContactsBtn').addEventListener('click',swapContacts);$('#swapRailBtn').addEventListener('click',swapContacts);$('#firstAssignmentBtn').addEventListener('click',()=>setPrimaryCursorChannel('first'));$('#secondAssignmentBtn').addEventListener('click',()=>setPrimaryCursorChannel('second'));
+  $$('[data-program-jump]').forEach(button=>button.addEventListener('click',()=>{$$('[data-program-jump]').forEach(item=>item.classList.toggle('active',item===button));$('#'+button.dataset.programJump)?.scrollIntoView({behavior:'smooth',block:'start'})}));
+  [['#tapSlopRange','#tapSlopOut','px'],['#holdTimeRange','#holdTimeOut','ms'],['#doubleTimeRange','#doubleTimeOut','ms']].forEach(([input,out,suffix])=>$(input).addEventListener('input',e=>$(out).textContent=e.target.value+suffix));
+  const bindRange=(id,key,out,fmt=v=>v)=>{$(id).addEventListener('input',e=>{state[key]=Number(e.target.value);$(out).textContent=fmt(state[key]);if(key==='cursorSize')document.documentElement.style.setProperty('--cursor',state.cursorSize+'px');paint();save()})};
+  bindRange('#offsetY','offsetY','#offsetOut',v=>v+'px');bindRange('#offsetX','offsetX','#offsetXOut',v=>v+'px');bindRange('#sensitivity','sensitivity','#sensitivityOut',v=>v.toFixed(2)+'×');bindRange('#cursorSize','cursorSize','#cursorOut',v=>v+'px');bindRange('#snapRadius','snapRadius','#snapRadiusOut',v=>v+'px');
+  $('#snapBtn').addEventListener('click',e=>{state.snap=!state.snap;e.currentTarget.textContent='AIM SNAP '+(state.snap?'ON':'OFF');TraceBox.write('SNAP_POLICY',{scope:'aim',active:state.snap,radius:state.snapRadius});save()});$('#smoothBtn').addEventListener('click',e=>{state.smooth=!state.smooth;e.currentTarget.textContent='AIM SMOOTH '+(state.smooth?'ON':'OFF');TraceBox.write('SMOOTH_POLICY',{scope:'aim',active:state.smooth});save()});$('#dragMagnetBtn').addEventListener('click',e=>{state.dragMagnet=!state.dragMagnet;e.currentTarget.textContent='DRAG MAGNET '+(state.dragMagnet?'ON':'OFF');e.currentTarget.classList.toggle('active',state.dragMagnet);TraceBox.write('DRAG_MAGNET_POLICY',{active:state.dragMagnet,radius:state.snapRadius,excludesGrabbedBody:true});renderNaturalCue();save();toast(state.dragMagnet?'Drag magnet on · nearby destinations attract':'Direct drag restored · no automatic destination')});$('#magnifyBtn').addEventListener('click',e=>{state.magnify=!state.magnify;e.currentTarget.textContent='MAGNIFY '+(state.magnify?'ON':'OFF');TraceBox.write('MAGNIFIER',{active:state.magnify});renderDepth();save()});$('#centreBtn').addEventListener('click',()=>centreCursors(true));
+  $('#movementProfile').addEventListener('change',e=>{state.movementProfile=e.target.value;const values={coarse:1.35,balanced:1,precision:.45};state.sensitivity=values[state.movementProfile];$('#sensitivity').value=state.sensitivity;$('#sensitivityOut').textContent=state.sensitivity.toFixed(2)+'×';state.precision=state.movementProfile==='precision';$('#precisionBtn').classList.toggle('active',state.precision);TraceBox.write('MOVEMENT_PROFILE',{profile:state.movementProfile,sensitivity:state.sensitivity});save()});
+  $('#cursorLabel').addEventListener('input',e=>{state.cursor.label=e.target.value.trim()||'LIVING';renderDepth();save()});$('#cursorColor').addEventListener('change',e=>{state.cursor.color=e.target.value;renderDepth();TraceBox.write('CURSOR_COLOUR',{color:state.cursor.color});save()});$('#cursorEffect').addEventListener('change',e=>{state.cursor.effect=e.target.value;renderDepth();TraceBox.write('CURSOR_EFFECT',{effect:state.cursor.effect});save()});
+  $$('[data-nudge]').forEach(b=>b.addEventListener('click',()=>{const [dx,dy]=b.dataset.nudge.split(',').map(Number);if(dx===0&&dy===0)return centreCursors(true);const step=state.precision?2:8;Object.assign(state.cursor,safePoint({x:state.cursor.x+dx*step,y:state.cursor.y+dy*step}));TraceBox.write('CURSOR_NUDGE',{dx:dx*step,dy:dy*step});updateHover();save()}));
+  $('#depthRange').addEventListener('input',e=>{state.aperture.z=Number(e.target.value);renderDepth();save()});$('#intentSelect').addEventListener('change',e=>{state.aperture.intent=e.target.value;TraceBox.write('APERTURE_INTENT',{intent:state.aperture.intent});renderDepth();save()});
+  $('#persistBtn').addEventListener('click',()=>setCursorPolicy('persist'));$('#fadeBtn').addEventListener('click',()=>setCursorPolicy('fade'));$('#wakeBtn').addEventListener('click',()=>setCursorVisible(true,'Depth editor'));
+  $('#saveContactBtn').addEventListener('click',saveSelectedContact);$('#lockContactBtn').addEventListener('click',toggleContactLock);$('#duplicateContactBtn').addEventListener('click',duplicateContact);$('#deleteContactBtn').addEventListener('click',deleteContact);
+  $('#contactSize').addEventListener('input',e=>$('#contactSizeOut').textContent=e.target.value+'px');
+  $('#contactList').addEventListener('click',e=>{const button=e.target.closest('[data-contact-action]');if(!button)return;const id=button.dataset.contactId;if(button.dataset.contactAction==='focus')focusContact(id);else{state.selectedContactId=id;renderContacts();TraceBox.write('CONTACT_EDITOR_SELECT',{id})}});
+  $('#applyChassis').addEventListener('click',()=>{state.chassis={driver:$('#driverRole').value,action:$('#actionRole').value,support:$('#supportRole').value,sense:'declared physical chassis · unsensed'};TraceBox.write('CHASSIS_PROFILE',{...state.chassis,hardwareClaim:false});renderDepth();save();toast('Declared chassis applied · unsensed')});
+  $('#routeCloudBtn').addEventListener('click',e=>{state.naeio.active=!state.naeio.active;stage.classList.toggle('route-cloud-off',!state.naeio.active);e.currentTarget.textContent='ROUTE CLOUD '+(state.naeio.active?'ON':'OFF');TraceBox.write('ROUTE_CLOUD',{active:state.naeio.active});updateHover();save()});$('#clearFieldBtn').addEventListener('click',resetRelationField);
+  $('#copyTrace').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(JSON.stringify(state.traces,null,2));toast('Trace copied')}catch{toast('Clipboard unavailable')}});$('#clearTrace').addEventListener('click',()=>{state.traces=[];renderTrace();save();toast('Trace cleared')});
+  $('#exportLdmlBtn').addEventListener('click',exportLdml);$('#importLdmlBtn').addEventListener('click',()=>$('#importLdmlFile').click());$('#importLdmlFile').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)importLdml(file);e.target.value=''});
+  window.addEventListener('keydown',e=>{if(e.key==='Escape')RouteOS.dispatch(Cading('CANCEL'));if(e.key==='Enter')RouteOS.dispatch(Cading('SELECT'));if(e.key===' ')RouteOS.dispatch(Cading('PIN'));if(e.key.toLowerCase()==='a'&&!state.acting)RouteOS.dispatch(Cading('ACT_START'));if(e.key.toLowerCase()==='z'&&(e.ctrlKey||e.metaKey))RouteOS.dispatch(Cading('UNDO'))});window.addEventListener('keyup',e=>{if(e.key.toLowerCase()==='a'&&state.acting)RouteOS.dispatch(Cading('ACT_END'))});
+  function fitGeometry(){Object.assign(state.cursor,safePoint(state.cursor));Object.assign(state.second,safePoint(state.second));renderRoutes();paint();updateHover()}window.addEventListener('resize',fitGeometry);window.visualViewport?.addEventListener('resize',fitGeometry);
+
+  const contactApi=Object.freeze({
+    name:'JM Living Cursor & ContactBody System',
+    version:'0.10D',
+    crown:'The finger guides. The cursor aims. Contact acts. Meaningful contact remains alive.',
+    separation:Object.freeze(['HAND / INPUT','CURSOR','TARGET','ACTION','CONTACTBODY','TRACE']),
+    contactClasses:Object.freeze(['TARGET CONTACT','ACTION CONTACT','SUPPORT CONTACT']),
+    route:Object.freeze(['GUIDE','AIM','TARGET','CHOOSE','CLICK / GRAB','ALTER','RELEASE','PRESERVE','REPLAY']),
+    contract:Object.freeze(['target','preview','select','grab','transform','commit','cancel','receipt']),
+    states:Object.freeze(['free','hover','click-candidate','hold-arming','hold-active','selected','grabbed','transforming','blocked','snap','pinned','committed','cancelled']),
+    modules:Object.freeze(['living-cursor','dotdotdeliverance','slingshot','point-positioning','seeksquarespots','dual-contact']),
+    actionFamilies,
+    getAperture:()=>JSON.parse(JSON.stringify(apertureSnapshot())),
+    getReceipts:()=>JSON.parse(JSON.stringify(state.traces)),
+    getLDML:()=>JSON.parse(JSON.stringify(ldmlSnapshot())),
+    getContactBodies:()=>JSON.parse(JSON.stringify(state.contacts)),
+    getInputProfiles:()=>JSON.parse(JSON.stringify(state.inputProfiles)),
+    getActiveProfile:()=>JSON.parse(JSON.stringify(activeProfile())),
+    getContactGrammar:()=>{const profile=activeProfile();return JSON.parse(JSON.stringify({profileId:profile.id,style:profile.grammarStyle,primaryCursorChannel:profile.primaryCursorChannel,first:{hand:profile.firstContactHand,role:profile.firstRole,gestures:gestureMap('first',profile)},second:{hand:profile.secondContactHand,role:profile.secondRole,gestures:gestureMap('second',profile)}}))},
+    getAvailableActions:()=>{const target=state.selected?.isConnected?state.selected:state.cursor.target;return{target:target?idOf(target):null,actions:target?JSON.parse(JSON.stringify(targetActionEntries(target))):[]}},
+    getFluency:()=>JSON.parse(JSON.stringify(state.fluency)),
+    getDragPolicy:()=>({law:state.dragMagnet?'deliberate-magnet':'direct-1-to-1',magnet:state.dragMagnet,aimSnap:state.snap,aimSmooth:state.smooth,snapRadius:state.snapRadius,preservesPickupPoint:true}),
+    configureDrag:config=>{
+      if(config&&Object.hasOwn(config,'magnet'))state.dragMagnet=Boolean(config.magnet);
+      if(config&&Object.hasOwn(config,'aimSnap'))state.snap=Boolean(config.aimSnap);
+      if(config&&Object.hasOwn(config,'aimSmooth'))state.smooth=Boolean(config.aimSmooth);
+      if(config&&Number.isFinite(Number(config.snapRadius)))state.snapRadius=clamp(Number(config.snapRadius),8,72);
+      TraceBox.write('DRAG_POLICY_CONFIG',{law:state.dragMagnet?'deliberate-magnet':'direct-1-to-1',magnet:state.dragMagnet,aimSnap:state.snap,aimSmooth:state.smooth,snapRadius:state.snapRadius,preservesPickupPoint:true});
+      $('#dragMagnetBtn').textContent='DRAG MAGNET '+(state.dragMagnet?'ON':'OFF');$('#dragMagnetBtn').classList.toggle('active',state.dragMagnet);$('#snapBtn').textContent='AIM SNAP '+(state.snap?'ON':'OFF');$('#smoothBtn').textContent='AIM SMOOTH '+(state.smooth?'ON':'OFF');$('#snapRadius').value=state.snapRadius;$('#snapRadiusOut').textContent=state.snapRadius+'px';renderNaturalCue();save();return contactApi.getDragPolicy()
+    },
+    configureFluency:config=>{
+      if(config&&Object.hasOwn(config,'guideEnabled'))state.fluency.guideEnabled=Boolean(config.guideEnabled);
+      if(config&&Object.hasOwn(config,'haptics'))state.fluency.haptics=Boolean(config.haptics);
+      if(config&&['natural','quiet','full'].includes(config.hintLevel))state.fluency.hintLevel=config.hintLevel;
+      if(config?.restartGuide){state.fluency.guideEnabled=true;state.fluency.guideStep=0;state.fluency.guideComplete=false;state.fluency.completedAt=null}
+      TraceBox.write('FLUENCY_CONFIG',{...state.fluency});renderGuide();renderNaturalCue();return JSON.parse(JSON.stringify(state.fluency))
+    },
+    configureContactGrammar:(channel,config={})=>{
+      if(!['first','second'].includes(channel))throw new TypeError('Contact grammar channel must be first or second.');
+      const profile=activeProfile(),index=state.inputProfiles.findIndex(item=>item.id===profile.id),next=cloneProfile(profile);next.channelGestures=next.channelGestures||{};next.channelGestures[channel]=normaliseGestures({...gestureMap(channel,profile),...(config&&typeof config==='object'?config:{})});next.grammarStyle='custom';next.gestures={...next.channelGestures.first};state.inputProfiles[index]=normaliseProfile(next,index);applyActiveProfile();TraceBox.write('CONTACT_GRAMMAR_CONFIG',{channel,hand:profileHand(channel,next),role:profileRole(channel,next),gestures:cloneProfile(next.channelGestures[channel])});return contactApi.getContactGrammar()
+    },
+    chooseAction:action=>{const mode=canonicalAction(action);if(!mode)return false;if(state.selected?.isConnected)state.contextView='target';TraceBox.write('ACTION_CHOOSE',{requested:action,mode,target:state.selected?.isConnected?idOf(state.selected):null});return setMode(mode)},
+    setActiveProfile:id=>{if(!state.inputProfiles.some(profile=>profile.id===id))return false;state.activeProfileId=id;applyActiveProfile({write:true,route:'API_PROFILE_APPLY'});return true},
+    programProfile:profile=>{const normalised=normaliseProfile(profile,state.inputProfiles.length),index=state.inputProfiles.findIndex(item=>item.id===normalised.id);if(index<0)state.inputProfiles.push(normalised);else state.inputProfiles[index]=normalised;state.activeProfileId=normalised.id;applyActiveProfile({write:true,route:'API_PROFILE_PROGRAM'});return JSON.parse(JSON.stringify(normalised))},
+    dispatch:(type,detail={})=>RouteOS.dispatch(Cading(String(type).toUpperCase(),detail)),
+    pin:(detail={})=>pinContact(detail.label||'contact'),
+    subscribe:callback=>{if(typeof callback!=='function')throw new TypeError('Subscriber must be a function');const handler=e=>callback(e.detail);window.addEventListener('jmcontactreceipt',handler);return()=>window.removeEventListener('jmcontactreceipt',handler)},
+    registerTarget:(element,hooks={})=>{
+      if(!(element instanceof Element)||!stage.contains(element))throw new TypeError('Contact target must be an Element inside the contact field.');
+      element.dataset.contactTarget='true';element.dataset.id=hooks.id||element.dataset.id||'ESTATE TARGET';element.dataset.kind=hooks.kind||element.dataset.kind||'estate';element.dataset.actions=Array.isArray(hooks.actions)?hooks.actions.join(','):(hooks.actions||element.dataset.actions||'inspect');
+      element.dataset.key=element.dataset.key||('EXT_'+Math.random().toString(36).slice(2,9));targetContracts.set(element,hooks);TraceBox.write('TARGET_REGISTER',{target:idOf(element),contract:contactApi.contract});updateHover();
+      return()=>{targetHook(element,'preview',{active:false});targetContracts.delete(element);delete element.dataset.contactTarget;TraceBox.write('TARGET_UNREGISTER',{target:idOf(element)});if(previewTarget===element)previewTarget=null;updateHover()}
+    }
+  });
+  window.JMLivingCursorContactBody=contactApi;window.JMContactDepth=contactApi;
+  setInterval(()=>{if(state.cursorPolicy==='fade'&&state.cursorVisible&&!state.acting&&!state.touch.visible&&performance.now()-state.lastInput>state.idleAfter)cursor.classList.add('cursor-idle');else if(state.cursorPolicy!=='fade'||state.acting||state.touch.visible)cursor.classList.remove('cursor-idle');renderDepth()},200);
+  load();applyActiveProfile();renderContacts();renderRoutes();renderTrace();renderDepth();renderActivation();renderGuide();stage.classList.toggle('route-cloud-off',!state.naeio.active);requestAnimationFrame(()=>{if(!Number.isFinite(state.cursor.x)||state.cursor.x===0)centreCursors(false);else fitGeometry();updateHover();TraceBox.write('OPEN',{version:'0.10D',screen:[innerWidth,innerHeight],contactDepth:true,programmableContactMap:true,perContactGrammar:true,actionDeck:true,naturalFluency:true,truthfulDrag:true,dragLaw:state.dragMagnet?'deliberate-magnet':'direct-1-to-1',parentKeeper:'JM Living Cursor & ContactBody v0.10C',anchor:'JM Living Cursor & ContactBody v0.9R',sourceKeeper:'JM Living Cursor & ContactBody v0.1 / v0.8M',donor:'NA/NA Contactfield v0.12D',phoneDing:'PENDING'})});
+})();
+</script>
+</body>
+</html>

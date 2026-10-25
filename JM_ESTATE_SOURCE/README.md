@@ -18,6 +18,10 @@ Preserve original named JM coding bodies, version identities, operational heads,
 - `Game Engines/CP10 Native Vale Contact/LIVE/`: actual CP10 and CP11–CP15 HTML source.
 - `Coding Systems/OneBody Coding OS/JM SANDBOX/Candidates/v0_3_Fold_Contact/`: actual `JM_SANDBOX_ONEBODY_v0_3.html` source.
 
+- `Coding/`: 19 original standalone coding-body files have been imported so far from the separate Coding Library directory, including Natural Operational Language Bounce v0.1/v0.2, Coding Body Lab QUADZE, TBS controls, Two Hand Estate Board, and Coding Body House builders. **This Coding directory remains INCOMPLETE.**
+
+**Current bounded import tally:** 87 actual source/script files (61 Sovereign Coding Bodies + 6 Vale CP10–CP15 + 1 OneBody Sandbox + 19 Coding directory) and 3 original source-navigation/manifest files, plus this import README. GitHub reports successful creation for all 91 items; selected representative source files have been fetched and compared to Library-read source text. This is **not** a verified complete Estate backup.
+
 ## Import boundaries and HOLDs
 
 - **Whole-Estate completion:** NOT CLAIMED. Other folders in `/JM Estate/`, including coding, games, engines, OS and historical archives, still need source inventory, safe transfer, and readback.

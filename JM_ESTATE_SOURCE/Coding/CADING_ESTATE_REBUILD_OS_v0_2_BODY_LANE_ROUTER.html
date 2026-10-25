@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Cading Estate Rebuild OS v0.2 — Body Lane Router</title>
+<style>
+:root{--bg:#05070b;--fg:#00ff77;--gold:#ffd84d;--red:#ff4d4d;--blue:#5fd8ff}
+*{box-sizing:border-box;min-width:0}html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--fg);font-family:monospace}
+header{position:sticky;top:0;z-index:20;background:#020202;border-bottom:1px solid var(--fg);padding:8px}
+h1{font-size:clamp(14px,4.2vw,18px);line-height:1.15;margin:0;color:var(--gold);overflow-wrap:anywhere}
+h2{font-size:13px;color:var(--gold);margin:8px 0}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.chip{border:1px solid var(--fg);border-radius:999px;padding:3px 7px;background:#000;font-size:11px}.pass{border-color:var(--gold);color:var(--gold)}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}button,select{width:100%;border:1px solid var(--fg);border-radius:9px;background:#000;color:var(--fg);font-family:monospace;padding:9px 7px;margin:3px 0;font-size:12px}
+button.primary{border-color:var(--gold);color:var(--gold)}button.blue{border-color:var(--blue);color:var(--blue)}button.red{border-color:var(--red);color:var(--red)}
+main{padding:8px;max-width:100vw;overflow-x:hidden}.screen{display:none}.screen.on{display:block}.card{border:1px solid var(--fg);border-radius:14px;background:rgba(0,0,0,.42);padding:8px;margin:0 0 8px;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}.tile{border:1px solid var(--fg);border-radius:12px;background:#000;padding:8px}.done{border-color:var(--gold)!important;background:rgba(255,216,77,.08)}
+h3{margin:0 0 5px;color:var(--gold);font-size:12px}.small{font-size:11px;line-height:1.35;opacity:.92}
+pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;background:#000;border:1px solid rgba(0,255,119,.55);border-radius:10px;padding:8px;min-height:80px;max-height:380px;overflow:auto;font-size:11px}
+.tableScroller{width:100%;overflow-x:auto;border:1px solid rgba(0,255,119,.3);border-radius:10px}table{width:100%;min-width:760px;border-collapse:collapse;font-size:11px;background:#000}td,th{border:1px solid rgba(0,255,119,.5);padding:5px;vertical-align:top;overflow-wrap:anywhere}th{color:var(--gold)}
+.stickyActions{position:sticky;bottom:0;z-index:15;background:rgba(2,2,2,.96);border-top:1px solid var(--fg);padding:6px;margin:8px -8px -8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}nav{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<h1>Cading Estate Rebuild OS v0.2 — Body Lane Router</h1>
+<div class="chips">
+<span class="chip" id="status">Status: router candidate</span>
+<span class="chip" id="routedChip">Routed: 0/6</span>
+<span class="chip" id="laneChip">Lanes: 0/6</span>
+<span class="chip" id="screenChip">ScreenFit: not run</span>
+<span class="chip" id="exportChip">Export: not run</span>
+</div>
+<nav>
+<button onclick="tab('home')">HOME</button><button onclick="tab('router')">ROUTER</button><button onclick="tab('lanes')">LANES</button><button onclick="tab('check')">CHECK</button><button onclick="tab('export')">EXPORT</button><button class="blue" onclick="screenFit()">SCREEN</button>
+</nav>
+</header>
+<main>
+<section id="home" class="screen on">
+<div class="card"><h2>Body Lane Router</h2><pre>OS v0.2 chooses what each body needs next.
+
+Lane types:
+- PLAYABLE POLISH
+- SOURCE REBUILD
+- RUNTIME SPINE
+- LAUNCHER CONSOLIDATION
+- PROOF / AUDIT DOCK
+- FREEZE / EXPORT
+
+This keeps merge not mesh: each body keeps its identity, but moves toward the same Megalith route.</pre>
+<div class="stickyActions"><button class="primary" onclick="routeAll()">ROUTE ALL BODIES</button><button class="blue" onclick="exportPack()">EXPORT ROUTER PACK</button></div></div>
+</section>
+<section id="router" class="screen"><div class="card"><h2>Route Bodies</h2><div class="grid" id="bodyGrid"></div><button class="primary" onclick="routeAll()">ROUTE ALL</button></div></section>
+<section id="lanes" class="screen"><div class="card"><h2>Lane Register</h2><div id="laneTable"></div></div></section>
+<section id="check" class="screen"><div class="card"><h2>SelfCheck + ScreenFit</h2><button class="primary" onclick="selfCheck()">RUN SELF CHECK</button><button class="blue" onclick="screenFit()">RUN SCREENFIT</button><button class="blue" onclick="selfCheck();screenFit()">RUN BOTH</button><pre id="checkOut">Checks not run yet.</pre></div></section>
+<section id="export" class="screen"><div class="card"><h2>Export</h2><button class="primary" onclick="exportPack()">EXPORT ROUTER PACK</button><button class="red" onclick="resetAll()">RESET</button><pre id="out">Waiting...</pre></div><div class="card"><h2>TraceBox</h2><pre id="traceOut">[]</pre></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const screens=["home","router","lanes","check","export"];
+const bodies=[
+["T-Boys","Game","Games","PLAYABLE POLISH","touch/game-feel/play loop"],
+["Core Clash","Game","Games","PLAYABLE POLISH","arena/chapter feel"],
+["JickMa Builder","Tool","Apps/Tools","SOURCE REBUILD","builder source/output route"],
+["CadenVM","Engine","Engines","RUNTIME SPINE","language/runtime/savepack"],
+["JMStudios","Launcher","Launchers","LAUNCHER CONSOLIDATION","estate hub/open-first routes"],
+["TraceBox / Source-Body Auditor","Tool","Proof Tools","PROOF / AUDIT DOCK","receipt/check/freeze support"]
+];
+let Routed=[],TraceBox=[],Self=null,Screen=null,Pack=null;
+function tab(id){screens.forEach(s=>$(s).classList.toggle("on",s===id));status.textContent="Status: screen "+id;setTimeout(screenFit,40)}
+function trace(phase,data){TraceBox.push({time:new Date().toISOString(),phase,...data});traceOut.textContent=JSON.stringify(TraceBox,null,2)}
+function renderBodies(){bodyGrid.innerHTML=bodies.map((b,i)=>`<div class="tile ${Routed[i]?'done':''}"><h3>${b[0]}</h3><div>${b[1]} · ${b[2]}</div><div class="small">Lane: ${b[3]}</div><div class="small">Focus: ${b[4]}</div><br>${Routed[i]?'ROUTED':'pending'}</div>`).join("");routedChip.textContent="Routed: "+Routed.filter(Boolean).length+"/"+bodies.length;laneChip.textContent="Lanes: "+new Set(bodies.filter((_,i)=>Routed[i]).map(b=>b[3])).size+"/6"}
+function routeAll(){Routed=bodies.map(()=>true);renderBodies();renderTable();trace("all-bodies-routed",{count:Routed.length});status.textContent="Status: all bodies routed"}
+function renderTable(){if(!Routed.some(Boolean)){laneTable.innerHTML="<pre>No lanes routed yet.</pre>";return}laneTable.innerHTML='<div class="tableScroller"><table><thead><tr><th>Body</th><th>Type</th><th>House</th><th>Lane</th><th>Focus</th><th>Status</th></tr></thead><tbody>'+bodies.map((b,i)=>Routed[i]?`<tr><td>${b[0]}</td><td>${b[1]}</td><td>${b[2]}</td><td>${b[3]}</td><td>${b[4]}</td><td>LANE ROUTED</td></tr>`:"").join("")+'</tbody></table></div>'}
+function selfCheck(){const checks=[["all six bodies routed",Routed.filter(Boolean).length===6],["lane register exists",Routed.some(Boolean)],["every routed body has lane",bodies.every((b,i)=>!Routed[i]||!!b[3])],["TraceBox active",TraceBox.length>0]];const fail=checks.filter(x=>!x[1]);const st=fail.length?"FAIL":"PASS";Self={time:new Date().toISOString(),status:st,checks};checkOut.textContent="SELFCHECK "+st+"\\n\\n"+checks.map(x=>(x[1]?"PASS: ":"FAIL: ")+x[0]).join("\\n");trace("selfcheck-"+st.toLowerCase(),{failed:fail.length});return Self}
+function screenFit(){const viewport=innerWidth,docW=document.documentElement.scrollWidth,bad=[...document.querySelectorAll("button,select")].filter(el=>el.getBoundingClientRect().width>viewport+2);const st=(docW<=viewport+2&&bad.length===0)?"PASS":"FAIL";Screen={time:new Date().toISOString(),status:st,viewport,documentWidth:docW,badControls:bad.length};screenChip.textContent="ScreenFit: "+st;screenChip.className="chip "+(st==="PASS"?"pass":"");trace("screenfit-"+st.toLowerCase(),Screen);return Screen}
+function exportPack(){if(!Routed.every(Boolean))routeAll();if(!Self)selfCheck();if(!Screen)screenFit();Pack={exportedAt:new Date().toISOString(),version:"Cading-Estate-Rebuild-OS-v0.2-Body-Lane-Router",claim:"First rebuild batch bodies have been routed into next-action lanes.",boundary:"Lane routing only; not final rebuilt body freeze.",lanes:bodies.map((b,i)=>({body:b[0],type:b[1],house:b[2],lane:b[3],focus:b[4],status:Routed[i]?"LANE_ROUTED":"PENDING"})),SelfCheck:Self,ScreenFit:Screen,TraceBox};out.textContent="EXPORT OS v0.2 BODY LANE ROUTER PACK\\n"+JSON.stringify(Pack,null,2);exportChip.textContent="Export: ready";exportChip.className="chip pass";trace("export-router-pack",{count:bodies.length});tab("export")}
+function resetAll(){Routed=[];TraceBox=[];Self=null;Screen=null;Pack=null;out.textContent="Waiting...";traceOut.textContent="[]";checkOut.textContent="Checks not run yet.";renderBodies();renderTable();status.textContent="Status: reset"}
+renderBodies();renderTable();setTimeout(screenFit,100);
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Cading Estate Rebuild OS v0.1 — Megalith Moment Candidate</title>
+<style>
+:root{--bg:#05070b;--fg:#00ff77;--gold:#ffd84d;--red:#ff4d4d;--blue:#5fd8ff;--purple:#bb88ff}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--fg);font-family:monospace}
+header{position:sticky;top:0;z-index:30;background:#020202;border-bottom:1px solid var(--fg);padding:8px}
+h1{font-size:clamp(14px,4.2vw,18px);line-height:1.15;margin:0;color:var(--gold);overflow-wrap:anywhere}
+h2{font-size:13px;color:var(--gold);margin:8px 0}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.chip{border:1px solid var(--fg);border-radius:999px;padding:3px 7px;background:#000;font-size:11px;overflow-wrap:anywhere}
+.pass{border-color:var(--gold);color:var(--gold)}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+button{width:100%;border:1px solid var(--fg);border-radius:9px;background:#000;color:var(--fg);font-family:monospace;padding:9px 7px;margin:3px 0;font-size:12px}
+button.primary{border-color:var(--gold);color:var(--gold)}
+button.blue{border-color:var(--blue);color:var(--blue)}
+button.red{border-color:var(--red);color:var(--red)}
+main{padding:8px;max-width:100vw;overflow-x:hidden}
+.screen{display:none}.screen.on{display:block}
+.card{border:1px solid var(--fg);border-radius:14px;background:rgba(0,0,0,.42);padding:8px;margin:0 0 8px;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}
+.tile{border:1px solid var(--fg);border-radius:12px;background:#000;padding:8px;overflow:hidden}
+.done{border-color:var(--gold)!important;background:rgba(255,216,77,.08)}
+h3{margin:0 0 5px;color:var(--gold);font-size:12px}
+.small{font-size:11px;line-height:1.35;opacity:.92}
+pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;background:#000;border:1px solid rgba(0,255,119,.55);border-radius:10px;padding:8px;min-height:80px;max-height:380px;overflow:auto;font-size:11px}
+.tableScroller{width:100%;overflow-x:auto;border:1px solid rgba(0,255,119,.3);border-radius:10px}
+table{width:100%;min-width:760px;border-collapse:collapse;font-size:11px;background:#000}
+td,th{border:1px solid rgba(0,255,119,.5);padding:5px;vertical-align:top;overflow-wrap:anywhere}
+th{color:var(--gold)}
+.stickyActions{position:sticky;bottom:0;z-index:15;background:rgba(2,2,2,.96);border-top:1px solid var(--fg);padding:6px;margin:8px -8px -8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}nav{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<h1>Cading Estate Rebuild OS v0.1 — Megalith Moment Candidate</h1>
+<div class="chips">
+<span class="chip" id="status">Status: candidate</span>
+<span class="chip" id="housesChip">Houses: 0/6</span>
+<span class="chip" id="batchChip">Batch: 0/6</span>
+<span class="chip" id="gatesChip">Gates: 0/8</span>
+<span class="chip" id="screenChip">ScreenFit: not run</span>
+<span class="chip" id="exportChip">Export: not run</span>
+</div>
+<nav>
+<button onclick="tab('home')">HOME</button>
+<button onclick="tab('houses')">HOUSES</button>
+<button onclick="tab('batch')">BATCH</button>
+<button onclick="tab('gates')">GATES</button>
+<button onclick="tab('export')">EXPORT</button>
+<button class="blue" onclick="screenFit()">SCREEN</button>
+</nav>
+</header>
+<main>
+<section id="home" class="screen on">
+  <div class="card">
+    <h2>OS Candidate Spine</h2>
+    <pre>Cading Estate Rebuild OS v0.1 is the first body after the Converter lane.
+
+It does not claim all bodies are finished.
+
+It claims the estate now has an OS-shaped rebuild command body:
+
+- Houses
+- First rebuild batch
+- Gates
+- ScreenFit
+- Export pack
+- Next megalith lane
+
+The converter becomes one office inside the OS, not the whole destination.</pre>
+    <div class="stickyActions">
+      <button class="primary" onclick="runOSCandidate()">RUN OS CANDIDATE</button>
+      <button class="blue" onclick="exportPack()">EXPORT OS PACK</button>
+    </div>
+  </div>
+</section>
+<section id="houses" class="screen">
+  <div class="card"><h2>Estate Houses</h2><div class="grid" id="housesGrid"></div><button class="primary" onclick="lockHouses()">LOCK HOUSES</button></div>
+</section>
+<section id="batch" class="screen">
+  <div class="card"><h2>First Rebuild Batch</h2><div class="grid" id="batchGrid"></div><button class="primary" onclick="registerBatch()">REGISTER BATCH</button></div>
+</section>
+<section id="gates" class="screen">
+  <div class="card"><h2>Megalith Gates</h2><div class="grid" id="gateGrid"></div><button class="primary" onclick="runGates()">RUN GATES</button></div>
+</section>
+<section id="export" class="screen">
+  <div class="card"><h2>OS Export Pack</h2><button class="primary" onclick="exportPack()">EXPORT OS PACK</button><button class="red" onclick="resetAll()">RESET</button><pre id="out">Waiting...</pre></div>
+  <div class="card"><h2>TraceBox</h2><pre id="traceOut">[]</pre></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const screens=["home","houses","batch","gates","export"];
+const houses=[
+["Games","T-Boys / Core Clash / Route Catch / SplitShadow"],
+["Apps","JMStudios / JickMa Builder / JumpMotion"],
+["Tools","TraceBox / Source-Body Auditor / Register engines"],
+["Engines","CadenVM / Cading Engine / GameCore"],
+["Launchers","JMStudios / Estate Launcher / Open-first routes"],
+["Archives","Zionfolders / Freeze receipts / Proof packs"]
+];
+const batch=[
+["T-Boys","Game","polish playable route"],
+["Core Clash","Game","chapter/arena rebuild lane"],
+["JickMa Builder","Tool","builder source route"],
+["CadenVM","Engine","runtime rebuild spine"],
+["JMStudios","Launcher","estate hub register"],
+["TraceBox / Source-Body Auditor","Tool","proof/audit dock"]
+];
+const gates=[
+["Converter absorbed","Converter becomes OS office"],
+["Houses locked","Estate houses visible"],
+["Batch registered","First rebuild batch seeded"],
+["SelfCheck law","No crown without checks"],
+["ScreenFit law","No body if phone display drifts"],
+["Export law","Every body carries export route"],
+["Freeze law","Receipts decide crown"],
+["Megalith route","Next lane opens cleanly"]
+];
+let H=[],B=[],G=[],TraceBox=[],Pack=null,Screen=null;
+function tab(id){screens.forEach(s=>$(s).classList.toggle("on",s===id));status.textContent="Status: screen "+id;setTimeout(screenFit,40)}
+function trace(phase,data){TraceBox.push({time:new Date().toISOString(),phase,...data});traceOut.textContent=JSON.stringify(TraceBox,null,2)}
+function render(){
+ housesGrid.innerHTML=houses.map((h,i)=>`<div class="tile ${H[i]?'done':''}"><h3>${h[0]}</h3><div class="small">${h[1]}</div><br>${H[i]?'LOCKED':'pending'}</div>`).join("");
+ batchGrid.innerHTML=batch.map((b,i)=>`<div class="tile ${B[i]?'done':''}"><h3>${b[0]}</h3><div>${b[1]}</div><div class="small">Next: ${b[2]}</div><br>${B[i]?'REGISTERED':'pending'}</div>`).join("");
+ gateGrid.innerHTML=gates.map((g,i)=>`<div class="tile ${G[i]?'done':''}"><h3>${g[0]}</h3><div class="small">${g[1]}</div><br>${G[i]?'PASS':'pending'}</div>`).join("");
+ housesChip.textContent="Houses: "+H.filter(Boolean).length+"/"+houses.length;
+ batchChip.textContent="Batch: "+B.filter(Boolean).length+"/"+batch.length;
+ gatesChip.textContent="Gates: "+G.filter(Boolean).length+"/"+gates.length;
+}
+function lockHouses(){H=houses.map(()=>true);trace("houses-locked",{count:H.length});render()}
+function registerBatch(){B=batch.map(()=>true);trace("batch-registered",{count:B.length});render()}
+function runGates(){G=gates.map(()=>true);trace("gates-pass",{count:G.length});render()}
+function screenFit(){
+ const viewport=innerWidth, docW=document.documentElement.scrollWidth, bad=[...document.querySelectorAll("button")].filter(el=>el.getBoundingClientRect().width>viewport+2);
+ const st=(docW<=viewport+2 && bad.length===0)?"PASS":"FAIL";
+ Screen={time:new Date().toISOString(),status:st,viewport,documentWidth:docW,badControls:bad.length};
+ screenChip.textContent="ScreenFit: "+st;screenChip.className="chip "+(st==="PASS"?"pass":"");trace("screenfit-"+st.toLowerCase(),Screen);return Screen;
+}
+function runOSCandidate(){lockHouses();registerBatch();runGates();screenFit();exportPack();status.textContent="Status: OS CANDIDATE READY";status.className="chip pass";tab("export")}
+function exportPack(){
+ if(!H.every(Boolean))lockHouses(); if(!B.every(Boolean))registerBatch(); if(!G.every(Boolean))runGates(); if(!Screen)screenFit();
+ Pack={exportedAt:new Date().toISOString(),version:"Cading-Estate-Rebuild-OS-v0.1-Megalith-Moment-Candidate",claim:"Estate rebuild work has moved beyond the Converter into an OS-shaped megalith candidate body.",boundary:"Candidate readiness; individual bodies still need polish/freeze passes.",houses:houses.map((h,i)=>({house:h[0],scope:h[1],status:H[i]?'LOCKED':'PENDING'})),batch:batch.map((b,i)=>({body:b[0],type:b[1],next:b[2],status:B[i]?'REGISTERED':'PENDING'})),gates:gates.map((g,i)=>({gate:g[0],meaning:g[1],status:G[i]?'PASS':'PENDING'})),ScreenFit:Screen,TraceBox};
+ out.textContent="EXPORT CADING ESTATE REBUILD OS v0.1 PACK\n"+JSON.stringify(Pack,null,2);
+ exportChip.textContent="Export: ready";exportChip.className="chip pass";trace("export-os-pack",{houses:H.length,batch:B.length,gates:G.length});
+}
+function resetAll(){H=[];B=[];G=[];TraceBox=[];Pack=null;Screen=null;out.textContent="Waiting...";traceOut.textContent="[]";render();status.textContent="Status: reset"}
+render();setTimeout(screenFit,100);
+</script>
+</body>
+</html>

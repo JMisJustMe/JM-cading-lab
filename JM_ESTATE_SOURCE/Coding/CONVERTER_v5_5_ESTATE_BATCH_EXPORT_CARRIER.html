@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Converter v5.5 — Estate Batch Export Carrier</title>
+<style>
+*{box-sizing:border-box;min-width:0}html,body{margin:0;max-width:100%;overflow-x:hidden;background:#05070b;color:#00ff77;font-family:monospace}
+header{position:sticky;top:0;background:#020202;border-bottom:1px solid #00ff77;padding:8px;z-index:3}
+h1{font-size:clamp(14px,4vw,18px);color:#ffd84d;margin:0}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.chip{border:1px solid #00ff77;border-radius:999px;padding:3px 7px;background:#000;font-size:11px}.pass{border-color:#ffd84d;color:#ffd84d}
+main{padding:8px}.card{border:1px solid #00ff77;border-radius:14px;padding:8px;margin-bottom:8px;background:rgba(0,0,0,.42)}
+button{width:100%;border:1px solid #00ff77;border-radius:9px;background:#000;color:#00ff77;font-family:monospace;padding:9px;margin:3px 0}button.primary{border-color:#ffd84d;color:#ffd84d}
+pre{white-space:pre-wrap;word-break:break-word;background:#000;border:1px solid rgba(0,255,119,.5);border-radius:10px;padding:8px;max-height:360px;overflow:auto}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}.tile{border:1px solid #00ff77;border-radius:12px;padding:8px;background:#000}.done{border-color:#ffd84d;background:rgba(255,216,77,.08)}
+@media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>Converter v5.5 — Estate Batch Export Carrier</h1><div class="chips">
+<span class="chip" id="status">Status: export-ready candidate</span><span class="chip" id="batch">Batch: 0/6</span><span class="chip" id="receipts">Receipts: 0</span><span class="chip" id="export">Export: not run</span>
+</div></header>
+<main>
+<div class="card"><h2>Estate Batch Export</h2><p>This carrier gathers the first rebuild batch into one exportable register pack for the next Megalith moment.</p>
+<button class="primary" onclick="run()">RUN ESTATE BATCH EXPORT</button><button onclick="copyPack()">GENERATE COPY PACK</button></div>
+<div class="card"><h2>Batch Bodies</h2><div class="grid" id="tiles"></div></div>
+<div class="card"><h2>Export Pack</h2><pre id="out">Waiting...</pre></div>
+</main>
+<script>
+const bodies=[
+["T-Boys","Game","Games","polish playable route"],
+["Core Clash","Game","Games","chapter/arena rebuild lane"],
+["JickMa Builder","Tool","Apps/Tools","builder source route"],
+["CadenVM","Engine","Engines","runtime rebuild spine"],
+["JMStudios","Launcher","Launchers","estate hub register"],
+["TraceBox / Source-Body Auditor","Tool","Proof Tools","proof/audit dock"]
+];
+let receipts=[], pack=null;
+function render(done=false){tiles.innerHTML=bodies.map(b=>`<div class="tile ${done?'done':''}"><b style="color:#ffd84d">${b[0]}</b><br>${b[1]} · ${b[2]}<br><small>Next: ${b[3]}</small><br>${done?'EXPORT-REGISTERED':'pending'}</div>`).join("");batch.textContent="Batch: "+(done?6:0)+"/6"}
+function trace(phase,data){receipts.push({time:new Date().toISOString(),phase,...data});receipts.textContent="Receipts: "+receipts.length}
+function run(){render(true);receipts=[];bodies.forEach(b=>receipts.push({time:new Date().toISOString(),phase:"batch-body-export-registered",body:b[0],type:b[1],house:b[2],next:b[3]}));pack={exportedAt:new Date().toISOString(),version:"Converter-v5.5-Estate-Batch-Export-Carrier",claim:"First rebuild batch is consolidated into an exportable Megalith-prep register.",boundary:"Export carrier only; final polished rebuilds remain staged.",bodies:bodies.map(b=>({body:b[0],type:b[1],house:b[2],next:b[3],status:"EXPORT_REGISTERED"})),receipts};out.textContent="EXPORT ESTATE BATCH PACK\n"+JSON.stringify(pack,null,2);status.textContent="Status: batch export complete";status.className="chip pass";batch.textContent="Batch: 6/6";document.getElementById('receipts').textContent="Receipts: "+receipts.length;export.textContent="Export: ready";export.className="chip pass"}
+function copyPack(){if(!pack)run();out.textContent+="\n\nCOPY ROUTE READY — use this JSON as next-chat handoff / batch register."}
+render(false)
+</script>
+</body></html>

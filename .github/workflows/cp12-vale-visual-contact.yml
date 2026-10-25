@@ -1,0 +1,53 @@
+name: JM CP12 Vale Reforged Visual Contact
+on:
+  push:
+    paths:
+      - 'engine/demo/cp12-vale-reforged-v0.1.html'
+      - 'tests/cp12-vale-visual-contact.mjs'
+      - '.github/workflows/cp12-vale-visual-contact.yml'
+  pull_request:
+    paths:
+      - 'engine/demo/cp12-vale-reforged-v0.1.html'
+      - 'tests/cp12-vale-visual-contact.mjs'
+      - '.github/workflows/cp12-vale-visual-contact.yml'
+permissions:
+  contents: read
+jobs:
+  real-visual-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        visual_case: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned rendering components
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Real GPU scene, JM authored forms, navigation, combat, recovery
+        env:
+          CP12_VISUAL_CASE: ${{ matrix.visual_case }}
+        run: node tests/cp12-vale-visual-contact.mjs
+      - name: Preserve visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp12-vale-visual-${{ matrix.visual_case }}
+          path: cp12-visual-evidence/*.png
+          if-no-files-found: ignore
+  inherited-original-bodies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Original Three JM Native Bodies
+        run: node tests/cp11-sovereign-contact.mjs
+      - name: Original RouteOS Body
+        run: CP11_ROUTE_CASE=1 node tests/cp11-routeos-contact.mjs

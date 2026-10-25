@@ -40,13 +40,18 @@ func run() -> void:
     abort("PACKET_SOURCE_BYTES_INVALID")
     return
 
+  # Launching the champion legitimately consumes some original game energy.
+  # Check tampering against the true immediate pre-contact state, not an invented 100.
+  var before_tamper: float = float(scene.battle["energy"]["blue"])
   var denied: Dictionary = envelope.duplicate(true)
   denied["payloadSHA256"] = "0".repeat(64)
   var no_contact: Dictionary = scene.accept_ko_contact(denied)
-  if bool(no_contact.get("applied",false)) or not is_equal_approx(float(scene.battle["energy"]["blue"]),100.0):
+  if bool(no_contact.get("applied",false)) or not is_equal_approx(float(scene.battle["energy"]["blue"]),before_tamper):
     abort("TAMPER_CHANGED_NATIVE_BATTLE")
     return
 
+  # Set an explicit 100-energy baseline, matching the inherited CP10 test.
+  scene.battle["energy"]["blue"] = 100.0
   var accepted: Dictionary = scene.accept_ko_contact(envelope)
   if not bool(accepted.get("applied",false)):
     abort("ACTUAL_NATIVE_CONTACT_FAILED_" + str(accepted.get("error","UNKNOWN")))

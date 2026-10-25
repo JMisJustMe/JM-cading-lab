@@ -10,7 +10,7 @@ execFileSync(process.execPath,[fileURLToPath(new URL('emit-live-policy.mjs',here
 const project=new URL('project.godot',target);
 let p=await readFile(project,'utf8');
 if(!p.includes('res://CP10Main.tscn'))throw Error('CP10_MAIN_DRIFT');
-await writeFile(project,p.replace('res://CP10Main.tscn','res://CP11Main.tscn'));
+await writeFile(project,p.replace('res://CP10Main.tscn','res://CP11ConvergedMain.tscn'));
 const cfg=new URL('export_presets.cfg',target);
 let s=await readFile(cfg,'utf8');
 for(const [a,b] of [['org.jmecostate.slingfall.cp10','org.jmecostate.slingfall.cp11'],['Android Fold CP10','Android Fold CP11'],['JM SLINGFALL CP10','JM SLINGFALL CP11'],['1.0.0-cp10','1.1.0-cp11']]){

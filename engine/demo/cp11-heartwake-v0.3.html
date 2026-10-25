@@ -62,6 +62,7 @@ function syncHud(){
  $('downed').hidden=run.health>0;selectVisualTarget();
 }
 
+let run={targets:[],health:100,charge:0,awakened:false,projectiles:[],enemyBolts:[],effects:[],cooldown:{pulse:0,slam:0,guard:0,surge:0},guardTime:0,lastEnemy:0,move:0,body:null,meshParts:[],coreAdapter:null,core:null,pivots:{},actor:null,renderer:null,scene:null,camera:null,cameraTheta:0.12,spin:false,clock:0,hitFlash:0,moveZ:0,lock:1,viewWide:true,paused:false,phase:1,echoes:[],victory:false,flareUntil:0,invulnerable:5,lastDamage:0,regenT:0,downNotified:false};
 function livingTarget(){const t=currentTargets()[run.lock];return t&&t.hp>0?t:null;}
 
 function selectVisualTarget(){

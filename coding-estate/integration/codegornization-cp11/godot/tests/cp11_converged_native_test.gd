@@ -22,6 +22,8 @@ func launch(team: String,pos: Vector2) -> Dictionary:
 	scene._land(h)
 	return h
 func capture(expected: String, cost: int) -> void:
+	# Launches spend 22 energy; normalise the scenario at actual contact, not at match start.
+	scene.battle["energy"]["blue"]=100.0
 	var r: Dictionary=scene.accept_ko_live()
 	var receipt: Dictionary=r.get("receipt",{})
 	check(expected+" accepted by actual native live recipient",bool(r.get("applied",false)) and r.get("action","")==expected)

@@ -17,7 +17,7 @@ raw = registry_path.read_bytes()
 expected_hash = hashlib.sha256(raw).hexdigest()
 parsed = json.loads(raw.decode("utf-8"))
 
-assert server.VERSION == "0.8.5"
+assert server.VERSION == "0.8.6"
 assert server.CURRENT_REGISTRY_SOURCE == "current_registry.json"
 assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
@@ -247,7 +247,7 @@ with tempfile.TemporaryDirectory() as td:
 import io
 from unittest.mock import patch
 
-assert server.VERSION == "0.8.5"
+assert server.VERSION == "0.8.6"
 assert "get_game_reentry_hints" in server.HANDLERS
 assert len([t for t in server.TOOLS if t["name"] == "get_game_reentry_hints"]) == 1
 assert server.GAME_REENTRY_BLOB_SHA == "9dc8b72b00e0e7b8fbf51c04a6f341c2bf9b20b5"

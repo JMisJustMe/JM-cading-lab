@@ -10,6 +10,21 @@
 
 **Source boundary:** The original JM M001 CP16 ContactGate, typed Mesh Contact Runner, private carrier hashes/IDs/receipts and the Library evidence ledger stay in their original separate private authority. No private source bytes are committed to this public repository. Work can pass local files from existing owner custody when authorised. Future build workflows may invoke this adapter before proposing a redundant upload, but no existing build pipeline is automatically intercepted by this addition.
 
-**Route:** proposed delivery + retained house → local byte/hash/CRC contact → typed decision → role/owner gate → separately authorised upload or reuse. No mutation in this adapter.
+**Actual JM Closure & Handoff PACKAGE-stage contact (draft branch):** The existing `scripts/jm_build_closure.py` accepts optional `--admission-candidate` and `--admission-keeper` **only alongside `--stage PACKAGE --state PASS`**. When supplied, it directly executes this same admission organ before changing the closure state. `SAME_BYTES_ROLE_HOLD` and `HOLD_INVALID` prevent PACKAGE PASS, with the original ledger still OPEN; `DISTINCT_BYTES` may pass to the existing separate evidence check but cannot alone grant package, upload, owner approval, or retirement authority. With no admission flags, pre-existing closure behaviour is unchanged. Real private user carriers are never fetched in GitHub CI.
+
+Example (local files and independent evidence; no uploading):
+
+```bash
+python3 scripts/jm_build_closure.py \
+  --state-file /path/to/existing/closure.json \
+  --stage PACKAGE --state PASS \
+  --evidence "native:independently-verified-package-receipt" \
+  --admission-candidate /path/to/proposed.zip \
+  --admission-keeper /path/to/existing-keeper.zip
+```
+
+**Integrated test:** `.github/workflows/jm-build-closure-handoff.yml` executes real CLI transitions on synthetic valid, invalid and duplicate ZIPs: three false PASS states blocked before ledger mutation, and distinct package + independent evidence enters PACKAGE while FREEZE remains OPEN. The generic synthetic self-test is separate in `.github/workflows/jm-m001-carrier-admission.yml`. Neither route intercepts every producer's uploads automatically. New build owners must opt into the PACKAGE guard when the delivery has a known keeper.
+
+**Route:** proposed delivery + retained house → local byte/hash/CRC contact → typed decision → normal closure evidence gate → role/owner gate → separately authorised upload or reuse. No deletion or account quota claim in this adapter.
 
 **Standard:** recover before rebuild; body ≠ carrier ≠ route ≠ seat; no Ding without a consequence; integration ≠ replacement.

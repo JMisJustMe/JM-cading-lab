@@ -1,0 +1,50 @@
+<!doctype html><meta charset="utf-8"><title>JM v4</title><style>body{font-family:system-ui;background:#09101f;color:#eef4ff;padding:28px}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.c{background:#131d34;border:1px solid #2a3b60;border-radius:14px;padding:16px}.n{font-size:2rem;font-weight:800}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #2a3b60;text-align:left}code{font-size:11px;color:#b6dbff}</style><h1>JM Coding Ecosystem — Trust & Host Expansion v4.0</h1><b>TRUST MUST HAVE A RETURNED RECEIPT.</b><div class=g><div class=c><div class=n>100/100</div>Kernel-enforced runs</div><div class=c><div class=n>100/100</div>Kernel-keyring signatures</div><div class=c><div class=n>100/100</div>Tier-3 reproduction</div><div class=c><div class=n>12</div>External host DING</div><div class=c><div class=n>2000</div>Soak contacts</div><div class=c><div class=n>500</div>Concurrent contacts</div></div><div class=c><h2>Kernel</h2><pre>{
+  "state": "DING",
+  "bodies": "100/100",
+  "wall_seconds": 0.699,
+  "enforcement": [
+    "uid/gid 65534",
+    "all Linux capabilities dropped",
+    "no_new_privs",
+    "libseccomp syscall filter",
+    "RLIMIT CPU/NOFILE/AS",
+    "network syscall denial",
+    "sealed predecessor mutation denial"
+  ],
+  "seccomp_rules": 27,
+  "namespace_probes": {
+    "user_namespace": {
+      "state": "DING",
+      "returncode": 0,
+      "stderr": ""
+    },
+    "network_namespace": {
+      "state": "HOLD",
+      "returncode": 1,
+      "stderr": "unshare: unshare failed: Operation not permitted"
+    },
+    "mount_namespace": {
+      "state": "HOLD",
+      "returncode": 1,
+      "stderr": "unshare: unshare failed: Operation not permitted"
+    },
+    "pid_namespace": {
+      "state": "HOLD",
+      "returncode": 1,
+      "stderr": "unshare: unshare failed: Operation not permitted"
+    },
+    "kvm_hypervisor": {
+      "state": "HOLD",
+      "exists": false
+    }
+  },
+  "boundary": "Real Linux kernel enforcement; network/mount/PID namespaces and KVM hypervisor remain HOLD where unavailable."
+}</pre></div><div class=c><h2>Self-host ladder</h2><pre>{
+  "T0_identity": "100/100 DING",
+  "T1_self_description": "100/100 DING",
+  "T2_self_verification": "100/100 DING",
+  "T3_self_package_exact_reproduction": "100/100 DING",
+  "T4_semantic_self_host_without_shared_runtime": "HOLD",
+  "T5_native_self_host_all_100": "HOLD",
+  "law": "SELF-REPRODUCTION != UNIVERSAL SEMANTIC SELF-HOSTING"
+}</pre></div><div class=c><h2>Compiler/runtime hosts</h2><table><tr><th>Host</th><th>State</th><th>Proof</th><th>Boundary</th></tr><tr><td>Python</td><td>DING</td><td>RUN</td><td></td></tr><tr><td>JavaScript</td><td>DING</td><td>RUN</td><td></td></tr><tr><td>Bash</td><td>DING</td><td>RUN</td><td></td></tr><tr><td>Ruby</td><td>DING</td><td>RUN</td><td></td></tr><tr><td>PHP</td><td>DING</td><td>RUN</td><td></td></tr><tr><td>C</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>C++</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>Go</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>Java</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>Kotlin</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>Swift</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>TypeScript</td><td>DING</td><td>BUILD+RUN</td><td></td></tr><tr><td>Rust</td><td>HOLD</td><td></td><td>rustc absent on current host</td></tr></table></div><div class=c><h2>Physical rails</h2><table><tr><td>gpu</td><td>HOLD</td><td><code>{"state": "HOLD", "dev_dri": false, "dev_nvidia0": false, "nvidia_smi": false, "vulkaninfo": false}</code></td></tr><tr><td>android_device</td><td>HOLD</td><td><code>{"state": "HOLD", "adb": false, "usb_bus": false}</code></td></tr><tr><td>sensor</td><td>HOLD</td><td><code>{"state": "HOLD", "iio": false, "input": false, "hwmon": false}</code></td></tr><tr><td>hypervisor</td><td>HOLD</td><td><code>{"state": "HOLD", "kvm": false}</code></td></tr></table></div>

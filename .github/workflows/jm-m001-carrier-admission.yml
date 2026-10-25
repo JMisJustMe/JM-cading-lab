@@ -58,6 +58,9 @@ jobs:
         run: |
           set -euo pipefail
           cp -a dist "$RUNNER_TEMP/jm-kicshift-first-dist"
+          # Clean only the ephemeral generated output, not frozen source or canonical seat.
+          # A second dirty Vite/Tailwind build had changed hashed CSS/JS output.
+          rm -rf -- dist
           npm run build
           python3 - <<'PY'
           from pathlib import Path

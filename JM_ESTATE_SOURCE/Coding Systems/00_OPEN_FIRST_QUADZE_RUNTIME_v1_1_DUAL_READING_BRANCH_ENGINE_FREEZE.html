@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Quadze Runtime v1.1 — Dual-Reading Branch Engine</title>
+<style>
+:root{--bg:#07101d;--panel:#111c31;--panel2:#0b1424;--line:#2a3a61;--txt:#f5f7ff;--muted:#aeb8cf;--green:#45e388;--yellow:#ffd86b;--red:#ff6380;--blue:#60d5ff;--violet:#a77bff;--gold:#ffd86b}*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 10% 0%,#20294a 0,#07101d 45%,#050914 100%);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}body{max-width:800px;margin:0 auto;padding:16px 14px 40px}.card{background:linear-gradient(180deg,rgba(17,28,49,.96),rgba(10,18,32,.96));border:1px solid var(--line);border-radius:24px;padding:22px;margin:14px 0;box-shadow:0 0 0 1px rgba(255,255,255,.02),0 18px 50px rgba(0,0,0,.28)}h1{font-size:clamp(2rem,8vw,3.35rem);line-height:1.03;margin:0 0 10px}h2{font-size:1.65rem;margin:0 0 14px}.lead{font-size:1.08rem;line-height:1.5;color:var(--muted);font-weight:650}.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.chip{padding:10px 14px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-weight:900;letter-spacing:.04em;background:rgba(255,255,255,.035)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{min-height:110px}.label{color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:.9rem}.value{font-size:2.1rem;font-weight:1000;margin-top:6px}.ok{color:var(--green)}.wait{color:var(--yellow)}.bad{color:var(--red)}.states{display:grid;grid-template-columns:1fr 1fr;gap:12px}.state{border:1px solid var(--line);border-radius:18px;padding:16px;min-height:224px;background:#0a1322;transition:.25s}.state.active{border-color:var(--violet);box-shadow:0 0 0 2px rgba(167,123,255,.45),0 0 24px rgba(167,123,255,.18)}.state h3{font-size:1.9rem;margin:0 0 4px}.pair{display:grid;gap:8px;margin:12px 0}.mini{border:1px solid #34476f;border-radius:14px;padding:10px;background:rgba(255,255,255,.025)}.mini strong{display:block;color:var(--gold);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}.bridge{min-height:64px;border:1px dashed #415174;border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;font-weight:900;font-size:.96rem;color:#e8eeff}.routes{display:grid;gap:12px}.route{border:1px solid var(--line);border-radius:18px;padding:15px;background:#0a1322}.route.ok{border-color:rgba(69,227,136,.7)}.route .path{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:1rem;line-height:1.55;white-space:pre-wrap;margin-top:8px}.route .living{color:var(--muted);font-weight:750;margin-top:6px}.btns{display:grid;gap:12px}.btn{border:0;border-radius:18px;padding:18px 16px;font-size:1rem;font-weight:1000;color:#06101d;background:linear-gradient(135deg,#88a8ff,#57ddf2);box-shadow:inset 0 -2px rgba(0,0,0,.1)}.btn:nth-child(2){background:linear-gradient(135deg,#b674ff,#84a2ff)}.btn:nth-child(3){background:linear-gradient(135deg,#ff7187,#ffd566)}pre{white-space:pre-wrap;word-break:break-word;margin:0;background:#050b14;border:1px solid var(--line);border-radius:16px;padding:16px;color:#dfe8ff;font-size:.88rem;line-height:1.45;max-height:380px;overflow:auto}.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.footer{color:var(--muted);font-size:.95rem;line-height:1.45}@media(max-width:560px){body{padding:12px 10px 30px}.card{border-radius:22px;padding:19px;margin:12px 0}.grid,.states{grid-template-columns:1fr 1fr;gap:10px}.metric{min-height:102px}.value{font-size:1.85rem}.state{min-height:220px;padding:13px}.state h3{font-size:1.55rem}.lead{font-size:1rem}.bridge{font-size:.86rem;min-height:64px}.mini{font-size:.88rem}}
+</style>
+</head>
+<body>
+<section class="card">
+<h1>Quadze Runtime v1.1</h1>
+<div class="lead">Dual-Reading Branch Engine — preserves v1.0 branching proof, then adds the living-route reading beside the formal-state reading without replacing either layer.</div>
+<div class="chips"><span class="chip">OPEN-FIRST</span><span class="chip">ANDROID FIT</span><span class="chip">DUAL READING</span><span class="chip">BRANCHING</span><span class="chip">NO DING, NO CLAIM</span></div>
+</section>
+
+<section class="grid" id="metrics"></section>
+
+<section class="card">
+<h2>Quadze States — Formal + Living</h2>
+<div class="states" id="states"></div>
+</section>
+
+<section class="card">
+<h2>Branch Routes</h2>
+<div class="routes" id="routes"></div>
+</section>
+
+<section class="card">
+<h2>Actions</h2>
+<div class="btns"><button class="btn" onclick="runAll()">Run Dual-Reading Route Test</button><button class="btn" onclick="exportReceipt()">Export Receipt</button><button class="btn" onclick="resetRun()">Reset</button></div>
+</section>
+
+<section class="card">
+<h2>TraceBox</h2>
+<pre id="trace"></pre>
+</section>
+
+<section class="card">
+<h2>Receipt Export</h2>
+<pre id="receipt"></pre>
+</section>
+
+<section class="card formula">
+<h2>Formula Body</h2>
+<pre>Q = {Q0,Q1,Q2,Q3}
+F(Q) = {Structural Absence, Functional Presence, Epistemic Potential, Semantic Relevance}
+L(Q) = {Sameness, Difference, Relation, Movement}
+Δ_Q = {δij | Qi → Qj}
+Γ_main = δ01 ∘ δ12 ∘ δ23 ∘ δ30
+Γ_A = Q0 → Q1 → Q2 → Q3 → Q0
+Γ_B = Q0 → Q1 → Q3 → Q0
+P_R = 4/4   state preservation
+P_T = 5/5   transition preservation
+P_Γ = 1/1   full chain completion
+P_B = 2/2   branch completion
+P_D = 4/4   dual-reading coverage
+P_R=1 ∧ P_T=1 ∧ P_Γ=1 ∧ P_B=1 ∧ P_D=1 ⇒ DING</pre>
+</section>
+
+<section class="card footer">
+<strong>Claim boundary:</strong> This v1.1 freeze demonstrates the defined Quadze branching routes plus dual formal/living Q-state reading inside this Android/browser HTML host. It does not claim all future Quadze architectures, distributed runtimes, native APK status, or full Cading compiler integration are proven.
+</section>
+
+<script>
+const STATES={
+ Q0:{formal:'Structural Absence',living:'Sameness',bridge:'What remains before separation or active difference.'},
+ Q1:{formal:'Functional Presence',living:'Difference',bridge:'What appears as an active distinct thing.'},
+ Q2:{formal:'Epistemic Potential',living:'Relation',bridge:'What can be known through connection.'},
+ Q3:{formal:'Semantic Relevance',living:'Movement',bridge:'What becomes meaningful through route/change.'}
+};
+const TRANSITION_LIVING={
+ 'Q0→Q1':'Sameness opens into difference.',
+ 'Q1→Q2':'Difference becomes knowable through relation.',
+ 'Q2→Q3':'Relation gains movement and meaning.',
+ 'Q3→Q0':'Movement returns into preserved field/sameness.',
+ 'Q1→Q3':'Difference branches directly into meaningful movement.'
+};
+const ROUTES=[
+ {id:'MAIN',label:'Full Chain Γ',path:['Q0','Q1','Q2','Q3','Q0']},
+ {id:'A',label:'Branch Route A',path:['Q0','Q1','Q2','Q3','Q0']},
+ {id:'B',label:'Branch Route B',path:['Q0','Q1','Q3','Q0']}
+];
+let trace=[], completedRoutes={}, seenStates={}, transitions={}, dualCovered={};
+function el(id){return document.getElementById(id)}
+function log(type,msg,obj={}){trace.push({n:trace.length+1,time:new Date().toISOString(),type,msg,...obj});renderTrace()}
+function resetRun(){trace=[];completedRoutes={};seenStates={};transitions={};dualCovered={};renderAll();el('receipt').textContent='Run test first.'}
+function coverDual(q){if(STATES[q] && STATES[q].formal && STATES[q].living){dualCovered[q]=true}}
+function transition(a,b,route){seenStates[a]=true;seenStates[b]=true;coverDual(a);coverDual(b);const key=a+'→'+b;transitions[key]=true;log('TRANSITION',`${route}: ${a} → ${b}`,{before:a,after:b,route,formalBefore:STATES[a].formal,formalAfter:STATES[b].formal,living:TRANSITION_LIVING[key]||'Unregistered living transition'});renderAll();}
+function runRoute(r){log('ROUTE_START',`${r.label} started`,{route:r.id,path:r.path.join('→')});for(let i=0;i<r.path.length-1;i++){transition(r.path[i],r.path[i+1],r.id)}completedRoutes[r.id]=true;log('ROUTE_PASS',`${r.label} completed`,{route:r.id});}
+function score(){const pr=Object.keys(STATES).filter(k=>seenStates[k]).length; const neededT=['Q0→Q1','Q1→Q2','Q2→Q3','Q3→Q0','Q1→Q3']; const pt=neededT.filter(k=>transitions[k]).length; const pg=completedRoutes.MAIN?1:0; const pb=['A','B'].filter(k=>completedRoutes[k]).length; const pd=Object.keys(STATES).filter(k=>dualCovered[k]).length; const ding=pr===4&&pt===5&&pg===1&&pb===2&&pd===4; return {pr,pt,pg,pb,pd,ding}}
+function runAll(){resetRun();log('BOOT','D(Z0)=Q loaded. Dual formal/living reading registered. Branching test started.');ROUTES.forEach(runRoute); const s=score(); if(s.ding){log('DING','P_R=4/4, P_T=5/5, P_Γ=1/1, P_B=2/2, P_D=4/4. Claim permitted inside this v1.1 test.',s)}else{log('BUGG','Dual-reading branching route test incomplete.',s)}renderAll();exportReceipt(false)}
+function renderMetrics(){const s=score();el('metrics').innerHTML=`<div class="card metric"><div class="label">P_R State Preservation</div><div class="value ${s.pr===4?'ok':'wait'}">${s.pr}/4</div></div><div class="card metric"><div class="label">P_T Transition Preservation</div><div class="value ${s.pt===5?'ok':'wait'}">${s.pt}/5</div></div><div class="card metric"><div class="label">P_Γ Full Chain</div><div class="value ${s.pg===1?'ok':'wait'}">${s.pg}/1</div></div><div class="card metric"><div class="label">P_B Branches</div><div class="value ${s.pb===2?'ok':'wait'}">${s.pb}/2</div></div><div class="card metric"><div class="label">P_D Dual Reading</div><div class="value ${s.pd===4?'ok':'wait'}">${s.pd}/4</div></div><div class="card metric"><div class="label">Claim</div><div class="value ${s.ding?'ok':'bad'}">${s.ding?'PERMITTED':'BLOCKED'}</div></div>`}
+function renderStates(){const last=trace.slice().reverse().find(t=>t.after)?.after;el('states').innerHTML=Object.entries(STATES).map(([k,v])=>`<div class="state ${last===k?'active':''}"><h3>${k}</h3><div class="pair"><div class="mini"><strong>Formal</strong>${v.formal}</div><div class="mini"><strong>Living</strong>${v.living}</div></div><div class="bridge">${seenStates[k]?v.bridge:'Waiting for route.'}</div></div>`).join('')}
+function routeLiving(r){let out=[];for(let i=0;i<r.path.length-1;i++){const key=r.path[i]+'→'+r.path[i+1];out.push(TRANSITION_LIVING[key]||key)}return out.join(' ')}
+function renderRoutes(){el('routes').innerHTML=ROUTES.map(r=>`<div class="route ${completedRoutes[r.id]?'ok':''}"><strong>${r.label}</strong><div class="path">${r.path.join(' → ')}</div><div class="living">${routeLiving(r)}</div><div>${completedRoutes[r.id]?'PASS':'Waiting'}</div></div>`).join('')}
+function renderTrace(){el('trace').textContent=JSON.stringify(trace,null,2)}
+function renderAll(){renderMetrics();renderStates();renderRoutes();renderTrace()}
+function exportReceipt(show=true){const s=score();const receipt={title:'Quadze Runtime v1.1 Dual-Reading Branch Engine Freeze',version:'v1.1',status:s.ding?'PASS':'WAIT',statePreservation:`${s.pr}/4`,transitionPreservation:`${s.pt}/5`,fullChain:`${s.pg}/1`,branches:`${s.pb}/2`,dualReading:`${s.pd}/4`,claim:s.ding?'PERMITTED':'BLOCKED',states:STATES,routes:ROUTES.map(r=>({id:r.id,path:r.path,complete:!!completedRoutes[r.id],livingRoute:routeLiving(r)})),trace};el('receipt').textContent=JSON.stringify(receipt,null,2);if(show)log('EXPORT','Receipt exported.',{status:receipt.status});}
+window.addEventListener('load',()=>{renderAll();runAll();});
+</script>
+</body></html>

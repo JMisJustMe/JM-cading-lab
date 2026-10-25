@@ -70,7 +70,7 @@ await new Promise(ok=>server.listen(0,'127.0.0.1',ok));port=server.address().por
 let browser;
 try{
  browser=await chromium.launch({headless:true,executablePath:chrome,args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
- const page=await browser.newPage({viewport:{width,height:Math.max(750,width*1.7)},deviceScaleFactor:1,hasTouch:true,isMobile:true});
+ const page=await browser.newPage({viewport:{width,height:Math.round(Math.max(750,width*1.7))},deviceScaleFactor:1,hasTouch:true,isMobile:true});
  const errors=[];page.on('pageerror',e=>errors.push('PAGE '+e.message));page.on('console',m=>{if(m.type()==='error')errors.push('CONSOLE '+m.text())});
  await page.goto('http://127.0.0.1:'+port+html);
  await page.waitForFunction(()=>window.__CP11?.state==='LIVE_WEBGL'&&window.__CP11.native?.online&&window.__CP11.route?.online,{timeout:50000});

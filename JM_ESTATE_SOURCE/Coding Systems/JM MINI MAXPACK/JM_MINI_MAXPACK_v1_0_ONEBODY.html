@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09131f">
+<meta name="color-scheme" content="dark">
+<title>JM MINI MAXPACK v1.0 · Sovereign Seed Workbench</title>
+<style>
+:root { --bg:#080f19;--panel:#101d2d;--raised:#18293d;--ink:#edf7ff;--muted:#94aabc;--line:#32485a;--teal:#4af0c9;--blue:#72beff;--gold:#f4c66e;--red:#ff8392;--font:ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif; }
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;color:var(--ink);background:var(--bg);font-family:var(--font)}button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+body{background:radial-gradient(ellipse at 25% 0%,#17344b 0,transparent 42%),radial-gradient(ellipse at 100% 30%,#1c2543 0,transparent 35%),var(--bg)}
+.top{padding:22px max(18px,calc((100vw - 1560px)/2));border-bottom:1px solid var(--line);background:#0b1420d9}.brandline{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.stamp{width:46px;height:46px;display:grid;place-items:center;border:1px solid var(--teal);border-radius:14px;font:900 18px ui-monospace,monospace;box-shadow:0 0 30px #4af0c923;color:var(--teal)}h1{font-size:clamp(1.35rem,3vw,2rem);margin:0;letter-spacing:-.04em}.top p{color:var(--muted);margin:3px 0 0}.topmeta{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid var(--line);border-radius:50px;padding:6px 10px;font:700 10px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase}.pill.good{color:var(--teal);border-color:#367d73}.pill.open{color:var(--gold);border-color:#94774a}.pill.bad{color:var(--red);border-color:#a34e60}
+.frame{display:grid;grid-template-columns:minmax(230px,260px) minmax(410px,1.35fr) minmax(330px,1fr);gap:14px;padding:16px;max-width:1660px;margin:auto;align-items:start}.panel{border:1px solid var(--line);border-radius:18px;background:#0e1928ea;overflow:hidden;min-width:0}.panelhd{padding:15px 16px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between}.panelhd h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin:0}.subhd{font-size:12px;color:var(--muted)}.panelbody{padding:16px}.side{display:grid;gap:14px}.muted{color:var(--muted)}.small{font-size:12px;line-height:1.5}.mini{font:700 11px ui-monospace,monospace;color:var(--teal);text-transform:uppercase;letter-spacing:.08em}.sectionlabel{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}.field{display:grid;gap:6px;margin-bottom:13px}.field label{font-size:12px;color:var(--muted)}input,select{width:100%;border:1px solid #43596c;border-radius:10px;padding:11px;background:#0a1422}button.btn{border:1px solid #436174;background:#142b3f;padding:10px 11px;border-radius:11px;font-size:12px;font-weight:800;letter-spacing:.01em}button.btn:hover{background:#1d3c52}button.btn.primary{border-color:#3bcba8;background:#155b58;color:#edfffa}button.btn.primary:hover{background:#1a706a}button.btn.ghost{background:#0c1b2c}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btnrow .btn{flex:1;white-space:nowrap}.stack{display:grid;gap:8px}.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.metric{border:1px solid var(--line);padding:12px;border-radius:10px;background:#122338}.metric b{font:800 22px ui-monospace,monospace;display:block;color:var(--teal)}.metric span{font-size:10px;color:var(--muted)}.divider{height:1px;background:var(--line);margin:15px 0}.sourcepan{display:flex;flex-direction:column;min-height:670px}.toolbar{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:8px}.spacer{flex:1}.codewrap{position:relative;display:flex;min-height:485px;flex:1;background:#08111f}.numbers{width:43px;flex:0 0 43px;text-align:right;padding:14px 9px 14px 2px;overflow:hidden;white-space:pre;color:#647c91;user-select:none;border-right:1px solid #253b4f;font:13px/1.62 ui-monospace,SFMono-Regular,Consolas,monospace}.source{border:0;border-radius:0;outline:0!important;width:100%;resize:vertical;min-height:485px;padding:14px 16px;background:transparent;color:#e5f2ff;font:13px/1.62 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2;white-space:pre;overflow:auto;caret-color:var(--teal)}.source::selection{background:#357763}.statusline{padding:12px 15px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;font:12px ui-monospace,monospace;color:var(--muted)}.statusline strong{color:var(--teal)}.tabs{display:flex;overflow:auto;gap:5px;padding:8px 10px 0;border-bottom:1px solid var(--line)}.tab{border:0;background:transparent;color:var(--muted);border-bottom:2px solid transparent;padding:10px 9px;font-size:12px;font-weight:750;white-space:nowrap}.tab[aria-selected=true]{color:var(--teal);border-bottom-color:var(--teal)}pre.json{margin:0;padding:17px;max-height:600px;min-height:490px;overflow:auto;color:#d9ecff;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.inspectorfooter{padding:10px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.help{font-size:13px;line-height:1.65;color:#d2e6f2;padding:2px 2px}.help h3{font-size:13px;color:var(--teal);margin:15px 0 5px}.help p{margin:4px 0 11px}.help code{font-size:11px;color:var(--gold)}.help .examples{border:1px solid #334d5e;padding:10px;background:#091827;border-radius:9px;white-space:pre-wrap;font:12px/1.7 ui-monospace,monospace} .outputnote{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding:10px 15px;background:#071523;font-size:12px}.dot{width:9px;height:9px;border-radius:99px;background:var(--gold);flex-shrink:0}.dot.pass{background:var(--teal)}.dot.fail{background:var(--red)}.footer{max-width:1650px;margin:0 auto;padding:10px 18px 22px;color:var(--muted);font-size:11px;line-height:1.7}.footer strong{color:var(--ink)}.filelabel{display:inline-flex;align-items:center;justify-content:center}.nofile{display:none}.notice{padding:10px;border:1px solid #74633f;background:#4c3d1b32;border-radius:9px;color:#ffe3a3;font-size:11px;line-height:1.55}.key{background:#20394b;border:1px solid #47647a;border-radius:4px;padding:1px 4px;color:white}
+@media(max-width:1220px){.frame{grid-template-columns:240px 1fr}.inspector{grid-column:1/-1}.inspector pre.json{min-height:260px;max-height:370px}}@media(max-width:730px){.top{padding:18px 14px}.topmeta{margin-left:0}.frame{display:flex;flex-direction:column;padding:10px;gap:10px}.panel{width:100%}.side{display:contents}.controlpanel{order:2}.sourcepan{order:1;min-height:0}.inspector{order:3}.metricsPanel{order:4}.codewrap,.source{min-height:390px}.tabs{padding:5px 4px 0}.tabs .tab{padding:10px 7px;font-size:11px}pre.json{min-height:250px;max-height:410px}.panelbody{padding:12px}.toolbar{padding:9px 10px}.brandline{align-items:flex-start}.top p{font-size:13px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brandline"><div class="stamp" aria-hidden="true">JM</div><div><div class="mini">Create from strength · not from scratch</div><h1>MINI MAXPACK <span style="color:var(--teal)">v1.0</span></h1><p>Portable coding seed · parser → guards → IR → runtime → trace → recovery</p></div><div class="topmeta"><span class="pill good">One body</span><span class="pill good">Offline capable</span><span class="pill" id="topProof">CONTACT OPEN</span></div></div></header>
+<main class="frame">
+  <aside class="side">
+    <section class="panel controlpanel" aria-label="Project controls"><div class="panelhd"><h2>01 · Creation</h2><span class="mini">Source</span></div><div class="panelbody">
+      <div class="field"><label for="project">Active project</label><select id="project"></select></div>
+      <div class="field"><label for="projectName">Project name</label><input id="projectName" maxlength="96" spellcheck="false"></div>
+      <div class="field"><label for="template">New creation seed</label><select id="template"></select></div>
+      <div class="stack"><button class="btn primary" id="newProject">+ Create separate project</button><div class="btnrow"><button class="btn ghost" id="exportProject">Export JSON</button><button class="btn ghost" id="exportSource">Export source</button></div><div class="btnrow"><label class="btn ghost filelabel" for="importProject">Import project JSON</label><input class="nofile" id="importProject" type="file" accept=".json,application/json"><button class="btn ghost" id="deleteProject">Remove local</button></div></div>
+      <div class="divider"></div><p class="sectionlabel">Recovery · checkpoints</p><div class="field"><label for="checkpoints">Available state snapshots</label><select id="checkpoints"></select></div><button class="btn ghost" id="restore" style="width:100%">Restore selected checkpoint</button><div class="divider"></div><p class="sectionlabel">Proof rules</p><div class="notice"><strong>NO DING, NO CLAIM.</strong> A green runtime receipt is an in-browser result only. It is not device, deployment, Android-package or complete-language proof.</div><p class="small muted">No server. No account. No external libraries. Import never executes source. <strong>Gardles is a distinct JM body, not another name for generic runtime guards.</strong> Original Gardles source is not mounted in this seed. Browser storage may be unavailable or cleared; export what matters.</p>
+    </div></section>
+    <section class="panel metricsPanel"><div class="panelhd"><h2>02 · Contact ledger</h2></div><div class="panelbody"><div class="statgrid"><div class="metric"><b id="numTokens">0</b><span>TOKENS</span></div><div class="metric"><b id="numOps">0</b><span>IR OPS</span></div><div class="metric"><b id="numSteps">0</b><span>RUNTIME STEPS</span></div><div class="metric"><b id="numTests">—</b><span>SELF-TESTS</span></div></div><div class="divider"></div><p class="small muted" id="parentNote">Parent: JM OneBody Coding OS v1.0 All-in-One. This is a deliberately smaller descendant, not its replacement.</p></div></section>
+  </aside>
+  <section class="panel sourcepan"><div class="panelhd"><div><h2>03 · Cading source</h2><div class="subhd">A bounded declarative script. Never arbitrary JavaScript execution.</div></div><span class="mini" id="dirty">EDITABLE</span></div>
+    <div class="toolbar"><button class="btn primary" id="run">▶ Run &amp; receipt</button><button class="btn" id="validate">Check grammar</button><button class="btn ghost" id="selfTest">Run self-tests</button><span class="spacer"></span><button class="btn ghost" id="resetState">Reset state</button></div>
+    <div class="codewrap"><div class="numbers" id="lines" aria-hidden="true">1</div><textarea aria-label="Cading source editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" class="source" id="source"></textarea></div>
+    <div class="statusline"><span id="sourceStat">0 lines · Ready</span><span><strong id="runStat">NOT RUN</strong> · <span id="lastDigest">No receipt</span></span></div>
+    <div class="outputnote"><span class="dot" id="statusDot"></span><span id="output">Enter a body, then Check grammar or Run.</span></div>
+  </section>
+  <section class="panel inspector"><div class="panelhd"><h2>04 · Living inspector</h2><span class="mini" id="inspectorStatus">TRACE READY</span></div><div class="tabs" role="tablist" aria-label="Inspector sections">
+    <button class="tab" role="tab" data-tab="state" aria-selected="true">State</button><button class="tab" role="tab" data-tab="ir" aria-selected="false">IR</button><button class="tab" role="tab" data-tab="trace" aria-selected="false">Trace</button><button class="tab" role="tab" data-tab="receipts" aria-selected="false">Receipts</button><button class="tab" role="tab" data-tab="checks" aria-selected="false">Tests</button><button class="tab" role="tab" data-tab="guide" aria-selected="false">Guide</button>
+  </div><pre class="json" id="inspector" tabindex="0"></pre><div class="inspectorfooter">Open the tabs to inspect actual IR, events, before/after state digests and auditable run receipts.</div></section>
+</main>
+<footer class="footer"><strong>JM MINI MAXPACK v1.0</strong> · New compact descendant of JM OneBody Coding OS v1.0 All-in-One · Original JM authorial line preserved · Design principles: Full Body → Straight Run → Correct After · Mesh ≠ Merge · Recover Before Rebuild · No Ding, No Claim. Offline browser host only. JS source distributed in optional developer pack.</footer>
+<script id="core">
+/* JM MINI MAXPACK v1.0 · Portable authoring & guarded runtime
+   Independent compact descendant from JM OneBody Coding OS v1.0 All-in-One.
+   Semantics inherit the JM53 token → AST → analyse → IR → run → trace flow.
+   NOT the full OneBody, JM32-1DA, compiler or device runtime.
+   No eval, Function, external dependencies, or automatic code execution on import.
+*/
+(function(root,factory){
+  'use strict';
+  const body=factory();
+  if(typeof module==='object' && module.exports) module.exports=body;
+  if(root)root.JMMiniMax=body;
+})(typeof globalThis==='object'?globalThis:null,function(){
+  'use strict';
+  const VERSION='1.0.0', SCHEMA='jm.minimax.project/1', IR_SCHEMA='jm.minimax.ir/1';
+  const LIMIT=Object.freeze({source:49152,tokens:6000,statements:600,steps:2400,repeat:64,events:120,handlers:80,depth:8,trace:300,stateBytes:131072,output:120});
+  const RESERVED=new Set(['__proto__','prototype','constructor']);
+  const OPS=Object.freeze({set:['path','value'],add:['path','value'],subtract:['path','value'],multiply:['path','value'],toggle:['path'],append:['path','value'],remove:['path','value'],emit:['type'],route:['to'],note:['text'],checkpoint:[],damage:['target','value'],heal:['target','value']});
+  const safeJson=x=>JSON.parse(JSON.stringify(x));
+  const size=x=>JSON.stringify(x).length;
+  const isRecord=x=>x!==null && typeof x==='object' && !Array.isArray(x);
+  const compare=(a,op,b)=>{
+    if(op==='==')return JSON.stringify(a)===JSON.stringify(b);
+    if(op==='!=')return JSON.stringify(a)!==JSON.stringify(b);
+    if(op==='contains')return (Array.isArray(a)?a.includes(b):(typeof a==='string'&&String(a).includes(String(b))));
+    if(!Number.isFinite(a)||!Number.isFinite(b)||typeof a!=='number'||typeof b!=='number') return false;
+    return ({'>':a>b,'<':a<b,'>=':a>=b,'<=':a<=b})[op]===true;
+  };
+  const fnv=x=>{
+    let h=2166136261;const s=typeof x==='string'?x:stable(x);
+    for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}
+    return 'fnv1a32-'+(h>>>0).toString(16).padStart(8,'0');
+  };
+  function stable(x){if(Array.isArray(x))return '['+x.map(stable).join(',')+']';if(isRecord(x))return '{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+stable(x[k])).join(',')+'}';return JSON.stringify(x)}
+  class Fault extends Error{constructor(code,message,line=0){super(message);this.name='JMFault';this.code=code;this.line=line}}
+  function requireOk(c,code,msg,line=0){if(!c)throw new Fault(code,msg,line)}
+  function pathParts(path){
+    requireOk(typeof path==='string' && /^[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*){0,7}$/.test(path),'BAD_PATH','Use safe dotted paths (up to 8 segments).');
+    let parts=path.split('.');requireOk(parts.every(p=>!RESERVED.has(p)),'UNSAFE_PATH','Unsafe path segment.');return parts;
+  }
+  function readPath(o,p){const parts=pathParts(p);let cur=o;for(const k of parts){if(cur==null||!Object.prototype.hasOwnProperty.call(Object(cur),k))return undefined;cur=cur[k]}return cur}
+  function writePath(o,p,v){const parts=pathParts(p);let cur=o;for(const k of parts.slice(0,-1)){if(!isRecord(cur[k]))cur[k]={};cur=cur[k]}cur[parts.at(-1)]=v}
+  function finite(n,label){requireOk(typeof n==='number'&&Number.isFinite(n),'NON_FINITE',label+' must be a finite number.');return n}
+  function validValue(v,depth=0){requireOk(depth<=LIMIT.depth,'VALUE_DEPTH','Value nesting too deep');
+    if(v===null||typeof v==='string'||typeof v==='boolean')return true;
+    if(typeof v==='number')return Number.isFinite(v);
+    if(Array.isArray(v))return v.length<=1000&&v.every(a=>validValue(a,depth+1));
+    if(isRecord(v))return Object.keys(v).length<=200&&Object.keys(v).every(k=>!RESERVED.has(k)&&validValue(v[k],depth+1));return false;
+  }
+  function tokenize(source){
+    requireOk(typeof source==='string' && source.length<=LIMIT.source,'SOURCE_LIMIT','Source exceeds '+LIMIT.source+' characters.');
+    let t=[], i=0,ln=1,col=1;
+    const push=(type,value,l=ln,c=col)=>{requireOk(t.length<LIMIT.tokens,'TOKEN_LIMIT','Too many tokens.',l);t.push({type,value,line:l,col:c})};
+    const step=()=>{let c=source[i++];if(c==='\n'){ln++;col=1}else col++;return c};
+    while(i<source.length){let c=source[i];
+      if(c==='\r'){step();continue}if(c==='\n'){push('nl','\n');step();continue}if(/\s/.test(c)){step();continue}
+      if(c==='#'){while(i<source.length&&source[i]!=='\n')step();continue}
+      const l=ln,k=col;
+      if(c==='"'||c==="'"){
+        let q=step(),v='',closed=false;
+        while(i<source.length){let x=step();if(x===q){closed=true;break}if(x==='\\'){
+          requireOk(i<source.length,'ESCAPE_EOF','Escape at end of string',l);
+          let e=step();requireOk('nrt\\"\''.includes(e),'BAD_ESCAPE','Unsupported escape sequence \\'+e,l);
+          v+=({n:'\n',r:'\r',t:'\t'})[e]??e;
+        }else v+=x}
+        requireOk(closed,'STRING_OPEN','Unclosed string.',l);push('string',v,l,k);continue;
+      }
+      let two=source.slice(i,i+2);
+      if(['==','!=','>=','<='].includes(two)){step();step();push('op',two,l,k);continue}
+      if(['=','>','<'].includes(c)){step();push('op',c,l,k);continue}
+      let raw='';while(i<source.length&&!/[\s=<>#]/.test(source[i]))raw+=step();
+      requireOk(raw.length>0,'BAD_CHARACTER','Invalid input character '+c,l);
+      if(/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)){let n=Number(raw);requireOk(Number.isFinite(n),'NON_FINITE','Number out of range.',l);push('number',n,l,k)}else push('word',raw,l,k);
+    }
+    t.push({type:'eof',value:'',line:ln,col});return t;
+  }
+  function parse(tokens){
+    let i=0,out=[];
+    const peek=()=>tokens[i],take=()=>tokens[i++];
+    const expect=(type,value)=>{let t=take();requireOk(t&&t.type===type&&(value===undefined||t.value===value),'PARSE_EXPECT','Expected '+(value??type)+' at line '+(t?.line??'?'),t?.line);return t};
+    const value=()=>{let t=take();requireOk(t&&['word','string','number'].includes(t.type),'VALUE_EXPECT','Expected value.',t?.line);if(t.type!=='word')return t.value;if(t.value==='true')return true;if(t.value==='false')return false;if(t.value==='null')return null;return t.value};
+    const args=()=>{let a={};while(peek().type!=='eof'&&peek().type!=='nl'){
+       let k=expect('word');requireOk(/^[A-Za-z_]\w*$/.test(k.value)&&!RESERVED.has(k.value),'ARG_NAME','Invalid argument name.',k.line);
+       requireOk(!Object.prototype.hasOwnProperty.call(a,k.value),'ARG_DUP','Duplicate argument '+k.value,k.line);
+       expect('op','=');a[k.value]=value();
+    }return a};
+    while(peek().type!=='eof'){
+      if(peek().type==='nl'){take();continue}
+      requireOk(out.length<LIMIT.statements,'STATEMENT_LIMIT','Too many statements.',peek().line);
+      let t=expect('word');let word=t.value, item={line:t.line};
+      if(word==='body'){item.kind='body';item.name=value()}
+      else if(word==='state'){item.kind='state';item.path=expect('word').value;expect('op','=');item.value=value()}
+      else if(word==='do'){item.kind='call';item.op=expect('word').value;item.args=args()}
+      else if(word==='expect'||word==='guard'){item.kind=word;item.path=expect('word').value;let op=take();requireOk(op&&(['op','word'].includes(op.type)),'EXPECT_OPERATOR','Expected comparator',t.line);item.comparator=op.value;item.value=value()}
+      else if(word==='when'){item.kind='when';item.path=expect('word').value;let op=take();requireOk(op&&['op','word'].includes(op.type),'EXPECT_OPERATOR','Expected comparator',t.line);item.comparator=op.value;item.value=value();expect('word','do');item.op=expect('word').value;item.args=args()}
+      else if(word==='repeat'){item.kind='repeat';item.count=value();expect('word','do');item.op=expect('word').value;item.args=args()}
+      else if(word==='on'){item.kind='on';item.event=value();expect('word','do');item.op=expect('word').value;item.args=args()}
+      else throw new Fault('UNKNOWN_KEYWORD','Unknown statement '+word,t.line);
+      requireOk(peek().type==='nl'||peek().type==='eof','TRAILING_TOKENS','Unexpected extra tokens.',t.line);
+      if(peek().type==='nl')take();out.push(item);
+    }
+    return {kind:'program',statements:out};
+  }
+  const CMP=new Set(['==','!=','>','<','>=','<=','contains']);
+  function analyse(ast){
+    let diagnostics=[],count=0,declared=false;
+    const bad=(code,msg,line)=>diagnostics.push({severity:'error',code,message:msg,line});
+    const warn=(code,msg,line)=>diagnostics.push({severity:'warning',code,message:msg,line});
+    for(const st of ast.statements){
+      if(st.kind==='body'){count++;if(count!==1||declared)bad('BODY_COUNT','Exactly one body declaration permitted.',st.line);else if(typeof st.name!=='string'||!st.name.trim()||st.name.length>96)bad('BODY_NAME','Body name must be 1–96 chars.',st.line);declared=true;}
+      if(st.kind==='state'||['expect','guard','when'].includes(st.kind))try{pathParts(st.path)}catch(e){bad(e.code,e.message,st.line)}
+      if(st.kind==='state'&&!validValue(st.value))bad('BAD_VALUE','Invalid initial value.',st.line);
+      if(['expect','guard','when'].includes(st.kind)&&!CMP.has(st.comparator))bad('COMPARATOR','Unsupported comparator.',st.line);
+      if(['call','when','repeat','on'].includes(st.kind)){
+        if(!Object.prototype.hasOwnProperty.call(OPS,st.op)){bad('UNKNOWN_OPERATION','Unknown operation: '+st.op,st.line);continue}
+        const required=OPS[st.op];for(const k of required){if(!Object.prototype.hasOwnProperty.call(st.args,k))bad('MISSING_ARG','Missing '+k+' for '+st.op,st.line)}
+        for(const [k,v] of Object.entries(st.args)){if(!/^[A-Za-z_]\w*$/.test(k)||RESERVED.has(k)||!validValue(v))bad('BAD_ARG','Unsafe argument '+k,st.line)}
+        for(const k of ['path','target'])if(st.args[k]!==undefined)try{pathParts(String(st.args[k]))}catch(e){bad(e.code,e.message,st.line)}
+        if(st.args.value!==undefined&&['add','subtract','multiply','heal','damage'].includes(st.op)&&!(typeof st.args.value==='number'&&Number.isFinite(st.args.value)))bad('NUMERIC_ARG',st.op+' needs numeric value.',st.line);
+        if(st.op==='emit'&&(typeof st.args.type!=='string'||!/^[\w.:/-]{1,64}$/.test(st.args.type||'')))bad('EVENT_TYPE','Event type invalid.',st.line);
+      }
+      if(st.kind==='repeat'&&(!Number.isInteger(st.count)||st.count<0||st.count>LIMIT.repeat))bad('REPEAT_BOUND','Repeat count must be 0–'+LIMIT.repeat,st.line);
+      if(st.kind==='on'&&(typeof st.event!=='string'||!/^[\w.:/-]{1,64}$/.test(st.event)))bad('HANDLER_EVENT','Invalid event name.',st.line);
+    }
+    if(count!==1)bad('BODY_REQUIRED','Exactly one body declaration required.',1);
+    if(ast.statements.length===1)warn('NO_WORK','Body has no work statements.',1);
+    return diagnostics;
+  }
+  function compile(source){let tok=tokenize(source),ast=parse(tok),diagnostics=analyse(ast);
+    const errors=diagnostics.filter(d=>d.severity==='error');
+    requireOk(!errors.length,'ANALYSIS_FAILURE',errors.map(e=>`L${e.line} ${e.code}: ${e.message}`).join(' | '),errors[0]?.line);
+    const name=ast.statements.find(x=>x.kind==='body').name;
+    const IR=ast.statements.map(st=>{
+      const base={line:st.line};
+      if(st.kind==='body')return {...base,opcode:'BODY',name:st.name};
+      if(st.kind==='state')return {...base,opcode:'STATE',path:st.path,value:st.value};
+      if(st.kind==='call')return {...base,opcode:'CALL',op:st.op,args:st.args};
+      if(['guard','expect'].includes(st.kind))return {...base,opcode:st.kind.toUpperCase(),path:st.path,comparator:st.comparator,value:st.value};
+      if(st.kind==='when')return {...base,opcode:'WHEN',path:st.path,comparator:st.comparator,value:st.value,op:st.op,args:st.args};
+      if(st.kind==='repeat')return {...base,opcode:'REPEAT',count:st.count,op:st.op,args:st.args};
+      if(st.kind==='on')return {...base,opcode:'ON',event:st.event,op:st.op,args:st.args};
+      throw new Fault('UNKNOWN_AST','Unexpected AST node.',st.line);
+    });return {schema:IR_SCHEMA,name,ast,diagnostics,tokens:tok.length,ops:IR,digest:fnv(IR),sourceDigest:fnv(source)};
+  }
+  function defaultState(){return {route:{current:'idle',history:[]},events:[],notes:[]}}
+  const sliceLimited=(a)=>{if(a.length>LIMIT.output)a.splice(0,a.length-LIMIT.output)};
+  function stepEffect(ctx,op,args,line){
+    const st=ctx.state;
+    const read=(path)=>readPath(st,String(path)),write=(path,v)=>writePath(st,String(path),v);
+    const at=(path)=>{const o=read(path);return typeof o==='undefined'?0:finite(o,String(path))};
+    const afterCopy=()=>requireOk(size(st)<=LIMIT.stateBytes,'STATE_LIMIT','State exceeded safe storage limit.',line);
+    let detail={},ev=null;
+    if(op==='set'){write(args.path,args.value);detail={path:args.path,value:args.value}}
+    else if(['add','subtract','multiply','heal','damage'].includes(op)){
+      const path=(op==='heal'||op==='damage')?args.target:args.path;const original=at(path);
+      const sign=op==='subtract'||op==='damage'?-1:1;
+      const v=op==='multiply'?original*finite(args.value,'multiplier'):original+sign*finite(args.value,'value');
+      finite(v,'result');write(path,v);detail={path,previous:original,next:v};
+    }
+    else if(op==='toggle'){let prev=read(args.path);requireOk(prev===undefined||typeof prev==='boolean','TOGGLE_TYPE','Toggle needs boolean.',line);write(args.path,!Boolean(prev));detail={path:args.path,next:read(args.path)}}
+    else if(op==='append'){let a=read(args.path);if(a===undefined)a=[];requireOk(Array.isArray(a),'APPEND_TYPE','Append needs array.',line);a=[...a,args.value];write(args.path,a);detail={path:args.path,length:a.length}}
+    else if(op==='remove'){let a=read(args.path);requireOk(Array.isArray(a),'REMOVE_TYPE','Remove needs existing array.',line);let i=a.findIndex(x=>stable(x)===stable(args.value));if(i>=0)a.splice(i,1);detail={path:args.path,removed:i>=0}}
+    else if(op==='route'){let history=read('route.history');if(!Array.isArray(history))history=[];history.push({from:read('route.current')??'idle',to:args.to});if(history.length>60)history.shift();write('route.history',history);write('route.current',args.to);detail={to:args.to}}
+    else if(op==='note'){let notes=read('notes');if(!Array.isArray(notes))notes=[];notes.push(String(args.text));sliceLimited(notes);write('notes',notes);detail={text:args.text}}
+    else if(op==='checkpoint'){ctx.checkpoints.push({label:String(args.label??'checkpoint'),state:safeJson(st),step:ctx.stepCount});detail={label:args.label??'checkpoint'}}
+    else if(op==='emit'){
+      ev={type:args.type,payload:args.value??null,atStep:ctx.stepCount};
+      ctx.queue.push(ev);requireOk(ctx.queue.length+ctx.eventsProcessed<=LIMIT.events,'EVENT_LIMIT','Event limit exceeded.',line);
+      let arr=read('events');if(!Array.isArray(arr))arr=[];arr.push(ev);sliceLimited(arr);write('events',arr);detail={type:args.type,queued:true};
+    }else throw new Fault('BAD_OPERATION','Operation not permitted: '+op,line);
+    afterCopy();return detail;
+  }
+  function makeRuntime(initial,opts={}){
+    let ctx={state:safeJson(initial??defaultState()),trace:[],outputs:[],checkpoints:[],handlers:new Map(),queue:[],stepCount:0,eventsProcessed:0,passed:0,checks:0,receipts:[]};
+    requireOk(validValue(ctx.state)&&size(ctx.state)<=LIMIT.stateBytes,'BAD_STATE','Initial state invalid.');
+    const track=(opcode,line,before,detail)=>{
+      let evt={seq:ctx.trace.length+1,line,opcode,before:fnv(before),after:fnv(ctx.state),detail};
+      ctx.trace.push(evt);if(ctx.trace.length>LIMIT.trace)ctx.trace.shift();return evt;
+    };
+    const runOp=(op,args,line)=>{
+      requireOk(++ctx.stepCount<=LIMIT.steps,'STEP_BUDGET','Execution step budget exceeded.',line);
+      let before=safeJson(ctx.state),detail=stepEffect(ctx,op,args,line);track('DO_'+op.toUpperCase(),line,before,detail);
+      processEvents(line);
+    };
+    const processEvents=(line)=>{
+      while(ctx.queue.length){
+        requireOk(++ctx.eventsProcessed<=LIMIT.events,'EVENT_BUDGET','Event budget exceeded.',line);
+        const ev=ctx.queue.shift();for(const h of ctx.handlers.get(ev.type)||[])runOp(h.op,h.args,h.line);
+      }
+    };
+    const runIR=(ir,externalEvents=[])=>{
+      requireOk(Array.isArray(externalEvents)&&externalEvents.length<=32,'EXTERNAL_EVENTS','External event batch must be an array of up to 32 events.');
+      for(const inst of ir.ops){const before=safeJson(ctx.state);let detail={};
+        switch(inst.opcode){
+          case 'BODY':detail={name:inst.name};break;
+          case 'STATE':writePath(ctx.state,inst.path,safeJson(inst.value));requireOk(size(ctx.state)<=LIMIT.stateBytes,'STATE_LIMIT','Initial state over budget.',inst.line);detail={path:inst.path,value:inst.value};break;
+          case 'CALL':runOp(inst.op,inst.args,inst.line);continue;
+          case 'EXPECT':case 'GUARD':{
+            let actual=readPath(ctx.state,inst.path),pass=compare(actual,inst.comparator,inst.value);
+            ctx.checks++;if(pass)ctx.passed++;
+            detail={path:inst.path,expected:inst.value,actual,pass};
+            requireOk(pass,inst.opcode==='GUARD'?'GUARD_FAILED':'EXPECT_FAILED',inst.path+' '+inst.comparator+' '+JSON.stringify(inst.value)+' failed.',inst.line);break;
+          }
+          case 'WHEN':{
+            let ok=compare(readPath(ctx.state,inst.path),inst.comparator,inst.value);detail={condition:inst.path+' '+inst.comparator+' '+JSON.stringify(inst.value),matched:ok};
+            if(ok)runOp(inst.op,inst.args,inst.line);break;
+          }
+          case 'REPEAT':{
+            for(let j=0;j<inst.count;j++)runOp(inst.op,inst.args,inst.line);detail={count:inst.count};break;
+          }
+          case 'ON':{
+            let hs=ctx.handlers.get(inst.event)||[];requireOk(ctx.handlers.size+hs.length<LIMIT.handlers,'HANDLER_LIMIT','Too many registered handlers.',inst.line);
+            hs.push({op:inst.op,args:inst.args,line:inst.line});ctx.handlers.set(inst.event,hs);detail={event:inst.event,registered:true};break;
+          }
+          default:throw new Fault('INVALID_IR','Invalid instruction',inst.line);
+        }
+        track(inst.opcode,inst.line,before,detail);
+      }
+      // External host events enter the SAME checked route as source-authored emit actions.
+      for(const e of externalEvents){
+        requireOk(isRecord(e)&&typeof e.type==='string'&&/^[\w.:/-]{1,64}$/.test(e.type)&&validValue(e.value??null),'EXTERNAL_EVENT','Invalid external event.');
+        runOp('emit',{type:e.type,value:e.value??null},0);
+      }
+      return ctx;
+    };
+    function snapshot(){return {state:safeJson(ctx.state),trace:safeJson(ctx.trace),checks:ctx.checks,passed:ctx.passed,steps:ctx.stepCount,events:ctx.eventsProcessed,checkpoints:safeJson(ctx.checkpoints)}}
+    return {runIR,snapshot,get state(){return ctx.state},get trace(){return ctx.trace},get handlers(){return ctx.handlers}};
+  }
+  function run(source,initial,options={}){
+    let compiled=null,base=safeJson(initial??defaultState());
+    const started=new Date().toISOString();
+    try{
+      compiled=compile(source);
+      let rt=makeRuntime(base);let finished=rt.runIR(compiled,options.events??[]);let x=rt.snapshot();
+      let receipt={schema:'jm.minimax.receipt/1',version:VERSION,status:'PASS',name:compiled.name,sourceDigest:compiled.sourceDigest,irDigest:compiled.digest,started,finished:new Date().toISOString(),checks:x.checks,passed:x.passed,steps:x.steps,events:x.events,stateDigest:fnv(x.state),traceDigest:fnv(x.trace),committed:true};
+      return {status:'PASS',compiled,receipt,state:x.state,trace:x.trace,checkpoints:x.checkpoints,errors:[]};
+    }catch(e){let err={code:e.code??'UNKNOWN_ERROR',message:e.message,line:e.line??0};return {status:'HOLD',compiled,receipt:{schema:'jm.minimax.receipt/1',version:VERSION,status:'HOLD',started,finished:new Date().toISOString(),error:err,committed:false,sourceDigest:fnv(source)},state:base,trace:[],checkpoints:[],errors:[err]}}
+  }
+  function inspect(source){try{let compiled=compile(source);return {status:'PASS',compiled,errors:[]}}catch(e){return {status:'HOLD',errors:[{code:e.code??'ERROR',line:e.line??0,message:e.message}],compiled:null}}}
+  const TEMPLATES=Object.freeze({
+    'First Contact':`# JM MINI MAXPACK · first contact\nbody "First Contact"\nstate identity = "owner-seed"\nstate energy = 10\nstate actions = 0\nstate ready = true\nguard ready == true\ndo note text="Creative identity starts here"\ndo add path=energy value=5\nrepeat 2 do add path=actions value=1\nwhen energy >= 15 do route to="create"\nexpect actions == 2\nexpect route.current == "create"\ndo checkpoint label="first-ding"`,
+    'Game Seed':`# New game · two-sided encounter skeleton\nbody "Unwritten Arena"\nstate player.hp = 100\nstate rival.hp = 80\nstate rounds = 0\nstate rules.friendlyFire = false\nguard player.hp > 0\non HIT do damage target=rival.hp value=12\ndo emit type=HIT value="first contact"\nrepeat 2 do add path=rounds value=1\nwhen rival.hp < 80 do route to="contested"\nexpect rival.hp == 68\nexpect rounds == 2\ndo checkpoint label="opening-round"`,
+    'App Seed':`# New app · workflow and persistent state\nbody "Unwritten App"\nstate queue = "idle"\nstate completed = 0\nstate allowed = true\nguard allowed == true\ndo route to="processing"\ndo set path=queue value="running"\ndo add path=completed value=1\ndo note text="An actual state transition occurred"\nexpect completed == 1\ndo checkpoint label="first-operation"`,
+    'Simulation Seed':`# New simulation · bounded deterministic rules\nbody "Unwritten Simulation"\nstate heat = 20\nstate pressure = 5\nstate cycles = 0\nrepeat 8 do add path=heat value=1\nrepeat 4 do multiply path=pressure value=2\nwhen heat >= 28 do route to="phase-change"\nguard pressure <= 100\nexpect pressure == 80\nexpect heat == 28\ndo checkpoint label="stable-phase"`,
+    'Blank Seed':`body "My New Creation"\nstate ready = true\nguard ready == true\ndo note text="Create your first route here"\nexpect ready == true`
+  });
+  function newProject(name='New JM Project',template='First Contact'){
+    return {schema:SCHEMA,version:VERSION,id:'local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),name:String(name).slice(0,96),created:new Date().toISOString(),updated:new Date().toISOString(),source:TEMPLATES[template]??TEMPLATES['First Contact'],state:defaultState(),receipts:[],lastTrace:[],checkpoints:[],sourceParent:'JM OneBody Coding OS v1.0 All-in-One'};
+  }
+  function checkProject(x){
+    requireOk(isRecord(x)&&x.schema===SCHEMA,'PROJECT_SCHEMA','Import schema mismatch.');
+    requireOk(typeof x.name==='string'&&x.name.length<=96,'PROJECT_NAME','Invalid project name.');
+    requireOk(typeof x.source==='string'&&x.source.length<=LIMIT.source,'PROJECT_SOURCE','Invalid source.');
+    requireOk(typeof x.id==='string'&&x.id.length<=100,'PROJECT_ID','Invalid project id.');
+    requireOk(validValue(x.state)&&size(x.state)<=LIMIT.stateBytes,'PROJECT_STATE','Unsafe imported state.');
+    requireOk(Array.isArray(x.receipts)&&x.receipts.length<=25,'PROJECT_RECEIPTS','Too many receipts.');
+    requireOk(Array.isArray(x.checkpoints)&&x.checkpoints.length<=16,'PROJECT_CHECKPOINTS','Too many checkpoints.');
+    requireOk(Array.isArray(x.lastTrace)&&x.lastTrace.length<=LIMIT.trace,'PROJECT_TRACE','Invalid trace.');
+    requireOk(size(x)<=350000,'PROJECT_TOO_LARGE','Project too large.');
+    // Do not execute code on import. Compile only when user explicitly asks to inspect or run.
+    return safeJson(x);
+  }
+  function commit(project,source,result){
+    let p=checkProject(project);p.source=source;p.updated=new Date().toISOString();
+    p.receipts.push(result.receipt);if(p.receipts.length>20)p.receipts.shift();
+    if(result.status==='PASS'){
+      p.state=result.state;p.lastTrace=result.trace;
+      p.checkpoints.push(...result.checkpoints.map(c=>({...c,created:p.updated,sourceDigest:fnv(source)})));
+      while(p.checkpoints.length>16)p.checkpoints.shift();
+    }
+    return checkProject(p);
+  }
+  function restoreCheckpoint(project,idx){let p=checkProject(project);requireOk(Number.isInteger(idx)&&idx>=0&&idx<p.checkpoints.length,'CHECKPOINT_INDEX','No such checkpoint.');let c=p.checkpoints[idx];requireOk(validValue(c.state),'CHECKPOINT_INVALID','Checkpoint state invalid.');p.state=safeJson(c.state);p.updated=new Date().toISOString();return checkProject(p)}
+  function selfTest(){
+    let tests=[];
+    const test=(name,fn)=>{try{fn();tests.push({name,status:'PASS'})}catch(e){tests.push({name,status:'FAIL',error:e.message})}};
+    const ok=(x,m)=>{if(!x)throw Error(m)};
+    test('Tokenizer strings, comments and line origin',()=>{let ts=tokenize('# hi\nbody "Hello world"\n');ok(ts.some(t=>t.type==='string'&&t.value==='Hello world'&&t.line===2),'token failed')});
+    test('Parser and normalised IR',()=>{let r=compile(TEMPLATES['First Contact']);ok(r.ops.some(x=>x.opcode==='REPEAT')&&r.schema===IR_SCHEMA,'missing IR')});
+    test('First-contact full route',()=>{let r=run(TEMPLATES['First Contact']);ok(r.status==='PASS'&&readPath(r.state,'energy')===15,'bad run')});
+    test('Game event handler and damage',()=>{let r=run(TEMPLATES['Game Seed']);ok(r.status==='PASS'&&readPath(r.state,'rival.hp')===68,'event failed')});
+    test('App workflow and checkpoint',()=>{let r=run(TEMPLATES['App Seed']);ok(r.status==='PASS'&&r.checkpoints.length===1,'app failed')});
+    test('Simulation repeats capped and deterministic',()=>{let r=run(TEMPLATES['Simulation Seed']);ok(r.status==='PASS'&&readPath(r.state,'pressure')===80,'simulation failed')});
+    test('Unknown operation rejected',()=>ok(run('body X\ndo evil path=x value=1').status==='HOLD','unknown op accepted'));
+    test('Prototype path blocked',()=>ok(run('body X\nstate __proto__.polluted = true').status==='HOLD','unsafe path accepted'));
+    test('Unterminated string rejected',()=>ok(run('body "open').status==='HOLD','string accepted'));
+    test('Overlong source rejected',()=>ok(run('body X\n'+' '.repeat(LIMIT.source)).status==='HOLD','source accepted'));
+    test('Repeat bound enforced',()=>ok(run('body X\nrepeat 999 do note text="no"').status==='HOLD','repeat accepted'));
+    test('Failure keeps previous state unchanged',()=>{let state={held:31};let r=run('body X\ndo add path=held value=4\nguard held == 100',state);ok(r.status==='HOLD'&&r.state.held===31,'transaction leaked')});
+    test('Conditional true and false',()=>{let r=run('body X\nstate count = 1\nwhen count == 1 do add path=count value=2\nwhen count == 100 do add path=count value=10');ok(r.status==='PASS'&&r.state.count===3,'conditional failed')});
+    test('Typed toggle',()=>{let r=run('body X\nstate flag = true\ndo toggle path=flag');ok(!r.state.flag,'toggle failed')});
+    test('Array append/remove',()=>{let r=run('body X\ndo append path=items value=hello\ndo append path=items value=world\ndo remove path=items value=hello');ok(r.state.items.length===1&&r.state.items[0]==='world','array failed')});
+    test('No arbitrary JS execution',()=>{let r=run('body X\ndo eval code="console.log(123)"');ok(r.status==='HOLD','eval accepted')});
+    test('Guard blocks negative false assertion',()=>ok(run('body X\nstate a = 0\nguard a > 1').status==='HOLD','guard accepted'));
+    test('Checkpoint restore',()=>{let p=newProject();let r=run('body X\nstate x = 12\ndo checkpoint label=save');p=commit(p,p.source,r);p.state.x=33;p=restoreCheckpoint(p,0);ok(p.state.x===12,'restoration failed')});
+    test('Project export/import roundtrip',()=>{let p=newProject();ok(checkProject(safeJson(p)).source===p.source,'import failed')});
+    test('Corrupt project import rejected',()=>{let p=newProject();p.schema='bad';let threw=false;try{checkProject(p)}catch(e){threw=true}ok(threw,'corrupt import accepted')});
+    test('Memoised handler bounded against recursion',()=>ok(run('body X\non PING do emit type=PING\ndo emit type=PING').status==='HOLD','recursive emission accepted'));
+    test('External game event adapter contacts registered handler',()=>{let src='body X\nstate hits = 0\non HIT do add path=hits value=1';let r=run(src,undefined,{events:[{type:'HIT',value:{force:2}}]});ok(r.status==='PASS'&&r.state.hits===1,'external event failed')});
+    test('External event shape validation',()=>{let r=run('body X',undefined,{events:[{type:'BAD EVENT',value:0}]});ok(r.status==='HOLD','invalid event accepted')});
+    test('No event code execution on import',()=>{let p=newProject();p.source='body X\ndo bad';ok(checkProject(p).source===p.source,'import executed')});
+    test('State overflow prevented',()=>{let r=run('body X\nstate x = 2\nrepeat 64 do multiply path=x value=999999999999999999999');ok(r.status==='HOLD','overflow accepted')});
+    test('Receipt commits only on earned PASS',()=>{let p=newProject();let r=run('body X\nexpect missing == 1');p=commit(p,p.source,r);ok(p.receipts.at(-1).status==='HOLD'&&p.state.route.current==='idle','false pass')});
+    return {schema:'jm.minimax.selftest/1',version:VERSION,total:tests.length,passed:tests.filter(t=>t.status==='PASS').length,failed:tests.filter(t=>t.status==='FAIL').length,tests};
+  }
+  return Object.freeze({VERSION,SCHEMA,IR_SCHEMA,LIMIT,OPS,TEMPLATES,tokenize,parse,analyse,compile,inspect,run,newProject,checkProject,commit,restoreCheckpoint,selfTest,readPath,fnv,stable});
+});
+
+</script>
+<script id="workbench">
+(()=>{'use strict';
+const J=window.JMMiniMax;
+const $=s=>document.getElementById(s), stringify=v=>JSON.stringify(v,null,2), storage='JM_MINI_MAXPACK_v1_WORKSPACE';
+const guide=`JM MINI MAXPACK · LANGUAGE GUIDE\n\nONE BODY. GENUINE PARSER. GUARDED RUNTIME.\nThe language is declarative, intentionally bounded and not JavaScript.\n\nSYNTAX\nbody "Your Creation"\nstate health = 100\nstate stats.turns = 0\ndo set path=health value=50\ndo add path=health value=5\ndo subtract path=health value=3\ndo multiply path=health value=2\ndo toggle path=ready\ndo append path=items value="new entry"\ndo remove path=items value="old entry"\ndo damage target=enemy.hp value=4\ndo heal target=player.hp value=4\ndo route to="next-stage"\ndo note text="Traceable action"\ndo emit type=PING value="any payload"\ndo checkpoint label="saved-phase"\n\nVALIDATION / CONDITIONS\nguard health > 0      # abort/rollback if false\nexpect health == 100 # test assertion; rollback on false\nwhen health >= 10 do add path=stats.turns value=1\nrepeat 3 do add path=stats.turns value=1\non PING do note text="Observed PING"\n\nCOMPARATORS\n==  !=  >  <  >=  <=  contains\n\nGUARDRAILS\nOnly allowlisted operations; no eval/Function/imports/network from source.\nSafe dotted state paths; prototype keys blocked.\nEach run is an all-or-nothing state transaction.\nA failure returns the prior state and an unearned HOLD receipt.\nBounded repeat, token, state, event and instruction budgets.\nNo implicit execution on import.\n\nCREATION/DELIVERY\n1. Choose a seed, create a separate project.\n2. Change source and validate.\n3. Run; examine State, IR, Trace and Receipts.\n4. Export a project JSON and carry the portable HTML to a new host.\n5. A host such as Gemini can port/adapt the core and author new organs.\n\nHONESTY\nCompile PASS != Browser runtime PASS != Device DING.\nDigest = FNV-1a32 non-cryptographic change marker, NOT authentication.\nThe parent is JM OneBody Coding OS v1.0; this is not a full substitute.\nGardles is a separate owner-named body; this pack does not claim its original source.\n`; 
+let projects=[],current=null,lastCompile=null,lastResult=null,lastTests=null,activeTab='state',saveTimer=null;
+function save(){try{localStorage.setItem(storage,stringify({version:J.VERSION,current,projects}))}catch(e){say('Local autosave unavailable. Export your project JSON.',false)}}
+function load(){try{let x=JSON.parse(localStorage.getItem(storage)||'null');if(x&&Array.isArray(x.projects)&&x.projects.length&&x.projects.length<=24){projects=x.projects.map(z=>J.checkProject(z));current=projects.some(z=>z.id===x.current)?x.current:projects[0].id;return}}catch(e){}let p=J.newProject();projects=[p];current=p.id;save()}
+function get(){return projects.find(p=>p.id===current)}
+function escapeFile(s){return String(s).replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,50)||'project'}
+function download(name,content,type){let url=URL.createObjectURL(new Blob([content],{type}));let a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+function label(v){return String(v??'').slice(0,75)}
+function replaceOptions(node,items,value){node.replaceChildren();items.forEach(([id,title])=>{const op=document.createElement('option');op.value=id;op.textContent=title;node.append(op)});if(value!==undefined)node.value=value}
+function syncPicker(){replaceOptions($('project'),projects.map(p=>[p.id,p.name]),current)}
+function syncCheckpoints(){let cs=get().checkpoints;replaceOptions($('checkpoints'),cs.length?cs.map((c,i)=>[String(i),`${i+1}. ${c.label} · step ${c.step}`]):[['','No checkpoints yet']],cs.length?String(cs.length-1):'');$('restore').disabled=!cs.length}
+function syncEditor(){let p=get();$('projectName').value=p.name;$('source').value=p.source;$('runStat').textContent=p.receipts.at(-1)?.status??'NOT RUN';$('lastDigest').textContent=p.receipts.at(-1)?.stateDigest??'No receipt';lastCompile=null;lastResult=null;syncCheckpoints();updateStats();view()}
+function updateLines(){let e=$('source'),n=e.value.split('\n').length;$('lines').textContent=Array.from({length:n},(_,i)=>String(i+1)).join('\n');$('lines').scrollTop=e.scrollTop;$('sourceStat').textContent=`${n} lines · ${e.value.length.toLocaleString()} characters`}
+function updateStats(){updateLines();$('numTokens').textContent=String(lastCompile?.tokens??'—');$('numOps').textContent=String(lastCompile?.ops?.length??'—');$('numSteps').textContent=String(lastResult?.receipt?.steps??'—');$('numTests').textContent=lastTests?`${lastTests.passed}/${lastTests.total}`:'—'}
+function say(message,good=null){$('output').textContent=message;$('statusDot').className='dot'+(good===true?' pass':good===false?' fail':'');$('topProof').textContent=good===true?'BROWSER DING':good===false?'HOLD · CHECK':'CONTACT OPEN';$('topProof').className='pill '+(good===true?'good':good===false?'bad':'open')}
+function activeTabTo(id){activeTab=id;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===id)));view()}
+function view(){let p=get();let x;
+  if(activeTab==='state')x=stringify(p.state);
+  if(activeTab==='ir')x=lastCompile?stringify({name:lastCompile.name,sourceDigest:lastCompile.sourceDigest,irDigest:lastCompile.digest,diagnostics:lastCompile.diagnostics,ops:lastCompile.ops}):'Check grammar or Run to inspect compiled intermediate representation.';
+  if(activeTab==='trace')x=stringify(p.lastTrace.length?p.lastTrace:[{status:'OPEN',message:'Run the program to produce a trace.'}]);
+  if(activeTab==='receipts')x=stringify(p.receipts.length?p.receipts.slice().reverse():[{status:'OPEN',message:'No runtime receipts yet.'}]);
+  if(activeTab==='checks')x=lastTests?stringify(lastTests):'Select “24 self-tests” for the in-browser test suite.';
+  if(activeTab==='guide')x=guide;
+  $('inspector').textContent=x;
+  $('inspectorStatus').textContent=({state:'CURRENT STATE',ir:'COMPILER OUTPUT',trace:'EXECUTION TRACE',receipts:'PROOF LEDGER',checks:'TEST RECEIPT',guide:'AUTHORING GUIDE'})[activeTab];
+}
+function syncSource(){let p=get();p.source=$('source').value;p.updated=new Date().toISOString();lastCompile=null;lastResult=null;save();updateStats()}
+function validate(){syncSource();const result=J.inspect(get().source);lastCompile=result.compiled;
+  if(result.status==='PASS'){say('Grammar and guards passed. Compile proof only; run to verify state consequence.',true);$('runStat').textContent='COMPILE PASS';activeTabTo('ir')}
+  else{say(result.errors.map(e=>`L${e.line} ${e.code}: ${e.message}`).join(' | '),false);$('runStat').textContent='HOLD';activeTabTo('ir')}
+  updateStats();return result}
+function run(){syncSource();const p=get();let r=J.run(p.source,p.state);lastResult=r;lastCompile=r.compiled;
+  try{let updated=J.commit(p,p.source,r);projects[projects.findIndex(x=>x.id===p.id)]=updated}catch(e){say('Receipt generated but project save failed: '+e.message,false);return}
+  save();syncCheckpoints();$('runStat').textContent=r.status;$('lastDigest').textContent=r.receipt.stateDigest??'state held';
+  if(r.status==='PASS'){say(`DING: ${r.receipt.steps} operations, ${r.receipt.passed}/${r.receipt.checks} expectations. State committed.`,true);activeTabTo('state')}
+  else{say(`HOLD: ${r.errors.map(e=>`L${e.line} ${e.code} ${e.message}`).join('; ')}. Prior state preserved.`,false);activeTabTo('receipts')}
+  updateStats();}
+function newProject(){if(projects.length>=24){say('24 local projects maximum. Export or remove one first.',false);return}let template=$('template').value;let p=J.newProject(template.replace(' Seed','')+' Project',template);projects.push(p);current=p.id;syncPicker();syncEditor();save();say('New independent project created. Source inherited as a starter, not as a finished creation.',null)}
+function reset(){let p=get();if(!confirm('Clear the active runtime state, trace, receipts and checkpoints for this project? Source stays intact.'))return;p.state={route:{current:'idle',history:[]},events:[],notes:[]};p.lastTrace=[];p.receipts=[];p.checkpoints=[];save();syncEditor();say('Runtime reset; source preserved.',null)}
+function deleteProject(){if(projects.length===1){say('Keep at least one project. Create another before removing this.',false);return}if(!confirm('Remove this local project? Export it first if needed.'))return;projects=projects.filter(p=>p.id!==current);current=projects[0].id;save();syncPicker();syncEditor();say('Local project removed.',null)}
+function setup(){load();replaceOptions($('template'),Object.keys(J.TEMPLATES).map(n=>[n,n]),'First Contact');syncPicker();syncEditor();say('Ready. Your source remains local unless you export/share it.',null);
+  $('source').addEventListener('input',()=>{syncSource();$('dirty').textContent='MODIFIED';clearTimeout(saveTimer);saveTimer=setTimeout(save,250)});
+  $('source').addEventListener('scroll',updateLines);
+  $('source').addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();let x=e.target,s=x.selectionStart;x.setRangeText('  ',s,x.selectionEnd,'end');syncSource()}if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run()}});
+  $('run').onclick=run;$('validate').onclick=validate;
+  $('selfTest').onclick=()=>{lastTests=J.selfTest();updateStats();activeTabTo('checks');say(`Runtime self-tests: ${lastTests.passed}/${lastTests.total} passed. This is NOT device proof.`,lastTests.failed===0)};
+  $('newProject').onclick=newProject;$('resetState').onclick=reset;$('deleteProject').onclick=deleteProject;
+  $('restore').onclick=()=>{try{let i=Number($('checkpoints').value);if(!confirm('Restore this state checkpoint? Current unsaved state will be replaced; source and receipts remain.'))return;let p=J.restoreCheckpoint(get(),i);projects[projects.findIndex(x=>x.id===p.id)]=p;save();activeTabTo('state');syncCheckpoints();say('Checkpoint state restored. Source and proof history preserved.',true)}catch(e){say('Recovery failed: '+e.message,false)}};
+  $('project').onchange=e=>{syncSource();current=e.target.value;save();syncEditor();say('Switched to independent project.',null)};
+  $('projectName').onchange=e=>{let p=get();p.name=(e.target.value.trim()||'Untitled').slice(0,96);save();syncPicker()};
+  $('exportProject').onclick=()=>{syncSource();download(`JM_MINIMAX_${escapeFile(get().name)}.json`,stringify(get()),'application/json');say('Project JSON exported with source, state and proof receipts.',true)};
+  $('exportSource').onclick=()=>{syncSource();download(`JM_MINIMAX_${escapeFile(get().name)}.cading`,get().source+'\n','text/plain');say('Declarative source exported.',true)};
+  $('importProject').onchange=async e=>{let file=e.target.files?.[0];if(!file)return;try{let s=await file.text();if(s.length>350000)throw Error('Import too large.');let p=J.checkProject(JSON.parse(s));if(projects.length>=24)throw Error('Project limit reached.');p.id='import-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);projects.push(p);current=p.id;save();syncPicker();syncEditor();say('Imported without executing source. Check grammar before Run.',true)}catch(err){say('Import rejected: '+err.message,false)}finally{e.target.value=''}};
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>activeTabTo(b.dataset.tab));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save()});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
+})();
+</script>
+</body>
+</html>

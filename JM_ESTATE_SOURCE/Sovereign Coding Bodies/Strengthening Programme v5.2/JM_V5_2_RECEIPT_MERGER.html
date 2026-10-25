@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JM v5.2 Receipt Merger</title>
+<style>body{font-family:system-ui;background:#07111f;color:#eef4ff;padding:20px}.card{background:#111d32;border:1px solid #29446d;border-radius:16px;padding:16px;margin:12px 0}button,input{font-size:18px;padding:12px;width:100%;box-sizing:border-box}pre{white-space:pre-wrap;word-break:break-word}</style></head>
+<body><h1>JM v5.2 — Receipt Merger</h1><p><b>Law:</b> RETURNED CONTACT CROWNS ONLY THE RAIL IT TOUCHED.</p>
+<div class="card"><input id="files" type="file" accept=".json,application/json" multiple><button id="merge">MERGE SELECTED RECEIPTS</button><button id="save">SAVE MASTER CONTACT RECEIPT</button></div>
+<div class="card"><pre id="out"></pre></div>
+<script>
+let master={schema:"jm.v5.2.master-returned-contact/v1",merged_at:null,sources:[],rails:{},boundaries:[]};
+const out=document.querySelector("#out");
+function update(){out.textContent=JSON.stringify(master,null,2)}
+function promote(name,state,source,details){
+ const prev=master.rails[name];
+ const rank={BUGG:0,HOLD:1,READY:2,DING:3};
+ if(!prev||rank[state]>rank[prev.state])master.rails[name]={state,source,details};
+}
+document.querySelector("#merge").onclick=async()=>{
+ master={schema:"jm.v5.2.master-returned-contact/v1",merged_at:new Date().toISOString(),sources:[],rails:{},boundaries:[]};
+ for(const f of document.querySelector("#files").files){
+  try{
+   const j=JSON.parse(await f.text());master.sources.push({name:f.name,schema:j.schema||null});
+   if(j.rails)for(const [k,v] of Object.entries(j.rails))promote(k,v.state||"HOLD",f.name,v);
+   if(j.observed?.touch?.state)promote("touch",j.observed.touch.state,f.name,j.observed.touch);
+   if(j.keystore?.state)promote("android_keystore",j.keystore.state,f.name,j.keystore);
+   if(j.features?.strongbox!==undefined)promote("strongbox_feature",j.features.strongbox?"DING":"HOLD",f.name,j.features);
+   if(j.state==="DING" && j.props)promote("adb_device_contact","DING",f.name,j.props);
+   if(j.boundaries)master.boundaries.push(...j.boundaries);
+  }catch(e){master.sources.push({name:f.name,error:String(e)})}
+ }
+ update();
+};
+document.querySelector("#save").onclick=()=>{
+ const b=new Blob([JSON.stringify(master,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(b);a.download="JM_V5_2_MASTER_RETURNED_CONTACT_RECEIPT.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+update();
+</script></body></html>

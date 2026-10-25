@@ -1,0 +1,1053 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#05080f"><title>Fracture Circuit v0.26.3 — Raised Floor Self-Test — Durable Profile · Adapter Contact</title><style>
+:root{--bg:#05080f;--floor:#10192a;--floor2:#17263c;--accent:#ffd06a;--player:#63ddff;--enemy:#ff647d;--meaning:#ba82ff;--route:#70edbb;--ink:#f3f7ff;--muted:#9fb0c7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button{font:inherit}.game{position:relative;width:100%;height:100%;overflow:hidden;background:var(--bg)}.stage{position:absolute;inset:0;overflow:hidden}.stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,transparent 34%,#0004 77%,#0009 115%);z-index:2}
+.topHud{position:absolute;left:12px;right:12px;top:max(10px,env(safe-area-inset-top));z-index:8;display:grid;grid-template-columns:1fr auto;gap:8px;pointer-events:none}
+.hudCard{background:#06101bd9;border:1px solid #ffffff1c;backdrop-filter:blur(9px);box-shadow:0 8px 28px #0008;border-radius:16px}.statusCard{padding:9px 12px;min-width:0}.row{display:flex;align-items:center;gap:8px}.scene{font-weight:1000;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.round{font:900 11px ui-monospace,monospace;color:var(--accent);white-space:nowrap}.health{height:7px;background:#ffffff14;border-radius:99px;overflow:hidden;margin-top:7px}.health>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--route),var(--player));border-radius:inherit;transition:width .16s}
+.scoreCard{padding:8px 10px;text-align:right;min-width:88px}.scoreNum{font:1000 18px ui-monospace,monospace}.timer{font:800 11px ui-monospace,monospace;color:var(--muted)}
+.objectiveBar{position:absolute;top:83px;left:50%;transform:translateX(-50%);z-index:8;max-width:calc(100% - 26px);padding:8px 12px;border-radius:999px;background:#06101bcf;border:1px solid #ffffff18;backdrop-filter:blur(8px);font:900 11px ui-monospace,monospace;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.combo{position:absolute;top:126px;left:50%;transform:translateX(-50%) scale(.95);z-index:8;color:var(--accent);font:1000 17px ui-monospace,monospace;text-shadow:0 3px 18px #000;opacity:0;transition:.15s;pointer-events:none}.combo.show{opacity:1;transform:translateX(-50%) scale(1)}
+.controls{position:absolute;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));z-index:10;display:flex;justify-content:space-between;align-items:flex-end;padding:0 18px;pointer-events:none}.pad,.act{pointer-events:auto;touch-action:none;user-select:none}.pad{width:96px;height:96px;border:2px solid color-mix(in srgb,var(--player) 58%,transparent);border-radius:50%;background:#07141fc7;box-shadow:0 12px 35px #0008, inset 0 0 0 1px #ffffff12;display:grid;place-items:center}.knob{width:50px;height:50px;border-radius:50%;background:color-mix(in srgb,var(--player) 72%,#183b4b);border:2px solid #dffaff;box-shadow:0 4px 18px #0008}
+.act{width:92px;height:92px;border-radius:50%;border:3px solid var(--accent);background:#201708d9;color:#ffe8ac;font-weight:1000;font-size:16px;position:relative;overflow:hidden;box-shadow:0 12px 35px #0009,0 0 24px color-mix(in srgb,var(--accent) 14%,transparent)}.act:before{content:'';position:absolute;left:0;right:0;bottom:0;height:var(--charge,0%);background:color-mix(in srgb,var(--accent) 26%,transparent)}.act span{position:relative;z-index:1}
+.menuBtn{position:absolute;right:14px;top:132px;z-index:11;width:42px;height:42px;border-radius:14px;border:1px solid #ffffff20;background:#07111ddd;color:#dfeaff;font-weight:1000;backdrop-filter:blur(8px)}
+.roundBanner,.intro{position:absolute;inset:0;z-index:18;display:grid;place-items:center;pointer-events:none}.intro{background:linear-gradient(180deg,#030710ee,#030710aa);transition:opacity .35s}.intro.hide{opacity:0}.introBox{text-align:center;padding:30px}.introBox b{display:block;color:var(--accent);font-size:clamp(35px,10vw,72px);line-height:.95}.introBox span{display:block;color:var(--muted);margin-top:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.roundBanner{font-size:clamp(42px,13vw,86px);font-weight:1000;color:var(--accent);text-shadow:0 6px 30px #000;opacity:0;transform:scale(.92);transition:.18s}.roundBanner.show{opacity:1;transform:scale(1)}
+.flash{position:absolute;inset:0;z-index:12;pointer-events:none;background:#ff526622;opacity:0;transition:opacity .05s}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(88vw,390px);z-index:30;background:#07101df8;border-left:1px solid #ffffff1b;box-shadow:-20px 0 50px #000a;transform:translateX(105%);transition:transform .2s;padding:calc(16px + env(safe-area-inset-top)) 16px 16px;overflow:auto}.drawer.open{transform:none}.drawer h2{margin:0 0 4px;color:var(--accent)}.drawer .muted{color:var(--muted);font-size:12px}.drawer .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.drawer button{border:1px solid #334a68;border-radius:12px;padding:11px;background:#112138;color:white;font-weight:900}.drawer button.primary{background:var(--accent);color:#181307;border-color:transparent}.drawer details{border-top:1px solid #ffffff12;padding:10px 0}.drawer summary{font-weight:900;cursor:pointer}.drawer pre{white-space:pre-wrap;word-break:break-word;font:10px ui-monospace,monospace;color:#c4d1e4}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{font:800 10px ui-monospace,monospace;padding:5px 7px;border:1px solid #ffffff1b;border-radius:99px;color:#cbd7e8}
+.end{display:none;position:absolute;inset:0;z-index:40;background:#030710df;place-items:center;padding:24px;backdrop-filter:blur(8px)}.endBox{width:min(92vw,430px);text-align:center;padding:28px;border-radius:26px;background:#081321;border:1px solid #ffffff1d;box-shadow:0 24px 70px #000c}.endBox small{color:var(--muted);font-weight:900;letter-spacing:.1em}.endBox h2{font-size:42px;margin:5px 0;color:var(--accent)}.endBox strong{font:1000 28px ui-monospace,monospace}.endBox button{display:block;width:100%;margin-top:16px;padding:14px;border:0;border-radius:14px;background:var(--accent);color:#171205;font-weight:1000;font-size:17px}
+.feedback{position:absolute;left:50%;top:45%;z-index:15;transform:translate(-50%,-50%) scale(.9);font-weight:1000;font-size:24px;color:white;text-shadow:0 4px 18px #000;opacity:0;pointer-events:none}.feedback.show{animation:pop .55s ease-out}@keyframes pop{0%{opacity:0;transform:translate(-50%,-40%) scale(.75)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-75%) scale(1.08)}}
+@media(min-width:800px){.controls{padding:0 28px 22px}.pad{width:122px;height:122px}.act{width:118px;height:118px}.objectiveBar{top:78px}.menuBtn{top:122px}}
+
+.rendererBadge{display:inline-flex;margin-top:8px;padding:5px 8px;border-radius:999px;border:1px solid #ffffff1b;color:#9fb0c7;font:800 10px ui-monospace,monospace}.stage.renderer-fallback:after{content:'SAFE RENDER';position:absolute;left:10px;bottom:8px;z-index:3;color:#ffffff24;font:700 8px ui-monospace,monospace;pointer-events:none}@media(max-height:700px){.objectiveBar{top:72px}.menuBtn{top:116px}.controls{bottom:max(10px,env(safe-area-inset-bottom))}.pad{width:88px;height:88px}.act{width:86px;height:86px}}
+/* Fracture Circuit v0.26.3 — Raised Floor Self-Test — durable profile / adapter integration */
+.fcSetup{position:absolute;inset:0;z-index:60;background:radial-gradient(circle at 50% 18%,#16263d 0,#09111d 36%,#04070d 74%);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.fcSetup.hidden{display:none}.fcPanel{width:min(900px,100%);border:1px solid #ffffff1c;background:#07101cf2;border-radius:24px;padding:20px;box-shadow:0 22px 80px #000c}
+.fcEyebrow{font:900 11px ui-monospace,monospace;letter-spacing:.18em;color:#87a6bd}.fcPanel h1{margin:6px 0 4px;font-size:clamp(28px,5vw,52px);line-height:.94}.fcPanel h1 span{color:var(--accent)}
+.fcSub{color:#9bb1c4;max-width:720px;font-size:13px;line-height:1.5}.fcGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px}.fcGroup{border:1px solid #ffffff12;border-radius:18px;padding:12px;background:#ffffff05}.fcGroup h2{font:900 11px ui-monospace,monospace;letter-spacing:.13em;color:#b7cad9;margin:0 0 9px}.fcChoices{display:grid;gap:8px}
+.fcChoice{appearance:none;text-align:left;border:1px solid #ffffff14;border-radius:13px;background:#0b1725;color:#e8f5ff;padding:10px 11px;min-height:58px}.fcChoice b{display:block;font-size:13px}.fcChoice small{display:block;color:#7f9bb0;font-size:10px;line-height:1.25;margin-top:3px}.fcChoice.selected{border-color:var(--accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 55%,transparent),0 0 28px color-mix(in srgb,var(--accent) 10%,transparent);background:#152235}.fcLaunch{width:100%;margin-top:16px;border:2px solid var(--accent);border-radius:16px;background:linear-gradient(180deg,#2d2109,#181006);color:#ffe7ac;font:1000 16px ui-monospace,monospace;padding:15px;letter-spacing:.06em}.fcReceipt{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#718ca0;font:800 10px ui-monospace,monospace;margin-top:10px}
+.fcLoadoutBtn{position:absolute;left:14px;top:132px;z-index:11;border:1px solid #ffffff20;border-radius:11px;background:#07121dcc;color:#b8d4e7;font:900 10px ui-monospace,monospace;padding:8px 9px;backdrop-filter:blur(7px)}
+.fcRunTag{position:absolute;left:50%;bottom:max(126px,calc(env(safe-area-inset-bottom) + 126px));transform:translateX(-50%);z-index:8;color:#7897ad;background:#06101baa;border:1px solid #ffffff10;border-radius:999px;padding:6px 10px;font:900 9px ui-monospace,monospace;letter-spacing:.08em;white-space:nowrap;pointer-events:none}
+@media(max-width:720px){.fcSetup{padding:10px;align-items:flex-start}.fcPanel{padding:14px;border-radius:18px}.fcGrid{grid-template-columns:1fr;gap:9px}.fcGroup{padding:9px}.fcChoices{grid-template-columns:1fr 1fr}.fcChoice{min-height:62px;padding:9px}.fcChoice small{font-size:9px}.fcRunTag{bottom:max(121px,calc(env(safe-area-inset-bottom) + 121px));max-width:68%;overflow:hidden;text-overflow:ellipsis}}
+@media(max-width:390px){.fcChoices{grid-template-columns:1fr}.fcPanel h1{font-size:29px}}
+
+/* v0.26 player-facing production organs */
+.fcSettingsBtn{position:absolute;left:14px;top:171px;z-index:11;border:1px solid #ffffff20;border-radius:11px;background:#07121dcc;color:#b8d4e7;font:900 10px ui-monospace,monospace;padding:8px 9px;backdrop-filter:blur(7px)}
+.fcRecordTag{position:absolute;right:14px;bottom:max(126px,calc(env(safe-area-inset-bottom) + 126px));z-index:8;color:#8da6ba;background:#06101baa;border:1px solid #ffffff10;border-radius:999px;padding:6px 10px;font:900 9px ui-monospace,monospace;pointer-events:none}
+.combatReadout{position:absolute;right:14px;top:184px;z-index:12;min-width:110px;text-align:right;color:#fff;font:1000 11px ui-monospace,monospace;text-shadow:0 3px 15px #000;opacity:0;transform:translateX(8px);transition:.12s;pointer-events:none}.combatReadout.show{opacity:1;transform:none}
+.settingsSheet{position:absolute;inset:0;z-index:55;background:#02060dcc;display:none;place-items:center;padding:18px;backdrop-filter:blur(8px)}.settingsSheet.open{display:grid}
+.settingsCard{width:min(92vw,480px);max-height:88vh;overflow:auto;background:#081321;border:1px solid #ffffff1d;border-radius:24px;padding:20px;box-shadow:0 24px 70px #000c}.settingsCard h2{margin:0;color:var(--accent)}.settingsCard p{color:var(--muted);font-size:12px;line-height:1.45}
+.settingRow{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:12px 0;border-top:1px solid #ffffff10}.settingRow:first-of-type{border-top:0}.settingRow b{display:block}.settingRow small{display:block;color:var(--muted);margin-top:3px}.settingRow input[type=range]{width:150px}
+.settingsCard button{width:100%;margin-top:12px;padding:13px;border:0;border-radius:13px;background:var(--accent);color:#171205;font-weight:1000}
+body.fcLargeHud .scene{font-size:18px}body.fcLargeHud .objectiveBar{font-size:13px;padding:10px 14px}body.fcLargeHud .scoreNum{font-size:22px}
+body.fcHighContrast .hudCard,body.fcHighContrast .objectiveBar{background:#02060df2;border-color:#ffffff55}body.fcHighContrast .health{height:9px}
+body.fcReducedMotion .roundBanner,body.fcReducedMotion .intro,body.fcReducedMotion .combo,body.fcReducedMotion .feedback{transition:none!important;animation-duration:.01ms!important}
+.endRecord{margin-top:8px;color:#9fb0c7;font:900 11px ui-monospace,monospace}
+@media(max-width:720px){.fcSettingsBtn{top:167px}.fcRecordTag{right:8px;bottom:max(121px,calc(env(safe-area-inset-bottom) + 121px));max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.combatReadout{right:10px;top:205px}}
+
+
+/* v0.26.1 arena-visibility / edge-control repair */
+.fcLoadoutBtn,.fcSettingsBtn,.fcRunTag,.fcRecordTag{display:none!important}
+.controls{left:0;right:0;bottom:max(9px,env(safe-area-inset-bottom));padding:0 10px;align-items:end}
+.pad{width:86px;height:86px;border-width:1px;background:#07141f8f;opacity:.72;transition:opacity .12s,transform .12s}
+.knob{width:44px;height:44px;border-width:1px;background:color-mix(in srgb,var(--player) 68%,#183b4b);box-shadow:0 4px 13px #0007}
+.act{width:80px;height:80px;border-width:2px;background:#201708a8;font-size:13px;opacity:.76;transition:opacity .12s,transform .12s}
+.pad:active,.act:active{opacity:1;transform:scale(1.03)}
+.menuBtn{top:max(88px,calc(env(safe-area-inset-top) + 78px));right:10px;width:38px;height:38px;border-radius:12px;background:#07111da8}
+.objectiveBar{top:max(76px,calc(env(safe-area-inset-top) + 66px));max-width:calc(100% - 72px)}
+.combatReadout{right:10px;top:max(132px,calc(env(safe-area-inset-top) + 122px))}
+@media(min-width:800px){
+  .controls{padding:0 20px 10px}
+  .pad{width:102px;height:102px}.knob{width:50px;height:50px}.act{width:96px;height:96px;font-size:15px}
+}
+@media(orientation:landscape) and (max-height:560px){
+  .controls{bottom:max(5px,env(safe-area-inset-bottom));padding:0 14px}
+  .pad{width:74px;height:74px}.knob{width:38px;height:38px}.act{width:70px;height:70px;font-size:12px}
+  .objectiveBar{top:max(54px,calc(env(safe-area-inset-top) + 46px));max-width:58%}
+  .menuBtn{top:8px;right:8px}
+  .topHud{left:8px;right:54px;top:max(6px,env(safe-area-inset-top))}
+}
+
+
+/* Fracture Circuit v0.26.3 — Raised Floor Self-Test — durable profile / adapter contact */
+.profileBlock{margin:14px 0 4px;padding:12px;border:1px solid #ffffff18;border-radius:14px;background:#ffffff06}.profileBlock h3{margin:0 0 5px;font:900 11px ui-monospace,monospace;letter-spacing:.12em;color:#c8dae7}.profileBlock p{margin:0 0 9px;color:#8ea7b9;font-size:11px;line-height:1.4}.profileBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.profileBtns button{min-height:42px}.profileStatus{margin-top:8px;color:#96b1c4;font:800 10px ui-monospace,monospace;line-height:1.35;word-break:break-word}@media(max-width:520px){.profileBtns{grid-template-columns:1fr}.profileBtns button{min-height:46px}}
+</style></head><body><div class="game">
+<div class="fcSetup" id="fcSetup"><div class="fcPanel">
+  <div class="fcEyebrow">FRACTURE CIRCUIT · v0.26.2 · DURABLE PROFILE · ADAPTER CONTACT</div>
+  <h1>CHOOSE THE <span>DIFFERENCE</span></h1>
+  <div class="fcSub">Runner × circuit × mode still defines the live grammar. v0.26.2 keeps the v0.26.1 edge-control repair and adds adapter-governed runtime contact, durable profile continuity and portable SavePack without rewriting its protected parents.</div>
+  <div class="fcGrid">
+    <section class="fcGroup"><h2>01 · RUNNER</h2><div class="fcChoices" id="fcRunnerChoices">
+      <button class="fcChoice" data-fc-kind="runner" data-fc-value="VECTRA"><b>VECTRA</b><small>fast · long combo · light core</small></button>
+      <button class="fcChoice" data-fc-kind="runner" data-fc-value="BULWARK"><b>BULWARK</b><small>heavy HP · impact CAST · slower</small></button>
+      <button class="fcChoice" data-fc-kind="runner" data-fc-value="RELAY"><b>RELAY</b><small>route score · stable control · recovery</small></button>
+      <button class="fcChoice" data-fc-kind="runner" data-fc-value="RIFT"><b>RIFT</b><small>glass cannon · brutal CAST · short window</small></button>
+    </div></section>
+    <section class="fcGroup"><h2>02 · CIRCUIT</h2><div class="fcChoices" id="fcCircuitChoices">
+      <button class="fcChoice" data-fc-kind="circuit" data-fc-value="SHARD"><b>SHARD LOOP</b><small>balanced fracture field</small></button>
+      <button class="fcChoice" data-fc-kind="circuit" data-fc-value="DEADLINE"><b>DEADLINE GRID</b><small>short clock · dense pressure</small></button>
+      <button class="fcChoice" data-fc-kind="circuit" data-fc-value="MIRROR"><b>MIRROR YARD</b><small>meaning-rich · mirrored contact</small></button>
+      <button class="fcChoice" data-fc-kind="circuit" data-fc-value="SPLIT"><b>SPLIT CURRENT</b><small>wide field · gate-heavy routes</small></button>
+    </div></section>
+    <section class="fcGroup"><h2>03 · RUN MODE</h2><div class="fcChoices" id="fcModeChoices">
+      <button class="fcChoice" data-fc-kind="mode" data-fc-value="CONVERGENCE"><b>CONVERGENCE</b><small>break + meaning + route</small></button>
+      <button class="fcChoice" data-fc-kind="mode" data-fc-value="PRESSURE"><b>PRESSURE</b><small>combat-forward elimination</small></button>
+      <button class="fcChoice" data-fc-kind="mode" data-fc-value="RELAY"><b>RELAY</b><small>gate + glyph contact race</small></button>
+    </div></section>
+  </div>
+  <button class="fcLaunch" id="fcLaunch">ENTER CIRCUIT</button>
+  <div class="fcReceipt"><span>48 COMBINATIONS</span><span>DONOR ≠ DESCENDANT</span><span>v0.25 PARENT 1c47365a…57d498</span></div>
+</div></div>
+<main class="stage"><canvas id="c"></canvas><div class="vignette"></div><div class="flash" id="flash"></div><div class="topHud"><div class="hudCard statusCard"><div class="row"><span class="scene" id="sceneName"></span><span class="round" id="roundText"></span></div><div class="health"><i id="healthFill"></i></div></div><div class="hudCard scoreCard"><div class="scoreNum" id="scoreNum">0</div><div class="timer" id="timer">--s</div></div></div><div class="objectiveBar" id="objectiveCompact"></div><div class="combo" id="combo"></div><button class="fcLoadoutBtn" id="fcLoadoutBtn">LOADOUT</button><button class="menuBtn" id="menuBtn" aria-label="Proof menu">•••</button><div class="fcRunTag" id="fcRunTag"></div><div class="fcRecordTag" id="fcRecordTag">PB —</div><div class="combatReadout" id="combatReadout"></div><div class="controls"><div class="pad" id="pad"><div class="knob" id="knob"></div></div><button class="act" id="act"><span>ACT</span></button></div><div class="feedback" id="feedback"></div><div class="roundBanner" id="roundBanner"></div><div class="intro" id="intro"><div class="introBox"><b id="introScene"></b><span id="introType"></span></div></div><aside class="drawer" id="drawer"><button id="closeDrawer">BACK TO GAME</button><h2>FRACTURE PAUSE</h2><div class="muted">Arena first. Movement and CAST stay at the thumb edges; loadout, settings, records and proof stay off the live field.</div><div class="rendererBadge" id="drawerRecord">PB —</div><div class="buttons"><button id="restartBtn">RESTART</button><button id="pauseBtn">PAUSE</button><button id="drawerSettingsBtn">SETTINGS</button><button id="drawerLoadoutBtn">LOADOUT</button></div><details><summary>DONORS</summary><div class="tags" id="donorTags"></div></details><details><summary>SHARED ORGANS</summary><pre id="organText"></pre></details><details><summary>RENDERER</summary><pre id="rendererText"></pre></details><details><summary>TRACE / PROOF</summary><pre id="traceText"></pre></details></aside><div class="end" id="end"><div class="endBox"><small id="endKicker"></small><h2 id="endTitle"></h2><strong id="endScore"></strong><p id="endText"></p><div class="endRecord" id="endRecord"></div><button id="playAgain">PLAY AGAIN</button></div></div>
+<div class="settingsSheet" id="fcSettingsSheet"><div class="settingsCard">
+  <h2>GAME SETTINGS</h2>
+  <p>Player-facing controls. These change presentation/input preference, not the runner × circuit × mode grammar.</p>
+  <div class="settingRow"><div><b>Audio feedback</b><small>Runtime tones for score, rounds and outcomes.</small></div><input id="setAudio" type="checkbox" checked></div>
+  <div class="settingRow"><div><b>Haptic feedback</b><small>Contact/CAST vibration where the device supports it.</small></div><input id="setHaptic" type="checkbox" checked></div>
+  <div class="settingRow"><div><b>Reduced motion</b><small>Removes camera shake and softens flashes/signature motion.</small></div><input id="setReduced" type="checkbox"></div>
+  <div class="settingRow"><div><b>Larger HUD</b><small>Raises player-facing HUD readability.</small></div><input id="setLargeHud" type="checkbox"></div>
+  <div class="settingRow"><div><b>High contrast HUD</b><small>Stronger HUD separation without changing game rules.</small></div><input id="setContrast" type="checkbox"></div>
+  <div class="settingRow"><div><b>Movement sensitivity</b><small id="setSensitivityValue">1.00×</small></div><input id="setSensitivity" type="range" min="0.70" max="1.35" step="0.05" value="1"></div>
+
+  <div class="profileBlock">
+    <h3>PROFILE CONTINUITY</h3>
+    <p>Loadout, accessibility settings and run records persist as one Fracture Circuit profile. Portable SavePack is a separate recovery route.</p>
+    <div class="profileBtns"><button id="profileSaveBtn">SAVE PROFILE</button><button id="profileExportBtn">EXPORT SAVEPACK</button><button id="profileImportBtn">IMPORT SAVEPACK</button></div>
+    <input id="profileImportFile" type="file" accept="application/json,.json" hidden>
+    <div class="profileStatus" id="profileStatus">PROFILE · STARTING…</div>
+  </div>
+  <button id="closeSettings">BACK TO GAME</button>
+</div></div>
+<div id="fcPersistenceProof" hidden></div></main></div><script>
+/* JM Game Durable Save / Persistence Contract v0.1 — Fracture Circuit v0.26.3 — Raised Floor Self-Test adapter.
+   The carrier preserves the profile. Fracture Circuit owns profile meaning. */
+(function(global){
+"use strict";
+const CACHE=global.__FC_PROFILE_CACHE__={settings:{},selection:{},records:{},lastResult:null,meta:{revision:0,carrier:"starting"}};
+const GAME_ID="fracture-circuit", NS="jm.game.fracture-circuit", PROFILE_KEY=NS+"::default::profile";
+const DB_NAME="JM_FractureCircuit_v0262", STORE="profiles";
+let mem=null,dbp=null,saveTimer=0;
+const stable=v=>Array.isArray(v)?v.map(stable):(v&&typeof v==="object"?Object.keys(v).sort().reduce((o,k)=>(o[k]=stable(v[k]),o),{}):v);
+const canonical=v=>JSON.stringify(stable(v));
+function sha256(ascii){function rightRotate(v,a){return(v>>>a)|(v<<(32-a))}let mathPow=Math.pow,maxWord=mathPow(2,32),lengthProperty="length",i,j,result="",words=[],asciiBitLength=ascii[lengthProperty]*8;let hash=sha256.h=sha256.h||[],k=sha256.k=sha256.k||[],primeCounter=k[lengthProperty],isComposite={};for(let candidate=2;primeCounter<64;candidate++){if(!isComposite[candidate]){for(i=0;i<313;i+=candidate)isComposite[i]=candidate;hash[primeCounter]=(mathPow(candidate,.5)*maxWord)|0;k[primeCounter++]=(mathPow(candidate,1/3)*maxWord)|0}}ascii+="\x80";while(ascii[lengthProperty]%64-56)ascii+="\x00";for(i=0;i<ascii[lengthProperty];i++){j=ascii.charCodeAt(i);if(j>>8)return sha256(unescape(encodeURIComponent(ascii)));words[i>>2]|=j<<((3-i)%4)*8}words[words[lengthProperty]]=((asciiBitLength/maxWord)|0);words[words[lengthProperty]]=asciiBitLength;for(j=0;j<words[lengthProperty];){let w=words.slice(j,j+=16),oldHash=hash.slice(0);hash=hash.slice(0,8);for(i=0;i<64;i++){let w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4],temp1=hash[7]+(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=(i<16)?w[i]:((w[i-16]+(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))+w[i-7]+(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10)))|0)),temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));hash=[(temp1+temp2)|0].concat(hash);hash[4]=(hash[4]+temp1)|0}for(i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0}for(i=0;i<8;i++)for(j=3;j+1;j--){let b=(hash[i]>>(j*8))&255;result+=(b<16?0:"")+b.toString(16)}return result}
+function localAvailable(){try{localStorage.setItem("__fc_probe__","1");localStorage.removeItem("__fc_probe__");return true}catch(_){return false}}
+function openDB(){if(dbp)return dbp;if(!global.indexedDB)return Promise.reject(new Error("IndexedDB unavailable"));dbp=new Promise((resolve,reject)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(STORE))r.result.createObjectStore(STORE)};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error("IndexedDB open failed"))});return dbp}
+async function idbGet(){const db=await openDB();return new Promise((resolve,reject)=>{const r=db.transaction(STORE,"readonly").objectStore(STORE).get(PROFILE_KEY);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}
+async function idbPut(v){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).put(v,PROFILE_KEY);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}
+async function chooseCarrier(){if(global.indexedDB){try{await openDB();CACHE.meta.carrier="IndexedDB";return"IndexedDB"}catch(_){}}if(localAvailable()){CACHE.meta.carrier="localStorage";return"localStorage"}CACHE.meta.carrier="memory";return"memory"}
+function legacy(){let settings={},selection={},records={};if(localAvailable()){try{settings=JSON.parse(localStorage.getItem("fracture-circuit-v026-settings")||"{}")||{}}catch(_){}try{selection=JSON.parse(localStorage.getItem("fracture-circuit-v026")||localStorage.getItem("fracture-circuit-v025")||"{}")||{}}catch(_){}try{records=JSON.parse(localStorage.getItem("fracture-circuit-v026-records")||"{}")||{}}catch(_){}}return{settings,selection,records}}
+function envelopePayload(){return{settings:{...CACHE.settings},selection:{...CACHE.selection},records:JSON.parse(JSON.stringify(CACHE.records||{})),lastResult:CACHE.lastResult?JSON.parse(JSON.stringify(CACHE.lastResult)):null}}
+function validPayload(p){return !!p&&typeof p==="object"&&p.settings&&p.selection&&p.records&&typeof p.records==="object"}
+function makeEnvelope(prev=null){const now=new Date().toISOString(),revision=Math.max(CACHE.meta.revision||0,prev?.revision||0)+1,payload=envelopePayload();const basis={contract:"jm.game.persistence.contract/0.1",game_id:GAME_ID,namespace:NS,save_schema:"1",game_version:"0.26.2",profile_id:"default",slot_id:"profile",revision,payload};return{...basis,envelope_schema:"jm.game.save-envelope/0.1",created_at:prev?.created_at||now,updated_at:now,durability_claim:CACHE.meta.carrier==="IndexedDB"?"T1_LOCAL_DURABLE_CANDIDATE":(CACHE.meta.carrier==="localStorage"?"T1_LOCAL_DURABLE_CANDIDATE":"T0_SESSION"),integrity:{algorithm:"SHA-256",checksum:sha256(canonical(basis))},lineage:{source_game_id:GAME_ID,source_save_schema:"1",parent_game_version:"0.26.1",parent_sha256:"a22e4897a3f637e1da2413efe947e9ae5b59663633372bdb1a4e5ab7fbf20bd7",migration_trace:prev?[]:["legacy-v0.26-local-profile-import-if-present"],previous_revision:prev?.revision||null,carrier_receipts:[CACHE.meta.carrier]}}}
+function validateEnvelope(e){if(!e||e.contract!=="jm.game.persistence.contract/0.1"||e.envelope_schema!=="jm.game.save-envelope/0.1"||e.game_id!==GAME_ID||e.namespace!==NS||!validPayload(e.payload))return false;const basis={contract:e.contract,game_id:e.game_id,namespace:e.namespace,save_schema:e.save_schema,game_version:e.game_version,profile_id:e.profile_id,slot_id:e.slot_id,revision:e.revision,payload:e.payload};return e.integrity?.checksum===sha256(canonical(basis))}
+async function readRecord(){const c=await chooseCarrier();if(c==="IndexedDB")return await idbGet();if(c==="localStorage"){try{return JSON.parse(localStorage.getItem("fracture-circuit-v0262-profile")||"null")}catch(_){return null}}return mem}
+async function writeRecord(v){const c=CACHE.meta.carrier||await chooseCarrier();if(c==="IndexedDB")return idbPut(v);if(c==="localStorage")return localStorage.setItem("fracture-circuit-v0262-profile",JSON.stringify(v));mem=v}
+async function hydrate(){let rec=null;try{rec=await readRecord()}catch(_){CACHE.meta.carrier=localAvailable()?"localStorage":"memory";try{rec=await readRecord()}catch(__){}}if(rec?.head&&validateEnvelope(rec.head)){Object.assign(CACHE.settings,rec.head.payload.settings||{});Object.assign(CACHE.selection,rec.head.payload.selection||{});CACHE.records=rec.head.payload.records||{};CACHE.lastResult=rec.head.payload.lastResult||null;CACHE.meta.revision=rec.head.revision||0;CACHE.meta.restored="HEAD"}else if(rec?.previous&&validateEnvelope(rec.previous)){Object.assign(CACHE.settings,rec.previous.payload.settings||{});Object.assign(CACHE.selection,rec.previous.payload.selection||{});CACHE.records=rec.previous.payload.records||{};CACHE.lastResult=rec.previous.payload.lastResult||null;CACHE.meta.revision=rec.previous.revision||0;CACHE.meta.restored="PREVIOUS"}else{const l=legacy();Object.assign(CACHE.settings,l.settings);Object.assign(CACHE.selection,l.selection);CACHE.records=l.records;CACHE.meta.restored="LEGACY_OR_FRESH"}status();return CACHE}
+async function saveNow(reason="profile-save"){if(global.FC_SETTINGS)CACHE.settings={...global.FC_SETTINGS};if(global.FC?.selection)CACHE.selection={...global.FC.selection};let old=null;try{old=await readRecord()}catch(_){}const e=makeEnvelope(old?.head||null),rec={head:e,previous:old?.head&&validateEnvelope(old.head)?old.head:(old?.previous||null)};await writeRecord(rec);const rb=await readRecord();if(!rb?.head||!validateEnvelope(rb.head))throw new Error("WRITE_READBACK_FAILED");CACHE.meta.revision=rb.head.revision;CACHE.meta.lastSaveReason=reason;CACHE.meta.lastSaveAt=rb.head.updated_at;status("PROFILE SAVED · "+CACHE.meta.carrier+" · REV "+rb.head.revision);return rb.head}
+function scheduleSave(reason="profile-change"){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveNow(reason).catch(e=>status("SAVE HOLD · "+e.message)),90)}
+async function exportPack(){const e=await saveNow("savepack-export");const rec=await readRecord();const basis={schema:"jm.game.savepack/0.1",envelope:e,previous:rec?.previous||null};const pack={...basis,exported_at:new Date().toISOString(),pack_integrity:{algorithm:"SHA-256",checksum:sha256(canonical(basis))}};const text=JSON.stringify(pack,null,2),blob=new Blob([text],{type:"application/json"}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="Fracture_Circuit_v0.26.2_SavePack.json";a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);status("SAVEPACK READY · DOWNLOAD REQUESTED");return text}
+async function importPackText(text){const pack=typeof text==="string"?JSON.parse(text):text;if(pack?.schema!=="jm.game.savepack/0.1")throw new Error("UNKNOWN SAVEPACK");const basis={schema:pack.schema,envelope:pack.envelope,previous:pack.previous||null};if(pack.pack_integrity?.checksum!==sha256(canonical(basis)))throw new Error("PACK CHECKSUM FAILED");if(!validateEnvelope(pack.envelope))throw new Error("WRONG/CORRUPT GAME PROFILE");Object.assign(CACHE.settings,pack.envelope.payload.settings||{});Object.assign(CACHE.selection,pack.envelope.payload.selection||{});CACHE.records=pack.envelope.payload.records||{};CACHE.lastResult=pack.envelope.payload.lastResult||null;CACHE.meta.revision=pack.envelope.revision||0;await writeRecord({head:pack.envelope,previous:pack.previous||null});if(global.FC_SETTINGS){Object.assign(global.FC_SETTINGS,CACHE.settings);global.applySettings&&global.applySettings()}if(global.FC){Object.assign(global.FC.selection,CACHE.selection);global.FC.read&&global.FC.read()}global.updateRecordTag&&global.updateRecordTag();status("SAVEPACK IMPORTED · PROFILE RESTORED");return true}
+function status(msg){const el=document.getElementById("profileStatus");if(el)el.textContent=msg||("PROFILE · "+(CACHE.meta.carrier||"starting")+" · "+(CACHE.meta.restored||"new")+" · REV "+(CACHE.meta.revision||0))}
+function bindUI(){const s=document.getElementById("profileSaveBtn"),e=document.getElementById("profileExportBtn"),i=document.getElementById("profileImportBtn"),f=document.getElementById("profileImportFile");if(s)s.onclick=()=>saveNow("manual-profile-save").catch(x=>status("SAVE HOLD · "+x.message));if(e)e.onclick=()=>exportPack().catch(x=>status("EXPORT HOLD · "+x.message));if(i&&f)i.onclick=()=>f.click();if(f)f.onchange=async()=>{const file=f.files&&f.files[0];if(!file)return;try{await importPackText(await file.text())}catch(x){status("IMPORT HOLD · "+x.message)}finally{f.value=""}};status()}
+async function qaMode(){let q=null;try{q=new URL(location.href).searchParams.get("qaPersist")}catch(_){}const out=document.getElementById("fcPersistenceProof");if(!q||!out)return;if(q==="write"){CACHE.selection={runner:"RIFT",circuit:"MIRROR",mode:"PRESSURE"};const e=await saveNow("qa-write");out.textContent="WRITE_PASS:"+CACHE.meta.carrier+":"+e.revision+":"+e.payload.selection.runner}else if(q==="read"){out.textContent="READ_PASS:"+CACHE.meta.carrier+":"+CACHE.meta.revision+":"+(CACHE.selection.runner||"NONE")}}
+global.FCPersistV0262={CACHE,hydrate,saveNow,scheduleSave,exportPack,importPackText,bindUI,status,qaMode,sha256,canonical,validateEnvelope};
+})(globalThis);
+</script><script>window.__JM_SYNTHESIS_SPEC__={"schema":"jm.megalith.game-crown-project/0.24","id":"megalith-scene-hybrid-ee781aad","title":"Fracture Circuit","description":"Create a fast bouncy hybrid arena with three rounds. Collect meaning glyphs, break pressure enemies, cross glowing route gates between zones, mirror my movement, hold to charge powers and reward combo chains.","families":["GameForge","GlyphPlay","GlyphForge","PLAYFORM","Kading Game Estate","PlayZone World Studio","JaggedMirror Game Lab"],"genome":{"schema":"jm.megalith.gameplay-genome/0.21","version":"0.21.0","archetype":"hybrid","pace":1.25,"difficulty":1,"scale":6.5,"enemies":4,"glyphTarget":4,"gateTarget":3,"anchorTarget":0,"zones":3,"mirror":true,"charge":true,"abilityCycle":true,"architecture":false,"objective":"break 4 pressure bodies + collect 4 meaning glyphs + cross 3 route gates","seed":4000848557,"families":["GameForge","GlyphPlay","GlyphForge","PLAYFORM","Kading Game Estate","PlayZone World Studio","JaggedMirror Game Lab"]},"feel":{"schema":"jm.megalith.game-feel/0.22","version":"0.22.0","rounds":3,"roundSeconds":58,"comboWindow":4.2,"bounce":1.35,"contactDamage":0.62,"iFrames":0.72,"baseDamage":1.05,"pulseSpeed":6.8,"pulseBaseRadius":0.48,"pulseLife":0.42,"score":{"break":120,"meaning":80,"route":65,"build":90,"round":300,"time":4},"enemyRoles":["chase","orbit"],"recovery":{"hpPerRound":1.35,"energyPerRound":1},"feelTags":["discrete-hit","expanding-cast","combo-score","round-loop","restart","enemy-roles","contact-feedback"]},"presentation":{"schema":"jm.megalith.game-crown-presentation/0.24","version":"0.24.0","scene":"Fracture Circuit","action":"CAST","palette":{"bg":"#05080f","floor":"#10192a","floor2":"#17263c","accent":"#ffd06a","player":"#63ddff","enemy":"#ff647d","meaning":"#ba82ff","route":"#70edbb"},"camera":{"yaw":-0.72,"pitch":0.92,"dist":13.1,"follow":0.34},"hud":{"compact":true,"donorsVisible":false,"organsVisible":false,"objectiveMode":"progress","healthBar":true},"environment":{"tileGrid":true,"edgeRails":true,"beacons":true,"gateArches":true,"shadows":true},"controls":{"pad":96,"action":92,"opacity":0.88},"transitions":{"intro":0.9,"round":0.7,"end":true},"developerDrawer":true,"claim_boundary":"Game-facing scene/HUD/control composition improved; final authored art/audio/device performance remain owner/product gates."},"parent":"v0.23A Render Failover Repair","parent_sha256":"927d0448bd9743571ff9e7742bbfaa11d34cc70d86f16c3fb912ab0f05c19ea9","parent_child_sha256":"51aebe0e8e7f3571a64b19fc7de5f6f919e12745b4c308451808fb64b8dd0449","authority":["v0.18 Ten-Engine Federation","v0.19 Renderer Absorption","v0.20 Frozen Synthesis Keeper","v0.21 Android-contacted Gameplay Genome","v0.22 Android-contacted PlayLoop stepping-stone"],"organ_chain":["input","project","native/runtime","graphics","release","runtime","determinism","renderer","gameplay genome","game feel","game crown presentation"],"boundary":"Current standalone browser-game crown candidate; exact owner-device final play/contact remains the last local crown gate. Native/APK, GPU profiling and authored production asset packs remain separate outward product gates."};</script><script>window.__JM_PRODUCTION_INHERITANCE__={"schema":"jm.game-production.serious-body-inheritance/0.1","state":"INHERITANCE_RESOLVED__NO_NEW_GAME_CROWN_CLAIM","game":{"name":"Fracture Circuit v0.25 \u2014 Runners \u00d7 Circuits","sha256":"1c47365aff597776be8c7e5d2acf3a0afd6769d4680bfa3f5095a195e357d498","bytes":110019,"status":"CURRENT SOURCE/GAMEPLAY HEAD \u00b7 QA PASS \u00b7 OWNER-DEVICE CHANGED-BYTE DING OPEN"},"protected_contacted_parent":{"name":"Fracture Circuit v0.24A","sha256":"747b774325a5e5739558546ed7e67b2f4b322b83b19bbb2cb915d31a1cc02d28"},"foundry_parent":{"name":"JM MEGALITH v0.24A Browser-Game Crown","sha256":"5e517e937d62dafbf9611dacc34112b1c95ad094bcd0ce44335845b1e143b90c"},"resolver":{"schema":"jm.gamecore.organ-resolver/0.3","version":"0.3.0","request":{"name":"Fracture Circuit v0.25 \u2014 Runners \u00d7 Circuits","intent":"Fracture Circuit Runners Circuits: fast arena combat, touch movement, CAST attacks, runner-specific physics and scoring, circuit-specific field geometry and pressure, rounds, hit feedback, camera response, trace, recovery, game-first presentation.","surfaces":["android","laptop"],"tags":["GameForge","GlyphPlay","GlyphForge","PLAYFORM","JM GameCore","JM GAME NATIVE CORE","Kading Game Estate","PlayZone World Studio","JaggedMirror Game Lab","JMStudios Game Workshop"]},"selected":[{"id":"MEGALITH.PLAYLOOP_FEEL","name":"PlayLoop / Game Feel","source":"JM MEGALITH v0.22+","source_hashes":[],"status":"PROVEN_PARENT_CAPABILITY","surfaces":["android","laptop"],"keywords":["game","feel","round","score","combo","restart","combat"],"baseline":true,"boundary":"Contact tuning remains recipient-specific.","score":84},{"id":"MEGALITH.PRESENTATION","name":"Game-first presentation / scene composition","source":"JM MEGALITH v0.23+","source_hashes":[],"status":"PROVEN_PARENT_CAPABILITY","surfaces":["android","laptop"],"keywords":["game","scene","hud","camera","presentation","visual"],"baseline":true,"boundary":"Production asset authorship remains a separate outward lane.","score":84},{"id":"CORE.RUNTIME.STATE_TRACE","name":"Runtime / state / trace custody","source":"JM GameCore v0.2I-A + JM GAME NATIVE CORE v0.2","source_hashes":["1d1fe40eb421bd4b9d7c2565e69af48b77041818ed48d8997aae2d112bc37aa7","41b74d75ffa9d39671fb43bb9d4359acd1d50d11896c39be2ac50b35debc9e51"],"status":"PROVEN_ARCHITECTURE","surfaces":["android","laptop"],"keywords":["state","runtime","trace","checkpoint","replay"],"baseline":true,"boundary":"Recipient game still owns its rules and save meaning.","score":72},{"id":"MEGALITH.GENOME","name":"Gameplay Genome","source":"JM MEGALITH v0.21+","source_hashes":[],"status":"PROVEN_PARENT_CAPABILITY","surfaces":["android","laptop"],"keywords":["game","objective","enemy","collect","route","world"],"baseline":true,"boundary":"Genome supports generation; it does not replace authored design judgement.","score":72},{"id":"CONTROL.CROSS_CARRIER.INTENT_MAP","name":"Portrait / landscape / laptop intent map","source":"JM Donor Registry CTRL-001 + CTRL-002","source_hashes":[],"status":"FILE_BACKED_BLUEPRINT_DONOR","surfaces":["android","laptop"],"keywords":["control","touch","keyboard","laptop","portrait","landscape"],"baseline":true,"boundary":"Blueprint donor; recipient runtime proof remains required.","score":60},{"id":"FEEL.CAMERA.CHASE","name":"Chase / feel camera state","source":"camera \u2014 Fight Clash: Box-Out v0.6 \u2192 CLASHFIELD v0.5","source_hashes":[],"status":"RECENT_EXACT_BOUNDED_DONOR","surfaces":["android","laptop"],"keywords":["camera","chase","arena","movement","combat"],"baseline":false,"boundary":"Recipient tuning remains game-specific.","score":56},{"id":"MEGALITH.RENDER_FAILOVER","name":"Renderer failover","source":"JM MEGALITH v0.23A+","source_hashes":[],"status":"PROVEN_PARENT_CAPABILITY","surfaces":["android","laptop"],"keywords":["render","graphics","android","browser","scene"],"baseline":true,"boundary":"Does not equal cross-device GPU profiling.","score":48},{"id":"WORKSHOP.PRODUCTION_CUSTODY","name":"Concept \u2192 assets \u2192 build \u2192 test \u2192 package custody","source":"JMStudios Game Workshop B0.9.2","source_hashes":[],"status":"STRUCTURAL_FEDERATION_CALLABLE_CONTRACT","surfaces":["android","laptop"],"keywords":["assets","build","test","package","production"],"baseline":true,"boundary":"Production-custody role is real; deeper executable migration remains open.","score":48},{"id":"FEEL.CAMERA.CONTACT_SHAKE","name":"Camera / contact shake","source":"kickShake \u2014 JM House Siege v1.2 \u2192 CLASHFIELD v0.5","source_hashes":[],"status":"RECENT_EXACT_BOUNDED_DONOR","surfaces":["android","laptop"],"keywords":["combat","hit","impact","clash","camera","shake"],"baseline":false,"boundary":"Use only where motion serves readability; reduced-motion route required.","score":44},{"id":"FEEDBACK.AUDIO.COMBAT","name":"Combat audio / impact feel","source":"SoundBody \u2014 JM Western Sniper PvP v0.5 \u2192 CLASHFIELD v0.5","source_hashes":[],"status":"RECENT_EXACT_BOUNDED_DONOR","surfaces":["android","laptop"],"keywords":["combat","hit","shoot","cast","impact","enemy"],"baseline":false,"boundary":"Synthetic/runtime audio is not authored production music or SFX pack.","score":44},{"id":"FEEDBACK.HAPTIC.CONTACT","name":"Contact haptic response","source":"haptic \u2014 JM Rim Route v0.8.2 \u2192 CLASHFIELD v0.5","source_hashes":[],"status":"RECENT_EXACT_BOUNDED_DONOR","surfaces":["android"],"keywords":["contact","hit","cast","touch","impact"],"baseline":false,"boundary":"Device support varies; haptic must never be sole feedback channel.","score":44},{"id":"FEEDBACK.HIT.READABILITY","name":"Hit flash / marker / floating damage","source":"JM MECH CONTACT // CLASHFIELD v0.5","source_hashes":[],"status":"RECENT_EXECUTABLE_DONOR","surfaces":["android","laptop"],"keywords":["hit","combat","damage","enemy","impact"],"baseline":false,"boundary":"Exact style must be adapted to recipient visual identity.","score":32},{"id":"CONTROL.TOUCH.DIRECT_AIM_DRAG","name":"Direct touch / aim / drag","source":"JM Living Cursor & ContactBody v0.11M","source_hashes":["a8d5505bec7ec3000acefd4a797f047a79194f3be5b99fe1bebe4097b0011385"],"status":"SOURCE_CONTRACT_PASS_PHONE_DING_PENDING","surfaces":["android"],"keywords":["aim","drag","touch","shoot","launch","pointer"],"baseline":false,"boundary":"Active donor candidate; exact physical-phone crown remains open.","score":15}],"blockers":[],"ready_for_inheritance":true,"boundary":"Inheritance resolution only; v0.25 changed-byte owner-device Ding remains open."},"next_build_pressure":["apply only capabilities that materially improve Fracture Circuit over v0.25","preserve 48-combination runner \u00d7 circuit \u00d7 mode grammar","increase player-facing production quality rather than adding engine-visible UI","run Android + laptop contact before any mature/crown claim","FEED genuinely reusable new organs back into GameCore/MEGALITH"],"boundary":"This seats the first serious-body inheritance route. It does not claim a v0.26 game has been built or contacted yet."};</script><script>/*
+JM MEGALITH Input / Contact Organ v0.2
+Source absorption: JMgaME Control Organ v1.1 + duplicated lower-layer input routines
+recovered from GameForge Forgefall v3.0, GlyphPlay Meaning Breaker v3.0,
+and GlyphForge Prism Production Studio v3.0.
+
+Law: one shared lower layer; body-specific profiles remain distinct.
+*/
+(function(global){
+  "use strict";
+  const VERSION="0.2.0";
+  const SCHEMA="jm.megalith.input-contact/0.2";
+  const ROUTE=["CONTACT","TRAVEL","DEAD-ZONE","RESPONSE","RELATION","ACTION THRESHOLD","RELEASE","RECOVERY","PREFERENCE","TRACE"];
+
+  const PROFILES={
+    gameforge:{
+      id:"gameforge",relation:"screen",
+      channels:{
+        move:{sensitivity:1.0,deadzone:0.10,threshold:null,invertX:false,invertY:false},
+        aim:{sensitivity:1.05,deadzone:0.10,threshold:0.46,invertX:false,invertY:false,assist:0.20,response:0.72}
+      },
+      verbs:{travel:"MOVE",action:"FIRE",release:"STOP"}
+    },
+    glyphplay:{
+      id:"glyphplay",relation:"screen",
+      channels:{
+        move:{sensitivity:1.0,deadzone:0.12,threshold:null,invertX:false,invertY:false},
+        power:{sensitivity:1.0,deadzone:0.10,threshold:0.72,invertX:false,invertY:false,assist:0.15}
+      },
+      verbs:{travel:"MOVE",action:"CAST",release:"READY"}
+    },
+    glyphforge:{
+      id:"glyphforge",relation:"object",
+      channels:{
+        orbit:{sensitivity:0.90,deadzone:0.08,threshold:0.72,invertX:false,invertY:false},
+        shape:{sensitivity:0.85,deadzone:0.08,threshold:0.72,invertX:false,invertY:false},
+        capability:{sensitivity:0.90,deadzone:0.08,threshold:0.72,invertX:false,invertY:false}
+      },
+      zoom:{min:7,max:20},
+      verbs:{travel:"MANIPULATE",action:"APPLY",release:"READY"}
+    }
+  };
+
+  function clone(x){return JSON.parse(JSON.stringify(x))}
+  function clamp(v,a=-1,b=1){return Math.max(a,Math.min(b,v))}
+  function deepMerge(base,extra){
+    const out=clone(base||{});
+    if(!extra||typeof extra!=="object")return out;
+    for(const [k,v] of Object.entries(extra)){
+      if(v&&typeof v==="object"&&!Array.isArray(v)&&out[k]&&typeof out[k]==="object"&&!Array.isArray(out[k])) out[k]=deepMerge(out[k],v);
+      else out[k]=clone(v);
+    }
+    return out;
+  }
+  function profile(id,overrides={}){
+    const key=String(id||"").toLowerCase();
+    if(!PROFILES[key])throw new Error("Unknown MEGALITH input profile: "+id);
+    return deepMerge(PROFILES[key],overrides);
+  }
+  function tuneVector(raw={},channel={}){
+    let x=Number(raw.x||0), z=Number(raw.z||0);
+    if(channel.invertX)x*=-1;
+    if(channel.invertY)z*=-1;
+    const dead=Math.max(0,Math.min(.95,Number(channel.deadzone??.1)));
+    const sense=Math.max(0,Number(channel.sensitivity??1));
+    const mag=Math.hypot(x,z);
+    if(mag<=dead)return{x:0,z:0,mag:0,rawMag:mag,phase:"DEAD-ZONE"};
+    const scaled=Math.min(1,(mag-dead)/Math.max(.001,1-dead))*sense;
+    const k=scaled/Math.max(.000001,mag);
+    const out={x:clamp(x*k),z:clamp(z*k),mag:Math.min(1,scaled),rawMag:mag,phase:"TRAVEL"};
+    const threshold=channel.threshold;
+    if(threshold!=null && out.mag>=Number(threshold))out.phase="ACTION THRESHOLD";
+    return out;
+  }
+  function binding(engine,channel,overrides={}){
+    const p=profile(engine,overrides.profile||{});
+    const ch=p.channels[channel]||p.channels.move||p.channels.orbit;
+    if(!ch)throw new Error(`No channel ${channel} for ${engine}`);
+    return {
+      schema:"jm.megalith.input.binding/0.2",
+      engine:p.id,
+      relation:p.relation,
+      channel,
+      route:ROUTE.slice(),
+      tuning:clone(ch),
+      verbs:clone(p.verbs||{}),
+      provenance:{
+        absorbed_from:["JMgaME Control Organ v1.1","GameForge/GlyphPlay/GlyphForge lower-layer input routines"],
+        donor_identity_preserved:true
+      }
+    };
+  }
+  function projectBindings(organs=[]){
+    const names=new Set((organs||[]).map(String));
+    const out=[];
+    if(names.has("GameForge")){out.push(binding("gameforge","move"));out.push(binding("gameforge","aim"))}
+    if(names.has("GlyphPlay")){out.push(binding("glyphplay","move"));out.push(binding("glyphplay","power"))}
+    if(names.has("GlyphForge")){out.push(binding("glyphforge","orbit"));out.push(binding("glyphforge","shape"));out.push(binding("glyphforge","capability"))}
+    return out;
+  }
+  function fitViewport(){
+    if(typeof document==="undefined")return 0;
+    const h=(global.visualViewport&&global.visualViewport.height)||global.innerHeight||0;
+    document.documentElement.style.setProperty("--vh",h+"px");
+    return h;
+  }
+  function relativePad(el,out,cfg={}){
+    if(!el)throw new Error("relativePad requires an element");
+    out=out||{};
+    let active=false,pid=-1,startX=0,startY=0;
+    const status=cfg.statusEl||null;
+    const read=v=>typeof v==="function"?v():v;
+    const setStatus=t=>{if(status)status.textContent=t};
+    const release=e=>{
+      if(!active)return;
+      active=false;pid=-1;out.x=out.z=out.mag=0;out.active=false;out.engaged=false;
+      setStatus(cfg.idleText||"READY");cfg.onRelease&&cfg.onRelease(e);
+    };
+    const move=e=>{
+      if(!active||e.pointerId!==pid)return;
+      const r=el.getBoundingClientRect();
+      const relation=cfg.relation||"relative";
+      let dx,dy,max=Math.max(24,Math.min(r.width,r.height)*.42);
+      if(relation==="absolute"){dx=e.clientX-(r.left+r.width/2);dy=e.clientY-(r.top+r.height/2)}
+      else {dx=e.clientX-startX;dy=e.clientY-startY}
+      const raw={x:clamp(dx/max),z:clamp(dy/max)};
+      const channel={
+        deadzone:Number(read(cfg.deadzone)??.1),
+        sensitivity:Number(read(cfg.sensitivity)??1),
+        threshold:read(cfg.threshold),
+        invertX:!!read(cfg.invertX),invertY:!!read(cfg.invertY)
+      };
+      const v=tuneVector(raw,channel);
+      Object.assign(out,v,{active:true,engaged:v.phase==="ACTION THRESHOLD"});
+      if(v.phase==="DEAD-ZONE")setStatus(cfg.contactText||"CONTACT");
+      else if(v.phase==="ACTION THRESHOLD"){setStatus(cfg.engagedText||"ACTION");cfg.onEngage&&cfg.onEngage(v,e)}
+      else {setStatus(cfg.travelText||"TRAVEL");cfg.onTravel&&cfg.onTravel(v,e)}
+      cfg.onVector&&cfg.onVector(v,e);
+    };
+    el.addEventListener("pointerdown",e=>{
+      active=true;pid=e.pointerId;startX=e.clientX;startY=e.clientY;out.active=true;
+      el.setPointerCapture&&el.setPointerCapture(pid);setStatus(cfg.contactText||"CONTACT");
+      cfg.onContact&&cfg.onContact(e);move(e)
+    });
+    el.addEventListener("pointermove",move);
+    ["pointerup","pointercancel","lostpointercapture"].forEach(type=>el.addEventListener(type,release));
+    if(typeof global.addEventListener==="function")global.addEventListener("blur",release);
+    if(typeof document!=="undefined")document.addEventListener("visibilitychange",()=>document.hidden&&release());
+    return release;
+  }
+  function joystick(el,out,cfg={}){
+    const knob=el&&el.querySelector?el.querySelector(".knob"):null;
+    const baseTravel=cfg.onTravel,baseVector=cfg.onVector,baseRelease=cfg.onRelease;
+    return relativePad(el,out,Object.assign({},cfg,{
+      relation:"absolute",
+      onTravel:(v,e)=>{if(knob)knob.style.transform=`translate(${v.x*28}px,${v.z*28}px)`;baseTravel&&baseTravel(v,e)},
+      onVector:(v,e)=>{if(v.phase==="DEAD-ZONE"&&knob)knob.style.transform="";baseVector&&baseVector(v,e)},
+      onRelease:e=>{if(knob)knob.style.transform="";baseRelease&&baseRelease(e)}
+    }));
+  }
+  function pinchZoom(el,onZoom,cfg={}){
+    if(!el)return()=>{};
+    const points=new Map();let last=null;
+    const update=e=>{
+      points.set(e.pointerId,[e.clientX,e.clientY]);
+      if(points.size===2){
+        const [a,b]=[...points.values()],dist=Math.hypot(a[0]-b[0],a[1]-b[1]);
+        if(last!=null)onZoom&&onZoom((dist-last)*(cfg.scale??.02),e);
+        last=dist;
+      }
+    };
+    const down=e=>{points.set(e.pointerId,[e.clientX,e.clientY]);el.setPointerCapture&&el.setPointerCapture(e.pointerId);if(points.size===2)last=null};
+    const up=e=>{points.delete(e.pointerId);last=null};
+    el.addEventListener("pointerdown",down);el.addEventListener("pointermove",update);
+    ["pointerup","pointercancel","lostpointercapture"].forEach(t=>el.addEventListener(t,up));
+    return()=>{points.clear();last=null};
+  }
+  function absorptionReceipt(){
+    return {
+      schema:"jm.megalith.input.absorption-receipt/0.2",
+      version:VERSION,
+      route:ROUTE.slice(),
+      shared_functions:["profile","tuneVector","binding","projectBindings","fitViewport","relativePad","joystick","pinchZoom"],
+      donor_policy:"Exact donors remain recoverable; shared MEGALITH organ replaces future duplicate lower-layer copies only after migration proof.",
+      claim_boundary:"Shared organ extraction and MEGALITH project-model wiring are proven here. Existing standalone donor engines are not claimed rewritten until explicit migration tests pass."
+    };
+  }
+  const API={VERSION,SCHEMA,ROUTE,PROFILES,profile,tuneVector,binding,projectBindings,fitViewport,relativePad,joystick,pinchZoom,absorptionReceipt};
+  if(typeof module!=="undefined"&&module.exports)module.exports=API;
+  global.JMMegalithInput=API;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+
+/*
+JM MEGALITH Project / World Envelope v0.3
+Unifies project carriage without flattening native source schemas.
+Native payloads survive inside provenance/native_source.
+*/
+(function(global){
+"use strict";
+const VERSION="0.3.0",SCHEMA="jm.megalith.project/0.3";
+const clone=x=>JSON.parse(JSON.stringify(x));
+const arr=x=>Array.isArray(x)?x:[];
+const uniq=a=>[...new Set(a.filter(x=>x!=null&&x!==""))];
+
+function blank(meta={}){
+ return {
+  schema:SCHEMA,
+  version:VERSION,
+  identity:{id:meta.id||null,title:meta.title||"Untitled MEGALITH Project",source_description:meta.source_description||"",package_name:meta.package_name||null},
+  origin:{source_family:meta.source_family||"MEGALITH",source_schema:meta.source_schema||SCHEMA,source_body:meta.source_body||null,migration:"NATIVE_OR_NEW"},
+  organs:{selected:[],provenance:[]},
+  world:{actors:[],tools:[],gestures:[],spaces:[],rooms:[],zones:[],biomes:[],portals:[],rules:[],objectives:[],pressure:[],assets:[]},
+  input:{schema:"jm.megalith.input-plan/0.2",shared_organ:"MEGALITH_INPUT_CONTACT_ORGAN_v0_2",bindings:[]},
+  runtime:{source:null,parse:null,ir:null,ticks:null,contact:null,state_change:null,trace:null,replay:null},
+  authoring:{files:{},active_file:null,boards:[],engines:[],branches:{},tokens:{},donors:[]},
+  modeling:{template:null,workshop:null,model:null,capabilities:{},plugins:[],visual_studio:null,experiments:[],datasets:[]},
+  production:{concept:null,assets:[],build:null,test:null,package:null,release:null,targets:{},android:null,security:null,build_matrix:null,receipts:[]},
+  variants:{seed:null,left:null,right:null,difference:null,recombine:null},
+  lineage:{history:[],receipts:[],native_sources:[]},
+  proof:{trace_required:true,claim_boundary:"Unified carriage does not upgrade native proof state."}
+ };
+}
+function detect(input={}){
+ const s=String(input.schema||input.state?.schema||"");
+ if(s==="jm.universal.project/v4")return"UNIVERSAL_FORGE";
+ if(s.startsWith("jm32-creator-project/"))return"JM32_CREATOR";
+ if(s.startsWith("jm.game.project/")||s.startsWith("jm.gamecore.project/")||s.startsWith("jm.forge.project/")||s.startsWith("jm.playform.project/")||s.startsWith("jm.native.project/")||s.startsWith("jm.kading.project/")||s.startsWith("jm.playzone.project/")||s.startsWith("jm.jaggedmirror.project/")||s.startsWith("jmstudios.project/"))return"ENGINE_ARMY";
+ if(s===SCHEMA)return"MEGALITH";
+ return"UNKNOWN";
+}
+function preserve(p,input,family){
+ p.lineage.native_sources.push({family,schema:input.schema||null,payload:clone(input),preserved:true});
+ p.organs.provenance.push({family,schema:input.schema||null,rule:"native payload retained"});
+ return p;
+}
+function army(input){
+ let p=blank({title:input.body||input.engine||input.schema,source_family:"ENGINE_ARMY",source_schema:input.schema,source_body:input.engine||null});
+ preserve(p,input,"ENGINE_ARMY");
+ if(input.engine)p.organs.selected.push(input.engine);
+ if(input.body)p.identity.title=input.body;
+ if(input.controlOrgan&&global.JMMegalithInput&&input.engine)p.input.bindings=global.JMMegalithInput.projectBindings([input.engine]);
+ if(Array.isArray(input.organs))p.organs.selected.push(...input.organs);
+ if(Array.isArray(input.fields)){
+   for(const f of input.fields){
+    if(f==="actor")p.world.actors.push("actor");
+    else if(f==="tool")p.world.tools.push("tool");
+    else if(f==="gesture")p.world.gestures.push("gesture");
+    else if(f==="space")p.world.spaces.push("space");
+    else if(f==="objective")p.world.objectives.push("objective");
+    else if(f==="pressure")p.world.pressure.push("pressure");
+   }
+ }
+ const route=arr(input.route);
+ for(const x of route){
+  const k=String(x).toLowerCase();
+  if(k==="rooms")p.world.rooms.push("rooms");
+  else if(k==="zones")p.world.zones.push("zones");
+  else if(k==="biomes")p.world.biomes.push("biomes");
+  else if(k==="portals")p.world.portals.push("portals");
+  else if(k==="source")p.runtime.source="source";
+  else if(k==="parse")p.runtime.parse="parse";
+  else if(k==="ir")p.runtime.ir="IR";
+  else if(k==="ticks")p.runtime.ticks="ticks";
+  else if(k==="trace")p.runtime.trace="trace";
+  else if(k==="replay")p.runtime.replay="replay";
+  else if(["concept","assets","build","test","package","release"].includes(k))p.production[k]=k;
+  else if(["seed","difference","recombine"].includes(k))p.variants[k]=k;
+  else if(k==="left rule")p.variants.left="left rule";
+  else if(k==="right rule")p.variants.right="right rule";
+ }
+ if(input.assetSchema)p.modeling.capabilities.assetSchema=input.assetSchema;
+ if(input.acts!=null)p.world.rules.push({kind:"acts",count:input.acts});
+ if(input.sectors!=null)p.world.zones.push({kind:"sectors",count:input.sectors});
+ p.organs.selected=uniq(p.organs.selected);
+ return p;
+}
+function universal(input){
+ let p=blank({id:input.id,title:input.name,package_name:input.packageName,source_family:"UNIVERSAL_FORGE",source_schema:input.schema,source_body:"Universal Forge"});
+ preserve(p,input,"UNIVERSAL_FORGE");
+ p.modeling.template=input.template||null;p.modeling.workshop=input.workshop||null;p.modeling.model=clone(input.model);p.modeling.capabilities=clone(input.capabilities||{});p.modeling.plugins=clone(input.plugins||[]);p.modeling.visual_studio=clone(input.visualStudio);p.modeling.experiments=clone(input.experiments||[]);p.modeling.datasets=clone(input.datasets||[]);
+ p.world.assets=clone(input.assets||[]);p.production.assets=clone(input.assets||[]);p.production.release=clone(input.release);p.production.targets=clone(input.targets||{});p.production.android=clone(input.android);p.production.security=clone(input.security);p.production.build_matrix=clone(input.buildMatrix);p.production.receipts=clone(input.packageReceipts||[]);
+ p.runtime.source=input.source||null;p.runtime.state_change=input.bodyRuntime||null;p.lineage.history=clone(input.history||[]);p.lineage.receipts.push(...clone(input.workshopProofs||[]));
+ return p;
+}
+function jm32(input){
+ const s=input.state||input;
+ let p=blank({title:s.meta?.title||"JM32 Creator Project",source_family:"JM32_CREATOR",source_schema:input.schema||"jm32-creator-state",source_body:"JM32-1DA"});
+ preserve(p,input,"JM32_CREATOR");
+ p.authoring.files=clone(s.files||{});p.authoring.active_file=s.activeFile||null;p.authoring.boards=clone(s.boards||[]);p.authoring.engines=clone(s.engines||[]);p.authoring.branches=clone(s.branches||{});p.authoring.tokens=clone(s.tokens||{});p.authoring.donors=clone(s.donors||[]);
+ p.lineage.receipts=clone(s.receipts||[]);p.lineage.history.push({meta:clone(s.meta||{})});
+ p.runtime.source=s.files?.["routes.jm"]||s.files?.["app.js"]||null;
+ p.organs.selected=uniq(arr(s.engines).map(e=>e.name||e.id));
+ return p;
+}
+function migrate(input={}){
+ const family=detect(input);
+ if(family==="MEGALITH")return clone(input);
+ if(family==="ENGINE_ARMY")return army(input);
+ if(family==="UNIVERSAL_FORGE")return universal(input);
+ if(family==="JM32_CREATOR")return jm32(input);
+ throw new Error("Unsupported project schema: "+(input.schema||"missing"));
+}
+function compose(inputs=[]){
+ const parts=inputs.map(migrate);
+ const p=blank({title:"MEGALITH Composed Project",source_family:"COMPOSED",source_schema:SCHEMA});
+ for(const x of parts){
+  p.organs.selected.push(...x.organs.selected);p.organs.provenance.push(...x.organs.provenance);
+  for(const k of Object.keys(p.world))if(Array.isArray(p.world[k]))p.world[k].push(...arr(x.world[k]));
+  p.input.bindings.push(...arr(x.input?.bindings));
+  p.lineage.native_sources.push(...x.lineage.native_sources);p.lineage.history.push(...x.lineage.history);p.lineage.receipts.push(...x.lineage.receipts);
+ }
+ p.organs.selected=uniq(p.organs.selected);
+ p.input.bindings=p.input.bindings.filter((b,i,a)=>a.findIndex(x=>x.engine===b.engine&&x.channel===b.channel)===i);
+ p.proof.claim_boundary="Composition shares one MEGALITH envelope while every native source payload remains preserved. Composition does not prove behavioural parity.";
+ return p;
+}
+function validate(p={}){
+ const errors=[];
+ if(p.schema!==SCHEMA)errors.push("schema");
+ if(!p.identity||!p.origin||!p.world||!p.input||!p.runtime||!p.authoring||!p.modeling||!p.production||!p.lineage)errors.push("core sections");
+ if(!Array.isArray(p.lineage?.native_sources))errors.push("native_sources");
+ return{valid:errors.length===0,errors};
+}
+const API={VERSION,SCHEMA,blank,detect,migrate,compose,validate};
+if(typeof module!=="undefined"&&module.exports)module.exports=API;
+global.JMMegalithProject=API;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+
+/* JM MEGALITH Native Runtime Organ v0.4
+Recovered semantics from JM GAME NATIVE CORE Deterministic Runtime v1.0.
+Bounded extraction: text source -> explicit IR -> deterministic ticks -> trace/checksum/replay.
+*/
+(function(global){"use strict";
+const VERSION="0.4.0",SCHEMA="jm.megalith.native-runtime/0.4";
+function parseSource(text){
+ const lines=String(text||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+ const program={player:{x:2,speed:1},enemy:{count:3,speed:.4},goal:{ticks:120},rules:[]};
+ for(const line of lines){
+  const [head,...rest]=line.split(/\s+/);const o=Object.fromEntries(rest.filter(s=>s.includes('=')).map(s=>{const i=s.indexOf('=');return[s.slice(0,i),s.slice(i+1)]}));
+  if(head==='PLAYER')program.player={x:+o.x||2,speed:+o.speed||1};
+  if(head==='ENEMY')program.enemy={count:+o.count||3,speed:+o.speed||.4};
+  if(head==='GOAL')program.goal={ticks:+o.ticks||120};
+  if(head==='RULE')program.rules.push(rest.join(' '));
+ }
+ return program;
+}
+function rng(seed){let s=seed>>>0;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296}}
+function create(program,opts={}){
+ const random=rng(opts.seed??32);const p=JSON.parse(JSON.stringify(program));
+ const state={tick:0,player:{x:p.player.x||2,y:3,hp:5},enemies:Array.from({length:p.enemy.count||3},(_,i)=>({x:1+i*2,y:1+random()*4,vx:(random()-.5)*(p.enemy.speed||.4)})),fault:false,done:false,trace:[]};
+ function checksum(){let s=JSON.stringify({t:state.tick,p:state.player,e:state.enemies.map(e=>[+e.x.toFixed(3),+e.y.toFixed(3)])});let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(16).padStart(8,'0')}
+ function step(){if(state.done)return state;state.tick++;state.player.x+=Math.sin(state.tick*.07)*(p.player.speed*.02);for(const e of state.enemies){e.x+=e.vx;if(e.x<0||e.x>8)e.vx*=-1;if(Math.hypot(e.x-state.player.x,e.y-state.player.y)<.45){state.player.hp--;e.x=random()*8;state.trace.push(`t${state.tick}:collision hp=${state.player.hp}`)}}if(state.fault&&state.tick===30){state.player.x=NaN;state.trace.push('FAULT: invalid player coordinate')}if(!Number.isFinite(state.player.x)){state.trace.push('RECOVERY: rollback tick '+(state.tick-1));state.player.x=2;state.fault=false}if(state.tick>=p.goal.ticks||state.player.hp<=0)state.done=true;return state}
+ function run(n=p.goal.ticks){for(let i=0;i<n&&!state.done;i++)step();return state}
+ return{program:p,state,step,run,checksum,armFault:()=>{state.fault=true;state.trace.push('FAULT ARMED FOR TICK 30')},snapshot:()=>JSON.parse(JSON.stringify(state))};
+}
+function executeSource(text,opts={}){const ir=parseSource(text);const rt=create(ir,opts);rt.run(opts.ticks??ir.goal.ticks);return{schema:SCHEMA,source:text,ir,state:rt.snapshot(),checksum:rt.checksum(),trace:rt.state.trace.slice()}}
+const API={VERSION,SCHEMA,parseSource,create,executeSource};if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithNativeRuntime=API;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+
+/* JM MEGALITH Graphics / Math Primitive Organ v0.5
+Exact lower-layer primitives recovered from byte-identical GameForge/GlyphPlay/GlyphForge bodies.
+*/
+(function(global){"use strict";
+const VERSION="0.5.0",SCHEMA="jm.megalith.graphics-primitives/0.5",TAU=Math.PI*2;
+function I(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])}
+function P(fov,asp,n,f){let q=1/Math.tan(fov/2),nf=1/(n-f);return new Float32Array([q/asp,0,0,0,0,q,0,0,0,0,(f+n)*nf,-1,0,0,2*f*n*nf,0])}
+function RX(a){let m=I(),c=Math.cos(a),s=Math.sin(a);m[5]=c;m[6]=s;m[9]=-s;m[10]=c;return m}
+function RY(a){let m=I(),c=Math.cos(a),s=Math.sin(a);m[0]=c;m[2]=-s;m[8]=s;m[10]=c;return m}
+function RZ(a){let m=I(),c=Math.cos(a),s=Math.sin(a);m[0]=c;m[1]=s;m[4]=-s;m[5]=c;return m}
+function S(x,y,z){let m=I();m[0]=x;m[5]=y;m[10]=z;return m}
+function T(x,y,z){let m=I();m[12]=x;m[13]=y;m[14]=z;return m}
+function V(eye,at=[0,0,0],up=[0,1,0]){let z=[eye[0]-at[0],eye[1]-at[1],eye[2]-at[2]],zl=Math.hypot(...z)||1;z=z.map(v=>v/zl);let x=[up[1]*z[2]-up[2]*z[1],up[2]*z[0]-up[0]*z[2],up[0]*z[1]-up[1]*z[0]],xl=Math.hypot(...x)||1;x=x.map(v=>v/xl);let y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-x[0]*eye[0]-x[1]*eye[1]-x[2]*eye[2],-y[0]*eye[0]-y[1]*eye[1]-y[2]*eye[2],-z[0]*eye[0]-z[1]*eye[1]-z[2]*eye[2],1])}
+function mul(a,b){let o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];return o}
+function tri(a,b,c,n,out){for(let p of [a,b,c])out.push(...p,...n)}
+function mesh(data){return {data:new Float32Array(data),count:data.length/6}}
+function cube(){let o=[],p=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],fs=[[0,1,2,3,[0,0,-1]],[5,4,7,6,[0,0,1]],[4,0,3,7,[-1,0,0]],[1,5,6,2,[1,0,0]],[3,2,6,7,[0,1,0]],[4,5,1,0,[0,-1,0]]];for(let [a,b,c,d,n]of fs){tri(p[a],p[b],p[c],n,o);tri(p[a],p[c],p[d],n,o)}return mesh(o)}
+function cyl(seg=16,cone=0){let o=[];for(let i=0;i<seg;i++){let a=i/seg*TAU,b=(i+1)/seg*TAU,ra=1,rt=cone?0:1;let p0=[Math.cos(a)*ra,-1,Math.sin(a)*ra],p1=[Math.cos(b)*ra,-1,Math.sin(b)*ra],p2=[Math.cos(b)*rt,1,Math.sin(b)*rt],p3=[Math.cos(a)*rt,1,Math.sin(a)*rt],n=[Math.cos((a+b)/2),cone?.45:0,Math.sin((a+b)/2)];tri(p0,p1,p2,n,o);tri(p0,p2,p3,n,o);tri([0,-1,0],p1,p0,[0,-1,0],o);if(!cone)tri([0,1,0],p3,p2,[0,1,0],o)}return mesh(o)}
+function sphere(seg=16,ring=10){let o=[];for(let y=0;y<ring;y++){let v0=y/ring*Math.PI,v1=(y+1)/ring*Math.PI;for(let x=0;x<seg;x++){let u0=x/seg*TAU,u1=(x+1)/seg*TAU;let pt=(u,v)=>[Math.sin(v)*Math.cos(u),Math.cos(v),Math.sin(v)*Math.sin(u)];let a=pt(u0,v0),b=pt(u1,v0),c=pt(u1,v1),d=pt(u0,v1);tri(a,b,c,a,o);tri(a,c,d,a,o)}}return mesh(o)}
+function torus(maj=.72,min=.22,seg=20,tube=8){let o=[];for(let i=0;i<seg;i++)for(let j=0;j<tube;j++){let u0=i/seg*TAU,u1=(i+1)/seg*TAU,v0=j/tube*TAU,v1=(j+1)/tube*TAU;let pt=(u,v)=>[(maj+min*Math.cos(v))*Math.cos(u),min*Math.sin(v),(maj+min*Math.cos(v))*Math.sin(u)];let a=pt(u0,v0),b=pt(u1,v0),c=pt(u1,v1),d=pt(u0,v1),n=[Math.cos(u0)*Math.cos(v0),Math.sin(v0),Math.sin(u0)*Math.cos(v0)];tri(a,b,c,n,o);tri(a,c,d,n,o)}return mesh(o)}
+function drawPerson(r,p,col,ang,t){let bob=Math.sin(t*8)*.04;r.draw('cylinder',[p.x,.72+bob,p.z],[.34,.62,.34],col,[0,ang,0],.12);r.draw('sphere',[p.x,1.53+bob,p.z],[.38,.38,.38],'#eef5ff',[],.08);let sw=Math.sin(t*9)*.25;r.draw('cylinder',[p.x+Math.cos(ang+1.57)*.4,.72,p.z+Math.sin(ang+1.57)*.4],[.11,.48,.11],col,[sw,0,ang],.06);r.draw('cylinder',[p.x+Math.cos(ang-1.57)*.4,.72,p.z+Math.sin(ang-1.57)*.4],[.11,.48,.11],col,[-sw,0,ang],.06)}
+function fitViewport(){if(typeof document==='undefined')return null;const apply=()=>document.documentElement.style.setProperty('--vh',Math.floor(global.visualViewport?.height||global.innerHeight||0)+'px');global.addEventListener&&global.addEventListener('resize',apply);global.visualViewport?.addEventListener('resize',apply);apply();return apply}
+function attachToProject(project){const p=JSON.parse(JSON.stringify(project));p.modeling=p.modeling||{};p.modeling.capabilities=p.modeling.capabilities||{};p.modeling.capabilities.graphics={schema:SCHEMA,organ:'MEGALITH_GRAPHICS_PRIMITIVE_ORGAN_v0_5',sources:['GameForge','GlyphPlay','GlyphForge'],primitives:['cube','cyl','sphere','torus'],math:['I','P','RX','RY','RZ','S','T','V','mul'],character_helper:'drawPerson'};return p}
+function receipt(){return{schema:'jm.megalith.graphics-absorption-receipt/0.5',version:VERSION,organ:SCHEMA,source_relation:'29 exact three-way function bodies recovered; selected math/mesh/primitive/person helpers promoted.',donor_policy:'Exact donor engines remain recoverable; standalone engine migration/parity remains a later gate.',claim_boundary:'Shared primitive ownership is proven; renderer parity and final GPU/native performance are not claimed.'}}
+const API={VERSION,SCHEMA,TAU,I,P,RX,RY,RZ,S,T,V,mul,tri,mesh,cube,cyl,sphere,torus,drawPerson,fitViewport,attachToProject,receipt};if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithGraphics=API;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+
+/* JM MEGALITH Release / Package / Test Custody Organ v0.6
+Donors:
+- JMStudios Game Workshop B0.9.2 / Production Custody v1.0: CONCEPT → ASSETS → BUILD → TEST → PACKAGE → RELEASE
+- JM Universal Forge v4.0.0: release metadata, preflight, PWA/project packages, APK/AAB/store carrier boundaries.
+Law: custody is shared; target-specific external/native gates remain honest.
+*/
+(function(global){"use strict";
+const VERSION="0.6.0",SCHEMA="jm.megalith.release-custody/0.6";
+const PHASES=["CONCEPT","ASSETS","BUILD","TEST","PACKAGE","RELEASE"];
+const TARGETS={
+ standalone_html:{label:"Standalone HTML",carrier:"browser",external:false},
+ hosted_pwa:{label:"Hosted PWA",carrier:"browser/service-worker",external:false},
+ project_zionpack:{label:"Project Zionpack",carrier:"zip",external:false},
+ workspace_zionpack:{label:"Workspace Zionpack",carrier:"zip",external:false},
+ browser_apk:{label:"Browser APK",carrier:"browser-signer",external:true},
+ maintenance_apk:{label:"Maintenance APK",carrier:"private-factory",external:true},
+ owner_release_apk:{label:"Owner release APK",carrier:"owner-key/native-host",external:true},
+ signed_aab:{label:"Signed AAB",carrier:"official-gradle",external:true},
+ aab_universal_apk:{label:"AAB-derived APK",carrier:"bundletool",external:true},
+ play_submission:{label:"Play submission",carrier:"external-console",external:true}
+};
+function clone(x){return JSON.parse(JSON.stringify(x??null))}
+function ensure(p){p=clone(p)||{};p.production=p.production||{};p.production.assets=Array.isArray(p.production.assets)?p.production.assets:[];p.production.receipts=Array.isArray(p.production.receipts)?p.production.receipts:[];p.production.release=p.production.release||{};p.production.release.versionName=p.production.release.versionName||"0.1.0";p.production.release.versionCode=Number(p.production.release.versionCode||1);p.production.release.channel=p.production.release.channel||"debug";p.production.release.play=p.production.release.play||{};p.production.release.keystore=p.production.release.keystore||{status:"UNSET"};p.production.release.aab=p.production.release.aab||{status:"SOURCE_READY",validated:false};return p}
+function packageName(p){return String(p.identity?.package_name||p.production?.android?.packageName||p.production?.android?.package||"")}
+function testPass(p){const t=p.production?.test;if(!t)return false;if(t.status)return t.status==="PASS";if(Array.isArray(t.tests))return t.tests.length>0&&t.tests.every(x=>x.pass===true);if(Array.isArray(t))return t.length>0&&t.every(x=>x.pass===true);return false}
+function stage(p){p=ensure(p);let i=0;if(p.production.concept)i=1;if(p.production.assets.length)i=2;if(p.production.build?.status==="PASS")i=3;if(testPass(p))i=4;if(p.production.package?.status==="PASS")i=5;if(p.production.release?.receipt?.status==="PASS")i=6;return {index:Math.min(i,5),complete:i>=6,name:PHASES[Math.min(i,5)]}}
+function record(p,kind,receipt){p=ensure(p);const r={at:new Date().toISOString(),kind,...clone(receipt)};p.production.receipts.unshift(r);p.production.receipts=p.production.receipts.slice(0,100);return {project:p,receipt:r}}
+function recordBuild(p,receipt={}){p=ensure(p);p.production.build={status:receipt.status||"PASS",route:receipt.route||"MEGALITH_SHARED_BUILD",...clone(receipt)};return record(p,"BUILD",p.production.build)}
+function recordTest(p,receipt={}){p=ensure(p);p.production.test={status:receipt.status||"PASS",tests:clone(receipt.tests||[]),...clone(receipt)};return record(p,"TEST",p.production.test)}
+function recordPackage(p,receipt={}){p=ensure(p);p.production.package={status:receipt.status||"PASS",target:receipt.target||"project_zionpack",...clone(receipt)};return record(p,"PACKAGE",p.production.package)}
+function pwaManifest(p){p=ensure(p);const name=p.identity?.title||"JM MEGALITH Project";return {name,short_name:String(name).slice(0,24),description:p.production.release.play.shortDescription||`${name} built through JM MEGALITH.`,id:`./?project=${encodeURIComponent(packageName(p)||p.identity?.id||'project')}`,start_url:"./",scope:"./",display:"standalone",orientation:p.production.android?.orientation||"any",background_color:"#03070d",theme_color:p.production.android?.themeColor||"#07131f",icons:[{src:"icons/jm-megalith-192.png",sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:"icons/jm-megalith-512.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}]}}
+function pwaWorker(p){const cache=`${packageName(p)||'jm-megalith'}-v${p.production?.release?.versionCode||1}`;return `const CACHE=${JSON.stringify(cache)};const CORE=['./','./index.html','./manifest.webmanifest','./icons/jm-megalith-192.png','./icons/jm-megalith-512.png'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).catch(()=>caches.match('./index.html'))));});`}
+function preflight(p,opts={}){p=ensure(p);const r=p.production.release,play=r.play||{},checks=[];const add=(name,pass,detail)=>checks.push({name,pass:Boolean(pass),detail});const pkg=packageName(p);add("Project envelope",/^jm\.megalith\.project\//.test(String(p.schema||"")),p.schema||"missing");add("Concept",Boolean(p.production.concept),p.production.concept||"missing");add("Assets",p.production.assets.length>0,p.production.assets.length);add("Build receipt",p.production.build?.status==="PASS",p.production.build?.status||"OPEN");add("Tests",testPass(p),p.production.test?.status||"OPEN");add("Package identity",/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg),pkg||"missing");add("Version name",/^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$/.test(String(r.versionName||"")),r.versionName);add("Version code",Number.isInteger(r.versionCode)&&r.versionCode>0,r.versionCode);add("Release title",Boolean(play.title||p.identity?.title),play.title||p.identity?.title||"missing");add("Trace/receipt route",p.proof?.trace_required!==false,"required");if(r.channel==="production"){add("Owner signing identity",r.keystore?.status==="READY",r.keystore?.status||"UNSET");add("AAB validation",r.aab?.validated===true,r.aab?.status||"OPEN");}
+const status=checks.every(x=>x.pass)?"PASS":"HOLD";return {schema:"jm.megalith.release-preflight/0.6",status,channel:r.channel,project:p.identity?.title||null,packageName:pkg,checks,held:checks.filter(x=>!x.pass).map(x=>x.name),boundaries:{nativeBuild:"HOST_OR_EXTERNAL_CONTACT_REQUIRED",ownerSigning:"OWNER_KEY_REQUIRED",storeAcceptance:"EXTERNAL",deviceProof:"SEPARATE_CONTACT_GATE"}}}
+function plan(p,targetIds=Object.keys(TARGETS)){p=ensure(p);const pf=preflight(p),baseReady=pf.status==="PASS";return targetIds.map(id=>{const t=TARGETS[id];if(!t)return{id,status:"UNKNOWN"};let status=baseReady?"READY":"HOLD";if(t.external&&baseReady)status="EXTERNAL_GATE";if(id==="signed_aab"&&p.production.release.aab?.validated===true)status="PASS";if(id==="owner_release_apk"&&p.production.release.keystore?.status==="READY"&&p.production.release.receipt?.targets?.owner_release_apk?.status==="PASS")status="PASS";return{id,...t,status}})}
+function releasePackManifest(p){p=ensure(p);const pf=preflight(p);return {schema:"jm.megalith.release-pack/0.6",project:{id:p.identity?.id||null,title:p.identity?.title||null,packageName:packageName(p)},version:{name:p.production.release.versionName,code:p.production.release.versionCode,channel:p.production.release.channel},custody:{phases:PHASES.slice(),stage:stage(p)},preflight:pf,targets:plan(p),files:["PROJECT.json","app/index.html","app/manifest.webmanifest","app/sw.js","release/RELEASE_CONFIG.json","release/PREFLIGHT.json","release/BOUNDARY.md"],provenance:["JMStudios Game Workshop B0.9.2 / Production Custody v1.0","JM Universal Forge v4.0.0"],boundary:"Package manifest and browser carriers can be produced locally. APK/AAB/signing/store acceptance remain target-specific gates unless separately evidenced."}}
+function attachToProject(p,meta={}){p=ensure(p);p.production.releaseOrgan={schema:SCHEMA,version:VERSION,donors:["JMStudios","Universal Forge"],custody:PHASES.slice(),targets:Object.keys(TARGETS),attachedAt:meta.at||new Date().toISOString()};return p}
+function release(p,receipt={}){p=ensure(p);const pf=preflight(p);if(pf.status!=="PASS")return {project:p,status:"HOLD",preflight:pf};const targets={};for(const r of plan(p))targets[r.id]={status:r.status};p.production.release.receipt={schema:"jm.megalith.release-receipt/0.6",status:"PASS",at:new Date().toISOString(),targets,boundary:"PASS means MEGALITH release custody/preflight passed; external targets keep their own gates."};record(p,"RELEASE",p.production.release.receipt);return {project:p,status:"PASS",preflight:pf,receipt:p.production.release.receipt}}
+function receipt(){return{schema:"jm.megalith.release-absorption-receipt/0.6",version:VERSION,shared_custody:PHASES,donors:{JMStudios:"custody/gate semantics",UniversalForge:"carrier/preflight/package semantics"},claim_boundary:"Shared release custody is integrated. Native/store outputs are not claimed without their specific external proof."}}
+const API={VERSION,SCHEMA,PHASES,TARGETS,ensure,packageName,testPass,stage,record,recordBuild,recordTest,recordPackage,pwaManifest,pwaWorker,preflight,plan,releasePackManifest,attachToProject,release,receipt};if(typeof module!=="undefined"&&module.exports)module.exports=API;global.JMMegalithRelease=API;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+
+/* JM MEGALITH Shared Runtime Service v0.8
+Donors:
+- JM GAME NATIVE CORE v1.0: tick, checksum, replay, fault/recovery trace.
+- JM GameCore v1.0: identity-safe shared organ mounting.
+- GameForge Forgefall v3.0: real continuous engine-loop pressure requiring adapter-host federation.
+Law: shared runtime orchestration does not erase engine-owned simulation semantics.
+*/
+(function(global){"use strict";
+const VERSION="0.8.0",SCHEMA="jm.megalith.runtime-service/0.8";
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function stable(x){if(Array.isArray(x))return x.map(stable);if(x&&typeof x==='object'){const o={};Object.keys(x).sort().forEach(k=>o[k]=stable(x[k]));return o}return x}
+function checksumValue(x){const s=JSON.stringify(stable(x));let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(16).padStart(8,'0')}
+function normalizeOrgan(name,organ={}){return{name:String(name),beforeTick:typeof organ.beforeTick==='function'?organ.beforeTick:null,afterTick:typeof organ.afterTick==='function'?organ.afterTick:null,onEvent:typeof organ.onEvent==='function'?organ.onEvent:null,onRecover:typeof organ.onRecover==='function'?organ.onRecover:null,meta:clone(organ.meta||{})}}
+function createCore(config){
+ const trace=[],frames=[],events=[],organs=new Map();let tick=0,time=0,paused=false,checkpoint=null,checkpointTick=0,recoveries=0;
+ const id=config.id||'megalith-runtime';const maxTrace=config.maxTrace||500,checkpointEvery=Math.max(1,config.checkpointEvery||60);
+ function get(){return clone(config.getState())}
+ function set(s){config.setState(clone(s))}
+ function record(type,data={}){const r={tick,time:+time.toFixed(6),type,...clone(data)};trace.push(r);if(trace.length>maxTrace)trace.shift();return r}
+ function saveCheckpoint(reason='interval'){checkpoint=get();checkpointTick=tick;record('CHECKPOINT',{reason,checksum:checksumValue(checkpoint)});return clone(checkpoint)}
+ function recover(reason='validation'){if(checkpoint==null){record('RECOVERY_HOLD',{reason,detail:'no checkpoint'});return false}set(checkpoint);recoveries++;for(const o of organs.values())o.onRecover&&o.onRecover({reason,tick,state:get()});record('RECOVERY',{reason,to_tick:checkpointTick,recoveries});return true}
+ function mount(name,organ={}){if(organs.has(name))return false;organs.set(name,normalizeOrgan(name,organ));record('ORGAN_MOUNT',{name});return true}
+ function unmount(name){const ok=organs.delete(name);if(ok)record('ORGAN_UNMOUNT',{name});return ok}
+ function dispatch(event){events.push(clone(event));record('EVENT_QUEUE',{event});return events.length}
+ function validate(){return typeof config.validate==='function'?config.validate(get()):true}
+ function step(dt=1/60,input=null){if(paused)return{paused:true,tick,state:get()};dt=Math.max(0,Math.min(Number(dt)||0,config.maxDt||.1));tick++;time+=dt;const queued=events.splice(0);const ctx={id,tick,time,dt,input:clone(input),events:clone(queued),record,dispatch,getState:get,setState:set,mount,unmount};for(const e of queued)for(const o of organs.values())o.onEvent&&o.onEvent(e,ctx);for(const o of organs.values())o.beforeTick&&o.beforeTick(ctx);config.update(ctx);for(const o of organs.values())o.afterTick&&o.afterTick(ctx);frames.push({dt,input:clone(input),events:clone(queued)});if(frames.length>(config.maxFrames||10000))frames.shift();let ok=validate();if(!ok){record('FAULT',{reason:'validation'});recover('validation');ok=validate()}if(tick===1||tick%checkpointEvery===0)saveCheckpoint(tick===1?'first-tick':'interval');record('TICK',{dt,checksum:checksumValue(get()),valid:ok});return{tick,time,state:get(),valid:ok}}
+ function run(n=1,dt=1/60,inputProvider=null){let r;for(let i=0;i<n;i++)r=step(dt,typeof inputProvider==='function'?inputProvider(i):inputProvider);return r}
+ function pause(){paused=true;record('PAUSE');return true}function resume(){paused=false;record('RESUME');return true}
+ function receipt(){return{schema:'jm.megalith.runtime-receipt/0.8',id,tick,time,paused,checksum:checksumValue(get()),organs:[...organs.keys()],recoveries,trace_count:trace.length,frame_count:frames.length,boundary:config.boundary||'Runtime service orchestrates state/ticks/trace/recovery; engine-specific simulation semantics remain owned by the adapted body.'}}
+ if(config.initialCheckpoint!==false)saveCheckpoint('initial');
+ return{schema:SCHEMA,version:VERSION,id,step,run,pause,resume,dispatch,mount,unmount,saveCheckpoint,recover,snapshot:get,checksum:()=>checksumValue(get()),receipt,trace:()=>clone(trace),frames:()=>clone(frames),organs:()=>[...organs.keys()]}
+}
+function create(config={}){let state=clone(config.initialState||{});const reducer=typeof config.update==='function'?config.update:()=>{};return createCore({...config,getState:()=>state,setState:s=>{state=s},update:ctx=>{const next=reducer(state,ctx);if(next!==undefined)state=next}})}
+function createAdapterHost(config={}){if(typeof config.getState!=='function'||typeof config.setState!=='function'||typeof config.update!=='function')throw new Error('Adapter host requires getState, setState and update');return createCore(config)}
+function replayOwned(config,frames=[]){const host=create({...config,initialCheckpoint:false});host.saveCheckpoint('replay-start');for(const f of frames){for(const e of f.events||[])host.dispatch(e);host.step(f.dt,f.input)}return{checksum:host.checksum(),state:host.snapshot(),receipt:host.receipt()}}
+function receipt(){return{schema:'jm.megalith.runtime-service-absorption/0.8',version:VERSION,donors:{native_core:['ticks','checksum','replay','recovery'],gamecore:['identity-safe organ mount'],gameforge:['adapter-host continuous loop pressure']},modes:['OWNED_STATE','ADAPTER_HOST'],claim_boundary:'Generic runtime orchestration is shared. Deterministic replay of an adapted engine requires that engine randomness/input sources also be made reproducible.'}}
+const API={VERSION,SCHEMA,clone,stable,checksumValue,create,createAdapterHost,replayOwned,receipt};if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithRuntime=API;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+
+(function(global){'use strict';
+const VERSION='0.10.0',SCHEMA='jm.megalith.determinism-custody/0.10';
+const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
+function stable(v){if(Array.isArray(v))return v.map(stable);if(v&&typeof v==='object'){const o={};Object.keys(v).sort().forEach(k=>o[k]=stable(v[k]));return o}return v}
+function checksum(v){let h=2166136261>>>0,s=JSON.stringify(stable(v));for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(16).padStart(8,'0')}
+function hashName(name){let h=2166136261>>>0;for(const c of String(name)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h>>>0}
+function rng(seed){let x=(Number(seed)>>>0)||0x6d2b79f5;return{random(){x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return x/4294967296},snapshot(){return x>>>0},restore(v){x=(Number(v)>>>0)||0x6d2b79f5;return x}}}
+function create(config={}){
+ const seed=(Number(config.seed)>>>0)||320032,mode=config.mode==='REPLAY'?'REPLAY':'RECORD';
+ const tape=clone(config.tape||{schema:'jm.megalith.determinism-tape/0.10',seed,frames:[]});
+ const channels=new Map();let index=0,current=null,counts={};
+ function channel(name='sim'){name=String(name);if(!channels.has(name))channels.set(name,rng((seed^hashName(name))>>>0));return channels.get(name)}
+ function random(name='sim'){counts[name]=(counts[name]||0)+1;return channel(name).random()}
+ function range(a,b,name='sim'){return Number(a)+(Number(b)-Number(a))*random(name)}
+ function frame(dt,input={},actions=[]){
+   if(mode==='REPLAY'){
+     if(index>=tape.frames.length)throw new Error('Determinism replay tape exhausted at frame '+index);
+     current=clone(tape.frames[index++]);return current;
+   }
+   current={i:index++,dt:Number(dt)||0,input:clone(input),actions:clone(actions)};tape.frames.push(clone(current));return current;
+ }
+ function reset(){index=0;current=null;counts={};channels.clear()}
+ function exportTape(){return clone({...tape,seed,frame_count:tape.frames.length,checksum:checksum(tape.frames)})}
+ function receipt(){return{schema:'jm.megalith.determinism-receipt/0.10',version:VERSION,mode,seed,index,frames:tape.frames.length,channels:[...channels.keys()],random_calls:clone(counts),tape_checksum:checksum(tape.frames),boundary:'Determinism custody records frame input/action data and supplies seeded named random channels. Full replay requires all state-changing external contacts to enter the tape.'}}
+ return{schema:SCHEMA,version:VERSION,mode,seed,frame,random,range,channelState:name=>channel(name).snapshot(),reset,exportTape,receipt,checksum};
+}
+function replay(tape,runner){const d=create({seed:tape.seed,mode:'REPLAY',tape});let state=clone(runner.initialState);while(d.receipt().index<tape.frames.length){const f=d.frame();state=runner.step(state,f,d)}return{state,checksum:checksum(state),receipt:d.receipt()}}
+const API={VERSION,SCHEMA,clone,stable,checksum,create,replay};if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithDeterminism=API;
+})(typeof window!=='undefined'?window:globalThis);
+
+
+/* JM MEGALITH RENDERER CLASS ORGAN v0.19 + v0.23A FAILOVER PATCH
+   v0.19 authority is preserved. v0.23A adds transport-safe renderer failover:
+   any WebGL2 creation/shader/link/buffer/context-loss failure falls to Canvas2D.
+*/
+(function(global){
+global.JMMegalithRendererClass = class Renderer{
+ constructor(canvas,opt={}){this.canvas=canvas;this.bg=opt.bg||'#04101a';this.yaw=-.72;this.pitch=.62;this.dist=14;this.target=[0,1,0];this.drag=null;this.fallback=false;this.mode='boot';this.failoverReason='';this.drawCount=0;this.frameDraws=0;this.ctx=null;this.gl=null;const ua=(typeof navigator!=='undefined'&&navigator.userAgent)||'';const proto=(typeof location!=='undefined'&&location.protocol)||'';this.transportSafe2D=opt.prefer2D===true||/Android/i.test(ua)||proto==='content:';if(this.transportSafe2D){this.activateFallback('transport-safe-2d:'+(/Android/i.test(ua)?'android':proto||'requested'))}else try{this._initWebGL(opt);this.mode='webgl2'}catch(e){this.activateFallback('webgl-init: '+(e&&e.message||e))}this.resize();if(this.gl&&canvas.addEventListener)canvas.addEventListener('webglcontextlost',e=>{e.preventDefault&&e.preventDefault();this.activateFallback('webgl-context-lost')},{passive:false})}
+ _initWebGL(opt){const canvas=this.canvas,gl=canvas.getContext&&canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true});if(!gl)throw Error('webgl2-unavailable');this.gl=gl;let vs=`#version 300 es\nin vec3 p;in vec3 n;uniform mat4 m,vp;out vec3 N,W;void main(){vec4 w=m*vec4(p,1.);W=w.xyz;N=mat3(m)*n;gl_Position=vp*w;}`,fs=`#version 300 es\nprecision highp float;in vec3 N,W;uniform vec3 c;uniform float e;out vec4 O;void main(){vec3 l=normalize(vec3(.4,.85,.3));float d=max(dot(normalize(N),l),0.);float rim=pow(1.-max(dot(normalize(N),normalize(vec3(0.,1.,1.))),0.),2.);vec3 col=c*(.22+.78*d)+c*rim*.22+c*e;float fog=clamp((length(W)-12.)/26.,0.,.78);O=vec4(mix(col,vec3(.01,.025,.045),fog),1.);}`;let sh=(t,s)=>{let q=gl.createShader(t);if(!q)throw Error('shader-create-failed');gl.shaderSource(q,s);gl.compileShader(q);if(!gl.getShaderParameter(q,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(q)||'shader-compile-failed');return q};this.pr=gl.createProgram();if(!this.pr)throw Error('program-create-failed');gl.attachShader(this.pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(this.pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(this.pr);if(!gl.getProgramParameter(this.pr,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(this.pr)||'program-link-failed');gl.useProgram(this.pr);this.loc={p:gl.getAttribLocation(this.pr,'p'),n:gl.getAttribLocation(this.pr,'n'),m:gl.getUniformLocation(this.pr,'m'),vp:gl.getUniformLocation(this.pr,'vp'),c:gl.getUniformLocation(this.pr,'c'),e:gl.getUniformLocation(this.pr,'e')};this.meshes={cube:cube(),sphere:sphere(),cylinder:cyl(),cone:cyl(16,1),torus:torus()};for(let k in this.meshes){let x=this.meshes[k];x.vao=gl.createVertexArray();x.buf=gl.createBuffer();if(!x.vao||!x.buf)throw Error('mesh-buffer-failed:'+k);gl.bindVertexArray(x.vao);gl.bindBuffer(gl.ARRAY_BUFFER,x.buf);gl.bufferData(gl.ARRAY_BUFFER,x.data,gl.STATIC_DRAW);gl.enableVertexAttribArray(this.loc.p);gl.vertexAttribPointer(this.loc.p,3,gl.FLOAT,false,24,0);gl.enableVertexAttribArray(this.loc.n);gl.vertexAttribPointer(this.loc.n,3,gl.FLOAT,false,24,12)}if(opt.cameraControl!==false&&canvas.addEventListener){canvas.addEventListener('pointerdown',e=>{if(e.target!==canvas)return;this.drag=[e.clientX,e.clientY];canvas.setPointerCapture&&canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointermove',e=>{if(!this.drag)return;this.yaw+=(e.clientX-this.drag[0])*.007;this.pitch=Math.max(.22,Math.min(1.2,this.pitch+(e.clientY-this.drag[1])*.005));this.drag=[e.clientX,e.clientY]});canvas.addEventListener('pointerup',()=>this.drag=null);canvas.addEventListener('wheel',e=>{e.preventDefault();this.dist=Math.max(7,Math.min(24,this.dist+e.deltaY*.01))},{passive:false})}}
+ activateFallback(reason='fallback'){this.failoverReason=String(reason);this.fallback=true;this.mode='2d-fallback';this.gl=null;this.pr=null;this.meshes=null;this.ctx=this.canvas.getContext&&this.canvas.getContext('2d');if(!this.ctx)throw Error('renderer-failover-no-2d-context: '+this.failoverReason);return this}
+ resize(){let d=Math.min((typeof devicePixelRatio!=='undefined'?devicePixelRatio:1)||1,1.55),w=Math.max(1,this.canvas.clientWidth|0),h=Math.max(1,this.canvas.clientHeight|0);if(this.canvas.width!==Math.round(w*d)||this.canvas.height!==Math.round(h*d)){this.canvas.width=Math.round(w*d);this.canvas.height=Math.round(h*d)}if(!this.fallback&&this.gl)try{this.gl.viewport(0,0,this.canvas.width,this.canvas.height)}catch(e){this.activateFallback('viewport: '+e.message)}}
+ begin(target=this.target){this.resize();this.frameDraws=0;if(this.fallback){let q=this.ctx,d=this.canvas.width/Math.max(1,this.canvas.clientWidth);q.setTransform(1,0,0,1,0,0);let grad=q.createLinearGradient? q.createLinearGradient(0,0,0,this.canvas.height):null;if(grad){grad.addColorStop(0,this.bg);grad.addColorStop(1,'#02040a');q.fillStyle=grad}else q.fillStyle=this.bg;q.fillRect(0,0,this.canvas.width,this.canvas.height);q.setTransform(d,0,0,d,0,0);this.fbTarget=target;return}try{let gl=this.gl,b=hex(this.bg);gl.clearColor(b[0],b[1],b[2],1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);let eye=[target[0]+Math.cos(this.yaw)*Math.cos(this.pitch)*this.dist,target[1]+Math.sin(this.pitch)*this.dist,target[2]+Math.sin(this.yaw)*Math.cos(this.pitch)*this.dist];this.vp=mul(P(.76,this.canvas.width/this.canvas.height,.1,100),V(eye,target));gl.useProgram(this.pr);gl.uniformMatrix4fv(this.loc.vp,false,this.vp)}catch(e){this.activateFallback('begin: '+e.message);return this.begin(target)}}
+ _project(pos){let w=this.canvas.clientWidth,h=this.canvas.clientHeight,s=Math.max(9,Math.min(w,h)/15.5),tx=this.fbTarget?.[0]||0,tz=this.fbTarget?.[2]||0,dx=pos[0]-tx,dz=pos[2]-tz;return [w/2+(dx-dz*.22)*s,h*.53+(dz*.72+dx*.08)*s-pos[1]*s*.52,s]}
+ draw(kind,pos=[0,0,0],scale=[1,1,1],color='#ffffff',rot=[0,0,0],em=0){if(this.fallback){let q=this.ctx,[x,y,s]=this._project(pos),sx=Math.max(2,scale[0]*s),sz=Math.max(2,scale[2]*s),sy=Math.max(2,scale[1]*s*.55);q.save();q.globalAlpha=.94;q.fillStyle=color;q.strokeStyle=color;q.lineWidth=Math.max(2,1+em*8);q.shadowColor=em?color:'transparent';q.shadowBlur=em?10+em*26:0;if(kind==='torus'){q.beginPath();q.ellipse(x,y,Math.max(3,sx*.55),Math.max(2,sz*.30),rot[1]||0,0,Math.PI*2);q.stroke()}else if(kind==='sphere'){let g=q.createRadialGradient?q.createRadialGradient(x-sx*.15,y-sy*.18,1,x,y,Math.max(sx,sy)*.55):null;if(g){g.addColorStop(0,'#ffffff');g.addColorStop(.18,color);g.addColorStop(1,color+'aa');q.fillStyle=g}q.beginPath();q.ellipse(x,y,Math.max(3,sx*.43),Math.max(3,sy*.65),0,0,Math.PI*2);q.fill()}else if(kind==='cone'){q.translate(x,y);q.rotate(rot[1]||0);q.beginPath();q.moveTo(0,-sy);q.lineTo(sx*.42,sy*.6);q.lineTo(-sx*.42,sy*.6);q.closePath();q.fill()}else if(kind==='cylinder'){q.fillRect(x-sx*.18,y-sy*.65,sx*.36,sy*1.3);q.beginPath();q.ellipse(x,y-sy*.65,sx*.18,Math.max(2,sz*.13),0,0,Math.PI*2);q.fill()}else{q.translate(x,y);q.rotate((rot[1]||0)*.35);q.beginPath();q.moveTo(-sx*.42,-sz*.18);q.lineTo(0,-sz*.42);q.lineTo(sx*.42,-sz*.18);q.lineTo(sx*.42,sz*.18);q.lineTo(0,sz*.42);q.lineTo(-sx*.42,sz*.18);q.closePath();q.fill()}q.restore();this.drawCount++;this.frameDraws++;return}try{let gl=this.gl,x=this.meshes[kind]||this.meshes.cube,m=mul(T(...pos),mul(RY(rot[1]||0),mul(RX(rot[0]||0),mul(RZ(rot[2]||0),S(...scale)))));gl.bindVertexArray(x.vao);gl.uniformMatrix4fv(this.loc.m,false,m);gl.uniform3fv(this.loc.c,hex(color));gl.uniform1f(this.loc.e,em);gl.drawArrays(gl.TRIANGLES,0,x.count);this.drawCount++;this.frameDraws++}catch(e){this.activateFallback('draw: '+e.message);this.draw(kind,pos,scale,color,rot,em)}}
+ beam(a,b,w,color,y=.12){let dx=b[0]-a[0],dz=b[2]-a[2],len=Math.hypot(dx,dz);this.draw('cube',[(a[0]+b[0])/2,y,(a[2]+b[2])/2],[len/2,w,w],color,[0,-Math.atan2(dz,dx),0],.12)}
+ receipt(){return{mode:this.mode,fallback:this.fallback,reason:this.failoverReason,drawCount:this.drawCount,transportSafe2D:!!this.transportSafe2D,culling:'disabled-transport-safe'}}
+}
+})(globalThis);
+
+
+/* JM MEGALITH Gameplay Genome Organ v0.21
+Parent: v0.20 Descendant Synthesis Forge
+Purpose: natural description + donor-family pressure -> executable gameplay structure.
+Boundary: gameplay grammar is generated; final feel/balance/art/native packaging remain owner/product gates.
+*/
+(function(global){"use strict";
+const VERSION='0.21.0',SCHEMA='jm.megalith.gameplay-genome/0.21';
+const FAMILIES={
+ 'GameForge':{tier:'deep',role:'combat / pressure / action'},
+ 'GlyphPlay':{tier:'deep',role:'meaning / glyph / relation'},
+ 'GlyphForge':{tier:'deep',role:'form / capability / visual power'},
+ 'PLAYFORM':{tier:'structural',role:'participation / gesture / expression'},
+ 'JM GameCore':{tier:'structural',role:'shared organ registry'},
+ 'JM GAME NATIVE CORE':{tier:'structural',role:'deterministic IR runtime'},
+ 'Kading Game Estate':{tier:'structural',role:'inheritance / route / gates'},
+ 'PlayZone World Studio':{tier:'structural',role:'zones / portals / traversal'},
+ 'JaggedMirror Game Lab':{tier:'structural',role:'mirror / difference / recombination'},
+ 'JMStudios Game Workshop':{tier:'structural',role:'production / package custody'},
+ 'JM BuildCAD':{tier:'deep-adjacent',role:'space / rooms / architecture'}
+};
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function hash(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return(h>>>0)}
+function has(fs,n){return (fs||[]).includes(n)}
+function resolve(description='',families=[]){
+ const t=String(description).toLowerCase(), fs=[...new Set(families)];
+ const combat=/fight|combat|battle|enemy|weapon|shoot|arena|boss|pressure|survive/.test(t)||has(fs,'GameForge');
+ const collect=/collect|glyph|meaning|symbol|memory|treasure|pickup/.test(t)||has(fs,'GlyphPlay');
+ const route=/route|gate|portal|zone|travel|navigate|maze|room|world/.test(t)||has(fs,'Kading Game Estate')||has(fs,'PlayZone World Studio');
+ const build=/build|room|architecture|cad|space|structure|industrial|level/.test(t)||has(fs,'JM BuildCAD');
+ let archetype='hybrid';
+ if(combat&&!collect&&!route)archetype='arena'; else if(collect&&!combat&&!route)archetype='collector'; else if(build&&!combat&&!collect&&!has(fs,'Kading Game Estate')&&!has(fs,'PlayZone World Studio'))archetype='spatial'; else if(route&&!combat&&!collect)archetype='route';
+ const pace=/fast|quick|rapid|frenetic|bouncy/.test(t)?1.25:/slow|calm|deliberate/.test(t)?.78:1;
+ const difficulty=/hard|brutal|difficult|punishing/.test(t)?1.35:/easy|gentle|simple/.test(t)?.72:1;
+ const scale=/large|huge|wide|open/.test(t)?8:/small|tight|compact/.test(t)?5:6.5;
+ const mirror=has(fs,'JaggedMirror Game Lab')||/mirror|opposite|reflection|twin/.test(t);
+ const charge=has(fs,'PLAYFORM')||has(fs,'GlyphForge')||/charge|hold|power|long press/.test(t);
+ const enemies=combat?Math.round(clamp(4*difficulty+(archetype==='arena'?2:0),2,10)):0;
+ const glyphTarget=collect?Math.round(clamp(4+(difficulty>1?2:0),3,9)):0;
+ const gateTarget=(route&&archetype!=='spatial')?Math.round(clamp(3+(scale>7?2:0),2,6)):0;
+ const zones=has(fs,'PlayZone World Studio')?Math.max(2,Math.min(4,gateTarget||3)):1;
+ const anchorTarget=(build&&archetype==='spatial')?3:0;
+ const objectiveParts=[];if(enemies)objectiveParts.push('break '+enemies+' pressure bodies');if(glyphTarget)objectiveParts.push('collect '+glyphTarget+' meaning glyphs');if(gateTarget)objectiveParts.push('cross '+gateTarget+' route gates');if(anchorTarget)objectiveParts.push('activate '+anchorTarget+' build anchors');if(!objectiveParts.length)objectiveParts.push('reach synthesis threshold');
+ return {schema:SCHEMA,version:VERSION,archetype,pace,difficulty,scale,enemies,glyphTarget,gateTarget,anchorTarget,zones,mirror,charge,abilityCycle:has(fs,'GlyphForge'),architecture:build,objective:objectiveParts.join(' + '),seed:hash(description+'|'+fs.join('|')),families:fs};
+}
+function initial(genome,det){
+ const s={player:{x:0,z:0,hp:5,energy:1},enemies:[],glyphs:[],gates:[],anchors:[],shots:[],meaning:0,pressure:0,route:0,build:0,zone:0,capability:1,won:false,lost:false,t:0};
+ for(let i=0;i<genome.enemies;i++)s.enemies.push({x:det.range(-genome.scale+1,genome.scale-1,'ex'+i),z:det.range(-4.2,4.2,'ez'+i),hp:2.4*genome.difficulty,speed:.5*genome.pace});
+ for(let i=0;i<genome.glyphTarget;i++)s.glyphs.push({x:det.range(-genome.scale+1,genome.scale-1,'gx'+i),z:det.range(-4.2,4.2,'gz'+i),live:true});
+ for(let i=0;i<genome.gateTarget;i++)s.gates.push({x:-genome.scale+1+(i+1)*(2*genome.scale-2)/(genome.gateTarget+1),z:(i%2?2.4:-2.4),passed:false,zone:i%Math.max(1,genome.zones)});
+ for(let i=0;i<(genome.anchorTarget||0);i++)s.anchors.push({x:det.range(-genome.scale+1,genome.scale-1,'ax'+i),z:det.range(-4.0,4.0,'az'+i),live:true});
+ return s;
+}
+function victory(s,g){const a=g.enemies===0||s.enemies.every(e=>e.hp<=0),b=g.glyphTarget===0||s.meaning>=g.glyphTarget,c=g.gateTarget===0||s.route>=g.gateTarget,d=!g.anchorTarget||s.build>=g.anchorTarget;return a&&b&&c&&d}
+function step(s,ctx,g,events){
+ const input=ctx.input||{},dt=ctx.dt||1/60, rec=(type,data={})=>events&&events.push({type,...data});s.t+=dt;
+ const speed=4.3*g.pace;s.player.x=clamp(s.player.x+(input.x||0)*dt*speed,-g.scale,g.scale);s.player.z=clamp(s.player.z+(input.z||0)*dt*speed,-4.8,4.8);
+ for(const e of s.enemies){if(e.hp<=0)continue;const dx=s.player.x-e.x,dz=s.player.z-e.z,d=Math.hypot(dx,dz)||1;e.x+=dx/d*dt*e.speed;e.z+=dz/d*dt*e.speed;if(d<.58){s.player.hp=Math.max(0,s.player.hp-dt*.65*g.difficulty);s.pressure+=dt*.2}}
+ for(const x of s.glyphs)if(x.live&&Math.hypot(x.x-s.player.x,x.z-s.player.z)<.62){x.live=false;s.meaning++;s.capability=1+(s.meaning%4);rec('MEANING_CONTACT',{meaning:s.meaning})}
+ for(const gate of s.gates)if(!gate.passed&&Math.hypot(gate.x-s.player.x,gate.z-s.player.z)<.75){gate.passed=true;s.route++;s.zone=gate.zone;rec('ROUTE_GATE',{route:s.route,zone:s.zone})}
+ for(const a of s.anchors)if(a.live&&Math.hypot(a.x-s.player.x,a.z-s.player.z)<.7){a.live=false;s.build++;rec('BUILD_ANCHOR',{build:s.build})}
+ if(input.fire){const p=clamp(Number(input.fire)||1,.5,4);s.shots.push({x:s.player.x,z:s.player.z,life:.34+.1*p,power:p*s.capability});rec('ACTION_RELEASE',{power:p*s.capability})}
+ for(const q of s.shots){q.life-=dt;for(const e of s.enemies)if(e.hp>0&&Math.hypot(e.x-q.x,e.z-q.z)<.8+q.power*.5){e.hp-=dt*18*q.power;if(e.hp<=0){s.pressure++;rec('PRESSURE_BREAK',{pressure:s.pressure})}}}s.shots=s.shots.filter(q=>q.life>0);
+ s.won=victory(s,g);s.lost=s.player.hp<=0;return s;
+}
+function receipt(){return{schema:'jm.megalith.gameplay-genome-receipt/0.21',version:VERSION,families:Object.keys(FAMILIES),claim:'Description resolves into executable gameplay grammar; donor tiers remain distinguishable.'}}
+const API={VERSION,SCHEMA,FAMILIES,resolve,initial,victory,step,receipt};if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithGameplayGenome=API;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+/* JM MEGALITH PlayLoop / Game Feel Organ v0.22
+Parent: v0.21 Gameplay Genome Forge (owner Android-contacted working head)
+Purpose: turn declarative gameplay genomes into rounds, discrete impact, enemy roles,
+score/combo pressure, time pressure, recovery and restartable game loops.
+Boundary: this organ improves generated game feel/depth; final balance, art, audio,
+performance and native packaging remain product/owner gates.
+*/
+(function(global){'use strict';
+const VERSION='0.22.0',SCHEMA='jm.megalith.game-feel/0.22';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function resolve(genome={},description='',families=[]){
+ const t=String(description).toLowerCase(),a=genome.archetype||'hybrid';
+ const rounds=/one round|single round/.test(t)?1:/five rounds|5 rounds|endless/.test(t)?5:(a==='arena'||a==='hybrid'?3:2);
+ const roundSeconds=/relaxed|untimed|no timer/.test(t)?120:/fast|quick|frenetic|rapid/.test(t)?58:72;
+ const comboWindow=/combo|chain|streak/.test(t)?4.2:3.2;
+ const bounce=/bouncy|bounce|knockback|punchy/.test(t)?1.35:1;
+ const enemyRoles=genome.enemies?['chase','orbit','dash','sentinel'].slice(0,Math.min(4,Math.max(2,Math.ceil(genome.enemies/2)))):[];
+ return {schema:SCHEMA,version:VERSION,rounds,roundSeconds,comboWindow,bounce,
+   contactDamage:.62*(genome.difficulty||1),iFrames:.72,
+   baseDamage:1.05/(Math.max(.8,genome.difficulty||1)),pulseSpeed:6.8,pulseBaseRadius:.48,pulseLife:.42,
+   score:{break:120,meaning:80,route:65,build:90,round:300,time:4},enemyRoles,
+   recovery:{hpPerRound:1.35,energyPerRound:1},
+   feelTags:['discrete-hit','expanding-cast','combo-score','round-loop','restart','enemy-roles','contact-feedback']};
+}
+function roleEnemy(e,i,f,round=1){e.id=e.id||('e'+round+'_'+i);e.kind=f.enemyRoles.length?f.enemyRoles[i%f.enemyRoles.length]:'chase';e.spawnX=e.x;e.spawnZ=e.z;e.cool=.25+i*.13;e.dash=0;e.vx=0;e.vz=0;e.flash=0;e.maxHp=e.hp;return e}
+function initial(genome,feel,det){
+ const s=JMMegalithGameplayGenome.initial(genome,det);s.round=1;s.rounds=feel.rounds;s.score=0;s.combo=1;s.streak=0;s.comboClock=0;s.timeLeft=feel.roundSeconds;s.total={meaning:0,breaks:0,route:0,build:0};s.player.maxHp=5;s.player.hp=5;s.player.invuln=0;s.player.flash=0;s.pulses=[];s.hitstop=0;s.shake=0;s.roundFlash=1;s.enemies.forEach((e,i)=>roleEnemy(e,i,feel,1));return s;
+}
+function award(s,base,kind,events,comboWindow=3.2){s.streak++;s.combo=clamp(1+(s.streak-1)*.22,1,5);s.comboClock=kind==='damage'?0:comboWindow;s.score+=Math.round(base*s.combo);events&&events.push({type:'SCORE',kind,base,combo:+s.combo.toFixed(2),score:s.score});}
+function spawnRound(s,g,f,det,events){
+ const fresh=JMMegalithGameplayGenome.initial(g,det);s.enemies=fresh.enemies;s.glyphs=fresh.glyphs;s.gates=fresh.gates;s.anchors=fresh.anchors;s.shots=[];s.pulses=[];s.meaning=0;s.pressure=0;s.route=0;s.build=0;s.zone=0;s.capability=1;s.timeLeft=f.roundSeconds;s.player.hp=Math.min(s.player.maxHp,s.player.hp+f.recovery.hpPerRound);s.player.invuln=1;s.player.x=0;s.player.z=0;s.enemies.forEach((e,i)=>{e.hp*=1+(s.round-1)*.18;e.speed*=1+(s.round-1)*.08;roleEnemy(e,i,f,s.round)});s.roundFlash=1;events&&events.push({type:'ROUND_START',round:s.round});return s;
+}
+function objectiveComplete(s,g){return (g.enemies===0||s.enemies.every(e=>e.hp<=0))&&(g.glyphTarget===0||s.meaning>=g.glyphTarget)&&(g.gateTarget===0||s.route>=g.gateTarget)&&(!g.anchorTarget||s.build>=g.anchorTarget)}
+function pulse(s,power){s.pulses.push({x:s.player.x,z:s.player.z,r:.08,maxR:.95+power*.42,life:.42,power,hit:[]});}
+function enemyMove(e,s,dt,g,f){if(e.hp<=0)return;const dx=s.player.x-e.x,dz=s.player.z-e.z,d=Math.hypot(dx,dz)||1,ux=dx/d,uz=dz/d,t=-uz,n=ux,base=e.speed*(1+.06*(s.round-1));e.cool-=dt;e.flash=Math.max(0,e.flash-dt*4);
+ if(e.kind==='orbit'){e.x+=(ux*.35+t*.94)*base*dt;e.z+=(uz*.35+n*.94)*base*dt;}
+ else if(e.kind==='dash'){if(e.dash>0){e.x+=e.vx*dt;e.z+=e.vz*dt;e.dash-=dt}else if(e.cool<=0&&d<5){e.vx=ux*base*5.4;e.vz=uz*base*5.4;e.dash=.22;e.cool=1.35+.35*(e.id.length%3)}else{e.x+=ux*base*.55*dt;e.z+=uz*base*.55*dt;}}
+ else if(e.kind==='sentinel'){const home=Math.hypot(e.x-e.spawnX,e.z-e.spawnZ);if(d<2.8){e.x+=ux*base*.75*dt;e.z+=uz*base*.75*dt}else if(home>.3){e.x+=(e.spawnX-e.x)*dt*.8;e.z+=(e.spawnZ-e.z)*dt*.8}}
+ else {e.x+=ux*base*dt;e.z+=uz*base*dt;}
+ e.x=clamp(e.x,-g.scale,g.scale);e.z=clamp(e.z,-4.8,4.8);
+}
+function step(s,ctx,g,f,det,events){const input=ctx.input||{},dt=Math.min(.05,ctx.dt||1/60),rec=(type,data={})=>events&&events.push({type,...data});
+ if(s.won||s.lost)return s;if(s.hitstop>0){s.hitstop-=dt;return s;}s.t+=dt;s.timeLeft=Math.max(0,s.timeLeft-dt);s.player.invuln=Math.max(0,s.player.invuln-dt);s.player.flash=Math.max(0,s.player.flash-dt*5);s.shake=Math.max(0,s.shake-dt*5);s.roundFlash=Math.max(0,s.roundFlash-dt*2);s.comboClock=Math.max(0,s.comboClock-dt);if(s.comboClock<=0&&s.streak){s.streak=0;s.combo=1;}
+ const speed=4.65*(g.pace||1);s.player.x=clamp(s.player.x+(input.x||0)*dt*speed,-g.scale,g.scale);s.player.z=clamp(s.player.z+(input.z||0)*dt*speed,-4.8,4.8);
+ for(const e of s.enemies){enemyMove(e,s,dt,g,f);if(e.hp<=0)continue;const dx=s.player.x-e.x,dz=s.player.z-e.z,d=Math.hypot(dx,dz),m=d||1;if(d<.56&&s.player.invuln<=0){s.player.hp=Math.max(0,s.player.hp-f.contactDamage);s.player.invuln=f.iFrames;s.player.flash=1;s.shake=1;s.streak=0;s.combo=1;s.comboClock=0;const push=.55*f.bounce;s.player.x=clamp(s.player.x+dx/m*push,-g.scale,g.scale);s.player.z=clamp(s.player.z+dz/m*push,-4.8,4.8);rec('PLAYER_HIT',{hp:s.player.hp,enemy:e.kind});}}
+ for(const x of s.glyphs)if(x.live&&Math.hypot(x.x-s.player.x,x.z-s.player.z)<.64){x.live=false;s.meaning++;s.total.meaning++;s.capability=1+(s.total.meaning%4);award(s,f.score.meaning,'meaning',events,f.comboWindow);rec('MEANING_CONTACT',{meaning:s.meaning})}
+ for(const gate of s.gates)if(!gate.passed&&Math.hypot(gate.x-s.player.x,gate.z-s.player.z)<.76){gate.passed=true;s.route++;s.total.route++;s.zone=gate.zone;award(s,f.score.route,'route',events,f.comboWindow);rec('ROUTE_GATE',{route:s.route,zone:s.zone})}
+ for(const a of s.anchors)if(a.live&&Math.hypot(a.x-s.player.x,a.z-s.player.z)<.72){a.live=false;s.build++;s.total.build++;award(s,f.score.build,'build',events,f.comboWindow);rec('BUILD_ANCHOR',{build:s.build})}
+ if(input.fire){const p=clamp(Number(input.fire)||1,.5,4)*s.capability;pulse(s,p);rec('CAST_RELEASE',{power:+p.toFixed(2)})}
+ for(const q of s.pulses){q.life-=dt;q.r=Math.min(q.maxR,q.r+dt*f.pulseSpeed);for(const e of s.enemies){if(e.hp<=0||q.hit.includes(e.id))continue;const d=Math.hypot(e.x-q.x,e.z-q.z);if(d<q.r+.38){q.hit.push(e.id);const dmg=f.baseDamage*q.power;e.hp-=dmg;e.flash=1;const dx=e.x-q.x,dz=e.z-q.z,m=Math.hypot(dx,dz)||1;e.x=clamp(e.x+dx/m*.42*f.bounce,-g.scale,g.scale);e.z=clamp(e.z+dz/m*.42*f.bounce,-4.8,4.8);s.hitstop=.022;s.shake=.7;rec('PRESSURE_HIT',{enemy:e.kind,damage:+dmg.toFixed(2),hp:+Math.max(0,e.hp).toFixed(2)});if(e.hp<=0){s.pressure++;s.total.breaks++;award(s,f.score.break,'break',events,f.comboWindow);rec('PRESSURE_BREAK',{pressure:s.pressure,kind:e.kind})}}}}s.pulses=s.pulses.filter(q=>q.life>0);
+ if(s.player.hp<=0||s.timeLeft<=0){s.lost=true;rec('GAME_OVER',{reason:s.player.hp<=0?'hp':'time'});return s}
+ if(objectiveComplete(s,g)){if(s.round<s.rounds){s.score+=f.score.round+Math.floor(s.timeLeft*f.score.time);s.round++;spawnRound(s,g,f,det,events)}else{s.score+=Math.floor(s.timeLeft*f.score.time);s.won=true;rec('GAME_COMPLETE',{score:s.score,rounds:s.rounds})}}
+ return s;}
+function receipt(){return{schema:'jm.megalith.game-feel-receipt/0.22',version:VERSION,features:['round-loop','discrete-damage','enemy-role-ai','expanding-cast','score-combo','time-pressure','round-recovery','quick-restart'],claim_boundary:'Playable depth improved; final feel/balance/performance remain owner contact gates.'}}
+const API={VERSION,SCHEMA,resolve,initial,step,objectiveComplete,spawnRound,receipt};if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithGameFeel=API;
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+/*
+JM MEGALITH Game Crown Presentation Organ v0.24
+Parent: v0.22 PlayLoop / Game Feel Forge
+Purpose: invert the v0.22 test-rig presentation so the generated game owns the screen.
+The MEGALITH proof/donor machinery remains available behind a player-hidden developer drawer.
+Boundary: presentation depth is a forward game-facing organ, not a final art/audio/native crown.
+*/
+(function(global){'use strict';
+const VERSION='0.24.0',SCHEMA='jm.megalith.game-crown-presentation/0.24';
+const PALETTES={
+ arena:{bg:'#05070d',floor:'#111b2b',floor2:'#172840',accent:'#ffcf66',player:'#63ddff',enemy:'#ff6579',meaning:'#ba80ff',route:'#70f0bc'},
+ collector:{bg:'#06100d',floor:'#10231d',floor2:'#163328',accent:'#8cf0b5',player:'#73dfff',enemy:'#ff7a79',meaning:'#d19cff',route:'#ffd272'},
+ route:{bg:'#070b12',floor:'#121c2d',floor2:'#172944',accent:'#74dfff',player:'#5ce0ff',enemy:'#ff6d76',meaning:'#b986ff',route:'#ffd36a'},
+ spatial:{bg:'#080b0f',floor:'#171e28',floor2:'#202d3d',accent:'#ffbf67',player:'#68dbff',enemy:'#ff7080',meaning:'#c08cff',route:'#76efbc'},
+ hybrid:{bg:'#05080f',floor:'#10192a',floor2:'#17263c',accent:'#ffd06a',player:'#63ddff',enemy:'#ff647d',meaning:'#ba82ff',route:'#70edbb'}
+};
+const NAMES={arena:'Pressure Ring',collector:'Glyph Garden',route:'Gatefall Run',spatial:'Buildfield',hybrid:'Fracture Circuit'};
+function resolve(genome={},feel={},description='',families=[]){
+ const archetype=genome.archetype||'hybrid',palette=PALETTES[archetype]||PALETTES.hybrid;
+ const scene=NAMES[archetype]||'MEGALITH Run';
+ const action=families.includes('GlyphPlay')?'CAST':families.includes('GameForge')?'PULSE':'ACT';
+ const camera={yaw:-.72,pitch:archetype==='route'?0.82:0.92,dist:archetype==='spatial'?14.2:13.1,follow:.34};
+ const hud={compact:true,donorsVisible:false,organsVisible:false,objectiveMode:'progress',healthBar:true};
+ return {schema:SCHEMA,version:VERSION,scene,action,palette,camera,hud,
+  environment:{tileGrid:true,edgeRails:true,beacons:true,gateArches:true,shadows:true},
+  controls:{pad:96,action:92,opacity:.86},
+  transitions:{intro:.9,round:.7,end:true},
+  developerDrawer:true,
+  claim_boundary:'Current standalone browser-game presentation scope completed; authored production asset packs, native/GPU profiling and owner-device final crown remain external/product gates.'};
+}
+function compactObjective(s,g){
+ const p=[];if(g.enemies)p.push('BREAK '+s.pressure+'/'+g.enemies);if(g.glyphTarget)p.push('GLYPH '+s.meaning+'/'+g.glyphTarget);
+ if(g.gateTarget)p.push('GATE '+s.route+'/'+g.gateTarget);if(g.anchorTarget)p.push('BUILD '+s.build+'/'+g.anchorTarget);return p.join('  ·  ')||'SURVIVE';
+}
+function receipt(){return{schema:'jm.megalith.game-crown-presentation-receipt/0.24',version:VERSION,
+ features:['game-first-screen','compact-hud','camera-follow','scene-composition','small-touch-controls','round-transition','hidden-developer-drawer','generated-scene-identity','renderer-failover','standalone-game-crown'],
+ claim_boundary:'Presentation organ is executable and generated; final art/audio/native feel remain owner gates.'}}
+const API={VERSION,SCHEMA,resolve,compactObjective,receipt};
+if(typeof module!=='undefined'&&module.exports)module.exports=API;global.JMMegalithPresentation=API;
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script><script>(()=>{'use strict';
+const SPEC=window.__JM_SYNTHESIS_SPEC__,G=SPEC.genome,F=SPEC.feel,P=SPEC.presentation,FS=SPEC.families,has=n=>FS.includes(n),canvas=document.querySelector('#c'),events=[];
+const rec=(type,data={})=>{events.unshift({at:new Date().toISOString(),type,...data});events.splice(200);if(type==='PRESSURE_HIT'&&typeof combatPulse==='function')combatPulse(data)};
+const FC_SETTINGS={audio:true,haptic:true,reducedMotion:false,largeHud:false,highContrast:false,sensitivity:1};window.FC_SETTINGS=FC_SETTINGS;
+function loadSettings(){Object.assign(FC_SETTINGS,window.__FC_PROFILE_CACHE__?.settings||{});applySettings()}
+function saveSettings(){if(window.__FC_PROFILE_CACHE__)window.__FC_PROFILE_CACHE__.settings={...FC_SETTINGS};window.FCPersistV0262?.scheduleSave('settings');applySettings()}
+function applySettings(){document.body.classList.toggle('fcReducedMotion',!!FC_SETTINGS.reducedMotion);document.body.classList.toggle('fcLargeHud',!!FC_SETTINGS.largeHud);document.body.classList.toggle('fcHighContrast',!!FC_SETTINGS.highContrast)}
+function buzz(pattern){if(FC_SETTINGS.haptic&&navigator.vibrate)navigator.vibrate(pattern)}
+let audioCtx=null;function tone(freq=440,dur=.06,type='sine',vol=.025){if(!FC_SETTINGS.audio)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+dur);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur)}catch(_){}}
+
+const FC_RUNNERS={
+ VECTRA:{id:'VECTRA',name:'VECTRA',action:'ARC',pace:1.18,hp:4.25,damage:.90,combo:1.24,iFrames:.88,bounce:1.05,score:{meaning:1.08,route:1.08,break:.95},player:'#62e8ff'},
+ BULWARK:{id:'BULWARK',name:'BULWARK',action:'BURST',pace:.84,hp:7.0,damage:1.32,combo:.90,iFrames:1.14,bounce:1.45,score:{meaning:.95,route:.94,break:1.12},player:'#ffd16f'},
+ RELAY:{id:'RELAY',name:'RELAY',action:'LINK',pace:1.02,hp:5.4,damage:1.00,combo:1.12,iFrames:1.00,bounce:1.12,score:{meaning:1.10,route:1.38,break:.96},player:'#72f0b4'},
+ RIFT:{id:'RIFT',name:'RIFT',action:'RIFT',pace:1.08,hp:3.65,damage:1.62,combo:.84,iFrames:.78,bounce:1.62,score:{meaning:1.00,route:.92,break:1.28},player:'#d889ff'}
+};
+const FC_CIRCUITS={
+ SHARD:{id:'SHARD',name:'SHARD LOOP',scale:6.5,difficulty:1.00,enemyDelta:0,glyphDelta:0,gateDelta:0,zones:3,seconds:60,roles:['chase','orbit'],palette:{bg:'#050a12',floor:'#14283f',floor2:'#203a57',accent:'#ffd06a',route:'#70edbb'}},
+ DEADLINE:{id:'DEADLINE',name:'DEADLINE GRID',scale:5.7,difficulty:1.18,enemyDelta:2,glyphDelta:-1,gateDelta:0,zones:2,seconds:44,roles:['chase','dash','sentinel'],palette:{bg:'#12070a',floor:'#35131a',floor2:'#501b25',accent:'#ff8669',route:'#ffd06d'}},
+ MIRROR:{id:'MIRROR',name:'MIRROR YARD',scale:6.2,difficulty:1.04,enemyDelta:1,glyphDelta:2,gateDelta:1,zones:3,seconds:64,roles:['orbit','sentinel','chase'],mirror:true,palette:{bg:'#0b0715',floor:'#251a42',floor2:'#39245f',accent:'#d69aff',route:'#77f4d7'}},
+ SPLIT:{id:'SPLIT',name:'SPLIT CURRENT',scale:8.0,difficulty:1.08,enemyDelta:1,glyphDelta:0,gateDelta:2,zones:4,seconds:68,roles:['chase','orbit','dash'],palette:{bg:'#041217',floor:'#103741',floor2:'#17525e',accent:'#72ecff',route:'#7cff9f'}}
+};
+const FC_MODES={
+ CONVERGENCE:{id:'CONVERGENCE',name:'CONVERGENCE',enemies:4,glyphs:4,gates:3,rounds:3,difficulty:1.0,score:.0},
+ PRESSURE:{id:'PRESSURE',name:'PRESSURE',enemies:7,glyphs:0,gates:0,rounds:3,difficulty:1.14,pressure:true},
+ RELAY:{id:'RELAY',name:'RELAY',enemies:2,glyphs:5,gates:5,rounds:3,difficulty:.96,relay:true}
+};
+const FC={runner:null,circuit:null,mode:null,selection:{runner:'VECTRA',circuit:'SHARD',mode:'CONVERGENCE'},booted:false,
+ choose(kind,value){this.selection[kind]=value;document.querySelectorAll('[data-fc-kind="'+kind+'"]').forEach(b=>b.classList.toggle('selected',b.dataset.fcValue===value));},
+ read(){try{const u=new URL(location.href),r=u.searchParams.get('runner'),c=u.searchParams.get('circuit'),m=u.searchParams.get('mode');const saved=window.__FC_PROFILE_CACHE__?.selection||{};this.selection.runner=FC_RUNNERS[r]?r:(FC_RUNNERS[saved.runner]?saved.runner:'VECTRA');this.selection.circuit=FC_CIRCUITS[c]?c:(FC_CIRCUITS[saved.circuit]?saved.circuit:'SHARD');this.selection.mode=FC_MODES[m]?m:(FC_MODES[saved.mode]?saved.mode:'CONVERGENCE');}catch(_){ }['runner','circuit','mode'].forEach(k=>this.choose(k,this.selection[k]));},
+ persist(){if(window.__FC_PROFILE_CACHE__)window.__FC_PROFILE_CACHE__.selection={...this.selection};window.FCPersistV0262?.scheduleSave('loadout-selection')},
+ apply(){this.runner=FC_RUNNERS[this.selection.runner];this.circuit=FC_CIRCUITS[this.selection.circuit];this.mode=FC_MODES[this.selection.mode];const r=this.runner,c=this.circuit,m=this.mode;G.pace=1.25*r.pace;G.difficulty=c.difficulty*m.difficulty;G.scale=c.scale;G.enemies=Math.max(0,m.enemies+c.enemyDelta);G.glyphTarget=Math.max(0,m.glyphs+c.glyphDelta);G.gateTarget=Math.max(0,m.gates+c.gateDelta);G.zones=Math.max(1,c.zones);G.mirror=!!c.mirror;G.charge=true;G.seed=4000848557+['VECTRA','BULWARK','RELAY','RIFT'].indexOf(r.id)*1009+['SHARD','DEADLINE','MIRROR','SPLIT'].indexOf(c.id)*9176+['CONVERGENCE','PRESSURE','RELAY'].indexOf(m.id)*611;const parts=[];if(G.enemies)parts.push('break '+G.enemies+' pressure bodies');if(G.glyphTarget)parts.push('collect '+G.glyphTarget+' meaning glyphs');if(G.gateTarget)parts.push('cross '+G.gateTarget+' route gates');G.objective=parts.join(' + ')||'hold the fracture';F.rounds=m.rounds;F.roundSeconds=c.seconds+(r.id==='RELAY'?4:0);F.comboWindow=4.2*r.combo;F.contactDamage=.62*G.difficulty;F.iFrames=.72*r.iFrames;F.baseDamage=(1.05/Math.max(.8,G.difficulty))*r.damage;F.bounce=1.35*r.bounce;F.enemyRoles=c.roles.slice(0,Math.min(c.roles.length,Math.max(2,Math.ceil(G.enemies/2))));F.score.break=Math.round(120*r.score.break*(m.pressure?1.18:1));F.score.meaning=Math.round(80*r.score.meaning*(m.relay?1.14:1));F.score.route=Math.round(65*r.score.route*(m.relay?1.28:1));P.scene='Fracture Circuit';P.action=r.action;Object.assign(P.palette,c.palette,{player:r.player});SPEC.schema='jm.fracture-circuit.game/0.26.2';SPEC.id='fracture-circuit-v0262-'+r.id.toLowerCase()+'-'+c.id.toLowerCase()+'-'+m.id.toLowerCase();SPEC.title='Fracture Circuit v0.26.3 — Raised Floor Self-Test — '+r.name+' / '+c.name;SPEC.description=r.name+' enters '+c.name+' in '+m.name+' mode. '+G.objective+'.';SPEC.parent='Fracture Circuit v0.26.1 — Edge Control Repair';SPEC.parent_sha256='a22e4897a3f637e1da2413efe947e9ae5b59663633372bdb1a4e5ab7fbf20bd7';SPEC.fracture={version:'0.26.2',runner:r.id,circuit:c.id,mode:m.id};SPEC.production_inheritance=window.__JM_PRODUCTION_INHERITANCE__;if(!SPEC.organ_chain.includes('fracture roster'))SPEC.organ_chain.push('fracture roster','circuit grammar','production inheritance','accessibility preferences','run records','runner visual signatures','enemy role telegraphs','arena edge controls','smoothed contact vector','engine adapter contract v0.1','durable profile persistence v0.1','portable SavePack');this.persist();},
+ applyPlayer(s){if(!s||!s.player)return s;s.player.maxHp=this.runner.hp;s.player.hp=this.runner.hp;return s},
+ receipt(){return{schema:'jm.fracture-circuit.run-receipt/0.26.2',parent_sha256:'a22e4897a3f637e1da2413efe947e9ae5b59663633372bdb1a4e5ab7fbf20bd7',contacted_grandparent_sha256:'747b774325a5e5739558546ed7e67b2f4b322b83b19bbb2cb915d31a1cc02d28',runner:this.runner,circuit:this.circuit,mode:this.mode,genome:{pace:G.pace,difficulty:G.difficulty,scale:G.scale,enemies:G.enemies,glyphTarget:G.glyphTarget,gateTarget:G.gateTarget,zones:G.zones},feel:{rounds:F.rounds,roundSeconds:F.roundSeconds,comboWindow:F.comboWindow,contactDamage:F.contactDamage,iFrames:F.iFrames,baseDamage:F.baseDamage,enemyRoles:F.enemyRoles,score:F.score}}},
+ drawCircuit(renderer,s,sc,P){renderer.draw('torus',[0,.03,0],[1.32,1.32,1.32],P.palette.accent,[Math.PI/2,this.circuit.id==='MIRROR'?s.t*.32:0,0],.045);renderer.draw('sphere',[0,.22,0],[.16,.16,.16],P.palette.route,[0,0,0],.12);if(this.circuit.id==='DEADLINE'){for(let z=-3.6;z<=3.6;z+=2.4){renderer.draw('cube',[-2.0,.18,z],[.16,.35,.72],P.palette.accent,[0,s.t*.18,0],.05);renderer.draw('cube',[2.0,.18,z],[.16,.35,.72],P.palette.accent,[0,-s.t*.18,0],.05)}}else if(this.circuit.id==='MIRROR'){for(let x=-sc+1;x<=sc-1;x+=2.1){renderer.draw('torus',[x,.05,0],[.34,.34,.34],P.palette.meaning,[Math.PI/2,s.t*.25,0],.06)}}else if(this.circuit.id==='SPLIT'){renderer.draw('cube',[0,-.34,0],[.12,.05,4.7],P.palette.route,[0,0,0],.06);for(let z=-3.4;z<=3.4;z+=1.7)renderer.draw('cylinder',[0,.25,z],[.08,.3,.08],P.palette.accent,[0,0,0],.09)}else{renderer.draw('torus',[0,.03,0],[1.0,1.0,1.0],P.palette.accent,[Math.PI/2,s.t*.12,0],.04)}},
+ openSetup(){document.querySelector('#fcSetup').classList.remove('hidden');this.read();},
+ launch(){this.persist();if(this.booted){const u=new URL(location.href);u.search='';u.searchParams.set('runner',this.selection.runner);u.searchParams.set('circuit',this.selection.circuit);u.searchParams.set('mode',this.selection.mode);u.searchParams.set('autostart','1');location.href=u.toString();return}this.apply();this.booted=true;document.querySelector('#fcSetup').classList.add('hidden');bootGame();}
+};window.FC=FC;
+function bootGame(){
+for(const [k,v] of Object.entries(P.palette))document.documentElement.style.setProperty('--'+k,v);
+document.querySelector('#sceneName').textContent='Fracture Circuit · '+FC.runner.name+' / '+FC.mode.name;document.querySelector('#act span').textContent=FC.runner.action;document.querySelector('#introScene').textContent=FC.circuit.name;document.querySelector('#introType').textContent=FC.runner.name+' · '+FC.mode.name+' · '+F.rounds+' rounds';document.querySelector('#fcRunTag').textContent=FC.runner.name+' × '+FC.circuit.name+' × '+FC.mode.name;
+document.querySelector('#donorTags').innerHTML=FS.map(x=>'<span class="tag">'+x+'</span>').join('');document.querySelector('#organText').textContent=SPEC.organ_chain.join(' → ');
+let project=JMMegalithProject.blank({id:SPEC.id,title:SPEC.title,source_description:SPEC.description,package_name:'jm.megalith.'+SPEC.id.replace(/[^a-z0-9_]/gi,'').toLowerCase()});
+project.organs.selected=FS.slice();project.input.bindings=JMMegalithInput.projectBindings(FS);project.world.rooms=G.zones>1?Array.from({length:G.zones},(_,i)=>'zone '+(i+1)):['arena'];project.world.actors=['player'].concat(G.enemies?['pressure bodies']:[]);project.world.assets=['gameplay genome','game feel','presentation scene'].concat(has('GlyphForge')?['capability forms']:[]);project.world.rules=[G.objective,'round loop '+F.rounds];project.production.concept=SPEC.description;project.production.assets=['synthesized game descendant','playloop/game feel organ','presentation/scene organ'];project=JMMegalithRelease.attachToProject(project,{at:new Date().toISOString()});
+const det=JMMegalithDeterminism.create({seed:G.seed});let state=JMMegalithGameFeel.initial(G,F,det);FC.applyPlayer(state);
+const runtime=JMMegalithRuntime.create({id:SPEC.id,initialState:state,checkpointEvery:180,validate:s=>Number.isFinite(s.player.x)&&Number.isFinite(s.player.z)&&s.player.hp>=0&&Number.isFinite(s.score),update:(s,ctx)=>JMMegalithGameFeel.step(s,ctx,G,F,det,events)});
+runtime.mount('determinism',{meta:det.receipt()});runtime.mount('gameplay-genome',{meta:JMMegalithGameplayGenome.receipt()});runtime.mount('game-feel',{meta:JMMegalithGameFeel.receipt()});runtime.mount('presentation-scene',{meta:JMMegalithPresentation.receipt()});runtime.mount('project-world',{meta:{schema:project.schema}});
+const FC_ENGINE_ADAPTER={
+ describe(){return{adapterSchema:'jm.game.engine-adapter-contract/0.1',adapterVersion:'0.1',engineId:'fracture-circuit',engineName:'Fracture Circuit',engineVersion:'0.26.2',sourceAuthority:'Fracture Circuit v0.26.1 — Edge Control Repair',fingerprint:'fc-v0262:a22e4897a3f637e1da2413efe947e9ae5b59663633372bdb1a4e5ab7fbf20bd7',depths:['D0_STRUCTURAL','D1_CONTACT','D2_RUNTIME','D3_PERSISTENCE','D5_RENDER','D6_PRODUCTION'],capabilities:[{id:'input',state:'SUPPORTED_WITH_ADAPTER'},{id:'runtime',state:'SUPPORTED_WITH_ADAPTER'},{id:'persistence',state:'SUPPORTED_WITH_ADAPTER'},{id:'determinism',state:'STRUCTURAL_ONLY'},{id:'render',state:'SUPPORTED_WITH_ADAPTER'},{id:'production',state:'SUPPORTED_WITH_ADAPTER'}],boundaries:['shared host services do not own runner/circuit/mode meaning','D4 deterministic replay is not claimed for all external contacts','owner-device feel/Ding remains open']}} ,
+ fingerprint(){return'fc-v0262:a22e4897a3f637e1da2413efe947e9ae5b59663633372bdb1a4e5ab7fbf20bd7'},
+ translateInput(raw){const ri={x:Number(raw?.x)||0,z:Number(raw?.z)||0,fire:Number(raw?.fire)||0};return{engineId:'fracture-circuit',relation:'arena-contact',verb:ri.fire>0?FC.runner.action:'MOVE',runner:FC.runner.id,circuit:FC.circuit.id,runtimeInput:ri}},
+ getState(){return state},
+ setState(s){state=s;runtime.setState(s,'engine-adapter')},
+ update(ctx){const packet=ctx?.input?.runtimeInput?ctx.input:this.translateInput(ctx?.input||{}),r=runtime.step(Number(ctx?.dt)||.016,packet.runtimeInput);state=r.state;return r},
+ validateState(s){return!!s&&!!s.player&&Number.isFinite(s.player.x)&&Number.isFinite(s.player.z)&&s.player.hp>=0&&Number.isFinite(s.score)},
+ persistenceAdapter(){return{gameId:'fracture-circuit',namespace:'jm.game.fracture-circuit',saveSchema:'1',gameVersion:'0.26.2',capture:()=>({settings:{...FC_SETTINGS},selection:{...FC.selection},records:JSON.parse(JSON.stringify(FC_RECORDS.all())),lastResult:window.__FC_PROFILE_CACHE__?.lastResult||null}),validatePayload:p=>({ok:!!p&&!!p.settings&&!!p.selection&&!!p.records,errors:[]}),restore:p=>{Object.assign(FC_SETTINGS,p.settings||{});Object.assign(FC.selection,p.selection||{});if(window.__FC_PROFILE_CACHE__){window.__FC_PROFILE_CACHE__.settings={...FC_SETTINGS};window.__FC_PROFILE_CACHE__.selection={...FC.selection};window.__FC_PROFILE_CACHE__.records=p.records||{};window.__FC_PROFILE_CACHE__.lastResult=p.lastResult||null}applySettings();updateRecordTag();return p}}},
+ renderAdapter(){return{renderer:()=>renderer,scene:()=>P.scene,palette:()=>({...P.palette}),boundary:'renderer service does not own Fracture Circuit visual identity'}},
+ productionAdapter(){return{project:()=>project,release:()=>JMMegalithRelease.releasePackManifest?JMMegalithRelease.releasePackManifest(project):null,boundary:'shared release custody does not own game identity'}}
+};window.__JM_ENGINE_ADAPTER__=FC_ENGINE_ADAPTER;rec('ENGINE_ADAPTER_BOOT',{version:'0.1',depths:FC_ENGINE_ADAPTER.describe().depths,fingerprint:FC_ENGINE_ADAPTER.fingerprint()});
+let renderer;try{renderer=new JMMegalithRendererClass(canvas,{bg:P.palette.bg,cameraControl:false});renderer.yaw=P.camera.yaw;renderer.pitch=P.camera.pitch;renderer.dist=P.camera.dist;rec('RENDERER_BOOT',renderer.receipt?renderer.receipt():{mode:renderer.fallback?'2d-fallback':'webgl2'});if(renderer.fallback)document.querySelector('.stage').classList.add('renderer-fallback')}catch(e){rec('RENDERER_FATAL',{error:e.message})}
+const enemyCol={chase:P.palette.enemy,orbit:'#ff9e61',dash:'#ff4c88',sentinel:'#dd70ff'};
+function floorTile(x,z,i){renderer.draw('cube',[x,-.48,z],[.96,.08,.9],i%2?P.palette.floor:P.palette.floor2)}
+
+function drawRunnerSignature(s){
+ const r=FC.runner.id,t=s.t,x=s.player.x,z=s.player.z,col=P.palette.player,rm=FC_SETTINGS.reducedMotion;
+ if(r==='VECTRA'){renderer.draw('cone',[x-.42,.8,z],[.12,.38,.12],col,[0,0,-.65],.10);renderer.draw('cone',[x+.42,.8,z],[.12,.38,.12],col,[0,0,.65],.10);if(!rm)for(let i=1;i<=4;i++)renderer.draw('torus',[x-(input.x||0)*i*.32,.08,z-(input.z||0)*i*.32],[.22+i*.025,.22+i*.025,.22+i*.025],col,[Math.PI/2,t*1.4+i,0],.045)}
+ else if(r==='BULWARK'){renderer.draw('cube',[x-.42,.94,z],[.22,.22,.28],col,[0,t*.08,0],.10);renderer.draw('cube',[x+.42,.94,z],[.22,.22,.28],col,[0,-t*.08,0],.10);renderer.draw('torus',[x,.54,z],[.67,.67,.67],col,[Math.PI/2,rm?0:t*.3,0],.07);renderer.draw('torus',[x,.54,z],[.88,.88,.88],P.palette.accent,[Math.PI/2,rm?0:-t*.22,0],.04)}
+ else if(r==='RELAY'){for(let i=0;i<3;i++){const a=(rm?i*2.094:t*.9+i*2.094);renderer.draw('sphere',[x+Math.cos(a)*.72,.55,z+Math.sin(a)*.72],[.13,.13,.13],P.palette.route,[0,0,0],.11);renderer.draw('cylinder',[x+Math.cos(a)*.42,.35,z+Math.sin(a)*.42],[.045,.25,.045],P.palette.accent,[0,0,0],.05)}}
+ else if(r==='RIFT'){renderer.draw('sphere',[x,1.05,z],[.18,.18,.18],P.palette.meaning,[0,0,0],.14);renderer.draw('torus',[x,.74,z],[.76,.76,.76],col,[rm?0:t*.9,rm?0:t*1.4,0],.085);renderer.draw('torus',[x,.74,z],[.52,.52,.52],P.palette.meaning,[rm?0:-t*.7,rm?0:t*.8,0],.06)}
+}
+function drawEnemyRole(e,s){
+ const col=e.flash>0?'#ffffff':(enemyCol[e.kind]||P.palette.enemy);
+ if(e.kind==='orbit'){renderer.draw('sphere',[e.x,.42,e.z],[.34,.34,.34],col,[0,0,0],.08);renderer.draw('torus',[e.x,.42,e.z],[.52,.52,.52],col,[Math.PI/2,s.t*1.7,0],.055)}
+ else if(e.kind==='dash'){renderer.draw('cone',[e.x,.42,e.z],[.31,.68,.31],col,[0,s.t*2.2,0],.09);renderer.draw('cube',[e.x,.1,e.z],[.58,.04,.12],col,[0,s.t*.7,0],.04)}
+ else if(e.kind==='sentinel'){renderer.draw('cylinder',[e.x,.48,e.z],[.42,.62,.42],col,[0,0,0],.09);renderer.draw('torus',[e.x,.94,e.z],[.31,.31,.31],P.palette.accent,[Math.PI/2,0,0],.06)}
+ else {renderer.draw(has('GlyphForge')?'cone':'cube',[e.x,.42,e.z],[.38,.54,.38],col,[0,s.t,0],.08);renderer.draw('torus',[e.x,.05,e.z],[.43,.43,.43],col,[Math.PI/2,0,0],.05)}
+}
+
+function draw(s){if(!renderer)return;const follow=[s.player.x*P.camera.follow,0,s.player.z*P.camera.follow];renderer.begin(follow);const sc=G.scale;FC.drawCircuit(renderer,s,sc,P);
+ if(P.environment.tileGrid){let i=0;for(let x=-sc;x<=sc;x+=2.05)for(let z=-4.4;z<=4.4;z+=1.95)floorTile(x,z,i++)}
+ if(P.environment.edgeRails){for(let x=-sc;x<=sc;x+=2.2){renderer.draw('cube',[x,.02,-5],[.92,.22,.16],P.palette.floor2);renderer.draw('cube',[x,.02,5],[.92,.22,.16],P.palette.floor2)}}
+ if(P.environment.beacons){renderer.draw('cylinder',[-sc+.45,.7,-4.35],[.12,.8,.12],P.palette.accent,[0,0,0],.08);renderer.draw('cylinder',[sc-.45,.7,4.35],[.12,.8,.12],P.palette.route,[0,0,0],.08)}
+ for(const gate of s.gates){const col=gate.passed?P.palette.route:P.palette.accent;renderer.draw('cylinder',[gate.x,.65,gate.z-.5],[.10,.7,.10],col,[0,0,0],.12);renderer.draw('cylinder',[gate.x,.65,gate.z+.5],[.10,.7,.10],col,[0,0,0],.12);renderer.draw('cube',[gate.x,1.25,gate.z],[.1,.12,.55],col,[0,0,0],.10)}
+ for(const a of s.anchors)if(a.live){renderer.draw('cube',[a.x,.22,a.z],[.5,.12,.5],P.palette.route,[0,s.t*.4,0],.08);renderer.draw('torus',[a.x,.65,a.z],[.42,.42,.42],P.palette.accent,[Math.PI/2,s.t,0],.12)}
+ if(P.environment.shadows)renderer.draw('sphere',[s.player.x,-.28,s.player.z],[.46,.05,.46],'#05080f');
+ JMMegalithGraphics.drawPerson(renderer,s.player,s.player.invuln>0?'#f1fdff':P.palette.player,0,s.t);drawRunnerSignature(s);
+ if(G.mirror){const m={x:-s.player.x,z:-s.player.z};renderer.draw('torus',[m.x,.04,m.z],[.46,.46,.46],P.palette.meaning,[Math.PI/2,0,0],.08);JMMegalithGraphics.drawPerson(renderer,m,P.palette.meaning,0,-s.t)}
+ for(const e of s.enemies)if(e.hp>0){if(P.environment.shadows)renderer.draw('sphere',[e.x,-.29,e.z],[.4,.045,.4],'#05080f');drawEnemyRole(e,s)}
+ for(const g of s.glyphs)if(g.live){renderer.draw('torus',[g.x,.62,g.z],[.38,.38,.38],P.palette.meaning,[Math.PI/2,s.t*1.2,0],.18);renderer.draw('sphere',[g.x,.62,g.z],[.09,.09,.09],P.palette.accent,[0,0,0],.14)}
+ for(const q of s.pulses)renderer.draw('torus',[q.x,.18,q.z],[q.r,q.r,q.r],P.palette.accent,[Math.PI/2,s.t*3,0],.18);
+}
+let input={x:0,z:0,fire:0},targetInput={x:0,z:0},paused=false,last=performance.now(),lastRound=1,lastScore=0,lastHp=state.player.hp,comboTimer=0;
+const pad=document.querySelector('#pad'),knob=document.querySelector('#knob');let pid=null;
+function padMove(e){
+ const r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy),lim=r.width*.34,k=m>lim?lim/m:1,nx=dx*k/lim,ny=dy*k/lim;
+ const dz=.10;
+ targetInput.x=(Math.abs(nx)<dz?0:nx)*FC_SETTINGS.sensitivity;
+ targetInput.z=(Math.abs(ny)<dz?0:ny)*FC_SETTINGS.sensitivity;
+ knob.style.transform=`translate(${dx*k*.50}px,${dy*k*.50}px)`
+}
+pad.onpointerdown=e=>{pid=e.pointerId;pad.setPointerCapture(pid);padMove(e)};pad.onpointermove=e=>{if(e.pointerId===pid)padMove(e)};function padUp(){pid=null;targetInput.x=targetInput.z=0;knob.style.transform=''}pad.onpointerup=pad.onpointercancel=padUp;
+const act=document.querySelector('#act');let chargeStart=0,chargeRAF=0;
+function startCharge(){if(chargeStart||paused)return;chargeStart=performance.now();buzz(8);const tick=()=>{if(!chargeStart)return;const p=Math.min(1,(performance.now()-chargeStart)/(G.charge?1000:260));act.style.setProperty('--charge',(p*100)+'%');chargeRAF=requestAnimationFrame(tick)};tick()}
+function releaseCharge(){if(!chargeStart)return;const held=performance.now()-chargeStart;chargeStart=0;cancelAnimationFrame(chargeRAF);act.style.setProperty('--charge','0%');input.fire=G.charge?Math.min(4,.8+held/330):1;tone(240+Math.min(4,input.fire)*90,.06,'square',.018);buzz(14)}
+act.onpointerdown=e=>{e.preventDefault();startCharge()};act.onpointerup=act.onpointercancel=e=>{e.preventDefault();releaseCharge()};
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=1;if(e.code==='Space')input.fire=1});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+
+let combatReadoutTimer=0;
+function combatPulse(data){const el=document.querySelector('#combatReadout');if(!el)return;el.textContent=(data.enemy||'HIT').toUpperCase()+' · '+(data.damage||'');el.classList.add('show');clearTimeout(combatReadoutTimer);combatReadoutTimer=setTimeout(()=>el.classList.remove('show'),520)}
+const FC_RECORDS={
+ key(){return [FC.runner.id,FC.circuit.id,FC.mode.id].join(':')},
+ all(){return window.__FC_PROFILE_CACHE__?.records||{}},
+ read(){return this.all()[this.key()]||{best:0,runs:0,wins:0}},
+ start(){const all=this.all(),k=this.key(),r=all[k]||{best:0,runs:0,wins:0};r.runs++;all[k]=r;if(window.__FC_PROFILE_CACHE__)window.__FC_PROFILE_CACHE__.records=all;window.FCPersistV0262?.scheduleSave('run-start');return r},
+ finish(score,win){const all=this.all(),k=this.key(),r=all[k]||{best:0,runs:0,wins:0};const previous=r.best||0;if(win)r.wins=(r.wins||0)+1;r.best=Math.max(previous,score);all[k]=r;if(window.__FC_PROFILE_CACHE__){window.__FC_PROFILE_CACHE__.records=all;window.__FC_PROFILE_CACHE__.lastResult={at:new Date().toISOString(),score,win,runner:FC.runner.id,circuit:FC.circuit.id,mode:FC.mode.id}}window.FCPersistV0262?.scheduleSave('run-finish');return{...r,newBest:score>previous,previous}}
+};
+function updateRecordTag(){const r=FC_RECORDS.read(),el=document.querySelector('#fcRecordTag'),dr=document.querySelector('#drawerRecord');const txt='PB '+(r.best||0)+' · '+(r.wins||0)+'W/'+(r.runs||0)+'R';if(el)el.textContent=txt;if(dr)dr.textContent=txt}
+function openSettings(){paused=true;runtime.pause();const sh=document.querySelector('#fcSettingsSheet');sh.classList.add('open');document.querySelector('#setAudio').checked=FC_SETTINGS.audio;document.querySelector('#setHaptic').checked=FC_SETTINGS.haptic;document.querySelector('#setReduced').checked=FC_SETTINGS.reducedMotion;document.querySelector('#setLargeHud').checked=FC_SETTINGS.largeHud;document.querySelector('#setContrast').checked=FC_SETTINGS.highContrast;document.querySelector('#setSensitivity').value=FC_SETTINGS.sensitivity;document.querySelector('#setSensitivityValue').textContent=Number(FC_SETTINGS.sensitivity).toFixed(2)+'×'}
+function closeSettings(){document.querySelector('#fcSettingsSheet').classList.remove('open');paused=false;runtime.resume();last=performance.now()}
+function bindSettings(){window.FCPersistV0262?.bindUI();
+ const map=[['setAudio','audio'],['setHaptic','haptic'],['setReduced','reducedMotion'],['setLargeHud','largeHud'],['setContrast','highContrast']];
+ for(const [id,k] of map)document.querySelector('#'+id).onchange=e=>{FC_SETTINGS[k]=e.target.checked;saveSettings()};
+ document.querySelector('#setSensitivity').oninput=e=>{FC_SETTINGS.sensitivity=Number(e.target.value);document.querySelector('#setSensitivityValue').textContent=FC_SETTINGS.sensitivity.toFixed(2)+'×';saveSettings()};
+ document.querySelector('#closeSettings').onclick=closeSettings;document.querySelector('#drawerSettingsBtn').onclick=()=>{toggleDrawer(false);openSettings()};document.querySelector('#drawerLoadoutBtn').onclick=()=>{toggleDrawer(false);paused=true;runtime.pause();FC.openSetup()};
+}
+
+function feedback(txt){if(/^\+/.test(txt))tone(740,.045,'triangle',.018);const el=document.querySelector('#feedback');el.textContent=txt;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
+function showRound(n){tone(330+n*55,.08,'square',.018);const el=document.querySelector('#roundBanner');el.textContent='ROUND '+n;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),800)}
+function finish(win){const el=document.querySelector('#end');if(el.style.display==='grid')return;const record=FC_RECORDS.finish(state.score,win);el.style.display='grid';document.querySelector('#endKicker').textContent=FC.runner.name+' · '+FC.circuit.name;document.querySelector('#endTitle').textContent=win?'CIRCUIT CLEARED':'RUN FRACTURED';document.querySelector('#endScore').textContent=state.score+' PTS';document.querySelector('#endText').textContent=win?FC.mode.name+' held across '+F.rounds+' rounds.':(state.player.hp<=0?'Pressure overwhelmed '+FC.runner.name+'.':'The '+FC.circuit.name+' clock expired.');document.querySelector('#endRecord').textContent=(record.newBest?'NEW BEST · ':'BEST '+record.best+' · ')+record.wins+' WINS · '+record.runs+' RUNS';updateRecordTag();tone(win?880:155,.28,win?'triangle':'sawtooth',.03);rec(win?'END_WIN':'END_LOSS',{score:state.score,runner:FC.runner.id,circuit:FC.circuit.id,mode:FC.mode.id,record})}
+function restart(){state=JMMegalithGameFeel.initial(G,F,det);FC.applyPlayer(state);runtime.setState(state,'quick-restart');lastRound=1;lastScore=0;lastHp=state.player.hp;document.querySelector('#end').style.display='none';document.querySelector('#drawer').classList.remove('open');paused=false;runtime.resume();last=performance.now();showRound(1);rec('QUICK_RESTART')}
+function updateHud(s){document.querySelector('#roundText').textContent=FC.runner.name+' · R'+s.round+'/'+F.rounds;document.querySelector('#healthFill').style.width=(Math.max(0,s.player.hp/s.player.maxHp)*100)+'%';document.querySelector('#scoreNum').textContent=s.score;document.querySelector('#timer').textContent=Math.ceil(s.timeLeft)+'s';document.querySelector('#objectiveCompact').textContent=JMMegalithPresentation.compactObjective(s,G);const c=document.querySelector('#combo');if(s.combo>1){c.textContent='x'+s.combo.toFixed(2)+' COMBO';c.classList.add('show');comboTimer=.15}else if(comboTimer<=0)c.classList.remove('show')}
+function toggleDrawer(force){const d=document.querySelector('#drawer'),open=force===undefined?!d.classList.contains('open'):force;d.classList.toggle('open',open);if(open){paused=true;runtime.pause();document.querySelector('#pauseBtn').textContent='RESUME';document.querySelector('#rendererText')&&(document.querySelector('#rendererText').textContent=JSON.stringify(renderer&&renderer.receipt?renderer.receipt():{mode:'fatal'},null,2));document.querySelector('#traceText').textContent=JSON.stringify({spec:SPEC,project,runtime:runtime.receipt(),determinism:det.receipt(),renderer:renderer&&renderer.receipt?renderer.receipt():null,events,production_inheritance:window.__JM_PRODUCTION_INHERITANCE__,engine_adapter:window.__JM_ENGINE_ADAPTER__?.describe?.(),profile_persistence:window.__FC_PROFILE_CACHE__?.meta},null,2)}}
+document.querySelector('#fcLoadoutBtn').onclick=()=>{paused=true;runtime.pause();FC.openSetup()};document.querySelector('#menuBtn').onclick=()=>toggleDrawer();document.querySelector('#closeDrawer').onclick=()=>{toggleDrawer(false);paused=false;runtime.resume();document.querySelector('#pauseBtn').textContent='PAUSE';last=performance.now()};
+document.querySelector('#pauseBtn').onclick=()=>{paused=!paused;paused?runtime.pause():runtime.resume();document.querySelector('#pauseBtn').textContent=paused?'RESUME':'PAUSE';last=performance.now()};document.querySelector('#restartBtn').onclick=restart;document.querySelector('#playAgain').onclick=restart;
+loadSettings();bindSettings();FC_RECORDS.start();updateRecordTag();setTimeout(()=>document.querySelector('#intro').classList.add('hide'),P.transitions.intro*1000);setTimeout(()=>document.querySelector('#intro').style.display='none',P.transitions.intro*1000+400);showRound(1);
+function loop(now){if(paused){requestAnimationFrame(loop);return}const dt=Math.min(.04,(now-last)/1000||.016);last=now;
+ const kx=(keys.d?1:0)-(keys.a?1:0),kz=(keys.s?1:0)-(keys.w?1:0);
+ if(kx||kz){targetInput.x=kx*FC_SETTINGS.sensitivity;targetInput.z=kz*FC_SETTINGS.sensitivity}else if(pid===null){targetInput.x=0;targetInput.z=0}
+ const ease=Math.min(1,dt*15);
+ input.x+=(targetInput.x-input.x)*ease;input.z+=(targetInput.z-input.z)*ease;
+ if(Math.abs(input.x)<.008)input.x=0;if(Math.abs(input.z)<.008)input.z=0;
+ const nativeInput=FC_ENGINE_ADAPTER.translateInput({x:input.x,z:input.z,fire:input.fire});det.frame(dt,nativeInput.runtimeInput,[nativeInput.verb]);const r=FC_ENGINE_ADAPTER.update({dt,input:nativeInput});input.fire=0;state=r.state;
+ if(state.round!==lastRound){lastRound=state.round;showRound(state.round)}
+ if(state.score>lastScore){feedback('+'+(state.score-lastScore));lastScore=state.score}
+ if(state.player.hp<lastHp){lastHp=state.player.hp;buzz([20,20,28])}
+ draw(state);if(renderer&&renderer.fallback)document.querySelector('.stage').classList.add('renderer-fallback');document.querySelector('#flash').style.opacity=state.player.flash>0?Math.min(FC_SETTINGS.reducedMotion?.16:.42,state.player.flash*(FC_SETTINGS.reducedMotion?.16:.42)):0;canvas.style.transform=!FC_SETTINGS.reducedMotion&&state.shake>0?`translate(${Math.sin(state.t*93)*2.2*state.shake}px,${Math.cos(state.t*79)*2.2*state.shake}px)`:'none';updateHud(state);comboTimer=Math.max(0,comboTimer-dt);
+ if(state.won)finish(true);else if(state.lost)finish(false);requestAnimationFrame(loop)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&!paused){paused=true;runtime.pause();rec('AUTO_PAUSE_HIDDEN')}});rec('FRACTURE_V0262_BOOT',{scene:P.scene,archetype:G.archetype,families:FS,runner:FC.runner.id,circuit:FC.circuit.id,mode:FC.mode.id,profile:FC.receipt()});requestAnimationFrame(loop);
+
+}
+
+function bindFractureSetup(){loadSettings();FC.read();document.querySelectorAll('[data-fc-kind]').forEach(b=>b.onclick=()=>FC.choose(b.dataset.fcKind,b.dataset.fcValue));document.querySelector('#fcLaunch').onclick=()=>FC.launch();let auto=false;try{auto=new URL(location.href).searchParams.get('autostart')==='1'}catch(_){}if(auto)FC.launch()}
+window.FCPersistV0262.hydrate().then(()=>{window.FCPersistV0262.bindUI();bindFractureSetup();return window.FCPersistV0262.qaMode()}).catch(e=>{window.FCPersistV0262.status('PROFILE HOLD · '+e.message);bindFractureSetup()});
+})();
+</script><script>window.__JM_MEGALITH_DISPLAY_PATCH__={version:'v0.24A-parent',law:'Inherited Android/content transport-safe Canvas2D path; parent crown preserved.'};window.__FRACTURE_CIRCUIT_DESCENDANT__={version:'v0.26.2',parent:'Fracture Circuit v0.26.1 — Edge Control Repair',parent_sha256:'a22e4897a3f637e1da2413efe947e9ae5b59663633372bdb1a4e5ab7fbf20bd7',scope:'durable player profile + portable SavePack + engine-adapter runtime contact',owner_device_ding:'OPEN',mature_crown:'NOT CLAIMED'};</script>
+<script id="jm-raised-floor-self-test-organ">
+/* JM GAME SELF-TEST ORGAN v1.0
+ * Donated from Den Breakers v0.13A.
+ * Adapter law: the organ owns proof orchestration; the game owns game-specific tests. * No crown mutation: mount only in a descendant/candidate unless already part of an earned crown.
+ */
+(()=>{
+'use strict';
+if(globalThis.JMGameSelfTestOrgan) return;
+const css=`
+.jmsto-btn{position:fixed;z-index:99990;left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));border:1px solid #d9c06f66;border-radius:999px;background:#0a1110e8;color:#ffe7a0;padding:7px 10px;font:900 8px/1 system-ui;letter-spacing:.08em;box-shadow:0 8px 22px #0009;cursor:pointer}
+.jmsto-panel{position:fixed;z-index:99999;inset:0;display:none;place-items:center;background:#020605c9;backdrop-filter:blur(6px);padding:12px;color:#eef6ed;font-family:system-ui,sans-serif}.jmsto-panel.show{display:grid}
+.jmsto-card{width:min(560px,94vw);max-height:min(720px,90vh);overflow:auto;border:1px solid #ecd47b44;border-radius:18px;background:#0a120ef7;box-shadow:0 25px 80px #000c;padding:14px}.jmsto-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.jmsto-head h2{margin:0;color:#ffe59b;font-size:20px}.jmsto-head p{margin:5px 0 0;color:#9eae9d;font-size:10px;line-height:1.4}.jmsto-close{border:0;background:#ffffff0c;color:#fff;border-radius:10px;width:32px;height:32px;font-size:20px}.jmsto-run{margin-top:12px;width:100%;border:1px solid #efd47d66;border-radius:12px;background:linear-gradient(#d3ad50,#8d6b2d);color:#171007;padding:11px;font-weight:950}.jmsto-status{margin:10px 0 6px;padding:7px 9px;border-radius:10px;background:#ffffff08;font:900 9px system-ui}.jmsto-status.pass{color:#a8f2b9}.jmsto-status.fail{color:#ff9c93}.jmsto-row{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:7px;align-items:center;padding:6px 3px;border-bottom:1px solid #ffffff0b;font-size:9px}.jmsto-row.pass .jmsto-mark{color:#8de7a5}.jmsto-row.fail .jmsto-mark{color:#ff887d}.jmsto-row span{color:#899b8f;font-size:8px;text-align:right}.jmsto-receipt{margin-top:9px;white-space:pre-wrap;color:#8fa495;background:#050a07;border-radius:10px;padding:8px;font:700 8px/1.45 ui-monospace,monospace}
+`;
+function installStyle(){if(document.getElementById('jmsto-style'))return;const s=document.createElement('style');s.id='jmsto-style';s.textContent=css;document.head.append(s)}
+function normalizeResult(v,detail=''){if(v&&typeof v==='object'&&'pass'in v)return {pass:!!v.pass,detail:String(v.detail??detail)};return {pass:v===true,detail:String(detail||'')}}
+function create(cfg={}){
+ const state={last:null,running:false};
+ const trace=(type,data={})=>{try{if(typeof cfg.trace==='function')cfg.trace(type,data)}catch{}}
+ async function run(){if(state.running)return state.last;state.running=true;const t0=performance.now();const results=[];let snapshot=null;
+  try{if(typeof cfg.snapshot==='function')snapshot=await cfg.snapshot();for(const t of (cfg.tests||[])){const started=performance.now();try{const raw=await t.run();const n=normalizeResult(raw,t.detail||'');results.push({id:t.id||t.name,name:t.name||t.id,pass:n.pass,detail:n.detail,ms:+(performance.now()-started).toFixed(2)})}catch(err){results.push({id:t.id||t.name,name:t.name||t.id,pass:false,detail:String(err?.message||err),ms:+(performance.now()-started).toFixed(2)})}}
+  } finally {try{if(typeof cfg.restore==='function')await cfg.restore(snapshot)}catch(err){results.push({id:'restore',name:'State restore',pass:false,detail:String(err?.message||err),ms:0})}}
+  const passed=results.filter(r=>r.pass).length,failed=results.length-passed;const receipt={schema:'JM_GAME_SELF_TEST_RECEIPT_v1',id:(cfg.id||'game')+'-ST-'+Date.now(),game:cfg.game||cfg.id||'game',version:cfg.version||'unknown',organ:'JM GAME SELF-TEST ORGAN v1.0',total:results.length,passed,failed,results,durationMs:+(performance.now()-t0).toFixed(1),restored:!results.some(r=>r.id==='restore'&&!r.pass),status:failed?'HOLD':'DING',timestamp:new Date().toISOString()};state.last=receipt;state.running=false;trace(failed?'SELF_TEST_HOLD':'SELF_TEST_DING',receipt);try{localStorage.setItem((cfg.storageKey||'jm_game_self_test_last'),JSON.stringify(receipt))}catch{};return receipt
+ }
+ function mount(opts={}){installStyle();const panel=document.createElement('div');panel.className='jmsto-panel';panel.innerHTML=`<div class="jmsto-card"><div class="jmsto-head"><div><h2>JM SELF-TEST</h2><p>${opts.description||'Deterministic proof run. The game supplies its own lawful tests.'}</p></div><button class="jmsto-close">×</button></div><button class="jmsto-run">RUN SELF-TEST</button><div class="jmsto-status">READY</div><div class="jmsto-rows"></div><div class="jmsto-receipt">No receipt yet.</div></div>`;document.body.append(panel);const b=document.createElement('button');b.className='jmsto-btn';b.textContent=opts.label||'SELF TEST';(opts.parent||document.body).append(b);const close=()=>panel.classList.remove('show');panel.querySelector('.jmsto-close').onclick=close;b.onclick=()=>panel.classList.add('show');const runBtn=panel.querySelector('.jmsto-run'),status=panel.querySelector('.jmsto-status'),rows=panel.querySelector('.jmsto-rows'),receipt=panel.querySelector('.jmsto-receipt');runBtn.onclick=async()=>{runBtn.disabled=true;runBtn.textContent='RUNNING…';const r=await run();status.className='jmsto-status '+(r.failed?'fail':'pass');status.textContent=`${r.status} • ${r.passed}/${r.total} • ${r.durationMs}ms`;rows.innerHTML=r.results.map(x=>`<div class="jmsto-row ${x.pass?'pass':'fail'}"><b class="jmsto-mark">${x.pass?'✓':'×'}</b><b>${x.name}</b><span>${x.detail||x.ms+'ms'}</span></div>`).join('');receipt.textContent=JSON.stringify({id:r.id,game:r.game,version:r.version,status:r.status,passed:r.passed,total:r.total,restored:r.restored},null,2);runBtn.disabled=false;runBtn.textContent='RUN AGAIN'};return {panel,button:b,open:()=>panel.classList.add('show'),close}
+ }
+ return {run,mount,get last(){return state.last},config:cfg};
+}
+globalThis.JMGameSelfTestOrgan={version:'1.0',create};
+})();
+
+</script>
+<script id="jm-raised-floor-self-test-adapter">
+
+(()=>{
+'use strict';
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const test=JMGameSelfTestOrgan.create({
+ id:'fracture-circuit', game:'FRACTURE CIRCUIT', version:'v0.26.3 RAISED FLOOR SELF-TEST', storageKey:'fracture_v0263_self_test',
+ trace:(type,data)=>{try{window.__JM_RAISED_FLOOR_TRACE__=(window.__JM_RAISED_FLOOR_TRACE__||[]).concat({t:performance.now(),type,data}).slice(-120)}catch{}},
+ snapshot:()=>({setup:!document.querySelector('#fcSetup')?.classList.contains('hidden')}),
+ restore:async snap=>{try{if(!snap?.setup)document.querySelector('#closeDrawer')?.click();else window.FC?.openSetup?.()}catch{} await wait(20)},
+ tests:[
+  {id:'viewport',name:'Bounded viewport',run:()=>{const r=document.querySelector('#c')?.getBoundingClientRect();return {pass:!!r&&r.width>200&&r.height>200&&document.documentElement.scrollWidth<=innerWidth+2&&document.documentElement.scrollHeight<=innerHeight+2,detail:r?`${Math.round(r.width)}×${Math.round(r.height)}`:'no canvas'}}},
+  {id:'spec',name:'Fracture genome authority',run:()=>{const s=window.__JM_SYNTHESIS_SPEC__;return {pass:!!s&&s.title?.includes('Fracture Circuit')&&Array.isArray(s.families)&&s.families.includes('GameForge'),detail:`${s?.families?.length||0} families`}}},
+  {id:'persistence',name:'Durable profile adapter',run:()=>{const p=window.FCPersistV0262,c=window.__FC_PROFILE_CACHE__;return {pass:!!p?.validateEnvelope&&!!c?.meta?.carrier,detail:c?.meta?.carrier||'no carrier'}}},
+  {id:'enter',name:'Setup → live circuit',run:async()=>{const b=document.querySelector('#fcLaunch');if(!b)return {pass:false,detail:'no launch'};b.click();await wait(80);return {pass:document.querySelector('#fcSetup')?.classList.contains('hidden')===true&&!!window.__JM_ENGINE_ADAPTER__,detail:window.__JM_ENGINE_ADAPTER__?'engine adapter live':'adapter missing'}}},
+  {id:'adapter',name:'Engine adapter contact',run:()=>{const d=window.__JM_ENGINE_ADAPTER__?.describe?.();return {pass:!!d&&!!window.JMMegalithDeterminism&&!!window.JMMegalithGameFeel,detail:d?`depths ${d.depths?.length||0}`:'no describe'}}},
+  {id:'drawer',name:'Pause/proof drawer route',run:async()=>{document.querySelector('#menuBtn')?.click();await wait(20);const a=document.querySelector('#drawer')?.classList.contains('open');document.querySelector('#closeDrawer')?.click();await wait(20);const b=!document.querySelector('#drawer')?.classList.contains('open');return {pass:!!a&&!!b,detail:`open ${!!a} / close ${!!b}`}}},
+  {id:'identity',name:'Fracture identity preserved',run:()=>({pass:!!window.__JM_SYNTHESIS_SPEC__?.title?.includes('Fracture Circuit')&&!!document.querySelector('#fcLaunch')&&!!document.querySelector('#act'),detail:'runner × circuit retained'})}
+ ]
+});
+test.mount({label:'SELF TEST',description:'Fracture keeps runner × circuit × mode. Raised Floor adds proof, not Den Breakers mechanics.'});
+window.__JM_RAISED_FLOOR_SELF_TEST__=test;window.__JM_RAISED_FLOOR_META__={game:'Fracture Circuit',version:'v0.26.3',parent:'v0.26.2 Durable Profile Adapter Contact',status:'WORKING DESCENDANT · OWNER DING OPEN'};
+})();
+
+</script>
+</body></html>

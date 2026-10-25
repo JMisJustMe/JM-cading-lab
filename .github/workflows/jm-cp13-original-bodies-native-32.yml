@@ -46,7 +46,7 @@ jobs:
           specs=[('--editor --import --quit','cp13-import.log'),('cp10_ko_contact_test.gd','cp13-cp10.log'),
              ('cp11_ko_live_test.gd','cp13-cp11-live.log'),
              ('cp11_converged_native_test.gd','cp13-cp11-converged.log'),
-             ('cold_on_cp03.gd','cp13-cold-recovery.log')]
+             ('native_input_test.gd','cp13-input-lifecycle.log')]
           for name,log in specs:
               args=[exe,'--headless','--path','godot']
               args+=['--editor','--import','--quit'] if name.startswith('--') else ['--script','res://tests/'+name]

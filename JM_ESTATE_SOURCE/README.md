@@ -38,7 +38,7 @@ Five exact Library originals were newly imported after Checkpoint A. Each was fe
 
 **Evidence boundary:** five exact original-to-GitHub byte identities **PASS**. The remaining source population has not all been compared against raw originals. At this checkpoint, an attempted read of `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_1.html` was incomplete; the subsequent Checkpoint C below resolves this HOLD with exact original blob verification. GitHub custody of the listed files does **not** mean native execution, typed transport, cross-body consequences, or device acceptance. Whole-Estate recovery remains **HOLD**; exclude secrets, binary artifacts and uninspected ZIP interiors from public publication.
 
-## Current verified import — Checkpoint C (2026-10-25)
+## Verified import — Checkpoint C (2026-10-25)
 
 **GitHub tree at `2f8823eabc06f6c0c6c4910ee1f7e45f8ad38b19`:** **172 original source/script files + 4 supporting records = 176 nonempty Git files** in `JM_ESTATE_SOURCE/`. Recursive Git tree `truncated: false`; total file payload **13,871,875 bytes** at this pinned commit. The `Code, OS & Runtime/` family now contributes **8** original source files. The earlier source-family counts remain unchanged: 61 Sovereign Coding Bodies; 41 Games; 8 Game Engines; 37 Coding; 13 Coding Systems; 3 Coding Estate; 1 Coding - Language - Runtime - OS.
 
@@ -51,6 +51,23 @@ In addition to the five exact originals in Checkpoint B, these three previously 
 | `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_7J_NATIVE.html` | 102,981 | `6b5615e6fe956429380b462380d66eed403e241d` |
 
 **Bounded proof:** **8/8 newly imported original files** in Checkpoints B+C have exact source-to-GitHub Git blob identity and post-write readback. This is **not** 172/172 independent original comparisons, complete ZIP-content recovery, execution proof, native parity, or a claim that the whole Estate has been transferred. Source inventory and safe transfer remain in progress; no changes to `main`.
+
+## Current verified import — Checkpoint D (2026-10-25)
+
+**Source custody:** At the parent commit \`bf4502cf8631b4ce89a35160951bc128648262a5\`, the recursive Git tree is \`truncated: false\`, with **174 source/script files + 4 supporting records = 178 nonempty files** under \`JM_ESTATE_SOURCE/\`; 14,322,435 Git payload bytes. These counts refer only to this import branch. \`main\` is unchanged. The present README update creates a subsequent documentation commit and does not add another original source.
+
+**Two new exact originals** inherited from the established 001–012 export frontier and verified against independently recovered Library raw originals, manifest SHA-256, prewrite Git blob identity and GitHub postwrite readback:
+
+| Original path beneath \`JM_ESTATE_SOURCE/\` | Bytes | Verified original Git blob SHA-1 |
+| --- | ---: | --- |
+| \`Gold Mode Coding Hub/Kading/JM Coding Estate/v0.4.1/JM_CODING_ESTATE_REAL_BUILD_v0_4_1.mjs\` | 222,904 | \`57f9f518150c20d9e68411effe43ff024d542f30\` |
+| \`Gold Mode Coding Hub/Kading/JM Coding Estate/v0.4.1/00_OPEN_FIRST_JM_CODING_ESTATE_v0_4_1.html\` | 225,636 | \`7c3aa8a051406e26b3714c240abc40c3b818e04f\` |
+
+**Existing-source byte repair:** \`Coding - Language - Runtime - OS/RouteOS/Estate Shelf v2.1A/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html\` was already imported, but its GitHub blob omitted the original final newline. Exact raw original: 4,063 bytes, Git blob SHA-1 \`b6e2c7178e8fcde65df5bce6a9a064b87844bb16\`. The missing newline was restored, verified before the write and independently read back from GitHub. This **does not** establish byte exactness of every previously imported source; matched paths alone are insufficient.
+
+**Runtime execution (bounded independent Node smoke check):** Original \`JM_CODING_ESTATE_REAL_BUILD_v0_4_1.mjs\` passed \`node --check\` with Node v22.16.0. All **27/27** original \`EXAMPLES\` ran via the exported \`runExample\` API, and their \`receipt.status\` values were \`PASS\` for that run. This verifies source-level local execution of the recovered implementation, **not** native Android execution, typed transport between independently deployed bodies, full project coverage, or owner acceptance.
+
+**Unresolved HOLDs:** The 11 independently preflighted Wave 02 originals remain **staged, not committed**; two other Wave 02 source transfers received provider safety blocks and were not retried; another original had inaccessible raw bytes. A prior multi-file Git tree/commit transfer was blocked and must not be routed around. The full 013–015 export frontier has not been recovered path-for-path; whole-Library backup and all remaining source publication remain open. Credential-bearing archives and private materials are excluded from this public repository.
 
 ## Import boundaries and HOLDs
 

@@ -90,7 +90,7 @@ func run() -> void:
 	check("RALLY rejects uninjured actor",not wrong.get("applied",false) and wrong.get("error","")=="NO INJURED ALLY")
 	wrong=scene.accept_cp15_route("BOGUS")
 	check("undefined route fails closed",not wrong.get("applied",false) and wrong.get("error","")=="ROUTE NOT SEALED")
-	scene.mode="result"
+	scene._finish()
 	wrong=scene.accept_cp15_route("GUARD")
 	check("result mode cannot apply battle changes",not wrong.get("applied",false) and wrong.get("error","")=="SECTOR ONLY")
 	scene._sync_native_rails()

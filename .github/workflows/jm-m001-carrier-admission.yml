@@ -63,17 +63,29 @@ jobs:
           keeper = Path('games-beyond/kicshift')
           assert (candidate / 'index.html').is_file(), 'actual built product index absent'
           assert (keeper / 'index.html').is_file(), 'existing Estate keeper index absent'
-          names = sorted(str(p.relative_to(candidate)) for p in candidate.rglob('*') if p.is_file())
-          assert len(names) >= 2, 'too few deployable source members'
-          assert all((keeper/name).is_file() for name in names), 'canonical keeper is missing source-deployable members: HOLD'
-          for output, root in [(Path('/tmp/jm-kicshift-proposed.zip'),candidate),(Path('/tmp/jm-kicshift-keeper.zip'),keeper)]:
+          # Inspect the two *separate* deployable trees. A reproducible rebuild
+          # may have changed JS/CSS hashed basenames; absence of one basename in
+          # the other seat means different output, not a reason to fake equality.
+          proposed_names=sorted(str(p.relative_to(candidate)) for p in candidate.rglob('*') if p.is_file())
+          house_names=sorted(str(p.relative_to(keeper)) for p in keeper.rglob('*')
+                             if p.is_file() and p.name != 'PORTABILITY_MANIFEST.json')
+          assert len(proposed_names)>=3 and len(house_names)>=3, 'incomplete source/keeper deployable tree: HOLD'
+          assert any(n.startswith('assets/') for n in proposed_names), 'source assets absent: HOLD'
+          assert any(n.startswith('assets/') for n in house_names), 'keeper assets absent: HOLD'
+          for output, root, names in [(Path('/tmp/jm-kicshift-proposed.zip'),candidate,proposed_names),
+                                      (Path('/tmp/jm-kicshift-keeper.zip'),keeper,house_names)]:
               with zipfile.ZipFile(output,'w') as z:
                   for name in names:
                       b=(root/name).read_bytes()
                       info=zipfile.ZipInfo(name,date_time=(1980,1,1,0,0,0))
                       info.compress_type=zipfile.ZIP_DEFLATED
                       z.writestr(info,b)
-          print(json.dumps({'schema':'JM.M001.RealProductCarrierContact/0.1','product':'JM KICSHIFT portable original','source_members':len(names),'keeper_route':'games-beyond/kicshift','comparison_scope':'exact names from new deployable dist, not extra keeper metadata','stage':'pre-delivery','actual_files_compared':True},sort_keys=True))
+          print(json.dumps({'schema':'JM.M001.RealProductCarrierContact/0.1','product':'JM KICSHIFT portable original',
+                           'source_members':len(proposed_names),'keeper_members':len(house_names),
+                           'source_names':proposed_names,'keeper_names':house_names,
+                           'keeper_route':'games-beyond/kicshift',
+                           'comparison_scope':'two independent complete deployable trees; keeper manifest excluded',
+                           'stage':'pre-delivery','actual_files_compared':True},sort_keys=True))
           PY
       - name: Run original JM admission gate on real independently rebuilt product files
         shell: bash

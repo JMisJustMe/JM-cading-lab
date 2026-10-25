@@ -100,7 +100,7 @@ jobs:
           Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --export-debug 'Android Fold CP15' "$PWD/JM_SLINGFALL_CP15_ROUTE_DECK_FOLD_TEST.apk" > evidence/export.log 2>&1
           python3 - <<'PY'
           import pathlib,os,subprocess,zipfile,json,hashlib,struct
-          apk=pathlib.Path('JM_SLINGFALL_CP11_KO_LIVE_NATIVE_FOLD_TEST.apk')
+          apk=pathlib.Path('JM_SLINGFALL_CP15_ROUTE_DECK_FOLD_TEST.apk')
           assert apk.is_file()
           tools=sorted((pathlib.Path(os.environ['ANDROID_HOME'])/'build-tools').glob('*/apksigner'))[-1].parent
           r=subprocess.run([str(tools/'apksigner'),'verify','--verbose','--print-certs',str(apk)],check=True,capture_output=True,text=True)
@@ -131,7 +131,7 @@ jobs:
         with:
           name: jm-cp15-jourmaze-native-tactics-fold-apk-and-evidence
           path: |
-            coding-estate/integration/codegornization-cp11/JM_SLINGFALL_CP11_KO_LIVE_NATIVE_FOLD_TEST.apk
+            coding-estate/integration/codegornization-cp11/JM_SLINGFALL_CP15_ROUTE_DECK_FOLD_TEST.apk
             coding-estate/integration/codegornization-cp11/evidence/
             coding-estate/integration/codegornization-cp15/evidence/
           retention-days: 30

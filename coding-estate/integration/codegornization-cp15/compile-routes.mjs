@@ -90,6 +90,7 @@ const policy={schema:'jm.jourmaze-native-tactics/1',
 const payload=JSON.stringify(policy),digest=sha(Buffer.from(payload,'utf8'));
 const envelope={schema:'jm.jourmaze-native-tactics.transport/1',payload,payloadSHA256:digest};
 await mkdir(new URL('./packets/',here),{recursive:true});
+await mkdir(new URL('./seal/',here),{recursive:true});
 await mkdir(new URL('./evidence/',here),{recursive:true});
 await writeFile(new URL('./packets/tactics.json',here),JSON.stringify(envelope,null,2)+'\n');
 await writeFile(new URL('./seal/CP15Seal.gd',here),

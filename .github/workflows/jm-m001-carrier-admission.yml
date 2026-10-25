@@ -1,0 +1,142 @@
+name: JM M001 Carrier Admission Preflight
+
+on:
+  push:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/**'
+      - '.github/workflows/jm-m001-carrier-admission.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/**'
+      - '.github/workflows/jm-m001-carrier-admission.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate-self-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout original JM repository
+        uses: actions/checkout@v4
+      - name: Python syntax contact
+        run: python3 -m py_compile agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py
+      - name: Execute read-only, synthetic anti-duplication gates
+        run: |
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py --self-test | tee /tmp/jm-m001-preflight.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          proof = json.loads(Path('/tmp/jm-m001-preflight.json').read_text())
+          assert proof['schema'] == 'JM.M001.CarrierAdmissionSelfTest/0.1'
+          assert proof['pass'] is True
+          assert proof['checks'] == 7
+          assert all(proof['cases'].values())
+          assert proof['boundary'].startswith('SYNTHETIC')
+          print('JM M001 ADMISSION PREFLIGHT: PASS 7/7; private carriers not loaded')
+          PY
+
+  kicshift-real-source-contact:
+    name: Contact real JM KICSHIFT portable package before delivery
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build original preserved KICSHIFT product source
+        working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Repeat build to isolate toolchain drift from same-host nondeterminism
+        working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a dist "$RUNNER_TEMP/jm-kicshift-first-dist"
+          # Clean only the ephemeral generated output, not frozen source or canonical seat.
+          # A second dirty Vite/Tailwind build had changed hashed CSS/JS output.
+          rm -rf -- dist
+          npm run build
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          old=Path(os.environ['RUNNER_TEMP'])/'jm-kicshift-first-dist'
+          new=Path('dist')
+          def digests(p):
+              return {str(f.relative_to(p)):hashlib.sha256(f.read_bytes()).hexdigest()
+                      for f in p.rglob('*') if f.is_file()}
+          before,after=digests(old),digests(new)
+          assert before and before==after, 'Same-host KICSHIFT rebuild differs: HOLD and protect source'
+          print(json.dumps({'schema':'JM.M001.SameHostBuildRepeatability/0.1',
+                            'product':'JM KICSHIFT',
+                            'repeatable_files':len(before),
+                            'same_host_byte_repeatability':'PASS',
+                            'frozen_estate_carrier_parity':'NOT_YET_CHECKED',
+                            'release_authorised':False,
+                            'claim':'Same-host double build only; historical dependency lock and owner parity remain separate'},sort_keys=True))
+          PY
+      - name: Recover matching deployable tree from existing canonical Estate mount
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, zipfile
+          candidate = Path('apps-tools-games/jm-portable-body/kicshift-v0.1/dist')
+          keeper = Path('games-beyond/kicshift')
+          assert (candidate / 'index.html').is_file(), 'actual built product index absent'
+          assert (keeper / 'index.html').is_file(), 'existing Estate keeper index absent'
+          # Inspect the two *separate* deployable trees. A reproducible rebuild
+          # may have changed JS/CSS hashed basenames; absence of one basename in
+          # the other seat means different output, not a reason to fake equality.
+          proposed_names=sorted(str(p.relative_to(candidate)) for p in candidate.rglob('*') if p.is_file())
+          house_names=sorted(str(p.relative_to(keeper)) for p in keeper.rglob('*')
+                             if p.is_file() and p.name != 'PORTABILITY_MANIFEST.json')
+          assert len(proposed_names)>=3 and len(house_names)>=3, 'incomplete source/keeper deployable tree: HOLD'
+          assert any(n.startswith('assets/') for n in proposed_names), 'source assets absent: HOLD'
+          assert any(n.startswith('assets/') for n in house_names), 'keeper assets absent: HOLD'
+          for output, root, names in [(Path('/tmp/jm-kicshift-proposed.zip'),candidate,proposed_names),
+                                      (Path('/tmp/jm-kicshift-keeper.zip'),keeper,house_names)]:
+              with zipfile.ZipFile(output,'w') as z:
+                  for name in names:
+                      b=(root/name).read_bytes()
+                      info=zipfile.ZipInfo(name,date_time=(1980,1,1,0,0,0))
+                      info.compress_type=zipfile.ZIP_DEFLATED
+                      z.writestr(info,b)
+          print(json.dumps({'schema':'JM.M001.RealProductCarrierContact/0.1','product':'JM KICSHIFT portable original',
+                           'source_members':len(proposed_names),'keeper_members':len(house_names),
+                           'source_names':proposed_names,'keeper_names':house_names,
+                           'keeper_route':'games-beyond/kicshift',
+                           'comparison_scope':'two independent complete deployable trees; keeper manifest excluded',
+                           'stage':'pre-delivery','actual_files_compared':True},sort_keys=True))
+          PY
+      - name: Run original JM admission gate on real independently rebuilt product files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py \
+            --candidate /tmp/jm-kicshift-proposed.zip \
+            --keeper /tmp/jm-kicshift-keeper.zip > /tmp/jm-kicshift-admission.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/jm-kicshift-admission.json').read_text())
+          assert x['schema']=='JM.M001.CarrierAdmission/0.1'
+          assert x['state'] in {'SAME_BYTES_ROLE_HOLD','DISTINCT_BYTES'},x
+          assert x['crc_candidate']==x['crc_keeper']=='PASS',x
+          assert x['admission_authorised'] is False
+          assert x['retirement_authorised'] is False
+          assert x['library_mutations']==0
+          assert x['account_quota_savings_claimed_bytes']==0
+          # Do not upload or modify any source/delivery destination in this proof job.
+          print(json.dumps({'product':'JM KICSHIFT','real_source_build':True,
+                            'admission_state':x['state'],
+                            'matched_all_deployable_bytes':x['whole_byte_equality'],
+                            'next':'REUSE_IF_ROLE_CLEAR' if x['state']=='SAME_BYTES_ROLE_HOLD' else 'NORMAL_SEPARATE_PACKAGE_AUTHORITY',
+                            'quota_savings_claimed':0},sort_keys=True))
+          PY

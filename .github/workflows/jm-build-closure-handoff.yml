@@ -19,6 +19,76 @@ jobs:
       - name: Self-test closure and handoff body
         run: python3 scripts/jm_build_closure.py --self-test
 
+      - name: Prove PACKAGE stage rejects duplicate delivery before PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/jm-m001-package
+          python3 - <<'PY'
+          import json, zipfile
+          from pathlib import Path
+          root=Path('/tmp/jm-m001-package')
+          evidence={"schema":"jm.build-execution/0.1","state":"CLOSED",
+                    "created_for":{"body":"JM M001 PACKAGE Gate Fixture"},
+                    "gates":{"synthetic":{"state":"PASS"}},
+                    "closure":{"execution_closed":True}}
+          (root/'execution.json').write_text(json.dumps(evidence))
+          for file, payload in [('keeper.zip','original keeper'),('duplicate.zip','original keeper'),
+                                ('distinct.zip','meaningfully distinct')]:
+              with zipfile.ZipFile(root/file,'w') as z:z.writestr('jm-content.txt',payload)
+          (root/'invalid.zip').write_bytes(b'not a valid zip')
+          PY
+
+          python3 scripts/jm_build_closure.py --init \
+            --execution-ledger /tmp/jm-m001-package/execution.json \
+            --state-file /tmp/jm-m001-package/closure.json
+          if python3 scripts/jm_build_closure.py \
+            --stage PACKAGE --state PASS --state-file /tmp/jm-m001-package/closure.json \
+            --evidence ci:synthetic-native-package-check \
+            --admission-keeper /tmp/jm-m001-package/keeper.zip \
+            --admission-candidate /tmp/jm-m001-package/duplicate.zip; then
+            echo 'FALSE PASS: exact duplicate PACKAGE entered closure'; exit 1
+          fi
+          if python3 scripts/jm_build_closure.py \
+            --stage PACKAGE --state PASS --state-file /tmp/jm-m001-package/closure.json \
+            --evidence ci:synthetic-native-package-check \
+            --admission-keeper /tmp/jm-m001-package/keeper.zip \
+            --admission-candidate /tmp/jm-m001-package/invalid.zip; then
+            echo 'FALSE PASS: corrupt PACKAGE entered closure'; exit 1
+          fi
+          if python3 scripts/jm_build_closure.py \
+            --stage PACKAGE --state PASS --state-file /tmp/jm-m001-package/closure.json \
+            --admission-keeper /tmp/jm-m001-package/keeper.zip \
+            --admission-candidate /tmp/jm-m001-package/distinct.zip; then
+            echo 'FALSE PASS: distinctness wrongly replaced external PACKAGE evidence'; exit 1
+          fi
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/jm-m001-package/closure.json')
+          x=json.loads(p.read_text())
+          assert x['stages']['PACKAGE']['state']=='OPEN'
+          assert len(x['history'])==1
+          print('JM PACKAGE admission expected HOLD PASS: duplicate, invalid and unevidenced stages blocked')
+          PY
+          python3 scripts/jm_build_closure.py \
+            --stage PACKAGE --state PASS --state-file /tmp/jm-m001-package/closure.json \
+            --evidence ci:synthetic-native-package-check \
+            --admission-keeper /tmp/jm-m001-package/keeper.zip \
+            --admission-candidate /tmp/jm-m001-package/distinct.zip
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/jm-m001-package/closure.json').read_text())
+          p=x['stages']['PACKAGE']
+          assert p['state']=='PASS'
+          a=p['carrier_admission']
+          assert a['state']=='DISTINCT_BYTES' and not a['admission_authorised']
+          assert not a['retirement_authorised'] and a['account_quota_savings_claimed_bytes']==0
+          assert x['stages']['FREEZE']['state']=='OPEN'
+          print('JM PACKAGE → native admission gate contact PASS: distinct carrier reached PACKAGE with independent synthetic evidence; no deletion, upload or crown')
+          PY
+
       - name: Live-probe recovered closure donors
         run: |
           set -euo pipefail

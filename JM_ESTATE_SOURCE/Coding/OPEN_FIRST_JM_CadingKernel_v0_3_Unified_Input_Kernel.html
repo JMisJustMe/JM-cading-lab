@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>JM CadingKernel v0.3 — Unified Input Kernel</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{margin:0;background:#0f1117;color:#eef4ff;font-family:system-ui,Arial,sans-serif}
+header{padding:12px;border-bottom:1px solid #303542;background:#111621;position:sticky;top:0;z-index:2}
+h1{font-size:19px;margin:0}p{font-size:13px;color:#aab6c7;margin:5px 0 0}
+.app{display:flex;flex-direction:column;gap:8px;padding:8px}.panel{background:#181b24;border:1px solid #303542;border-radius:12px;padding:10px}
+#game{width:100%;height:240px;background:#02040a;border:1px solid #303542;border-radius:10px;touch-action:none}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:360px;margin:8px auto 0}
+.btn{min-height:48px;border:1px solid #3a4150;border-radius:10px;background:#202432;color:#eef4ff;font-weight:900;font-size:15px}
+.btn.live,.btn:active{background:#294260;border-color:#69a7ff}.combat{display:flex;gap:8px;margin-top:8px}.combat .btn{flex:1}
+textarea,pre{width:100%;background:#070a10;color:#eef4ff;border:1px solid #303542;border-radius:10px;padding:9px;font:12px/1.35 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow:auto}
+textarea{min-height:100px;color:#9cff9c}pre{max-height:260px}button.main{padding:9px 12px;border:0;border-radius:9px;background:#69a7ff;color:#06101c;font-weight:900;margin-top:8px}
+.status{font-size:12px;color:#aab6c7;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px}
+@media(min-width:900px){.app{display:grid;grid-template-columns:1fr 1fr;align-items:start}.wide{grid-column:1/-1}#game{height:320px}}
+</style></head><body>
+<header><h1>JM CadingKernel v0.3 — Unified Input Kernel</h1><p>Every source feeds one kernel.input truth. Cading reads ctx.input, not the device.</p></header>
+<div class="app">
+<section class="panel"><h2>GameCore visual</h2><canvas id="game" width="680" height="360"></canvas><div id="visualStatus" class="status"></div>
+<div class="pad">
+<button class="btn" data-input="upLeft">↖</button><button class="btn" data-input="up">↑</button><button class="btn" data-input="upRight">↗</button>
+<button class="btn" data-input="left">←</button><button class="btn" data-input="center">•</button><button class="btn" data-input="right">→</button>
+<button class="btn" data-input="downLeft">↙</button><button class="btn" data-input="down">↓</button><button class="btn" data-input="downRight">↘</button>
+</div><div class="combat"><button class="btn" data-input="attack">Attack</button><button class="btn" data-input="guard">Guard</button></div></section>
+<section class="panel"><h2>Cading source</h2><textarea id="cadingSource">tick.</textarea><button class="main" id="compileBtn">Compile & Try Promote</button>
+<div id="compileStatus" class="status">No compile yet.</div><h2>kernel.input</h2><pre id="inputSnapshot"></pre></section>
+<section class="panel wide"><h2>Receipt / runtime truth</h2><pre id="receiptPanel">No receipt yet.</pre></section></div>
+<script>
+"use strict";
+const canvas=document.getElementById("game"),g=canvas.getContext("2d");
+const visualStatus=document.getElementById("visualStatus"),compileStatus=document.getElementById("compileStatus"),receiptPanel=document.getElementById("receiptPanel"),inputSnapshot=document.getElementById("inputSnapshot");
+let currentRuntime=null,lastKnownGoodRuntime=null,lastReceipt=null;
+const visualState={player:{x:60,y:60,size:22,speed:2.6},ticks:0};
+const kernel={input:{up:false,down:false,left:false,right:false,upLeft:false,upRight:false,downLeft:false,downRight:false,tap:false,hold:false,holdTime:0,tapTime:0,attackTap:false,attackHold:false,attackHoldTime:0,guardTap:false,guardHold:false,guardHoldTime:0,cursor:{x:0,y:0,down:false,dragging:false},swipe:null,drag:{dx:0,dy:0}},sources:{keyboard:{},touchButtons:{},cursor:{}},trace:[],frame:0};
+function trace(message,data){kernel.trace.push({at:Date.now(),message,data:data||null});if(kernel.trace.length>80)kernel.trace.shift()}
+function pulseReset(){kernel.input.tap=false;kernel.input.attackTap=false;kernel.input.guardTap=false;kernel.input.swipe=null;kernel.input.drag.dx=0;kernel.input.drag.dy=0}
+function mergeDirs(){const dirs=["up","down","left","right","upLeft","upRight","downLeft","downRight"];for(const d of dirs)kernel.input[d]=!!(kernel.sources.keyboard[d]||kernel.sources.touchButtons[d]||kernel.sources.cursor[d]);if(kernel.input.upLeft){kernel.input.up=true;kernel.input.left=true}if(kernel.input.upRight){kernel.input.up=true;kernel.input.right=true}if(kernel.input.downLeft){kernel.input.down=true;kernel.input.left=true}if(kernel.input.downRight){kernel.input.down=true;kernel.input.right=true}kernel.input.hold=dirs.some(d=>kernel.input[d])}
+function setDir(name,on,src){if(!kernel.sources[src])kernel.sources[src]={};kernel.sources[src][name]=on;mergeDirs();if(on){kernel.input.tap=true;kernel.input.tapTime=Date.now()}}
+function setCombat(name,on){if(name==="attack"){if(on&&!kernel.input.attackHold){kernel.input.attackTap=true;kernel.input.tap=true;kernel.input.tapTime=Date.now()}kernel.input.attackHold=on}if(name==="guard"){if(on&&!kernel.input.guardHold){kernel.input.guardTap=true;kernel.input.tap=true;kernel.input.tapTime=Date.now()}kernel.input.guardHold=on}}
+function timers(){kernel.input.holdTime=kernel.input.hold?kernel.input.holdTime+16:0;kernel.input.attackHoldTime=kernel.input.attackHold?kernel.input.attackHoldTime+16:0;kernel.input.guardHoldTime=kernel.input.guardHold?kernel.input.guardHoldTime+16:0}
+document.addEventListener("keydown",e=>{if(e.repeat)return;const m={ArrowUp:"up",KeyW:"up",ArrowDown:"down",KeyS:"down",ArrowLeft:"left",KeyA:"left",ArrowRight:"right",KeyD:"right",KeyQ:"upLeft",KeyE:"upRight",KeyZ:"downLeft",KeyC:"downRight"};if(m[e.code]){setDir(m[e.code],true,"keyboard");e.preventDefault()}if(e.code==="Space"){setCombat("attack",true);e.preventDefault()}if(e.code==="ShiftLeft"||e.code==="ShiftRight"){setCombat("guard",true);e.preventDefault()}});
+document.addEventListener("keyup",e=>{const m={ArrowUp:"up",KeyW:"up",ArrowDown:"down",KeyS:"down",ArrowLeft:"left",KeyA:"left",ArrowRight:"right",KeyD:"right",KeyQ:"upLeft",KeyE:"upRight",KeyZ:"downLeft",KeyC:"downRight"};if(m[e.code]){setDir(m[e.code],false,"keyboard");e.preventDefault()}if(e.code==="Space"){setCombat("attack",false);e.preventDefault()}if(e.code==="ShiftLeft"||e.code==="ShiftRight"){setCombat("guard",false);e.preventDefault()}});
+document.querySelectorAll("[data-input]").forEach(b=>{const n=b.dataset.input,dir=["up","down","left","right","upLeft","upRight","downLeft","downRight"].includes(n),combat=["attack","guard"].includes(n);function on(e){e.preventDefault();b.classList.add("live");if(dir)setDir(n,true,"touchButtons");if(combat)setCombat(n,true)}function off(e){e.preventDefault();b.classList.remove("live");if(dir)setDir(n,false,"touchButtons");if(combat)setCombat(n,false)}b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointercancel",off);b.addEventListener("pointerleave",off)});
+let start=null,last=null;function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+canvas.addEventListener("pointerdown",e=>{e.preventDefault();const p=point(e);kernel.input.cursor={x:p.x,y:p.y,down:true,dragging:false};start={...p,t:Date.now()};last=p;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener("pointermove",e=>{const p=point(e);kernel.input.cursor.x=p.x;kernel.input.cursor.y=p.y;if(kernel.input.cursor.down&&last){kernel.input.drag.dx+=p.x-last.x;kernel.input.drag.dy+=p.y-last.y;if(Math.abs(p.x-start.x)+Math.abs(p.y-start.y)>8)kernel.input.cursor.dragging=true}last=p});
+canvas.addEventListener("pointerup",e=>{e.preventDefault();const p=point(e);kernel.input.cursor.x=p.x;kernel.input.cursor.y=p.y;kernel.input.cursor.down=false;if(start){const dx=p.x-start.x,dy=p.y-start.y,dist=Math.hypot(dx,dy);if(dist<10){kernel.input.tap=true;kernel.input.tapTime=Date.now()}else kernel.input.swipe=Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up")}kernel.input.cursor.dragging=false;start=null;last=null});
+function visualUpdate(){const p=visualState.player;let dx=0,dy=0;if(kernel.input.left)dx--;if(kernel.input.right)dx++;if(kernel.input.up)dy--;if(kernel.input.down)dy++;if(dx&&dy){dx*=Math.SQRT1_2;dy*=Math.SQRT1_2}const boost=kernel.input.hold?Math.min(1.8,1+kernel.input.holdTime/1800):1;p.x=Math.max(0,Math.min(canvas.width-p.size,p.x+dx*p.speed*boost));p.y=Math.max(0,Math.min(canvas.height-p.size,p.y+dy*p.speed*boost));visualState.ticks++}
+function visualDraw(){g.clearRect(0,0,canvas.width,canvas.height);g.fillStyle="#05070d";g.fillRect(0,0,canvas.width,canvas.height);g.strokeStyle="rgba(255,255,255,.12)";for(let x=0;x<canvas.width;x+=40){g.beginPath();g.moveTo(x,0);g.lineTo(x,canvas.height);g.stroke()}for(let y=0;y<canvas.height;y+=40){g.beginPath();g.moveTo(0,y);g.lineTo(canvas.width,y);g.stroke()}g.fillStyle="#ff4d4d";g.fillRect(visualState.player.x,visualState.player.y,visualState.player.size,visualState.player.size);g.fillStyle="#eef4ff";g.font="14px system-ui";g.fillText("Ticks: "+visualState.ticks,10,20);g.fillText("Runtime: "+(currentRuntime?"active":"none"),10,38);g.fillText("Last good: "+(lastKnownGoodRuntime?"yes":"none"),10,56);g.fillText("Hold: "+kernel.input.hold+" / "+kernel.input.holdTime,10,74);g.fillText("Attack hold: "+kernel.input.attackHoldTime,10,92)}
+function tokenize(s){const t=[];let c="";for(let i=0;i<s.length;i++){const ch=s[i];if(ch==="."||ch==="\n"){if(c.trim())t.push({type:"WORD",value:c.trim()});t.push({type:"FULLSTOP",value:ch});c=""}else c+=ch}if(c.trim())t.push({type:"WORD",value:c.trim()});return t}
+function parseBlocks(tokens){const b=[];let c=[];for(const t of tokens){if(t.type==="FULLSTOP"){if(!c.length)throw E2("Empty block");b.push({type:"BLOCK",words:c});c=[]}else c.push(t.value)}return b}
+function buildIR(blocks){return{routes:blocks.map(b=>({route:b.words[0]||null,entity:b.words[1]||null,nota:b.words.includes("nota"),raw:b.words}))}}
+function validateIR(ir){const errors=[],warnings=[],info=[];ir.routes.forEach(n=>{if(!n.route)errors.push(E3(n.raw));if(!n.entity)warnings.push(W2(n.raw));if(n.nota)info.push(I2(n.raw))});return{errors,warnings,info}}
+function emitJavaScript(ir){let out='const CadingRuntime = {};\\nCadingRuntime.routes = {};\\n';ir.routes.forEach(n=>{if(!n.route)return;out+=`CadingRuntime.routes["${n.route}"] = function(ctx) {\\n`;out+=`  ctx.trace("Running route: ${n.route}", { input: ctx.input });\\n`;out+="};\\n"});out+="\\nCadingRuntime.start = function(ctx) {\\n  ctx.trace('Runtime started', { input: ctx.input });\\n};\\n";return out}
+function createRuntime(js){return new Function(js+"\\nreturn CadingRuntime;")()}
+function createCompileReceipt(ir,diagnostics){return{version:"CadingKernel_v0.3_UnifiedInput_on_v0.2B",timestamp:Date.now(),ir,diagnostics}}
+function E2(raw){return{code:"CADINGE002MISSING_FULLSTOP",raw}}function E3(raw){return{code:"CADINGE003UNKNOWN_ROUTE",raw}}function W2(raw){return{code:"CADINGW002ENTITY_UNUSED",raw}}function I2(raw){return{code:"CADINGI002NOTAFALLBACKUSED",raw}}
+function compileCadingSource(source){try{const tokens=tokenize(source),blocks=parseBlocks(tokens),ir=buildIR(blocks),diagnostics=validateIR(ir),hasErrors=diagnostics.errors.length>0,js=emitJavaScript(ir),candidateRuntime=createRuntime(js),receipt=createCompileReceipt(ir,diagnostics);return{candidateRuntime,receipt,hasErrors,emittedJS:js}}catch(e){return{candidateRuntime:null,receipt:{version:"CadingKernel_v0.3_UnifiedInput_on_v0.2B",timestamp:Date.now(),error:String(e)},hasErrors:true,emittedJS:""}}}
+function makeCtx(){return{input:kernel.input,visualState,trace}}
+function tryPromoteRuntimeFromSource(source){const r=compileCadingSource(source);lastReceipt={promoted:false,receipt:r.receipt,emittedJS:r.emittedJS};if(r.hasErrors||!r.candidateRuntime){compileStatus.textContent="Candidate rejected. Last good kept.";renderReceipt(false);return false}lastKnownGoodRuntime=currentRuntime||r.candidateRuntime;currentRuntime=r.candidateRuntime;compileStatus.textContent="Candidate promoted.";lastReceipt.promoted=true;renderReceipt(true);return true}
+function renderReceipt(promoted){receiptPanel.textContent=JSON.stringify({promoted,currentRuntimeActive:!!currentRuntime,lastKnownGoodRuntime:!!lastKnownGoodRuntime,lastReceipt},null,2)}
+function loop(){pulseReset();timers();visualUpdate();visualDraw();const runtimeCtx=makeCtx();if(currentRuntime?.routes?.tick)currentRuntime.routes.tick(runtimeCtx);visualStatus.textContent="Ticks: "+visualState.ticks+" | Runtime: "+(currentRuntime?"active":"none")+" | Last good: "+(lastKnownGoodRuntime?"yes":"none")+" | Hold: "+kernel.input.hold+" | AttackHold: "+kernel.input.attackHold;inputSnapshot.textContent=JSON.stringify(kernel.input,null,2);kernel.frame++;requestAnimationFrame(loop)}
+document.getElementById("compileBtn").onclick=()=>tryPromoteRuntimeFromSource(document.getElementById("cadingSource").value||"");
+loop();
+</script></body></html>

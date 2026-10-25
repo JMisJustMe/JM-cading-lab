@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JM CadingKernel v0.3B – Kernel Boundary + State Bridge</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #111; color: #eee; }
+    .app { display: flex; flex-direction: column; padding: 8px; gap: 8px; }
+    .panel { background: #1b1b1b; border-radius: 8px; padding: 8px; }
+    h3 { margin: 0 0 6px 0; font-size: 16px; }
+    #game { width: 100%; max-width: 600px; height: 240px; background: #000; display: block; margin: 0 auto; }
+    .status { font-size: 11px; color: #ccc; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
+    .controls { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+    .dpad { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px); gap: 4px; justify-content: center; margin: 0 auto; }
+    .btn { background: #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; user-select: none; touch-action: none; }
+    .btn:active { background: #555; }
+    .combat-row { display: flex; justify-content: center; gap: 8px; }
+    .combat-btn { padding: 8px 12px; border-radius: 6px; background: #5a2bf0; font-size: 14px; user-select: none; touch-action: none; }
+    .combat-btn.guard { background: #f0a52b; }
+    textarea { width: 100%; min-height: 80px; background: #000; color: #0f0; font-family: monospace; font-size: 12px; border-radius: 4px; padding: 6px; box-sizing: border-box; }
+    pre { width: 100%; background: #000; color: #ddd; border-radius: 4px; padding: 6px; box-sizing: border-box; white-space: pre-wrap; overflow: auto; font-size: 11px; max-height: 180px; }
+    button { padding: 8px 12px; border-radius: 4px; border: none; background: #2b6cf0; color: #fff; font-size: 14px; }
+    .gesture-area { margin-top: 6px; padding: 10px; border-radius: 6px; border: 1px dashed #555; text-align: center; font-size: 12px; color: #888; }
+    .gesture-label { font-weight: bold; color: #f0a52b; }
+    @media (min-width: 900px) {
+      .app { flex-direction: row; align-items: flex-start; }
+      .panel { flex: 1; }
+      #game { height: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="panel">
+      <h3>GameCore visual</h3>
+      <canvas id="game"></canvas>
+      <div class="status" id="visualStatus"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Cading source (compiler still parked)</h3>
+      <textarea id="cadingSource">tick.</textarea>
+      <button id="compileBtn">Compile & Try Promote (parked)</button>
+      <div class="status" id="compileStatus"></div>
+
+      <div class="controls">
+        <div><strong>8-way D-Pad</strong></div>
+        <div class="dpad" id="dpad">
+          <div class="btn" data-dir="upLeft">&#8598;</div>
+          <div class="btn" data-dir="up">&#8593;</div>
+          <div class="btn" data-dir="upRight">&#8599;</div>
+          <div class="btn" data-dir="left">&#8592;</div>
+          <div class="btn" data-dir="center"></div>
+          <div class="btn" data-dir="right">&#8594;</div>
+          <div class="btn" data-dir="downLeft">&#8601;</div>
+          <div class="btn" data-dir="down">&#8595;</div>
+          <div class="btn" data-dir="downRight">&#8600;</div>
+        </div>
+
+        <div class="combat-row">
+          <div class="combat-btn" id="attackBtn">Attack</div>
+          <div class="combat-btn guard" id="guardBtn">Guard</div>
+        </div>
+
+        <div class="gesture-area" id="gestureArea">
+          <span class="gesture-label">COMING / FUTURE:</span><br>
+          Gesture Area • Swipe • Drag • Cursor Gesture Routing<br>
+          (Scaffolded only – not yet a crowned control layer)
+        </div>
+
+        <div class="status" id="inputStatus"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>ctx boundary snapshot</h3>
+      <pre id="ctxStatus"></pre>
+      <h3>Runtime log</h3>
+      <pre id="runtimeLog"></pre>
+    </div>
+  </div>
+
+  <script>
+    /* ============================
+       KERNEL INPUT MODEL v0.3
+       ============================ */
+    const kernel = {
+      input: {
+        up: false, down: false, left: false, right: false,
+        upLeft: false, upRight: false, downLeft: false, downRight: false,
+        tap: false, hold: false, tapTime: 0, holdTime: 0,
+        attackTap: false, attackHold: false, attackHoldTime: 0,
+        guardTap: false, guardHold: false, guardHoldTime: 0,
+        cursor: { x: 0, y: 0, down: false, dragging: false },
+        swipe: null,
+        drag: { dx: 0, dy: 0 }
+      },
+      events: [],
+      logs: []
+    };
+
+    const canvas = document.getElementById("game");
+    const ctx2d = canvas.getContext("2d");
+    const visualStatus = document.getElementById("visualStatus");
+    const compileStatus = document.getElementById("compileStatus");
+    const inputStatus = document.getElementById("inputStatus");
+    const ctxStatus = document.getElementById("ctxStatus");
+    const runtimeLog = document.getElementById("runtimeLog");
+
+    let visualState = {
+      player: { x: 80, y: 80, size: 20, speed: 2.5 },
+      ticks: 0
+    };
+
+    /* ============================
+       CURRENT RUNTIME: v0.3B built-in tick route
+       ============================ */
+    let currentRuntime = {
+      version: "v0.3B",
+      routes: {
+        tick: function(ctx) {
+          const p = ctx.state.player;
+          const input = ctx.input;
+          let dx = 0;
+          let dy = 0;
+
+          if (input.up) dy -= 1;
+          if (input.down) dy += 1;
+          if (input.left) dx -= 1;
+          if (input.right) dx += 1;
+
+          if (dx !== 0 && dy !== 0) {
+            dx *= 0.707;
+            dy *= 0.707;
+          }
+
+          const holdBoost = input.hold ? Math.min(1.7, 1 + input.holdTime / 1800) : 1;
+          p.x += dx * p.speed * holdBoost;
+          p.y += dy * p.speed * holdBoost;
+
+          p.x = Math.max(0, Math.min(ctx.state.world.width - p.size, p.x));
+          p.y = Math.max(0, Math.min(ctx.state.world.height - p.size, p.y));
+
+          ctx.state.world.ticks += 1;
+
+          if (input.attackTap) ctx.emit("attack.tap", { tick: ctx.time.tick });
+          if (input.guardTap) ctx.emit("guard.tap", { tick: ctx.time.tick });
+
+          ctx.log("tick route ran", {
+            route: ctx.meta.routeName,
+            tick: ctx.time.tick,
+            inputHold: input.hold,
+            player: { x: Math.round(p.x), y: Math.round(p.y) }
+          });
+        }
+      }
+    };
+
+    let lastKnownGoodRuntime = currentRuntime;
+
+    /* ============================
+       KERNEL BOUNDARY: makeCtx()
+       ============================ */
+    function makeCtx(routeName, deltaMs) {
+      return {
+        input: kernel.input,
+
+        state: {
+          player: visualState.player,
+          world: {
+            get ticks() { return visualState.ticks; },
+            set ticks(v) { visualState.ticks = v; },
+            width: canvas.width,
+            height: canvas.height
+          }
+        },
+
+        emit: function(eventName, payload) {
+          kernel.events.push({ at: Date.now(), eventName, payload });
+          if (kernel.events.length > 30) kernel.events.shift();
+        },
+
+        log: function(...args) {
+          kernel.logs.push({ at: Date.now(), args });
+          if (kernel.logs.length > 30) kernel.logs.shift();
+          console.log("[CADING]", ...args);
+        },
+
+        time: {
+          tick: visualState.ticks,
+          deltaMs: deltaMs
+        },
+
+        meta: {
+          routeName: routeName,
+          runtimeVersion: currentRuntime ? currentRuntime.version : "none"
+        }
+      };
+    }
+
+    /* ============================
+       TAP / HOLD LOGIC HELPERS
+       ============================ */
+    function markTap(fieldTap, timeField) {
+      kernel.input[fieldTap] = true;
+      kernel.input[timeField] = performance.now();
+    }
+
+    function startHold(fieldHold) {
+      kernel.input[fieldHold] = true;
+    }
+
+    function endHold(fieldHold, holdTimeField) {
+      kernel.input[fieldHold] = false;
+      kernel.input[holdTimeField] = 0;
+    }
+
+    function updateHoldTimes(deltaMs) {
+      if (kernel.input.hold) kernel.input.holdTime += deltaMs;
+      if (kernel.input.attackHold) kernel.input.attackHoldTime += deltaMs;
+      if (kernel.input.guardHold) kernel.input.guardHoldTime += deltaMs;
+    }
+
+    /* ============================
+       INPUT: KEYBOARD
+       ============================ */
+    const keyMap = {
+      ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+      w: "up", s: "down", a: "left", d: "right",
+      q: "upLeft", e: "upRight", z: "downLeft", c: "downRight"
+    };
+
+    document.addEventListener("keydown", e => {
+      const dir = keyMap[e.key];
+      if (dir) {
+        setDirState(dir, true);
+        e.preventDefault();
+      }
+      if (e.key === " ") {
+        if (!kernel.input.attackHold) {
+          markTap("attackTap", "tapTime");
+          startHold("attackHold");
+        }
+        e.preventDefault();
+      }
+      if (e.key === "Shift") {
+        if (!kernel.input.guardHold) {
+          markTap("guardTap", "tapTime");
+          startHold("guardHold");
+        }
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener("keyup", e => {
+      const dir = keyMap[e.key];
+      if (dir) {
+        setDirState(dir, false);
+        e.preventDefault();
+      }
+      if (e.key === " ") {
+        endHold("attackHold", "attackHoldTime");
+        e.preventDefault();
+      }
+      if (e.key === "Shift") {
+        endHold("guardHold", "guardHoldTime");
+        e.preventDefault();
+      }
+    });
+
+    /* ============================
+       INPUT: 8-WAY D-PAD
+       ============================ */
+    const dpad = document.getElementById("dpad");
+
+    function setDirState(dir, isDown) {
+      const inp = kernel.input;
+      const set = (name, val) => { if (name) inp[name] = val; };
+
+      if (!isDown && dir === "center") {
+        ["up","down","left","right","upLeft","upRight","downLeft","downRight"].forEach(k => inp[k] = false);
+        inp.hold = false;
+        inp.holdTime = 0;
+        return;
+      }
+
+      if (dir === "up") set("up", isDown);
+      if (dir === "down") set("down", isDown);
+      if (dir === "left") set("left", isDown);
+      if (dir === "right") set("right", isDown);
+
+      if (dir === "upLeft") { set("upLeft", isDown); set("up", isDown); set("left", isDown); }
+      if (dir === "upRight") { set("upRight", isDown); set("up", isDown); set("right", isDown); }
+      if (dir === "downLeft") { set("downLeft", isDown); set("down", isDown); set("left", isDown); }
+      if (dir === "downRight") { set("downRight", isDown); set("down", isDown); set("right", isDown); }
+
+      if (isDown) {
+        kernel.input.hold = true;
+      } else {
+        const anyDir = ["up","down","left","right","upLeft","upRight","downLeft","downRight"].some(k => kernel.input[k]);
+        if (!anyDir) {
+          kernel.input.hold = false;
+          kernel.input.holdTime = 0;
+        }
+      }
+    }
+
+    function attachDpadEvents(btn) {
+      const dir = btn.dataset.dir;
+      if (!dir) return;
+
+      const down = e => {
+        e.preventDefault();
+        setDirState(dir, true);
+        markTap("tap", "tapTime");
+      };
+      const up = e => {
+        e.preventDefault();
+        setDirState(dir, false);
+      };
+
+      btn.addEventListener("mousedown", down);
+      btn.addEventListener("mouseup", up);
+      btn.addEventListener("mouseleave", up);
+      btn.addEventListener("touchstart", down, { passive: false });
+      btn.addEventListener("touchend", up);
+      btn.addEventListener("touchcancel", up);
+    }
+
+    Array.from(dpad.querySelectorAll(".btn")).forEach(attachDpadEvents);
+
+    /* ============================
+       COMBAT BUTTONS
+       ============================ */
+    function attachCombat(btn, tapField, holdField, holdTimeField) {
+      const down = e => {
+        e.preventDefault();
+        markTap(tapField, "tapTime");
+        startHold(holdField);
+      };
+      const up = e => {
+        e.preventDefault();
+        endHold(holdField, holdTimeField);
+      };
+
+      btn.addEventListener("mousedown", down);
+      btn.addEventListener("mouseup", up);
+      btn.addEventListener("mouseleave", up);
+      btn.addEventListener("touchstart", down, { passive: false });
+      btn.addEventListener("touchend", up);
+      btn.addEventListener("touchcancel", up);
+    }
+
+    attachCombat(document.getElementById("attackBtn"), "attackTap", "attackHold", "attackHoldTime");
+    attachCombat(document.getElementById("guardBtn"), "guardTap", "guardHold", "guardHoldTime");
+
+    /* ============================
+       CURSOR: still basic
+       ============================ */
+    canvas.addEventListener("mousemove", e => {
+      const rect = canvas.getBoundingClientRect();
+      kernel.input.cursor.x = e.clientX - rect.left;
+      kernel.input.cursor.y = e.clientY - rect.top;
+    });
+    canvas.addEventListener("mousedown", () => { kernel.input.cursor.down = true; });
+    canvas.addEventListener("mouseup", () => { kernel.input.cursor.down = false; kernel.input.cursor.dragging = false; });
+    canvas.addEventListener("mouseleave", () => { kernel.input.cursor.down = false; kernel.input.cursor.dragging = false; });
+
+    /* ============================
+       GESTURE AREA: still FUTURE / scaffold
+       ============================ */
+    document.getElementById("gestureArea").addEventListener("touchstart", () => {
+      kernel.input.swipe = null;
+      kernel.input.drag.dx = 0;
+      kernel.input.drag.dy = 0;
+    });
+
+    /* ============================
+       COMPILER: parked in this patch
+       ============================ */
+    document.getElementById("compileBtn").onclick = () => {
+      compileStatus.textContent =
+        "Compiler integration parked. v0.3B is testing ctx + state bridge only. Current runtime: built-in tick route.";
+    };
+
+    /* ============================
+       DRAW
+       ============================ */
+    function visualDraw() {
+      ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+      ctx2d.fillStyle = "#000";
+      ctx2d.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx2d.fillStyle = "red";
+      ctx2d.fillRect(visualState.player.x, visualState.player.y, visualState.player.size, visualState.player.size);
+
+      ctx2d.fillStyle = "white";
+      ctx2d.font = "12px monospace";
+      ctx2d.fillText("Ticks: " + visualState.ticks, 10, 16);
+      ctx2d.fillText("Runtime: " + (currentRuntime ? currentRuntime.version : "none"), 10, 30);
+      ctx2d.fillText("Last good: " + (lastKnownGoodRuntime ? "yes" : "none"), 10, 44);
+      ctx2d.fillText("Route: tick(ctx)", 10, 58);
+    }
+
+    function renderStatus(lastCtx) {
+      inputStatus.textContent =
+        "kernel.input:\n" +
+        JSON.stringify({
+          up: kernel.input.up,
+          down: kernel.input.down,
+          left: kernel.input.left,
+          right: kernel.input.right,
+          upLeft: kernel.input.upLeft,
+          upRight: kernel.input.upRight,
+          downLeft: kernel.input.downLeft,
+          downRight: kernel.input.downRight,
+          tap: kernel.input.tap,
+          holdTime: Math.round(kernel.input.holdTime),
+          attackTap: kernel.input.attackTap,
+          attackHoldTime: Math.round(kernel.input.attackHoldTime),
+          guardTap: kernel.input.guardTap,
+          guardHoldTime: Math.round(kernel.input.guardHoldTime),
+          cursor: kernel.input.cursor,
+          swipe: kernel.input.swipe
+        }, null, 0);
+
+      visualStatus.textContent =
+        "Ticks: " + visualState.ticks +
+        " | Runtime: " + (currentRuntime ? currentRuntime.version : "none") +
+        " | Route: tick(ctx)" +
+        " | Last good: " + (lastKnownGoodRuntime ? "yes" : "none");
+
+      ctxStatus.textContent = JSON.stringify({
+        input: "kernel.input",
+        state: {
+          player: {
+            x: Math.round(visualState.player.x),
+            y: Math.round(visualState.player.y),
+            speed: visualState.player.speed
+          },
+          world: { ticks: visualState.ticks, width: canvas.width, height: canvas.height }
+        },
+        emit: "function(eventName, payload)",
+        log: "function(...args)",
+        time: lastCtx ? lastCtx.time : null,
+        meta: lastCtx ? lastCtx.meta : null
+      }, null, 2);
+
+      runtimeLog.textContent = JSON.stringify({
+        recentEvents: kernel.events.slice(-5),
+        recentLogs: kernel.logs.slice(-5)
+      }, null, 2);
+    }
+
+    /* ============================
+       MAIN LOOP
+       ============================ */
+    let lastTime = performance.now();
+
+    function loop(now) {
+      const deltaMs = now - lastTime;
+      lastTime = now;
+
+      updateHoldTimes(deltaMs);
+
+      const routeName = "tick";
+      const ctx = makeCtx(routeName, deltaMs);
+
+      if (currentRuntime && currentRuntime.routes && currentRuntime.routes[routeName]) {
+        currentRuntime.routes[routeName](ctx);
+      }
+
+      visualDraw();
+      renderStatus(ctx);
+
+      kernel.input.tap = false;
+      kernel.input.attackTap = false;
+      kernel.input.guardTap = false;
+
+      requestAnimationFrame(loop);
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Cading Estate Rebuild OS v0.4 — Source Detail Dock</title><style>
+:root{--bg:#05070b;--fg:#00ff77;--gold:#ffd84d;--red:#ff4d4d;--blue:#5fd8ff}
+*{box-sizing:border-box;min-width:0}html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--fg);font-family:monospace}
+header{position:sticky;top:0;z-index:20;background:#020202;border-bottom:1px solid var(--fg);padding:8px}
+h1{font-size:clamp(14px,4.2vw,18px);line-height:1.15;margin:0;color:var(--gold);overflow-wrap:anywhere}
+h2{font-size:13px;color:var(--gold);margin:8px 0}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.chip{border:1px solid var(--fg);border-radius:999px;padding:3px 7px;background:#000;font-size:11px}.pass{border-color:var(--gold);color:var(--gold)}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}button,select,textarea,input{width:100%;border:1px solid var(--fg);border-radius:9px;background:#000;color:var(--fg);font-family:monospace;padding:9px 7px;margin:3px 0;font-size:12px}
+button.primary{border-color:var(--gold);color:var(--gold)}button.blue{border-color:var(--blue);color:var(--blue)}button.red{border-color:var(--red);color:var(--red)}
+main{padding:8px;max-width:100vw;overflow-x:hidden}.screen{display:none}.screen.on{display:block}.card{border:1px solid var(--fg);border-radius:14px;background:rgba(0,0,0,.42);padding:8px;margin:0 0 8px;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}.tile{border:1px solid var(--fg);border-radius:12px;background:#000;padding:8px}.done{border-color:var(--gold)!important;background:rgba(255,216,77,.08)}
+h3{margin:0 0 5px;color:var(--gold);font-size:12px}.small{font-size:11px;line-height:1.35;opacity:.92}
+pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;background:#000;border:1px solid rgba(0,255,119,.55);border-radius:10px;padding:8px;min-height:80px;max-height:380px;overflow:auto;font-size:11px}
+textarea{min-height:150px;white-space:pre-wrap}
+.tableScroller{width:100%;overflow-x:auto;border:1px solid rgba(0,255,119,.3);border-radius:10px}table{width:100%;min-width:850px;border-collapse:collapse;font-size:11px;background:#000}td,th{border:1px solid rgba(0,255,119,.5);padding:5px;vertical-align:top;overflow-wrap:anywhere}th{color:var(--gold)}
+.stickyActions{position:sticky;bottom:0;z-index:15;background:rgba(2,2,2,.96);border-top:1px solid var(--fg);padding:6px;margin:8px -8px -8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}nav{grid-template-columns:repeat(6,1fr)}}
+</style></head>
+<body>
+<header><h1>Cading Estate Rebuild OS v0.4 — Source Detail Dock</h1><div class="chips">
+<span class="chip" id="status">Status: source-detail candidate</span><span class="chip" id="mappedChip">Mapped: 0/6</span><span class="chip" id="screenChip">ScreenFit: not run</span><span class="chip" id="exportChip">Export: not run</span>
+</div><nav><button onclick="tab('home')">HOME</button><button onclick="tab('dock')">DOCK</button><button onclick="tab('map')">MAP</button><button onclick="tab('check')">CHECK</button><button onclick="tab('export')">EXPORT</button><button class="blue" onclick="screenFit()">SCREEN</button></nav></header>
+<main>
+<section id="home" class="screen on"><div class="card"><h2>Source Detail Dock</h2><pre>OS v0.4 starts the deeper mapping stage.
+
+It does not rebuild everything automatically.
+It creates detail cards for each body:
+
+- identity
+- current proof
+- active lane
+- source/material needed
+- missing fields
+- next execution move
+- freeze condition</pre><div class="stickyActions"><button class="primary" onclick="mapAll()">MAP ALL SOURCES</button><button class="blue" onclick="exportPack()">EXPORT DETAIL PACK</button></div></div></section>
+<section id="dock" class="screen"><div class="card"><h2>Body Source Dock</h2><select id="pick" onchange="loadBody(this.value)"></select><textarea id="sourceBox"></textarea><button class="primary" onclick="mapCurrent()">MAP CURRENT BODY</button></div></section>
+<section id="map" class="screen"><div class="card"><h2>Source Detail Map</h2><div id="mapTable"></div></div></section>
+<section id="check" class="screen"><div class="card"><h2>SelfCheck + ScreenFit</h2><button class="primary" onclick="selfCheck()">RUN SELF CHECK</button><button class="blue" onclick="screenFit()">RUN SCREENFIT</button><pre id="checkOut">Checks not run yet.</pre></div></section>
+<section id="export" class="screen"><div class="card"><h2>Export Source Detail Pack</h2><button class="primary" onclick="exportPack()">EXPORT DETAIL PACK</button><button class="red" onclick="resetAll()">RESET</button><pre id="out">Waiting...</pre></div><div class="card"><h2>TraceBox</h2><pre id="traceOut">[]</pre></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const screens=["home","dock","map","check","export"];
+const bodies=[
+{name:"T-Boys",lane:"PLAYABLE POLISH",proof:"playable/game loop receipts",needed:"latest playable HTML/source + character notes",missing:"feel tuning, screen proof, level-clear receipt",next:"map controls + polish route"},
+{name:"Core Clash",lane:"PLAYABLE POLISH",proof:"Training Yard / Echo chapter receipts",needed:"latest arena/chapter source",missing:"chapter route proof, aim comfort pass",next:"map round/chapter state"},
+{name:"JickMa Builder",lane:"SOURCE REBUILD",proof:"standalone builder Ding",needed:"builder HTML/source body",missing:"output integrity route, generated-body audit",next:"map builder input/output"},
+{name:"CadenVM",lane:"RUNTIME SPINE",proof:"execution/savepack receipts",needed:"latest VM source + syntax examples",missing:"runtime spine export, language-body link",next:"map compile/run/save/export"},
+{name:"JMStudios",lane:"LAUNCHER CONSOLIDATION",proof:"launcher/matrix Android receipts",needed:"latest launcher source/register",missing:"all-room route confidence, hub register export",next:"map rooms + open-first routes"},
+{name:"TraceBox / Source-Body Auditor",lane:"PROOF / AUDIT DOCK",proof:"TraceBox concept/proof receipts",needed:"auditor/source check body",missing:"audit output export, freeze receipt model",next:"map checks + receipt schema"}
+];
+let Detail=[],TraceBox=[],Self=null,Screen=null,Pack=null;
+function tab(id){screens.forEach(s=>$(s).classList.toggle("on",s===id));status.textContent="Status: screen "+id;setTimeout(screenFit,40)}
+function trace(phase,data){TraceBox.push({time:new Date().toISOString(),phase,...data});traceOut.textContent=JSON.stringify(TraceBox,null,2)}
+function init(){pick.innerHTML=bodies.map((b,i)=>`<option value="${i}">${b.name}</option>`).join("");loadBody(0);renderMap();setTimeout(screenFit,100)}
+function loadBody(i){const b=bodies[Number(i)||0];sourceBox.value=`body: ${b.name}\nlane: ${b.lane}\nproof: ${b.proof}\nneeded: ${b.needed}\nmissing: ${b.missing}\nnext: ${b.next}`;status.textContent="Status: loaded "+b.name}
+function parse(txt){let o={};txt.split("\n").map(x=>x.trim()).filter(Boolean).forEach(line=>{let i=line.indexOf(":");if(i>-1)o[line.slice(0,i).trim()]=line.slice(i+1).trim()});return o}
+function mapCurrent(){const o=parse(sourceBox.value);const card={body:o.body||"Unnamed",lane:o.lane||"UNKNOWN",proof:o.proof||"not supplied",needed:o.needed||"source needed",missing:o.missing||"unknown",next:o.next||"inspect",freezeCondition:"proof receipt + ScreenFit + export pack",status:"SOURCE_DETAIL_MAPPED",updatedAt:new Date().toISOString()};const idx=Detail.findIndex(x=>x.body===card.body);if(idx>-1)Detail[idx]=card;else Detail.push(card);trace("source-detail-mapped",card);renderMap();tab("map")}
+function mapAll(){Detail=[];bodies.forEach((b,i)=>{loadBody(i);mapCurrent()});status.textContent="Status: all sources mapped"}
+function renderMap(){mappedChip.textContent="Mapped: "+Detail.length+"/6";if(!Detail.length){mapTable.innerHTML="<pre>No source detail cards mapped yet.</pre>";return}mapTable.innerHTML='<div class="tableScroller"><table><thead><tr><th>Body</th><th>Lane</th><th>Proof</th><th>Needed</th><th>Missing</th><th>Next</th><th>Freeze</th></tr></thead><tbody>'+Detail.map(d=>`<tr><td>${d.body}</td><td>${d.lane}</td><td>${d.proof}</td><td>${d.needed}</td><td>${d.missing}</td><td>${d.next}</td><td>${d.freezeCondition}</td></tr>`).join("")+'</tbody></table></div>'}
+function selfCheck(){const checks=[["six detail cards mapped",Detail.length===6],["each has needed source",Detail.every(d=>!!d.needed)],["each has missing field note",Detail.every(d=>!!d.missing)],["each has next move",Detail.every(d=>!!d.next)],["TraceBox active",TraceBox.length>0]];const fail=checks.filter(x=>!x[1]);const st=fail.length?"FAIL":"PASS";Self={time:new Date().toISOString(),status:st,checks};checkOut.textContent="SELFCHECK "+st+"\n\n"+checks.map(x=>(x[1]?"PASS: ":"FAIL: ")+x[0]).join("\n");trace("selfcheck-"+st.toLowerCase(),{failed:fail.length});return Self}
+function screenFit(){const viewport=innerWidth,docW=document.documentElement.scrollWidth,bad=[...document.querySelectorAll("button,select,textarea")].filter(el=>el.getBoundingClientRect().width>viewport+2);const st=(docW<=viewport+2&&bad.length===0)?"PASS":"FAIL";Screen={time:new Date().toISOString(),status:st,viewport,documentWidth:docW,badControls:bad.length};screenChip.textContent="ScreenFit: "+st;screenChip.className="chip "+(st==="PASS"?"pass":"");trace("screenfit-"+st.toLowerCase(),Screen);return Screen}
+function exportPack(){if(Detail.length<6)mapAll();if(!Self)selfCheck();if(!Screen)screenFit();Pack={exportedAt:new Date().toISOString(),version:"Cading-Estate-Rebuild-OS-v0.4-Source-Detail-Dock",claim:"First-batch bodies have source-detail cards for deeper rebuild mapping.",boundary:"Detail mapping only; not full rebuild automation.",Detail,SelfCheck:Self,ScreenFit:Screen,TraceBox};out.textContent="EXPORT OS v0.4 SOURCE DETAIL PACK\n"+JSON.stringify(Pack,null,2);exportChip.textContent="Export: ready";exportChip.className="chip pass";trace("export-source-detail-pack",{count:Detail.length});tab("export")}
+function resetAll(){Detail=[];TraceBox=[];Self=null;Screen=null;Pack=null;out.textContent="Waiting...";traceOut.textContent="[]";checkOut.textContent="Checks not run yet.";renderMap();status.textContent="Status: reset"}
+init();
+</script>
+</body></html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Cading Estate Rebuild OS v0.5 — Rebuild Execution Pack Builder</title><style>
+:root{--bg:#05070b;--fg:#00ff77;--gold:#ffd84d;--red:#ff4d4d;--blue:#5fd8ff}
+*{box-sizing:border-box;min-width:0}html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--fg);font-family:monospace}
+header{position:sticky;top:0;z-index:20;background:#020202;border-bottom:1px solid var(--fg);padding:8px}
+h1{font-size:clamp(14px,4.2vw,18px);line-height:1.15;margin:0;color:var(--gold);overflow-wrap:anywhere}
+h2{font-size:13px;color:var(--gold);margin:8px 0}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.chip{border:1px solid var(--fg);border-radius:999px;padding:3px 7px;background:#000;font-size:11px}.pass{border-color:var(--gold);color:var(--gold)}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}button,select,textarea,input{width:100%;border:1px solid var(--fg);border-radius:9px;background:#000;color:var(--fg);font-family:monospace;padding:9px 7px;margin:3px 0;font-size:12px}
+button.primary{border-color:var(--gold);color:var(--gold)}button.blue{border-color:var(--blue);color:var(--blue)}button.red{border-color:var(--red);color:var(--red)}
+main{padding:8px;max-width:100vw;overflow-x:hidden}.screen{display:none}.screen.on{display:block}.card{border:1px solid var(--fg);border-radius:14px;background:rgba(0,0,0,.42);padding:8px;margin:0 0 8px;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}.tile{border:1px solid var(--fg);border-radius:12px;background:#000;padding:8px}.done{border-color:var(--gold)!important;background:rgba(255,216,77,.08)}
+h3{margin:0 0 5px;color:var(--gold);font-size:12px}.small{font-size:11px;line-height:1.35;opacity:.92}
+pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;background:#000;border:1px solid rgba(0,255,119,.55);border-radius:10px;padding:8px;min-height:80px;max-height:380px;overflow:auto;font-size:11px}
+textarea{min-height:150px;white-space:pre-wrap}
+.tableScroller{width:100%;overflow-x:auto;border:1px solid rgba(0,255,119,.3);border-radius:10px}table{width:100%;min-width:850px;border-collapse:collapse;font-size:11px;background:#000}td,th{border:1px solid rgba(0,255,119,.5);padding:5px;vertical-align:top;overflow-wrap:anywhere}th{color:var(--gold)}
+.stickyActions{position:sticky;bottom:0;z-index:15;background:rgba(2,2,2,.96);border-top:1px solid var(--fg);padding:6px;margin:8px -8px -8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}nav{grid-template-columns:repeat(6,1fr)}}
+</style></head>
+<body>
+<header><h1>Cading Estate Rebuild OS v0.5 — Rebuild Execution Pack Builder</h1><div class="chips">
+<span class="chip" id="status">Status: execution-pack candidate</span><span class="chip" id="packChip">Packs: 0/6</span><span class="chip" id="screenChip">ScreenFit: not run</span><span class="chip" id="exportChip">Export: not run</span>
+</div><nav><button onclick="tab('home')">HOME</button><button onclick="tab('packs')">PACKS</button><button onclick="tab('queue')">QUEUE</button><button onclick="tab('check')">CHECK</button><button onclick="tab('export')">EXPORT</button><button class="blue" onclick="screenFit()">SCREEN</button></nav></header>
+<main>
+<section id="home" class="screen on"><div class="card"><h2>Execution Pack Builder</h2><pre>OS v0.5 converts source-detail cards into rebuild execution packs.
+
+Each pack carries:
+- body
+- lane
+- execution route
+- proof target
+- freeze rule
+- export files needed
+- next operator action
+
+This is still push-ready candidate work, not final rebuilt products.</pre><div class="stickyActions"><button class="primary" onclick="buildPacks()">BUILD EXECUTION PACKS</button><button class="blue" onclick="exportPack()">EXPORT EXECUTION PACKS</button></div></div></section>
+<section id="packs" class="screen"><div class="card"><h2>Execution Packs</h2><div class="grid" id="packGrid"></div><button class="primary" onclick="buildPacks()">BUILD PACKS</button></div></section>
+<section id="queue" class="screen"><div class="card"><h2>Execution Queue</h2><div id="queueTable"></div></div></section>
+<section id="check" class="screen"><div class="card"><h2>SelfCheck + ScreenFit</h2><button class="primary" onclick="selfCheck()">RUN SELF CHECK</button><button class="blue" onclick="screenFit()">RUN SCREENFIT</button><pre id="checkOut">Checks not run yet.</pre></div></section>
+<section id="export" class="screen"><div class="card"><h2>Export Execution Pack</h2><button class="primary" onclick="exportPack()">EXPORT EXECUTION PACKS</button><button class="red" onclick="resetAll()">RESET</button><pre id="out">Waiting...</pre></div><div class="card"><h2>TraceBox</h2><pre id="traceOut">[]</pre></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const screens=["home","packs","queue","check","export"];
+const seeds=[
+["T-Boys","PLAYABLE POLISH","playable-touch-pass","playable screenshot + level Ding","open-first HTML + zionfolder"],
+["Core Clash","PLAYABLE POLISH","arena-chapter-pass","round/chapter clear receipt","open-first HTML + zionfolder"],
+["JickMa Builder","SOURCE REBUILD","builder-output-pass","generated standalone body opens","builder source + generated pack"],
+["CadenVM","RUNTIME SPINE","runtime-save-export-pass","execute/save/export receipt","VM source + savepack"],
+["JMStudios","LAUNCHER CONSOLIDATION","launcher-matrix-pass","rooms/open-first matrix receipt","launcher HTML + register"],
+["TraceBox / Source-Body Auditor","PROOF / AUDIT DOCK","audit-export-pass","audit complete export receipt","auditor HTML + audit pack"]
+];
+let Packs=[],TraceBox=[],Self=null,Screen=null,Export=null;
+function tab(id){screens.forEach(s=>$(s).classList.toggle("on",s===id));status.textContent="Status: screen "+id;setTimeout(screenFit,40)}
+function trace(phase,data){TraceBox.push({time:new Date().toISOString(),phase,...data});traceOut.textContent=JSON.stringify(TraceBox,null,2)}
+function buildPacks(){Packs=seeds.map(s=>({body:s[0],lane:s[1],executionRoute:s[2],proofTarget:s[3],filesNeeded:s[4],freezeRule:"only freeze after proof receipt + ScreenFit + export",operatorAction:"run body-specific pass then attach receipt",status:"EXECUTION_PACK_READY"}));renderPacks();renderQueue();trace("execution-packs-built",{count:Packs.length});status.textContent="Status: execution packs built"}
+function renderPacks(){packGrid.innerHTML=(Packs.length?Packs:seeds.map(s=>({body:s[0],lane:s[1],executionRoute:s[2],proofTarget:s[3],status:"pending"}))).map(p=>`<div class="tile ${p.status==='EXECUTION_PACK_READY'?'done':''}"><h3>${p.body}</h3><div>${p.lane}</div><div class="small">Route: ${p.executionRoute}</div><div class="small">Proof: ${p.proofTarget}</div><br>${p.status}</div>`).join("");packChip.textContent="Packs: "+Packs.length+"/6"}
+function renderQueue(){if(!Packs.length){queueTable.innerHTML="<pre>No execution packs built yet.</pre>";return}queueTable.innerHTML='<div class="tableScroller"><table><thead><tr><th>Body</th><th>Lane</th><th>Execution Route</th><th>Proof Target</th><th>Files Needed</th><th>Freeze Rule</th><th>Action</th></tr></thead><tbody>'+Packs.map(p=>`<tr><td>${p.body}</td><td>${p.lane}</td><td>${p.executionRoute}</td><td>${p.proofTarget}</td><td>${p.filesNeeded}</td><td>${p.freezeRule}</td><td>${p.operatorAction}</td></tr>`).join("")+'</tbody></table></div>'}
+function selfCheck(){const checks=[["six execution packs",Packs.length===6],["each has proof target",Packs.every(p=>!!p.proofTarget)],["each has freeze rule",Packs.every(p=>!!p.freezeRule)],["each has files needed",Packs.every(p=>!!p.filesNeeded)],["TraceBox active",TraceBox.length>0]];const fail=checks.filter(x=>!x[1]);const st=fail.length?"FAIL":"PASS";Self={time:new Date().toISOString(),status:st,checks};checkOut.textContent="SELFCHECK "+st+"\n\n"+checks.map(x=>(x[1]?"PASS: ":"FAIL: ")+x[0]).join("\n");trace("selfcheck-"+st.toLowerCase(),{failed:fail.length});return Self}
+function screenFit(){const viewport=innerWidth,docW=document.documentElement.scrollWidth,bad=[...document.querySelectorAll("button")].filter(el=>el.getBoundingClientRect().width>viewport+2);const st=(docW<=viewport+2&&bad.length===0)?"PASS":"FAIL";Screen={time:new Date().toISOString(),status:st,viewport,documentWidth:docW,badControls:bad.length};screenChip.textContent="ScreenFit: "+st;screenChip.className="chip "+(st==="PASS"?"pass":"");trace("screenfit-"+st.toLowerCase(),Screen);return Screen}
+function exportPack(){if(!Packs.length)buildPacks();if(!Self)selfCheck();if(!Screen)screenFit();Export={exportedAt:new Date().toISOString(),version:"Cading-Estate-Rebuild-OS-v0.5-Rebuild-Execution-Pack-Builder",claim:"First-batch bodies now have execution packs for proof/freeze/export passes.",boundary:"Execution pack builder only; actual rebuild freezes require future receipts.",Packs,SelfCheck:Self,ScreenFit:Screen,TraceBox};out.textContent="EXPORT OS v0.5 REBUILD EXECUTION PACKS\n"+JSON.stringify(Export,null,2);exportChip.textContent="Export: ready";exportChip.className="chip pass";trace("export-execution-packs",{count:Packs.length});tab("export")}
+function resetAll(){Packs=[];TraceBox=[];Self=null;Screen=null;Export=null;out.textContent="Waiting...";traceOut.textContent="[]";checkOut.textContent="Checks not run yet.";renderPacks();renderQueue();status.textContent="Status: reset"}
+renderPacks();renderQueue();setTimeout(screenFit,100);
+</script>
+</body></html>

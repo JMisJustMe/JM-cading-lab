@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Cading Game Example 002BBA — Android Button Input Patch</title>
+<style>
+:root{--bg:#07090f;--p:#101827;--p2:#172033;--t:#ecf7ff;--m:#9fb3c8;--l:rgba(255,255,255,.16);--c:#8ff7ff;--g:#a7ff83;--r:#ff6b6b;--y:#ffd166;--v:#d7a7ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 18% 7%,rgba(143,247,255,.14),transparent 30%),radial-gradient(circle at 90% 88%,rgba(167,255,131,.08),transparent 26%),var(--bg);color:var(--t);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{padding:14px 16px 12px;border-bottom:1px solid var(--l);background:rgba(7,9,15,.9);position:sticky;top:0;z-index:3}
+h1{margin:0;font-size:clamp(20px,5vw,34px);letter-spacing:-.04em;line-height:1.1}.sub{margin-top:6px;color:var(--m);font-size:13px;line-height:1.35}
+main{width:min(1280px,100%);margin:0 auto;padding:10px;display:grid;grid-template-columns:1.05fr .95fr;gap:10px}@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:rgba(16,24,39,.86);border:1px solid var(--l);border-radius:20px;overflow:hidden;box-shadow:0 16px 55px rgba(0,0,0,.35)}
+h2{margin:0;padding:12px 12px 0;font-size:16px}.inner{padding:12px}
+canvas{width:100%;display:block;border-radius:16px;border:1px solid var(--l);background:#08101a}
+.controls{pointer-events:auto;position:relative;z-index:20;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}@media(max-width:650px){.controls{grid-template-columns:repeat(3,minmax(0,1fr))}}
+button{pointer-events:auto;border:1px solid var(--l);background:var(--p2);color:var(--t);padding:10px 9px;border-radius:13px;font-weight:850;touch-action:manipulation;user-select:none;position:relative;z-index:2}.primary{color:var(--c);border-color:rgba(143,247,255,.65)}.danger{border-color:rgba(255,107,107,.62)}.good{border-color:rgba(167,255,131,.62)}.warn{border-color:rgba(255,209,102,.7)}.purple{border-color:rgba(215,167,255,.75)}
+.status{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}@media(max-width:650px){.status{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pill{border:1px solid var(--l);background:rgba(255,255,255,.045);border-radius:14px;padding:9px}.pill b{display:block;color:var(--m);font-size:11px;margin-bottom:3px}.pill span{display:block;font-weight:900;overflow-wrap:anywhere}
+textarea,pre{width:100%;min-height:260px;border-radius:16px;border:1px solid var(--l);background:rgba(0,0,0,.28);color:var(--t);padding:12px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.42;white-space:pre-wrap}textarea{min-height:360px;resize:vertical}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 0}.tab.active{color:var(--c);border-color:rgba(143,247,255,.8)}
+.receipt{border-left:3px solid var(--c);padding:7px 8px;margin:0 0 8px;background:rgba(143,247,255,.055);border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.38}.receipt.bugg,.receipt.error{border-left-color:var(--r)}.receipt.confirm,.receipt.valid,.receipt.goal{border-left-color:var(--g)}.receipt.route,.receipt.warn{border-left-color:var(--y)}.receipt.nota,.receipt.void{border-left-color:var(--v)}
+.small{color:var(--m);font-size:12px;line-height:1.4}
+</style>
+</head>
+<body>
+<header>
+<h1>Cading Game Example 002BBA — Android Button Input Patch</h1>
+<div class="sub">Same JM / EN / G grid, patched with direct inline controls, document delegation, pointer/touch/click fallback, and visible Last Input receipt.</div>
+</header>
+<main>
+<section class="card"><h2>Playable grid proof</h2><div class="inner">
+<canvas id="game" width="720" height="720"></canvas>
+<div class="controls">
+<button id="upBtn" data-action="input.up" onclick="return CadingDirectInput(\'input.up\',event)" ontouchend="return CadingDirectInput(\'input.up\',event)" class="primary">↑ Up</button>
+<button id="leftBtn" data-action="input.left" onclick="return CadingDirectInput(\'input.left\',event)" ontouchend="return CadingDirectInput(\'input.left\',event)" class="primary">← Left</button>
+<button id="rightBtn" data-action="input.right" onclick="return CadingDirectInput(\'input.right\',event)" ontouchend="return CadingDirectInput(\'input.right\',event)" class="primary">Right →</button>
+<button id="downBtn" data-action="input.down" onclick="return CadingDirectInput(\'input.down\',event)" ontouchend="return CadingDirectInput(\'input.down\',event)" class="primary">Down ↓</button>
+<button id="tickBtn" data-action="input.tickEnemy" onclick="return CadingDirectInput(\'input.tickEnemy\',event)" ontouchend="return CadingDirectInput(\'input.tickEnemy\',event)" class="purple">Enemy Tick</button>
+<button id="voidBtn" data-action="input.none" onclick="return CadingDirectInput(\'input.none\',event)" ontouchend="return CadingDirectInput(\'input.none\',event)" class="warn">Ø None</button>
+<button id="unknownBtn" data-action="input.fire" onclick="return CadingDirectInput(\'input.fire\',event)" ontouchend="return CadingDirectInput(\'input.fire\',event)" class="warn">NOTA</button>
+<button id="forceBtn" data-action="force.enemy" onclick="return CadingDirectInput(\'force.enemy\',event)" ontouchend="return CadingDirectInput(\'force.enemy\',event)" class="danger">Force HitEnemy</button>
+<button id="goalBtn" data-action="force.goal" onclick="return CadingDirectInput(\'force.goal\',event)" ontouchend="return CadingDirectInput(\'force.goal\',event)" class="good">Force Goal</button>
+<button id="recompileBtn" data-action="system.recompile" onclick="return CadingDirectInput(\'system.recompile\',event)" ontouchend="return CadingDirectInput(\'system.recompile\',event)">Recompile</button>
+<button id="exportBtn" data-action="system.export" onclick="return CadingDirectInput(\'system.export\',event)" ontouchend="return CadingDirectInput(\'system.export\',event)" class="good">Export</button>
+</div>
+<div class="status">
+<div class="pill"><b>Runtime</b><span id="runtimeStatus">BOOT</span></div>
+<div class="pill"><b>Validation</b><span id="validStatus">—</span></div>
+<div class="pill"><b>JM</b><span id="playerStatus">—</span></div>
+<div class="pill"><b>EN</b><span id="enemyStatus">—</span></div>
+<div class="pill"><b>Score</b><span id="scoreStatus">0</span></div>
+<div class="pill"><b>Last Input</b><span id="lastInputStatus">BOOT</span></div>
+</div>
+<p class="small">Keys: arrows move JM, T ticks EN, N sends Ø, F sends unknown NOTA. Move onto G to score. Move/tick into EN to reset.</p>
+
+<p class="small" id="directPatchNote" style="border:1px solid rgba(167,255,131,.35);border-radius:12px;padding:8px;background:rgba(167,255,131,.06)">
+002B direct-control patch active: every button has inline input, document-level fallback, and Last Input proof.
+</p>
+
+</div></section>
+
+<section class="card"><h2>Trace receipts</h2><div class="inner" id="tracePanel"></div></section>
+
+<section class="card"><h2>game.cading</h2><div class="inner"><textarea id="sourceEditor" spellcheck="false"></textarea></div></section>
+
+<section class="card"><h2>Compiler / runtime output</h2>
+<div class="tabs">
+<button class="tab active" data-tab="receipt">Receipt</button>
+<button class="tab" data-tab="diagnostics">Diagnostics</button>
+<button class="tab" data-tab="ir">IR</button>
+<button class="tab" data-tab="tokens">Tokens</button>
+<button class="tab" data-tab="runtime">Runtime</button>
+<button class="tab" data-tab="map">Route Map</button>
+</div>
+<div class="inner"><pre id="outputPanel"></pre></div>
+</section>
+</main>
+
+<script>
+"use strict";
+const DEFAULT_CADING_SOURCE = "entity World:\n    width: 10\n    height: 10\n    spawnPlayer: (1, 1)\n    spawnEnemy: (8, 1)\n    goalPos: (5, 5)\n.\n\nentity Player:\n    pos: (1, 1)\n    score: 0\n.\n\nentity Enemy:\n    pos: (8, 1)\n.\n\nBUGG HitEnemy:\n    message: \"Player hit enemy\"\n    recover: ResetPlayer\n.\n\nBUGG HitWall:\n    message: \"Player hit wall\"\n    recover: ResetPlayer\n.\n\nBUGG ReachedGoal:\n    message: \"Player reached goal\"\n    recover: AwardScore\n.\n\nroute ResetPlayer:\n    Player.pos = World.spawnPlayer\n    trace \"Reset player\", Player.pos\n    \u2713\n.\n\nroute AwardScore:\n    Player.score += 1,\n    trace \"Score up\", Player.score\n    Player.pos = World.spawnPlayer\n    Enemy.pos = World.spawnEnemy\n    \u2713\n.\n\nroute MoveLeft:\n    pre Player.pos.x > 0\n    Player.pos.x -= 1,\n    trace \"move left\", Player.pos\n    post Player.pos.x >= 0\n    bugg HitWall\n.\n\nroute MoveRight:\n    pre Player.pos.x < World.width\n    Player.pos.x += 1,\n    trace \"move right\", Player.pos\n    post Player.pos.x <= World.width\n    bugg HitWall\n.\n\nroute MoveUp:\n    pre Player.pos.y > 0\n    Player.pos.y -= 1,\n    trace \"move up\", Player.pos\n    post Player.pos.y >= 0\n    bugg HitWall\n.\n\nroute MoveDown:\n    pre Player.pos.y < World.height\n    Player.pos.y += 1,\n    trace \"move down\", Player.pos\n    post Player.pos.y <= World.height\n    bugg HitWall\n.\n\nroute TickEnemy:\n    Enemy.pos.x -= 1,\n    trace \"enemy tick\", Enemy.pos\n.\n\nroute CheckCollisions:\n    pre Player.pos Speakuals Enemy.pos\n    bugg HitEnemy\n    post NOTA\n.\n\nroute CheckGoal:\n    pre Player.pos Speakuals World.goalPos\n    bugg ReachedGoal\n    post NOTA\n.\n\nNOTA:\n    trace \"No route matched\", event.name\n.\n\non input.left:\n    route MoveLeft\n.\n\non input.right:\n    route MoveRight\n.\n\non input.up:\n    route MoveUp\n.\n\non input.down:\n    route MoveDown\n.\n\non input.tickEnemy:\n    route TickEnemy\n.\n\non input.none:\n    route \u00d8\n.\n";
+const DIAGNOSTICS = {"errors": {"CADINGE001UNKNOWNBLOCK": "Block header not recognised", "CADINGE002MISSINGFULLSTOP": "Block missing terminating fullstop", "CADINGE003UNKNOWNROUTE": "Event points to unknown route", "CADINGE004UNKNOWNENTITYPATH": "Path starts with unknown entity", "CADINGE005BUGGRECOVERMISSING": "BUGG has no valid recovery route", "CADINGE006INLINEBUGGUNKNOWN": "Inline bugg refers to unknown BUGG", "CADINGE007PREPOSTUNRESOLVEDPATH": "Pre/post references invalid path", "CADINGE008EVENTROUTEVOIDWITHOUTNOTA": "\u00d8 used without NOTA fallback", "CADINGE009EMPTYROUTEBODY": "Route has no body operations, confirmation, or check BUGG"}, "warnings": {"CADINGW001ROUTENOPOST": "Route missing post condition", "CADINGW002ENTITYUNUSED": "Entity defined but unused", "CADINGW003BUGGNEVERTRIGGERED": "BUGG defined but never referenced"}, "info": {"CADINGI001VOIDROUTEUSED": "\u00d8 route used", "CADINGI002NOTAFALLBACKUSED": "NOTA fallback triggered", "CADINGI003ROUTECONFIRMUSED": "\u2713 confirmation used", "CADINGI004GAMEREADYROUTEPRESENT": "Game-ready route set detected", "CADINGI005CHECKROUTEUSED": "Check route used: pre + BUGG + post NOTA"}};
+
+const CadingDiagnostics = {
+  make(level, code, message, extra={}) { return Object.assign({level, code, message, line: extra.line || null}, extra); },
+  error(code, message, extra={}) { return this.make("error", code, message, extra); },
+  warning(code, message, extra={}) { return this.make("warning", code, message, extra); },
+  info(code, message, extra={}) { return this.make("info", code, message, extra); }
+};
+
+function clone(v){ return v && typeof v === "object" ? JSON.parse(JSON.stringify(v)) : v; }
+function esc(s){ return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+
+const CadingTokenizer = {
+  KEYWORDS: new Set(["entity","route","on","pre","post","trace","BUGG","bugg","NOTA"]),
+  OPERATORS: ["Speakuals","32÷×&","+=","-=",">=","<=","==","=",">","<","+","-","*","/"],
+  MARKS: new Set([".",",",":","(",")","✓","Ø"]),
+  tokenize(source){
+    const tokens=[], diagnostics=[];
+    const lines=source.replace(/\r/g,"").split("\n");
+    for(let lineIndex=0; lineIndex<lines.length; lineIndex++){
+      const line=lines[lineIndex]; let i=0;
+      while(i<line.length){
+        const ch=line[i], column=i+1;
+        if(/\s/.test(ch)){i++; continue;}
+        if(ch === '"'){
+          let j=i+1; while(j<line.length && line[j] !== '"') j++;
+          if(j>=line.length){ diagnostics.push(CadingDiagnostics.error("CADINGE012UNCLOSEDSTRING","Unclosed string",{line:lineIndex+1,column})); break; }
+          tokens.push({type:"string",value:line.slice(i+1,j),raw:line.slice(i,j+1),line:lineIndex+1,column}); i=j+1; continue;
+        }
+        const op=this.OPERATORS.find(op=>line.slice(i,i+op.length)===op);
+        if(op){tokens.push({type:"operator",value:op,line:lineIndex+1,column}); i+=op.length; continue;}
+        if(this.MARKS.has(ch)){tokens.push({type:"mark",value:ch,line:lineIndex+1,column}); i++; continue;}
+        const num=line.slice(i).match(/^-?\d+(?:\.\d+)?/);
+        if(num){tokens.push({type:"number",value:Number(num[0]),raw:num[0],line:lineIndex+1,column}); i+=num[0].length; continue;}
+        const word=line.slice(i).match(/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)*/);
+        if(word){
+          const raw=word[0];
+          tokens.push({type:this.KEYWORDS.has(raw)?"keyword":raw.includes(".")?"path":"identifier",value:raw,line:lineIndex+1,column});
+          i+=raw.length; continue;
+        }
+        diagnostics.push(CadingDiagnostics.error("CADINGE013UNKNOWNTOKEN","Unknown token: "+ch,{line:lineIndex+1,column}));
+        i++;
+      }
+    }
+    return {tokens,diagnostics};
+  }
+};
+
+const CadingBlockParser = {
+  parseBlocks(source){
+    const blocks=[], diagnostics=[]; let current=[], startLine=1;
+    const lines=source.replace(/\r/g,"").split("\n");
+    for(let i=0;i<lines.length;i++){
+      const raw=lines[i], trimmed=raw.trim();
+      if(!trimmed) continue;
+      if(!current.length) startLine=i+1;
+      if(trimmed === "."){ if(current.length) blocks.push({lines:current,startLine,endLine:i+1}); current=[]; }
+      else current.push({text:raw.trimEnd(),line:i+1});
+    }
+    if(current.length){ blocks.push({lines:current,startLine,endLine:lines.length,missingFullstop:true}); diagnostics.push(CadingDiagnostics.error("CADINGE002MISSINGFULLSTOP","Block missing terminating .",{line:startLine})); }
+    for(const block of blocks){
+      const head=block.lines[0]?.text.trim() || "";
+      if(!/^(entity|route|BUGG|on|NOTA)\b/.test(head)) diagnostics.push(CadingDiagnostics.error("CADINGE001UNKNOWNBLOCK","Unknown block header: "+head,{line:block.startLine}));
+    }
+    return {blocks,diagnostics};
+  }
+};
+
+const CadingIRBuilder = {
+  buildIR(blocks){
+    const ir={kernel:{name:"Cading Game Example 002BB",route:"JM / EN / G Grid Ding"},entities:{},bugg:{},routes:{},events:{},nota:null,marks:{".":"fullstopped",",":"comma travel","✓":"Ding","Ø":"safe no-route","NOTA":"fallback"}};
+    const diagnostics=[]; const seen={entity:new Set(),route:new Set(),bugg:new Set(),event:new Set()};
+    for(const block of blocks){
+      const head=block.lines[0].text.trim();
+      if(head.startsWith("entity ")) this.parseEntity(block,ir,diagnostics,seen);
+      else if(head.startsWith("BUGG ")) this.parseBUGG(block,ir,diagnostics,seen);
+      else if(head.startsWith("route ")) this.parseRoute(block,ir,diagnostics,seen);
+      else if(head.startsWith("on ")) this.parseEvent(block,ir,diagnostics,seen);
+      else if(head.startsWith("NOTA")) this.parseNOTA(block,ir,diagnostics);
+    }
+    return {ir,diagnostics};
+  },
+  typed(raw){
+    raw=raw.trim();
+    const tup=raw.match(/^\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)$/);
+    if(tup) return {type:"tuple",value:{x:Number(tup[1]),y:Number(tup[2])}};
+    if(/^-?\d+(\.\d+)?$/.test(raw)) return {type:"number",value:Number(raw)};
+    if(/^".*"$/.test(raw)) return {type:"string",value:raw.slice(1,-1)};
+    if(raw==="NOTA") return {type:"nota",value:"NOTA"};
+    if(raw==="Ø") return {type:"void",value:null,mark:"Ø"};
+    return {type:"ref",value:raw};
+  },
+  parseEntity(block,ir,diagnostics,seen){
+    const name=block.lines[0].text.trim().match(/^entity\s+(\w+)\s*:/)?.[1];
+    if(!name) return diagnostics.push(CadingDiagnostics.error("CADINGE001UNKNOWNBLOCK","Invalid entity header",{line:block.startLine}));
+    if(seen.entity.has(name)) diagnostics.push(CadingDiagnostics.error("CADINGE011DUPLICATENAME","Duplicate entity "+name,{line:block.startLine,entity:name}));
+    seen.entity.add(name); ir.entities[name]={};
+    for(const item of block.lines.slice(1)){
+      const m=item.text.trim().match(/^(\w+)\s*:\s*(.+)$/);
+      if(m) ir.entities[name][m[1]]=this.typed(m[2]);
+      else diagnostics.push(CadingDiagnostics.error("CADINGE014INVALIDENTITYFIELD","Invalid entity field",{line:item.line,entity:name}));
+    }
+  },
+  parseBUGG(block,ir,diagnostics,seen){
+    const name=block.lines[0].text.trim().match(/^BUGG\s+(\w+)\s*:/)?.[1];
+    if(!name) return diagnostics.push(CadingDiagnostics.error("CADINGE001UNKNOWNBLOCK","Invalid BUGG header",{line:block.startLine}));
+    if(seen.bugg.has(name)) diagnostics.push(CadingDiagnostics.error("CADINGE011DUPLICATENAME","Duplicate BUGG "+name,{line:block.startLine,bugg:name}));
+    seen.bugg.add(name); ir.bugg[name]={message:"",recover:""};
+    for(const item of block.lines.slice(1)){
+      const t=item.text.trim();
+      if(t.startsWith("message:")) ir.bugg[name].message=t.slice(8).trim().replace(/^"|"$/g,"");
+      else if(t.startsWith("recover:")) ir.bugg[name].recover=t.slice(8).trim();
+      else diagnostics.push(CadingDiagnostics.error("CADINGE015INVALIDBUGGLINE","Invalid BUGG line",{line:item.line,bugg:name}));
+    }
+  },
+  parseRoute(block,ir,diagnostics,seen){
+    const name=block.lines[0].text.trim().match(/^route\s+(\w+)\s*:/)?.[1];
+    if(!name) return diagnostics.push(CadingDiagnostics.error("CADINGE001UNKNOWNBLOCK","Invalid route header",{line:block.startLine}));
+    if(seen.route.has(name)) diagnostics.push(CadingDiagnostics.error("CADINGE011DUPLICATENAME","Duplicate route "+name,{line:block.startLine,route:name}));
+    seen.route.add(name);
+    const route={name,pre:[],post:[],body:[],bugg:null,confirm:false,sourceLine:block.startLine,checkRoute:false};
+    for(const item of block.lines.slice(1)){
+      let t=item.text.trim().replace(/,$/,"");
+      if(t.startsWith("pre ")) route.pre.push(t.slice(4).trim());
+      else if(t.startsWith("post ")) route.post.push(t.slice(5).trim());
+      else if(t.startsWith("bugg ")) route.bugg=t.slice(5).trim();
+      else if(t.startsWith("trace ")) route.body.push(this.parseTrace(t,item.line));
+      else if(t==="✓"){route.body.push({op:"confirm",mark:"✓",line:item.line}); route.confirm=true;}
+      else if(t.includes("+=")||t.includes("-=")) route.body.push(this.parseMove(t,item.line));
+      else if(t.includes("=")) route.body.push(this.parseSet(t,item.line));
+      else diagnostics.push(CadingDiagnostics.error("CADINGE010INVALIDROUTELINE","Invalid route line: "+t,{line:item.line,route:name}));
+    }
+    if(route.pre.length && route.bugg && !route.body.length) route.checkRoute = true;
+    ir.routes[name]=route;
+  },
+  parseEvent(block,ir,diagnostics,seen){
+    const eventName=block.lines[0].text.trim().match(/^on\s+([\w.]+)\s*:/)?.[1];
+    if(!eventName) return diagnostics.push(CadingDiagnostics.error("CADINGE001UNKNOWNBLOCK","Invalid event header",{line:block.startLine}));
+    if(seen.event.has(eventName)) diagnostics.push(CadingDiagnostics.error("CADINGE011DUPLICATENAME","Duplicate event "+eventName,{line:block.startLine,event:eventName}));
+    seen.event.add(eventName);
+    const routeLine=block.lines.slice(1).map(x=>x.text.trim()).find(x=>x.startsWith("route "));
+    if(!routeLine) diagnostics.push(CadingDiagnostics.error("CADINGE003UNKNOWNROUTE","Event without route",{line:block.startLine,event:eventName}));
+    else ir.events[eventName]={route:routeLine.slice(6).trim()};
+  },
+  parseNOTA(block,ir,diagnostics){
+    ir.nota={body:[],sourceLine:block.startLine};
+    for(const item of block.lines.slice(1)){
+      const t=item.text.trim().replace(/,$/,"");
+      if(t.startsWith("trace ")) ir.nota.body.push(this.parseTrace(t,item.line));
+      else diagnostics.push(CadingDiagnostics.error("CADINGE010INVALIDROUTELINE","Invalid NOTA line",{line:item.line}));
+    }
+  },
+  parseTrace(t,line){
+    const m=t.match(/^trace\s+"([^"]*)"(?:\s*,\s*(.+))?$/);
+    if(!m) return {op:"error",line,message:"Invalid trace: "+t};
+    return {op:"trace",message:m[1],args:m[2]?m[2].split(",").map(x=>x.trim()).filter(Boolean):[],line};
+  },
+  parseMove(t,line){
+    const m=t.match(/^(.+?)\s*(\+=|-=)\s*(.+)$/);
+    if(!m) return {op:"error",line,message:"Invalid move: "+t};
+    return {op:"move",target:m[1].trim(),delta:m[2]==="-="?("-"+m[3].trim()):m[3].trim(),line};
+  },
+  parseSet(t,line){
+    const m=t.match(/^(.+?)\s*=\s*(.+)$/);
+    if(!m) return {op:"error",line,message:"Invalid set: "+t};
+    return {op:"set",target:m[1].trim(),value:m[2].trim(),line};
+  }
+};
+
+const CadingValidator = {
+  validateIR(ir){
+    const errors=[],warnings=[],info=[],usedEntities=new Set(),usedBUGG=new Set();
+    for(const [eventName,event] of Object.entries(ir.events)){
+      if(event.route==="Ø"){ info.push(CadingDiagnostics.info("CADINGI001VOIDROUTEUSED","Ø route used",{event:eventName})); if(!ir.nota) errors.push(CadingDiagnostics.error("CADINGE008EVENTROUTEVOIDWITHOUTNOTA","Ø used without NOTA",{event:eventName})); continue; }
+      if(!ir.routes[event.route]) errors.push(CadingDiagnostics.error("CADINGE003UNKNOWNROUTE","Event points to unknown route",{event:eventName,route:event.route}));
+    }
+    for(const [name,bugg] of Object.entries(ir.bugg)){
+      if(!bugg.recover || !ir.routes[bugg.recover]) errors.push(CadingDiagnostics.error("CADINGE005BUGGRECOVERMISSING","BUGG has no valid recovery route",{bugg:name,route:bugg.recover}));
+    }
+    for(const [name,route] of Object.entries(ir.routes)){
+      if(!route.body.length && !route.confirm && !route.checkRoute) errors.push(CadingDiagnostics.error("CADINGE009EMPTYROUTEBODY","Route has no body, confirmation, or check BUGG",{route:name,line:route.sourceLine}));
+      if(!route.post.length && !route.checkRoute) warnings.push(CadingDiagnostics.warning("CADINGW001ROUTENOPOST","Route missing post condition",{route:name,line:route.sourceLine}));
+      if(route.checkRoute) info.push(CadingDiagnostics.info("CADINGI005CHECKROUTEUSED","Check route used",{route:name}));
+      if(route.bugg){ if(!ir.bugg[route.bugg]) errors.push(CadingDiagnostics.error("CADINGE006INLINEBUGGUNKNOWN","Inline bugg unknown",{route:name,bugg:route.bugg})); else usedBUGG.add(route.bugg); }
+      if(route.confirm) info.push(CadingDiagnostics.info("CADINGI003ROUTECONFIRMUSED","✓ confirmation used",{route:name}));
+      for(const cond of [...route.pre,...route.post.filter(x=>x!=="NOTA")]) this.validateCondition(cond,ir,errors,usedEntities,name);
+      for(const op of route.body){
+        if(op.op==="move"||op.op==="set") this.validatePath(op.target,ir,errors,usedEntities,name,"CADINGE004UNKNOWNENTITYPATH");
+        if(op.op==="move") this.validateRefish(op.delta,ir,errors,usedEntities,name);
+        if(op.op==="set") this.validateRefish(op.value,ir,errors,usedEntities,name);
+        if(op.op==="trace") (op.args||[]).forEach(arg=>this.validateRefish(arg,ir,errors,usedEntities,name));
+        if(op.op==="error") errors.push(CadingDiagnostics.error("CADINGE010INVALIDROUTELINE",op.message,{route:name,line:op.line}));
+      }
+    }
+    for(const name of Object.keys(ir.bugg)) if(!usedBUGG.has(name)) warnings.push(CadingDiagnostics.warning("CADINGW003BUGGNEVERTRIGGERED","BUGG defined but never referenced",{bugg:name}));
+    if(["Player","Enemy","World"].every(x=>ir.entities[x])) info.push(CadingDiagnostics.info("CADINGI004GAMEREADYROUTEPRESENT","JM/EN/G game-ready entity set detected",{}));
+    return {valid:errors.length===0,errors,warnings,info};
+  },
+  entityShape(fields){const shape={}; for(const [k,v] of Object.entries(fields)) shape[k]=v.type==="tuple"?{x:0,y:0}:v.value; return shape;},
+  validateCondition(cond,ir,errors,usedEntities,route){
+    const m=String(cond).match(/^(.+?)\s*(>=|<=|>|<|Speakuals|==)\s*(.+)$/);
+    if(!m) return errors.push(CadingDiagnostics.error("CADINGE007PREPOSTUNRESOLVEDPATH","Invalid condition "+cond,{route}));
+    this.validateRefish(m[1],ir,errors,usedEntities,route,"CADINGE007PREPOSTUNRESOLVEDPATH");
+    this.validateRefish(m[3],ir,errors,usedEntities,route,"CADINGE007PREPOSTUNRESOLVEDPATH");
+  },
+  validateRefish(expr,ir,errors,usedEntities,route,code="CADINGE004UNKNOWNENTITYPATH"){
+    expr=String(expr).trim();
+    if(!expr || /^-?\d+(\.\d+)?$/.test(expr) || expr==="NOTA") return;
+    if(expr.startsWith("-")) return this.validateRefish(expr.slice(1),ir,errors,usedEntities,route,code);
+    this.validatePath(expr,ir,errors,usedEntities,route,code);
+  },
+  validatePath(path,ir,errors,usedEntities,route,code){
+    path=String(path).trim(); if(path==="event.name") return;
+    const parts=path.split("."), root=parts[0];
+    if(!ir.entities[root]) return errors.push(CadingDiagnostics.error(code,"Unknown entity path root "+path,{route,path}));
+    usedEntities.add(root);
+    let current=this.entityShape(ir.entities[root]);
+    for(const part of parts.slice(1)){
+      if(current==null || !(part in current)) return errors.push(CadingDiagnostics.error("CADINGE007PREPOSTUNRESOLVEDPATH","Unresolved path "+path,{route,path}));
+      current=current[part];
+    }
+  }
+};
+
+const CadingRuntime = {
+  createRuntime(ir){
+    const state=this.buildInitialState(ir),traceLog=[],receipts=[],meta={lastEventName:"Ø",runtimeInfo:[]};
+    const read=(path)=>{ if(path==="event.name") return meta.lastEventName; return path.split(".").reduce((node,key)=>{if(node==null) throw Error("Cannot read "+path); return node[key];},state); };
+    const write=(path,value)=>{const parts=path.split("."); let node=state; for(const key of parts.slice(0,-1)){if(node[key]==null) node[key]={}; node=node[key];} node[parts.at(-1)]=clone(value);};
+    const valueOf=(expr)=>{expr=String(expr).trim(); if(expr.startsWith("-")) return -Number(valueOf(expr.slice(1))); if(/^-?\d+(\.\d+)?$/.test(expr)) return Number(expr); return read(expr);};
+    const condition=(expr)=>{const m=String(expr).match(/^(.+?)\s*(>=|<=|>|<|Speakuals|==)\s*(.+)$/); const l=valueOf(m[1]),op=m[2],r=valueOf(m[3]); if(op==="Speakuals" || op==="==") return JSON.stringify(l)===JSON.stringify(r); if(op===">=") return l>=r; if(op==="<=") return l<=r; if(op===">") return l>r; if(op==="<") return l<r; return false;};
+    const trace=(message,args=[],tone="trace")=>{const data={}; for(const arg of args) data[arg]=clone(read(arg)); const entry={message,data,tone,at:new Date().toISOString()}; traceLog.push(entry); receipts.push(entry); if(traceLog.length>220) traceLog.shift(); console.log("[Cading Grid 002]",entry); return entry;};
+    const runNOTA=(eventName)=>{meta.lastEventName=eventName; meta.runtimeInfo.push(CadingDiagnostics.info("CADINGI002NOTAFALLBACKUSED","NOTA fallback used",{event:eventName})); if(!ir.nota){trace("NOTA event "+eventName,[],"nota"); return false;} trace("NOTA_ENTER "+eventName,[],"nota"); for(const op of ir.nota.body) apply(op); receipts.push({message:"NOTA_COMPLETE",event:eventName,at:new Date().toISOString()}); return true;};
+    const runBUGG=(name,route="manual",stage="manual")=>{const b=ir.bugg[name]; if(!b) return runNOTA("unknown.bugg."+name); trace("BUGG: "+b.message,["Player.pos"],"bugg"); receipts.push({message:"BUGG_ROUTE",bugg:name,route,stage,recover:b.recover,at:new Date().toISOString()}); return runRoute(b.recover,{skipChecks:true});};
+    const apply=(op)=>{ if(op.op==="move") return write(op.target,read(op.target)+valueOf(op.delta)); if(op.op==="set") return write(op.target,valueOf(op.value)); if(op.op==="trace") return trace(op.message,op.args||[]); if(op.op==="confirm") return trace("✓",[],"confirm"); throw Error("Unknown op "+JSON.stringify(op)); };
+    const runRoute=(name,opts={})=>{
+      if(name==="Ø"){trace("Ø route / no active route",[],"void"); receipts.push({message:"VOID_ROUTE",route:"Ø",at:new Date().toISOString()}); return true;}
+      const route=ir.routes[name]; if(!route) return runNOTA("unknown.route."+name);
+      if(route.checkRoute){
+        const hit=route.pre.every(condition);
+        if(hit && route.bugg) return runBUGG(route.bugg,name,"check");
+        if(route.post.includes("NOTA")) return false;
+        return false;
+      }
+      trace("ROUTE_ENTER "+name,[],"route");
+      for(const c of route.pre){ if(!condition(c)){trace("PRE_FAIL "+c,["Player.pos"],"bugg"); return route.bugg?runBUGG(route.bugg,name,"pre"):false;}}
+      for(const op of route.body) apply(op);
+      for(const c of route.post.filter(x=>x!=="NOTA")){ if(!condition(c)){trace("POST_FAIL "+c,["Player.pos"],"bugg"); return route.bugg?runBUGG(route.bugg,name,"post"):false;}}
+      receipts.push({message:"ROUTE_COMPLETE",route:name,at:new Date().toISOString()});
+      if(!opts.skipChecks && ["MoveLeft","MoveRight","MoveUp","MoveDown","TickEnemy"].includes(name)) runGameChecks();
+      return true;
+    };
+    const runGameChecks=()=>{ runRoute("CheckGoal",{skipChecks:true}); runRoute("CheckCollisions",{skipChecks:true}); };
+    const dispatch=(eventName)=>{meta.lastEventName=eventName; const event=ir.events[eventName]; if(!event) return runNOTA(eventName); return runRoute(event.route);};
+    const exportReceipt=()=>({title:"Cading Game Example 002BB Runtime Receipt",exportedAt:new Date().toISOString(),state:clone(state),receipts:clone(receipts),runtimeInfo:clone(meta.runtimeInfo),ir:clone(ir)});
+    return {state,ir,traceLog,receipts,dispatch,runRoute,runBUGG,runNOTA,runGameChecks,exportReceipt,forceEnemyHit(){state.Enemy.pos=clone(state.Player.pos); return runRoute("CheckCollisions");},forceGoal(){state.Player.pos=clone(state.World.goalPos); return runRoute("CheckGoal");},trace};
+  },
+  buildInitialState(ir){const s={}; for(const [en,fields] of Object.entries(ir.entities)){s[en]={}; for(const [f,v] of Object.entries(fields)) s[en][f]=clone(v.value);} return s;}
+};
+
+function compileCading(source,options={}){
+  const tokenResult=CadingTokenizer.tokenize(source);
+  const blockResult=CadingBlockParser.parseBlocks(source,tokenResult.tokens);
+  const irResult=CadingIRBuilder.buildIR(blockResult.blocks);
+  const validation=CadingValidator.validateIR(irResult.ir);
+  validation.errors.unshift(...tokenResult.diagnostics,...blockResult.diagnostics,...irResult.diagnostics);
+  validation.valid=validation.errors.length===0;
+  const compileReceipt={title:"Cading Game Example 002BB Compile Receipt",compiledAt:new Date().toISOString(),version:"Grid002B/v0.1",ok:validation.valid,counts:{tokens:tokenResult.tokens.length,blocks:blockResult.blocks.length,entities:Object.keys(irResult.ir.entities).length,routes:Object.keys(irResult.ir.routes).length,events:Object.keys(irResult.ir.events).length,bugg:Object.keys(irResult.ir.bugg).length,nota:irResult.ir.nota?1:0,voidEvents:Object.values(irResult.ir.events).filter(e=>e.route==="Ø").length},entities:Object.keys(irResult.ir.entities),routes:Object.keys(irResult.ir.routes),events:irResult.ir.events,bugg:Object.keys(irResult.ir.bugg),diagnostics:validation};
+  if(!validation.valid) return {ok:false,version:"Grid002B/v0.1",tokens:tokenResult.tokens,blocks:blockResult.blocks,ir:irResult.ir,validation,errors:validation.errors,compileReceipt};
+  return {ok:true,version:"Grid002B/v0.1",tokens:tokenResult.tokens,blocks:blockResult.blocks,ir:irResult.ir,validation,compileReceipt,emittedJavaScript:"// Generic IR runtime active. Routes run through dispatch(eventName).",runtime:CadingRuntime.createRuntime(irResult.ir)};
+}
+
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d"),sourceEditor=document.getElementById("sourceEditor"),outputPanel=document.getElementById("outputPanel"),tracePanel=document.getElementById("tracePanel");
+let result=null,activeTab="receipt";
+let lastInputLabel="BOOT";
+sourceEditor.value=DEFAULT_CADING_SOURCE;
+
+function boot(){result=compileCading(sourceEditor.value,{debug:true}); if(result.ok) result.runtime.trace("COMPILED GRID 002 ✓",[],"confirm"); updateOutput();}
+function drawGrid(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!result?.ok) return;
+  const s=result.runtime.state,w=s.World,p=s.Player,e=s.Enemy,g=s.World.goalPos;
+  const pad=38, cell=Math.floor((canvas.width-pad*2)/(w.width+1));
+  ctx.fillStyle="#08101a";ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=1;
+  for(let x=0;x<=w.width+1;x++){ctx.beginPath();ctx.moveTo(pad+x*cell,pad);ctx.lineTo(pad+x*cell,pad+(w.height+1)*cell);ctx.stroke();}
+  for(let y=0;y<=w.height+1;y++){ctx.beginPath();ctx.moveTo(pad,pad+y*cell);ctx.lineTo(pad+(w.width+1)*cell,pad+y*cell);ctx.stroke();}
+  function tile(pos,label,color,tone){
+    const x=pad+pos.x*cell,y=pad+pos.y*cell;
+    ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=14;ctx.fillRect(x+4,y+4,cell-8,cell-8);ctx.shadowBlur=0;
+    ctx.strokeStyle="rgba(255,255,255,.55)";ctx.lineWidth=2;ctx.strokeRect(x+4,y+4,cell-8,cell-8);ctx.fillStyle=tone||"#06111a";ctx.font=`bold ${Math.max(14,cell*.34)}px system-ui`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,x+cell/2,y+cell/2);
+  }
+  tile(g,"G","#ffd166");
+  tile(e,"EN","#ff6b6b");
+  tile(p,"JM","#8ff7ff");
+  ctx.textAlign="left";ctx.textBaseline="alphabetic";ctx.fillStyle="rgba(167,255,131,.88)";ctx.font="bold 15px system-ui";ctx.fillText("JM / EN / G grid routes are compiled from Cading",18,canvas.height-18);
+}
+function renderStatus(){
+  if(!result)return;
+  document.getElementById("runtimeStatus").textContent=result.ok?"RUNNING":"COMPILE BUGG";
+  document.getElementById("validStatus").textContent=String(result.validation.valid);
+  const lastInputElGlobal=document.getElementById("lastInputStatus"); if(lastInputElGlobal) lastInputElGlobal.textContent=lastInputLabel;
+  if(result.ok){
+    const s=result.runtime.state,p=s.Player,e=s.Enemy;
+    document.getElementById("playerStatus").textContent=p.pos.x+", "+p.pos.y;
+    document.getElementById("enemyStatus").textContent=e.pos.x+", "+e.pos.y;
+    document.getElementById("scoreStatus").textContent=String(p.score);
+    const lastInputEl=document.getElementById("lastInputStatus"); if(lastInputEl) lastInputEl.textContent=lastInputLabel;
+    tracePanel.innerHTML=result.runtime.traceLog.slice(-34).reverse().map(item=>`<div class="receipt ${item.tone||""}"><b>${esc(item.message)}</b><br>${esc(JSON.stringify(item.data))}<br><small>${esc(item.at)}</small></div>`).join("");
+  } else {
+    tracePanel.innerHTML=result.errors.map(err=>`<div class="receipt error"><b>${esc(err.code)}</b><br>${esc(err.message)}</div>`).join("");
+  }
+  updateOutput();
+}
+function loop(){drawGrid();renderStatus();requestAnimationFrame(loop);}
+function updateOutput(){
+  if(!result)return;
+  if(activeTab==="receipt") outputPanel.textContent=JSON.stringify(result.compileReceipt,null,2);
+  if(activeTab==="diagnostics") outputPanel.textContent=JSON.stringify({library:DIAGNOSTICS,validation:result.validation},null,2);
+  if(activeTab==="ir") outputPanel.textContent=JSON.stringify(result.ir,null,2);
+  if(activeTab==="tokens") outputPanel.textContent=JSON.stringify(result.tokens,null,2);
+  if(activeTab==="runtime") outputPanel.textContent=result.runtime?JSON.stringify(result.runtime.exportReceipt(),null,2):JSON.stringify(result,null,2);
+  if(activeTab==="map") outputPanel.textContent=JSON.stringify({game:"JM / EN / G Grid",events:result.ir.events,routes:Object.keys(result.ir.routes),checkRoutes:["CheckGoal","CheckCollisions"],entities:Object.keys(result.ir.entities)},null,2);
+}
+function exportReceipt(){
+  const payload={title:"Cading Game Example 002BB Export",exportedAt:new Date().toISOString(),compileReceipt:result.compileReceipt,runtimeReceipt:result.runtime?result.runtime.exportReceipt():null,source:sourceEditor.value};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="Cading_Game_Example_002_JM_EN_G_Receipt.json"; a.click(); URL.revokeObjectURL(url);
+}
+function markInput(label){
+  lastInputLabel=label;
+  const el=document.getElementById("lastInputStatus");
+  if(el) el.textContent=label;
+}
+
+function safeAction(label, fn){
+  markInput(label);
+  try{
+    if(!result?.ok && label!=="Recompile" && label!=="Export") return;
+    fn();
+    renderStatus();
+  }catch(err){
+    markInput("INPUT BUGG");
+    console.error(err);
+    if(result?.runtime?.trace) result.runtime.trace("INPUT BUGG: "+err.message,[],"bugg");
+  }
+}
+
+
+let directInputStamp = 0;
+let directInputAction = "";
+
+function CadingDirectInput(action, ev){
+  if(ev){
+    try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+  }
+
+  const now = Date.now();
+  if(action === directInputAction && now - directInputStamp < 180) return false;
+  directInputAction = action;
+  directInputStamp = now;
+
+  try{
+    if(typeof markInput === "function") markInput("DIRECT " + action);
+    else {
+      lastInputLabel = "DIRECT " + action;
+      const el = document.getElementById("lastInputStatus");
+      if(el) el.textContent = lastInputLabel;
+    }
+
+    if(action === "system.recompile"){ boot(); return false; }
+    if(action === "system.export"){ exportReceipt(); return false; }
+
+    if(!result || !result.ok || !result.runtime){
+      lastInputLabel = "NO RUNTIME " + action;
+      const el = document.getElementById("lastInputStatus");
+      if(el) el.textContent = lastInputLabel;
+      return false;
+    }
+
+    if(action === "force.enemy") result.runtime.forceEnemyHit();
+    else if(action === "force.goal") result.runtime.forceGoal();
+    else result.runtime.dispatch(action);
+
+    if(typeof renderStatus === "function") renderStatus();
+    if(typeof drawGrid === "function") drawGrid();
+  } catch(err){
+    console.error("DIRECT INPUT BUGG", err);
+    lastInputLabel = "DIRECT BUGG";
+    const el = document.getElementById("lastInputStatus");
+    if(el) el.textContent = lastInputLabel;
+    try{ result?.runtime?.trace?.("DIRECT INPUT BUGG: " + err.message, [], "bugg"); }catch(_){}
+  }
+
+  return false;
+}
+
+window.CadingDirectInput = CadingDirectInput;
+
+// Document-level fallback: catches taps even if button-local listeners fail.
+document.addEventListener("click", function(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest("[data-action]") : null;
+  if(btn) CadingDirectInput(btn.getAttribute("data-action"), ev);
+}, true);
+
+document.addEventListener("pointerup", function(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest("[data-action]") : null;
+  if(btn) CadingDirectInput(btn.getAttribute("data-action"), ev);
+}, true);
+
+document.addEventListener("touchend", function(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest("[data-action]") : null;
+  if(btn) CadingDirectInput(btn.getAttribute("data-action"), ev);
+}, {capture:true, passive:false});
+
+function bindTap(id,label,fn){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.setAttribute("type","button");
+  el.setAttribute("data-bound","002A");
+  let last=0;
+  const handler=(e)=>{
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    const now=Date.now();
+    if(now-last<220) return;
+    last=now;
+    safeAction(label,fn);
+  };
+  el.addEventListener("pointerdown",handler,{passive:false});
+  el.addEventListener("touchstart",handler,{passive:false});
+  el.addEventListener("click",handler,{passive:false});
+}
+
+bindTap("leftBtn","input.left",()=>result.runtime.dispatch("input.left"));
+bindTap("rightBtn","input.right",()=>result.runtime.dispatch("input.right"));
+bindTap("upBtn","input.up",()=>result.runtime.dispatch("input.up"));
+bindTap("downBtn","input.down",()=>result.runtime.dispatch("input.down"));
+bindTap("tickBtn","input.tickEnemy",()=>result.runtime.dispatch("input.tickEnemy"));
+bindTap("voidBtn","input.none / Ø",()=>result.runtime.dispatch("input.none"));
+bindTap("unknownBtn","input.fire / NOTA",()=>result.runtime.dispatch("input.fire"));
+bindTap("forceBtn","Force HitEnemy",()=>result.runtime.forceEnemyHit());
+bindTap("goalBtn","Force Goal",()=>result.runtime.forceGoal());
+bindTap("recompileBtn","Recompile",()=>boot());
+bindTap("exportBtn","Export",()=>exportReceipt());
+
+window.addEventListener("keydown",e=>{
+  if(!result?.ok)return;
+  if(e.key==="ArrowLeft") safeAction("key.left",()=>result.runtime.dispatch("input.left"));
+  if(e.key==="ArrowRight") safeAction("key.right",()=>result.runtime.dispatch("input.right"));
+  if(e.key==="ArrowUp") safeAction("key.up",()=>result.runtime.dispatch("input.up"));
+  if(e.key==="ArrowDown") safeAction("key.down",()=>result.runtime.dispatch("input.down"));
+  if(e.key.toLowerCase()==="t") safeAction("key.tickEnemy",()=>result.runtime.dispatch("input.tickEnemy"));
+  if(e.key.toLowerCase()==="n") safeAction("key.none / Ø",()=>result.runtime.dispatch("input.none"));
+  if(e.key.toLowerCase()==="f") safeAction("key.fire / NOTA",()=>result.runtime.dispatch("input.fire"));
+});
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{activeTab=btn.dataset.tab;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));updateOutput();}));
+boot();loop();
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Cading Estate Rebuild OS v0.6 — Route Integrity Unified Form</title>
+<style>
+:root{--bg:#05070b;--fg:#00ff77;--gold:#ffd84d;--red:#ff4d4d;--blue:#5fd8ff}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--fg);font-family:monospace}
+header{position:sticky;top:0;z-index:30;background:#020202;border-bottom:1px solid var(--fg);padding:8px}
+h1{font-size:clamp(14px,4.2vw,18px);line-height:1.15;margin:0;color:var(--gold);overflow-wrap:anywhere}
+h2{font-size:13px;color:var(--gold);margin:8px 0}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.chip{border:1px solid var(--fg);border-radius:999px;padding:3px 7px;background:#000;font-size:11px;overflow-wrap:anywhere}.pass{border-color:var(--gold);color:var(--gold)}.fail{border-color:var(--red);color:var(--red)}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+button{width:100%;border:1px solid var(--fg);border-radius:9px;background:#000;color:var(--fg);font-family:monospace;padding:9px 7px;margin:3px 0;font-size:12px}
+button.primary{border-color:var(--gold);color:var(--gold)}button.blue{border-color:var(--blue);color:var(--blue)}button.red{border-color:var(--red);color:var(--red)}
+main{padding:8px;max-width:100vw;overflow-x:hidden}.screen{display:none}.screen.on{display:block}
+.card{border:1px solid var(--fg);border-radius:14px;background:rgba(0,0,0,.42);padding:8px;margin:0 0 8px;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr;gap:8px}.tile{border:1px solid var(--fg);border-radius:12px;background:#000;padding:8px;overflow:hidden}.done{border-color:var(--gold)!important;background:rgba(255,216,77,.08)}
+h3{margin:0 0 5px;color:var(--gold);font-size:12px}.small{font-size:11px;line-height:1.35;opacity:.92}
+pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;background:#000;border:1px solid rgba(0,255,119,.55);border-radius:10px;padding:8px;min-height:80px;max-height:390px;overflow:auto;font-size:11px}
+.tableScroller{width:100%;overflow-x:auto;border:1px solid rgba(0,255,119,.3);border-radius:10px}
+table{width:100%;min-width:760px;border-collapse:collapse;font-size:11px;background:#000}
+td,th{border:1px solid rgba(0,255,119,.5);padding:5px;vertical-align:top;overflow-wrap:anywhere}th{color:var(--gold)}
+.stickyActions{position:sticky;bottom:0;z-index:15;background:rgba(2,2,2,.96);border-top:1px solid var(--fg);padding:6px;margin:8px -8px -8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(2,1fr)}nav{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<h1>Cading Estate Rebuild OS v0.6 — Route Integrity Unified Form</h1>
+<div class="chips">
+<span class="chip" id="statusChip">Status: correction body</span>
+<span class="chip" id="auditChip">Audit: not run</span>
+<span class="chip" id="buttonChip">Buttons: not run</span>
+<span class="chip" id="screenChip">ScreenFit: not run</span>
+<span class="chip" id="routeChip">Route: one form</span>
+<span class="chip" id="outputChip">Export: not run</span>
+</div>
+<nav>
+<button onclick="showScreen('home')">HOME</button>
+<button onclick="showScreen('audit')">AUDIT</button>
+<button onclick="showScreen('stages')">STAGES</button>
+<button onclick="showScreen('queue')">QUEUE</button>
+<button onclick="showScreen('checks')">CHECKS</button>
+<button onclick="showScreen('output')">EXPORT</button>
+</nav>
+</header>
+<main>
+<section id="home" class="screen on">
+<div class="card">
+<h2>Basis Reminder</h2>
+<pre>This route is not build-for-build's-sake.
+
+Original point of this lane:
+Cading becomes a working estate rebuild route.
+
+Current basis:
+- Converter proved the bridge.
+- Converter is now one office inside the OS.
+- OS must stay as one usable form.
+- No crown without receipt.
+- No hidden route changes.
+- No dead buttons.
+- No screen drift.
+- Bigger pushes are allowed only when the route integrity is protected.</pre>
+<div class="stickyActions">
+<button class="primary" onclick="runFullIntegrity()">RUN FULL INTEGRITY</button>
+<button class="blue" onclick="makeExportPack()">EXPORT CORRECTION PACK</button>
+</div>
+</div>
+</section>
+
+<section id="audit" class="screen">
+<div class="card">
+<h2>Route Audit Truth</h2>
+<pre id="auditOut">Audit not run yet.</pre>
+<button class="primary" onclick="runRouteAudit()">RUN ROUTE AUDIT</button>
+</div>
+</section>
+
+<section id="stages" class="screen">
+<div class="card">
+<h2>Aligned Stage Map</h2>
+<div class="grid" id="stageGrid"></div>
+<button class="primary" onclick="lockStageMap()">LOCK STAGE MAP</button>
+</div>
+</section>
+
+<section id="queue" class="screen">
+<div class="card">
+<h2>One-Form Queue</h2>
+<div id="queueTable"></div>
+<button class="primary" onclick="buildUnifiedQueue()">BUILD UNIFIED QUEUE</button>
+</div>
+</section>
+
+<section id="checks" class="screen">
+<div class="card">
+<h2>SelfCheck + ButtonCheck + ScreenFit</h2>
+<button class="primary" onclick="runButtonCheck()">RUN BUTTON CHECK</button>
+<button class="blue" onclick="runScreenFit()">RUN SCREENFIT</button>
+<button class="blue" onclick="runFullIntegrity()">RUN FULL INTEGRITY</button>
+<pre id="checkOut">Checks not run yet.</pre>
+</div>
+</section>
+
+<section id="output" class="screen">
+<div class="card">
+<h2>Correction Export Pack</h2>
+<button class="primary" onclick="makeExportPack()">EXPORT CORRECTION PACK</button>
+<button class="red" onclick="resetBody()">RESET</button>
+<pre id="outputOut">Waiting...</pre>
+</div>
+<div class="card">
+<h2>TraceBox</h2>
+<pre id="traceOut">[]</pre>
+</div>
+</section>
+</main>
+
+<script>
+const screens=["home","audit","stages","queue","checks","output"];
+const stageData=[
+["v3.2","ScreenFit Ding","PROVEN/FROZEN by Android receipt"],
+["v4.0","Import Dock","candidate route opened"],
+["v4.1","Real Body Intake Batch","candidate first batch intake"],
+["v5.0","Megalith Prep Deck","candidate push-mode deck"],
+["v5.5 / v6.0 Converter-named","REPLACED / DO NOT CROWN","button audit failed in older split candidates"],
+["OS v0.1","Megalith Candidate OS Body","candidate OS-shaped route"],
+["OS v0.2","Body Lane Router","candidate lane route"],
+["OS v0.3","Polish / Freeze Queue","candidate queue route"],
+["OS v0.4","Source Detail Dock","candidate detail route"],
+["OS v0.5","Execution Pack Builder","candidate execution route"],
+["OS v0.6","Route Integrity Unified Form","current correction body"]
+];
+const queueData=[
+["One open-first route","Use this unified form before opening scattered links","ACTIVE"],
+["Split-link drift","v0.4/v0.5 were sent separately; now absorbed into one route map","CORRECTED"],
+["Broken older buttons","Converter v5.5/v6.0 older split candidates had JS break; replaced by OS route","REPLACED"],
+["Current OS route","OS v0.1-v0.5 concepts still align as stages/offices","ALIGNED"],
+["Next work","Build from this one-form route into Source Detail / Execution Pack / Receipt Collector","READY"]
+];
+let TraceBox=[], StageLocked=false, QueueBuilt=false, Audit=null, ButtonCheck=null, ScreenFit=null, ExportPack=null;
+
+function $(id){return document.getElementById(id)}
+function trace(phase,data){TraceBox.push({time:new Date().toISOString(),phase,...data});$("traceOut").textContent=JSON.stringify(TraceBox,null,2)}
+function setChip(id,text,ok){const el=$(id);el.textContent=text;el.className="chip "+(ok===true?"pass":ok===false?"fail":"")}
+function showScreen(id){screens.forEach(s=>$(s).classList.toggle("on",s===id));setChip("statusChip","Status: screen "+id,null);setTimeout(runScreenFit,50)}
+function lockStageMap(){StageLocked=true;renderStages();trace("stage-map-locked",{count:stageData.length});setChip("statusChip","Status: stage map locked",true)}
+function renderStages(){ $("stageGrid").innerHTML=stageData.map(s=>`<div class="tile ${StageLocked?'done':''}"><h3>${s[0]} — ${s[1]}</h3><div class="small">${s[2]}</div><br>${StageLocked?'LOCKED':'pending'}</div>`).join("")}
+function buildUnifiedQueue(){QueueBuilt=true;renderQueue();trace("unified-queue-built",{count:queueData.length});setChip("statusChip","Status: unified queue built",true)}
+function renderQueue(){
+ if(!QueueBuilt){$("queueTable").innerHTML="<pre>No unified queue built yet.</pre>";return}
+ $("queueTable").innerHTML='<div class="tableScroller"><table><thead><tr><th>Route Item</th><th>Meaning</th><th>Status</th></tr></thead><tbody>'+queueData.map(q=>`<tr><td>${q[0]}</td><td>${q[1]}</td><td>${q[2]}</td></tr>`).join("")+'</tbody></table></div>'
+}
+function runRouteAudit(){
+ Audit={
+  time:new Date().toISOString(),
+  status:"PASS_WITH_CORRECTION",
+  truth:[
+   "No: not everything previously sent is crown-safe.",
+   "Yes: drift was found.",
+   "Broken old split candidates: Converter v5.5 and Converter v6.0 had button-breaking JS.",
+   "Current correction: treat those old Converter-named bodies as replaced by OS route.",
+   "OS v0.1-v0.5 concepts remain aligned as stages/offices, but user should not have to open separate links.",
+   "This v0.6 form is the one-form route integrity correction body."
+  ],
+  basis:"Cading Estate Rebuild OS; Converter is one office, not destination."
+ };
+ $("auditOut").textContent="ROUTE AUDIT — PASS WITH CORRECTION\n\n"+Audit.truth.map(x=>"- "+x).join("\n")+"\n\nBasis: "+Audit.basis;
+ setChip("auditChip","Audit: correction logged",true);
+ trace("route-audit",Audit);
+ return Audit;
+}
+function runButtonCheck(){
+ const buttons=[...document.querySelectorAll("button")];
+ const missing=buttons.filter(b=>!b.getAttribute("onclick"));
+ const named=["showScreen","runFullIntegrity","makeExportPack","runRouteAudit","lockStageMap","buildUnifiedQueue","runButtonCheck","runScreenFit","resetBody"];
+ const missingFn=named.filter(n=>typeof window[n]!=="function");
+ const status=(missing.length===0 && missingFn.length===0)?"PASS":"FAIL";
+ ButtonCheck={time:new Date().toISOString(),status,buttonCount:buttons.length,missingOnclick:missing.map(b=>b.textContent.trim()),missingFunctions:missingFn};
+ setChip("buttonChip","Buttons: "+status,status==="PASS");
+ $("checkOut").textContent=renderChecks();
+ trace("button-check",ButtonCheck);
+ return ButtonCheck;
+}
+function runScreenFit(){
+ const viewport=innerWidth, docW=document.documentElement.scrollWidth, bodyW=document.body.scrollWidth;
+ const bad=[...document.querySelectorAll("button")].filter(el=>el.getBoundingClientRect().width>viewport+2);
+ const active=document.querySelector(".screen.on");
+ const status=(docW<=viewport+2 && bodyW<=viewport+2 && bad.length===0 && active.scrollWidth<=viewport+2)?"PASS":"FAIL";
+ ScreenFit={time:new Date().toISOString(),status,viewport,documentWidth:docW,bodyWidth:bodyW,badControls:bad.length,activeWidth:active.scrollWidth};
+ setChip("screenChip","ScreenFit: "+status,status==="PASS");
+ $("checkOut").textContent=renderChecks();
+ trace("screenfit",ScreenFit);
+ return ScreenFit;
+}
+function renderChecks(){
+ return "BUTTON CHECK\n"+(ButtonCheck?JSON.stringify(ButtonCheck,null,2):"not run")+
+ "\n\nSCREENFIT\n"+(ScreenFit?JSON.stringify(ScreenFit,null,2):"not run")+
+ "\n\nAUDIT\n"+(Audit?Audit.status:"not run");
+}
+function runFullIntegrity(){
+ runRouteAudit();
+ lockStageMap();
+ buildUnifiedQueue();
+ runButtonCheck();
+ runScreenFit();
+ makeExportPack();
+ setChip("statusChip","Status: full integrity complete",true);
+ showScreen("output");
+}
+function makeExportPack(){
+ if(!Audit)runRouteAudit();
+ if(!StageLocked)lockStageMap();
+ if(!QueueBuilt)buildUnifiedQueue();
+ if(!ButtonCheck)runButtonCheck();
+ if(!ScreenFit)runScreenFit();
+ ExportPack={
+  exportedAt:new Date().toISOString(),
+  version:"Cading-Estate-Rebuild-OS-v0.6-Route-Integrity-Unified-Form",
+  claim:"Route drift was identified and corrected into one unified OS form.",
+  basis:"Cading Estate Rebuild OS; not building for building; Converter is an office inside OS.",
+  audit:Audit,
+  buttonCheck:ButtonCheck,
+  screenFit:ScreenFit,
+  stageMap:stageData,
+  unifiedQueue:queueData,
+  boundary:"This is a route integrity correction body. It does not crown final app/game rebuilds.",
+  TraceBox
+ };
+ $("outputOut").textContent="EXPORT OS v0.6 ROUTE INTEGRITY CORRECTION PACK\n"+JSON.stringify(ExportPack,null,2);
+ setChip("outputChip","Export: ready",true);
+ trace("export-correction-pack",{status:"ready"});
+ return ExportPack;
+}
+function resetBody(){
+ TraceBox=[];StageLocked=false;QueueBuilt=false;Audit=null;ButtonCheck=null;ScreenFit=null;ExportPack=null;
+ $("traceOut").textContent="[]";$("outputOut").textContent="Waiting...";$("auditOut").textContent="Audit not run yet.";$("checkOut").textContent="Checks not run yet.";
+ setChip("statusChip","Status: reset",null);setChip("auditChip","Audit: not run",null);setChip("buttonChip","Buttons: not run",null);setChip("screenChip","ScreenFit: not run",null);setChip("outputChip","Export: not run",null);
+ renderStages();renderQueue();
+}
+renderStages();renderQueue();setTimeout(runScreenFit,100);
+</script>
+</body>
+</html>

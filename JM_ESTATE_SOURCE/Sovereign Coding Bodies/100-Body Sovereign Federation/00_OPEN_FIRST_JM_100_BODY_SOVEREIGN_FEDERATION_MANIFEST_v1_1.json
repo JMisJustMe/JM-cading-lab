@@ -1,0 +1,7217 @@
+{
+  "schema": "jm.coding.federation.manifest.v1",
+  "name": "JM 100-Body Sovereign Coding Federation",
+  "version": "1.1.0",
+  "body_count": 100,
+  "anchor": "32_Cb v2.1 remains separately seated and is not duplicated here.",
+  "kinds": {
+    "runtime": 12,
+    "service": 1,
+    "compiler": 15,
+    "composition": 5,
+    "logic": 1,
+    "route": 14,
+    "game": 11,
+    "embodied": 16,
+    "formula": 1,
+    "authoring": 9,
+    "governance": 11,
+    "delivery": 3,
+    "visual": 1
+  },
+  "bodies": [
+    {
+      "order": 1,
+      "body_id": "routeos",
+      "name": "RouteOS",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "route, state, trace and recovery are operating behaviour.",
+      "next_native_gap_source": "kernel boundary, service ABI, event loop, permissions, native host.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_routeos_CURRENT_v1_1.py",
+      "runtime_sha256": "6f2fdd86eb75498c4d8970d4903f8dcbca0fb0ff8a26a5f2a3274a502088be7a",
+      "self_test": {
+        "body_id": "routeos",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 2,
+      "body_id": "os-coding",
+      "name": "OS_CODING",
+      "kind": "service",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ServiceEngine",
+      "governing_statement": "operating-system behaviour is authored through JM routes and state.",
+      "next_native_gap_source": "service grammar, permissions IR, kernel adapters.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_os-coding_CURRENT_v1_1.py",
+      "runtime_sha256": "40b9a29dcf2fc7b4a5f83f28c56384995807032afa2137c57ad95e6c45624176",
+      "self_test": {
+        "body_id": "os-coding",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 3,
+      "body_id": "routecore-native",
+      "name": "RouteCore Native",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "routes are native state transitions, not decorative navigation.",
+      "next_native_gap_source": "ABI spec, scheduler, memory model, FFI.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_routecore-native_CURRENT_v1_1.py",
+      "runtime_sha256": "e900b60fdb8a786d98e753de4e2f55efc1fa3c5d1b5faa660ead332e581d3bf8",
+      "self_test": {
+        "body_id": "routecore-native",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 4,
+      "body_id": "root-method",
+      "name": "Root Method",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "root opcodes expose irreducible state-changing operations.",
+      "next_native_gap_source": "opcode registry, bytecode format, verifier, VM, disassembler.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_root-method_CURRENT_v1_1.py",
+      "runtime_sha256": "efc295228996ce5f32d0b8c0615bec2eb5c88308b7f0ccdaec32863be388dfcb",
+      "self_test": {
+        "body_id": "root-method",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 5,
+      "body_id": "cadenvm",
+      "name": "CadenVM",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "execute JM instructions with visible state, trace, recovery and Ding.",
+      "next_native_gap_source": "bytecode spec, verifier, debugger, JIT/AOT boundary, native runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_cadenvm_CURRENT_v1_1.py",
+      "runtime_sha256": "f28ffe37c30e5865d7832fdcf60bd2e1978fbcb43e3150c154d83fe6db1f30ee",
+      "self_test": {
+        "body_id": "cadenvm",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 6,
+      "body_id": "routevm",
+      "name": "RouteVM",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "execute route transitions as verified instructions.",
+      "next_native_gap_source": "instruction set, verifier, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_routevm_CURRENT_v1_1.py",
+      "runtime_sha256": "753199588d2ab3ecf5ff2e0aa4ba164bcb96d04ebe423fc7152c5d1354d047af",
+      "self_test": {
+        "body_id": "routevm",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 7,
+      "body_id": "jmvm",
+      "name": "JMVM",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "shared execution must retain body identity and source trace.",
+      "next_native_gap_source": "identity audit, instruction set, verifier, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmvm_CURRENT_v1_1.py",
+      "runtime_sha256": "43c5342773550883f011db4f3164d3dc1979f453bedf3567f88e2094fed4eb37",
+      "self_test": {
+        "body_id": "jmvm",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 8,
+      "body_id": "codehand",
+      "name": "CodeHand RouteOS",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "authoring hand, arena, world, operators, console and Cold Ding remain connected.",
+      "next_native_gap_source": "parser API, interactive debugger, REPL, multi-target project model.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_codehand_CURRENT_v1_1.py",
+      "runtime_sha256": "4bbd0ba5db9307d0336fefc18678acf3669e8e2a9e042e55218d154a56bdf9fd",
+      "self_test": {
+        "body_id": "codehand",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 9,
+      "body_id": "routebox",
+      "name": "RouteBox",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "route execution stays boxed, inspectable and recoverable.",
+      "next_native_gap_source": "sandbox API, route executor, trace storage.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_routebox_CURRENT_v1_1.py",
+      "runtime_sha256": "e1a0fd274121660bd4c74fa491396a73f916aa461ad3d2430022ecbc0a753ebe",
+      "self_test": {
+        "body_id": "routebox",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 10,
+      "body_id": "jm32-1da",
+      "name": "JM32-1DA",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "source, contact, state-change, Ding, trace and recovery are mandatory.",
+      "next_native_gap_source": "policy IR, static checks, runtime guards, receipt schema.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jm32-1da_CURRENT_v1_1.py",
+      "runtime_sha256": "75c51aa9bc603c343d0b058512e46b2dc16284ee73f9d63f55aaac321a499588",
+      "self_test": {
+        "body_id": "jm32-1da",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 11,
+      "body_id": "parser",
+      "name": "Parser",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "Source Text → Tokens → Parse Tree → Body Meaning.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_parser_CURRENT_v1_1.py",
+      "runtime_sha256": "2f8fd2e9f9b1243285ad8df76b1ea3a0fff18a9487da07a667b0e1662cf1693a",
+      "self_test": {
+        "body_id": "parser",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 12,
+      "body_id": "primebody",
+      "name": "PrimeBody Parser + Ding Schema",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "source must become explicit structure before execution and Ding.",
+      "next_native_gap_source": "unified API, source maps, error recovery, incremental parse.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_primebody_CURRENT_v1_1.py",
+      "runtime_sha256": "7fcd65c869beae4ecc85a9f7385f5a962ead463e24272e621e026a990a00fd70",
+      "self_test": {
+        "body_id": "primebody",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 13,
+      "body_id": "tokenbody",
+      "name": "TokenBody",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "tokens retain mark, source span, pressure and body identity.",
+      "next_native_gap_source": "token schema, incremental lexer, source map API.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_tokenbody_CURRENT_v1_1.py",
+      "runtime_sha256": "4e3dbcc5cabd28586e5d728c2e0d80232f0f49c441ec5eac3e8266749cbf315e",
+      "self_test": {
+        "body_id": "tokenbody",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 14,
+      "body_id": "compiler",
+      "name": "Compiler",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "Parse Tree → OneBody IR → Target Code.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_compiler_CURRENT_v1_1.py",
+      "runtime_sha256": "f336b047298f85c863efca0390986c4dabd78af58a924f9993045b5c0bc7779b",
+      "self_test": {
+        "body_id": "compiler",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 15,
+      "body_id": "onebody-ir",
+      "name": "IR / OneBody IR",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "Body Meaning → Neutral Body Structure → Target Output.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_onebody-ir_CURRENT_v1_1.py",
+      "runtime_sha256": "18814c2b8892b95cadeb7032d1806bd5a4bc235fd936b9e295475a34cd48e2c2",
+      "self_test": {
+        "body_id": "onebody-ir",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 16,
+      "body_id": "theoc",
+      "name": "TheoC Contract + TheoC IR",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "contracts and IR preserve JM permission and meaning before host compilation.",
+      "next_native_gap_source": "IR spec recovery, verifier, optimisation passes, multi-backend ABI.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_theoc_CURRENT_v1_1.py",
+      "runtime_sha256": "04e47c949f79a8a6a778ef36793b081a2f1a9fb7419b8a32847cb6452a61920d",
+      "self_test": {
+        "body_id": "theoc",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 17,
+      "body_id": "js-emitter",
+      "name": "JS Emitter",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "OneBody IR → JavaScript Code → Browser Runtime.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_js-emitter_CURRENT_v1_1.py",
+      "runtime_sha256": "c6d02de3e14087a95c0705c332a57487f2e567afe2eb71a26838f1ac04f6e868",
+      "self_test": {
+        "body_id": "js-emitter",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 18,
+      "body_id": "polyglot-bridge",
+      "name": "JM Polyglot Bridge",
+      "kind": "composition",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "MeshCompositionEngine",
+      "governing_statement": "translation across targets must preserve source-side governance and trace.",
+      "next_native_gap_source": "ABI, FFI generators, source maps, round-trip tests.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_polyglot-bridge_CURRENT_v1_1.py",
+      "runtime_sha256": "1ce7f7934d5320f29629e576379f07b5db4e79f43384c3e7acf89ccf1beaa7cd",
+      "self_test": {
+        "body_id": "polyglot-bridge",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 19,
+      "body_id": "hybrid-auto-compiler",
+      "name": "Hybrid Auto-Compiler",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "automation may choose compilation machinery but may not choose source authority.",
+      "next_native_gap_source": "capability resolver, backend contracts, round-trip tests.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_hybrid-auto-compiler_CURRENT_v1_1.py",
+      "runtime_sha256": "287e6c197b84700c7c2fb90070ab1729169a1da1ffc855541c06b094cd7da3a0",
+      "self_test": {
+        "body_id": "hybrid-auto-compiler",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 20,
+      "body_id": "wakeforge",
+      "name": "WakeForge",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "wake dormant bodies into executable routes without rewriting their identity.",
+      "next_native_gap_source": "source recovery adapters, build graph, emitters.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_wakeforge_CURRENT_v1_1.py",
+      "runtime_sha256": "551706224cae7cc8db122921fb98205acd4a55e6a4ae8ae27712ba7e0337c833",
+      "self_test": {
+        "body_id": "wakeforge",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 21,
+      "body_id": "cading",
+      "name": "Cading / Theomidul / zeze.nwona",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "marks → signals → routes → state → trace; Fullstopped is stage validation, not eternal truth.",
+      "next_native_gap_source": "lexer, parser, AST, semantic route checks, Cading IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_cading_CURRENT_v1_1.py",
+      "runtime_sha256": "4d054723179e25048f3cf5f9c552e67f50966b57616d79bd2c5f22385ac46b05",
+      "self_test": {
+        "body_id": "cading",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 22,
+      "body_id": "jmlogic",
+      "name": "JMLogic",
+      "kind": "logic",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "LogicEngine",
+      "governing_statement": "JM-native logic governs state and consequence rather than host syntax.",
+      "next_native_gap_source": "grammar recovery, lexer, parser, AST, semantic checks, IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmlogic_CURRENT_v1_1.py",
+      "runtime_sha256": "a056c2aaaf6e38d052d08564de9f4fd33fc0daaf086c3a612b5246bf1e50a3e7",
+      "self_test": {
+        "body_id": "jmlogic",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 23,
+      "body_id": "flowtalk",
+      "name": "FlowTalk",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "human flow remains executable without being flattened into generic commands.",
+      "next_native_gap_source": "grammar recovery, parser, flow graph, effect checks, IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_flowtalk_CURRENT_v1_1.py",
+      "runtime_sha256": "f78306936b97458def930f8bb8a20cb18de28f493f34613258dc48d8d59a710c",
+      "self_test": {
+        "body_id": "flowtalk",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 24,
+      "body_id": "kading",
+      "name": "Kading",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "Kading is a sovereign coding route, not a misspelling or alias silently collapsed into Cading.",
+      "next_native_gap_source": "identity audit, grammar recovery, parser, AST, IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_kading_CURRENT_v1_1.py",
+      "runtime_sha256": "53c2a15e6a93ca9218f49a51f5846310bea62060cca4b9f98e6b1d6678cee54f",
+      "self_test": {
+        "body_id": "kading",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 25,
+      "body_id": "quadze",
+      "name": "Quadze",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "build with Quadze by default; Quadze becomes the game only when explicitly requested.",
+      "next_native_gap_source": "grammar normalisation, parser, game IR, determinism checks, native emitter.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_quadze_CURRENT_v1_1.py",
+      "runtime_sha256": "d64d2875650cf8d3179a3b812897b63dc7f08036e44a15240910fada112ee99a",
+      "self_test": {
+        "body_id": "quadze",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 26,
+      "body_id": "kocodifying",
+      "name": "Kocodifying",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "user-style Kocodifying remains the primary authoring authority for its descendants.",
+      "next_native_gap_source": "grammar recovery, parser, AST, IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_kocodifying_CURRENT_v1_1.py",
+      "runtime_sha256": "8d30e7117babd025b9f05e81268cd6680d579f9ff0ff49b15fdce1f5bfbd2cd4",
+      "self_test": {
+        "body_id": "kocodifying",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 27,
+      "body_id": "codifying",
+      "name": "Codifying",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "codification is an executable body, not documentation beside code.",
+      "next_native_gap_source": "grammar recovery, parser, AST, IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_codifying_CURRENT_v1_1.py",
+      "runtime_sha256": "b81a3ba78e32e7182860b0b1e22bcad0ac004078cd914fcd3bd2ccb82c707739",
+      "self_test": {
+        "body_id": "codifying",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 28,
+      "body_id": "jmp",
+      "name": "J’MP",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "preserve J’MP-specific movement/meaning before interoperability.",
+      "next_native_gap_source": "grammar recovery, parser, AST, IR lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmp_CURRENT_v1_1.py",
+      "runtime_sha256": "3862ca63dcb18d34083d33768bffdbe98148c9b9dc37e67a814d0ffffa5fbe35",
+      "self_test": {
+        "body_id": "jmp",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 29,
+      "body_id": "formeula",
+      "name": "FormeULA / Formula-born Coding",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "form, relation and consequence remain linked through the executable formula body.",
+      "next_native_gap_source": "operator table, parser, typed AST, IR lowering, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_formeula_CURRENT_v1_1.py",
+      "runtime_sha256": "aa781967e9df6e91ff2e360f64150d3d0e05185c59ac9fdc062850c8c0616254",
+      "self_test": {
+        "body_id": "formeula",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 30,
+      "body_id": "recorp",
+      "name": "RECORP",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "Scattered → RECORP → Regrouped Body.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_recorp_CURRENT_v1_1.py",
+      "runtime_sha256": "49ed37ca1178a0944bec8d6628c63e93564b3746beb534ee98fe133a2b59aab7",
+      "self_test": {
+        "body_id": "recorp",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 31,
+      "body_id": "cading-lab",
+      "name": "zezu.nwona / Cading Lab",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "experiment visibly, preserve boundaries, and promote only through receipt.",
+      "next_native_gap_source": "module extraction, language server, cross-body fixtures.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_cading-lab_CURRENT_v1_1.py",
+      "runtime_sha256": "f591260f386205f8a00d22767dba35d39163a61e7341f6da8b7409b7b8185911",
+      "self_test": {
+        "body_id": "cading-lab",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 32,
+      "body_id": "formula-born-code",
+      "name": "Formula-Born Code",
+      "kind": "formula",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "FormulaEngine",
+      "governing_statement": "formulas give birth to executable bodies through governed lowering.",
+      "next_native_gap_source": "formula parser, symbolic AST, lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_formula-born-code_CURRENT_v1_1.py",
+      "runtime_sha256": "e7077c3828b7aded344a3c454889a9caa12654cbda6eef2d66af5f3fee7c275b",
+      "self_test": {
+        "body_id": "formula-born-code",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 33,
+      "body_id": "mark-level-syntax",
+      "name": "Mark-Level Syntax",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "marks are first-class executable syntax rather than decoration.",
+      "next_native_gap_source": "mark lexicon, lexer, parser, AST.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_mark-level-syntax_CURRENT_v1_1.py",
+      "runtime_sha256": "eeaad1140706396b3311e157ffd4ec2a470abb9aa5dd2f2b029256152e06667d",
+      "self_test": {
+        "body_id": "mark-level-syntax",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 34,
+      "body_id": "mark-code",
+      "name": "Mark-Code",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "marks compile through declared semantics and route effects.",
+      "next_native_gap_source": "mark grammar, parser, semantic table.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_mark-code_CURRENT_v1_1.py",
+      "runtime_sha256": "f4f43916f896bcc99d37327165c4f8386076b8e1905522dfc21177f59014428a",
+      "self_test": {
+        "body_id": "mark-code",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 35,
+      "body_id": "punctbody",
+      "name": "PunctBody",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "punctuation changes route and completion state rather than merely formatting text.",
+      "next_native_gap_source": "operator grammar, precedence, diagnostics.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_punctbody_CURRENT_v1_1.py",
+      "runtime_sha256": "552e7af0fd40a2fd44b6ebfcad192cc6a4d3883075c320c696bfa0bbdbe9f18b",
+      "self_test": {
+        "body_id": "punctbody",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 36,
+      "body_id": "mmzg",
+      "name": "MMZG / MorseMinus ZeroGrip",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "zero-grip and channel selection preserve signal, field, pressure, path delta, trace and PALM decision.",
+      "next_native_gap_source": "tokenizer, parser expansion, typed AST, effect checks, source maps.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_mmzg_CURRENT_v1_1.py",
+      "runtime_sha256": "84f24197f83b01f100aa45d91a941613a5130a3b276c8d59eaf661bcf18da57f",
+      "self_test": {
+        "body_id": "mmzg",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 37,
+      "body_id": "route-code",
+      "name": "Route-Code",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "routes are executable code with source, state and recovery.",
+      "next_native_gap_source": "route grammar, graph IR, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_route-code_CURRENT_v1_1.py",
+      "runtime_sha256": "46795b4723c7ea2d2e50bbee92b68c795da040604a4b8dbd6b577c97cea74524",
+      "self_test": {
+        "body_id": "route-code",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 38,
+      "body_id": "routeframe",
+      "name": "RouteFrame",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "control flow is represented as routes with visible entry, transition and recovery.",
+      "next_native_gap_source": "route graph, verifier, lowering.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_routeframe_CURRENT_v1_1.py",
+      "runtime_sha256": "d3258cd3d9f6e0e364cee35b18e89e018953c639d12df207c5cc1d6d0f32bc28",
+      "self_test": {
+        "body_id": "routeframe",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 39,
+      "body_id": "routescript",
+      "name": "RouteScript",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "scripts are explicit route programs with traceable state change.",
+      "next_native_gap_source": "grammar, parser, AST, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_routescript_CURRENT_v1_1.py",
+      "runtime_sha256": "bd2d6a8348a20212a7927999350a69cd07b9170f6906e1266439c7e60a3b6292",
+      "self_test": {
+        "body_id": "routescript",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 40,
+      "body_id": "statefield",
+      "name": "StateField",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "state exists in a field with contact and consequence.",
+      "next_native_gap_source": "state schema, effect system, runtime storage.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_statefield_CURRENT_v1_1.py",
+      "runtime_sha256": "abaf869b2fe5947cd05481722a78587b28e8968f3a3e6f76eecff1d5fa65e569",
+      "self_test": {
+        "body_id": "statefield",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 41,
+      "body_id": "cadenpad",
+      "name": "CadenPad",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "author, test and inspect Caden/Cading bodies with visible output and receipts.",
+      "next_native_gap_source": "language services, debug adapter, project model.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_cadenpad_CURRENT_v1_1.py",
+      "runtime_sha256": "39e4f0e1e06ddf7cc4371044367899ff832ac75c46bfe5019bfb61acb35d0aa5",
+      "self_test": {
+        "body_id": "cadenpad",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 42,
+      "body_id": "coding-body-house",
+      "name": "JM Coding Body House — Intuitive Builder",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "separate rooms preserve body identity while sharing one open-first house.",
+      "next_native_gap_source": "exact room manifest, plugin API, language services, native packaging.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_coding-body-house_CURRENT_v1_1.py",
+      "runtime_sha256": "45712c239f1ecff9e19b8a51e682d3027e773cc78d28188c631cbdb36e62b24c",
+      "self_test": {
+        "body_id": "coding-body-house",
+        "tests": 8,        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 43,
+      "body_id": "finger-one",
+      "name": "Finger One",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "primary JM coding hand; source-side bodies remain distinct while cooperating.",
+      "next_native_gap_source": "exact body map, adapter SDK, conformance suite.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_finger-one_CURRENT_v1_1.py",
+      "runtime_sha256": "6749302af4a34b65a083bca59d8e86b8f33475fd09ad277054a53cd0042cc62b",
+      "self_test": {
+        "body_id": "finger-one",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 44,
+      "body_id": "finger-one-codestudio",
+      "name": "Finger One CodeStudio / GripCube",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "the coding hand can inspect, select and operate bodies without flattening them.",
+      "next_native_gap_source": "project model, plugin protocol, debugger.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_finger-one-codestudio_CURRENT_v1_1.py",
+      "runtime_sha256": "62bb33606aeb5b6cb675407321ce8ba2888d0f3d08ebe807a2e01aae81a6b470",
+      "self_test": {
+        "body_id": "finger-one-codestudio",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 45,
+      "body_id": "finger-two",
+      "name": "Finger Two",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "formula, gesture, mudra, MorseMinus and ZeroGrip routes remain embodied and executable.",
+      "next_native_gap_source": "gesture grammar, temporal parser, body input runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_finger-two_CURRENT_v1_1.py",
+      "runtime_sha256": "784d10285f9b499c6623bb8380c55dddcc16ffda2ad808de958a4dca96d2953d",
+      "self_test": {
+        "body_id": "finger-two",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 46,
+      "body_id": "builder-lads",
+      "name": "Builder Lads",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "building agents cooperate visibly without taking source authority.",
+      "next_native_gap_source": "builder contract, task graph, receipt protocol.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_builder-lads_CURRENT_v1_1.py",
+      "runtime_sha256": "4588798adf65917486b2d51fcded5957ffc10b1cf83635b2955ad34086cd435b",
+      "self_test": {
+        "body_id": "builder-lads",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 47,
+      "body_id": "lexicon",
+      "name": "Lexicon",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "terms remain linked to executable definitions and body routes.",
+      "next_native_gap_source": "lexicon schema, lookup API, language server.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_lexicon_CURRENT_v1_1.py",
+      "runtime_sha256": "fa87558533ebd248cc725f13e121b4f37a022a7ddadbcf0f1da27528f7211cb1",
+      "self_test": {
+        "body_id": "lexicon",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 48,
+      "body_id": "namebank",
+      "name": "NameBank",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "names retain identity, aliases, lineage and collision rules.",
+      "next_native_gap_source": "symbol table, namespace resolver, collision diagnostics.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_namebank_CURRENT_v1_1.py",
+      "runtime_sha256": "f473e35ec22691127d15e41ea9a9374425646693be0e4e42ba722b6bb15f0dfe",
+      "self_test": {
+        "body_id": "namebank",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 49,
+      "body_id": "pattern-library",
+      "name": "Pattern Library",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "reusable patterns preserve provenance, constraints and demonstrated use.",
+      "next_native_gap_source": "pattern schema, matcher, versioning.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_pattern-library_CURRENT_v1_1.py",
+      "runtime_sha256": "6a7ad45dddfa3e9c050e06a6181c48fc92548b8cdfb30f57ace1a51a2e788de4",
+      "self_test": {
+        "body_id": "pattern-library",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 50,
+      "body_id": "star-route-builder",
+      "name": "Star Route Builder",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "build routes through visible star trials and receipts.",
+      "next_native_gap_source": "route graph editor, test runner, exporter.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_star-route-builder_CURRENT_v1_1.py",
+      "runtime_sha256": "ab96c41f1557f4992fde10d40036ad54809c7196706d663d6ebd75c0e8793b3b",
+      "self_test": {
+        "body_id": "star-route-builder",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 51,
+      "body_id": "build-gates",
+      "name": "Build Gates",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Source Gate → Signal Gate → Route Gate → State Gate → Trace Gate → Body Gate → Receipt Gate → Rebuild Gate.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_build-gates_CURRENT_v1_1.py",
+      "runtime_sha256": "f55d14a1872be79aa0aedd16ab80fea44ac035ffd2ebeb01423ba5ca6fbd464d",
+      "self_test": {
+        "body_id": "build-gates",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 52,
+      "body_id": "choice-box",
+      "name": "Choice Box",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "choice remains visible, routable and consequential.",
+      "next_native_gap_source": "choice AST, branch verifier, runtime adapter.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_choice-box_CURRENT_v1_1.py",
+      "runtime_sha256": "1d478357d9c32e30f8b5bdc8bd3bac9ae3c66d169b288fc97b80ed948edd0dc0",
+      "self_test": {
+        "body_id": "choice-box",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 53,
+      "body_id": "crown-register",
+      "name": "Crown Register",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Candidate Body + Proof Gates + Scope → Crown / Working-Crown / Hold.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_crown-register_CURRENT_v1_1.py",
+      "runtime_sha256": "7fbbfe5ab1e7d4d1ab973bd9ab0f03a81c27a213a22c59398835ad7aea6d062b",
+      "self_test": {
+        "body_id": "crown-register",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 54,
+      "body_id": "current-best-register",
+      "name": "Current Best Register",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Candidates + Scope + Proof → Strongest Usable Version.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_current-best-register_CURRENT_v1_1.py",
+      "runtime_sha256": "b77842a4051af636a31046130dc49eed00ec394f83797ad1ebd8c199bed017e7",
+      "self_test": {
+        "body_id": "current-best-register",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 55,
+      "body_id": "dgyak",
+      "name": "DGYAK",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Claimed Knowing → Evidence Check → Know / Hold.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_dgyak_CURRENT_v1_1.py",
+      "runtime_sha256": "1378d6f22380df8082dac1555b3027531f2496eb1b8ea30fb3538c8ac2e199ee",
+      "self_test": {
+        "body_id": "dgyak",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 56,
+      "body_id": "dings",
+      "name": "Dings",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Ding records earned contact; silence or failure remains no-Ding.",
+      "next_native_gap_source": "Ding schema, signing, trace links.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_dings_CURRENT_v1_1.py",
+      "runtime_sha256": "f1645824336c79418f52a433e1b764fa23583a60062d928d36557d4bd7c485d4",
+      "self_test": {
+        "body_id": "dings",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 57,
+      "body_id": "seven-birth-gates",
+      "name": "Seven Birth-Gates",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "new bodies pass explicit creation gates before claim and release.",
+      "next_native_gap_source": "gate schema, validator, receipt chain.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_seven-birth-gates_CURRENT_v1_1.py",
+      "runtime_sha256": "f7d062037f840678be81190f7a716794d25f75983419be7a1e5b22886aaffa14",
+      "self_test": {
+        "body_id": "seven-birth-gates",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 58,
+      "body_id": "source-ledger",
+      "name": "Source Ledger",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Source → Path → Authority → Receipt → Body Link.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_source-ledger_CURRENT_v1_1.py",
+      "runtime_sha256": "d66c01a88d1fa35385d1909d68e67983a6c94d8b5640ba61dfcc5d0ae3c1c5be",
+      "self_test": {
+        "body_id": "source-ledger",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 59,
+      "body_id": "vts",
+      "name": "VTS / Validate That System",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Claim / System → Validation Route → Consequence / Hold.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_vts_CURRENT_v1_1.py",
+      "runtime_sha256": "c370b81836729a5e9a6ae8301dd12237a6e4804c0e719236b94d8a5c4995bb94",
+      "self_test": {
+        "body_id": "vts",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 60,
+      "body_id": "tracebox",
+      "name": "TraceBox / Energy TraceBox",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "hidden effort becomes useful only when routed, measured, traced and recoverable.",
+      "next_native_gap_source": "event schema, trace protocol, storage adapters, query engine.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_tracebox_CURRENT_v1_1.py",
+      "runtime_sha256": "a1bf3138076d0f536b8a4afaad2efb6858fb0c9d3544317705146e17eb8876e8",
+      "self_test": {
+        "body_id": "tracebox",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 61,
+      "body_id": "bugg-error-library",
+      "name": "BUGG / Error Library",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "errors become reusable traced bodies with repair and recovery routes.",
+      "next_native_gap_source": "diagnostic schema, error codes, repair suggestions, regression tests.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_bugg-error-library_CURRENT_v1_1.py",
+      "runtime_sha256": "d4cfe5942ae431bcd9ad3f567977d2443f557a14f14bdadf810e9c83dd743a29",
+      "self_test": {
+        "body_id": "bugg-error-library",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 62,
+      "body_id": "buildode",
+      "name": "Buildode",
+      "kind": "delivery",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "DeliveryReceiptEngine",
+      "governing_statement": "Body + Purpose + Build Mode → Adapted Build Package.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_buildode_CURRENT_v1_1.py",
+      "runtime_sha256": "66ecd7fe6860d48221db3636852f8814f3912804763fc414113153c4017d5d36",
+      "self_test": {
+        "body_id": "buildode",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 63,
+      "body_id": "cold-ding-join",
+      "name": "Cold Ding Join",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "Trace + Stored Ding → Cold Ding Join → Receipt Memory.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_cold-ding-join_CURRENT_v1_1.py",
+      "runtime_sha256": "d8df09740124da4d7ba5ddc87306a2d19e816eda02e50a39c5d070a9947db3a2",
+      "self_test": {
+        "body_id": "cold-ding-join",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 64,
+      "body_id": "combibind",
+      "name": "CombiBind",
+      "kind": "composition",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "MeshCompositionEngine",
+      "governing_statement": "combine without erasing source identities or incompatible boundaries.",
+      "next_native_gap_source": "compatibility contracts, binder, conflict diagnostics.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_combibind_CURRENT_v1_1.py",
+      "runtime_sha256": "7d7d69fcefeed04d9455bacc86f40b76d098888531c819920a12aaec811cc0fb",
+      "self_test": {
+        "body_id": "combibind",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 65,
+      "body_id": "jmsmooth",
+      "name": "JMSmooth",
+      "kind": "composition",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "MeshCompositionEngine",
+      "governing_statement": "smooth execution without removing readable consequence.",
+      "next_native_gap_source": "optimisation passes, equivalence tests, performance receipts.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmsmooth_CURRENT_v1_1.py",
+      "runtime_sha256": "232913b1fb8155070f1d6a122ac5c95ded56e231acd2c3aed00fb1a5085cf30f",
+      "self_test": {
+        "body_id": "jmsmooth",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 66,
+      "body_id": "jqgraft",
+      "name": "JMQGraft",
+      "kind": "composition",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "MeshCompositionEngine",
+      "governing_statement": "grafts spread only through explicit compatibility and provenance rules.",
+      "next_native_gap_source": "graft contract, provenance graph, rollback.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jqgraft_CURRENT_v1_1.py",
+      "runtime_sha256": "f8162d236756565b1aa40e07ccfbf6d2e719906e1e99531cb5cc5b548f9b0e05",
+      "self_test": {
+        "body_id": "jqgraft",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 67,
+      "body_id": "mirror-pair-finger-law",
+      "name": "Mirror-Pair Finger Law",
+      "kind": "composition",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "MeshCompositionEngine",
+      "governing_statement": "Left State ↔ Right State → Difference / Relation → Paired Route.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_mirror-pair-finger-law_CURRENT_v1_1.py",
+      "runtime_sha256": "0736499b71660dd3a81b4539dd43845d59cc44f80eb9eca581f975bd346d04fd",
+      "self_test": {
+        "body_id": "mirror-pair-finger-law",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 68,
+      "body_id": "onebody",
+      "name": "OneBody",
+      "kind": "authoring",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RevisionAuthoringEngine",
+      "governing_statement": "Identity + Route + State + Trace + Receipt = OneBody.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_onebody_CURRENT_v1_1.py",
+      "runtime_sha256": "38e63c6d46f5e728f55acc3ff53f02e3ab315fbb442402b2d92170961fe673e2",
+      "self_test": {
+        "body_id": "onebody",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 69,
+      "body_id": "onebody-delivery",
+      "name": "OneBody Delivery",
+      "kind": "delivery",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "DeliveryReceiptEngine",
+      "governing_statement": "Source → Build → Receipt → Package → OPEN_FIRST.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_onebody-delivery_CURRENT_v1_1.py",
+      "runtime_sha256": "281d293ddafae0de16adaa430a79efa44d3c0d2a8f84e3f3907c2198804ac7e3",
+      "self_test": {
+        "body_id": "onebody-delivery",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 70,
+      "body_id": "zionfolder",
+      "name": "Zionfolder",
+      "kind": "delivery",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "DeliveryReceiptEngine",
+      "governing_statement": "Source + OPEN_FIRST + Manifest + Receipt + SHA → Recoverable Body Carrier.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_zionfolder_CURRENT_v1_1.py",
+      "runtime_sha256": "7dd97756f7100a21b2f658eeac92c2155cc0519359c2393c61b707214c06aa51",
+      "self_test": {
+        "body_id": "zionfolder",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 71,
+      "body_id": "codeing-engine",
+      "name": "Codeing Engine",
+      "kind": "compiler",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "CompilerEngine",
+      "governing_statement": "codeing converts marks and routes into executable state change.",
+      "next_native_gap_source": "frontend API, IR pipeline, backends.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_codeing-engine_CURRENT_v1_1.py",
+      "runtime_sha256": "e484e17dc1dfee87c05c5a2e0608fee860b0ae5e3b792f81d8b0f14dde944252",
+      "self_test": {
+        "body_id": "codeing-engine",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 72,
+      "body_id": "game-coding",
+      "name": "Game-CODING",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "game mechanics change through JM-native coding while visuals may remain unchanged.",
+      "next_native_gap_source": "game grammar, parser, gameplay IR, deterministic runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_game-coding_CURRENT_v1_1.py",
+      "runtime_sha256": "bb7a4b2ffbc307cdc02208e9edc7d335555ad3f7388911e05a5ac43257fc04dd",
+      "self_test": {
+        "body_id": "game-coding",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 73,
+      "body_id": "gameforge",
+      "name": "GameForge",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "GameForge must let different games stay different.",
+      "next_native_gap_source": "body adapter SDK, native build graph, target emitters.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_gameforge_CURRENT_v1_1.py",
+      "runtime_sha256": "081103dd4644b26d5b2d0fde36c1c77353ed5223ed4df4b9f15888cb6264c80f",
+      "self_test": {
+        "body_id": "gameforge",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 74,
+      "body_id": "glyphforge",
+      "name": "GlyphForge",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "shared shell and adapters preserve each game body’s distinct control grammar.",
+      "next_native_gap_source": "adapter ABI, capability negotiation, conformance tests.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_glyphforge_CURRENT_v1_1.py",
+      "runtime_sha256": "b698f09bd055f3df0cf7612eedfdcb4a2dd3aa04a8cb06060a070af93368c8a6",
+      "self_test": {
+        "body_id": "glyphforge",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 75,
+      "body_id": "glyphplay",
+      "name": "GlyphPlay",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "creator-first playable logic preserves source route and contact.",
+      "next_native_gap_source": "glyph grammar, parser, playable IR, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_glyphplay_CURRENT_v1_1.py",
+      "runtime_sha256": "b923d1c23c0e853aeb4c5a935341d9409adb6fb19376d2a2e25be5808e856fb6",
+      "self_test": {
+        "body_id": "glyphplay",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 76,
+      "body_id": "good-gold-star-codegame",
+      "name": "Good / Gold Star CodeGame Logic",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "coding bodies prove themselves through playable route trials.",
+      "next_native_gap_source": "trial harness, body adapters, receipts.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_good-gold-star-codegame_CURRENT_v1_1.py",
+      "runtime_sha256": "0ad0de0fdd596e454fdbcaca7d7afd8b7a6eb5ac3d6571166668ca4f2fcc5d4c",
+      "self_test": {
+        "body_id": "good-gold-star-codegame",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 77,
+      "body_id": "jm-game-native-core",
+      "name": "JM GAME NATIVE CORE",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "JM source → parse → IR → runtime → host bridge; the host serves the game.",
+      "next_native_gap_source": "multi-body adapters, native ABI, C++ backend, Rust backend, Wasm backend.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jm-game-native-core_CURRENT_v1_1.py",
+      "runtime_sha256": "8c834e61d7310f79254aba1f320eea9ed8678b8737472093075549178bec3332",
+      "self_test": {
+        "body_id": "jm-game-native-core",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 78,
+      "body_id": "jmgamecore",
+      "name": "JM GameCore",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "the estate is the donor; shared organs do not collapse sovereign games.",
+      "next_native_gap_source": "body registry adapter, build graph, native targets.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmgamecore_CURRENT_v1_1.py",
+      "runtime_sha256": "adae2b74ea4b6525cd4c4ee6be1934b0f81e75117c74b90bec35f4d48ba399fc",
+      "self_test": {
+        "body_id": "jmgamecore",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 79,
+      "body_id": "kading-game-estate-engine",
+      "name": "Kading Game Estate Engine",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "game bodies inherit estate organs through Kading without host-first takeover.",
+      "next_native_gap_source": "Kading frontend, game IR, native runtime, emitters.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_kading-game-estate-engine_CURRENT_v1_1.py",
+      "runtime_sha256": "ab881332b76ef3a7e81555581c7233636e78900ec8d54f4c251b9f471082463e",
+      "self_test": {
+        "body_id": "kading-game-estate-engine",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 80,
+      "body_id": "playform",
+      "name": "PLAYFORM",
+      "kind": "game",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GameStateEngine",
+      "governing_statement": "form and play remain mutually executable.",
+      "next_native_gap_source": "form grammar, parser, layout IR, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_playform_CURRENT_v1_1.py",
+      "runtime_sha256": "70507152f1a2d6fef47039499452d431d9ecd5986195922ca826d2d03e8fb56d",
+      "self_test": {
+        "body_id": "playform",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 81,
+      "body_id": "jmvisual-runtime",
+      "name": "JM Visual Interaction Runtime",
+      "kind": "runtime",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "StateRouteEngine",
+      "governing_statement": "touching the field must cause readable state and consequence.",
+      "next_native_gap_source": "input IR, gesture recogniser, render/runtime bridge.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmvisual-runtime_CURRENT_v1_1.py",
+      "runtime_sha256": "652d1a76245a90e6a546c57663c735a1d101781d092909d959ea659e7b8e7f3e",
+      "self_test": {
+        "body_id": "jmvisual-runtime",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 82,
+      "body_id": "jmvisualgraft",
+      "name": "JMVisualGraft",
+      "kind": "visual",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "VisualFieldEngine",
+      "governing_statement": "visual expression remains tied to mechanic, state and contact.",
+      "next_native_gap_source": "render IR, asset contract, GPU targets.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jmvisualgraft_CURRENT_v1_1.py",
+      "runtime_sha256": "5f877c7705089adb2c2cce32123324327ed1e53aca3502f1c92fecb5cc37ea9b",
+      "self_test": {
+        "body_id": "jmvisualgraft",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 83,
+      "body_id": "glyph-candidates",
+      "name": "Glyph Candidates",
+      "kind": "governance",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "GateGovernanceEngine",
+      "governing_statement": "candidate glyphs remain provisional until contact and execution prove them.",
+      "next_native_gap_source": "glyph registry, parser experiments, candidate receipts.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_glyph-candidates_CURRENT_v1_1.py",
+      "runtime_sha256": "ae57ed0daa22bb80c1bba4e2a776c159446a8501a3e9c740d1258d5de213ea85",
+      "self_test": {
+        "body_id": "glyph-candidates",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 84,      "body_id": "command-glyphs",
+      "name": "Command Glyphs",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "Meaning → Glyph → Pressure → Route Action.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_command-glyphs_CURRENT_v1_1.py",
+      "runtime_sha256": "18d79d9b2dc6980f7326c9f4e635471f8892becce29dd7b7f702578431961cd2",
+      "self_test": {
+        "body_id": "command-glyphs",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 85,
+      "body_id": "contactband",
+      "name": "ContactBand",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "contact joins source, state and consequence within bounded bands.",
+      "next_native_gap_source": "contact events, band model, runtime adapter.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_contactband_CURRENT_v1_1.py",
+      "runtime_sha256": "45e5fb737f1a5b1caaa70ee3ea1b5c3c90bc4626a2541757653fa1124c85021b",
+      "self_test": {
+        "body_id": "contactband",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 86,
+      "body_id": "contactcode",
+      "name": "ContactCode",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "physical or logical contact is explicit code input.",
+      "next_native_gap_source": "contact grammar, event AST, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_contactcode_CURRENT_v1_1.py",
+      "runtime_sha256": "350c3e3050e623f06122872acf8c2b7dae45381a63c1db9f2fe3357dee6dfe39",
+      "self_test": {
+        "body_id": "contactcode",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 87,
+      "body_id": "pattern-tapping",
+      "name": "Pattern-Tapping",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "patterned body contact is a first-class input language.",
+      "next_native_gap_source": "gesture lexer, temporal parser, gesture AST, runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_pattern-tapping_CURRENT_v1_1.py",
+      "runtime_sha256": "274d86a590ddcd5d245d555b533b4034d9d2852f2fc538b7626968944ec6909f",
+      "self_test": {
+        "body_id": "pattern-tapping",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 88,
+      "body_id": "seedform",
+      "name": "Seedform Choice Interface",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "hand/body input, choice, combo and permission mechanics share a governed surface.",
+      "next_native_gap_source": "gesture grammar, body-state model, runtime, device adapters.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_seedform_CURRENT_v1_1.py",
+      "runtime_sha256": "75203c1acee43ee67682d32e95f50808d0766151eb8bcd18fd97a1e98768f5f4",
+      "self_test": {
+        "body_id": "seedform",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 89,
+      "body_id": "reality-contact",
+      "name": "Reality Contact",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "claims and mechanics must contact reality rather than only resemble it.",
+      "next_native_gap_source": "contact API, test adapters, evidence schema.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_reality-contact_CURRENT_v1_1.py",
+      "runtime_sha256": "f66b6e44861058febf4a410ecb230112bd1b7654471d6041d37803b5de937506",
+      "self_test": {
+        "body_id": "reality-contact",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 90,
+      "body_id": "prayer-hands-paired-contact",
+      "name": "Prayer Hands / Paired Contact Logic",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "Left Contact + Right Contact → Join / Separate → Shared State.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_prayer-hands-paired-contact_CURRENT_v1_1.py",
+      "runtime_sha256": "4b36c8b56f92275d7522536c37bdff7b161c822f5d193cf22f0577bc47b4cf52",
+      "self_test": {
+        "body_id": "prayer-hands-paired-contact",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 91,
+      "body_id": "flowtalk-body-route",
+      "name": "FlowTalk Body Route",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "Source Wording → Body Meaning → Route → Output.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_flowtalk-body-route_CURRENT_v1_1.py",
+      "runtime_sha256": "f001421d87c3274b5bb9cc06cad22e93937da940506d351c664b4819360e2881",
+      "self_test": {
+        "body_id": "flowtalk-body-route",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 92,
+      "body_id": "jickma-jickmah",
+      "name": "JickMa / JickMah",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "Side Be → Contact → Trace → Gift → Side Af.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_jickma-jickmah_CURRENT_v1_1.py",
+      "runtime_sha256": "3513b529b4bffd76569b519ba6df6c62fc4ba3c156b38d227fb7045feb199ece",
+      "self_test": {
+        "body_id": "jickma-jickmah",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 93,
+      "body_id": "mood-drills",
+      "name": "Mood Drills",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "Mood → Drill → State Shift → Trace.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_mood-drills_CURRENT_v1_1.py",
+      "runtime_sha256": "e9afb6272799fc24f5063c6222fc823949bf97401adf4794cfbda5928a1c874e",
+      "self_test": {
+        "body_id": "mood-drills",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 94,
+      "body_id": "morseminus",
+      "name": "MorseMinus",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "Minimal Signal → Route Meaning → Action.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_morseminus_CURRENT_v1_1.py",
+      "runtime_sha256": "d4048ec09b12f8798eea491f464f705dd010bc4da8ce9fec006a28beecfb4521",
+      "self_test": {
+        "body_id": "morseminus",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 95,
+      "body_id": "mudra-code",
+      "name": "Mudra Code",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "hand forms and transitions are executable symbols with bodily context.",
+      "next_native_gap_source": "pose vocabulary, temporal parser, sensor adapters.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_mudra-code_CURRENT_v1_1.py",
+      "runtime_sha256": "7b476197383a42831819183d2a571c5e333c89256ad76721e1950d341aae0633",
+      "self_test": {
+        "body_id": "mudra-code",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 96,
+      "body_id": "noncoding-code",
+      "name": "Noncoding-Code",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "Meaning → Signal → Action → Trace.",
+      "next_native_gap_source": "historical source audit, exact native conformance.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_noncoding-code_CURRENT_v1_1.py",
+      "runtime_sha256": "171c0e5be65f139333b5fcbb1218d230379d41cda2c6ba3df0dff1d91c3b3ceb",
+      "self_test": {
+        "body_id": "noncoding-code",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 97,
+      "body_id": "speakgate",
+      "name": "SpeakGate",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "spoken input passes identity, ambiguity and permission gates before execution.",
+      "next_native_gap_source": "speech tokens, ambiguity parser, confirmation policy.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_speakgate_CURRENT_v1_1.py",
+      "runtime_sha256": "23ea6df777064b2c9895d02e29bdb66a291d284028b252cabd81aa299c300e3f",
+      "self_test": {
+        "body_id": "speakgate",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 98,
+      "body_id": "speakuals",
+      "name": "Speakuals",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "relations become speakable without losing source and landing.",
+      "next_native_gap_source": "grammar, parser, relation AST, semantic checks.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_speakuals_CURRENT_v1_1.py",
+      "runtime_sha256": "3a4c9b793eea2e2cceab9c2269f62e2a6d9c5ec4d1f8e1fe31fa6cdf60545800",
+      "self_test": {
+        "body_id": "speakuals",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 99,
+      "body_id": "speech-code",
+      "name": "Speech-Code",
+      "kind": "embodied",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "ContactFieldEngine",
+      "governing_statement": "speech becomes executable only through ambiguity, intent and permission handling.",
+      "next_native_gap_source": "speech parser, intent IR, confirmation runtime.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_speech-code_CURRENT_v1_1.py",
+      "runtime_sha256": "3959ff8d34e65e8b8785c2158a4127069d9e333ff187c13956d2dd59358425bf",
+      "self_test": {
+        "body_id": "speech-code",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    },
+    {
+      "order": 100,
+      "body_id": "tbs-string",
+      "name": "TBS.String",
+      "kind": "route",
+      "version": "1.1.0",
+      "foundation_version": "1.0.0",
+      "engine": "RouteResolutionEngine",
+      "governing_statement": "string bodies preserve named route and meaning structure.",
+      "next_native_gap_source": "string schema, parser, runtime library.",
+      "enhancements": [
+        "deterministic_receipts",
+        "trace_and_recovery",
+        "checkpoint_state",
+        "mesh_not_merge_contract",
+        "json_js_rust_python_emitters",
+        "self_test",
+        "api_ready_surface",
+        "claim_scope_boundary"
+      ],
+      "status": "CURRENT_OPERATIONAL_ENHANCED",
+      "runtime_file": "00_OPEN_FIRST_tbs-string_CURRENT_v1_1.py",
+      "runtime_sha256": "466686f09cbb13ca7fa2e4f223801399148f35d8499d62aebfa06fc5609796f0",
+      "self_test": {
+        "body_id": "tbs-string",
+        "tests": 8,
+        "passed": 8,
+        "percent": 100.0,
+        "state": "DING",
+        "details": [
+          [
+            "execute",
+            true
+          ],
+          [
+            "checkpoint",
+            true
+          ],
+          [
+            "recover",
+            true
+          ],
+          [
+            "mesh",
+            true
+          ],
+          [
+            "emit-json",
+            true
+          ],
+          [
+            "emit-js",
+            true
+          ],
+          [
+            "emit-rust",
+            true
+          ],
+          [
+            "emit-python",
+            true
+          ]
+        ]
+      },
+      "laws": [
+        "BODY IDENTITY BEFORE FEDERATION",
+        "MESH != MERGE",
+        "TRACE BEFORE CROWN",
+        "RECOVER BEFORE REBUILD",
+        "NO DING, NO CLAIM"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>32_Cb — Positional Bridge Coding Body v1.0</title>
+<style>
+:root{
+  --bg:#0b0d10;--panel:#12161c;--panel2:#171c24;--text:#f4f6f8;--muted:#9aa5b1;
+  --line:#29313c;--good:#59d98e;--warn:#ffcc66;--bad:#ff6b6b;--accent:#7cc7ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.45}
+main{max-width:1100px;margin:0 auto;padding:20px}
+h1{font-size:clamp(2rem,7vw,4.5rem);margin:.1em 0 0}
+h2{margin-top:1.5rem}
+.sub{color:var(--muted);margin:.25rem 0 1.4rem}
+.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.28rem .65rem;margin:.2rem .25rem .2rem 0;color:var(--accent)}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+textarea{width:100%;min-height:120px;background:#07090c;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;resize:vertical}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer;margin:6px 6px 0 0}
+button:hover{border-color:var(--accent)}
+pre{white-space:pre-wrap;word-break:break-word;background:#07090c;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:100px}
+.good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)} .muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+code{color:#cce8ff}
+.law{font-size:1.05rem;padding:12px;border-left:4px solid var(--accent);background:#0e1319;margin:10px 0}
+.small{font-size:.9rem}
+@media(max-width:800px){.grid{grid-template-columns:1fr}main{padding:12px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="badge">JM CODING ESTATE</div>
+  <div class="badge">ONEBODY</div>
+  <div class="badge">v1.0</div>
+  <h1>32_Cb</h1>
+  <p class="sub"><strong>Positional Bridge Coding Body</strong> — 3 ↔ C, 2 ↔ B by letter placement.</p>
+
+  <section class="card">
+    <div class="law"><strong>CORE:</strong> <code>32_Cb</code> is a dual-carrier bridge. The numeric rail <code>3,2</code> and alphabet rail <code>C,b</code> resolve to the same letter positions. The underscore <code>_</code> is the bridge/check operator.</div>
+    <div class="law"><strong>POWER:</strong> position and letter can carry the same route redundantly, so the code can translate <em>and</em> self-check.</div>
+    <div class="law"><strong>BOUNDARY:</strong> numeric position does not determine case. <code>32</code> can recover <code>CB</code>, but the lower-case <code>b</code> in <code>Cb</code> is presentation metadata unless another rule explicitly gives case a function.</div>
+  </section>
+
+  <div class="grid" style="margin-top:14px">
+    <section class="card">
+      <h2>Live 32_Cb Runtime</h2>
+      <p class="muted small">Enter a bridge body or command.</p>
+      <textarea id="src">32_Cb</textarea>
+      <div>
+        <button data-ex="32_Cb">32_Cb</button>
+        <button data-ex="32_CA">BUGG example</button>
+        <button data-ex="[10][13]_JM">JM</button>
+        <button data-ex="ENC Cb">ENC Cb</button>
+        <button data-ex="DEC 3.2">DEC 3.2</button>
+        <button data-ex="TRACE 32_Cb">TRACE</button>
+        <button id="run">RUN</button>
+      </div>
+      <h3>Receipt</h3>
+      <pre id="out"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Core Grammar</h2>
+      <table>
+        <tr><th>Form</th><th>Meaning</th></tr>
+        <tr><td><code>32_Cb</code></td><td>dual-rail bridge/check</td></tr>
+        <tr><td><code>3.2</code></td><td>explicit position sequence</td></tr>
+        <tr><td><code>[10][13]</code></td><td>safe positions above 9 → JM</td></tr>
+        <tr><td><code>ENC Cb</code></td><td>letters → positions</td></tr>
+        <tr><td><code>DEC 3.2</code></td><td>positions → letters</td></tr>
+        <tr><td><code>TRACE 32_Cb</code></td><td>full resolver trace</td></tr>
+      </table>
+      <p class="small muted">Compact unbracketed digit strings are read digit-by-digit and therefore only represent positions 1–9. Use brackets or separators for 10–26.</p>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:14px">
+    <h2>32_Cb Execution Spine</h2>
+    <pre>SOURCE
+→ TOKENISE
+→ SPLIT BRIDGE (_)
+→ POSITION RESOLVE
+→ CROSS-VALIDATE
+→ ROUTE IR
+→ VALIDATE
+→ STATE CHANGE
+→ DING / BUGG / HOLD
+→ TRACE
+→ RECOVERY / OUTPUT</pre>
+    <p>This descends from Cading rather than replacing it. Cading already resolves function through mark + position + neighbours + layer + route-state and already uses a compiler path through tokenise → parse → route analyse → IR → validate → execute → trace/recovery.</p>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Mode Separation</h2>
+    <p><code>32</code> already has other legitimate JM routes. <strong>32_Cb does not erase them.</strong></p>
+    <table>
+      <tr><th>Layer</th><th>32 can resolve as</th><th>Status</th></tr>
+      <tr><td>POSITION</td><td><code>3,2 → C,B</code></td><td>32_Cb core</td></tr>
+      <tr><td>FLOWTALK / JM32</td><td>THREE-TWO / FREE TO</td><td>existing separate route</td></tr>
+      <tr><td>NUMBER</td><td>thirty-two</td><td>ordinary numeric value</td></tr>
+    </table>
+    <div class="law"><strong>SAME MARK ≠ SINGLE FUNCTION.</strong> Layer decides which resolver has jurisdiction.</div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>32_Cb Laws</h2>
+    <ol>
+      <li><strong>POSITION BEFORE ASSUMPTION.</strong> In POSITION mode, A=1 … Z=26.</li>
+      <li><strong>BRIDGE MUST MATCH.</strong> Left and right rails must resolve to the same position sequence.</li>
+      <li><strong>CASE ≠ POSITION.</strong> Case is preserved but not invented.</li>
+      <li><strong>COMPACT ≠ AMBIGUOUS.</strong> Bare digit strings are single digits; 10–26 use separators/brackets.</li>
+      <li><strong>SAME MARK ≠ SINGLE FUNCTION.</strong> Position, numeric, sound and route readings stay separate until a layer is declared.</li>
+      <li><strong>MESH ≠ MERGE.</strong> 32_Cb can interoperate with Cading, FlowTalk and JM32 without swallowing them.</li>
+      <li><strong>TRACE BEFORE CROWN.</strong> A bridge PASS must show both resolved rails.</li>
+      <li><strong>BUGG IS ROUTE INFORMATION.</strong> A mismatch reports where the rails diverge.</li>
+      <li><strong>REVERSIBLE WHEN POSSIBLE.</strong> Position↔letter conversion should round-trip under the same alphabet profile.</li>
+      <li><strong>NO DING, NO CLAIM.</strong> Validated relation earns DING only inside its stated layer.</li>
+    </ol>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Alphabet Position Rail</h2>
+    <div id="map" class="small"></div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Reference IR</h2>
+    <pre>{
+  "body": "32_Cb",
+  "layer": "POSITION/AZ",
+  "numericPositions": [3, 2],
+  "alphaCarrier": ["C", "b"],
+  "alphaPositions": [3, 2],
+  "case": ["UPPER", "LOWER"],
+  "bridge": "_",
+  "match": true,
+  "state": "DING",
+  "traceRequired": true
+}</pre>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Built-in Proof Set</h2>
+    <pre id="tests"></pre>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Crown</h2>
+    <div class="law"><strong>32_Cb is a reversible positional bridge code in which numeric placement and alphabetic placement can carry the same route on parallel rails, cross-check each other, and emit an explicit trace instead of relying on visual resemblance alone.</strong></div>
+    <p><strong>Keeper:</strong> <code>3 ↔ C | 2 ↔ B | 32_Cb</code></p>
+    <p class="muted small">Status: v1.0 executable reference body. General-purpose language claims remain bounded to the implemented POSITION/AZ layer.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  function alphaPos(ch){
+    const c = String(ch).toUpperCase();
+    const i = A.indexOf(c);
+    return i >= 0 ? i + 1 : null;
+  }
+  function posChar(n){
+    n = Number(n);
+    return Number.isInteger(n) && n >= 1 && n <= 26 ? A[n-1] : null;
+  }
+  function caseOf(ch){
+    if (!/[A-Za-z]/.test(ch)) return 'NONE';
+    return ch === ch.toUpperCase() ? 'UPPER' : 'LOWER';
+  }
+  function parsePositions(raw){
+    const s = String(raw).trim();
+    if (!s) throw new Error('empty numeric rail');
+
+    if (s.includes('[')){
+      const matches = [...s.matchAll(/\[(\d{1,2})\]/g)];
+      const residue = s.replace(/\[(\d{1,2})\]/g,'').replace(/[\s.,:;|/\-]/g,'');
+      if (!matches.length || residue) throw new Error('invalid bracketed position rail');
+      const nums = matches.map(m => Number(m[1]));
+      validateNums(nums);
+      return nums;
+    }
+
+    if (/[\s.,:;|/\-]/.test(s)){
+      const nums = s.split(/[\s.,:;|/\-]+/).filter(Boolean).map(Number);
+      validateNums(nums);
+      return nums;
+    }
+
+    if (/^\d+$/.test(s)){
+      // Compact law: each bare digit is its own 1–9 position.
+      const nums = [...s].map(Number);
+      if (nums.some(n => n === 0)) throw new Error('0 has no A–Z letter position; use a different layer for zero/Z0 semantics');
+      validateNums(nums);
+      return nums;
+    }
+    throw new Error('numeric rail not recognised');
+  }
+  function validateNums(nums){
+    if (!nums.length || nums.some(n => !Number.isInteger(n) || n < 1 || n > 26)){
+      throw new Error('positions must be integers 1–26');
+    }
+  }
+  function parseLetters(raw){
+    const chars = [...String(raw).trim()].filter(c => /[A-Za-z]/.test(c));
+    if (!chars.length) throw new Error('alphabet rail contains no A–Z letters');
+    return chars;
+  }
+  function encodeLetters(raw){
+    const chars = parseLetters(raw);
+    return {
+      chars,
+      positions: chars.map(alphaPos),
+      case: chars.map(caseOf),
+      explicit: chars.map(c => `[${alphaPos(c)}]`).join(''),
+      dotted: chars.map(alphaPos).join('.')
+    };
+  }
+  function decodePositions(raw){
+    const positions = parsePositions(raw);
+    return {positions, letters: positions.map(posChar).join('')};
+  }
+  function validatePair(expr){
+    const parts = String(expr).trim().split('_');
+    if (parts.length !== 2) throw new Error('bridge bodies use exactly one underscore: numeric_alpha');
+    const numeric = parsePositions(parts[0]);
+    const alpha = encodeLetters(parts[1]);
+    const len = Math.max(numeric.length, alpha.positions.length);
+    const diffs = [];
+    for(let i=0;i<len;i++){
+      if(numeric[i] !== alpha.positions[i]){
+        diffs.push({index:i+1,numeric:numeric[i] ?? null,alpha:alpha.positions[i] ?? null,letter:alpha.chars[i] ?? null});
+      }
+    }
+    const match = diffs.length === 0;
+    return {
+      body:String(expr).trim(),
+      layer:'POSITION/AZ',
+      numericPositions:numeric,
+      alphaCarrier:alpha.chars,
+      alphaPositions:alpha.positions,
+      case:alpha.case,
+      bridge:'_',
+      match,
+      state:match ? 'DING' : 'BUGG',
+      diffs,
+      canonicalAlpha:numeric.map(posChar).join('')
+    };
+  }
+  function receiptPair(expr, trace=false){
+    const ir = validatePair(expr);
+    const lines = [];
+    lines.push(`${ir.state}: ${ir.body}`);
+    lines.push(`LAYER: ${ir.layer}`);
+    lines.push(`NUMERIC: [${ir.numericPositions.join(', ')}]`);
+    lines.push(`ALPHA:   ${ir.alphaCarrier.join('')} -> [${ir.alphaPositions.join(', ')}]`);
+    lines.push(`CASE:    ${ir.case.join(' / ')}`);
+    lines.push(`CANON:   ${ir.canonicalAlpha}`);
+    lines.push(`MATCH:   ${ir.match}`);
+    if(!ir.match){
+      lines.push(`DIFF:    ${JSON.stringify(ir.diffs)}`);
+    }
+    if(trace){
+      lines.push('');
+      lines.push('TRACE');
+      lines.push('SOURCE -> TOKENISE -> SPLIT "_" -> POSITION RESOLVE -> CROSS-VALIDATE -> IR -> ' + ir.state);
+    }
+    return lines.join('\n');
+  }
+  function execute(input){
+    const src = String(input).trim();
+    if (!src) return 'HOLD: no source supplied';
+    const m = src.match(/^(ENC|DEC|TRACE|CHECK|POS|LET)\s+(.+)$/i);
+    try{
+      if(m){
+        const cmd = m[1].toUpperCase(), arg = m[2].trim();
+        if(cmd === 'ENC' || cmd === 'POS'){
+          const r = encodeLetters(arg);
+          return `DING: ${cmd}\nSOURCE: ${arg}\nPOSITIONS: ${r.dotted}\nSAFE: ${r.explicit}\nCASE: ${r.case.join(' / ')}`;
+        }
+        if(cmd === 'DEC' || cmd === 'LET'){
+          const r = decodePositions(arg);
+          return `DING: ${cmd}\nSOURCE: ${arg}\nPOSITIONS: [${r.positions.join(', ')}]\nLETTERS: ${r.letters}\nBOUNDARY: position does not reconstruct original case`;
+        }
+        if(cmd === 'TRACE') return receiptPair(arg,true);
+        if(cmd === 'CHECK') return receiptPair(arg,false);
+      }
+      if(src.includes('_')) return receiptPair(src,true);
+      return 'HOLD: use a bridge body like 32_Cb or a command: ENC / DEC / CHECK / TRACE';
+    } catch(err){
+      return `BUGG: ${err.message}\nSOURCE: ${src}\nRECOVERY: preserve source, correct the failing rail, rerun`;
+    }
+  }
+
+  const out = document.getElementById('out');
+  const src = document.getElementById('src');
+  function run(){ out.textContent = execute(src.value); }
+  document.getElementById('run').addEventListener('click', run);
+  document.querySelectorAll('[data-ex]').forEach(b => b.addEventListener('click',()=>{src.value=b.dataset.ex;run();}));
+
+  document.getElementById('map').innerHTML = A.split('').map((c,i)=>`<span class="badge">${i+1}↔${c}</span>`).join('');
+
+  const tests = [
+    ['32_Cb', /DING/],
+    ['32_CA', /BUGG/],
+    ['[10][13]_JM', /DING/],
+    ['ENC Cb', /POSITIONS: 3\.2/],
+    ['DEC 3.2', /LETTERS: CB/],
+    ['DEC [10][13]', /LETTERS: JM/],
+    ['DEC 0', /BUGG/]
+  ];
+  let pass = 0;
+  const report = tests.map(([input,rx])=>{
+    const got = execute(input);
+    const ok = rx.test(got);
+    if(ok) pass++;
+    return `${ok?'PASS':'FAIL'}  ${input}  ->  ${got.split('\n')[0]}`;
+  });
+  report.unshift(`${pass}/${tests.length} tests PASS`);
+  document.getElementById('tests').textContent = report.join('\n');
+
+  run();
+})();
+</script>
+</body>
+</html>

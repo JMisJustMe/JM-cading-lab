@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#081320"><title>JM SLINGFALL — CP16 Six Routes | Browser Living Field v0.3</title>
+<style>
+:root{color-scheme:dark;--bg:#07111a;--ink:#e9f9f4;--quiet:#8fa8b2;--edge:#294651;--sea:#48decc;--gold:#f4c86d;--red:#ff6377;--ui:#101f2b;--button:#183340;--good:#87ebd1}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;width:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,Arial,sans-serif}button{font:inherit;cursor:pointer;touch-action:manipulation;color:inherit;border:1px solid #385363;background:#152937;border-radius:11px;transition:background .12s,transform .08s}button:active:not(:disabled){transform:scale(.97)}button:disabled{opacity:.38;cursor:default}.app{height:100%;height:100dvh;display:flex;flex-direction:column;min-height:0;max-width:1550px;margin:auto;background:linear-gradient(180deg,#10212a 0%,#07131b 75%)}.mast{height:62px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#0c1b25;border-bottom:1px solid #315765;gap:10px}.brand{min-width:0;white-space:nowrap}.brand .overline{font-size:9px;letter-spacing:.24em;font-weight:800;color:var(--sea)}.brand h1{font-size:19px;margin:0;line-height:1.16;font-weight:900;letter-spacing:.055em}.brand .sub{font-size:9px;color:#a9b6b8;letter-spacing:.08em}.brand b{color:var(--gold)}.meters{display:flex;align-items:center;gap:8px}.meter{text-align:center;padding:5px 9px;border:1px solid #294958;border-radius:10px;min-width:65px}.meter strong{font-size:17px;line-height:1;display:block}.meter small{display:block;color:#94c5cd;font-size:9px;font-weight:700;letter-spacing:.08em;margin-bottom:2px}.meter.energy strong{color:var(--gold)}.meter.score strong{color:#a8eefa}.meter.time strong{color:#edf6e9}.hudbutton{font-size:12px;font-weight:800;padding:10px}.stage{position:relative;flex:1;min-height:160px;overflow:hidden;background:#101f2c}canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}.stage-top{pointer-events:none;position:absolute;top:11px;left:11px;right:11px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.mission{color:#eaf6ee;background:#081722e8;border:1px solid #395e65;padding:9px 11px;border-radius:12px;max-width:70%;font-size:11px;line-height:1.45}.mission strong{display:block;color:#b5eede;font-size:10px;letter-spacing:.12em}.smallpill{color:#89bbca;background:#081722e8;border:1px solid #2b5059;border-radius:99px;padding:6px 9px;font-size:10px;font-weight:800;white-space:nowrap}.toast{position:absolute;left:50%;top:38%;transform:translateX(-50%);color:#ebfff6;font-size:14px;font-weight:900;line-height:1.3;letter-spacing:.04em;background:#081521ed;border:1px solid #79c9bd;border-radius:14px;padding:11px 16px;pointer-events:none;text-align:center;max-width:min(88%,420px);box-shadow:0 5px 30px #0008;opacity:0;transition:opacity .2s}.toast.visible{opacity:1}.footer{grid-template-columns:minmax(0,1fr);min-width:0;width:100%;flex:none;border-top:1px solid #34515d;background:linear-gradient(#0d1c29,#0b1823);padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:grid;gap:7px}.label{font-size:10px;letter-spacing:.14em;color:#84aab5;font-weight:900}.topcontrol{min-width:0;display:grid;grid-template-columns: 1fr auto;gap:10px;align-items:center}.selection{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.unit{padding:8px 4px;font-size:11px;font-weight:900;min-width:0;white-space:nowrap}.unit span{font-size:10px;margin-left:3px;color:#a2c8ca}.unit.sel{background:#125b64;border-color:#78e4d7;box-shadow:0 0 0 1px #3c9c94 inset}.mode{font-size:12px;font-weight:900;min-width:140px;padding:10px;background:#1f3b43}.mode.power{background:#715121;border-color:#daa65a;color:#ffeaad}.actions{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.action{min-width:0;position:relative;padding:10px 3px 8px;min-height:62px;border:1px solid #397c81;background:linear-gradient(180deg,#1c4650,#102936);box-shadow:inset 0 1px #ffffff12}.action.power{background:linear-gradient(180deg,#795324,#39291e);border-color:#c99a50}.action strong{font-size:13px;display:block}.action small{display:block;color:#d2eae8;font-size:11px;margin-top:2px}.action .status{font-size:9px;font-weight:900;letter-spacing:.025em;color:#a8cdd3}.utility{display:flex;justify-content:space-between;gap:7px;align-items:center;min-height:31px}.utility button{font-size:10px;padding:7px 10px;font-weight:800}.message{font-size:11px;color:#c2d8da;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}.utility .ko{border-color:#43816c;color:#b8edcf;background:#102d29}.utility .clear{color:#a1acb5}.overlay{position:absolute;inset:0;background:#06111bdc;z-index:10;display:flex;align-items:center;justify-content:center;padding:15px;overflow:auto}.splash{width:min(580px,100%);max-height:100%;overflow:auto;padding:24px;border-radius:24px;background:linear-gradient(150deg,#153340,#0a1823 75%);border:1px solid #4b827a;box-shadow:0 0 60px #000b}.splash .sigil{color:var(--gold);font-weight:900;letter-spacing:.23em;font-size:10px}.splash h2{font-size:clamp(29px,6vw,52px);line-height:.94;margin:12px 0 15px;letter-spacing:-.035em}.splash h2 em{font-style:normal;color:#68e6d7}.splash p{color:#b4ced1;font-size:13px;line-height:1.65;margin:8px 0}.splash .features{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.feat{background:#0f2934;border:1px solid #35515e;border-radius:12px;padding:11px 9px;font-size:12px;font-weight:800;text-align:center}.feat span{display:block;color:#9ebdc2;margin-top:3px;font-size:10px;font-weight:600}.primary{font-size:17px;font-weight:900;display:block;width:100%;padding:14px;background:#61e2d1;color:#071f28;border:0;box-shadow:0 0 0 2px #c2fff028 inset}.fine{font-size:11px;color:#91b0b9;line-height:1.5;margin:11px 0 0}.sr-only{position:absolute!important;width:1px;height:1px;clip:rect(0 0 0 0);overflow:hidden;white-space:nowrap}
+@media(max-width:580px){.mast{height:57px;padding:5px 8px}.brand h1{font-size:16px}.brand h1 b{display:none}.brand .sub{font-size:8px}.meter{min-width:51px;padding:6px 4px}.meter strong{font-size:14px}.meter small{font-size:8px}.meters{gap:4px}.hudbutton{padding:7px 6px;font-size:10px}.stage-top{top:6px;left:6px;right:6px}.mission{padding:7px 8px;font-size:10px;max-width:76%}.mission strong{font-size:9px}.smallpill{font-size:9px;padding:5px 7px}.footer{padding-top:6px;gap:6px}.mode{min-width:0;width:100%;padding:8px 4px;font-size:10px}.topcontrol{grid-template-columns:minmax(0,1fr) 104px;gap:7px}.selection{gap:4px}.unit{letter-spacing:-.035em}.unit{padding:8px 2px;font-size:10px}.unit span{font-size:9px}.action{min-height:57px;padding:8px 2px}.action strong{font-size:11px}.action small{font-size:10px}.action .status{font-size:8px}.utility button{font-size:9px;padding:7px 6px}.message{font-size:10px}.splash{padding:19px 17px}.splash .features{grid-template-columns:repeat(3,1fr);gap:5px}.feat{font-size:10px;padding:8px 5px}.feat span{font-size:9px}}
+@media(max-height:640px){.mast{height:49px}.brand h1{font-size:15px}.footer{gap:4px;padding-top:4px;padding-bottom:max(4px,env(safe-area-inset-bottom))}.selection .unit{padding:5px 2px}.action{min-height:50px;padding:6px 2px}.action strong{font-size:11px}.action small{font-size:10px}.utility{min-height:25px}.utility button{padding:4px 7px}.label{font-size:9px}}
+
+/* v0.2: Fold contact repair -- legible deployment guidance without hiding the arena */
+.mission span{display:block;margin-top:3px}.mission.ready{border-color:#5fbdad;box-shadow:0 0 0 1px #3ba99333}
+.field-guide{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);max-width:96%;min-width:min(360px,94%);padding:9px 12px;border-radius:13px;border:1px solid #5ed4c2;background:#092530e8;color:#dbfff2;font-size:12px;line-height:1.35;font-weight:800;text-align:center;pointer-events:none;box-shadow:0 4px 18px #0009;z-index:2;display:none}
+.field-guide.visible{display:block}.field-guide strong{color:#f2d28b}
+@media(max-width:500px){.mission{max-width:73%;font-size:11px}.field-guide{font-size:11px}.utility .message{font-size:11px}}
+
+/* v0.3 inheritance-preserving field orders, differentiated roles and changing zone state */
+.utility .order{border-color:#4aa6aa;background:#143d46;color:#a7f7e8;min-width:61px}
+.utility .order.active{background:#4ce1cc;color:#07202a;border-color:#baffef}
+.smallpill{max-width:42%;white-space:normal;line-height:1.25;text-align:right}
+.action:not(:disabled){box-shadow:inset 0 1px #ffffff26,0 0 11px #1b62633d}
+.stage.ordering{box-shadow:inset 0 0 0 3px #59e5cf9b}
+@media(max-width:390px){.utility .order{min-width:52px}.utility button{padding:6px 5px}}
+</style></head>
+<body><div class="app"><header class="mast"><div class="brand"><div class="overline">JM ECOSTATE · FIELD CONTACT</div><h1>SLINGFALL <b>// SIX ROUTES</b></h1><div class="sub">CP16 · LIVING FIELD v0.3 · HTML PREVIEW</div></div><div class="meters"><div class="meter energy"><small>ENERGY</small><strong id="energy">100</strong></div><div class="meter score"><small>BLUE : RED</small><strong id="score">0 : 0</strong></div><div class="meter time"><small>TIME</small><strong id="time">1:40</strong></div><button class="hudbutton" id="pause" aria-label="Pause and resume">Ⅱ</button></div></header>
+<main class="stage" id="stage"><canvas id="arena" aria-label="Three-zone tactics arena; tap a zone or drag from glowing blue launcher to deploy a champion"></canvas><div class="stage-top"><div class="mission" id="mission"><strong>FIELD OBJECTIVE</strong><span id="objectiveText">Tap any zone to fling. ORDER a squad destination or use SAFE / POWER abilities.</span></div><div class="smallpill" id="fieldState">FIELD · 0/3 HELD</div></div><div class="field-guide" id="fieldGuide" role="status" aria-live="polite"></div><div class="toast" id="toast" role="status" aria-live="polite"></div><div id="overlay" class="overlay"><div class="splash" id="splash"><div class="sigil">JM SLINGFALL · CP16 / 2026</div><h2>FLING IN.<br><em>FIGHT FOR THE FIELD.</em></h2><p>Tap <strong>RIDGE, CROSSROADS or SUPPLY</strong> to fling a champion straight in. Use <strong>ORDER</strong> to direct your squad to a zone without spending energy. Or drag from the glowing <strong>BLUE LAUNCHER</strong> for manual placement. Your units fight, claim zone bonuses, and face enemy waves. Enemy launches happen automatically.</p><div class="features"><div class="feat">FLING<span>3 champions</span></div><div class="feat">ROUTES<span>6 live abilities</span></div><div class="feat">SAFE / POWER<span>Touch to switch</span></div></div><button class="primary" id="play">PLAY QUICK CHECK</button><p class="fine">v0.2 Fold tap-deploy repair. Offline, touch-friendly HTML gameplay preview. It reproduces CP16's six route costs/effects but is a separate browser implementation, not the native Godot APK or a validated Godot port. Runs entirely in this file.</p></div></div></main>
+<div class="footer"><div class="topcontrol"><div><div class="label" style="margin-bottom:5px">CHAMPION · SELECT THEN FLING</div><div class="selection"><button class="unit sel" data-role="BULWARK">⬡ BULWARK <span>22E</span></button><button class="unit" data-role="DART">◆ DART <span>22E</span></button><button class="unit" data-role="WARDEN">✦ WARDEN <span>22E</span></button></div></div><div><div class="label" style="margin-bottom:5px">ROUTE SET</div><button id="mode" class="mode">SAFE · 3 ROUTES</button></div></div><div class="actions"><button class="action" data-action="GUARD"><strong id="guardName">BRACE</strong><small id="guardCost">8 ENERGY</small><span class="status" id="guardState">ALLY SHIELD</span></button><button class="action" data-action="RECOVER"><strong id="recoverName">RALLY</strong><small id="recoverCost">9 ENERGY</small><span class="status" id="recoverState">ALLY RECOVERY</span></button><button class="action" data-action="INTERCEPT"><strong id="interceptName">TRAP</strong><small id="interceptCost">10 ENERGY</small><span class="status" id="interceptState">RIVAL STUN</span></button></div><div class="utility"><div class="message" id="message" aria-live="polite">READY · Deploy champions from the glowing blue launch circle.</div><button class="order" id="order" aria-label="Toggle squad field orders">ORDER</button><button class="ko" id="ko">KO LIVE</button><button id="sound" aria-label="Toggle sound">♪ OFF</button><button class="clear" id="reset">RESTART</button></div></div></div>
+<script>
+(()=>{'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];const canvas=$('#arena'),ctx=canvas.getContext('2d',{alpha:false});const store='JM_SLINGFALL_CP16_HTML_LIVING_FIELD_V03_2026_10_25';const MAXTIME=100;let aimArmed=false, userFeedbackUntil=0;let orderMode=false,fieldOrder=null,waveIndex=0,fieldClaims=0,dominionEarned=false,beams=[],callouts=[],waveWarning=false;let W=800,H=520,DPR=1;let state='menu',paused=false,power=false,role='BULWARK',sound=false,clock=MAXTIME,energy=100,redEnergy=80,score=[0,0],contacts=0,lastContact=-100,enemyLaunch=-1,selectedPointer=null,units=[],flights=[],effects=[],parts=[],zones=[],lastFrame=performance.now(),saveTimer=0,toastTimer=0,matchId=0;let uid=0,noise=1234;const combos={GUARD:{safe:{name:'BRACE',cost:8,shield:3},power:{name:'HEAVY WARD',cost:12,shield:5}},RECOVER:{safe:{name:'RALLY',cost:9,heal:12},power:{name:'SURGE HEAL',cost:14,heal:19}},INTERCEPT:{safe:{name:'TRAP',cost:10,stun:1.25,damage:4},power:{name:'DIVE',cost:17,stun:1.8,damage:5}}};const roles={BULWARK:{hp:120,attack:7,speed:29,reach:57,period:1.0,color:'#64e5d8',symbol:'⬡',r:15},DART:{hp:76,attack:12,speed:58,reach:56,period:.65,color:'#9bddff',symbol:'◆',r:12},WARDEN:{hp:90,attack:9,speed:39,reach:85,period:.9,color:'#e4c4fa',symbol:'✦',r:14}};
+function rnd(){noise=(Math.imul(noise,1664525)+1013904223)>>>0;return noise/4294967296}function clamp(n,a,b){return Math.max(a,Math.min(b,n))}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}function xy(x,y){return{x:x*W,y:y*H}}function emitter(team){return xy(team==='blue'?.13:.87,team==='blue'?.83:.17)}function safeRect(){const w=canvas.getBoundingClientRect();return w}function size(){const r=safeRect();W=Math.max(270,r.width);H=Math.max(200,r.height);DPR=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);zones=[{p:xy(.25,.32),name:'RIDGE',owner:null,progress:0},{p:xy(.5,.52),name:'CROSSROADS',owner:null,progress:0},{p:xy(.76,.72),name:'SUPPLY',owner:null,progress:0}];}function relocate(){const ow=W,oh=H;const priorZones=zones.map(z=>({...z,p:{x:z.p.x/ow,y:z.p.y/oh}}));size();for(const u of units){u.x=u.x/ow*W;u.y=u.y/oh*H}for(let i=0;i<zones.length;i++)if(priorZones[i]){zones[i].owner=priorZones[i].owner;zones[i].progress=priorZones[i].progress}for(const f of flights){f.from.x=f.from.x/ow*W;f.from.y=f.from.y/oh*H;f.to.x=f.to.x/ow*W;f.to.y=f.to.y/oh*H}}window.addEventListener('resize',relocate);size();
+function note(s,visible=false){$('#message').textContent=s;if(visible)userFeedbackUntil=performance.now()+2600;if(visible){$('#toast').textContent=s;$('#toast').classList.add('visible');toastTimer=2.1}}function chirp(f=400,d=.07){if(!sound)return;try{const ac=chirp.ac||(chirp.ac=new(window.AudioContext||window.webkitAudioContext)());const osc=ac.createOscillator(),gain=ac.createGain();osc.type='triangle';osc.frequency.value=f;gain.gain.setValueAtTime(.075,ac.currentTime);gain.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);osc.connect(gain);gain.connect(ac.destination);osc.start();osc.stop(ac.currentTime+d)}catch(e){}}
+function makeUnit(team,kind,x,y,injury=0){const spec=roles[kind];const obj={id:++uid,team,kind,x,y,hp:spec.hp-injury,maxhp:spec.hp,shield:0,stun:0,attackCd:rnd()*.6,flash:0,angle:rnd()*6.28,strikes:0,abilityClock:2.3+rnd()*2.3};units.push(obj);return obj;}function init(){noise=1234+matchId*1291;score=[0,0];clock=MAXTIME;energy=100;redEnergy=80;contacts=0;lastContact=-100;enemyLaunch=1.5;paused=false;power=false;units=[];flights=[];effects=[];parts=[];beams=[];callouts=[];uid=0;selectedPointer=null;aimArmed=false;userFeedbackUntil=0;orderMode=false;fieldOrder=null;waveIndex=0;fieldClaims=0;dominionEarned=false;waveWarning=false;saveTimer=0;zones.forEach(z=>{z.owner=null;z.progress=0});let friend=xy(.42,.47),foe=xy(.52,.47);makeUnit('blue','BULWARK',friend.x,friend.y,42);makeUnit('red','DART',foe.x,foe.y);state='play';$('#overlay').style.display='none';$('#pause').textContent='Ⅱ';role='BULWARK';ui();note('FLING · ORDER YOUR SQUAD · SECURE ZONE BONUSES')}
+function serialize(){return JSON.stringify({clock,energy,redEnergy,score,contacts,lastContact,enemyLaunch,units,zones:zones.map(z=>({owner:z.owner,progress:z.progress})),power,role,fieldOrder,waveIndex,fieldClaims,dominionEarned})}function save(){try{localStorage.setItem(store,serialize())}catch(e){}}function restore(){try{const v=JSON.parse(localStorage.getItem(store));if(!v||!Array.isArray(v.units)||v.clock<=0)return false;init();clock=v.clock;energy=v.energy;redEnergy=v.redEnergy;score=v.score;contacts=v.contacts;lastContact=v.lastContact;enemyLaunch=v.enemyLaunch;units=v.units;power=!!v.power;role=v.role||'BULWARK';fieldOrder=v.fieldOrder||null;waveIndex=v.waveIndex||0;fieldClaims=v.fieldClaims||0;dominionEarned=!!v.dominionEarned;units.forEach(u=>{u.strikes??=0;u.abilityClock??=3});v.zones.forEach((z,i)=>{if(zones[i]){zones[i].owner=z.owner;zones[i].progress=z.progress}});ui();note('RECOVERED MATCH · CONTINUE FLINGING',true);return true}catch(e){return false}}
+function flight(team,kind,x,y){const from=emitter(team);flights.push({team,kind,from,to:{x:clamp(x,20,W-20),y:clamp(y,20,H-20)},t:0,duration:.58});emit(from.x,from.y,team==='blue'?'#71f5d6':'#ff6d83',14);chirp(team==='blue'?630:210,.14)}function deploy(team,kind,x,y){const pool=team==='blue'?energy:redEnergy;if(pool<22){if(team==='blue')note('RECHARGING · '+Math.floor(energy)+'/22 ENERGY · TAP A ZONE WHEN READY',true);return false}if(team==='blue')energy-=22;else redEnergy-=22;flight(team,kind,x,y);ui();save();return true}function near(a,b){return dist(a,b)<=Math.min(155,Math.max(80,W*.20))}function candidates(action){if(state!=='play'||paused)return{why:'NOT IN MATCH',targets:[]};if(contacts>=3)return{why:'ROUTES SPENT',targets:[]};if(lastContact>0&&lastContact-clock<4)return{why:'RECOVERING',targets:[]};const spec=combos[action][power?'power':'safe'];if(energy<spec.cost)return{why:'ENERGY LOW',targets:[]};const blue=units.filter(u=>u.team==='blue'&&u.hp>0),red=units.filter(u=>u.team==='red'&&u.hp>0);if(!blue.length)return{why:'DEPLOY BLUE FIRST',targets:[]};if(action==='GUARD')return{targets:blue};if(action==='RECOVER'){const wounded=blue.filter(u=>u.maxhp-u.hp>=5).sort((a,b)=>(b.maxhp-b.hp)-(a.maxhp-a.hp));return wounded.length?{targets:[wounded[0]]}:{why:'NO INJURED ALLY',targets:[]}}if(action==='INTERCEPT'){const nearby=red.filter(e=>blue.some(b=>near(e,b)));return nearby.length?{targets:nearby}:{why:'NO NEARBY RIVAL',targets:[]}}return{why:'UNDECLARED ROUTE',targets:[]}}
+function route(action){const spec=combos[action][power?'power':'safe'];if(!spec)return;const eligible=candidates(action);if(eligible.why){note('ROUTE HOLD · '+eligible.why,true);chirp(155,.1);return}const before=energy;energy-=spec.cost;let impacts=0;for(const u of eligible.targets){if(action==='GUARD'){u.shield=Math.min(power?10:8,u.shield+spec.shield)}else if(action==='RECOVER'){u.hp=Math.min(u.maxhp,u.hp+spec.heal)}else {u.stun=Math.max(u.stun,spec.stun);u.hp=Math.max(0,u.hp-spec.damage)}impacts++;pulse(u.x,u.y,power?'#f9c56a':'#67ebcf',power?90:68);emit(u.x,u.y,power?'#ffdd9a':'#a7fff1',17);u.flash=.35}units=units.filter(u=>u.hp>0);contacts++;lastContact=clock;chirp(power?715:505,.18);note(`JM ${power?'POWER':'SAFE'} · ${spec.name}  |  ${impacts} AFFECTED  |  ${before}→${energy} ENERGY`,true);save();ui()}
+function setFieldOrder(p){
+ if(state!=='play'||paused)return false;
+ const nearest=zones.slice().sort((a,b)=>dist(a.p,p)-dist(b.p,p))[0];
+ if(!nearest)return false;
+ fieldOrder=nearest.name;orderMode=false;
+ $('#stage').classList.remove('ordering');
+ pulse(nearest.p.x,nearest.p.y,'#57f1d5',105);
+ emit(nearest.p.x,nearest.p.y,'#aefff0',13);
+ note('SQUAD ORDER · DEFEND '+fieldOrder+' · NO ENERGY SPENT',true);chirp(590,.12);
+ save();ui();return true;
+}
+function floatWord(x,y,text,c='#f6e8a7'){
+ callouts.push({x,y,text,c,life:1.2});
+ if(callouts.length>38)callouts.shift();
+}
+function performWave(){
+ const index=waveIndex;
+ const target=zones[index%3];
+ for(let k=0;k<Math.min(3,2+Math.floor(index/2));k++){
+  const dx=(k-1)*30,dy=((index+k)%2?23:-23);
+  flight('red',['DART','WARDEN','BULWARK'][(k+index)%3],target.p.x+dx,target.p.y+dy);
+ }
+ waveIndex++;waveWarning=false;
+ note('RIVAL WAVE '+waveIndex+' · '+target.name+' UNDER PRESSURE',true);
+ floatWord(target.p.x,target.p.y-45,'WAVE '+waveIndex+'!','#ffa0ba');
+ pulse(target.p.x,target.p.y,'#ff7891',110);
+}
+function koAuto(){if(state!=='play'||paused){note('KO LIVE · MATCH REQUIRED',true);return}const blue=units.filter(u=>u.team==='blue'),red=units.filter(u=>u.team==='red');if(!blue.length){note('KO LIVE · DEPLOY BLUE CHAMPION',true);return}let kind,price;if(blue.some(u=>u.maxhp-u.hp>=15)){kind='TRIAGE';price=16}else if(red.some(e=>blue.some(b=>near(e,b)))){kind='COUNTER';price=14}else{kind='AEGIS';price=12}if(energy<price){note('KO LIVE · INSUFFICIENT ENERGY',true);return}energy-=price;if(kind==='AEGIS')blue.forEach(u=>{u.shield=Math.max(5,u.shield);pulse(u.x,u.y,'#5ce6bd',75)});if(kind==='TRIAGE'){const u=blue.sort((a,b)=>(b.maxhp-b.hp)-(a.maxhp-a.hp))[0];u.hp=Math.min(u.maxhp,u.hp+19);u.shield=Math.max(u.shield,3);pulse(u.x,u.y,'#80facb',85)}if(kind==='COUNTER')red.filter(e=>blue.some(b=>near(e,b))).forEach(e=>{e.stun=Math.max(e.stun,1.8);pulse(e.x,e.y,'#9aecfc',72)});note('KO LIVE · '+kind+' APPLIED · '+price+' ENERGY',true);chirp(590,.14);save();ui()}
+function pulse(x,y,c,r){effects.push({x,y,c,r,t:0,max:.65})}function emit(x,y,c,n){for(let i=0;i<n;i++){let a=rnd()*Math.PI*2,v=25+rnd()*110;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.3+rnd()*.7,c,size:1+rnd()*3})}}
+function contactGuide(){
+ const active=state==='play'&&!paused;
+ const hasBlue=units.some(u=>u.team==='blue'&&u.hp>0),incoming=flights.some(f=>f.team==='blue');
+ const guide=$('#fieldGuide'),objective=$('#objectiveText');
+ if(!active){guide.classList.remove('visible');return}
+ const short=orderMode?'FIELD ORDER ACTIVE · TAP RIDGE, CROSSROADS OR SUPPLY':hasBlue?'BLUE DEPLOYED · USE ROUTES OR ORDER YOUR SQUAD':incoming?'REINFORCEMENT INCOMING · KEEP WATCH':
+  energy>=22?'TAP ANY ZONE TO DEPLOY · OR DRAG THE BLUE LAUNCHER':
+  'RECHARGING '+Math.floor(energy)+'/22 ENERGY · '+Math.ceil((22-energy)/3)+'s';
+ const status=aimArmed?'BLUE LAUNCHER ARMED · TAP A ZONE NOW':short;
+ if(objective){objective.textContent=orderMode?'Choose the zone you want your surviving champions to defend. Free order.':hasBlue?'Defend zones; RIDGE absorbs hits, CROSSROADS boosts movement, SUPPLY charges energy.':
+  incoming?'Reinforcement inbound. Capture a zone and protect your champion.':
+  energy>=22?'Tap RIDGE, CROSSROADS or SUPPLY to fling a champion. Drag-launch still works.':
+  'Recharging. Tap any zone when energy reaches 22.'}
+ $('#mission').classList.toggle('ready',orderMode||(!hasBlue&&energy>=22));
+ guide.classList.toggle('visible',!hasBlue||orderMode);
+ guide.innerHTML=(aimArmed?'<strong>AIM READY</strong> · ':!incoming&&energy>=22?'<strong>READY TO FLING</strong> · ':'')+status;
+ if(performance.now()>userFeedbackUntil || ($('#message').textContent.includes('RECHARGING') && energy>=22)){
+  $('#message').textContent=status;
+ }
+}
+function ui(){if(!Number.isFinite(energy))energy=0;$('#energy').textContent=Math.floor(energy);$('#score').textContent=Math.floor(score[0])+' : '+Math.floor(score[1]);const sec=Math.max(0,Math.ceil(clock));$('#time').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');const p=$('#mode');p.textContent=(power?'POWER ✦':'SAFE')+' · 3 ROUTES';p.classList.toggle('power',power);$$('.unit').forEach(b=>b.classList.toggle('sel',b.dataset.role===role));for(const [action,label,cost,status] of [['GUARD','guardName','guardCost','guardState'],['RECOVER','recoverName','recoverCost','recoverState'],['INTERCEPT','interceptName','interceptCost','interceptState']]){const spec=combos[action][power?'power':'safe'];$('#'+label).textContent=spec.name;$('#'+cost).textContent=spec.cost+' ENERGY';const btn=$(`[data-action="${action}"]`);btn.classList.toggle('power',power);const e=candidates(action);btn.disabled=!!e.why;$('#'+status).textContent=e.why||({GUARD:'ALLY SHIELD',RECOVER:'ALLY HEAL',INTERCEPT:'STUN + DAMAGE'}[action])}$('#ko').disabled=state!=='play'||paused;const order=$('#order');order.disabled=state!=='play'||paused;order.classList.toggle('active',orderMode);order.textContent=orderMode?'TAP ZONE':'ORDER';$('#stage').classList.toggle('ordering',orderMode);const held=zones.filter(z=>z.owner==='blue').length;$('#fieldState').textContent=(fieldOrder?'ORDER '+fieldOrder+' · ':'FIELD ')+held+'/3 HELD';contactGuide();}
+function end(){state='result';save();const win=score[0]>=score[1];$('#splash').innerHTML=`<div class="sigil">MATCH COMPLETE · BROWSER PREVIEW</div><h2>${win?'FIELD <em>SECURED.</em>':'FIELD <em>CONTESTED.</em>'}</h2><p>You earned <b>${score[0]}</b> to the rivals' <b>${score[1]}</b> points. Your JM tactical route contacts: <b>${contacts}/3</b>. Zone captures: <b>${fieldClaims}</b>. Rivals sent <b>${waveIndex}</b> wave(s).</p><div class="features"><div class="feat">BRACE<span>shield</span></div><div class="feat">RALLY<span>heal</span></div><div class="feat">TRAP<span>stun</span></div></div><button id="play" class="primary">PLAY AGAIN</button><p class="fine">This was the offline HTML Living Field v0.3 preview, not the Godot native device test.</p>`;$('#play').onclick=()=>{matchId++;init()};$('#overlay').style.display='flex';ui()}
+const pointerXY=e=>{const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};
+canvas.addEventListener('pointerdown',e=>{if(state!=='play'||paused)return;
+ const p=pointerXY(e),l=emitter('blue');e.preventDefault();if(orderMode){setFieldOrder(p);return;}
+ if(dist(p,l)<Math.max(53,Math.min(86,W*.14))){
+  selectedPointer={id:e.pointerId,p,origin:l};canvas.setPointerCapture(e.pointerId);
+  note('AIM · DRAG TO FLING OR TAP A ZONE',true);return;
+ }
+ // Tap a zone OR any reachable ground: one touch reinforcement. Keep drag-to-fling.
+ if(energy>=22){
+  const zone=zones.find(z=>dist(p,z.p)<Math.max(68,Math.min(94,W*.16)));
+  const goal=zone?zone.p:p;
+  if(deploy('blue',role,goal.x,goal.y)){
+   aimArmed=false;note('CHAMPION FLUNG · '+role+(zone?' TO '+zone.name:'')+' · -22 ENERGY',true);
+  }
+ }else note('RECHARGING · '+Math.floor(energy)+'/22 ENERGY · '+Math.ceil((22-energy)/3)+'s',true);
+ ui();
+});
+canvas.addEventListener('pointermove',e=>{if(selectedPointer?.id===e.pointerId){e.preventDefault();selectedPointer.p=pointerXY(e)}});
+canvas.addEventListener('pointerup',e=>{if(selectedPointer?.id!==e.pointerId)return;e.preventDefault();
+ const p=pointerXY(e);
+ if(dist(p,emitter('blue'))>Math.max(50,W*.08)){
+  if(deploy('blue',role,p.x,p.y)){note('FLUNG · '+role+' · -22 ENERGY',true);aimArmed=false}
+ }else{aimArmed=true;note('BLUE LAUNCHER ARMED · TAP ANY ZONE TO FLING',true)}
+ selectedPointer=null;ui();
+});
+canvas.addEventListener('pointercancel',()=>{selectedPointer=null;aimArmed=false;ui()});window.addEventListener('blur',()=>{selectedPointer=null;aimArmed=false;if(state==='play'){paused=true;$('#pause').textContent='▶';ui()}});$('#order').onclick=()=>{if(state!=='play'||paused)return;orderMode=!orderMode;aimArmed=false;note(orderMode?'SQUAD ORDER · TAP A ZONE TO DIRECT ALLIES':'DEPLOYMENT MODE RESTORED',true);ui()};$$('.unit').forEach(b=>b.onclick=()=>{role=b.dataset.role;ui();note('CHAMPION SELECTED · '+role)});$$('.action').forEach(b=>b.onclick=()=>route(b.dataset.action));$('#mode').onclick=()=>{power=!power;ui();note((power?'POWER':'SAFE')+' ROUTES READY',true);chirp(power?650:400,.11)};$('#ko').onclick=koAuto;$('#pause').onclick=()=>{if(state!=='play')return;paused=!paused;$('#pause').textContent=paused?'▶':'Ⅱ';note(paused?'MATCH PAUSED':'MATCH RESUMED',true);ui()};$('#reset').onclick=()=>{if(state==='play'||state==='result'){matchId++;init()}else init()};$('#sound').onclick=()=>{sound=!sound;$('#sound').textContent=sound?'♪ ON':'♪ OFF';chirp(450,.08)};$('#play').onclick=()=>init();
+function segment(x1,y1,x2,y2,c,w=1){ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}function glowCircle(x,y,r,c){ctx.save();ctx.shadowBlur=20;ctx.shadowColor=c;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.restore()}function poly(x,y,r,sides,color,rotation=0){ctx.fillStyle=color;ctx.beginPath();for(let i=0;i<sides;i++){let a=rotation+i*2*Math.PI/sides;let px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fill()}
+function draw(t){ctx.fillStyle='#0a1b26';ctx.fillRect(0,0,W,H);const min=Math.min(W,H),scale=clamp(min/470,.8,1.12);ctx.save();ctx.strokeStyle='#173542';ctx.lineWidth=1;const step=Math.max(35,Math.round(min/9));for(let x=(t*2)%step;x<W;x+=step)segment(x,0,x,H,'#193544',.7);for(let y=(t*.8)%step;y<H;y+=step)segment(0,y,W,y,'#193544',.7);ctx.save();ctx.globalAlpha=.18;for(let i=0;i<17;i++){const x=(i*131.7)%W,y=(i*233.1)%H;glowCircle(x,y,12+i%4*13,i%3?'#237d82':'#3d6d6c')}ctx.restore();segment(0,H*.47,W,H*.68,'#31717b',3);segment(0,H*.60,W,H*.40,'#46636d',1.5);
+// Scenic elevated islands, supply towers and scoring rings.
+for(const [i,z] of zones.entries()){let x=z.p.x,y=z.p.y;const rr=clamp(min*.103,30,59),owner=z.owner,base=owner==='blue'?'#1e555b':owner==='red'?'#63303f':'#354653';glowCircle(x+1,y+rr*.26,rr*1.14,'#10212b');poly(x,y+3,rr*1.18,8,'#0b161d',Math.PI/8);poly(x,y-3,rr*1.18,8,'#294652',Math.PI/8);poly(x,y-7,rr*1.04,8,base,Math.PI/8);ctx.strokeStyle=owner==='blue'?'#68f0d3':owner==='red'?'#f48298':'#678493';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-7,rr*.72,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.abs(z.progress)/100);ctx.stroke();ctx.font=`900 ${Math.max(10,Math.round(12*scale))}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#e1f6ec';ctx.fillText(z.name,x,y-rr*.19);ctx.font=`800 ${Math.max(10,11*scale)}px system-ui`;ctx.fillStyle='#b4c6d3';ctx.fillText(owner?owner.toUpperCase():'NEUTRAL',x,y+rr*.11);if(waveWarning&&i===waveIndex%3){ctx.fillStyle='#ffc2bf';ctx.font='900 10px system-ui';ctx.fillText('RIVAL INBOUND',x,y+rr*.40)}}
+// Moving embers/particles.
+for(const a of parts){ctx.globalAlpha=clamp(a.life,0,1);ctx.fillStyle=a.c;ctx.fillRect(a.x,a.y,a.size,a.size)}ctx.globalAlpha=1;
+// Champion shells are different forms and motion states.
+for(const u of units){const spec=roles[u.kind],r=spec.r*scale,x=u.x,y=u.y,teamColor=u.team==='blue'?'#4af1d4':'#ff6b85';ctx.fillStyle='#06121eaa';ctx.beginPath();ctx.ellipse(x,y+r*.81,r*1.35,r*.45,0,0,Math.PI*2);ctx.fill();if(u.shield>0){ctx.save();ctx.strokeStyle='#79ffe0';ctx.shadowColor='#7bffe6';ctx.shadowBlur=15;ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-r*.22,r*1.42,0,Math.PI*2);ctx.stroke();ctx.restore()}const spin=t*(u.stun>0?.12:.4);poly(x,y-r*.23,r*1.25,8,u.team==='blue'?'#204857':'#70313d',Math.PI/8+spin*.12);let sides=u.kind==='BULWARK'?6:u.kind==='DART'?4:5;poly(x,y-r*.35,r,sides,u.team==='blue'?spec.color:'#ff7286',u.kind==='DART'?Math.PI/4:spin*.10);poly(x-2,y-r*.42,r*.62,sides,u.team==='blue'?'#245063':'#872e48',u.kind==='DART'?Math.PI/4:spin*.10);ctx.textAlign='center';ctx.font=`900 ${Math.max(14,Math.floor(r*1.42))}px system-ui`;ctx.fillStyle=u.team==='blue'?'#defef6':'#ffe9eb';ctx.fillText(spec.symbol,x,y-r*.10);if(u.flash>0){ctx.strokeStyle='#ffffffc7';ctx.lineWidth=3;ctx.strokeRect(x-r*1.1,y-r*1.4,r*2.2,r*2.2)}const bw=Math.max(28,r*2.8),bh=4;ctx.fillStyle='#00101b';ctx.fillRect(x-bw/2,y-r*1.88,bw,bh);ctx.fillStyle=u.team==='blue'?'#58e5c6':'#ff7189';ctx.fillRect(x-bw/2,y-r*1.88,bw*clamp(u.hp/u.maxhp,0,1),bh);if(u.stun>0){ctx.fillStyle='#faf1af';ctx.font='900 16px sans-serif';ctx.fillText('✦',x+r,y-r*1.7)}}
+// Tactical silhouettes and real-time role tells (not interchangeable bodies).
+for(const u of units){const s=roles[u.kind],r=s.r*scale;
+ if(u.kind==='BULWARK'){
+  ctx.strokeStyle=u.team==='blue'?'#4cf0e3':'#fd99aa';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(u.x-r*1.2,u.y-r*.1);ctx.lineTo(u.x-r*1.45,u.y-r*.85);ctx.lineTo(u.x-r*.85,u.y-r*1.4);ctx.stroke();
+ }else if(u.kind==='DART'){
+  ctx.strokeStyle=u.team==='blue'?'#a2edff':'#ff9ea9';ctx.lineWidth=2;
+  segment(u.x-r*.8,u.y+r*.35,u.x-r*2,u.y+r*.8,ctx.strokeStyle,2);
+ }else{
+  ctx.strokeStyle=u.team==='blue'?'#d4c0ff75':'#fda2b470';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(u.x,u.y-r*.3,Math.max(25,83*scale),0,Math.PI*2);ctx.stroke();
+ }
+}
+for(const b of beams){ctx.globalAlpha=clamp(b.life/.28,0,1);segment(b.x,b.y,b.tx,b.ty,b.c,3);ctx.globalAlpha=1}
+for(const q of callouts){ctx.globalAlpha=clamp(q.life,0,1);ctx.fillStyle=q.c;ctx.textAlign='center';ctx.font='900 12px system-ui';ctx.fillText(q.text,q.x,q.y-(1.2-q.life)*28);ctx.globalAlpha=1}
+if(fieldOrder){const z=zones.find(z=>z.name===fieldOrder);if(z){ctx.strokeStyle='#9dfff1';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.beginPath();ctx.arc(z.p.x,z.p.y,Math.max(58,Math.min(88,W*.15)),0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.font='900 11px system-ui';ctx.textAlign='center';ctx.fillStyle='#b6fff1';ctx.fillText('SQUAD ORDER',z.p.x,z.p.y-64)}}
+// Mid-air sling throws: visual arcs, landings generate real actors.
+for(const f of flights){let p=clamp(f.t/f.duration,0,1),x=f.from.x+(f.to.x-f.from.x)*p,y=f.from.y+(f.to.y-f.from.y)*p-Math.sin(Math.PI*p)*Math.min(130,H*.24);ctx.strokeStyle=f.team==='blue'?'#69eed687':'#ff7d8f73';ctx.lineWidth=2;ctx.setLineDash([5,7]);ctx.beginPath();ctx.moveTo(f.from.x,f.from.y);ctx.quadraticCurveTo((f.from.x+f.to.x)/2,(f.from.y+f.to.y)/2-Math.min(160,H*.32),f.to.x,f.to.y);ctx.stroke();ctx.setLineDash([]);glowCircle(x,y,8*scale,f.team==='blue'?'#9effea':'#ffa0ad')}
+for(const e of effects){let p=e.t/e.max;ctx.globalAlpha=1-p;ctx.lineWidth=3;ctx.strokeStyle=e.c;ctx.beginPath();ctx.arc(e.x,e.y,e.r*p,0,Math.PI*2);ctx.stroke()}ctx.globalAlpha=1;
+// Launchers + route trace.
+for(const team of ['blue','red']){let l=emitter(team),c=team==='blue'?'#51e9d2':'#ff748e';glowCircle(l.x,l.y,31*scale,team==='blue'?'#153b4a':'#392332');ctx.save();ctx.strokeStyle=c;ctx.lineWidth=3;ctx.beginPath();ctx.arc(l.x,l.y,30*scale,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(l.x,l.y,21*scale,t%6,t%6+Math.PI*1.3);ctx.stroke();ctx.font=`900 ${Math.max(18,Math.floor(24*scale))}px system-ui`;ctx.textAlign='center';ctx.fillStyle=c;ctx.fillText(team==='blue'?'➤':'✦',l.x,l.y+8);ctx.font=`800 ${Math.max(9,Math.floor(10*scale))}px system-ui`;ctx.fillText(team==='blue'?'DRAG TO FLING':'RIVAL',l.x,l.y+46*scale);ctx.restore()}
+if(selectedPointer){const p=selectedPointer.p,l=emitter('blue');ctx.strokeStyle='#a6ffdc';ctx.setLineDash([8,5]);ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(l.x,l.y);ctx.quadraticCurveTo((l.x+p.x)/2,(l.y+p.y)/2-Math.min(H*.2,80),p.x,p.y);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle='#7fffe3';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,15,0,Math.PI*2);ctx.stroke();ctx.font='900 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#deffed';ctx.fillText('RELEASE TO LAND',p.x,Math.max(15,p.y-23))}
+ctx.restore()}
+function update(dt){
+ clock=Math.max(0,clock-dt);
+ energy=Math.min(100,energy+dt*(3.0+(zones[2].owner==='blue'?1.6:0)));
+ redEnergy=Math.min(100,redEnergy+dt*2.4);
+ const waveTimes=[77,52,27];
+ if(waveIndex<waveTimes.length){
+  const trigger=waveTimes[waveIndex];
+  waveWarning=clock<=trigger+4&&clock>trigger;
+  if(clock<=trigger)performWave();
+ }else waveWarning=false;
+ enemyLaunch-=dt;
+ if(enemyLaunch<=0){
+  enemyLaunch=4.0+rnd()*2.2;
+  if(units.filter(u=>u.team==='red').length+flights.filter(f=>f.team==='red').length<9){
+   const where=zones[Math.floor(rnd()*3)].p;
+   deploy('red',['DART','BULWARK','WARDEN'][Math.floor(rnd()*3)],where.x+(rnd()-.5)*70,where.y+(rnd()-.5)*60);
+  }
+ }
+ for(let i=flights.length-1;i>=0;i--){
+  const f=flights[i];f.t+=dt;
+  if(f.t>=f.duration){makeUnit(f.team,f.kind,f.to.x,f.to.y);emit(f.to.x,f.to.y,f.team==='blue'?'#69f9df':'#ff9ca1',18);flights.splice(i,1)}
+ }
+ for(const u of units){
+  const spec=roles[u.kind];u.strikes??=0;u.abilityClock??=2.8;
+  u.stun=Math.max(0,u.stun-dt);u.shield=Math.max(0,u.shield-dt);
+  u.flash=Math.max(0,u.flash-dt);u.attackCd-=dt;u.abilityClock-=dt;
+  if(u.stun>0)continue;
+  // A distinct Warden aid pulse affects real combat health, not just artwork.
+  if(u.kind==='WARDEN'&&u.abilityClock<=0){
+   const allies=units.filter(a=>a.team===u.team&&a.hp>0&&a.maxhp-a.hp>=2&&dist(a,u)<105);
+   if(allies.length){const target=allies.sort((a,b)=>(b.maxhp-b.hp)-(a.maxhp-a.hp))[0];const gain=Math.min(7,target.maxhp-target.hp);target.hp+=gain;floatWord(target.x,target.y-20,'+'+Math.round(gain),'#9cfad9');pulse(target.x,target.y,'#ae91ff',50)}
+   u.abilityClock=5.2;
+  }
+  const enemies=units.filter(x=>x.team!==u.team&&x.hp>0);
+  const close=enemies.sort((a,b)=>dist(u,a)-dist(u,b))[0];
+  const defaultZone=zones.slice().sort((a,b)=>dist(a.p,u)-dist(b.p,u))[0]?.p;
+  const commanded=fieldOrder&&u.team==='blue'?zones.find(z=>z.name===fieldOrder)?.p:null;
+  const target=close&&dist(u,close)<spec.reach*2.25?close:commanded||defaultZone;
+  if(!target)continue;
+  const d=dist(u,target);
+  if(close&&target===close&&d<spec.reach){
+   if(u.attackCd<=0){
+    u.strikes++;let damage=spec.attack;
+    if(u.kind==='DART'&&u.strikes%3===0){damage*=1.8;floatWord(close.x,close.y-27,'CRIT','#e6f2ab')}
+    // Shields finally absorb actual damage. Bulwark has a distinct body guard.
+    if(close.kind==='BULWARK')damage*=.80;
+    if(close.shield>0)damage*=.40;
+    if(close.team==='blue'&&zones[0].owner==='blue'&&dist(close,zones[0].p)<130)damage*=.85;
+    close.hp-=damage;close.flash=.19;u.attackCd=spec.period;
+    if(u.kind==='WARDEN')beams.push({x:u.x,y:u.y,tx:close.x,ty:close.y,c:u.team==='blue'?'#ccb6ff':'#ffb6b5',life:.28});
+    emit(close.x,close.y,'#ffcc84',5);
+    if(close.hp<=0){pulse(close.x,close.y,'#fff5ca',60);emit(close.x,close.y,'#ffb4ad',18)}
+   }
+  }else if(d>(target===close?spec.reach:24)){
+   let v=Math.min(d,spec.speed*dt*(u.team==='blue'&&zones[1].owner==='blue'?1.22:1));
+   u.x+=(target.x-u.x)/d*v;u.y+=(target.y-u.y)/d*v;
+  }
+ }
+ units=units.filter(u=>u.hp>0);
+ for(const z of zones){
+  const friendly=units.filter(u=>u.team==='blue'&&dist(u,z.p)<Math.max(63,Math.min(112,W*.12))).length;
+  const opposing=units.filter(u=>u.team==='red'&&dist(u,z.p)<Math.max(63,Math.min(112,W*.12))).length;
+  const delta=friendly>opposing?dt*15:opposing>friendly?-dt*13:0;
+  z.progress=clamp(z.progress+delta,-100,100);
+  const was=z.owner;
+  z.owner=z.progress>=100?'blue':z.progress<=-100?'red':null;
+  if(z.owner!==was&&z.owner){
+   pulse(z.p.x,z.p.y,z.owner==='blue'?'#70ffe6':'#ff8d9b',95);
+   floatWord(z.p.x,z.p.y-40,z.owner==='blue'?'CLAIMED!':'RIVAL CLAIM','#e8fbcb');
+   if(z.owner==='blue'){fieldClaims++;note(z.name+' CAPTURED · '+({RIDGE:'GUARD',CROSSROADS:'SPEED',SUPPLY:'ENERGY'}[z.name])+' BONUS',true);save()}
+  }
+  if(z.owner)score[z.owner==='blue'?0:1]+=dt*.75;
+ }
+ if(!dominionEarned&&zones.every(z=>z.owner==='blue')){
+  dominionEarned=true;energy=Math.min(100,energy+20);score[0]+=15;
+  note('THREE-ZONE DOMINION · +20 ENERGY · +15 SCORE',true);chirp(820,.3);save();
+ }
+ for(let i=effects.length-1;i>=0;i--){effects[i].t+=dt;if(effects[i].t>=effects[i].max)effects.splice(i,1)}
+ for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.98;p.vy*=.98;p.life-=dt;if(p.life<=0)parts.splice(i,1)}
+ for(let i=beams.length-1;i>=0;i--){beams[i].life-=dt;if(beams[i].life<=0)beams.splice(i,1)}
+ for(let i=callouts.length-1;i>=0;i--){callouts[i].life-=dt;if(callouts[i].life<=0)callouts.splice(i,1)}
+ if(clock<=0)end();
+ saveTimer+=dt;if(saveTimer>=5.5){saveTimer=0;save()}
+ ui();
+}
+function frame(ts){const dt=clamp((ts-lastFrame)/1000,0,.055);lastFrame=ts;if(state==='play'&&!paused)update(dt);if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('#toast').classList.remove('visible')}draw(ts/1000);requestAnimationFrame(frame)}requestAnimationFrame(frame);
+// Restore is explicit: don't surprise owner by running a saved battle unasked.
+try{if(localStorage.getItem(store)){const btn=$('#play');btn.insertAdjacentHTML('beforebegin','<button id="restore" style="width:100%;padding:10px;margin-bottom:8px;background:#253b48;font-weight:800">RESUME SAVED MATCH</button>');$('#restore').onclick=restore}}catch(e){}
+window.__SLINGFALL_PREVIEW__={getState:()=>({state,paused,power,energy,redEnergy,score:score.slice(),contacts,units:units.map(u=>({...u})),clock,roles:role,orderMode,fieldOrder,waveIndex,fieldClaims,zones:zones.map(z=>({name:z.name,owner:z.owner,progress:z.progress})),dominionEarned,beams:beams.length}),start:()=>init(),select:a=>{role=a;ui()},deploy:(x,y)=>deploy('blue',role,x*W,y*H),route,koAuto,simulate:seconds=>{let ticks=Math.ceil(seconds/.05);for(let i=0;i<ticks&&state==='play';i++)update(.05)},setOrder:zone=>{const z=zones.find(a=>a.name===zone);return z?setFieldOrder(z.p):false},reset:()=>{matchId++;init()}};
+})();
+</script></body></html>

@@ -1,0 +1,303 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM v5.2 — Owner Phone Grand Contact Suite</title>
+<style>
+:root{color-scheme:dark}
+body{font-family:system-ui,-apple-system,sans-serif;background:#07111f;color:#eef4ff;margin:0;padding:20px}
+h1{font-size:32px;line-height:1.05;margin:.2em 0}.law{font-weight:800;letter-spacing:.03em}
+.card{background:#101d33;border:1px solid #2a4269;border-radius:18px;padding:16px;margin:14px 0}
+button{width:100%;padding:17px;border:0;border-radius:14px;font-size:18px;font-weight:850;background:#dce8ff;color:#081321;margin:7px 0}
+button.secondary{background:#223552;color:#eef4ff;border:1px solid #45648f}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.metric{background:#0c172a;border:1px solid #263c60;border-radius:12px;padding:10px}
+.k{font-size:12px;opacity:.78}.v{font-size:19px;font-weight:800;margin-top:3px}
+.ding{color:#82f0a7}.hold{color:#ffd56c}.bugg{color:#ff8d8d}
+#pad{height:220px;border:2px dashed #5a79a8;border-radius:16px;touch-action:none;display:flex;align-items:center;justify-content:center;color:#9eb4d3;margin-top:10px}
+pre{white-space:pre-wrap;word-break:break-word;font-size:11px;max-height:580px;overflow:auto}
+small{opacity:.75}
+</style>
+</head>
+<body>
+<h1>JM v5.2 — Owner Phone Grand Contact Suite</h1>
+<p class="law">TRUST MUST HAVE A RETURNED RECEIPT.</p>
+<div class="card">
+  <button id="run">RUN ALL BROWSER-CONTACT TESTS</button>
+  <button id="finalize" class="secondary">FINALIZE AFTER TOUCH / TILT</button>
+  <button id="save" class="secondary">SAVE MASTER RECEIPT JSON</button>
+  <p>After RUN, drag around the pad and tilt/move the phone for about 5 seconds. Then FINALIZE.</p>
+  <div id="pad">TOUCH / DRAG HERE</div>
+</div>
+<div class="card"><div id="summary" class="grid"></div></div>
+<div class="card"><pre id="out"></pre></div>
+
+<script>
+const R={
+ schema:"jm.v5.2.owner-phone-grand-contact/v1",
+ source:"actual browser/device contact",
+ started_at:null, finalized_at:null,
+ env:{},
+ rails:{
+   pointer:{state:"HOLD",samples:0},
+   touch:{state:"HOLD",samples:0},
+   motion:{state:"HOLD",samples:0},
+   orientation:{state:"HOLD",samples:0},
+   accelerometer:{state:"HOLD"},
+   gyroscope:{state:"HOLD"},
+   webgl2_render_readback:{state:"HOLD"},
+   webgpu_compute_readback:{state:"HOLD"},
+   webcrypto_sign_verify_nonextractable:{state:"HOLD"},
+   wasm_execution:{state:"HOLD"},
+   worker_roundtrip:{state:"HOLD"},
+   indexeddb_roundtrip:{state:"HOLD"},
+   localstorage_roundtrip:{state:"HOLD"},
+   storage_estimate:{state:"HOLD"},
+   battery:{state:"HOLD"},
+   canvas2d_readback:{state:"HOLD"},
+   offscreen_canvas:{state:"HOLD"},
+   offline_audio_render:{state:"HOLD"},
+   shared_memory_atomics:{state:"HOLD"}
+ },
+ boundaries:[
+  "WebGL readback proves browser GPU-render contact, not native Vulkan/OpenCL/CUDA.",
+  "WebGPU DING requires compute dispatch + mapped-buffer readback.",
+  "Non-extractable WebCrypto key does not prove StrongBox/TEE hardware backing.",
+  "Browser sensor denial does not prove the physical sensor is absent.",
+  "SharedArrayBuffer HOLD can be a browser isolation policy boundary, not a hardware limit."
+ ]
+};
+const pad=document.querySelector("#pad"), out=document.querySelector("#out"), summary=document.querySelector("#summary");
+function cssState(s){return s==="DING"?"ding":(s==="BUGG"?"bugg":"hold")}
+function render(){
+ const rails=Object.entries(R.rails);
+ summary.innerHTML=rails.map(([k,v])=>`<div class="metric"><div class="k">${k.replaceAll("_"," ")}</div><div class="v ${cssState(v.state)}">${v.state}</div></div>`).join("");
+ out.textContent=JSON.stringify(R,null,2);
+}
+function ding(name,extra={}){R.rails[name]={...R.rails[name],...extra,state:"DING"};render()}
+function hold(name,reason,extra={}){R.rails[name]={...R.rails[name],...extra,state:"HOLD",reason};render()}
+function bugg(name,error,extra={}){R.rails[name]={...R.rails[name],...extra,state:"BUGG",error:String(error)};render()}
+
+["pointerdown","pointermove","pointerup"].forEach(ev=>pad.addEventListener(ev,e=>{
+ R.rails.pointer.samples++;R.rails.pointer.state="DING";R.rails.pointer.last={x:e.clientX,y:e.clientY,pressure:e.pressure,pointerType:e.pointerType};render();
+}));
+["touchstart","touchmove","touchend"].forEach(ev=>pad.addEventListener(ev,e=>{
+ R.rails.touch.samples++;R.rails.touch.state="DING";R.rails.touch.lastTouches=e.touches.length;render();
+},{passive:true}));
+window.addEventListener("devicemotion",e=>{
+ R.rails.motion.samples++;R.rails.motion.state="DING";
+ R.rails.motion.last={x:e.accelerationIncludingGravity?.x??null,y:e.accelerationIncludingGravity?.y??null,z:e.accelerationIncludingGravity?.z??null,rotationRate:e.rotationRate??null};render();
+});
+window.addEventListener("deviceorientation",e=>{
+ R.rails.orientation.samples++;R.rails.orientation.state="DING";R.rails.orientation.last={alpha:e.alpha,beta:e.beta,gamma:e.gamma,absolute:e.absolute};render();
+});
+
+async function permissionSensors(){
+ for(const [rail,C] of [["motion",window.DeviceMotionEvent],["orientation",window.DeviceOrientationEvent]]){
+   try{
+     if(C && typeof C.requestPermission==="function"){
+       const p=await C.requestPermission();R.rails[rail].permission=p;
+       if(p!=="granted")hold(rail,"permission "+p,{permission:p,samples:R.rails[rail].samples});
+     } else R.rails[rail].permission="no-explicit-request-api";
+   }catch(e){hold(rail,e.name+":"+e.message,{permission:"error"})}
+ }
+}
+
+async function genericSensor(rail,C){
+ if(!C){hold(rail,"API unavailable");return}
+ try{
+   let samples=0,last=null,done=false;
+   const s=new C({frequency:20});
+   await new Promise(resolve=>{
+     const timer=setTimeout(()=>{if(!done){done=true;try{s.stop()}catch{};resolve()}},2200);
+     s.addEventListener("reading",()=>{
+       samples++;last={x:s.x??null,y:s.y??null,z:s.z??null,quaternion:s.quaternion?Array.from(s.quaternion):null};
+       if(samples>=3&&!done){done=true;clearTimeout(timer);try{s.stop()}catch{};resolve()}
+     });
+     s.addEventListener("error",e=>{if(!done){done=true;clearTimeout(timer);resolve()}});
+     s.start();
+   });
+   if(samples>0)ding(rail,{samples,last});else hold(rail,"no returned samples",{samples});
+ }catch(e){hold(rail,e.name+":"+e.message)}
+}
+
+function webgl2(){
+ try{
+  const c=document.createElement("canvas");c.width=c.height=16;
+  const gl=c.getContext("webgl2",{preserveDrawingBuffer:true});
+  if(!gl){hold("webgl2_render_readback","webgl2 unavailable");return}
+  const vs=gl.createShader(gl.VERTEX_SHADER);gl.shaderSource(vs,"#version 300 es\nin vec2 p;void main(){gl_Position=vec4(p,0,1);}");gl.compileShader(vs);
+  const fs=gl.createShader(gl.FRAGMENT_SHADER);gl.shaderSource(fs,"#version 300 es\nprecision highp float;out vec4 o;void main(){o=vec4(0.0,1.0,0.0,1.0);}");gl.compileShader(fs);
+  if(!gl.getShaderParameter(vs,gl.COMPILE_STATUS)||!gl.getShaderParameter(fs,gl.COMPILE_STATUS)){bugg("webgl2_render_readback","shader compile failure");return}
+  const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);gl.useProgram(pr);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  const px=new Uint8Array(4);gl.readPixels(8,8,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);
+  const dbg=gl.getExtension("WEBGL_debug_renderer_info");
+  const renderer=dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);
+  const ok=px[1]>200 && px[0]<30 && px[2]<30;
+  if(ok)ding("webgl2_render_readback",{rgba:Array.from(px),renderer,version:gl.getParameter(gl.VERSION),vendor:dbg?gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR)});
+  else bugg("webgl2_render_readback","unexpected pixel "+Array.from(px));
+ }catch(e){bugg("webgl2_render_readback",e.name+":"+e.message)}
+}
+
+async function webgpu(){
+ if(!navigator.gpu){hold("webgpu_compute_readback","navigator.gpu absent");return}
+ try{
+  const adapter=await navigator.gpu.requestAdapter();
+  if(!adapter){hold("webgpu_compute_readback","requestAdapter returned null");return}
+  const device=await adapter.requestDevice();
+  const input=new Uint32Array([1,2,3,4]);
+  const a=device.createBuffer({size:input.byteLength,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+  const b=device.createBuffer({size:input.byteLength,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_SRC});
+  const read=device.createBuffer({size:input.byteLength,usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+  device.queue.writeBuffer(a,0,input);
+  const module=device.createShaderModule({code:`@group(0) @binding(0) var<storage,read> a:array<u32>;
+@group(0) @binding(1) var<storage,read_write> b:array<u32>;
+@compute @workgroup_size(1) fn main(@builtin(global_invocation_id) id:vec3<u32>){let i=id.x;if(i<4u){b[i]=a[i]*2u;}}`});
+  const pipeline=device.createComputePipeline({layout:"auto",compute:{module,entryPoint:"main"}});
+  const bg=device.createBindGroup({layout:pipeline.getBindGroupLayout(0),entries:[{binding:0,resource:{buffer:a}},{binding:1,resource:{buffer:b}}]});
+  const enc=device.createCommandEncoder(),pass=enc.beginComputePass();pass.setPipeline(pipeline);pass.setBindGroup(0,bg);pass.dispatchWorkgroups(4);pass.end();
+  enc.copyBufferToBuffer(b,0,read,0,input.byteLength);device.queue.submit([enc.finish()]);
+  await read.mapAsync(GPUMapMode.READ);const got=Array.from(new Uint32Array(read.getMappedRange().slice(0)));read.unmap();
+  const ok=JSON.stringify(got)===JSON.stringify([2,4,6,8]);
+  if(ok)ding("webgpu_compute_readback",{input:Array.from(input),output:got,features:Array.from(adapter.features||[]),limits:{maxBindGroups:adapter.limits?.maxBindGroups}});
+  else bugg("webgpu_compute_readback","bad output "+JSON.stringify(got));
+ }catch(e){hold("webgpu_compute_readback",e.name+":"+e.message)}
+}
+
+async function cryptoTest(){
+ try{
+  const kp=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},false,["sign","verify"]);
+  const msg=new TextEncoder().encode("JM v5.2 owner-phone grand contact");
+  const sig=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},kp.privateKey,msg);
+  const ok=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},kp.publicKey,sig,msg);
+  let rejected=false;try{await crypto.subtle.exportKey("pkcs8",kp.privateKey)}catch(e){rejected=true}
+  if(ok&&rejected)ding("webcrypto_sign_verify_nonextractable",{signatureBytes:sig.byteLength,verified:true,privateExportRejected:true,hardwareBacking:"UNKNOWN_FROM_WEBCRYPTO_API"});
+  else bugg("webcrypto_sign_verify_nonextractable","verification/export boundary mismatch");
+ }catch(e){bugg("webcrypto_sign_verify_nonextractable",e.name+":"+e.message)}
+}
+
+async function wasm(){
+ try{
+  const bin=new Uint8Array([0,97,115,109,1,0,0,0,1,7,1,96,2,127,127,1,127,3,2,1,0,7,7,1,3,97,100,100,0,0,10,9,1,7,0,32,0,32,1,106,11]);
+  const {instance}=await WebAssembly.instantiate(bin);const v=instance.exports.add(3,2);
+  v===5?ding("wasm_execution",{result:v}):bugg("wasm_execution","result "+v);
+ }catch(e){bugg("wasm_execution",e.name+":"+e.message)}
+}
+
+async function worker(){
+ try{
+  const blob=new Blob([`onmessage=e=>postMessage({echo:e.data,twice:e.data*2})`],{type:"text/javascript"});
+  const url=URL.createObjectURL(blob);const w=new Worker(url);
+  const result=await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(new Error("timeout")),2500);w.onmessage=e=>{clearTimeout(t);resolve(e.data)};w.onerror=e=>{clearTimeout(t);reject(e)};w.postMessage(21)});
+  w.terminate();URL.revokeObjectURL(url);
+  result.twice===42?ding("worker_roundtrip",result):bugg("worker_roundtrip","bad worker result");
+ }catch(e){hold("worker_roundtrip",e.name+":"+e.message)}
+}
+
+async function indexeddb(){
+ if(!indexedDB){hold("indexeddb_roundtrip","indexedDB absent");return}
+ try{
+  const name="jm_v5_2_"+Date.now(), key="pulse", value={n:32,s:"DING"};
+  const db=await new Promise((resolve,reject)=>{const q=indexedDB.open(name,1);q.onupgradeneeded=()=>q.result.createObjectStore("s");q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)});
+  await new Promise((resolve,reject)=>{const t=db.transaction("s","readwrite");t.objectStore("s").put(value,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error)});
+  const got=await new Promise((resolve,reject)=>{const q=db.transaction("s").objectStore("s").get(key);q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)});
+  db.close();indexedDB.deleteDatabase(name);
+  JSON.stringify(got)===JSON.stringify(value)?ding("indexeddb_roundtrip",{value:got}):bugg("indexeddb_roundtrip","mismatch");
+ }catch(e){hold("indexeddb_roundtrip",e.name+":"+e.message)}
+}
+
+function localstore(){
+ try{
+  const k="jm_v5_2",v="DING:"+Date.now();localStorage.setItem(k,v);const got=localStorage.getItem(k);localStorage.removeItem(k);
+  got===v?ding("localstorage_roundtrip",{value:got}):bugg("localstorage_roundtrip","mismatch");
+ }catch(e){hold("localstorage_roundtrip",e.name+":"+e.message)}
+}
+
+async function storage(){
+ try{
+  if(!navigator.storage?.estimate){hold("storage_estimate","API absent");return}
+  const e=await navigator.storage.estimate();ding("storage_estimate",{quota:e.quota,usage:e.usage});
+ }catch(e){hold("storage_estimate",e.name+":"+e.message)}
+}
+
+async function battery(){
+ try{
+  if(!navigator.getBattery){hold("battery","API absent");return}
+  const b=await navigator.getBattery();ding("battery",{level:b.level,charging:b.charging,chargingTime:b.chargingTime,dischargingTime:b.dischargingTime});
+ }catch(e){hold("battery",e.name+":"+e.message)}
+}
+
+function canvas2d(){
+ try{
+  const c=document.createElement("canvas");c.width=c.height=2;const x=c.getContext("2d");
+  x.fillStyle="rgb(7,11,13)";x.fillRect(0,0,2,2);const p=Array.from(x.getImageData(0,0,1,1).data);
+  (p[0]===7&&p[1]===11&&p[2]===13)?ding("canvas2d_readback",{rgba:p}):bugg("canvas2d_readback","bad pixel "+p);
+ }catch(e){bugg("canvas2d_readback",e.name+":"+e.message)}
+}
+
+async function offscreen(){
+ try{
+  if(!window.OffscreenCanvas){hold("offscreen_canvas","API absent");return}
+  const c=new OffscreenCanvas(2,2),x=c.getContext("2d");x.fillStyle="rgb(5,9,17)";x.fillRect(0,0,2,2);const p=Array.from(x.getImageData(0,0,1,1).data);
+  ding("offscreen_canvas",{rgba:p});
+ }catch(e){hold("offscreen_canvas",e.name+":"+e.message)}
+}
+
+async function audio(){
+ try{
+  if(!window.OfflineAudioContext){hold("offline_audio_render","API absent");return}
+  const ac=new OfflineAudioContext(1,256,8000);const osc=ac.createOscillator();osc.frequency.value=440;osc.connect(ac.destination);osc.start();osc.stop(.02);
+  const rendered=await ac.startRendering();let sum=0;const d=rendered.getChannelData(0);for(let i=0;i<d.length;i++)sum+=Math.abs(d[i]);
+  sum>0?ding("offline_audio_render",{frames:d.length,absoluteSum:sum}):bugg("offline_audio_render","silent render");
+ }catch(e){hold("offline_audio_render",e.name+":"+e.message)}
+}
+
+function atomics(){
+ try{
+  if(typeof SharedArrayBuffer==="undefined"){hold("shared_memory_atomics","SharedArrayBuffer unavailable; likely isolation policy");return}
+  const sab=new SharedArrayBuffer(4),a=new Int32Array(sab);Atomics.store(a,0,31);const v=Atomics.add(a,0,1)+1;
+  v===32?ding("shared_memory_atomics",{value:v,crossOriginIsolated:self.crossOriginIsolated}):bugg("shared_memory_atomics","value "+v);
+ }catch(e){hold("shared_memory_atomics",e.name+":"+e.message)}
+}
+
+async function run(){
+ R.started_at=new Date().toISOString();
+ R.env={
+  ua:navigator.userAgent,secureContext:isSecureContext,crossOriginIsolated:self.crossOriginIsolated,
+  screen:{w:screen.width,h:screen.height,dpr:devicePixelRatio},
+  hardware:{concurrency:navigator.hardwareConcurrency??null,memoryGB:navigator.deviceMemory??null,touchPoints:navigator.maxTouchPoints??null},
+  languages:navigator.languages
+ };
+ R.rails.pointer={state:"HOLD",samples:0};R.rails.touch={state:"HOLD",samples:0};R.rails.motion={state:"HOLD",samples:0};R.rails.orientation={state:"HOLD",samples:0};
+ render();
+ await permissionSensors();
+ webgl2();canvas2d();localstore();atomics();
+ await Promise.all([
+  webgpu(),cryptoTest(),wasm(),worker(),indexeddb(),storage(),battery(),offscreen(),audio(),
+  genericSensor("accelerometer",window.Accelerometer),
+  genericSensor("gyroscope",window.Gyroscope)
+ ]);
+ render();
+}
+document.querySelector("#run").onclick=run;
+document.querySelector("#finalize").onclick=()=>{
+ R.finalized_at=new Date().toISOString();
+ for(const n of ["pointer","touch","motion","orientation"]){
+   if(R.rails[n].samples>0)R.rails[n].state="DING";
+   else if(R.rails[n].state!=="BUGG")R.rails[n].state="HOLD";
+ }
+ render();
+};
+document.querySelector("#save").onclick=()=>{
+ R.saved_at=new Date().toISOString();render();
+ const blob=new Blob([JSON.stringify(R,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="JM_V5_2_OWNER_PHONE_GRAND_CONTACT_RECEIPT.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+render();
+</script>
+</body>
+</html>

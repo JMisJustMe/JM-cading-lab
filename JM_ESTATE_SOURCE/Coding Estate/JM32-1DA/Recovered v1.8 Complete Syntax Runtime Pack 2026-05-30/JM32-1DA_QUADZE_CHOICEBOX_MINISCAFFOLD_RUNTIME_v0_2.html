@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JM32-1DA Quadze Choice Box Mini Scaffold Runtime v0.2</title>
+  <style>
+    :root{--bg:#0f0f10;--panel:#1a1a1d;--text:#f7f7f7;--muted:#b7b7bd;--line:#f7f7f7;--soft:#303036;--active:#f7f7f7;--activeText:#101013}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(circle at top left,rgba(255,255,255,.08),transparent 32%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:18px}
+    main{max-width:1340px;margin:0 auto;display:grid;gap:18px}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.panel{background:rgba(26,26,29,.94);border:1px solid #35353a;border-radius:26px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    h1{margin:0 0 8px;font-size:clamp(2rem,5vw,4.4rem);line-height:.92;letter-spacing:-.055em}h2{margin:0 0 12px;color:var(--muted);font-size:1rem;text-transform:uppercase;letter-spacing:.09em}p{color:var(--muted);line-height:1.55;margin:0 0 14px}
+    .hero-row{display:grid;grid-template-columns:350px 1fr;gap:18px;align-items:center}.zero-stage{display:grid;place-items:center;padding:14px}.zero-mark{width:min(70vw,310px);aspect-ratio:1;border:24px solid var(--line);border-radius:50%;position:relative;overflow:hidden;background:#141416}
+    .quad{position:absolute;width:50%;height:50%;border:0;background:transparent;color:var(--text);cursor:pointer;font-weight:950}.quad:hover,.quad:focus-visible{background:rgba(255,255,255,.16);outline:2px solid var(--line);z-index:4}.tl{left:0;top:0}.tr{right:0;top:0}.bl{left:0;bottom:0}.br{right:0;bottom:0}.cross-h,.cross-v{position:absolute;background:rgba(255,255,255,.45);z-index:2;pointer-events:none}.cross-h{height:2px;width:100%;top:50%;left:0}.cross-v{width:2px;height:100%;top:0;left:50%}
+    .output{font-weight:950;font-size:clamp(3rem,8vw,6rem);line-height:1;letter-spacing:-.07em;margin:6px 0 10px}.facts,.codebox{background:#101013;border:1px solid #35353a;border-radius:18px;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:#eee;font-size:.9rem}.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}button,select,input{border:1px solid #55555d;background:#222227;color:var(--text);border-radius:14px;padding:11px 13px;font-weight:800}button{cursor:pointer}button:hover{background:#2e2e34}input{min-width:170px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .grid{display:grid;gap:5px;background:#0c0c0e;border:1px solid #33333a;border-radius:20px;padding:10px;overflow-x:auto}.cell{min-width:42px;height:34px;border:1px solid #33333a;background:#17171a;color:var(--muted);border-radius:10px;display:grid;place-items:center;font-size:.72rem;cursor:pointer}.cell.parked{opacity:.36;cursor:not-allowed;background:#111114}.cell.activeLane{background:#24242a;border-color:#5a5a66;color:var(--text)}.cell.selected{background:var(--active);color:var(--activeText);border-color:var(--active);font-weight:950}
+    .runtime{display:grid;grid-template-columns:1fr 1fr;gap:18px}.receipt{background:#fbfbfb;color:#111;border-radius:20px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;min-height:240px}ul{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.5;max-height:230px;overflow:auto}@media(max-width:980px){.hero,.runtime,.hero-row{grid-template-columns:1fr}.zero-mark{width:min(78vw,300px)}}
+  </style>
+</head>
+<body>
+<main>
+<section class="hero">
+<div class="panel">
+<h1>Quadze + Choice Box + Mini Scaffold</h1>
+<p>One zero has four internal contact possibilities. Choice Box selects a lane. Mini scaffold gives that lane coordinates. Sneeze Check rejects invalid routes without collapse.</p>
+<div class="hero-row"><div class="zero-stage"><div class="zero-mark">
+<button class="quad tl" data-quad="TL">TL</button><button class="quad tr" data-quad="TR">TR</button><button class="quad bl" data-quad="BL">BL</button><button class="quad br" data-quad="BR">BR</button><div class="cross-h"></div><div class="cross-v"></div>
+</div></div><div><h2>Current Output</h2><div class="output" id="output">0</div><div class="facts" id="facts">numeric value = 0
+base zero count = 1
+quadrant metadata = none
+binary padding avoided = true
+choice box active lane = none
+coordinate = none
+recovered form = 0</div><div class="controls"><button id="recoverBtn">Recover plain 0</button><button id="lane5Btn">Lane 5 Recovery</button></div></div></div>
+</div>
+<div class="panel"><h2>Sneeze Check</h2><p>Test invalid or padded forms. These should become ha!/aha traces, not collapses.</p><div class="controls"><input id="manualInput" value="0[XX]" /><button id="manualBtn">Test Input</button></div><div class="controls"><button class="quickInvalid" data-token="0001">Test 0001</button><button class="quickInvalid" data-token="0000[TL]">Test 0000[TL]</button><button class="quickInvalid" data-token="00[TR]">Test 00[TR]</button><button class="quickInvalid" data-token="0[XX]">Test 0[XX]</button></div></div>
+</section>
+<section class="panel"><div class="controls"><h2>Mini Scaffold</h2><select id="scaleSelect"><option value="8">8 x 5</option><option value="16" selected>16 x 5</option></select><button id="clearTraceBtn">Clear Trace Log</button></div><div class="grid" id="grid"></div></section>
+<section class="runtime"><div class="panel"><h2>JM Bodyhouse Runtime Board</h2><div class="codebox" id="runtimeBoard">SOURCE: single zero-mark
+SIGNAL: waiting
+CONTACT FIELD: internal mark-space + Choice Box + mini scaffold
+ROUTE PRESSURE: none
+STATE CHANGE: none
+DING: waiting
+TRACE: none
+RECOVERY: plain 0 loaded
+OUTPUT: 0</div></div><div class="panel"><h2>TraceBox Receipt</h2><div class="receipt" id="receipt">TRACEBOX RECEIPT
+status: ready
+input: 0
+active lane: none
+coordinate: none
+state change: none
+ding: waiting
+recovery: plain 0
+output: 0</div></div></section>
+<section class="panel"><h2>Trace Log</h2><ul id="traceLog"><li>Ready: v0.2 loaded. Plain 0 active. No lanes selected.</li></ul></section>
+</main>
+<script>
+const qToLane={TL:1,TR:2,BL:3,BR:4};let scale=16,activeLane=null,activeQuadrant=null,selectedCoordinate=null,receiptCounter=0;
+const output=document.getElementById("output"),facts=document.getElementById("facts"),grid=document.getElementById("grid"),runtimeBoard=document.getElementById("runtimeBoard"),receipt=document.getElementById("receipt"),traceLog=document.getElementById("traceLog");
+function addTrace(m){const li=document.createElement("li");li.textContent=`[${new Date().toLocaleTimeString()}] ${m}`;traceLog.prepend(li)}
+function updateFacts(){facts.textContent=`numeric value = 0
+base zero count = 1
+quadrant metadata = ${activeQuadrant||"none"}
+binary padding avoided = true
+choice box active lane = ${activeLane||"none"}
+coordinate = ${selectedCoordinate||"none"}
+recovered form = 0`}
+function setReceipt(d){receiptCounter++;receipt.textContent=`TRACEBOX RECEIPT #${receiptCounter}
+status: ${d.status}
+input: ${d.input}
+numeric value: ${d.numericValue}
+base zero count: ${d.baseZeroCount}
+quadrant metadata: ${d.quadrant||"none"}
+active lane: ${d.lane||"none"}
+coordinate: ${d.coordinate||"none"}
+state change: ${d.stateChange}
+ding: ${d.ding}
+trace: ${d.trace}
+recovery: ${d.recovery}
+output: ${d.output}`}
+function buildGrid(){grid.innerHTML="";grid.style.gridTemplateColumns=`repeat(${scale}, minmax(42px,1fr))`;for(let y=1;y<=5;y++){for(let x=1;x<=scale;x++){const c=document.createElement("button");c.className="cell";c.textContent=`X${x}/Y${y}`;if(!activeLane||y!==activeLane)c.classList.add("parked");else c.classList.add("activeLane");if(selectedCoordinate===`X${x}/Y${y}`)c.classList.add("selected");c.onclick=()=>selectCoordinate(x,y);grid.appendChild(c)}}}
+function selectQuadrant(q){activeQuadrant=q;activeLane=qToLane[q];selectedCoordinate=`X1/Y${activeLane}`;output.textContent=`0[${q}]`;updateFacts();buildGrid();runtimeBoard.textContent=`SOURCE: single zero-mark
+SIGNAL: ${q} quadrant contact
+CONTACT FIELD: internal mark-space + Choice Box
+ROUTE PRESSURE: choose active lane without binary padding
+STATE CHANGE: lane ${activeLane} active; inactive lanes parked; coordinate ${selectedCoordinate} selected
+DING: 0[${q}] → Lane ${activeLane} → ${selectedCoordinate}
+TRACE: 0[${q}] / base zero count 1 / value 0
+RECOVERY: reset removes metadata and parks lanes
+OUTPUT: zero-value with ${q} metadata routed into scaffold`;setReceipt({status:"pass",input:`0[${q}]`,numericValue:0,baseZeroCount:1,quadrant:q,lane:activeLane,coordinate:selectedCoordinate,stateChange:`lane ${activeLane} active`,ding:`0[${q}] recognised`,trace:`0[${q}] → Lane ${activeLane} → ${selectedCoordinate}`,recovery:"reset returns to plain 0",output:"zero-value + metadata + coordinate"});addTrace(`DING: 0[${q}] uses one zero → Lane ${activeLane} → ${selectedCoordinate}.`)}
+function selectCoordinate(x,y){if(!activeLane){sneeze(`X${x}/Y${y}`,"no active lane selected");return}if(y!==activeLane){sneeze(`X${x}/Y${y}`,`lane ${y} is parked; active lane is ${activeLane}`);return}selectedCoordinate=`X${x}/Y${y}`;buildGrid();updateFacts();const token=activeQuadrant?`0[${activeQuadrant}]`:"0";runtimeBoard.textContent=`SOURCE: ${token}
+SIGNAL: coordinate selection ${selectedCoordinate}
+CONTACT FIELD: active lane ${activeLane} inside ${scale}x5 scaffold
+ROUTE PRESSURE: move within active lane only
+STATE CHANGE: coordinate updated to ${selectedCoordinate}
+DING: ${selectedCoordinate} selected
+TRACE: ${token} → Lane ${activeLane} → ${selectedCoordinate}
+RECOVERY: reset returns to plain 0
+OUTPUT: active coordinate receipt`;setReceipt({status:"pass",input:token,numericValue:0,baseZeroCount:1,quadrant:activeQuadrant,lane:activeLane,coordinate:selectedCoordinate,stateChange:`coordinate updated to ${selectedCoordinate}`,ding:`${selectedCoordinate} selected`,trace:`${token} → Lane ${activeLane} → ${selectedCoordinate}`,recovery:"reset returns to plain 0",output:"coordinate selected within active lane"});addTrace(`DING: coordinate set: ${token} → Lane ${activeLane} → ${selectedCoordinate}.`)}
+function parseManualToken(t){if(t==="0"){recover("manual plain zero accepted");return}const m=t.match(/^0\[(TL|TR|BL|BR)\]$/);if(m){selectQuadrant(m[1]);return}sneeze(t,"invalid or padded Quadze token")}
+function sneeze(input,reason){output.textContent="ha!";runtimeBoard.textContent=`SOURCE: ${input||"empty input"}
+SIGNAL: invalid/contact disruption
+CONTACT FIELD: Sneeze Check
+ROUTE PRESSURE: ${reason}
+CHAMBER / REJECTION / ACCEPTANCE CHECK: rejected as unsafe/invalid route
+AUTHORITY GATE: invalid route cannot block startup
+STATE CHANGE: no destructive change
+DING: ha!/aha trace pinned
+TRACE: ${input||"empty"} rejected
+RECOVERY: return to safe state or recover plain 0
+OUTPUT: sneeze handled without collapse`;setReceipt({status:"sneeze-recovered",input:input||"empty",numericValue:"unchanged",baseZeroCount:(input&&input.match(/0/g)||[]).length,quadrant:null,lane:activeLane,coordinate:selectedCoordinate,stateChange:"invalid route rejected; no collapse",ding:"ha!/aha trace pinned",trace:`${input||"empty"} rejected: ${reason}`,recovery:"plain 0 remains recoverable",output:"safe rejection"});addTrace(`ha!/aha: ${input||"empty"} rejected — ${reason}. Startup not blocked.`)}
+function recover(note="plain 0 recovered"){activeQuadrant=null;activeLane=null;selectedCoordinate=null;output.textContent="0";updateFacts();buildGrid();runtimeBoard.textContent=`SOURCE: recovery command
+SIGNAL: reset
+CONTACT FIELD: Choice Box + mini scaffold
+ROUTE PRESSURE: clear metadata and active lane
+STATE CHANGE: all lanes parked; coordinate cleared
+DING: plain 0 recovered
+TRACE: recovery logged
+RECOVERY: complete
+OUTPUT: 0`;setReceipt({status:"recovered",input:"reset",numericValue:0,baseZeroCount:1,quadrant:null,lane:null,coordinate:null,stateChange:"all lanes parked; metadata cleared",ding:"plain 0 recovered",trace:note,recovery:"complete",output:"0"});addTrace(`RECOVERY: ${note}.`)}
+function lane5Recovery(){activeQuadrant=null;activeLane=5;selectedCoordinate=`X1/Y5`;output.textContent="0";updateFacts();buildGrid();runtimeBoard.textContent=`SOURCE: Choice Box
+SIGNAL: lane 5 recovery/expansion selection
+CONTACT FIELD: ${scale}x5 scaffold
+ROUTE PRESSURE: reserve a fifth lane without forcing all lanes
+STATE CHANGE: lane 5 active as recovery/expansion lane
+DING: Lane 5 active
+TRACE: Choice Box → Lane 5 → ${selectedCoordinate}
+RECOVERY: reset parks lane 5
+OUTPUT: recovery/expansion lane available`;setReceipt({status:"pass",input:"lane5",numericValue:0,baseZeroCount:1,quadrant:null,lane:5,coordinate:selectedCoordinate,stateChange:"lane 5 active as recovery/expansion lane",ding:"Lane 5 active",trace:`Choice Box → Lane 5 → ${selectedCoordinate}`,recovery:"reset parks lane 5",output:"lane 5 available"});addTrace(`DING: Lane 5 activated as recovery/expansion lane → ${selectedCoordinate}.`)}
+document.querySelectorAll(".quad").forEach(b=>b.onclick=()=>selectQuadrant(b.dataset.quad));document.getElementById("recoverBtn").onclick=()=>recover();document.getElementById("lane5Btn").onclick=lane5Recovery;document.getElementById("manualBtn").onclick=()=>parseManualToken(document.getElementById("manualInput").value.trim());document.querySelectorAll(".quickInvalid").forEach(b=>b.onclick=()=>parseManualToken(b.dataset.token));document.getElementById("clearTraceBtn").onclick=()=>{traceLog.innerHTML="<li>Trace log cleared.</li>"};document.getElementById("scaleSelect").onchange=e=>{scale=Number(e.target.value);selectedCoordinate=activeLane?`X1/Y${activeLane}`:null;buildGrid();updateFacts();addTrace(`Mini scaffold scale changed to ${scale}x5.`)};buildGrid();
+</script>
+</body>
+</html>

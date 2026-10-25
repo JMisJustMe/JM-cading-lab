@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Code Hand JS/C++ Bridge v0.2</title>
+<style>
+:root{--bg:#080a14;--panel:#121827;--line:rgba(255,255,255,.14);--ink:#f7fbff;--muted:#b9c6dd;--cyan:#95f3ff;--gold:#ffd866;--green:#77f2a6}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 0 0,rgba(149,243,255,.08),transparent 32%),#080a14;color:var(--ink);overflow-x:hidden}
+main{width:100%;max-width:840px;margin:0 auto;padding:18px 16px 92px}
+h1{font-size:clamp(34px,11vw,64px);line-height:.98;margin:28px 0 18px;letter-spacing:-.06em}
+p{font-size:clamp(17px,4.5vw,22px);color:var(--muted);line-height:1.35}
+.card{border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:22px;padding:14px;margin:14px 0}
+button{border:1px solid var(--line);border-radius:16px;background:rgba(149,243,255,.13);color:var(--ink);font-weight:900;padding:12px 14px;margin:4px;font-size:16px;touch-action:manipulation}
+button.primary{background:linear-gradient(135deg,rgba(149,243,255,.18),rgba(255,216,102,.12));border-color:rgba(149,243,255,.35)}
+button.good{background:rgba(119,242,166,.12);border-color:rgba(119,242,166,.35)}
+pre{white-space:pre-wrap;word-break:break-word;background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:13px;overflow:auto;font-size:14px;line-height:1.45;max-height:52vh}
+code{color:var(--cyan)}
+.status{display:flex;align-items:center;gap:8px;color:var(--green);font-weight:900}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green)}
+.toolbelt{position:fixed;left:0;right:0;bottom:0;background:rgba(8,10,20,.95);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:8px 10px}
+.toolbelt button{font-size:13px;margin:0;padding:10px 6px}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>JM Code Hand JS/C++ Demo</h1>
+  <p>Your terms are available as <code>JM_API</code>. This version is <b>Android-safe</b>: no module import, no external JavaScript file needed.</p>
+
+  <div class="card status">
+    <span class="dot"></span>
+    <span id="ready">Ready — inline JavaScript loaded.</span>
+  </div>
+
+  <div class="card">
+    <button class="primary" id="run">Run JM_API Demo</button>
+    <button id="trace">Create Trace</button>
+    <button id="guide">Ask Ehilatheo</button>
+    <button class="good" id="sin">Check Sin-Tac</button>
+    <button id="cpp">Show C++ Route</button>
+  </div>
+
+  <pre id="out">Ready. Tap a button.</pre>
+
+  <div class="card">
+    <b>Clean lock</b>
+    <p class="small">I still code. AI Latheo helps me code. Code Hand shows the code. TraceBox proves the code worked. JM Systems stays mine.</p>
+  </div>
+</main>
+
+<footer class="toolbelt">
+  <button id="terms">Terms</button>
+  <button id="selftest">Selftest</button>
+  <button id="clear">Clear</button>
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+const JM_TERMS = [{"source": "Source Authority", "code": "SOURCE_AUTHORITY", "meaning": "checks that source owner / creator route is preserved"}, {"source": "Trace Log", "code": "TRACE_LOG", "meaning": "records event, route, before state, after state, and proof level"}, {"source": "Cold Ding", "code": "COLD_DING", "meaning": "stores cooled proof that a state changed and can be recovered"}, {"source": "FlowTalk Route", "code": "FLOWTALK_ROUTE", "meaning": "routes wording from source phrase into usable meaning without flattening it"}, {"source": "Sin-Tac Check", "code": "SIN_TAC_CHECK", "meaning": "checks protected marks, spelling, sound-seeds, and source-sensitive syntax"}, {"source": "Public Door", "code": "PUBLIC_DOOR", "meaning": "turns a complex system into a beginner-safe entry route"}, {"source": "Ama-Pro", "code": "AMA_PRO", "meaning": "creates a practice-to-pro route that grows ability without replacing the learner"}, {"source": "D-Level", "code": "D_LEVEL", "meaning": "assigns readiness / proof level from D0 to D10"}, {"source": "Vault Home", "code": "VAULT_HOME", "meaning": "assigns a recoverable storage home"}, {"source": "Use Law", "code": "USE_LAW", "meaning": "checks how a term/body/tool is allowed to be used"}, {"source": "Ehilatheo", "code": "EHILATHEO", "meaning": "helps, explains, tests, and guides without replacing the user hand"}, {"source": "Trusting Hand Ends Omissions", "code": "TRUSTING_HAND_ENDS_OMISSIONS", "meaning": "trusted helper-hand reduces omissions by making route, assumptions, missing pieces, and checks visible"}];
+
+function stamp() {
+  return new Date().toISOString();
+}
+
+class JMReceipt {
+  constructor({ type, source, beforeState = null, afterState = null, dLevel = 'D7', notes = '' }) {
+    if (!type) throw new Error('JMReceipt requires type');
+    if (!source) throw new Error('JMReceipt requires source');
+    this.ok = true;
+    this.type = type;
+    this.source = source;
+    this.beforeState = beforeState;
+    this.afterState = afterState;
+    this.dLevel = dLevel;
+    this.notes = notes;
+    this.timestamp = stamp();
+  }
+}
+
+function checkSourceAuthority(input = {}) {
+  return new JMReceipt({
+    type: 'SOURCE_AUTHORITY',
+    source: input.source || 'JM source route',
+    beforeState: input.beforeState || 'unchecked_authority',
+    afterState: 'authority_checked',
+    dLevel: input.dLevel || 'D8',
+    notes: input.notes || 'Implementation cannot overwrite source authority.'
+  });
+}
+
+function createTraceLog(input = {}) {
+  const eventType = input.eventType || input.event_type;
+  if (!eventType) throw new Error('TRACE_LOG requires eventType');
+  return new JMReceipt({
+    type: 'TRACE_LOG',
+    source: input.source || 'unknown_source',
+    beforeState: input.beforeState || input.before_state || 'unlogged_event',
+    afterState: input.afterState || input.after_state || 'logged_event',
+    dLevel: input.dLevel || input.d_level || 'D7',
+    notes: eventType
+  });
+}
+
+function createColdDing(input = {}) {
+  const artifactId = input.artifactId || input.artifact_id;
+  if (!artifactId) throw new Error('COLD_DING requires artifactId');
+  return new JMReceipt({
+    type: 'COLD_DING',
+    source: artifactId,
+    beforeState: input.beforeState || 'live_proof',
+    afterState: 'stored_recoverable_proof',
+    dLevel: input.dLevel || 'D9',
+    notes: input.notes || 'Cold Ding requires recoverable body + trace.'
+  });
+}
+
+function createFlowTalkRoute(input = {}) {
+  const phrase = input.phrase || input.sourcePhrase || '';
+  const receipt = new JMReceipt({
+    type: 'FLOWTALK_ROUTE',
+    source: phrase || 'source_phrase',
+    beforeState: 'raw_wording',
+    afterState: 'routed_wording',
+    dLevel: input.dLevel || 'D7',
+    notes: 'Meaning moved without being flattened.'
+  });
+  return Object.assign(receipt, {
+    phrase,
+    usableRoute: input.usableRoute || phrase.trim()
+  });
+}
+
+function validateSinTac(input = {}) {
+  const text = input.text || '';
+  const protectedMarks = input.protectedMarks || ['_', '-', '×', '/', '[', ']'];
+  const found = protectedMarks.filter(mark => text.includes(mark));
+  const receipt = new JMReceipt({
+    type: 'SIN_TAC_CHECK',
+    source: 'protected_text',
+    beforeState: 'unchecked_text',
+    afterState: 'syntax_checked_text',
+    dLevel: input.dLevel || 'D7',
+    notes: 'Found protected marks: ' + (found.join(' ') || 'none')
+  });
+  return Object.assign(receipt, { foundProtectedMarks: found });
+}
+
+function openPublicDoor(input = {}) {
+  const receipt = new JMReceipt({
+    type: 'PUBLIC_DOOR',
+    source: input.system || 'JM Systems',
+    beforeState: 'raw_system',
+    afterState: 'beginner_safe_route',
+    dLevel: input.dLevel || 'D8',
+    notes: 'Clear doorway. Complex foundation.'
+  });
+  return Object.assign(receipt, {
+    title: input.title || 'Start Here',
+    nextAction: input.nextAction || 'Choose one body to open.'
+  });
+}
+
+function createAmaProPath(input = {}) {
+  const receipt = new JMReceipt({
+    type: 'AMA_PRO',
+    source: input.skill || 'practice_route',
+    beforeState: 'beginner_state',
+    afterState: 'guided_progression_state',
+    dLevel: input.dLevel || 'D8',
+    notes: 'Practice grows the user hand instead of replacing it.'
+  });
+  return Object.assign(receipt, {
+    steps: input.steps || ['notice', 'try', 'trace', 'adjust', 'repeat']
+  });
+}
+
+function assignDLevel(input = {}) {
+  const allowed = ['D0','D1','D2','D3','D4','D5','D6','D7','D8','D9','D10'];
+  const level = input.level || input.dLevel || input.d_level;
+  if (!allowed.includes(level)) throw new Error('Invalid D-Level: ' + level);
+  return new JMReceipt({
+    type: 'D_LEVEL',
+    source: input.source || 'unranked_item',
+    beforeState: 'unranked_item',
+    afterState: 'ranked_item_' + level,
+    dLevel: level,
+    notes: input.notes || 'Assigned ' + level
+  });
+}
+
+function assignVaultHome(input = {}) {
+  const receipt = new JMReceipt({
+    type: 'VAULT_HOME',
+    source: input.item || 'unhoused_item',
+    beforeState: 'unhoused_item',
+    afterState: 'housed_item',
+    dLevel: input.dLevel || 'D6',
+    notes: 'Item received a recoverable home.'
+  });
+  return Object.assign(receipt, {
+    vaultHome: input.vaultHome || input.vault_home || 'BodyVault / needs-specific-folder'
+  });
+}
+
+function applyUseLaw(input = {}) {
+  const receipt = new JMReceipt({
+    type: 'USE_LAW',
+    source: input.term || 'unchecked_use',
+    beforeState: 'unchecked_use',
+    afterState: 'governed_use',
+    dLevel: input.dLevel || 'D7',
+    notes: input.law || 'Use must match route, boundary, and proof state.'
+  });
+  return Object.assign(receipt, {
+    allowedUses: input.allowedUses || [],
+    blockedUses: input.blockedUses || []
+  });
+}
+
+function guideByHand(input = {}) {
+  const receipt = new JMReceipt({
+    type: 'EHILATHEO',
+    source: input.context || 'user_hand',
+    beforeState: 'unsupported_user_hand',
+    afterState: 'guided_active_user_hand',
+    dLevel: input.dLevel || 'D8',
+    notes: 'Guide by the hand. Do not carry the body.'
+  });
+  return Object.assign(receipt, {
+    mode: input.mode || 'teach_not_replace',
+    language: input.language || 'JavaScript',
+    userHand: input.userHand || 'active',
+    nextTinyStep: input.nextTinyStep || 'edit one small piece, then run it'
+  });
+}
+
+function trustingHandEndsOmissions(input = {}) {
+  const receipt = new JMReceipt({
+    type: 'TRUSTING_HAND_ENDS_OMISSIONS',
+    source: input.context || 'helper_hand',
+    beforeState: 'hidden_omission_risk',
+    afterState: 'visible_route_check',
+    dLevel: input.dLevel || 'D8',
+    notes: 'Trusted help must expose missing pieces, not hide them.'
+  });
+  return Object.assign(receipt, {
+    visibleChecks: input.visibleChecks || [
+      'source route named',
+      'button/action named',
+      'state change named',
+      'trace created',
+      'recovery path visible'
+    ]
+  });
+}
+
+const JM_API = {
+  SOURCE_AUTHORITY: { check: checkSourceAuthority },
+  TRACE_LOG: { create: createTraceLog },
+  COLD_DING: { create: createColdDing },
+  FLOWTALK_ROUTE: { create: createFlowTalkRoute },
+  SIN_TAC_CHECK: { validate: validateSinTac },
+  PUBLIC_DOOR: { open: openPublicDoor },
+  AMA_PRO: { createPath: createAmaProPath },
+  D_LEVEL: { assign: assignDLevel },
+  VAULT_HOME: { assign: assignVaultHome },
+  USE_LAW: { apply: applyUseLaw },
+  EHILATHEO: { guide: guideByHand },
+  TRUSTING_HAND_ENDS_OMISSIONS: { check: trustingHandEndsOmissions }
+};
+
+function runDemo() {
+  return [
+    JM_API.SOURCE_AUTHORITY.check({ source: 'JM Systems' }),
+    JM_API.EHILATHEO.guide({ language: 'JavaScript', nextTinyStep: 'change a string and rerun' }),
+    JM_API.TRACE_LOG.create({
+      eventType: 'DEMO_ROUTE',
+      source: 'JM Code Hand JS Bridge',
+      beforeState: 'unrun_demo',
+      afterState: 'demo_ran',
+      dLevel: 'D8'
+    }),
+    JM_API.TRUSTING_HAND_ENDS_OMISSIONS.check({ context: 'demo' })
+  ];
+}
+
+function show(value) {
+  document.getElementById('out').textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+}
+
+function safeRun(label, fn) {
+  try {
+    const result = fn();
+    show(result);
+  } catch (err) {
+    show({ ok:false, label, error:String(err && err.message || err) });
+  }
+}
+
+function wire() {
+  document.getElementById('run').onclick = function() { safeRun('run', runDemo); };
+  document.getElementById('trace').onclick = function() {
+    safeRun('trace', function() {
+      return JM_API.TRACE_LOG.create({
+        eventType: 'USER_CLICKED_TRACE',
+        source: 'Android inline demo',
+        beforeState: 'waiting',
+        afterState: 'trace_created',
+        dLevel: 'D8'
+      });
+    });
+  };
+  document.getElementById('guide').onclick = function() {
+    safeRun('guide', function() {
+      return JM_API.EHILATHEO.guide({
+        language: 'JavaScript',
+        nextTinyStep: 'Open this page source later and change one text label.'
+      });
+    });
+  };
+  document.getElementById('sin').onclick = function() {
+    safeRun('sin', function() {
+      return JM_API.SIN_TAC_CHECK.validate({
+        text: 'Trusting_Hand_Ends_Omissions'
+      });
+    });
+  };
+  document.getElementById('cpp').onclick = function() {
+    show('C++ route:\n\n#include "jm_code_hand.hpp"\n\nauto receipt = jm::createTraceLog("BUTTON_CLICK", "FTR x JM Systems", "waiting", "clicked", "D8");\nstd::cout << receipt.toText();');
+  };
+  document.getElementById('terms').onclick = function() { show(JM_TERMS); };
+  document.getElementById('selftest').onclick = function() {
+    safeRun('selftest', function() {
+      const demo = runDemo();
+      const trace = JM_API.TRACE_LOG.create({ eventType:'SELFTEST', source:'button' });
+      const pass = Array.isArray(demo) && demo.length === 4 && trace.type === 'TRACE_LOG';
+      return { ok: pass, demoLength: demo.length, traceType: trace.type, loaded: true };
+    });
+  };
+  document.getElementById('clear').onclick = function() { show('Ready. Tap a button.'); };
+  window.JM_API = JM_API;
+  window.JM_TERMS = JM_TERMS;
+  window.JM_RUN_DEMO = runDemo;
+  document.body.setAttribute('data-jm-ready', 'true');
+}
+
+wire();
+}());
+</script>
+</body>
+</html>

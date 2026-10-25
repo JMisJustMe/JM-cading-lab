@@ -31,6 +31,23 @@ Core consequence law: **THE UI MAY REPORT AN ATTEMPT. ONLY THE CONSEQUENCE MAY R
 
 Do not downgrade this standard into mere prose guidance. If any carrier changes these operating laws, run its validator and the affected downstream gates.
 
+## Cross-client spark re-entry — SOURCE FIRST, HINT SECOND
+
+This is a shared **first-contact behaviour**, not another Estate, memory store, service, registry, bridge or proof claim. Applies to ChatGPT, Gemini and other permitted hosts when JM supplies an unfamiliar phrase, game idea or spontaneous delta.
+
+1. **Keep SPARK verbatim.** Do not rewrite a new idea as an old body or invent a new sovereign name.
+2. **Use existing contact.** If tools exist, call Build Mesh `build_mesh_status` and `build_sync_contract`, then `search_builds` for the original phrase. If unavailable, state `HOST_CONTACT_OPEN`; reading docs does not prove execution.
+3. **Reject weak matches.** Irrelevant fuzzy results do not constitute recovery. Only expand via a *user-supplied* abbreviation, evidenced ancestor or other independently grounded hint. Use `trace_lineage` / `recover_build` for the bounded hint; never assert synonymy merely from a score.
+4. **Separate ancestry/currentness.** Use `resolve_current_head`, `proof_state` and stronger direct private body/receipt evidence. Navigator discovery is `PUBLIC_LINEAGE_CONTACT` / `SNAPSHOT_ONLY`, not automatically an executable current head. When a hosted registry trails a newer exact private pointer, mark `SYNC_DRIFT`; keep private data within its authorised host.
+5. **Return separate fields:** `SPARK` (verbatim), `ANCESTRY` (source + proof type), `CURRENT` (exact authoritative head or HOLD), `DELTA` (novel difference, not silently integrated). Name actual execution/typed transport/native consequence/owner-device receipts independently. No invented Ding, no automatic write or archive duplication.
+6. **Continue through the smallest proven route.** Reuse existing head pointers, source paths, hashes, runtime, host adapter and storage governance. Changes need recipient execution, consequence, readback and applicable owner acceptance.
+
+**25 October 2026 bounded smoke:** Direct hosted search for `travelboardstorage` returned unrelated bodies. A separately supplied `TBS` lineage hint located public `EH-002` (Command Register TBS Panel), `OS-001` (Estate OS / TBS), `AU-003` (Stringline / TBS) and `RL-TBS-BODY-CHECK`. This proves hint-based *public ancestor discovery*, neither identity equivalence nor current executable authority. Every new host must earn its own contact.
+
+**Optional public-safe game branch hints:** `registry/cross-client-game-reentry-hints-v0_1.json` preserves seven **navigation cues**, not current-head crowns. Read it only when relevant; stronger direct receipts override it and raw private source stays private.
+
+**Keeper:** RECOVER THE ANCESTOR · PRESERVE THE SPARK · CONNECT ONLY WHAT EVIDENCE EARNS.
+
 ## Estate production inheritance — ALL PRODUCT BODIES
 
 Before materially building, rebuilding or upgrading an Estate product body, read:

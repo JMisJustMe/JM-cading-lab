@@ -1,0 +1,98 @@
+name: JM Live Experience CP07 — Hosted HTTPS Proof
+on:
+  push:
+    branches:
+      - verify/jm-live-experience-cp07-hosted-20261026
+    paths:
+      - ".github/workflows/jm-live-experience-cp07-hosted-proof.yml"
+  pull_request:
+    branches:
+      - feature/jm-live-experience-cp07-public-safe-admission-20261026
+    paths:
+      - ".github/workflows/jm-live-experience-cp07-hosted-proof.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate live TLS, 2025/2026 MCP, seven schemas, no source exposure
+        env:
+          URL: https://jm-live-experience-intake-mcp.onrender.com
+        run: |
+          python - <<'PY'
+          import os,json,time,urllib.request,urllib.error
+          base=os.environ['URL']
+          def req(method,path='/mcp',obj=None,headers=None):
+              b=json.dumps(obj).encode() if obj is not None else None
+              rq=urllib.request.Request(base+path,data=b,method=method,
+                                        headers=headers or {})
+              try:
+                  with urllib.request.urlopen(rq,timeout=30) as r:
+                      return r.status,dict((k.lower(),v) for k,v in r.headers.items()),r.read()
+              except urllib.error.HTTPError as e:
+                  return e.code,dict((k.lower(),v) for k,v in e.headers.items()),e.read()
+          def rpc(name,params=None,headers=None,path='/mcp'):
+              pkt={'jsonrpc':'2.0','id':3,'method':name,'params':params or {}}
+              status,h,raw=req('POST',path,pkt,{'Content-Type':'application/json',**(headers or {})})
+              assert status==200,(name,status,raw[:250])
+              obj=json.loads(raw)
+              assert obj['id']==3 and 'error' not in obj,obj
+              return obj['result']
+          for attempt in range(14):
+              try:
+                  status,h,raw=req('GET','/healthz')
+                  assert status==200
+                  health=json.loads(raw)
+                  assert health['game_assets']==0 and health['execution'] is False,health
+                  break
+              except Exception:
+                  if attempt==13:raise
+                  time.sleep(5)
+          print('CP07_LIVE_TLS_HEALTH: PASS',health)
+          for proposed,expected in [('2025-03-26','2025-03-26'),('2025-06-18','2025-06-18'),
+                                    ('2025-11-25','2025-11-25'),('2024-11-05','2025-06-18')]:
+              r=rpc('initialize',{'protocolVersion':proposed,'capabilities':{},
+                                   'clientInfo':{'name':'cp07 verifier','version':'0.1'}})
+              assert r['protocolVersion']==expected,(proposed,r)
+              print('LEGACY_INITIALIZE:',proposed,'=>',expected,'PASS')
+          r=rpc('server/discover',{'_meta':{
+              'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+              'io.modelcontextprotocol/clientCapabilities':{}}},
+              {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover',
+               'Accept':'application/json, text/event-stream'})
+          assert '2026-07-28' in r['supportedVersions']
+          print('MODERN_DISCOVER: PASS')
+          tools=rpc('tools/list')['tools']
+          names={t['name'] for t in tools}
+          expected_names={'experience_status','experience_open','experience_act','experience_observe',
+                          'experience_compare','experience_handoff_read','experience_close'}
+          assert names==expected_names,names
+          assert all(t['inputSchema']['type']=='object' and
+                     t['inputSchema']['additionalProperties'] is False for t in tools)
+          print('SEVEN_TYPED_TOOLS: PASS')
+          status=rpc('tools/call',{'name':'experience_status','arguments':{}})
+          assert status['isError'] is False and status['structuredContent']['hosted_game_source_count']==0,status
+          print('STATUS_RECEIPT: PASS; zero hosted games')
+          for name in sorted(expected_names-{'experience_status'}):
+              data=rpc('tools/call',{'name':name,'arguments':{}})
+              assert data['isError'] is True and data['structuredContent']['state']=='AUTHORITY_HOLD',data
+              assert data['structuredContent']['execution_occurred'] is False,data
+          print('SIX_PROTECTED_ACTIONS_FAIL_CLOSED: PASS')
+          pre={'Origin':'https://gemini.google.com','Access-Control-Request-Method':'POST',
+               'Access-Control-Request-Headers':'content-type,mcp-protocol-version,mcp-method'}
+          code,h,raw=req('OPTIONS','/mcp',headers=pre)
+          assert code==204 and h.get('access-control-allow-origin')==pre['Origin'],(code,h)
+          code,h,raw=req('OPTIONS','/mcp',headers={**pre,'Origin':'https://evil.example'})
+          assert code==403 and 'access-control-allow-origin' not in h,(code,h)
+          assert req('GET','/mcp')[0]==405
+          assert len(rpc('tools/list',path='/mcp/')['tools'])==7
+          print('CORS_FAIL_CLOSED_TRAILING_SLASH_GET_405: PASS')
+          print('CP07_LIVE_ADMISSION_CONTACT_PASS: REAL HTTPS; NOT PROOF OF GAMEPLAY OR GEMINI CLIENT CONNECTION')
+          PY

@@ -6,6 +6,11 @@ on:
       - verify/jm-mcp-workshop-cp03-remote-20261026
     paths:
       - ".github/workflows/jm-mcp-workshop-cp03-hosted-proof.yml"
+  pull_request:
+    branches:
+      - feature/jm-mcp-workshop-cp01-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp03-hosted-proof.yml"
   workflow_dispatch:
 
 permissions:

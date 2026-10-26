@@ -109,6 +109,17 @@ public final class MainActivity extends Activity {
     widthDp=getResources().getConfiguration().screenWidthDp;lastWidth=widthDp;wide=widthDp>=500;
     quickLayout="QUICK".equals(SetupPlan.layout(sp,wide));
     ScrollView scroll=new ScrollView(this);scroll.setBackgroundColor(BG);scroll.setFillViewport(true);
+    // Android 15+ enforces edge-to-edge at targetSdk 35. Without system-bar
+    // padding a scrolled action button can be visible underneath the status
+    // icons but cannot be tapped. Keep native controls in the real touch field.
+    if(android.os.Build.VERSION.SDK_INT>=35){
+      scroll.setOnApplyWindowInsetsListener((v,insets)->{
+        android.graphics.Insets safe=insets.getInsets(WindowInsets.Type.systemBars());
+        v.setPadding(0,safe.top,0,safe.bottom);
+        v.setClipToPadding(true);
+        return insets;
+      });
+    }
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);

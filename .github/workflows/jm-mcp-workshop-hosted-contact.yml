@@ -51,7 +51,8 @@ jobs:
                   time.sleep(4)
           print('HOST_CONTACT:',h)
           code,head,html=get('/')
-          assert code==200 and b'MCP <em>WORKSHOP</em>' in html and 'Content-Security-Policy' in head
+          print('HTML_PROBE:',code,'bytes='+str(len(html)),sorted(head),repr(html[:100]))
+          assert code==200 and b'MCP <em>WORKSHOP</em>' in html and any(k.lower()=='content-security-policy' for k in head)
           for path,needle in [('/workshop.js',b'workshop_run'),('/workshop.css',b'@media')]:
               c,_,v=get(path)
               assert c==200 and needle in v,path

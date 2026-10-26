@@ -6,7 +6,7 @@ Proof is dispatch/return-to-JM only; no external service account or API tested.
 import json
 import time
 from pathlib import Path
-from audit_ui_flow import adb,tap,has,pref_values,capture,dump,swipe
+from audit_ui_flow import adb,tap,has,pref_values,capture,dump,swipe,scroll_header
 
 OUT=Path("emulator-proof")
 PKG="com.jmisjustme.foldultra"
@@ -69,8 +69,24 @@ def main():
     adb("shell","am","force-stop",PKG)
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(2)
-    has("JM / COMPANION CONTACT","cp02_cold_return_to_jm")
+    nodes=dump("cp02_cold_reentry_overlay_check")
+    # Some generic Android restorations retain the PREVIOUS JM-owned
+    # confirmation dialog, obscuring the correctly restored Companion screen.
+    # Only the exact, verified GitHub owner dialog may be dismissed here;
+    # never tap an unknown provider prompt or count an obscured screen PASS.
+    if any(n.get("text")=="Open GitHub outside JM?" for n in nodes):
+        assert any(n.get("class")=="android.widget.Button" and
+                   n.get("text","").upper()=="STAY IN JM" for n in nodes),\
+               "HOLD: owner GitHub dialog has no safe cancel control"
+        tap("STAY IN JM","cp02_dismiss_restored_owner_dialog")
+        nodes=dump("cp02_after_owner_dialog_cancel")
+    assert not any(n.get("text")=="Open GitHub outside JM?" for n in nodes),\
+        "HOLD: owner confirmation still obstructs native JM return"
+    scroll_header("JM / COMPANION CONTACT","cp02_cold_return_to_jm")
     capture("COMPANION_CP02_REOPEN")
+    recovered=pref_values()
+    for key in protected:
+        assert before.get(key)==recovered.get(key),(key,"mutated by restored owner dialog")
     tap("Open JM source intake","cp02_existing_jm_source_route")
     has("Owner-selected originals.","cp02_original_intake_inherited")
     (OUT/"COMPANION_CP02_RECEIPT.json").write_text(json.dumps({

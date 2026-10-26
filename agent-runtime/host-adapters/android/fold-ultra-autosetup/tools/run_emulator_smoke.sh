@@ -178,3 +178,7 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_liv
 # CP01 native touch proof: route to the JM companion room, inspect explicit
 # handoff confirmation and CANCEL before any third-party app opens.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_companion_room.py
+
+# CP02: actual owner-confirmed Android ACTION_VIEW and cold return, plus
+# existing JM Intake navigation. Provider auth/requests are NOT exercised.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_companion_return.py

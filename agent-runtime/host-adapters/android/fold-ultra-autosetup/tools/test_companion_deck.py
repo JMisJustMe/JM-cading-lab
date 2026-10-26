@@ -40,6 +40,22 @@ class CompanionDeck(unittest.TestCase):
         self.assertIn("door.host.equals(uri.getHost())",JAVA)
         self.assertNotIn("Authorization",JAVA)
         self.assertNotIn("READ_EXTERNAL_STORAGE",JAVA)
+    def test_owner_scoped_trace_and_return_path(self):
+        self.assertIn('if(last>=0&&last<=12)tab=last;',MAIN)
+        self.assertIn('Open JM source intake',MAIN)
+        self.assertIn('tab=10;render();',MAIN)
+        self.assertIn('Open JM contact receipts',MAIN)
+        self.assertIn('JMContactV1.receipts(sp)',MAIN)
+        self.assertIn('JMContactV1.record(sp,"COMPANION_"',MAIN)
+        self.assertIn('"ANDROID_VIEW_DISPATCH"',MAIN)
+        self.assertIn('provider login, work and result UNVERIFIED',MAIN)
+        self.assertIn('startActivity(JMCompanionDoors.intentFor(door.id));',MAIN)
+        self.assertLess(MAIN.index('startActivity(JMCompanionDoors.intentFor(door.id));'),
+                        MAIN.index('JMContactV1.record(sp,"COMPANION_"'))
+        # The original provider-independent, zero-permission Android launcher
+        # remains untouched; no privileged inbound actions are introduced.
+        self.assertNotIn("<uses-permission",MANIFEST)
+        self.assertNotIn('jmfoldultra://open/companions',MAIN)
     def test_inherited_native_privacy_contract_unchanged(self):
         self.assertIn(PREFS,MAIN)
         self.assertIn("JMIntakeV1.review(this,sp",MAIN)

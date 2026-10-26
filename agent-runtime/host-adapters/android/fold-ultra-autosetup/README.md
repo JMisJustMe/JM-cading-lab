@@ -172,3 +172,31 @@ Bixby/navigation branch and is **not** silently merged or overwritten here.
   synchronisation or end-to-end service workflows.**
 - Do not install/upgrade over existing owner's APK without verified signing
   compatibility. No uninstall, wipe, automatic promotion or permission change.
+
+
+## JM Companion Return CP02 — source/receipt/cooperative contact (26 October 2026)
+
+**Additive descendant of Companion Doors CP01 draft PR #488; independent from
+the Bixby Contact 003 branch, original v0.9 owner build and v1.0 ancestor.**
+No new Android permissions, app ID, version or private content transfer.
+
+- Owner-confirmed external ACTION_VIEW requests use the already-established
+  `JMContactV1` 48-entry bounded evidence ledger. A receipt records
+  `COMPANION_<DOOR>` / `ANDROID_VIEW_DISPATCH` **after** Android
+  accepts a launch request. It says provider work/results **UNVERIFIED** and
+  `physical_verified=false`; it is not an OAuth/API/session success claim.
+- After an app is opened, JM's companion room is eligible for ordinary
+  `onPause`/cold-reopen continuation, including tab 12, without auto-launching
+  the provider. No external-app data is monitored or pulled automatically.
+- The owner can enter the *existing* native creative-intake room for opt-in
+  Android Share reception, or the existing Living Contact room to review/export
+  receipts. Neither original subsystem is forked or replaced.
+- New generic Android emulator probes must check actual touch entry, dialog
+  cancel, owner-approved ACTION_VIEW, bounded receipt, unchanged project and
+  Return Point data, cold return to same JM room, and source-intake navigation.
+- A successful Android intent dispatch means only an OS-level request was
+  accepted; provider launch rendering, account sign-in, API access, actual
+  external edits, physical Samsung Fold/Bixby recognition, and owner acceptance
+  remain **HOLD** until separate authenticated/device proof.
+- Exact installed Samsung APK signing compatibility remains unknown. Do not
+  install, uninstall, reset, force update, or promote production from CI.

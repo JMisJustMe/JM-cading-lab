@@ -1,0 +1,95 @@
+name: JM MCP Workshop CP03 — Hosted Dual-Era Live Proof
+
+on:
+  push:
+    branches:
+      - verify/jm-mcp-workshop-cp03-remote-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp03-hosted-proof.yml"
+  pull_request:
+    branches:
+      - feature/jm-mcp-workshop-cp01-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp03-hosted-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-cp03:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe exact live CP03 hosted JSON-RPC, old and modern eras
+        env:
+          URL: https://jm-mcp-workshop.onrender.com
+        run: |
+          python - <<'PY'
+          import json, os, time, urllib.request, urllib.error
+          base=os.environ['URL']
+          def call(method,params=None,modern=False,origin=None):
+              params=dict(params or {})
+              headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream' if modern else 'application/json'}
+              if modern:
+                  params['_meta']={
+                    'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+                    'io.modelcontextprotocol/clientCapabilities':{},
+                    'io.modelcontextprotocol/clientInfo':{'name':'JM GitHub CP03 hosted checker','version':'0.1.0'}}
+                  headers['MCP-Protocol-Version']='2026-07-28'
+                  headers['Mcp-Method']=method
+                  if method=='tools/call':headers['Mcp-Name']=params['name']
+              else:headers['MCP-Protocol-Version']='2025-11-25'
+              if origin:headers['Origin']=origin
+              body=json.dumps({'jsonrpc':'2.0','id':27,'method':method,'params':params},separators=(',',':')).encode()
+              req=urllib.request.Request(base+'/mcp',data=body,method='POST',headers=headers)
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  assert r.status==200,('HTTP',r.status)
+                  obj=json.load(r)
+                  assert obj['id']==27 and 'error' not in obj,obj
+                  return obj['result']
+          for i in range(10):
+              try:
+                  with urllib.request.urlopen(base+'/healthz',timeout=30) as h:
+                      assert h.status==200
+                      health=json.load(h)
+                      assert health['service']=='JM MCP WORKSHOP',health
+                  break
+              except Exception:
+                  if i==9:raise
+                  time.sleep(5)
+          print('LIVE_HEALTH:',health)
+          legacy=call('initialize',{'protocolVersion':'2025-11-25','clientInfo':{'name':'jm-legacy-check','version':'0.1'},'capabilities':{}})
+          assert legacy['protocolVersion']=='2025-11-25',legacy
+          print('LIVE_LEGACY_HANDSHAKE: PASS')
+          modern=call('server/discover',modern=True)
+          assert modern['resultType']=='complete',modern
+          assert '2026-07-28' in modern['supportedVersions'],modern
+          print('LIVE_MODERN_DISCOVERY:',modern['supportedVersions'])
+          names={t['name'] for t in call('tools/list',modern=True)['tools']}
+          assert names=={'workshop_define','workshop_connect','workshop_compose','workshop_run','workshop_test','workshop_compare','workshop_publish'},names
+          print('LIVE_7_TOOL_DISCOVERY:',sorted(names))
+          recipe={'slug':'jm_hosted_cp03_score','description':'Prove actual score on the CP03 remote Render MCP.',
+             'inputs':[{'name':'a','type':'integer','required':True},{'name':'b','type':'integer','required':True}],
+             'steps':[{'op':'add','as':'total','from':'a','with':'b'}],'outputs':['total']}
+          args={'name':'workshop_run','arguments':{'recipe':recipe,'arguments':{'a':42,'b':8}}}
+          modern_result=call('tools/call',args,modern=True)
+          assert modern_result['resultType']=='complete',modern_result
+          assert modern_result['structuredContent']['result']['total']==50,modern_result
+          legacy_result=call('tools/call',args,modern=False)
+          assert legacy_result['structuredContent']['result']['total']==50,legacy_result
+          print('LIVE_MODERN_AND_LEGACY_SCORE: PASS 42+8=50')
+          req=urllib.request.Request(base+'/mcp',data=b'{}',method='POST',
+             headers={'Content-Type':'application/json','Origin':'https://attacker.example'})
+          try:
+              urllib.request.urlopen(req,timeout=30)
+              raise AssertionError('Unknown Origin was accepted')
+          except urllib.error.HTTPError as e:
+              assert e.code==403,e.code
+          print('LIVE_UNKNOWN_ORIGIN_REJECTED: PASS')
+          print('CP03_HOSTED_PROOF: PASS -- legacy + modern discovery + 7 real tools + both execution routes + origin check')
+          PY

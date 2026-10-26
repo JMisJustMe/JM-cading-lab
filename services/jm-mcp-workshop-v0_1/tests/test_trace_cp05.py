@@ -36,11 +36,13 @@ class TracedTransport(unittest.TestCase):
                                      ('2025-11-25','2025-11-25')]:
                 packet={'jsonrpc':'2.0','id':1,'method':'initialize','params':{'protocolVersion':version,
                         'capabilities':{},'clientInfo':{'name':secret,'version':'1.0'}}}
-                code,obj=req('POST','/mcp?secret='+secret,packet,headers={'Content-Type':'application/json',
+                code,obj=req('POST','/mcp',packet,headers={'Content-Type':'application/json',
                    'Accept':'application/json, text/event-stream','Authorization':'Bearer '+secret,
                    'Cookie':'session='+secret,'User-Agent':secret})
                 self.assertEqual(code,200)
                 self.assertEqual(obj['result']['protocolVersion'],expected)
+            code,_=req('GET','/mcp?secret='+secret,headers={'Authorization':'Bearer '+secret})
+            self.assertEqual(code,404)
             code,obj=req('POST','/mcp',{'jsonrpc':'2.0','id':4,'method':'notifications/initialized'},{
                   'Content-Type':'application/json'})
             self.assertEqual(code,202)

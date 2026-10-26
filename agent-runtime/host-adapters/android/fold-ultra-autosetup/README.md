@@ -228,3 +228,40 @@ oversized outbound text (>5000 characters), changed project or revision.
   roundtrip; no automatic provider synchronization or two-way API claim.
 - Never install over the current owner APK until actual signing compatibility
   and preservation of owner data are established.
+
+
+## JM Fold Ultra Companion Work Loop CP04 — owner-directed Share → JM Project
+
+**Source lineage:** protected CP01/CP02/CP03 FLAZ in JM Estate Library,
+CP03 frozen source `42a5193770cb3e84ac466990b26c4ffae955ce64`.
+This is a NEW additive branch, NOT a modification of the frozen carrier,
+not a Samsung release and not a replacement for existing JM bodies.
+
+- Original Android ACTION_SEND/text/plain inbox now explicitly offers:
+  **Discard**, **Add to JM Root** (original operation), or
+  **Draft in JM project** (new). Its source is visibly UNVERIFIED.
+- The draft option reuses **ProjectShelf** and **SessionDeck.draft**, not
+  `SessionDeck.commit`. It appends a bounded provenance-labelled source
+  to the selected project's local UNSAVED working note, preserving prior
+  draft text. It refuses >2,500-char inbound material, >4,000-char result,
+  an absent selected project, changed checkpoint revision, selected project
+  or concurrent note/next-action/phase drafts.
+- The owner sees source excerpt, selected project and version before
+  choosing. Successful receipt opens the existing Session room; the owner
+  must independently review and SAVE a checkpoint later. Inbound
+  Livng Home CP07 typed JSON still uses its original guarded receipt
+  route and is not reinterpreted as a free-form note.
+- New exact-head native source + Android emulator test covers Share
+  dialog rendering, real owner touch to accept draft, no checkpoint/root
+  write, cold reopen without duplicate intake, oversize rejection.
+- The generic full-body emulator audit additionally checks monotonic
+  saved onboarding stages and visible headings, compensating for scroll
+  offsets and bounded Pixel Launcher obstructions via actual touch only.
+  This does not fabricate a device Ding or conceal a failed full run.
+- A second independent Android emulator job isolates CP04 intake from
+  the inherited longer return-point regression; both scopes are
+  reported distinctly. CI success is not physical Samsung acceptance,
+  provider OAuth/API execution or proof of delivery.
+- Zero new Android permissions; app ID/version stay unchanged. No
+  install, uninstall, update, wipe or promotion without owner's actual
+  installed signing-certificate compatibility and data preservation.

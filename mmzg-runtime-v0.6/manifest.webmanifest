@@ -1,0 +1,19 @@
+{
+  "name": "JM MorseMinus ZeroGrip Runtime v0.6",
+  "short_name": "MMZG v0.6",
+  "description": "Original JM MorseMinus ZeroGrip source-and-trace runtime. An installable browser route is not an APK or a new runtime proof.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#05070b",
+  "theme_color": "#05070b",
+  "icons": [
+    {
+      "src": "../icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

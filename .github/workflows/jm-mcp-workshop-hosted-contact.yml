@@ -1,0 +1,87 @@
+name: JM MCP WORKSHOP — Hosted CP02 Live Contact
+
+on:
+  push:
+    branches:
+      - feature/jm-mcp-workshop-cp01-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-hosted-contact.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-mcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Contact independent live Workshop and prove authored tool execution
+        env:
+          WORKSHOP_ENDPOINT: https://jm-mcp-workshop.onrender.com
+        run: |
+          python - <<'PY'
+          import hashlib, io, json, os, time, urllib.request, urllib.error, zipfile, base64
+          endpoint=os.environ['WORKSHOP_ENDPOINT']
+          def get(path):
+              with urllib.request.urlopen(endpoint+path,timeout=30) as r:
+                  return r.status, dict(r.headers), r.read()
+          def rpc(method,params=None):
+              body=json.dumps({'jsonrpc':'2.0','id':77,'method':method,'params':params or {}},separators=(',',':')).encode()
+              req=urllib.request.Request(endpoint+'/mcp',data=body,method='POST',headers={
+                  'Accept':'application/json','Content-Type':'application/json','MCP-Protocol-Version':'2025-11-25'})
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  assert r.status==200
+                  parsed=json.loads(r.read())
+                  assert 'error' not in parsed,parsed
+                  return parsed['result']
+          for attempt in range(16):
+              try:
+                  status,headers,health=get('/healthz')
+                  assert status==200
+                  h=json.loads(health)
+                  assert h['version']=='0.2.0',h
+                  break
+              except Exception:
+                  if attempt==15:raise
+                  time.sleep(4)
+          print('HOST_CONTACT:',h)
+          code,head,html=get('/')
+          assert code==200 and b'MCP <em>WORKSHOP</em>' in html and 'Content-Security-Policy' in head
+          for path,needle in [('/workshop.js',b'workshop_run'),('/workshop.css',b'@media')]:
+              c,_,v=get(path)
+              assert c==200 and needle in v,path
+          init=rpc('initialize',{'protocolVersion':'2025-11-25'})
+          assert init['serverInfo']['version']=='0.2.0'
+          names={t['name'] for t in rpc('tools/list')['tools']}
+          assert names=={'workshop_define','workshop_connect','workshop_compose','workshop_run','workshop_test','workshop_compare','workshop_publish'},names
+          recipe={'slug':'jm_score_bonus','description':'Calculate a game score plus a bounded achievement bonus.',
+                 'inputs':[{'name':'score','type':'integer','required':True},{'name':'bonus','type':'integer','required':True}],
+                 'steps':[{'op':'add','as':'total','from':'score','with':'bonus'},{'op':'prefix','as':'label','from':'total','value':'Score: '}],
+                 'outputs':['total','label']}
+          d=rpc('tools/call',{'name':'workshop_run','arguments':{'recipe':recipe,'arguments':{'score':42,'bonus':8}}})
+          assert d['structuredContent']['state']=='RECIPE_EXECUTED',d
+          assert d['structuredContent']['result']=={'total':50,'label':'Score: 50'},d
+          assert json.loads(d['content'][0]['text'])==d['structuredContent']
+          print('HOST_RUN:',d['structuredContent']['result'])
+          b=rpc('tools/call',{'name':'workshop_publish','arguments':{'recipe':recipe}})['structuredContent']
+          z=base64.b64decode(b['package_base64'])
+          assert hashlib.sha256(z).hexdigest()==b['sha256']
+          with zipfile.ZipFile(io.BytesIO(z)) as archive:
+              assert set(archive.namelist())==set(b['entry_sha256'])
+              assert archive.testzip() is None
+              for fname in archive.namelist():
+                  assert hashlib.sha256(archive.read(fname)).hexdigest()==b['entry_sha256'][fname]
+          print('HOST_PUBLISH:',b['filename'],'sha256='+b['sha256'])
+          bad=urllib.request.Request(endpoint+'/mcp',data=b'{}',method='POST',headers={'Origin':'https://not-jm.example','Content-Type':'application/json'})
+          try:
+              urllib.request.urlopen(bad,timeout=30)
+              raise AssertionError('malicious origin accepted')
+          except urllib.error.HTTPError as e:
+              assert e.code==403,e.code
+          print('HOSTED_CP02_PROOF: PASS — live health, owner HTML/JS/CSS, 7 MCP tools, execute score, ZIP package exact, origin rejected')
+          PY

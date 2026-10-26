@@ -7,6 +7,7 @@ import json
 import time
 from pathlib import Path
 from audit_ui_flow import adb,tap,has,pref_values,capture
+from probe_companion_return import touch_safe
 
 OUT=Path("emulator-proof")
 PKG="com.jmisjustme.foldultra"
@@ -22,13 +23,13 @@ def main():
     tap("JM COMPANIONS","cp03_open_companions")
     has("One working field. Many independent doors.","cp03_companions")
     before=pref_values()
-    tap("Share saved JM checkpoint","cp03_preview_open")
+    touch_safe("Share saved JM checkpoint","cp03_preview_open")
     has("PRIVATE SOURCE LEAVES JM ONLY IF YOU APPROVE.","cp03_private_preview")
     has("JM ECOSTATE","cp03_checkpoint_provenance")
     capture("COMPANION_CP03_SAVED_PREVIEW")
     tap("Keep inside JM","cp03_cancel")
     assert receipts(before)==receipts(pref_values()),"cancel wrote a receipt"
-    tap("Share saved JM checkpoint","cp03_second_preview")
+    touch_safe("Share saved JM checkpoint","cp03_second_preview")
     has("PRIVATE SOURCE LEAVES JM ONLY IF YOU APPROVE.","cp03_second_privacy_warning")
     tap("Choose recipient","cp03_open_native_chooser")
     time.sleep(2)

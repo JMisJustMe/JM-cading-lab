@@ -90,6 +90,28 @@ def pref_values():
     return {n.get("name"):n.get("value",n.text) for n in root}
 
 
+def advance_stage(button, expected, label, previous):
+    """Acknowledge a *recorded* Pixel Launcher ANR, then repeat one real tap.
+
+    Never treat ANR dismissal or a synthetic preference write as a JM PASS.
+    Retry only if the old stage is still visible and environment evidence exists.
+    """
+    tap(button,"advance_"+label)
+    try:
+        has(expected,label)
+    except AssertionError:
+        marker=OUT/("UI_check_"+label+"_ENVIRONMENT.json")
+        if not marker.exists():
+            raise
+        events=json.loads(marker.read_text())
+        if not any("Pixel Launcher ANR" in e.get("obstruction","") for e in events):
+            raise
+        has(previous,label+"_pixel_anr_old_stage_guard")
+        tap(button,"advance_"+label+"_pixel_anr_replay")
+        has(expected,label+"_after_pixel_anr_replay")
+        RECEIPTS.append({"check":label+"_pixel_launcher_recovery",
+                         "result":"PASS","scope":"environmental overlay, one bounded real tap"})
+
 def main():
     # Previous emulator gate leaves the disposable installation in 'ready=false'
     # even though its USB plans and session history have been tested.
@@ -100,14 +122,10 @@ def main():
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(2)
     has("INITIAL OPENING","arrival")
-    tap("Begin the opening","advance_arrival")
-    has("YOUR PRIORITY","priority")
-    tap("Continue","advance_priority")
-    has("SAME ROOT","paired_fields")
-    tap("Continue","advance_pair")
-    has("GALAXY + JM","galaxy_discovery")
-    tap("Continue","advance_galaxy")
-    has("READY / USER AUTHORITY","owner_entry")
+    advance_stage("Begin the opening","YOUR PRIORITY","priority","INITIAL OPENING")
+    advance_stage("Continue","SAME ROOT","paired_fields","YOUR PRIORITY")
+    advance_stage("Continue","GALAXY + JM","galaxy_discovery","SAME ROOT")
+    advance_stage("Continue","READY / USER AUTHORITY","owner_entry","GALAXY + JM")
     tap("ENTER JM FOLD ULTRA","enter_owner_workfield")
     has("JM PAIRED ROOT","native_root")
     p=pref_values()

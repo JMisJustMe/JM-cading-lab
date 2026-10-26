@@ -5,20 +5,38 @@ const examples={
  score:{recipe:{slug:'jm_score_bonus',description:'Calculate a game score plus a bounded achievement bonus.',inputs:[{name:'score',type:'integer',required:true},{name:'bonus',type:'integer',required:true}],steps:[{op:'add',from:'score',with:'bonus',as:'total'},{op:'prefix',from:'total',value:'Score: ',as:'label'}],outputs:['total','label']},args:{score:42,bonus:8}},
  badge:{recipe:{slug:'jm_game_badge',description:'Generate a character achievement badge from a level and name.',inputs:[{name:'hero',type:'string',required:true},{name:'level',type:'integer',required:true}],steps:[{op:'format',as:'badge',template:'{hero} · LEVEL {level} · ACHIEVEMENT UNLOCKED'}],outputs:['badge']},args:{hero:'Rift Runner',level:5}}
 };
-let prev=null,busy=false;
+let prev=null,busy=false,lastExampleSlug="",lastExampleLiteral="";
 const read=()=>JSON.parse($('recipe').value);
 const args=()=>JSON.parse($('arguments').value);
 function size(){ $('recipeSize').textContent=$('recipe').value.length.toLocaleString()+' chars'; }
 function writeRecipe(recipe){$('recipe').value=JSON.stringify(recipe,null,2);size();}
-function setExample(which){const sample=examples[which];writeRecipe(sample.recipe);$('arguments').value=JSON.stringify(sample.args,null,2);$('quickSlug').value=sample.recipe.slug;$('quickDescription').value=sample.recipe.description;$('quickInput').value=sample.recipe.inputs[0].name;prev=null;report('READY','Example loaded; press Run tool to execute it.');}
+function setExample(which){const sample=examples[which];writeRecipe(sample.recipe);$('arguments').value=JSON.stringify(sample.args,null,2);$('quickSlug').value=sample.recipe.slug;$('quickDescription').value=sample.recipe.description;$('quickInput').value=sample.recipe.inputs[0].name;
+ const last=sample.recipe.steps[sample.recipe.steps.length-1];
+ const quickOps=['prefix','suffix','uppercase','lowercase','length','copy'];
+ $('quickOperation').value=quickOps.includes(last.op)?last.op:'copy';
+ lastExampleSlug=sample.recipe.slug;
+ lastExampleLiteral=typeof last.value==='string'?last.value:'';
+ $('quickValue').value=lastExampleLiteral;
+ $('quickValue').placeholder='Enter your own prefix or suffix text';
+ prev=null;report('READY','Example loaded; press Run tool to execute it.');}
 function report(state,data){const badge=$('resultState');badge.textContent=state;badge.className='state '+((/PASS|EXECUTED|VALID|DOWNLOADED|READY|COMPLETED/.test(state))?'pass':(/FAIL|ERROR|HOLD/.test(state))?'fail':'');$('response').textContent=typeof data==='string'?data:JSON.stringify(data,null,2);}
 async function rpc(name,payload){const req={jsonrpc:'2.0',id:Math.floor(Math.random()*1e8)+1,method:'tools/call',params:{name,arguments:payload}};const headers={'Content-Type':'application/json','Accept':'application/json','MCP-Protocol-Version':'2025-11-25'};const r=await fetch('/mcp',{method:'POST',headers,body:JSON.stringify(req),cache:'no-store'});const j=await r.json();if(!r.ok)throw new Error('HTTP '+r.status+': '+JSON.stringify(j));if(j.error)throw new Error(j.error.message);if(j.result?.isError)throw new Error(j.result.content?.[0]?.text||'Tool error');return j.result.structuredContent??JSON.parse(j.result.content[0].text);}
 async function task(button,action){if(busy)return;busy=true;const el=$(button);el.disabled=true;report('RUNNING','Calling live Workshop MCP…');try{await action();}catch(err){report('ERROR',err.message||String(err));}finally{busy=false;el.disabled=false;}}
+$('quickSlug').addEventListener('input',()=>{
+  // A NEW tool never silently inherits the literal from the selected demo.
+  if($('quickSlug').value.trim()!==lastExampleSlug && $('quickValue').value===lastExampleLiteral){
+    $('quickValue').value='';
+  }
+});
 $('recipe').addEventListener('input',size);
 $('example').addEventListener('change',e=>setExample(e.target.value));
 $('buildQuick').addEventListener('click',()=>task('buildQuick',async()=>{
  const slug=$('quickSlug').value.trim(),input=$('quickInput').value.trim(),desc=$('quickDescription').value.trim(),op=$('quickOperation').value;
- const step={op,from:input,as:'result'};if(['prefix','suffix'].includes(op))step.value=$('quickValue').value;
+ const step={op,from:input,as:'result'};
+ if(['prefix','suffix'].includes(op)){
+   if(!$('quickValue').value.trim())throw Error('Enter the text to prefix or suffix before creating your new tool.');
+   step.value=$('quickValue').value;
+ }
  const recipe={slug,description:desc,inputs:[{name:input,type:'string',required:true}],steps:[step],outputs:['result']};
  const data=await rpc('workshop_define',{recipe});if(data.state!=='DEFINITION_VALID')throw Error('Not accepted');writeRecipe(recipe);$('arguments').value=JSON.stringify({[input]:'JM'},null,2);prev=null;report('VALID',data.tool_contract);
 }));

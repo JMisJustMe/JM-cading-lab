@@ -28,7 +28,11 @@ require('android.intent.action.SEND' in manifest and 'text/plain' in manifest, "
 require('android:launchMode="singleTop"' in manifest, "share handoff activity")
 require("<uses-permission" not in manifest, "no requested Android permissions")
 require('android:allowBackup="false"' in manifest, "no unmanaged Android backup")
-require("inspectIncoming" in src and "Append to your local root note?" in src, "explicit share approval")
+require("inspectIncoming" in src and
+        'setPositiveButton("Add to JM"' in src and
+        'setNegativeButton("Discard",null)' in src and
+        'setNeutralButton("Draft in JM project"' in src,
+        "explicit share approval")
 require("getCharSequenceExtra(Intent.EXTRA_TEXT)" in src, "Android text-only share intake")
 require("2500" in src and "10000" in src, "text and note input bounds")
 require("new AlertDialog.Builder" in src and "Apply" not in manifest, "user choices remain in app")

@@ -1,0 +1,40 @@
+name: JM Estate — Source Route Guard
+
+on:
+  pull_request:
+    paths:
+      - '**/index.html'
+      - 'index.html'
+      - 'estate-publication/apps-tools-games/games/futarized-v3.1/**'
+      - 'scripts/validate_estate_page_routes_v0_1.py'
+      - '.github/workflows/validate-estate-page-routes-v0-1.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**/index.html'
+      - 'index.html'
+      - 'estate-publication/apps-tools-games/games/futarized-v3.1/**'
+      - 'scripts/validate_estate_page_routes_v0_1.py'
+      - '.github/workflows/validate-estate-page-routes-v0-1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  route-evidence:
+    name: All index source refs plus recoverable FUTARIZED parts
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - name: Syntax guard
+        run: python3 -m py_compile scripts/validate_estate_page_routes_v0_1.py
+      - name: Resolve every literal HTML and service-worker route
+        run: python3 scripts/validate_estate_page_routes_v0_1.py
+      - name: Preserve truthful source vs deployment distinctions
+        run: |
+          echo 'GITHUB_TREE_SOURCE_REFERENCES=CHECKED'
+          echo 'FUTARIZED_GENERATED_HTML_SOURCE=RECONSTRUCTED_AND_SHA_PROVEN'
+          echo 'PUBLIC_WEBSITE_DEPLOYMENT=HOLD'
+          echo 'OWNER_DEVICE=HOLD'

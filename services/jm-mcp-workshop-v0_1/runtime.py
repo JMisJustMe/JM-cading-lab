@@ -123,8 +123,11 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             self.send_header('Content-Security-Policy', "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
             self.end_headers()
             self.wfile.write(data)
-        def _cors_headers(self):
-            """Browser contact: allow only exact admitted origins (never wildcard)."""
+        def _cors_headers(self,status):
+            """Browser contact: allow only exact admitted origins (never wildcard).
+            A denied preflight must not acquire a browser access grant.
+            """
+            if self.command=='OPTIONS' and status!=204:return
             origin=self.headers.get('Origin','')
             if origin and self._origin_allowed():
                 self.send_header('Access-Control-Allow-Origin',origin)
@@ -140,7 +143,7 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             self.send_header('Content-Length',str(len(data)))
             self.send_header('Cache-Control','no-store')
             self.send_header('X-Content-Type-Options','nosniff')
-            self._cors_headers()
+            self._cors_headers(status)
             self.end_headers()
             if data:self.wfile.write(data)
         def _origin_allowed(self):

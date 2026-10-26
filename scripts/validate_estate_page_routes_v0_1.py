@@ -14,6 +14,7 @@ import gzip
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -157,7 +158,17 @@ def main() -> int:
     # Historical, non-entry HTML is an inherited source carrier until proved
     # self-contained. Missing companions must remain visible but cannot
     # sentence a preserved ancestor to deletion or pretend it was deployed.
+    try:
+        source_head = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        source_head = "UNAVAILABLE_NON_GIT_CHECKOUT"
     report = {"schema": "jm.estate-source-route-holds/0.1",
+              "source_tree_head": source_head,
+              "non_entry_unique_missing_targets": len(
+                  {(item["page"], item["reason"]) for item in carrier_holds}
+              ),
               "boundary": "source-only; not public deployment or device proof",
               "strict_active_entry_missing": missing,
               "non_entry_carrier_holds": carrier_holds,

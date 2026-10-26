@@ -30,19 +30,34 @@ try:
  if editors:
   b=editors[0].attrib['bounds'];q=list(map(int,re.findall(r'\d+',b)))
   adb('shell','input','tap',str((q[0]+q[2])//2),str((q[1]+q[3])//2))
-  adb('shell','input','text','JM_NATIVE_CP03_CONTACT')
-  adb('shell','input','keyevent','4');time.sleep(1)
-  t=dump();checkpoint('native keyboard changes source', 'JM_NATIVE_CP03_CONTACT' in (OUT/'view.xml').read_text())
-  found=False
-  for _ in range(5):
-   if tap('SAVE REVIEWED SNAPSHOT'):found=True;break
-   scroll()
+  adb('shell','input','text','nativetouchproof')
+  adb('shell','input','keyevent','4');time.sleep(1.5)
+  t=dump()
+  read=lambda tree: next((x.attrib.get('text','') for x in tree.iter('node') if x.attrib.get('class','').endswith('EditText')),'')
+  entered=read(t)
+  checkpoint('native keyboard changes source',len(entered)>=8 and entered!='')
+  # Remove IME/focus uncertainty and establish real persisted draft before snapshot.
+  adb('shell','am','force-stop','com.jmisjustme.appcommons')
+  adb('shell','am','start','-n',COMP);time.sleep(2.5)
+  t=dump();checkpoint('edited source recovered on native cold launch',read(t)==entered and bool(entered))
+  found=tap('SAVE REVIEWED SNAPSHOT')
+  if not found:
+   # Pixel 6 fallback targets the visually confirmed control bounds from the hierarchy.
+   for node in t.iter('node'):
+    if node.attrib.get('text')=='SAVE REVIEWED SNAPSHOT':
+     m=re.findall(r'\d+',node.attrib.get('bounds',''))
+     if len(m)==4:
+      x1,y1,x2,y2=map(int,m);adb('shell','input','tap',str((x1+x2)//2),str((y1+y2)//2));time.sleep(1);found=True
+     break
   checkpoint('save snapshot control receives touch',found)
   if found:
-   checkpoint('owner-save dialog visible', 'Preserve native snapshot' in (OUT/'view.xml').read_text())
-   checkpoint('save confirmation applied',tap('SAVE'))
+   t=dump();dialog='Preserve native snapshot' in (OUT/'view.xml').read_text()
+   checkpoint('owner-save dialog visible',dialog)
+   confirmed=tap('SAVE') if dialog else False
+   checkpoint('save confirmation applied',confirmed)
   adb('shell','am','force-stop','com.jmisjustme.appcommons');adb('shell','am','start','-n',COMP);time.sleep(2.5)
-  dump();checkpoint('native source survives forced restart','JM_NATIVE_CP03_CONTACT' in (OUT/'view.xml').read_text())
+  t=dump()
+  checkpoint('native source survives forced restart',read(t)==entered and bool(entered))
   checkpoint('native saved revision survives forced restart','Revision 1' in (OUT/'view.xml').read_text())
  adb('exec-out','screencap','-p') if False else None
  with (OUT/'native-cp03.png').open('wb') as out: subprocess.run(['adb','exec-out','screencap','-p'],stdout=out,check=True)

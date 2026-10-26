@@ -527,8 +527,19 @@ public final class MainActivity extends Activity {
       return;
     }
     String excerpt=incoming.length()>220?incoming.substring(0,220)+"…":incoming;
+    // CP04: ordinary Android Share may be drafted into the current existing JM
+    // project, but no project session is committed or source identity trusted.
+    final JMCompanionInbox.Plan intakePlan;
+    JMCompanionInbox.Plan proposedPlan=null;
+    try{proposedPlan=JMCompanionInbox.prepare(sp,incoming);}
+    catch(Exception ignored){/* Original JM root-note route remains available. */}
+    intakePlan=proposedPlan;
+    final String intakeDestination=intakePlan==null?"Project draft unavailable":
+      "Project: "+intakePlan.projectTitle+" / revision "+intakePlan.revision;
     new AlertDialog.Builder(this).setTitle("SOURCE CONTACT / Android Share")
-      .setMessage("Another app shared text with JM:\n\n"+excerpt+"\n\nAppend to your local root note?")
+      .setMessage("Another app shared UNVERIFIED text with JM:\n\n"+excerpt+
+        "\n\nOwner choice: add to JM Root or create an UNSAVED draft in your current JM project.\n"+
+        intakeDestination+"\n\nNo external provider is authenticated.")
       .setNegativeButton("Discard",null)
       .setPositiveButton("Add to JM",(d,w)->{
         String previous=sp.getString("root","");
@@ -542,6 +553,22 @@ public final class MainActivity extends Activity {
           .putInt("source.count",sp.getInt("source.count",0)+1).apply();
         tab=0;render();
         Toast.makeText(this,"Shared source saved locally",Toast.LENGTH_SHORT).show();
+      })
+      .setNeutralButton("Draft in JM project",(d,w)->{
+        if(intakePlan==null){
+          new AlertDialog.Builder(this).setTitle("HOLD · Project draft unavailable")
+            .setMessage("Current project or bounded draft cannot accept this source. Your existing JM root option remains independent.")
+            .setPositiveButton("OK",null).show();return;
+        }
+        try{
+          JMCompanionInbox.stage(sp,intakePlan);
+          tab=8;render();
+          Toast.makeText(this,"Source added to UNSAVED JM project draft · save a checkpoint when ready",
+            Toast.LENGTH_LONG).show();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · JM draft unchanged")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
       }).show();
   }
   void runPreflight(){

@@ -29,7 +29,7 @@ class JMInbox(unittest.TestCase):
         self.assertIn('setPositiveButton("Add to JM"',MAIN)
         self.assertIn('setNeutralButton("Draft in JM project"',MAIN)
         self.assertIn("JMCompanionInbox.stage(sp,intakePlan)",MAIN)
-        self.assertIn("tab=8;render();",MAIN)
+        self.assertIn("tab=setupReady?8:0;",MAIN)
         self.assertIn("if(incoming.startsWith(\"{\")&&incoming.contains(\"JM.LivingHome.CP07.CloudReturn/1.0\"))",MAIN)
         self.assertLess(MAIN.index("CloudReturnBridge.select(incoming"),MAIN.index("JMCompanionInbox.prepare(sp,incoming)"))
         self.assertNotIn("<uses-permission",MANIFEST)

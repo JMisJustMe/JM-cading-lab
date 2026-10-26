@@ -1,0 +1,112 @@
+name: JM MCP Workshop CP04 — Live Gemini CORS and Dual MCP Proof
+
+on:
+  push:
+    branches:
+      - verify/jm-mcp-workshop-cp04-hosted-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp04-live-proof.yml"
+  pull_request:
+    branches:
+      - feature/jm-mcp-workshop-cp01-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp04-live-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run live HTTPS Gemini browser preflight and real MCP execution
+        env:
+          URL: https://jm-mcp-workshop.onrender.com
+        run: |
+          python - <<'PY'
+          import json, os, time, urllib.request, urllib.error
+          base=os.environ['URL']; origin='https://gemini.google.com'
+          versions=('2025-11-25','2026-07-28')
+          def request(path,method='GET',headers=None,data=None):
+              req=urllib.request.Request(base+path,method=method,headers=headers or {},data=data)
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      return r.status,dict((k.lower(),v) for k,v in r.headers.items()),r.read()
+              except urllib.error.HTTPError as e:
+                  return e.code,dict((k.lower(),v) for k,v in e.headers.items()),e.read()
+          def rpc(method,params=None,modern=False):
+              params=dict(params or {})
+              h={'Content-Type':'application/json',
+                 'Accept':'application/json, text/event-stream' if modern else 'application/json',
+                 'Origin':origin,
+                 'MCP-Protocol-Version':versions[1 if modern else 0]}
+              if modern:
+                  params['_meta']={
+                    'io.modelcontextprotocol/protocolVersion':versions[1],
+                    'io.modelcontextprotocol/clientCapabilities':{},
+                    'io.modelcontextprotocol/clientInfo':{'name':'JM CP04 hosted checker','version':'0.1'}}
+                  h['Mcp-Method']=method
+                  if method=='tools/call':h['Mcp-Name']=params['name']
+              body=json.dumps({'jsonrpc':'2.0','id':44,'method':method,'params':params},
+                       separators=(',',':')).encode()
+              status,headers,raw=request('/mcp','POST',h,body)
+              assert status==200,(method,status,raw[:400])
+              assert headers.get('access-control-allow-origin')==origin,(method,headers)
+              parsed=json.loads(raw)
+              assert parsed['id']==44 and 'error' not in parsed,parsed
+              return parsed['result']
+          for attempt in range(8):
+              try:
+                  code,_,body=request('/healthz')
+                  assert code==200 and json.loads(body)['service']=='JM MCP WORKSHOP'
+                  break
+              except Exception:
+                  if attempt==7:raise
+                  time.sleep(4)
+          print('CP04_LIVE_HEALTH: PASS',json.loads(body))
+          preflight={'Origin':origin,'Access-Control-Request-Method':'POST',
+            'Access-Control-Request-Headers':'content-type,mcp-protocol-version,mcp-method,mcp-name,authorization'}
+          code,headers,body=request('/mcp','OPTIONS',preflight)
+          assert code==204,(code,body)
+          assert headers.get('access-control-allow-origin')==origin,headers
+          assert 'POST' in headers.get('access-control-allow-methods',''),headers
+          for required in ('content-type','mcp-protocol-version','mcp-method','mcp-name','authorization'):
+              assert required in headers.get('access-control-allow-headers','').lower(),(required,headers)
+          print('GEMINI_OPTIONS_PREFLIGHT: PASS exact origin, 204, methods, headers')
+          code,headers,body=request('/mcp','OPTIONS',{
+            **preflight,'Origin':'https://gemini.google.com.attacker.example'})
+          assert code==403 and 'access-control-allow-origin' not in headers,(code,headers)
+          code,headers,body=request('/mcp','OPTIONS',{
+            **preflight,'Access-Control-Request-Headers':'content-type,x-nonexistent-privilege'})
+          assert code==403 and 'access-control-allow-origin' not in headers,(code,headers)
+          print('PREFLIGHT_FAIL_CLOSED: PASS')
+          old=rpc('initialize',{'protocolVersion':versions[0],'clientInfo':{
+            'name':'jm-legacy-check','version':'1'},'capabilities':{}},False)
+          assert old['protocolVersion']==versions[0],old
+          modern=rpc('server/discover',modern=True)
+          assert modern['resultType']=='complete' and versions[1] in modern['supportedVersions'],modern
+          print('LEGACY_AND_MODERN_HANDSHAKES: PASS')
+          expected={'workshop_define','workshop_connect','workshop_compose',
+                    'workshop_run','workshop_test','workshop_compare','workshop_publish'}
+          for modern_mode in (False,True):
+              result=rpc('tools/list',modern=modern_mode)
+              assert {t['name'] for t in result['tools']}==expected,result
+              recipe={'slug':'cp04_hosted_score',
+                 'description':'Verify real hosted score consequence while keeping source read-only.',
+                 'inputs':[{'name':'a','type':'integer','required':True},
+                           {'name':'b','type':'integer','required':True}],
+                 'steps':[{'op':'add','from':'a','with':'b','as':'total'}],
+                 'outputs':['total']}
+              d=rpc('tools/call',{'name':'workshop_run','arguments':{
+                  'recipe':recipe,'arguments':{'a':42,'b':8}}},modern_mode)
+              assert d['structuredContent']['result']['total']==50,d
+              assert d['structuredContent']['mutation_performed'] is False,d
+              print(('MODERN' if modern_mode else 'LEGACY')+'_GEMINI_ORIGIN_TOOL_RUN: PASS 42+8=50')
+          print('CP04_LIVE_HTTP_CONTACT: PASS (not actual Gemini UI account contact)')
+          PY

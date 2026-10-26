@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """JM ECOSTATE source-route guard v0.1.
 
-Inspect every checked-in index.html, not just the main navigation. Resolve
+Inspect every checked-in HTML page, not just the main navigation. Resolve
 actual HTML element URLs and literal serviceWorker.register() routes against
 the Git tree. A source-generated FUTARIZED playable target is recovered and
 hash-verified, not falsely labelled dead. This is source/transport evidence,
@@ -114,7 +114,7 @@ def resolve_reference(page: Path, raw: str) -> tuple[bool, str]:
 
 
 def main() -> int:
-    pages = sorted(page for page in ROOT.rglob("index.html") if ".git" not in page.parts)
+    pages = sorted(page for page in ROOT.rglob("*.html") if ".git" not in page.parts)
     missing: list[dict[str, str]] = []
     kinds: dict[str, int] = {}
     total = 0
@@ -148,7 +148,7 @@ def main() -> int:
             missing.append({"page": "FUTARIZED_SOURCE_CARRIAGE",
                             "element": "reconstruction", "reference": target,
                             "reason": str(exc)})
-    print(f"ESTATE SOURCE ROUTE GUARD: {len(pages)} index pages; {total} literal HTML/SW references")
+    print(f"ESTATE SOURCE ROUTE GUARD: {len(pages)} HTML pages; {total} literal HTML/SW references")
     print("RECOVERY: " + ", ".join(sorted(recovered)))
     print("KINDS: " + json.dumps(kinds, sort_keys=True))
     if missing:

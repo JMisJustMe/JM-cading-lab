@@ -43,7 +43,18 @@ def main():
     protected=("root","project.shelf","session.deck","reentry.points",
                "project.active","ready","cloud.return.pending","cloud.return.applied")
     for key in protected:assert before.get(key)==after.get(key),(key,"mutated by chooser")
-    # A user never picked a provider in this QA; no proof any content was sent.
+    # The Android-owned Sharesheet remains in the foreground. A bare
+    # am start while it is open does NOT prove native JM recovery: on
+    # Android 15 it can leave the chooser sheet covering the Activity.
+    has("Sharing text","cp03_android_sharesheet_visible")
+    adb("shell","input","keyevent","4")
+    time.sleep(.8)
+    # Owner returns to JM explicitly; no recipient was selected and no
+    # external provider/data-delivery claim is made by this test.
+    adb("shell","am","start","-W","-n",MAIN)
+    time.sleep(1.2)
+    has("JM / COMPANION CONTACT","cp03_after_owner_cancel")
+    # Only now test JM process death and restart in absence of OS overlay.
     adb("shell","am","force-stop",PKG)
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(2)
@@ -52,7 +63,8 @@ def main():
     (OUT/"COMPANION_CP03_RECEIPT.json").write_text(json.dumps({
         "status":"PASS","scope":"generic Android emulator",
         "share_preview_visible":True,"share_cancel_unchanged":True,
-        "sharesheet_requested_by_owner":True,
+        "sharesheet_requested_by_owner":True,"sharesheet_visible":True,
+        "sharesheet_cancelled_without_recipient":True,
         "provider_selected":False,"content_delivery_proven":False,
         "bounded_own_ledger":True,"project_history_unchanged":True,
         "cold_return":True,"owner_device":"NOT_TESTED"

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fix/jm-mcp-workshop-dual-era-20261026
+      - fix/jm-mcp-workshop-gemini-cors-cp04-20261026
     paths:
       - "services/jm-mcp-workshop-v0_1/**"
       - ".github/workflows/jm-mcp-workshop-dual-era.yml"

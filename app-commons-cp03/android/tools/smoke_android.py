@@ -8,6 +8,19 @@ def checkpoint(name,ok):results.append({'test':name,'pass':bool(ok)});print(('PA
 def dump():
  adb('shell','uiautomator','dump','/sdcard/jm_view.xml');subprocess.run(['adb','pull','/sdcard/jm_view.xml',str(OUT/'view.xml')],capture_output=True,check=True)
  return ET.parse(OUT/'view.xml').getroot()
+def wait_ready(seconds=48):
+ deadline=time.monotonic()+seconds
+ last=None
+ while time.monotonic()<deadline:
+  try:
+   last=dump()
+   nodes=list(last.iter('node'))
+   values=[n.attrib.get('text','') for n in nodes]
+   if any('APP//COMMONS' in x for x in values) and any(n.attrib.get('class','').endswith('EditText') for n in nodes):
+    return last
+  except (subprocess.SubprocessError,ET.ParseError,FileNotFoundError): pass
+  time.sleep(1.5)
+ raise RuntimeError('HOLD native activity did not reach visible JM editor after boot; no UI Ding')
 def tap(label):
  tree=dump()
  for node in tree.iter('node'):
@@ -21,7 +34,7 @@ def scroll():adb('shell','input','swipe','200','720','200','310','360');time.sle
 try:
  adb('shell','am','force-stop','com.jmisjustme.appcommons')
  adb('shell','am','start','-n',COMP)
- time.sleep(3);t=dump();raw=(OUT/'view.xml').read_text()
+ time.sleep(2);t=wait_ready();raw=(OUT/'view.xml').read_text()
  checkpoint('original JM native room renders', 'APP//COMMONS' in raw and 'INSPECT LOCAL SOURCE' in raw)
  checkpoint('independent origin label', 'ORIGINAL NATIVE WORKROOM' in raw)
  # Actual system touch + keyboard event, not preference injection.
@@ -38,8 +51,8 @@ try:
   checkpoint('native keyboard changes source',len(entered)>=8 and entered!='')
   # Remove IME/focus uncertainty and establish real persisted draft before snapshot.
   adb('shell','am','force-stop','com.jmisjustme.appcommons')
-  adb('shell','am','start','-n',COMP);time.sleep(2.5)
-  t=dump();checkpoint('edited source recovered on native cold launch',read(t)==entered and bool(entered))
+  adb('shell','am','start','-n',COMP);t=wait_ready()
+  checkpoint('edited source recovered on native cold launch',read(t)==entered and bool(entered))
   found=tap('SAVE REVIEWED SNAPSHOT')
   if not found:
    # Pixel 6 fallback targets the visually confirmed control bounds from the hierarchy.
@@ -55,8 +68,8 @@ try:
    checkpoint('owner-save dialog visible',dialog)
    confirmed=tap('SAVE') if dialog else False
    checkpoint('save confirmation applied',confirmed)
-  adb('shell','am','force-stop','com.jmisjustme.appcommons');adb('shell','am','start','-n',COMP);time.sleep(2.5)
-  t=dump()
+  adb('shell','am','force-stop','com.jmisjustme.appcommons');adb('shell','am','start','-n',COMP)
+  t=wait_ready()
   checkpoint('native source survives forced restart',read(t)==entered and bool(entered))
   checkpoint('native saved revision survives forced restart','Revision 1' in (OUT/'view.xml').read_text())
  adb('exec-out','screencap','-p') if False else None

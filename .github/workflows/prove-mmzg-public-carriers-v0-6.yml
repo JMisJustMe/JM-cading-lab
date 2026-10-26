@@ -1,0 +1,81 @@
+name: MMZG v0.6 Public Carrier SHA Contact
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/prove-mmzg-public-carriers-v0-6.yml'
+      - 'mmzg-runtime-v0.6/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/prove-mmzg-public-carriers-v0-6.yml'
+      - 'mmzg-runtime-v0.6/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-proof:
+    name: Exact source-to-public bytes on both independent carriers
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prove exact MMZG v0.6 public deployment bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=/tmp/mmzg_public_sha_parity_receipt.txt
+          printf 'JM MMZG PUBLIC CARRIAGE v0.6 - GITHUB RUN %s\n' "$GITHUB_RUN_ID" > "$receipt"
+          total=0
+          for base in \
+            https://jmisjustme.github.io/JM-cading-lab/mmzg-runtime-v0.6 \
+            https://jmisjustme-estate.pages.dev/mmzg-runtime-v0.6
+          do
+            for file in index.html mmzg_runtime_core_v0_6.js manifest.webmanifest service_worker.js
+            do
+              local_hash=$(sha256sum "mmzg-runtime-v0.6/$file" | cut -d' ' -f1)
+              success=0
+              for attempt in $(seq 1 12)
+              do
+                code=$(curl --location --silent --show-error --max-time 25 --connect-timeout 8 \
+                  -H 'Cache-Control: no-cache' \
+                  -o /tmp/mmzg.public                   -w '%{http_code}' "$base/$file?jm-source-proof=$GITHUB_RUN_ID-$attempt" || true)
+                if test "$code" = 200
+                then
+                  live_hash=$(sha256sum /tmp/mmzg.public | cut -d' ' -f1)
+                  if test "$live_hash" = "$local_hash"
+                  then
+                    echo "PASS 200 $base/$file SHA-256=$live_hash"
+                    printf 'PASS %s/%s %s\n' "$base" "$file" "$live_hash" >> "$receipt"
+                    success=1
+                    total=$((total+1))
+                    break
+                  fi
+                  echo "MISMATCH $base/$file expected $local_hash got $live_hash"
+                else
+                  echo "CONTACT HOLD $base/$file HTTP $code attempt $attempt"
+                fi
+                sleep 4
+              done
+              if test "$success" != 1
+              then
+                echo "FAIL: no exact public source-byte contact for $base/$file"
+                exit 1
+              fi
+            done
+          done
+          test "$total" -eq 8
+          echo 'PUBLIC_SOURCE_BYTE_PARITY=PASS_8_OF_8'
+          echo 'REAL_BROWSER_LOCAL_SOURCE=PREVIOUSLY_PROVEN_PR480'
+          echo 'OWNER_FOLD_CONTACT=HOLD'
+          echo 'NATIVE_ANDROID_APK=NOT_CLAIMED'
+      - name: Keep exact public custody receipt even on fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MMZG_v0_6_PUBLIC_SHA_CARRIER_RECEIPT
+          path: /tmp/mmzg_public_sha_parity_receipt.txt
+          if-no-files-found: warn
+          retention-days: 30

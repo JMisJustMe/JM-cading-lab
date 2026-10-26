@@ -1,0 +1,33 @@
+name: JM MCP Workshop CP03 — Dual-Era Contact
+
+on:
+  push:
+    branches:
+      - fix/jm-mcp-workshop-dual-era-20261026
+    paths:
+      - "services/jm-mcp-workshop-v0_1/**"
+      - ".github/workflows/jm-mcp-workshop-dual-era.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "services/jm-mcp-workshop-v0_1/**"
+      - ".github/workflows/jm-mcp-workshop-dual-era.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dual-era-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Parse host and original interpreter
+        run: |
+          python -m py_compile services/jm-mcp-workshop-v0_1/server.py services/jm-mcp-workshop-v0_1/runtime.py services/jm-mcp-workshop-v0_1/workshop.py services/jm-mcp-workshop-v0_1/recipe.py
+      - name: Test legacy and modern MCP contracts against actual loopback host
+        run: python -m unittest discover -s services/jm-mcp-workshop-v0_1/tests -v

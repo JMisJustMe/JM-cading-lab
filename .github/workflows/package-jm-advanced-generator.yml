@@ -11,6 +11,9 @@ on:
       - "games-beyond/generation-packs/TBOYS_4T_CLASH_ADVANCED_GENERATION_PACK_v0_1.md"
       - "games-beyond/generation-packs/JM_ADVANCED_GENERATOR_PLAYABLE_SOURCE_RECEIPT_v0_2.md"
       - ".github/workflows/package-jm-advanced-generator.yml"
+      - "scripts/jm_package_advanced_generator.py"
+      - "agent-runtime/host-adapters/storage-admission/**"
+      - "registry/storage-admission/**"
 
 permissions:
   contents: write
@@ -29,6 +32,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build one-download JM Unity proof pack
+        id: admission
         shell: bash
         run: |
           set -euo pipefail
@@ -45,54 +49,11 @@ jobs:
           cp games-beyond/generation-packs/WESTERN_SNIPER_ADVANCED_REGENERATION_PACK_v0_1.md "$STAGE/GENERATION_CONTRACTS/"
           cp games-beyond/generation-packs/TBOYS_4T_CLASH_ADVANCED_GENERATION_PACK_v0_1.md "$STAGE/GENERATION_CONTRACTS/"
 
-          python - <<'PY'
-          from pathlib import Path
-          import hashlib, json, os, zipfile
-
-          pack = "JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2"
-          stage = Path(os.environ["RUNNER_TEMP"]) / pack
-          out = Path("games-beyond/downloads")
-          archive = out / f"{pack}.zip"
-
-          manifest = {
-              "schema": "JM.AdvancedGenerator.Package/0.2",
-              "status": "PLAYABLE_SOURCE_COMPILE_PENDING",
-              "files": []
-          }
-          for path in sorted(stage.rglob("*")):
-              if path.is_file():
-                  data = path.read_bytes()
-                  manifest["files"].append({
-                      "path": str(path.relative_to(stage)),
-                      "bytes": len(data),
-                      "sha256": hashlib.sha256(data).hexdigest()
-                  })
-          (stage / "PACKAGE_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-
-          if archive.exists():
-              archive.unlink()
-          with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
-              for path in sorted(stage.rglob("*")):
-                  if path.is_file():
-                      zf.write(path, Path(pack) / path.relative_to(stage))
-
-          digest = hashlib.sha256(archive.read_bytes()).hexdigest()
-          (out / f"{pack}.sha256").write_text(f"{digest}  {archive.name}\n", encoding="utf-8")
-          metadata = {
-              "schema": "JM.AdvancedGenerator.PackageRun/0.2",
-              "run_id": os.environ["GITHUB_RUN_ID"],
-              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-              "commit": os.environ["GITHUB_SHA"],
-              "archive": archive.name,
-              "bytes": archive.stat().st_size,
-              "sha256": digest
-          }
-          (out / f"{pack}.run.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
-          print(f"Built {archive} ({archive.stat().st_size} bytes)")
-          print(f"SHA-256 {digest}")
-          PY
+          python3 scripts/jm_package_advanced_generator.py \
+            --stage "$STAGE" --archive "$OUT/$PACK.zip"
 
       - name: Upload verifiable package artifact
+        if: steps.admission.outputs.additional_carrier == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2
@@ -103,6 +64,7 @@ jobs:
           retention-days: 30
 
       - name: Commit package when changed
+        if: steps.admission.outputs.additional_carrier == 'true'
         shell: bash
         run: |
           set -euo pipefail

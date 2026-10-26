@@ -1,0 +1,27 @@
+name: JM M001 Mandatory Production Admission
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/**'
+      - 'registry/storage-admission/**'
+      - 'scripts/jm_build_closure.py'
+      - 'scripts/jm_package_advanced_generator.py'
+      - 'scripts/test_jm_m001_production_admission.py'
+      - '.github/workflows/jm-m001-production-admission.yml'
+      - '.github/workflows/package-jm-advanced-generator.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mandatory-admission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve original gate and closure regression
+        run: |
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py --self-test
+          python3 scripts/jm_build_closure.py --self-test
+      - name: Execute production admission on public JM package bytes
+        run: python3 scripts/test_jm_m001_production_admission.py -v

@@ -1,0 +1,54 @@
+name: JM Historical Companion Delivery QA
+on:
+  pull_request:
+    paths:
+      - "games-beyond/bodies/source_vault/**"
+      - "estate-publication/contact-organ-descendants/phone-browser/**"
+      - "ai-federation/jm-ai-lab-v2.0/**"
+      - "tests/jm-historical-companion-delivery.spec.mjs"
+      - ".github/workflows/jm-historical-companion-delivery-qa.yml"
+  push:
+    branches: [main]
+    paths:
+      - "games-beyond/bodies/source_vault/**"
+      - "estate-publication/contact-organ-descendants/phone-browser/**"
+      - "ai-federation/jm-ai-lab-v2.0/**"
+      - "tests/jm-historical-companion-delivery.spec.mjs"
+      - ".github/workflows/jm-historical-companion-delivery-qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate original dependency references, manifests and workers
+        shell: bash
+        run: |
+          node --check games-beyond/bodies/source_vault/service-worker.js
+          node --check estate-publication/contact-organ-descendants/phone-browser/service-worker.js
+          python3 -m json.tool games-beyond/bodies/source_vault/manifest.webmanifest >/dev/null
+          python3 -m json.tool estate-publication/contact-organ-descendants/phone-browser/manifest.webmanifest >/dev/null
+          python3 -m json.tool ai-federation/jm-ai-lab-v2.0/04_MANIFEST.webmanifest >/dev/null
+          node --check tests/jm-historical-companion-delivery.spec.mjs
+          python3 scripts/validate_estate_page_routes_v0_1.py
+      - name: Install real Chromium
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot original source pages via local HTTP
+        run: |
+          python3 -m http.server 4197 --bind 127.0.0.1 >/tmp/jm-historical-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4197/games-beyond/bodies/source_vault/OPEN_FIRST_JMGAMECORE_v0_2I_A_CORRECTED_THREE_GAME_INTEGRATION.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-historical-http.log
+          exit 1
+      - name: Real Chromium source and offline reload proof
+        run: node tests/jm-historical-companion-delivery.spec.mjs

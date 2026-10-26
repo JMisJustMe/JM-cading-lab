@@ -39,7 +39,7 @@ try {
   pass('real browser downloaded verified capsule',verified.snapshots.length===1&&verified.source.includes('cross-door candidate'));
   await ctx.close();ctx=null;
   // This is a new browser process with the SAME disk profile, unlike set_content.
-  ctx=await launch();p=ctx.pages()[0]||await ctx.newPage();p.on('pageerror',e=>errors.push(String(e)));
+  ctx=await launch();p=ctx.pages()[0]||await ctx.newPage();p.on('pageerror',e=>errors.push(String(e)));p.on('dialog',d=>d.accept());
   await p.goto(url,{waitUntil:'load'});
   pass('disk profile survives full Chrome process restart',(await p.locator('#source').inputValue()).includes('cross-door candidate'));
   await p.locator('[data-tab="lineage"]').click();

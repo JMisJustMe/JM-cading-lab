@@ -1,0 +1,37 @@
+name: JM MCP WORKSHOP CP01 — Independent Executable Contract
+
+on:
+  push:
+    branches:
+      - feature/jm-mcp-workshop-cp01-20261026
+    paths:
+      - "services/jm-mcp-workshop-v0_1/**"
+      - ".github/workflows/jm-mcp-workshop-cp01.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "services/jm-mcp-workshop-v0_1/**"
+      - ".github/workflows/jm-mcp-workshop-cp01.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Parse independent MCP host and recipe interpreter
+        run: |
+          python -m py_compile services/jm-mcp-workshop-v0_1/server.py \
+            services/jm-mcp-workshop-v0_1/runtime.py \
+            services/jm-mcp-workshop-v0_1/workshop.py \
+            services/jm-mcp-workshop-v0_1/recipe.py
+      - name: Run executable behaviour and both MCP transport regressions
+        run: python -m unittest discover -s services/jm-mcp-workshop-v0_1/tests -v

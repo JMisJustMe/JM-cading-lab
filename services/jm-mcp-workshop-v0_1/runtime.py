@@ -1,9 +1,9 @@
 """Minimal stdlib MCP transport for JM Workshop and generated read-only recipe servers.
 
-Bounded JSON-RPC MCP 2025-03-26 / 2025-06-18 / 2025-11-25 subset:
+Dual-era JSON-RPC MCP 2025-03-26 / 2025-06-18 / 2025-11-25 and 2026-07-28:
 initialize, ping, tools/list, tools/call, resources/list/read, prompts/list/get.
 Streamable HTTP is stateless JSON-response mode; SSE and server-initiated
-notifications are intentionally unsupported, GET /mcp -> 405.  No session
+notifications are intentionally unsupported; no GET SSE stream or MCP sessions.
 management or authentication is claimed. Add an authenticated gateway before
 any future write capability.  Separate from JM Build Mesh.
 """
@@ -15,6 +15,7 @@ import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PROTOCOLS=('2025-03-26','2025-06-18','2025-11-25')
+MODERN='2026-07-28'
 MAX_BODY=131072
 
 
@@ -44,7 +45,7 @@ class Dispatch:
         self.resources=resources or [];self.read_resource=read_resource
         assert {t['name'] for t in tools}==set(handlers), 'tool discovery and dispatch mismatch'
 
-    def rpc(self,obj):
+    def rpc(self,obj,modern=False):
         if not isinstance(obj,dict): return _err(None,-32600,'JSON-RPC request must be object')
         reqid=obj.get('id')
         if obj.get('jsonrpc')!='2.0' or not isinstance(obj.get('method'),str):
@@ -55,7 +56,12 @@ class Dispatch:
             return None
         if reqid is None or type(reqid) not in (int,str):return _err(None,-32600,'request id required')
         try:
-            if method=='initialize':
+            if modern and method=='server/discover':
+                data={'resultType':'complete','supportedVersions':[MODERN,*reversed(PROTOCOLS)],
+                      'capabilities':{'tools':{'listChanged':False},'resources':{},'prompts':{}},
+                      '_meta':{'io.modelcontextprotocol/serverInfo':{'name':self.name,'version':self.version}},
+                      'ttlMs':300000,'cacheScope':'public'}
+            elif method=='initialize':
                 version=params.get('protocolVersion')
                 if version not in PROTOCOLS:version=PROTOCOLS[-1]
                 data={'protocolVersion':version,'capabilities':{'tools':{'listChanged':False},
@@ -86,6 +92,8 @@ class Dispatch:
                 data={'messages':[{'role':'user','content':{'type':'text','text':
                     'Design a declarative JM MCP Workshop recipe for: '+purpose+'. Use workshop://recipe/example as a reference. No arbitrary scripts, external writes or unapproved JM body access. Return a complete recipe with explicit inputs, steps and outputs.'}}]}
             else:return _err(reqid,-32601,'method not found')
+            if modern and isinstance(data,dict) and 'resultType' not in data:
+                data={'resultType':'complete',**data}
             return {'jsonrpc':'2.0','id':reqid,'result':data}
         except (ValueError,TypeError,KeyError,OverflowError) as e:
             return _err(reqid,-32602,str(e)[:500])
@@ -155,14 +163,41 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             if not self._origin_allowed():return self._send(403,{'error':'Origin forbidden'})
             if not self._auth():return self._send(401,{'error':'Bearer token required'})
             version_header=self.headers.get('MCP-Protocol-Version')
-            if version_header and version_header not in PROTOCOLS:return self._send(400,{'error':'unsupported protocol version'})
+            if version_header and version_header not in PROTOCOLS+(MODERN,):
+                return self._send(400,{'jsonrpc':'2.0','id':None,'error':{'code':-32022,
+                  'message':'Unsupported protocol version','data':{'supported':[MODERN,*reversed(PROTOCOLS)],'requested':version_header}}})
             if 'application/json' not in self.headers.get('Content-Type',''):return self._send(415,{'error':'application/json required'})
             try:n=int(self.headers.get('Content-Length','0'))
             except ValueError:return self._send(400,{'error':'bad length'})
             if n<1 or n>MAX_BODY:return self._send(413,{'error':'body size exceeded'})
             try:payload=json.loads(self.rfile.read(n),object_pairs_hook=_reject_duplicates)
             except (ValueError,TypeError):return self._send(400,_err(None,-32700,'invalid JSON'))
-            result=app.rpc(payload)
+            modern=version_header==MODERN or (
+                isinstance(payload,dict) and isinstance(payload.get('params'),dict)
+                and isinstance(payload['params'].get('_meta'),dict)
+                and payload['params']['_meta'].get('io.modelcontextprotocol/protocolVersion')==MODERN)
+            if modern:
+                def mismatch(what):
+                    return self._send(400,{'jsonrpc':'2.0','id':payload.get('id') if isinstance(payload,dict) else None,
+                         'error':{'code':-32020,'message':'MCP header or metadata mismatch: '+what}})
+                if not isinstance(payload,dict):return mismatch('request')
+                params=payload.get('params',{})
+                if not isinstance(params,dict):return mismatch('params')
+                meta=params.get('_meta',{})
+                if not isinstance(meta,dict) or meta.get('io.modelcontextprotocol/protocolVersion')!=MODERN:
+                    return mismatch('protocol metadata')
+                if not isinstance(meta.get('io.modelcontextprotocol/clientCapabilities'),dict):
+                    return mismatch('clientCapabilities')
+                if version_header!=MODERN:return mismatch('MCP-Protocol-Version')
+                if self.headers.get('Mcp-Method')!=payload.get('method'):return mismatch('Mcp-Method')
+                method=payload.get('method')
+                if method in ('tools/call','prompts/get','resources/read'):
+                    key='uri' if method=='resources/read' else 'name'
+                    if self.headers.get('Mcp-Name')!=params.get(key):return mismatch('Mcp-Name')
+                accept=self.headers.get('Accept','')
+                if 'application/json' not in accept or 'text/event-stream' not in accept:
+                    return mismatch('Accept')
+            result=app.rpc(payload,modern=modern)
             self._send(202 if result is None else 200,result)
     server=ThreadingHTTPServer((os.environ.get('HOST','0.0.0.0'),int(os.environ.get('PORT','10000'))),Handler)
     try:server.serve_forever()

@@ -28,7 +28,7 @@ def tap_document(filename):
   if filename==node.attrib.get('text',''):
    clickable=next((x for x in reversed(parents) if x.attrib.get('clickable')=='true'),None)
    target=clickable or node
-   q=list(map(int,re.findall(r'\\d+',target.attrib.get('bounds',''))))
+   q=list(map(int,re.findall(r'\d+',target.attrib.get('bounds',''))))
    if len(q)==4:
     adb('shell','input','tap',str((q[0]+q[2])//2),str((q[1]+q[3])//2))
     time.sleep(1.4);return True
@@ -68,7 +68,16 @@ try:
  assert tap('Save',scrolls=1),'document picker SAVE not found'
  stamp('selected document re-read exactly',wait('EXPORT VERIFIED',22))
  shot('export-verified')
- # Change draft before importing; so import has an observable state consequence.
+ # Change the real draft through native keyboard AFTER the exported file is preserved.
+ for _ in range(4):
+  adb('shell','input','swipe','400','310','400','1160','260');time.sleep(.35)
+ editor=next((x for x in nodes() if x.attrib.get('class','').endswith('EditText')),None)
+ assert editor is not None,'native source not visible after export'
+ q=list(map(int,re.findall(r'\d+',editor.attrib['bounds'])))
+ adb('shell','input','tap',str((q[0]+q[2])//2),str((q[1]+q[3])//2))
+ adb('shell','input','text','AfterExportMutation');adb('shell','input','keyevent','4')
+ time.sleep(1)
+ stamp('native draft changed after export',any('AfterExportMutation' in n.attrib.get('text','') for n in nodes()))
  assert tap('VERIFY + IMPORT .JSON',scrolls=4),'import control unreachable'
  stamp('Android document read picker opened',wait('Downloads',15) or wait('Recent',12))
  shot('open-picker')
@@ -77,6 +86,9 @@ try:
  stamp('verified source approval shown',wait('Adopt verified external',22))
  assert tap('ADOPT TO DRAFT'),'adopt approval missing'
  stamp('native source adopted after verifying JSON',wait('NATIVE IMPORT VERIFIED',15))
+ # The imported file must actually undo the post-export change, not merely report success.
+ for _ in range(3):adb('shell','input','swipe','400','315','400','1160','280');time.sleep(.3)
+ stamp('actual earlier source restored from document',not any('AfterExportMutation' in n.attrib.get('text','') for n in nodes()) and any('NativeCapsuleRoundtripCP04' in n.attrib.get('text','') for n in nodes()))
  shot('import-verified')
 except Exception as e:
  checks.append({'test':'bounded execution HOLD','pass':False,'reason':str(e)})

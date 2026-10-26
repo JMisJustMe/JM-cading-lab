@@ -33,12 +33,12 @@ public final class JMCompanionShare {
        !phase.equals(SessionDeck.draftText(sp,snapshot,"phase")))
       throw new IllegalStateException("Unsaved JM changes: save or discard drafts first");
     String title=project.getString("title");
-    String body="JM ECOSTATE · OWNER-APPROVED SAVED CHECKPOINT\\n"+
-      "Project: "+title+"\\n"+
-      "Family: "+project.getString("family")+"\\n"+
-      "Revision: "+revision+"\\n"+
-      "Phase: "+phase+"\\n\\n"+
-      "SAVED NOTE\\n"+note+"\\n\\nNEXT ACTION\\n"+next;
+    String body="JM ECOSTATE · OWNER-APPROVED SAVED CHECKPOINT\n"+
+      "Project: "+title+"\n"+
+      "Family: "+project.getString("family")+"\n"+
+      "Revision: "+revision+"\n"+
+      "Phase: "+phase+"\n\n"+
+      "SAVED NOTE\n"+note+"\n\nNEXT ACTION\n"+next;
     // Upper bound defends the receiving app, preview, share intent and trace.
     if(body.length()>5000)throw new IllegalStateException("Checkpoint exceeds safe share bound");
     return new Prepared(id,title,revision,body);

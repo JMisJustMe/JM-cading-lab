@@ -1,0 +1,96 @@
+name: JM Legacy Two-Branch Playwright Host Proof
+on:
+  pull_request:
+    paths: [".github/workflows/jm-legacy-two-branch-playwright-host-proof.yml"]
+  push:
+    branches: [main]
+    paths: [".github/workflows/jm-legacy-two-branch-playwright-host-proof.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-branch-browser-proof:
+    name: "Ubuntu 24.04 native proof / ${{ matrix.kind }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - kind: AGI_RUNTIME
+            source_branch: factory/jm-agi-lab-runtime-console-v1
+            port: 4188
+            target: apps/jm-agi-lab-runtime-console-v1/index.html
+            test: tests/jm-agi-lab-runtime-console-v1.spec.mjs
+            receipt: qa/jm-agi-lab-runtime-console-v1/browser-proof.json
+          - kind: ROUTEOS_REAL_CONTACT
+            source_branch: jm-ai-executable-body-contact-v0-1
+            port: 4177
+            target: games-beyond/routeos/runtime/index.html
+            test: tests/jm-ai-routeos-real-contact-v0-1.spec.mjs
+            receipt: ai-host-contact/routeos-body-contact/ROUTEOS_REAL_CONTACT_RECEIPT_v0_1.json
+    steps:
+      - name: Check out original historical branch read-only
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.source_branch }}
+          persist-credentials: false
+      - name: Record actual original branch source commit and prove target is present
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          TESTFILE: ${{ matrix.test }}
+          KIND: ${{ matrix.kind }}
+        run: |
+          set -euo pipefail
+          test -s "$TARGET"
+          test -s "$TESTFILE"
+          echo "HISTORICAL_PROVEN_BRANCH=${{ matrix.source_branch }}"
+          echo "HISTORICAL_REAL_SOURCE_SHA=$(git rev-parse HEAD)"
+          echo "NO_ACTIONS_WRITE_TOKEN=YES"
+          node --check "$TESTFILE"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright Chromium on pinned Ubuntu 24.04
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve original branch content over real loopback HTTP
+        shell: bash
+        env:
+          PORT: ${{ matrix.port }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          python3 -m http.server "$PORT" --bind 127.0.0.1 >/tmp/jm-original-branch-browser.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS "http://127.0.0.1:$PORT/$TARGET" >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-original-branch-browser.log
+          exit 1
+      - name: Execute original branch browser and state test, no source write-back
+        shell: bash
+        env:
+          BASE_URL: http://127.0.0.1:${{ matrix.port }}
+          ROUTEOS_BASE_URL: http://127.0.0.1:${{ matrix.port }}
+          TESTFILE: ${{ matrix.test }}
+        run: |
+          set -euo pipefail
+          node "$TESTFILE"
+          echo 'JM_ORIGINAL_BRANCH_PLAYWRIGHT_HOST_CONTACT=PASS'
+      - name: Validate original test receipt and preserve proof
+        shell: bash
+        env:
+          RECEIPT: ${{ matrix.receipt }}
+        run: |
+          set -euo pipefail
+          test -s "$RECEIPT"
+          python3 -m json.tool "$RECEIPT" >/dev/null
+          echo "JM_LEGACY_BROWSER_ORIGINAL_BRANCH_PROOF=PASS"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_LEGACY_PLAYWRIGHT_HOST_${{ matrix.kind }}
+          path: ${{ matrix.receipt }}
+          if-no-files-found: error

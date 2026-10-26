@@ -56,7 +56,20 @@ def main():
     adb('shell','am','start','-W','-n',MAIN);time.sleep(1.2)
     before=pref_values()
     touch('JM WORKROOM','android.widget.Button');has('No documents here yet','cp05_empty_native_store')
-    touch('New','android.widget.Button');touch('JSON data')
+    touch('New','android.widget.Button')
+    # Platform Quickstep may steal the first choice tap immediately after a
+    # recovered ANR. Retry only if the real native create menu is STILL open;
+    # never populate SQLite or mark creation PASS via a fixture.
+    for attempt in range(2):
+        touch('JSON data')
+        nodes=dump('cp05_after_json_choice_'+str(attempt))
+        if any('data.json' in n.get('text','') for n in nodes):
+            break
+        assert any('Create in jm-ecostate' in n.get('text','') for n in nodes), (
+            'HOLD: JSON choice did not reach native editor or intact create dialog')
+    else:
+        capture('CP05_JSON_CHOICE_UNDELIVERED')
+        raise AssertionError('HOLD: real JSON data selection not delivered after bounded retry')
     has('data.json','cp05_created_document');capture('CP05_EDITOR_NARROW')
     touch('Save revision','android.widget.Button');has('Saved revision 1','cp05_first_checkpoint')
     touch('Tools','android.widget.Button');touch('Format / validate JSON','android.widget.Button')

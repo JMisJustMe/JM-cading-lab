@@ -85,13 +85,16 @@
       "evidence": "Manifest and SW now present on draft branch, matching existing HTML relative references; scoped GET/origin/cache/namespace static checks passed"
     },
     "build_entry_gate": {
-      "state": "RECHECK_REQUIRED",
-      "prior_run": 40253613288,
-      "prior_result": "FAIL_CLOSED_WITHOUT_MANIFEST",
-      "new_input": "this prospective same-PR manifest"
+      "state": "PASS",
+      "evidence": "Native JM entry gate executed with same-PR prospectively authorized reuse-only route; subsequent CI passed without bypassing gate",
+      "latest_validated_head": "8ef4f8dbdd79bdf5ef1fea8273e84d142bb2c83b"
     },
     "browser_service_worker_runtime": {
-      "state": "HOLD — not run"
+      "state": "PASS — LOCAL CHROMIUM ONLY",
+      "workflow_run": 40262004239,
+      "job_id": 121376184618,
+      "iterations": 32,
+      "meaning": "GitHub Ubuntu runner Chromium loaded original MMZG page over local HTTP, installed actual service worker, executed 32 original runtime selftests and reloaded successfully offline; no uncaught page errors"
     },
     "production_delivery": {
       "state": "HOLD — not deployed"
@@ -101,6 +104,13 @@
     },
     "android_apk": {
       "state": "NOT CLAIMED"
+    },
+    "vm_service_worker_simulation": {
+      "state": "PASS",
+      "workflow_run": 40262004239,
+      "job_id": 121376184618,
+      "iterations": 32,
+      "meaning": "Actual original JS code and SW script exercised in Node VM with mocked browser host: origin/scope/method constraints, cache separation and offline fallback"
     }
   },
   "host_and_surfaces": {
@@ -123,9 +133,9 @@
     "route": "AUTHORIZED_TO_BUILD_SCOPED_REPAIR",
     "build_authorized_by_manifest": true,
     "new_capability_authorized": false,
-    "runtime": "NOT CLAIMED",
-    "contact": "NOT CLAIMED",
-    "production": "NOT CLAIMED",
+    "runtime": "LOCAL_CHROMIUM_RUNTIME_PASS_32",
+    "contact": "LOCAL_CHROMIUM_SERVICE_WORKER_OFFLINE_PASS — PUBLIC_AND_FOLD_HOLD",
+    "production": "HOLD — NO MAINLINE DEPLOYMENT",
     "crown": "NOT EARNED"
   },
   "next_route": {
@@ -133,6 +143,6 @@
     "close_condition": "No dead referenced delivery paths in published scope, owner experience intact and no source regression"
   },
   "manifest_proof": {
-    "result": "PROSPECTIVE ROUTE RESOLVED from recovered existing MMZG plus real JM donors; this entry authorizes only bounded source repair and claims no runtime/device/production Ding."
+    "result": "PASS — prospectively authorized existing-body delivery repair, seven original governance/source workflows green at earlier head; 32 Node VM and 32 real Chromium runs with service-worker installation and offline reload passed on run 40262004239. Production public delivery/Fold/Android contact untested; crown NOT EARNED."
   }
 }

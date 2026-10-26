@@ -182,8 +182,8 @@ def main() -> int:
             except Exception as exc:
                 valid, reason = False, "recover_failure:" + str(exc)
             if not valid:
-                recovered, origin = inherited_source_context(page, kind, ref)
-                if recovered:
+                origin_ok, origin = inherited_source_context(page, kind, ref)
+                if origin_ok:
                     origin_recovered.append({
                         "page": page.relative_to(ROOT).as_posix(),
                         "element": kind, "reference": ref,

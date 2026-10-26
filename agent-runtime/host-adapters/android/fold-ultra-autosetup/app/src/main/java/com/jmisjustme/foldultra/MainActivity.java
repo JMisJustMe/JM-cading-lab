@@ -112,7 +112,7 @@ public final class MainActivity extends Activity {
     // Android 15+ enforces edge-to-edge at targetSdk 35. Without system-bar
     // padding a scrolled action button can be visible underneath the status
     // icons but cannot be tapped. Keep native controls in the real touch field.
-    if(android.os.Build.VERSION.SDK_INT>=35){
+    if(android.os.Build.VERSION.SDK_INT>=35 && sp.getBoolean("ready",false) && tab==12){
       scroll.setOnApplyWindowInsetsListener((v,insets)->{
         android.graphics.Insets safe=insets.getInsets(WindowInsets.Type.systemBars());
         v.setPadding(0,safe.top,0,safe.bottom);

@@ -42,7 +42,7 @@ permissions:
 
 jobs:
   personality-browser-qa:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Estate
         uses: actions/checkout@v4

@@ -1,0 +1,32 @@
+name: JM Live Experience CP07 — Public-Safe Contact
+on:
+  push:
+    branches:
+      - feature/jm-live-experience-cp07-public-safe-admission-20261026
+    paths:
+      - "services/jm-live-experience-cp07-intake/**"
+      - ".github/workflows/jm-live-experience-cp07-contact.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "services/jm-live-experience-cp07-intake/**"
+      - ".github/workflows/jm-live-experience-cp07-contact.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ingress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax and source custody
+        run: |
+          python -m py_compile services/jm-live-experience-cp07-intake/server.py services/jm-live-experience-cp07-intake/test_server.py
+          test ! -d services/jm-live-experience-cp07-intake/samples
+          test ! -d services/jm-live-experience-cp07-intake/captures
+      - name: Live-loopback MCP and fail-closed checks
+        run: python -m unittest discover -s services/jm-live-experience-cp07-intake -p 'test_*.py' -v

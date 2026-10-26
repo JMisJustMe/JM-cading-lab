@@ -116,7 +116,7 @@ public final class MainActivity extends Activity {
       scroll.setOnApplyWindowInsetsListener((v,insets)->{
         android.graphics.Insets safe=insets.getInsets(WindowInsets.Type.systemBars());
         v.setPadding(0,safe.top,0,safe.bottom);
-        v.setClipToPadding(true);
+        scroll.setClipToPadding(true);
         return insets;
       });
     }

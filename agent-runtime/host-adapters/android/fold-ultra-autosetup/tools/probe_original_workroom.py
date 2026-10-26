@@ -47,10 +47,29 @@ def main():
     tap("JM ORIGINAL STRUCTURES","original_enter")
     has("Build from the mechanism.","original_room_native")
     capture("ORIGINAL_LAB_BEFORE")
-    nodes=dump("original_editor_visible")
-    edits=[n for n in nodes if n.get("class")=="android.widget.EditText"]
-    assert len(edits)==1,("Expected one real JM source editor",len(edits))
-    tap_node(edits[0])
+    # The editor lives BELOW the native header and engine card. Locate it
+    # through real ScrollView movement rather than assuming first viewport.
+    from audit_ui_flow import swipe
+    editor=None
+    for attempt in range(12):
+        nodes=dump("original_editor_visible_"+str(attempt))
+        edits=[n for n in nodes if n.get("class")=="android.widget.EditText"]
+        if len(edits)>1:
+            raise AssertionError("HOLD: multiple native JM editors; ambiguous source")
+        if edits:
+            import re
+            bounds=edits[0].get("bounds","")
+            m=re.fullmatch(r"\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]",bounds)
+            if not m:raise AssertionError("HOLD: native editor lacks bounds")
+            x1,y1,x2,y2=map(int,m.groups())
+            if 110<=y1 and y2<=1500:
+                editor=edits[0]
+                break
+        swipe("up")
+    if editor is None:
+        capture("FAIL_ORIGINAL_EDITOR_NOT_VISIBLE")
+        raise AssertionError("HOLD: no safe visible native JM source editor after 12 bounded swipes")
+    tap_node(editor)
     adb("shell","input","text","JM%soriginal%sstructure")
     time.sleep(.6)
     adb("shell","input","keyevent","4")

@@ -562,8 +562,12 @@ public final class MainActivity extends Activity {
         }
         try{
           JMCompanionInbox.stage(sp,intakePlan);
-          tab=8;render();
-          Toast.makeText(this,"Source added to UNSAVED JM project draft · save a checkpoint when ready",
+          boolean setupReady=sp.getBoolean("ready",false);
+          tab=setupReady?8:0;
+          render();
+          Toast.makeText(this,setupReady?
+            "Source added to UNSAVED JM project draft · review and save a checkpoint":
+            "JM project draft preserved · finish first-time JM setup to open the session",
             Toast.LENGTH_LONG).show();
         }catch(Exception e){
           new AlertDialog.Builder(this).setTitle("HOLD · JM draft unchanged")

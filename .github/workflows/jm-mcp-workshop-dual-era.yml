@@ -8,7 +8,7 @@ on:
       - "services/jm-mcp-workshop-v0_1/**"
       - ".github/workflows/jm-mcp-workshop-dual-era.yml"
   pull_request:
-    branches: [main]
+    branches: [main, feature/jm-mcp-workshop-cp01-20261026]
     paths:
       - "services/jm-mcp-workshop-v0_1/**"
       - ".github/workflows/jm-mcp-workshop-dual-era.yml"

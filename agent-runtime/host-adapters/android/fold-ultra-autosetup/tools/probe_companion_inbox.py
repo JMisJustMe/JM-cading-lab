@@ -46,7 +46,9 @@ def main():
     assert after.get("root")==before.get("root"),"root note mutated"
     assert after.get("session.deck")==before.get("session.deck"),"saved checkpoint mutated"
     assert after.get("project.active")==before.get("project.active"),"project selection changed"
-    # This disposable app is still in first-time setup; the stored project\n    # draft must survive WITHOUT bypassing JM onboarding.\n    has("INITIAL OPENING","cp04_setup_gate_preserved")
+    # This disposable app is still in first-time setup; the stored project
+    # draft must survive WITHOUT bypassing JM onboarding.
+    has("INITIAL OPENING","cp04_setup_gate_preserved")
     capture("COMPANION_INBOX_SESSION_DRAFT")
     # Android activity re-entry without another ACTION_SEND must not replay
     # the original text, append a duplicate or commit a session checkpoint.

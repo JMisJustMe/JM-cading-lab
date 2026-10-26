@@ -186,3 +186,7 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_com
 # CP03: verify actual native owner-previewed saved JM checkpoint chooser
 # without recipient selection, provider account/API access or session mutation.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_companion_share.py
+
+# JM ORIGINAL STRUCTURES CP01: native source edit, structural analysis, snapshot,
+# exact diff, governed project draft handoff and cold re-entry. Not a Fold DING.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_original_workroom.py

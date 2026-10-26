@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>JM GameCore v0.2I-A — T-Boys + Catching Run + Aiming Run</title>
+<meta name="theme-color" content="#06101f" />
+<link rel="manifest" href="manifest.webmanifest" />
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#050713;--panel:#111a2a;--panel2:#17243a;--ink:#f8fbff;--muted:#aeb9d2;
+  --line:rgba(143,247,255,.24);--blue:#69dbff;--gold:#ffd36e;--green:#93f7aa;
+  --red:#ff6f7e;--violet:#bf9cff;--orange:#ff9f45;--dark:#030712;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+radial-gradient(circle at 20% 0%,rgba(105,219,255,.18),transparent 30%),
+radial-gradient(circle at 90% 5%,rgba(255,211,110,.11),transparent 32%),
+linear-gradient(160deg,#02040c,#06101f 55%,#030712);
+color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+body{overscroll-behavior:none;touch-action:manipulation}
+.app{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;gap:8px;padding:8px;max-width:1320px;margin:auto}
+header,.card,.dock{border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,rgba(17,26,42,.95),rgba(6,12,25,.96));box-shadow:0 20px 70px rgba(0,0,0,.45)}
+header{padding:12px;display:grid;gap:8px}
+.top{display:flex;align-items:start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{font-size:clamp(22px,4.5vw,42px);letter-spacing:-.045em;margin:0;line-height:.95}
+h2,h3{margin:0 0 8px}
+.sub{color:var(--muted);line-height:1.35;font-size:13px;max-width:890px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:800}
+.chip b{color:var(--gold)}
+.screen{display:none}
+.screen.active{display:block}
+.gameLayout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:8px}
+.canvasWrap{position:relative;min-height:520px;overflow:hidden;padding:0}
+canvas{display:block;width:100%;height:100%;min-height:520px;background:
+radial-gradient(circle at 50% 34%,rgba(105,219,255,.08),transparent 28%),
+linear-gradient(180deg,#071327,#050713)}
+.overlay{position:absolute;inset:0;pointer-events:none}
+.overlay:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(143,247,255,.24)}
+.overlay:after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgba(143,247,255,.18)}
+.hud{position:absolute;left:10px;right:10px;top:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.badge{border:1px solid rgba(143,247,255,.26);border-radius:12px;background:rgba(0,0,0,.42);padding:7px 9px;font-size:12px;font-weight:900}
+.tracebar{position:absolute;left:10px;right:10px;bottom:10px;border:1px solid rgba(143,247,255,.28);border-radius:14px;background:rgba(0,0,0,.46);padding:8px 10px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.side{display:grid;gap:8px;align-content:start}
+.card{padding:12px}
+p,li{color:var(--muted);line-height:1.45}
+button,.btn{border:1px solid rgba(143,247,255,.30);background:rgba(143,247,255,.09);color:var(--ink);border-radius:13px;padding:10px 11px;font-weight:950;cursor:pointer;text-decoration:none;text-align:center}
+button.primary,.btn.primary{background:var(--gold);color:#171007}
+button.blue{background:rgba(105,219,255,.18)}
+button.red{background:rgba(255,111,126,.18)}
+button.green{background:rgba(147,247,170,.16)}
+button.active{outline:2px solid var(--gold)}
+.controlGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.threeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.thread{display:grid;gap:7px}
+.threadTop{display:flex;justify-content:space-between;font-weight:950}
+.track{height:12px;border:1px solid rgba(255,255,255,.13);border-radius:999px;background:rgba(0,0,0,.32);overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold),var(--green));width:50%;transition:width .2s ease}
+.traceList{display:grid;gap:6px;max-height:260px;overflow:auto}
+.event{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:12px;padding:8px;font-size:12px}
+.event small{color:var(--muted)}
+.pad{display:grid;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,48px);gap:6px;justify-content:center}
+.pad .up{grid-column:2}.pad .left{grid-column:1;grid-row:2}.pad .down{grid-column:2;grid-row:3}.pad .right{grid-column:3;grid-row:2}
+.sliderGrid{display:grid;gap:9px}
+.sliderGrid input{width:100%}
+.unitList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.unitBtn{font-size:12px;padding:8px 6px}
+.statusGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.teamBox{border:1px solid rgba(255,255,255,.10);border-radius:13px;padding:9px;background:rgba(0,0,0,.20)}
+.hpbar{height:10px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(0,0,0,.28);overflow:hidden;margin-top:5px}
+.hpbar i{display:block;height:100%;background:linear-gradient(90deg,#ff6f7e,#ffd36e);width:100%}
+.homeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+pre{white-space:pre-wrap;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px;overflow:auto;color:#dfe9ff}
+.dock{position:sticky;bottom:7px;z-index:5;padding:7px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.dock button{font-size:12px;padding:9px 6px}
+.refImg{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:#040711}
+@media(max-width:900px){
+  .app{padding:6px}
+  .gameLayout{grid-template-columns:1fr}
+  .canvasWrap,canvas{min-height:55dvh}
+  .homeGrid{grid-template-columns:1fr}
+  .dock{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:480px){
+  .threeGrid,.unitList{grid-template-columns:1fr}
+  .statusGrid{grid-template-columns:1fr}
+  .controlGrid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="top">
+    <div>
+      <h1>JM GameCore v0.2I‑A</h1>
+      <div class="sub">Corrected integration stage: <b>T‑Boys + Catching Run + Aiming Run</b> together in one playable room. No wrapper. No extra game-room widening.</div>
+    </div>
+    <div class="chips">
+      <span class="chip">Active: <b id="modeChip">HOME</b></span>
+      <span class="chip">Flow: <b id="flowChip">0</b></span>
+      <span class="chip">Aim: <b id="aimChip">0</b></span>
+      <span class="chip">Energy: <b id="energyChip">5</b></span>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="home" class="screen active">
+  <div class="card">
+    <h2>Corrected three-game incorporation</h2>
+    <p>This build keeps the active set tight: T-Boys, Catching Run, and Aiming Run. Catching Run earns flow. Aiming Run earns aim charge. T-Boys converts both into team-vs-team clash pressure.</p>
+  </div>
+  <div class="homeGrid" style="margin-top:8px">
+    <div class="card"><h3>Catching Run</h3><p>Run, collect DING orbs, dodge BUGG bodies. Feeds <b>Flow</b> into the shared room.</p><button class="primary" onclick="show('catch')">Open Catching Run</button></div>
+    <div class="card"><h3>Aiming Run</h3><p>Aim, charge, release, hit moving targets. Feeds <b>Aim</b> into the shared room.</p><button class="primary" onclick="show('aim')">Open Aiming Run</button></div>
+    <div class="card"><h3>T-Boys Clash Corps</h3><p>Bluefin vs Crimson Gear. 3v3 named-unit clash with PvP health, energy, and CrackSpot pressure.</p><button class="primary" onclick="show('tboys')">Open T-Boys</button></div>
+  </div>
+</section>
+
+<section id="catch" class="screen">
+  <div class="gameLayout">
+    <div class="card canvasWrap">
+      <canvas id="catchCanvas"></canvas><div class="overlay"></div>
+      <div class="hud"><span class="badge">Catching Run</span><span class="badge">Score <b id="catchScore">0</b> · Lives <b id="catchLives">3</b></span></div>
+      <div class="tracebar"><span>TRACEBOX</span><span id="catchStrip">Ready: Start run</span></div>
+    </div>
+    <aside class="side">
+      <div class="card thread"><div class="threadTop"><span>THREAD · Flow</span><span id="catchThreadText">45</span></div><div class="track"><div id="catchThreadFill" class="fill"></div></div></div>
+      <div class="card"><h3>ChoiceBox</h3><div class="controlGrid"><button class="primary" onclick="catchStart()">Start</button><button onclick="catchPause()">Pause</button><button onclick="catchFreeze()">Freeze</button><button onclick="catchReset()">Reset</button></div></div>
+      <div class="card"><h3>Movement</h3><div class="pad"><button class="up" data-cdir="up">▲</button><button class="left" data-cdir="left">◀</button><button class="down" data-cdir="down">▼</button><button class="right" data-cdir="right">▶</button></div></div>
+      <div class="card"><h3>Trace</h3><div id="catchTrace" class="traceList"></div></div>
+    </aside>
+  </div>
+</section>
+
+<section id="aim" class="screen">
+  <div class="gameLayout">
+    <div class="card canvasWrap">
+      <canvas id="aimCanvas"></canvas><div class="overlay"></div>
+      <div class="hud"><span class="badge">Aiming Run</span><span class="badge">Angle <b id="angleOut">38</b>° · Power <b id="powerOut">66</b></span></div>
+      <div class="tracebar"><span>TRACEBOX</span><span id="aimStrip">Ready: aim, charge, release</span></div>
+    </div>
+    <aside class="side">
+      <div class="card thread"><div class="threadTop"><span>THREAD · Aim Charge</span><span id="aimThreadText">40</span></div><div class="track"><div id="aimThreadFill" class="fill"></div></div></div>
+      <div class="card sliderGrid"><label>Angle <input id="angle" type="range" min="8" max="82" value="38"></label><label>Power <input id="power" type="range" min="18" max="100" value="66"></label></div>
+      <div class="card"><h3>ChoiceBox</h3><div class="controlGrid"><button class="primary" onclick="aimLaunch()">Release</button><button onclick="aimBest()">Best Shot</button><button onclick="aimRandom()">Random</button><button onclick="aimReset()">Reset</button></div></div>
+      <div class="card"><h3>Trace</h3><div id="aimTrace" class="traceList"></div></div>
+    </aside>
+  </div>
+</section>
+
+<section id="tboys" class="screen">
+  <div class="gameLayout">
+    <div class="card canvasWrap">
+      <canvas id="tbCanvas"></canvas><div class="overlay"></div>
+      <div class="hud"><span class="badge">Bluefin vs Crimson Gear</span><span class="badge">Energy <b id="tbEnergy">5</b> · Turn <b id="tbTurn">Bluefin</b></span></div>
+      <div class="tracebar"><span>TRACEBOX</span><span id="tbStrip">Select unit → drag aim → release clash</span></div>
+    </div>
+    <aside class="side">
+      <div class="card statusGrid">
+        <div class="teamBox"><b>Bluefin</b><div class="hpbar"><i id="blueHp"></i></div><small id="blueHpTxt">100%</small></div>
+        <div class="teamBox"><b>Crimson Gear</b><div class="hpbar"><i id="redHp"></i></div><small id="redHpTxt">100%</small></div>
+      </div>
+      <div class="card thread"><div class="threadTop"><span>THREAD · Clash Momentum</span><span id="tbThreadText">50</span></div><div class="track"><div id="tbThreadFill" class="fill"></div></div></div>
+      <div class="card"><h3>Bluefin Units</h3><div class="unitList" id="unitButtons"></div></div>
+      <div class="card"><h3>Action Tray</h3><div class="controlGrid"><button class="blue" onclick="tbAbility('boost')">Bounce Boost</button><button class="green" onclick="tbAbility('heal')">Team Rally</button><button class="red" onclick="tbEndTurn()">End Turn</button><button onclick="tbReset()">Reset</button></div></div>
+      <div class="card"><h3>Trace</h3><div id="tbTrace" class="traceList"></div></div>
+    </aside>
+  </div>
+</section>
+
+<section id="receipt" class="screen">
+  <div class="card">
+    <h2>Integration receipt</h2>
+    <pre id="receiptText">JMGAMECORE_v0_2I_A_CORRECTED_THREE_GAME_INTEGRATION
+Status: active
+Scope: T-Boys + Catching Run + Aiming Run
+Result: READY_FOR_USER_TEST</pre>
+    <div class="threeGrid"><button class="primary" onclick="freezeReceipt()">Freeze receipt</button><button onclick="copyReceipt()">Copy receipt</button><button onclick="exportState()">Export JSON</button></div>
+  </div>
+  <div class="card" style="margin-top:8px"><h3>All Events</h3><div id="allTrace" class="traceList"></div></div>
+</section>
+
+<section id="source" class="screen">
+  <div class="card">
+    <h2>Source lock</h2>
+    <pre>Corrected active incorporation:
+1. T-Boys
+2. Catching Run
+3. Aiming Run
+
+Not in this build:
+- extra fighting donor
+- hand-game branch as active room
+- Corporate Cleverness as game room
+
+Donor use:
+- T-Boys ZionFolder: named teams, PvP health, 3v3, energy/action tray, CrackSpot pressure.
+- 128 Hand SideLane: parked nearby as control donor, not merged here.
+- Corporate Cleverness: QA/extraction lens, not a fourth game.</pre>
+    <img class="refImg" src="assets/TBOYS_REFERENCE_CONTACT_SHEET.jpg" alt="T-Boys reference sheet" onerror="this.style.display='none'">
+  </div>
+</section>
+</main>
+
+<nav class="dock">
+  <button id="nav-home" class="active" onclick="show('home')">Home</button>
+  <button id="nav-catch" onclick="show('catch')">Catch</button>
+  <button id="nav-aim" onclick="show('aim')">Aim</button>
+  <button id="nav-tboys" onclick="show('tboys')">T-Boys</button>
+  <button id="nav-source" onclick="show('source')">Source</button>
+  <button id="nav-receipt" onclick="show('receipt')">Receipt</button>
+</nav>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let events=[];
+let shared={flow:0,aim:0,energy:5};
+function addEvent(game,result,detail){const e={ts:new Date().toISOString(),game,result,detail,shared:{...shared}};events.push(e);renderAll();return e}
+function trace(id,e){const box=$(id); if(!box)return; const d=document.createElement("div");d.className="event";d.innerHTML=`<b>${e.result}</b> · ${e.game}<br><small>${e.detail}</small>`;box.prepend(d); while(box.children.length>8)box.lastChild.remove()}
+function renderAll(){["flow","aim","energy"].forEach(k=>$(k+"Chip").textContent=shared[k]);$("tbEnergy").textContent=shared.energy;const box=$("allTrace"); if(box){box.innerHTML="";events.slice(-30).reverse().forEach(e=>{const d=document.createElement("div");d.className="event";d.innerHTML=`<b>${e.result}</b> · ${e.game}<br><small>${e.detail}</small>`;box.appendChild(d)})}}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll(".dock button").forEach(b=>b.classList.remove("active"));const n=$("nav-"+id);if(n)n.classList.add("active");$("modeChip").textContent=id.toUpperCase();setTimeout(drawAll,40)}
+function setThread(prefix,val){val=clamp(Math.round(val),0,100);$(prefix+"ThreadText").textContent=val;$(prefix+"ThreadFill").style.width=val+"%";return val}
+function fit(c){const r=c.parentElement.getBoundingClientRect(),d=Math.max(1,Math.min(devicePixelRatio||1,2));c.width=Math.max(320,r.width*d);c.height=Math.max(260,r.height*d);const ctx=c.getContext("2d");ctx.setTransform(d,0,0,d,0,0);return {ctx,w:r.width,h:r.height}}
+function grid(ctx,w,h){ctx.clearRect(0,0,w,h);ctx.fillStyle="#06101f";ctx.fillRect(0,0,w,h);ctx.strokeStyle="rgba(143,247,255,.16)";ctx.lineWidth=1;for(let x=0;x<w;x+=48){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=0;y<h;y+=48){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}ctx.strokeStyle="rgba(255,211,110,.20)";ctx.strokeRect(18,58,w-36,h-104)}
+function circ(ctx,x,y,r,col){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+function text(ctx,t,x,y,col="#f8fbff",size=12){ctx.fillStyle=col;ctx.font=`900 ${size}px system-ui`;ctx.fillText(t,x,y)}
+function drawAll(){drawCatch();drawAim();drawTB()}
+
+/* Catching Run */
+let catchS={run:false,score:0,lives:3,thread:45,p:{x:120,y:200,r:14},items:[],keys:{}};
+function catchReset(){catchS={run:false,score:0,lives:3,thread:45,p:{x:120,y:200,r:14},items:[],keys:{}};$("catchScore").textContent=0;$("catchLives").textContent=3;setThread("catch",45);$("catchStrip").textContent="Reset";drawCatch()}
+function spawnCatch(){const wrap=$("catchCanvas").parentElement;catchS.items.push({x:30+Math.random()*(wrap.clientWidth-60),y:70+Math.random()*(wrap.clientHeight-120),r:10,type:Math.random()<.72?"ding":"bugg"})}
+function catchStart(){catchS.run=true;if(catchS.items.length<3){spawnCatch();spawnCatch();spawnCatch()}$("catchStrip").textContent="Run live";catchLoop()}
+function catchPause(){catchS.run=!catchS.run;if(catchS.run)catchLoop();$("catchStrip").textContent=catchS.run?"Run live":"Paused"}
+function catchFreeze(){const e=addEvent("Catching Run","FREEZE",`score ${catchS.score}, flow ${shared.flow}`);trace("catchTrace",e);$("catchStrip").textContent="Freeze logged"}
+function catchLoop(){if(!catchS.run)return;const p=catchS.p,s=4,w=$("catchCanvas").parentElement.clientWidth,h=$("catchCanvas").parentElement.clientHeight;if(catchS.keys.left)p.x-=s;if(catchS.keys.right)p.x+=s;if(catchS.keys.up)p.y-=s;if(catchS.keys.down)p.y+=s;p.x=clamp(p.x,p.r,w-p.r);p.y=clamp(p.y,p.r+62,h-p.r-30);if(catchS.items.length<6&&Math.random()<.035)spawnCatch();for(let i=catchS.items.length-1;i>=0;i--){const it=catchS.items[i];if(Math.hypot(p.x-it.x,p.y-it.y)<p.r+it.r){if(it.type==="ding"){catchS.score+=5;shared.flow+=1;shared.energy=clamp(shared.energy+1,0,10);catchS.thread=setThread("catch",catchS.thread+6);const e=addEvent("Catching Run","DING",`Caught flow orb. Flow +1, Energy +1`);trace("catchTrace",e);$("catchStrip").textContent=e.detail}else{catchS.lives--;catchS.thread=setThread("catch",catchS.thread-12);const e=addEvent("Catching Run","BUGG",`Hit BUGG body. Lives -1`);trace("catchTrace",e);$("catchStrip").textContent=e.detail}catchS.items.splice(i,1);$("catchScore").textContent=catchS.score;$("catchLives").textContent=catchS.lives;if(catchS.lives<=0){catchS.run=false;const e=addEvent("Catching Run","RECOVER","Run ended. Keep earned flow.");trace("catchTrace",e)}}}drawCatch();requestAnimationFrame(catchLoop)}
+function drawCatch(){const c=$("catchCanvas");if(!c)return;const {ctx,w,h}=fit(c);grid(ctx,w,h);text(ctx,"CATCHING RUN · collect green DING · avoid red BUGG",24,36,"#69dbff",13);catchS.items.forEach(it=>circ(ctx,it.x,it.y,it.r,it.type==="ding"?"#93f7aa":"#ff6f7e"));circ(ctx,catchS.p.x,catchS.p.y,catchS.p.r,"#69dbff");text(ctx,"RUNNER",catchS.p.x-24,catchS.p.y-20,"#f8fbff",10)}
+
+/* Aiming Run */
+let aimS={angle:38,power:66,thread:40,shot:null,target:{x:360,y:140,r:18}};
+function aimSync(){aimS.angle=+$("angle").value;aimS.power=+$("power").value;$("angleOut").textContent=aimS.angle;$("powerOut").textContent=aimS.power;aimS.thread=setThread("aim",clamp(30+Math.floor(aimS.power/2)-Math.abs(42-aimS.angle),0,100))}
+function aimReset(){aimS.shot=null;aimS.thread=40;setThread("aim",40);$("aimStrip").textContent="Reset";drawAim()}
+function aimRandom(){$("angle").value=Math.floor(12+Math.random()*66);$("power").value=Math.floor(22+Math.random()*78);aimSync();drawAim()}
+function aimBest(){$("angle").value=42;$("power").value=72;aimSync();aimLaunch()}
+function aimLaunch(){aimSync();const h=$("aimCanvas").parentElement.clientHeight;const rad=aimS.angle*Math.PI/180;aimS.shot={x:42,y:h-58,vx:Math.cos(rad)*aimS.power*.115,vy:-Math.sin(rad)*aimS.power*.115,bounces:0,live:true};$("aimStrip").textContent="Shot live";const e=addEvent("Aiming Run","TRACE",`Release angle ${aimS.angle}, power ${aimS.power}`);trace("aimTrace",e);aimLoop()}
+function aimLoop(){if(!aimS.shot||!aimS.shot.live)return;const s=aimS.shot,w=$("aimCanvas").parentElement.clientWidth,h=$("aimCanvas").parentElement.clientHeight;s.vy+=.14;s.x+=s.vx;s.y+=s.vy;if(s.x<12||s.x>w-12){s.vx*=-.78;s.bounces++}if(s.y>h-20){s.y=h-20;s.vy*=-.62;s.bounces++}if(Math.hypot(s.x-aimS.target.x,s.y-aimS.target.y)<aimS.target.r+9){s.live=false;shared.aim+=2;shared.energy=clamp(shared.energy+1,0,10);aimS.thread=setThread("aim",aimS.thread+15);const e=addEvent("Aiming Run","DING","Target hit. Aim +2, Energy +1");trace("aimTrace",e);$("aimStrip").textContent=e.detail}if(s.x>w+40||s.y>h+60||s.bounces>7){s.live=false;aimS.thread=setThread("aim",aimS.thread-10);const e=addEvent("Aiming Run","MISS","Shot lost route. Adjust angle/power.");trace("aimTrace",e);$("aimStrip").textContent=e.detail}drawAim();requestAnimationFrame(aimLoop)}
+function drawAim(){const c=$("aimCanvas");if(!c)return;const {ctx,w,h}=fit(c);grid(ctx,w,h);aimS.target={x:w-78,y:92+Math.sin(Date.now()/900)*22,r:18};text(ctx,"AIMING RUN · aim/charge/release · hits feed T-Boys",24,36,"#ffd36e",13);circ(ctx,aimS.target.x,aimS.target.y,aimS.target.r,"#ffd36e");ctx.fillStyle="#69dbff";ctx.fillRect(32,h-61,22,22);const rad=aimS.angle*Math.PI/180;ctx.strokeStyle="#93f7aa";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(43,h-50);ctx.lineTo(43+Math.cos(rad)*62,h-50-Math.sin(rad)*62);ctx.stroke();if(aimS.shot)circ(ctx,aimS.shot.x,aimS.shot.y,9,"#93f7aa")}
+
+/* T-Boys */
+let tb={
+  turn:"Bluefin",active:"Aero",thread:50,drag:null,blueHP:100,redHP:100,
+  units:[
+    {name:"Aero",team:"Bluefin",x:120,y:330,r:16,hp:30,col:"#69dbff",role:"balanced"},
+    {name:"Nova",team:"Bluefin",x:90,y:250,r:16,hp:28,col:"#bf9cff",role:"arc"},
+    {name:"Jett",team:"Bluefin",x:150,y:180,r:16,hp:24,col:"#93f7aa",role:"bounce"},
+    {name:"Raze",team:"Crimson",x:500,y:230,r:16,hp:30,col:"#ff6f7e",role:"striker"},
+    {name:"Zane",team:"Crimson",x:540,y:310,r:16,hp:28,col:"#ff9f45",role:"duelist"},
+    {name:"Grit",team:"Crimson",x:470,y:150,r:18,hp:38,col:"#ffd36e",role:"tank"}
+  ],
+  crack:{x:330,y:245,r:24}
+};
+function tbReset(){tb.blueHP=100;tb.redHP=100;tb.thread=50;tb.turn="Bluefin";tb.active="Aero";shared.energy=5;tb.units.forEach((u,i)=>{u.hp=[30,28,24,30,28,38][i]});renderTBStatus();drawTB();$("tbStrip").textContent="Reset"}
+function renderTBStatus(){$("blueHp").style.width=tb.blueHP+"%";$("redHp").style.width=tb.redHP+"%";$("blueHpTxt").textContent=tb.blueHP+"%";$("redHpTxt").textContent=tb.redHP+"%";$("tbTurn").textContent=tb.turn;$("tbEnergy").textContent=shared.energy;setThread("tb",tb.thread);renderAll();renderUnitButtons()}
+function renderUnitButtons(){const box=$("unitButtons");box.innerHTML="";tb.units.filter(u=>u.team==="Bluefin").forEach(u=>{const b=document.createElement("button");b.className="unitBtn "+(tb.active===u.name?"active":"");b.textContent=u.name;b.onclick=()=>{tb.active=u.name;renderUnitButtons();$("tbStrip").textContent=`Selected ${u.name}`;drawTB()};box.appendChild(b)})}
+function activeUnit(){return tb.units.find(u=>u.name===tb.active)||tb.units[0]}
+function tbAbility(kind){if(shared.energy<2){const e=addEvent("T-Boys","NO ENERGY","Need 2 energy");trace("tbTrace",e);$("tbStrip").textContent=e.detail;return}shared.energy-=2;if(kind==="boost"){shared.aim+=1;tb.thread=setThread("tb",tb.thread+6);const e=addEvent("T-Boys","BOOST","Bounce Boost used. Aim +1");trace("tbTrace",e);$("tbStrip").textContent=e.detail}else{tb.blueHP=clamp(tb.blueHP+10,0,100);const e=addEvent("T-Boys","RALLY","Team Rally healed Bluefin +10");trace("tbTrace",e);$("tbStrip").textContent=e.detail}renderTBStatus();drawTB()}
+function tbEndTurn(){tb.turn=tb.turn==="Bluefin"?"Crimson Gear":"Bluefin";$("tbTurn").textContent=tb.turn;const e=addEvent("T-Boys","TURN",`Turn passed to ${tb.turn}`);trace("tbTrace",e);drawTB()}
+function tbDamage(amount,detail){tb.redHP=clamp(tb.redHP-amount,0,100);tb.thread=setThread("tb",tb.thread+Math.floor(amount/2));const e=addEvent("T-Boys",tb.redHP<=0?"WIN_DING":"HIT_DING",detail+` Damage ${amount}. Crimson ${tb.redHP}%`);trace("tbTrace",e);$("tbStrip").textContent=e.detail;renderTBStatus()}
+function drawTB(){const c=$("tbCanvas");if(!c)return;const {ctx,w,h}=fit(c);grid(ctx,w,h);text(ctx,"T-BOYS CLASH CORPS · Bluefin vs Crimson Gear · PvP health + CrackSpot",24,36,"#69dbff",13);tb.crack={x:w/2,y:h/2,r:24};ctx.strokeStyle="#ffd36e";ctx.lineWidth=3;ctx.beginPath();ctx.arc(tb.crack.x,tb.crack.y,tb.crack.r,0,Math.PI*2);ctx.stroke();text(ctx,"CrackSpot",tb.crack.x-30,tb.crack.y+44,"#ffd36e",10);tb.units.forEach(u=>{const sx=u.team==="Bluefin"?1:-1;const scaleX=w/620,scaleY=h/430;const x=u.x*scaleX,y=u.y*scaleY;u._x=x;u._y=y;circ(ctx,x,y,u.r,u.col);text(ctx,u.name,x-18,y-23,"#f8fbff",10);ctx.fillStyle="rgba(0,0,0,.55)";ctx.fillRect(x-16,y+20,32,5);ctx.fillStyle=u.team==="Bluefin"?"#69dbff":"#ff6f7e";ctx.fillRect(x-16,y+20,32*(u.hp/40),5)});const a=activeUnit();if(a&&a._x){ctx.strokeStyle="#ffd36e";ctx.lineWidth=2;ctx.beginPath();ctx.arc(a._x,a._y,a.r+7,0,Math.PI*2);ctx.stroke()}if(tb.drag){ctx.strokeStyle="#93f7aa";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(tb.drag.sx,tb.drag.sy);ctx.lineTo(tb.drag.x,tb.drag.y);ctx.stroke();text(ctx,"release to clash",tb.drag.x+8,tb.drag.y-8,"#93f7aa",11)}}
+function tbPointerPos(ev){const r=$("tbCanvas").getBoundingClientRect();return {x:ev.clientX-r.left,y:ev.clientY-r.top}}
+$("tbCanvas").addEventListener("pointerdown",ev=>{const p=tbPointerPos(ev),a=activeUnit();if(!a)return;tb.drag={sx:a._x||120,sy:a._y||300,x:p.x,y:p.y};$("tbCanvas").setPointerCapture(ev.pointerId);drawTB()})
+$("tbCanvas").addEventListener("pointermove",ev=>{if(!tb.drag)return;const p=tbPointerPos(ev);tb.drag.x=p.x;tb.drag.y=p.y;drawTB()})
+$("tbCanvas").addEventListener("pointerup",ev=>{if(!tb.drag)return;const d=tb.drag;tb.drag=null;const dist=Math.hypot(d.x-d.sx,d.y-d.sy);let dmg=Math.round(clamp(dist/9,4,22));if(Math.hypot(d.x-tb.crack.x,d.y-tb.crack.y)<tb.crack.r+18){dmg+=8;shared.energy=clamp(shared.energy+1,0,10)}if(shared.flow>0){dmg+=Math.min(4,shared.flow);shared.flow=Math.max(0,shared.flow-1)}if(shared.aim>0){dmg+=Math.min(6,shared.aim);shared.aim=Math.max(0,shared.aim-1)}tbDamage(dmg,`${tb.active} launched through clash route.`);drawTB()})
+
+/* receipts */
+function freezeReceipt(){const txt=`JMGAMECORE_v0_2I_A_CORRECTED_THREE_GAME_INTEGRATION
+Frozen: ${new Date().toISOString()}
+Scope: T-Boys + Catching Run + Aiming Run
+Shared state: ${JSON.stringify(shared)}
+Events: ${events.length}
+Result: THREE_GAME_INTEGRATION_DING`; $("receiptText").textContent=txt;show("receipt")}
+function copyReceipt(){navigator.clipboard?.writeText($("receiptText").textContent)}
+function exportState(){const blob=new Blob([JSON.stringify({version:"v0.2I-A",shared,events,catchS,aimS,tb},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="JMGAMECORE_v0_2I_A_THREE_GAME_STATE.json";a.click();URL.revokeObjectURL(a.href)}
+
+document.querySelectorAll("[data-cdir]").forEach(b=>{const d=b.dataset.cdir;b.addEventListener("pointerdown",()=>catchS.keys[d]=true);b.addEventListener("pointerup",()=>catchS.keys[d]=false);b.addEventListener("pointerleave",()=>catchS.keys[d]=false)})
+window.addEventListener("keydown",e=>{if(e.key==="ArrowLeft"||e.key==="a")catchS.keys.left=true;if(e.key==="ArrowRight"||e.key==="d")catchS.keys.right=true;if(e.key==="ArrowUp"||e.key==="w")catchS.keys.up=true;if(e.key==="ArrowDown"||e.key==="s")catchS.keys.down=true})
+window.addEventListener("keyup",e=>{if(e.key==="ArrowLeft"||e.key==="a")catchS.keys.left=false;if(e.key==="ArrowRight"||e.key==="d")catchS.keys.right=false;if(e.key==="ArrowUp"||e.key==="w")catchS.keys.up=false;if(e.key==="ArrowDown"||e.key==="s")catchS.keys.down=false})
+$("angle").addEventListener("input",()=>{aimSync();drawAim()});$("power").addEventListener("input",()=>{aimSync();drawAim()})
+window.addEventListener("resize",()=>setTimeout(drawAll,60))
+setThread("catch",45);setThread("aim",40);setThread("tb",50);renderTBStatus();drawAll();
+if("serviceWorker" in navigator && location.protocol !== "file:"){navigator.serviceWorker.register("./service-worker.js").catch(()=>{});}
+</script>
+</body>
+</html>

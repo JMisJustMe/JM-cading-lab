@@ -127,7 +127,12 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
         def _origin_allowed(self):
             origin=self.headers.get('Origin','')
             if not origin:return True
-            allowed={'https://chatgpt.com','https://gemini.google.com','http://127.0.0.1','http://localhost'}
+            allowed={'https://chatgpt.com','https://gemini.google.com','https://jm-mcp-workshop.onrender.com',
+                     'http://127.0.0.1','http://localhost'}
+            # A served owner UI must be allowed to POST back to its own canonical
+            # host; never accept arbitrary matching Host/Origin supplied by clients.
+            port=os.environ.get('PORT','10000')
+            allowed.update({'http://127.0.0.1:'+port,'http://localhost:'+port})
             env=os.environ.get('JM_WORKSHOP_ALLOWED_ORIGINS','')
             allowed.update(x.strip() for x in env.split(',') if x.strip())
             return origin in allowed

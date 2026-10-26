@@ -39,7 +39,7 @@ public final class MainActivity extends Activity {
     else if(sp.getBoolean("ready",false)){
       // Remember the last visited JM room; never auto-launch external apps.
       int last=sp.getInt("nav.last",0);
-      if(last>=0&&last<=9)tab=last;
+      if(last>=0&&last<=12)tab=last;
     }
     getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -1064,11 +1064,29 @@ public final class MainActivity extends Activity {
   // CP01: first-party JM UI, explicit outbound handoff to independently owned providers.
   // This does not claim their code, APIs, accounts or data as JM integrations.
   void companionRoom(){
-    title("JM / COMPANION CONTACT · CP01","One working field. Many independent doors.",
+    title("JM / COMPANION CONTACT · CP02","One working field. Many independent doors.",
       "Open existing services via Android's supported HTTPS handoff. The provider or browser handles the account.");
     LinearLayout guide=card("OWNER CONTROL / NO INVISIBLE CONNECTION","Every door asks first.",
       "No passwords, tokens, private files, clipboard content or sessions are sent by JM. This is navigation, NOT provider API access or an unofficial modified APK.",TEAL);
     label(guide,"Use Android Share back into JM only when you explicitly choose to.",13,MUTED,false);
+    LinearLayout returnPath=card("RECOVER / SHARE / RETURN","Bring work back into JM.",
+      "Open another provider with permission; use Android Share into our existing source intake. JM does not inspect other apps in the background.",PURPLE);
+    btn(returnPath,"Open JM source intake →",false,()->{tab=10;render();});
+    btn(returnPath,"Open JM contact receipts →",false,()->{tab=11;render();});
+    try{
+      org.json.JSONArray receipts=JMContactV1.receipts(sp);
+      for(int i=receipts.length()-1;i>=0;i--){
+        JSONObject row=receipts.getJSONObject(i);
+        if(!"ANDROID_VIEW_DISPATCH".equals(row.optString("kind","")) ||
+           !row.optString("name","").startsWith("COMPANION_"))continue;
+        card("LAST REQUEST / LOCAL TRACE",row.optString("name",""),
+          row.optString("proof","")+" This is not proof that the provider opened or returned data.",TEAL);
+        break;
+      }
+    }catch(Exception ignored){
+      card("HOLD / CONTACT TRACE","Local receipt unreadable",
+        "Open Living Contact to review. No external integration is inferred.",PURPLE);
+    }
     for(JMCompanionDoors.Door door:JMCompanionDoors.DOORS){
       LinearLayout c=card(door.kind+" / "+door.host,door.title,door.purpose,door.kind.equals("JM SOURCE")?TEAL:BLUE);
       btn(c,"Open "+door.title+"  ↗",false,()->confirmCompanion(door));
@@ -1084,8 +1102,20 @@ public final class MainActivity extends Activity {
         " remains independently operated; this action sends no JM note, file or account token.")
       .setNegativeButton("Stay in JM",null)
       .setPositiveButton("Open external door",(d,w)->{
-        try{startActivity(JMCompanionDoors.intentFor(door.id));}
-        catch(Exception e){Toast.makeText(this,"HOLD · No supported app/browser handoff",Toast.LENGTH_LONG).show();}
+        try{
+          startActivity(JMCompanionDoors.intentFor(door.id));
+          // Existing bounded JM contact body; only Android's acceptance of
+          // the owner's request is recorded, never provider authentication.
+          try{
+            JMContactV1.record(sp,"COMPANION_"+door.id.toUpperCase(java.util.Locale.ROOT),
+              "ANDROID_VIEW_DISPATCH","Owner requested "+door.host+
+              " via Android ACTION_VIEW; provider login, work and result UNVERIFIED.");
+          }catch(Exception traceError){
+            Toast.makeText(this,"HOLD · External route requested; JM trace unsaved",Toast.LENGTH_LONG).show();
+          }
+        }catch(Exception e){
+          Toast.makeText(this,"HOLD · No supported app/browser handoff",Toast.LENGTH_LONG).show();
+        }
       }).show();
   }
 

@@ -200,3 +200,31 @@ No new Android permissions, app ID, version or private content transfer.
   remain **HOLD** until separate authenticated/device proof.
 - Exact installed Samsung APK signing compatibility remains unknown. Do not
   install, uninstall, reset, force update, or promote production from CI.
+
+
+## JM Companion Share CP03 — owner-approved two-way source path (26 October 2026)
+
+**Additive descendant of CP02, not a new app or duplicated SessionDeck.**
+Reuses the existing local saved project/session checkpoint from `ProjectShelf`
+and `SessionDeck`. Refuses revision 0, empty saved work, unsaved drafts,
+oversized outbound text (>5000 characters), changed project or revision.
+
+- The owner taps **Share saved JM checkpoint** from JM COMPANIONS, sees an
+  explicit complete text preview and privacy warning, and can CANCEL without
+  leaving JM. A separate **Choose recipient** approval invokes the *Android
+  Sharesheet*; the owner, not JM, chooses the recipient app and account.
+- No background sending, silent email, account impersonation, new permission,
+  provider token or read of an external app.
+- Saved share requests are distinguished from actual delivery using the
+  inherited bounded `JMContactV1` receipt: `COMPANION_SHARE` /
+  `ANDROID_SHARE_REQUEST`, physical_verified=false, recipient unverified.
+  Receipts never contain private note text.
+- Generic Android emulator gate must exercise preview, CANCEL with no receipt,
+  owner Sharesheet request with bounded receipt, unchanged project/recovery
+  state, and cold reopen. Opening a chooser is not proof of receiver selection,
+  successful email/post/upload, physical Samsung execution or provider API.
+- Existing inbound Android Share → JM Intake remains independently owner
+  approved. Together the two routes form a bounded *user-mediated* content
+  roundtrip; no automatic provider synchronization or two-way API claim.
+- Never install over the current owner APK until actual signing compatibility
+  and preservation of owner data are established.

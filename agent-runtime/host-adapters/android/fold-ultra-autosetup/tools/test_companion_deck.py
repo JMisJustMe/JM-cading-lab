@@ -56,6 +56,23 @@ class CompanionDeck(unittest.TestCase):
         # remains untouched; no privileged inbound actions are introduced.
         self.assertNotIn("<uses-permission",MANIFEST)
         self.assertNotIn('jmfoldultra://open/companions',MAIN)
+    def test_saved_jm_checkpoint_outbound_contract(self):
+        SHARE=(ROOT/"app/src/main/java/com/jmisjustme/foldultra/JMCompanionShare.java").read_text(encoding="utf-8")
+        self.assertIn("SessionDeck.find(sp,id)",SHARE)
+        self.assertIn('if(revision<1)',SHARE)
+        self.assertIn("SessionDeck.draftText(sp,snapshot",SHARE)
+        self.assertIn("approved.payload.equals(now.payload)",SHARE)
+        self.assertIn("Intent.ACTION_SEND",SHARE)
+        self.assertIn("Intent.createChooser(send",SHARE)
+        self.assertIn("Share saved JM checkpoint",MAIN)
+        self.assertIn("JMCompanionShare.prepare(sp)",MAIN)
+        self.assertIn("JMCompanionShare.stillCurrent(sp,prepared)",MAIN)
+        self.assertIn("JMCompanionShare.chooser(prepared)",MAIN)
+        self.assertIn('JMContactV1.record(sp,"COMPANION_SHARE","ANDROID_SHARE_REQUEST"',MAIN)
+        self.assertIn('setNegativeButton("Keep inside JM",null)',MAIN)
+        self.assertIn("PRIVATE SOURCE LEAVES JM ONLY IF YOU APPROVE.",MAIN)
+        self.assertNotIn("<uses-permission",MANIFEST)
+        self.assertNotIn("WRITE_EXTERNAL_STORAGE",SHARE)
     def test_inherited_native_privacy_contract_unchanged(self):
         self.assertIn(PREFS,MAIN)
         self.assertIn("JMIntakeV1.review(this,sp",MAIN)

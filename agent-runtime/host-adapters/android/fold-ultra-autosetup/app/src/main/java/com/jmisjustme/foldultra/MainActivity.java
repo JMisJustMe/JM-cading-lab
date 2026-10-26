@@ -1083,6 +1083,7 @@ public final class MainActivity extends Activity {
     LinearLayout returnPath=card("RECOVER / SHARE / RETURN","Bring work back into JM.",
       "Open another provider with permission; use Android Share into our existing source intake. JM does not inspect other apps in the background.",PURPLE);
     btn(returnPath,"Open JM source intake →",false,()->{tab=10;render();});
+    btn(returnPath,"Share saved JM checkpoint →",false,this::shareSavedJmCheckpoint);
     btn(returnPath,"Open JM contact receipts →",false,()->{tab=11;render();});
     try{
       org.json.JSONArray receipts=JMContactV1.receipts(sp);
@@ -1106,6 +1107,43 @@ public final class MainActivity extends Activity {
       "GitHub App grants, Google OAuth, AI provider APIs and third-party clients require their own contracts and approval. No external API credentials live in this APK.",PURPLE);
     btn(page,"← Return to JM Root",false,()->{tab=0;render();});
   }
+  // CP03: only the owner's selected, saved native SessionDeck checkpoint.
+  // Preview first; confirm again in Android Sharesheet. Unsaved drafts and
+  // changed revisions are refused instead of being silently included.
+  void shareSavedJmCheckpoint(){
+    final JMCompanionShare.Prepared prepared;
+    try{prepared=JMCompanionShare.prepare(sp);}
+    catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Checkpoint not shareable")
+        .setMessage(e.getMessage()).setPositiveButton("Keep inside JM",null).show();
+      return;
+    }
+    new AlertDialog.Builder(this).setTitle("Share saved JM checkpoint?")
+      .setMessage("PRIVATE SOURCE LEAVES JM ONLY IF YOU APPROVE.\n"+
+        "This is the exact saved revision; it will go to whichever app you select.\n"+
+        "Recipient, account and eventual use are NOT verified by JM.\n\n"+
+        prepared.payload)
+      .setNegativeButton("Keep inside JM",null)
+      .setPositiveButton("Choose recipient",(d,w)->{
+        if(!JMCompanionShare.stillCurrent(sp,prepared)){
+          Toast.makeText(this,"HOLD · JM checkpoint changed; nothing shared",Toast.LENGTH_LONG).show();
+          return;
+        }
+        try{
+          startActivity(JMCompanionShare.chooser(prepared));
+          try{
+            JMContactV1.record(sp,"COMPANION_SHARE","ANDROID_SHARE_REQUEST",
+              "Owner approved native share of saved "+prepared.projectId+
+              " revision "+prepared.revision+"; recipient/data receipt unverified.");
+          }catch(Exception e){
+            Toast.makeText(this,"HOLD · Share chooser opened; contact trace unsaved",Toast.LENGTH_LONG).show();
+          }
+        }catch(Exception e){
+          Toast.makeText(this,"HOLD · Android share unavailable",Toast.LENGTH_LONG).show();
+        }
+      }).show();
+  }
+
   void confirmCompanion(JMCompanionDoors.Door door){
     new AlertDialog.Builder(this)
       .setTitle("Open "+door.title+" outside JM?")
@@ -1217,9 +1255,9 @@ public final class MainActivity extends Activity {
       int expected=pending.getInt("native_expected_revision");
       String preview=result.length()>1000?result.substring(0,1000)+"…":result;
       new AlertDialog.Builder(this).setTitle("JM / Living Home return · owner approval")
-        .setMessage("Project: "+project+"\\nMission: "+mission+"\\nExpected native revision: "+expected+
-          "\\n\\nUNVERIFIED EXTERNAL TEXT · not a proven model, server or device execution.\\n\\n"+
-          preview+"\\n\\nAppend as a NEW native session revision? No Return Point is overwritten.")
+        .setMessage("Project: "+project+"\nMission: "+mission+"\nExpected native revision: "+expected+
+          "\n\nUNVERIFIED EXTERNAL TEXT · not a proven model, server or device execution.\n\n"+
+          preview+"\n\nAppend as a NEW native session revision? No Return Point is overwritten.")
         .setNegativeButton("Keep pending",null)
         .setPositiveButton("Approve new JM checkpoint",(d,w)->{
           try{

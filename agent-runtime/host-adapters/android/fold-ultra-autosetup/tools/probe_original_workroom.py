@@ -65,6 +65,12 @@ def main():
             if 110<=y1 and y2<=1500:
                 editor=edits[0]
                 break
+            # The first upward movement can leave the editor underneath
+            # Android's status bar (observed y=70..307). Reverse direction
+            # until its actual touch bounds are safe, rather than overscrolling.
+            if y1<110:
+                swipe("down")
+                continue
         swipe("up")
     if editor is None:
         capture("FAIL_ORIGINAL_EDITOR_NOT_VISIBLE")

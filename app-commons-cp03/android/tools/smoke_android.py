@@ -1,4 +1,4 @@
-"""CP03 disposable Android API35 touch/cold-restart proof, NOT an owner's Fold."""
+"""CP04 disposable Android API35 touch/cold-restart proof, NOT an owner's Fold."""
 import subprocess,time,xml.etree.ElementTree as ET,json, pathlib,re,sys
 OUT=pathlib.Path('android-smoke-proof');OUT.mkdir(exist_ok=True)
 COMP='com.jmisjustme.appcommons/com.jmisjustme.foldultra.AppCommonsActivity'
@@ -73,7 +73,7 @@ try:
   checkpoint('native source survives forced restart',read(t)==entered and bool(entered))
   checkpoint('native saved revision survives forced restart','Revision 1' in (OUT/'view.xml').read_text())
  adb('exec-out','screencap','-p') if False else None
- with (OUT/'native-cp03.png').open('wb') as out: subprocess.run(['adb','exec-out','screencap','-p'],stdout=out,check=True)
+ with (OUT/'native-cp04.png').open('wb') as out: subprocess.run(['adb','exec-out','screencap','-p'],stdout=out,check=True)
 except Exception as e:
  results.append({'test':'test runner exception','pass':False,'error':str(e)})
 finally:

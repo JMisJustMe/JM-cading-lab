@@ -20,6 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.CodingErrorAction;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 
 /** Independent original JM native Android app, no provider dependencies.
@@ -65,9 +67,11 @@ public final class AppCommonsActivity extends Activity {
   }
   void paint(){
     ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);scroll.setBackgroundColor(BG);
+    // Inherit safe top/bottom window cutouts on Android 15+, avoid overlay with system clock.
+    scroll.setFitsSystemWindows(true);
     LinearLayout body=new LinearLayout(this);body.setPadding(22,26,22,24);body.setOrientation(LinearLayout.VERTICAL);scroll.addView(body);
     line(body,"JM  /  APP//COMMONS",27,CYAN);
-    line(body,"CP03 · ORIGINAL NATIVE WORKROOM",15,WHITE);
+    line(body,"CP04 · ORIGINAL NATIVE WORKROOM",15,WHITE);
     line(body,"A separate Android application. Original Fold Ultra, ProjectShelf and SessionDeck stay untouched.",13,MUTED);
     source=new EditText(this);source.setGravity(Gravity.TOP|Gravity.START);source.setTextColor(WHITE);
     source.setHintTextColor(MUTED);source.setHint("# My original JM project\n- [ ] Build a real consequence");
@@ -87,6 +91,8 @@ public final class AppCommonsActivity extends Activity {
     button(body,"EXACT DIFF / SNAPSHOT",()->{try{show("JM native exact line comparison",JMOriginalStructures.compare(saved(),draft()).report());}
       catch(Exception e){hold(e.getMessage());}});
     button(body,"SAVE REVIEWED SNAPSHOT",()->snapshot());
+    button(body,"RECOVER SAVED → DRAFT",()->recover());
+    button(body,"VERIFY LOCAL CAPSULE",()->audit());
     button(body,"VERIFY + IMPORT .JSON",()->chooseImport());
     button(body,"EXPORT VERIFIED .JSON",()->export());
     if(custodyHold)button(body,"RESET INVALID LOCAL STATE (OWNER APPROVAL)",()->{
@@ -96,7 +102,7 @@ public final class AppCommonsActivity extends Activity {
           if(!sp.edit().clear().commit()){hold("Reset storage refused");return;}
           custodyHold=false;paint();
        }).show();});
-    line(body,"SHARED CONTRACT · JM.AppCommons.Capsule/0.1\nNO PROVIDER ACCESS · NO EXTRA PERMISSIONS\nIMPORT ONLY AFTER OWNER REVIEW",12,MUTED);
+    line(body,"SHARED CONTRACT · JM.AppCommons.Capsule/0.1 · CP04\nNO PROVIDER ACCESS · NO EXTRA PERMISSIONS\nIMPORT ONLY AFTER OWNER REVIEW",12,MUTED);
     setContentView(scroll);
   }
   void snapshot(){
@@ -118,8 +124,38 @@ public final class AppCommonsActivity extends Activity {
        }).show();
     }catch(Exception e){hold(e.getMessage());}
   }
+  void recover(){
+    try{if(custodyHold)throw new IllegalStateException("Custody HOLD");
+      final int version=rev(); if(version<1)throw new IllegalStateException("No saved snapshot yet");
+      final String old=saved(),before=draft();
+      new AlertDialog.Builder(this).setTitle("Recover snapshot to draft?")
+       .setMessage("Snapshot revision "+version+"\nSHA-256 "+JMAppCommonsCapsule.sha(old)+
+         "\nThis does NOT modify the saved snapshot. Current draft must still match preview.")
+       .setNegativeButton("KEEP DRAFT",null)
+       .setPositiveButton("RECOVER TO DRAFT",(d,w)->{
+          try{if(custodyHold||rev()!=version||!saved().equals(old)||!draft().equals(before))
+            throw new IllegalStateException("Revision or draft changed since preview");
+            if(!writeDraft(old))throw new IllegalStateException("Draft recovery write refused");
+            suppress=true;source.setText(old);suppress=false;
+            status("RECOVERED TO DRAFT · saved revision "+rev()+" unchanged");
+          }catch(Exception e){suppress=false;hold(e.getMessage());}
+       }).show();
+    }catch(Exception e){hold(e.getMessage());}
+  }
+  void audit(){
+    try{if(custodyHold)throw new IllegalStateException("Custody HOLD");
+      String draft=JMOriginalStructures.checked(draft()),snapshot=saved();
+      String capsule=JMAppCommonsCapsule.emit("JM App Commons Native",draft,rev()>0?snapshot:null,
+        Instant.now().toString(),"Native r"+rev());
+      JMAppCommonsCapsule.Received checked=JMAppCommonsCapsule.verify(capsule);
+      if(!checked.source.equals(draft))throw new IllegalStateException("Capsule source mismatch");
+      show("CAPSULE VERIFIED · LOCAL",checked.evidence()+"\nSaved revision "+rev()+
+        "\nOffline verification only; no browser, cloud or AI host contact implied.");
+      status("VERIFIED LOCAL CAPSULE · "+checked.sourceHash.substring(0,16));
+    }catch(Exception e){hold(e.getMessage());}
+  }
   void chooseImport(){Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);
-    i.setType("application/json");try{startActivityForResult(i,PICK);}catch(Exception e){hold("Document picker unavailable");}}
+    i.setType("*/*");try{startActivityForResult(i,PICK);}catch(Exception e){hold("Document picker unavailable");}}
   void export(){try{
     if(custodyHold)throw new IllegalStateException("Stored state is in HOLD");
     pendingDraft=JMOriginalStructures.checked(draft());pendingSaved=saved();pendingRev=rev();
@@ -131,7 +167,7 @@ public final class AppCommonsActivity extends Activity {
       .setNegativeButton("KEEP LOCAL",(d,w)->pendingExport=null)
       .setPositiveButton("CHOOSE FILE",(d,w)->{
         Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);i.setType("application/json");
-        i.addCategory(Intent.CATEGORY_OPENABLE);i.putExtra(Intent.EXTRA_TITLE,"JM_APP_COMMONS_NATIVE_CP03.json");
+        i.addCategory(Intent.CATEGORY_OPENABLE);i.putExtra(Intent.EXTRA_TITLE,"JM_APP_COMMONS_NATIVE_CP04.json");
         try{startActivityForResult(i,SAVE_JSON);}catch(Exception e){hold("Export chooser unavailable");}
       }).show();
   }catch(Exception e){hold(e.getMessage());}}
@@ -145,10 +181,23 @@ public final class AppCommonsActivity extends Activity {
             !saved().equals(pendingSaved)||rev()!=pendingRev)
           throw new IllegalStateException("Export source changed since approval");
         byte[] bytes=pendingExport.getBytes(StandardCharsets.UTF_8);
-        try(OutputStream out=getContentResolver().openOutputStream(data.getData(),"w")){
+        Uri target=data.getData();
+        try(OutputStream out=getContentResolver().openOutputStream(target,"w")){
           if(out==null)throw new IllegalStateException("Document destination refused");out.write(bytes);out.flush();
         }
-        status("EXPORT WRITTEN · "+bytes.length+" UTF-8 bytes");
+        // An accepted write callback is not a Ding. Reopen the owner-selected
+        // document and demand an exact byte-for-byte roundtrip before success.
+        ByteArrayOutputStream returned=new ByteArrayOutputStream();
+        try(InputStream in=getContentResolver().openInputStream(target)){
+          if(in==null)throw new IllegalStateException("Exported document unreadable");
+          byte[] buf=new byte[4096];int n;
+          while((n=in.read(buf))!=-1){if(returned.size()+n>JMAppCommonsCapsule.MAX_CAPSULE_BYTES)
+            throw new IllegalStateException("Exported document overbound");returned.write(buf,0,n);}
+        }
+        if(!java.util.Arrays.equals(bytes,returned.toByteArray()))
+          throw new IllegalStateException("Exported document failed exact readback");
+        JMAppCommonsCapsule.verify(new String(bytes,StandardCharsets.UTF_8));
+        status("EXPORT VERIFIED · "+bytes.length+" UTF-8 bytes · re-read exact");
       }
     }catch(Exception e){hold(e.getMessage());}
     finally{pendingExport=null;}
@@ -161,8 +210,11 @@ public final class AppCommonsActivity extends Activity {
         while((n=in.read(block))!=-1){if(out.size()+n>JMAppCommonsCapsule.MAX_CAPSULE_BYTES)
           throw new IllegalArgumentException("Capsule exceeds 200000 UTF-8 bytes");out.write(block,0,n);}
       }
-      JMAppCommonsCapsule.Received verified=JMAppCommonsCapsule.verify(
-        new String(out.toByteArray(),StandardCharsets.UTF_8));
+      // Decoder must reject malformed bytes, rather than silently replacing them.
+      String decoded=StandardCharsets.UTF_8.newDecoder()
+        .onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT)
+        .decode(ByteBuffer.wrap(out.toByteArray())).toString();
+      JMAppCommonsCapsule.Received verified=JMAppCommonsCapsule.verify(decoded);
       JMOriginalStructures.checked(verified.source);
       final String before=draft(),savedBefore=saved();final int beforeRev=rev();
       new AlertDialog.Builder(this).setTitle("Adopt verified external JM source?")

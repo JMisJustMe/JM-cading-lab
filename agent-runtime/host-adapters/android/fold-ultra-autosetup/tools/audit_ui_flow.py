@@ -64,17 +64,26 @@ def tap(fragment:str,label:str):
     # down through the real screen. Never tap guessed coordinates.
     for index in range(12):
         nodes=dump("find_"+label+"_"+str(index))
-        found=match(nodes,fragment)
-        # Favor exact or prefix text and visible Button nodes.
+        # Only a real native Button is tappable. Inherited text labels such
+        # as "Capture · Access · Continue" must not pass a Continue tap test.
+        found=[n for n in match(nodes,fragment)
+               if n.get("class")=="android.widget.Button"]
         found=sorted(found,key=lambda n:(
-            0 if n.get("text","").startswith(fragment) else 1,
-            0 if n.get("class")=="android.widget.Button" else 1))
+            0 if n.get("text","").startswith(fragment) else 1))
         if found:
             text=found[0].get("text","")
             bounds=found[0].get("bounds","")
             m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",bounds)
             if not m:raise AssertionError(f"Control lacks bounds {label}: {text}")
             x1,y1,x2,y2=map(int,m.groups())
+            if y1<145:
+                adb("shell","input","swipe","360","365","360","780","270")
+                time.sleep(.45)
+                continue
+            if y2>1470:
+                adb("shell","input","swipe","360","1240","360","860","270")
+                time.sleep(.45)
+                continue
             adb("shell","input","tap",str((x1+x2)//2),str((y1+y2)//2))
             time.sleep(.55)
             RECEIPTS.append({"check":label,"result":"PASS","control":text})

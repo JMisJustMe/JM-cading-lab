@@ -1,0 +1,91 @@
+name: JM MCP Workshop CP05 — Live Privacy Trace and Legacy Gateway Contact
+on:
+  push:
+    branches:
+      - verify/jm-mcp-workshop-cp05-live-trace-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp05-live-trace.yml"
+  pull_request:
+    branches:
+      - feature/jm-mcp-workshop-cp01-20261026
+    paths:
+      - ".github/workflows/jm-mcp-workshop-cp05-live-trace.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exercise live legacy Gemini-style gateway and modern MCP, no Origin
+        run: |
+          python - <<'PY'
+          import json, urllib.request, urllib.error, time
+          base='https://jm-mcp-workshop.onrender.com'
+          def send(method,path,data=None,headers=None):
+              req=urllib.request.Request(base+path,method=method,
+                       data=json.dumps(data).encode() if data is not None else None,
+                       headers=headers or {})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      return r.status,dict((k.lower(),v) for k,v in r.headers.items()),r.read()
+              except urllib.error.HTTPError as e:
+                  return e.code,dict((k.lower(),v) for k,v in e.headers.items()),e.read()
+          for n in range(12):
+              try:
+                  code,_,raw=send('GET','/healthz')
+                  assert code==200
+                  break
+              except Exception:
+                  if n==11:raise
+                  time.sleep(5)
+          print('CP05_HEALTH: PASS')
+          for requested,expected in [('2024-11-05','2025-11-25'),('2025-06-18','2025-06-18'),('2025-11-25','2025-11-25')]:
+              packet={'jsonrpc':'2.0','id':7,'method':'initialize','params':{
+                      'protocolVersion':requested,'capabilities':{},
+                      'clientInfo':{'name':'JM GitHub CP05 Gateway Probe','version':'1'}}}
+              code,headers,raw=send('POST','/mcp',packet,
+                   {'Content-Type':'application/json','Accept':'application/json, text/event-stream'})
+              assert code==200,(requested,code,raw[:200])
+              response=json.loads(raw)
+              assert response['result']['protocolVersion']==expected,(requested,response)
+              print('LEGACY_INITIALIZE:',requested,'=>',expected,'PASS')
+          code,headers,raw=send('POST','/mcp',
+              {'jsonrpc':'2.0','id':9,'method':'notifications/initialized'},
+              {'Content-Type':'application/json'})
+          assert code==202,(code,raw)
+          print('INITIALIZED_NOTIFICATION: PASS')
+          code,headers,raw=send('POST','/mcp',
+              {'jsonrpc':'2.0','id':10,'method':'tools/list','params':{}},
+              {'Content-Type':'application/json','Accept':'application/json'})
+          assert code==200,(code,raw)
+          assert len(json.loads(raw)['result']['tools'])==7
+          print('NO_ORIGIN_TOOLS_LIST: PASS 7')
+          code,headers,raw=send('POST','/mcp',{'jsonrpc':'2.0','id':11,'method':'server/discover',
+                'params':{'_meta':{'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+                                  'io.modelcontextprotocol/clientCapabilities':{}}}},
+              {'Content-Type':'application/json','Accept':'application/json, text/event-stream',
+               'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover'})
+          assert code==200,(code,raw)
+          assert '2026-07-28' in json.loads(raw)['result']['supportedVersions']
+          print('NO_ORIGIN_MODERN_DISCOVER: PASS')
+          pre={'Origin':'https://gemini.google.com','Access-Control-Request-Method':'POST',
+               'Access-Control-Request-Headers':'content-type,mcp-protocol-version,mcp-method'}
+          code,headers,raw=send('OPTIONS','/mcp',headers=pre)
+          assert code==204 and headers.get('access-control-allow-origin')==pre['Origin'],(code,headers)
+          print('GEMINI_PREFLIGHT: PASS')
+          code,headers,raw=send('OPTIONS','/mcp',headers={**pre,'Origin':'null'})
+          assert code==403 and 'access-control-allow-origin' not in headers,(code,headers)
+          print('LITERAL_NULL_ORIGIN_FAIL_CLOSED: PASS')
+          code,headers,raw=send('GET','/mcp/')
+          assert code==404,(code,raw)
+          print('TRAILING_SLASH_BEHAVIOR: 404 expected')
+          print('CP05_REAL_REMOTE_HTTP_SUITE: PASS')
+          PY

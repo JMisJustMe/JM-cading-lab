@@ -1,4 +1,4 @@
-"""Repository-grade local MCP Workshop v0.1 regression / adversarial / transport suite."""
+"""Repository-grade local MCP Workshop v0.2 regression / adversarial / transport suite."""
 import base64
 import hashlib
 import http.client
@@ -125,12 +125,12 @@ class WorkshopTests(unittest.TestCase):
 
 
 class TransportTests(unittest.TestCase):
-    def setUp(self):self.app=Dispatch('JM MCP WORKSHOP','0.1.0',workshop.list_tools(),workshop.HANDLERS,workshop.resources(),workshop.read_resource)
+    def setUp(self):self.app=Dispatch('JM MCP WORKSHOP','0.2.0',workshop.list_tools(),workshop.HANDLERS,workshop.resources(),workshop.read_resource)
     def rpc(self,method,params=None):return self.app.rpc({'jsonrpc':'2.0','method':method,'id':2,'params':params or {}})
     def test_initialize_2025(self):self.assertEqual(self.rpc('initialize',{'protocolVersion':'2025-11-25'})['result']['protocolVersion'],'2025-11-25')
     def test_initialize_older(self):self.assertEqual(self.rpc('initialize',{'protocolVersion':'2025-06-18'})['result']['protocolVersion'],'2025-06-18')
     def test_ping(self):self.assertEqual(self.rpc('ping')['result'],{})
-    def test_list_tools(self):self.assertEqual(len(self.rpc('tools/list')['result']['tools']),6)
+    def test_list_tools(self):self.assertEqual(len(self.rpc('tools/list')['result']['tools']),7)
     def test_live_tool_call(self):
         r=self.rpc('tools/call',{'name':'workshop_test','arguments':{'recipe':sample(),'cases':[{'arguments':{'name':'JM'}}]}})['result']
         self.assertEqual(r['structuredContent']['passed'],1)
@@ -150,7 +150,7 @@ class TransportTests(unittest.TestCase):
 class RealProcessTests(unittest.TestCase):
     def test_stdio_real_subprocess(self):
         p=subprocess.run([sys.executable,str(ROOT/'server.py'),'--stdio'],input='{"jsonrpc":"2.0","id":7,"method":"tools/list"}\n',capture_output=True,text=True,timeout=6)
-        self.assertEqual(p.returncode,0);self.assertEqual(len(json.loads(p.stdout)['result']['tools']),6)
+        self.assertEqual(p.returncode,0);self.assertEqual(len(json.loads(p.stdout)['result']['tools']),7)
     def test_generated_stdio_real_subprocess(self):
         folder,blob,hashes=generated_package()
         try:

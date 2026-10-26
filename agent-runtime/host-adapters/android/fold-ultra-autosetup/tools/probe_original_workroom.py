@@ -21,9 +21,21 @@ def main():
     adb("shell","am","force-stop",PKG)
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(1.5)
-    if not any("JM PAIRED ROOT" in n.get("text","") for n in dump("original_initial")):
-        adb("shell","input","keyevent","4")
-        time.sleep(.5)
+    current=pref_values()
+    if current.get("ready")!="true":
+        # Fresh installation: earn real first-run consent; no ADB state injection.
+        from audit_ui_flow import advance_stage
+        has("INITIAL OPENING","original_fresh_opening")
+        advance_stage("Begin the opening","YOUR PRIORITY","original_priority","INITIAL OPENING",1)
+        advance_stage("Continue","SAME ROOT","original_pairing","YOUR PRIORITY",2)
+        advance_stage("Continue","GALAXY + JM","original_galaxy","SAME ROOT",3)
+        advance_stage("Continue","READY / USER AUTHORITY","original_owner","GALAXY + JM",4)
+        tap("ENTER JM FOLD ULTRA","original_owner_enters")
+        assert pref_values().get("ready")=="true","Fresh owner-entry did not persist"
+    else:
+        if not any("JM PAIRED ROOT" in n.get("text","") for n in dump("original_initial")):
+            adb("shell","input","keyevent","4")
+            time.sleep(.5)
     scroll_header("JM PAIRED ROOT","original_root_return")
     before=pref_values()
     tap("JM ORIGINAL STRUCTURES","original_enter")

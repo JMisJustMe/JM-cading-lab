@@ -1,0 +1,31 @@
+name: JM Unique Bodies — real native contact
+on:
+  pull_request:
+    paths:
+      - "experiments/unique-bodies-contact/**"
+      - ".github/workflows/jm-unique-bodies-contact.yml"
+  push:
+    branches:
+      - "feat/jm-unique-bodies-native-contact-*"
+    paths:
+      - "experiments/unique-bodies-contact/**"
+      - ".github/workflows/jm-unique-bodies-contact.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute untouched sovereign JM donor code in both directions
+        run: node experiments/unique-bodies-contact/native-contact-smoke.mjs | tee native-contact-proof.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-unique-bodies-native-contact-proof
+          path: native-contact-proof.json

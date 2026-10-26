@@ -6,7 +6,7 @@ Proof is dispatch/return-to-JM only; no external service account or API tested.
 import json
 import time
 from pathlib import Path
-from audit_ui_flow import adb,tap,has,pref_values,capture
+from audit_ui_flow import adb,tap,has,pref_values,capture,dump,swipe
 
 OUT=Path("emulator-proof")
 PKG="com.jmisjustme.foldultra"
@@ -15,12 +15,40 @@ MAIN=f"{PKG}/.MainActivity"
 def ledger(prefs):
     return json.loads(prefs.get("jm.contact.receipts","[]"))
 
+def touch_safe(prefix,label):
+    """Tap an unobstructed native button, not one partly under Android bars."""
+    import re
+    for attempt in range(16):
+        nodes=dump("safe_"+label+"_"+str(attempt))
+        found=[n for n in nodes
+               if n.get("class")=="android.widget.Button"
+               and n.get("text","").startswith(prefix)]
+        if found:
+            m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",found[0].get("bounds",""))
+            if not m:raise AssertionError("Missing Android button bounds: "+prefix)
+            x1,y1,x2,y2=map(int,m.groups())
+            if y1<150:
+                # Move it down into touchable content, away from status icons.
+                adb("shell","input","swipe","360","360","360","830","260")
+                time.sleep(.45)
+                continue
+            if y2>1460:
+                adb("shell","input","swipe","360","1240","360","850","260")
+                time.sleep(.45)
+                continue
+            adb("shell","input","tap",str((x1+x2)//2),str((y1+y2)//2))
+            time.sleep(.75)
+            return
+        swipe("up")
+    capture("FAIL_SAFE_"+label)
+    raise AssertionError("No fully touchable Android button found: "+prefix)
+
 def main():
     # CP01 cancels an owner-approved dialog and remains on the companions room.
     has("One working field. Many independent doors.","cp02_start")
     before=pref_values()
     count=len(ledger(before))
-    tap("Open GitHub","cp02_choose_source")
+    touch_safe("Open GitHub","cp02_choose_source")
     has("Open GitHub outside JM?","cp02_android_confirmation")
     tap("Open external door","cp02_explicit_approve")
     time.sleep(3)

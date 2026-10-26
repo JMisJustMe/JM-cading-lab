@@ -39,7 +39,7 @@ public final class MainActivity extends Activity {
     else if(sp.getBoolean("ready",false)){
       // Remember the last visited JM room; never auto-launch external apps.
       int last=sp.getInt("nav.last",0);
-      if(last>=0&&last<=12)tab=last;
+      if(last>=0&&last<=13)tab=last;
     }
     getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -112,7 +112,7 @@ public final class MainActivity extends Activity {
     // Android 15+ enforces edge-to-edge at targetSdk 35. Without system-bar
     // padding a scrolled action button can be visible underneath the status
     // icons but cannot be tapped. Keep native controls in the real touch field.
-    if(android.os.Build.VERSION.SDK_INT>=35 && sp.getBoolean("ready",false) && tab==12){
+    if(android.os.Build.VERSION.SDK_INT>=35 && sp.getBoolean("ready",false) && (tab==12||tab==13)){
       scroll.setOnApplyWindowInsetsListener((v,insets)->{
         android.graphics.Insets safe=insets.getInsets(WindowInsets.Type.systemBars());
         v.setPadding(0,safe.top,0,safe.bottom);
@@ -287,7 +287,8 @@ public final class MainActivity extends Activity {
     }
     space(page,12);
     if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else if(tab==7)automationRoom();else if(tab==8)sessionRoom();else if(tab==9)reentryRoom();
-    else if(tab==10)intakeRoom();else if(tab==11)contactRoom();else companionRoom();
+    else if(tab==10)intakeRoom();else if(tab==11)contactRoom();else if(tab==12)companionRoom();
+    else JMOriginalWorkroom.render(this);
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -347,7 +348,8 @@ public final class MainActivity extends Activity {
     btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
     btn(page,"CREATIVE INTAKE / Owner-selected media →",false,()->{tab=10;render();});
     btn(page,"LIVING CONTACT / Scoped receipts →",false,()->{tab=11;render();});
-    btn(page,"JM COMPANIONS / Connected app doors →",false,()->{tab=12;render();});
+    btn(page,"JM ORIGINAL STRUCTURES / Own offline workroom →",true,()->{tab=13;render();});
+    btn(page,"JM COMPANIONS / External app doors →",false,()->{tab=12;render();});
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
     btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }

@@ -1,40 +1,42 @@
-# JM MCP WORKSHOP — v0.1.0 (independent CP01)
+# JM MCP WORKSHOP — v0.2.0 (CP02, separate JM MCP)
 
-**Purpose:** Give JM the ability to define a new MCP tool as a safe data recipe, test what it actually does, compare it with an ancestor, and export an independent working MCP server. This is a separate system: **it does not modify, import or replace JM Build Mesh**.
+**JM owner's selected independent MCP**, not a version or replacement of the live **JM ECOSTATE Build Mesh**. CP01 remains preserved in Git history and the original source ZIP.
 
-## What works
+## Actually working
 
-- Six callable MCP tools: `workshop_define`, `workshop_connect`, `workshop_compose`, `workshop_test`, `workshop_compare`, `workshop_publish`.
-- Readable MCP resources: `workshop://recipe/example` and `workshop://contract/operations`.
-- One prompt: `design_safe_capability`.
-- A typed bounded recipe language: inputs, ordered `steps`, outputs. Supported operations: `copy`, `uppercase`, `lowercase`, `prefix`, `suffix`, `length`, `add`, `join`, `format`, `literal`.
-- **Real behavior**: `workshop_test` interprets an authored recipe against concrete test cases and reports exact results / mismatches.
-- **Real source export**: `workshop_publish` returns a deterministic base64 ZIP with `server.py`, the interpreter and MCP transport; that child server is runnable independently and accepts its newly authored tool by name.
-- Two transports: remote Streamable HTTP JSON responses via `POST /mcp`, and stdio using `python server.py --stdio`. MCP protocol versions supported: 2025-03-26, 2025-06-18 and 2025-11-25 (bounded subset; not every optional SDK feature).
+- A responsive **owner-facing browser Workshop** on `/` and `/workshop` (the same Python server). Edit JSON recipes, choose three worked examples, use the quick builder, execute through live MCP `tools/call`, inspect results, import/export recipe JSON, and download a generated standalone MCP ZIP.
+- **Seven MCP tools:** `workshop_define`, `workshop_connect`, `workshop_compose`, **`workshop_run`**, `workshop_test`, `workshop_compare`, `workshop_publish`.
+- MCP resources `workshop://recipe/example` and `workshop://contract/operations`; a design prompt; stdio and stateless Streamable HTTP JSON responses.
+- **Real new capability authoring**: a bounded recipe describes input schema, ordered behavior (copy, uppercase, lowercase, prefix, suffix, length, add, join, format, literal), and output contract. `workshop_run` actually computes the result. `workshop_publish` emits a deterministic zip with an independent executable MCP server and its interpreter. A separately launched process has executed an exported game-score recipe.
+- **No host code execution:** A recipe cannot import, eval, run JS/Python/shell commands, read arbitrary files or call URLs. `workshop_connect` returns a proposal, not a connection. Nothing is automatically pushed into the Estate.
 
-## Quick local run
+## Local quick start
 
-```shell
-python server.py --stdio
-# OR
-PORT=10000 python server.py
-# GET /healthz for service metadata; POST JSON-RPC to /mcp
+```sh
 python -m unittest discover -s tests -v
+python server.py # choose PORT and HOST through env; browser UI on http://localhost:10000/
+python server.py --stdio # newline-delimited MCP JSON-RPC
 ```
 
-Simple API request:
+To run an actual authored recipe via MCP HTTP:
 
-```json
-{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"workshop_test","arguments":{"recipe":{"slug":"jm_greeting","description":"Create a short personalised JM greeting using a safe programmable sequence.","inputs":[{"name":"name","type":"string","required":true}],"steps":[{"op":"uppercase","from":"name","as":"upper_name"},{"op":"prefix","from":"upper_name","value":"JM says hello, ","as":"greeting"}],"outputs":["greeting"]},"cases":[{"arguments":{"name":"Theo"},"expected":{"greeting":"JM says hello, THEO"}}]}}}
+```sh
+curl -s http://localhost:10000/mcp -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"workshop_run","arguments":{"recipe":{"slug":"add_score","description":"Calculate an original JM scoring effect with bounded integer values.","inputs":[{"name":"a","type":"integer","required":true},{"name":"b","type":"integer","required":true}],"steps":[{"op":"add","from":"a","with":"b","as":"total"}],"outputs":["total"]},"arguments":{"a":12,"b":30}}}}'
 ```
 
-## Safety, scope and proof
+Response contains `structuredContent.result.total = 42`. A second client can use the identical JSON-RPC tool contract through the hosted `/mcp` endpoint once deployed and connected.
 
-- All tools are **non-mutating to external systems** and stateless. `CONNECT` is a proposed donor route; no automatic JM Estate source access, account permissions, API credentials or device control is granted.
-- `PUBLISH` produces ZIP bytes to the caller; it does **not** upload, publish or deploy a service on its own.
-- No arbitrary Python, JavaScript, shell commands, imports, URI fetching or unrestricted filesystem interaction from recipes. Only explicit primitive operations may be executed.
-- HTTP has Origin checks, bounded request bodies and optional `JM_WORKSHOP_TOKEN` bearer authentication. Configure an authenticated gateway and persistent custody before introducing any write operations; deployment to a public URL should otherwise be regarded as public read-only access.
-- Proof layers remain separate: syntax/unit/process/local HTTP; GitHub CI; Render host; ChatGPT tool invocation; Gemini invocation; actual JM coding-body effects and owner device experience.
-- Open/plan/test/export is not equivalent to autonomous AI collaboration or real delivery to external hosts.
+## Hosting and exposure
 
-**Estate governance:** REUSE BEFORE REBUILD · MESH ≠ MERGE · ACCESS ≠ AUTHORITY · INTEGRATION ≠ REPLACEMENT · NO DING NO CLAIM.
+- Host as a **separate Python web service** using this repository branch, `autoDeploy=no`, `plan=free` where available. Build command: `pip install -r services/jm-mcp-workshop-v0_1/requirements.txt`. Start: `python services/jm-mcp-workshop-v0_1/server.py`. Existing path is kept to preserve initial CP01 lineage; service version is v0.2.0.
+- `GET /` serves the owner interface; `GET /healthz` returns instance metadata; `POST /mcp` accepts MCP JSON-RPC. `GET /mcp` returns 405 because server-to-client SSE is deliberately not implemented.
+- MCP protocol subset: legacy handshake versions `2025-03-26`, `2025-06-18`, `2025-11-25`; **not yet dual-era `2026-07-28`**. This bounded implementation does not claim full SDK feature coverage.
+- If `JM_WORKSHOP_TOKEN` is set, API requests require that bearer token. No token is required by default because CP02 only supports bounded, non-mutating public-safe operations. Do not add external writes to this unauthenticated service.
+- Static UI delivered under restrictive CSP, no third-party scripts or dependencies. Browser UI is same-origin only. Uploaded recipe JSON is read in-browser; downloaded files are held by the client, not stored on the server.
+- Browser tests may be blocked by a test machine's local HTTP policy. That is a testing limitation, **not proof the UI works on JM's Fold**. Owner visual and touchscreen acceptance require separate direct contact.
+
+## Evidence / release distinctions
+
+Local 76/76 automated regressions PASS: CP01 tests inherited, CP02 direct execution, ZIP child process, HTTP asset routes, origin guard, deterministic output and proof boundaries. JavaScript syntax PASS. GitHub CI is separate. Hosted Render service, live remote POST, ChatGPT+Gemini MCP connections and owner-device tests all require their own receipts before DING.
+
+**Keeper:** RECOVER BEFORE REBUILD · DO FOR SELF OFF OF OWN MERITS · MESH ≠ MERGE · SOURCE ≠ RUNTIME ≠ DEVICE · NO DING, NO CLAIM.

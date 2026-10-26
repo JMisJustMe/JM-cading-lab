@@ -40,6 +40,15 @@ TAGS = {
 SW_PATTERN = re.compile(r"serviceWorker\s*\.\s*register\s*\(\s*['\"]([^'\"]+)['\"]", re.I)
 
 
+# Exact ancestry from protected PATCH_RECEIPT_v1_1.json files.
+# An origin-resolved source reference is NOT archive-relative delivery proof.
+HISTORICAL_ORIGINS = {
+    "estate-publication/contact-organ-descendants/phone-studios/index_CONTACT_ORGAN_v1_1_DESCENDANT.html": "games-beyond/index.html",
+    "estate-publication/contact-organ-descendants/phone-lyricstudio/index_CONTACT_ORGAN_v1_1_DESCENDANT.html": "lyrics/index.html",
+    "estate-publication/contact-organ-descendants/phone-money/index_CONTACT_ORGAN_v1_1_DESCENDANT.html": "money-menu/index.html",
+}
+
+
 class RouteParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -114,10 +123,49 @@ def resolve_reference(page: Path, raw: str) -> tuple[bool, str]:
     return False, "missing:" + target.relative_to(ROOT).as_posix()
 
 
+def inherited_source_context(page: Path, element: str, reference: str) -> tuple[bool, str]:
+    """Recover a real original source link without claiming archive delivery."""
+    key = page.relative_to(ROOT).as_posix()
+    origin = HISTORICAL_ORIGINS.get(key)
+    if not origin:
+        return False, "not_registered"
+    receipt_path = page.parent / "PATCH_RECEIPT_v1_1.json"
+    if not receipt_path.is_file():
+        return False, "missing_receipt"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if (receipt.get("descendant") != key
+            or receipt.get("source") != origin
+            or receipt.get("sourceClass") != "CURRENT_REPO_REAL_BODY_FALLBACK"
+            or receipt.get("parentMutated") is not False
+            or not receipt.get("descendantSha256")
+            or hashlib.sha256(page.read_bytes()).hexdigest() != receipt["descendantSha256"]):
+        return False, "unproved_receipt_or_changed_descendant"
+    donor = ROOT / origin
+    if not donor.is_file():
+        return False, "missing_recorded_donor"
+    historical_body = page.read_text(encoding="utf-8")
+    donor_body = donor.read_text(encoding="utf-8")
+    historical_parser, donor_parser = RouteParser(), RouteParser()
+    historical_parser.feed(historical_body)
+    donor_parser.feed(donor_body)
+    def references(body: str, parsed: RouteParser) -> list[tuple[str, str]]:
+        return parsed.refs + [("serviceworker_register", m.group(1))
+                              for m in SW_PATTERN.finditer(body)]
+    archived = references(historical_body, historical_parser)
+    original = references(donor_body, donor_parser)
+    if archived != original or (element, reference) not in original:
+        return False, "source_reference_sequence_not_equal"
+    resolved, reason = resolve_reference(donor, reference)
+    if not resolved:
+        return False, "donor_reference_unresolved:" + reason
+    return True, origin
+
+
 def main() -> int:
     pages = sorted(page for page in ROOT.rglob("*.html") if ".git" not in page.parts)
     missing: list[dict[str, str]] = []
     carrier_holds: list[dict[str, str]] = []
+    origin_recovered: list[dict[str, str]] = []
     kinds: dict[str, int] = {}
     total = 0
     recovered = set()
@@ -133,6 +181,17 @@ def main() -> int:
                 valid, reason = resolve_reference(page, ref)
             except Exception as exc:
                 valid, reason = False, "recover_failure:" + str(exc)
+            if not valid:
+                recovered, origin = inherited_source_context(page, kind, ref)
+                if recovered:
+                    origin_recovered.append({
+                        "page": page.relative_to(ROOT).as_posix(),
+                        "element": kind, "reference": ref,
+                        "archive_relative_status": reason,
+                        "recorded_origin": origin,
+                        "evidence": "DONOR_LINK_ONLY__ARCHIVE_STANDALONE_NOT_PROVED"
+                    })
+                    valid, reason = True, "historical_origin_recovered:" + origin
             kinds[reason.split(":")[0]] = kinds.get(reason.split(":")[0], 0) + 1
             if reason == "generated_source_recovered_sha_pass":
                 recovered.add(ref)
@@ -172,12 +231,14 @@ def main() -> int:
               "boundary": "source-only; not public deployment or device proof",
               "strict_active_entry_missing": missing,
               "non_entry_carrier_holds": carrier_holds,
+              "historical_origin_resolutions": origin_recovered,
               "verified_futarized_targets": sorted(recovered),
               "scanned_html": len(pages), "active_index_pages": active_pages,
               "literal_references": total}
     out = ROOT / "audit-output" / "JM_ESTATE_SOURCE_ROUTE_HOLDS_v0_1.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print(f"RECOVERED_SOURCE_CONTEXT: {len(origin_recovered)} historical references with verified ancestry, byte integrity and matching original link sequence; archive delivery remains unproved")
     print(f"HOLD: {len(carrier_holds)} unresolved references in non-entry source carriers, emitted at {out.relative_to(ROOT)}")
     groups: dict[str, int] = {}
     for item in carrier_holds:

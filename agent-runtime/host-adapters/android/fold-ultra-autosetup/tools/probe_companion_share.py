@@ -6,7 +6,7 @@ Disposable Android emulator only. Opening the chooser is not provider receipt.
 import json
 import time
 from pathlib import Path
-from audit_ui_flow import adb,tap,has,pref_values,capture
+from audit_ui_flow import adb,tap,has,scroll_header,pref_values,capture
 from probe_companion_return import touch_safe
 
 OUT=Path("emulator-proof")
@@ -53,12 +53,15 @@ def main():
     # external provider/data-delivery claim is made by this test.
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(1.2)
-    has("JM / COMPANION CONTACT","cp03_after_owner_cancel")
+    # Android restores the native ScrollView at its previous offset. Verify
+    # the real JM heading by scrolling back through live native UI, not by
+    # treating the initially visible viewport as the whole Activity.
+    scroll_header("JM / COMPANION CONTACT","cp03_after_owner_cancel")
     # Only now test JM process death and restart in absence of OS overlay.
     adb("shell","am","force-stop",PKG)
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(2)
-    has("JM / COMPANION CONTACT","cp03_reopen_companion")
+    scroll_header("JM / COMPANION CONTACT","cp03_reopen_companion")
     capture("COMPANION_CP03_REOPEN")
     (OUT/"COMPANION_CP03_RECEIPT.json").write_text(json.dumps({
         "status":"PASS","scope":"generic Android emulator",

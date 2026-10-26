@@ -1,0 +1,58 @@
+name: JM Estate — Source Route Guard
+
+on:
+  pull_request:
+    paths:
+      - '**/*.html'
+      - '*.html'
+      - '**/*.css'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.webmanifest'
+      - '**/*.svg'
+      - 'estate-publication/apps-tools-games/games/futarized-v3.1/**'
+      - 'scripts/validate_estate_page_routes_v0_1.py'
+      - '.github/workflows/validate-estate-page-routes-v0-1.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.html'
+      - '*.html'
+      - '**/*.css'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.webmanifest'
+      - '**/*.svg'
+      - 'estate-publication/apps-tools-games/games/futarized-v3.1/**'
+      - 'scripts/validate_estate_page_routes_v0_1.py'
+      - '.github/workflows/validate-estate-page-routes-v0-1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  route-evidence:
+    name: All source routes, generated bodies and archived-dependency HOLDs
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - name: Syntax guard
+        run: python3 -m py_compile scripts/validate_estate_page_routes_v0_1.py
+      - name: Resolve every literal HTML and service-worker route
+        run: python3 scripts/validate_estate_page_routes_v0_1.py
+      - name: Preserve exact source carrier HOLDs for recovery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_SOURCE_ROUTE_HOLDS_v0_1
+          path: audit-output/JM_ESTATE_SOURCE_ROUTE_HOLDS_v0_1.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve truthful source vs deployment distinctions
+        run: |
+          echo 'GITHUB_TREE_SOURCE_REFERENCES=CHECKED'
+          echo 'FUTARIZED_GENERATED_HTML_SOURCE=RECONSTRUCTED_AND_SHA_PROVEN'
+          echo 'PUBLIC_WEBSITE_DEPLOYMENT=HOLD'
+          echo 'OWNER_DEVICE=HOLD'

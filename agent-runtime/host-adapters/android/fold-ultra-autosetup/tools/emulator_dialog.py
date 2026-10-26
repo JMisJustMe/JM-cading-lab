@@ -53,20 +53,25 @@ def clear_overlay_and_read(tag):
     events=[]
     for attempt in range(7):
         nodes=xml(f"{tag}_{attempt}")
-        if not any("Pixel Launcher isn't responding" in n.get("text","") for n in nodes):
+        # API 35 stock emulator images can call the platform launcher
+        # Quickstep instead of Pixel Launcher. Match ONLY these two native
+        # launcher ANRs; never dismiss a JM or third-party failure as noise.
+        launcher=next((label for label in (
+            "Pixel Launcher isn't responding", "Quickstep isn't responding")
+            if any(label in n.get("text","") for n in nodes)),None)
+        if launcher is None:
             if events:
                 (OUT/f"{tag}_ENVIRONMENT.json").write_text(json.dumps(events,indent=2))
             return nodes
-        # Never misattribute this emulator OS issue to JM, or count it PASS.
         button="Wait" if attempt<3 else "Close app"
         choices=[n for n in nodes if n.get("text")==button and n.get("class")=="android.widget.Button"]
-        if len(choices)!=1:raise AssertionError("Pixel Launcher obstruction cannot be cleared safely")
-        events.append({"obstruction":"Pixel Launcher ANR","attempt":attempt,"action":button,
+        if len(choices)!=1:raise AssertionError("Platform launcher obstruction cannot be cleared safely")
+        events.append({"obstruction":launcher,"attempt":attempt,"action":button,
                        "status":"environmental"})
         tap_node(choices[0])
         time.sleep(1)
     (OUT/f"{tag}_ENVIRONMENT.json").write_text(json.dumps(events,indent=2))
-    raise AssertionError("HOLD: Pixel Launcher obstructed the JM approval after retries")
+    raise AssertionError("HOLD: platform launcher obstructed the JM approval after retries")
 
 
 def press_approval(label,decision="APPLY"):

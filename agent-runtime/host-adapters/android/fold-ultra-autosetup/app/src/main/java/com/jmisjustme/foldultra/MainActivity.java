@@ -290,6 +290,8 @@ public final class MainActivity extends Activity {
     else if(tab==10)intakeRoom();else if(tab==11)contactRoom();else companionRoom();
   }
   void root(){
+    btn(page,"JM WORKROOM / Write · Code · Files",true,()->
+      startActivity(new Intent(this,com.jmisjustme.foldultra.workroom.WorkroomActivity.class)));
     String focus=sp.getString("focus","CREATE");
     LinearLayout c=card("CURRENT FIELD",focus+" / "+(wide?"WORKFIELD":"SOURCE"),
       wide?"Expanded creative and testing routes.":"One-handed fast routes and capture.",PURPLE);
@@ -874,6 +876,8 @@ public final class MainActivity extends Activity {
         }
       });
       btn(working,"Open active project ↗",false,()->ProjectShelf.open(this,project));
+      btn(working,"Open JM Workroom / documents and tools",false,()->
+        startActivity(new Intent(this,com.jmisjustme.foldultra.workroom.WorkroomActivity.class)));
       LinearLayout continuity=card("TWO SCREENS / ONE LOCAL STATE","Safe continuation",
         "Folding changes JM's available-width layout; the active project and its local draft remain in shared application storage.",PURPLE);
       label(continuity,"Actual Fold transition and battery/process recovery still require owner-device tests.",13,MUTED,false);

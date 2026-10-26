@@ -56,7 +56,12 @@ public final class WorkroomStore extends SQLiteOpenHelper {
       if(d.revision>0&&d.body.equals(d.saved)){db.setTransactionSuccessful();return d;}
       int revision=d.revision+1;ContentValues r=new ContentValues();r.put("doc",id);r.put("revision",revision);r.put("body",d.body);r.put("stamp",System.currentTimeMillis());db.insertOrThrow("revisions",null,r);
       ContentValues v=new ContentValues();v.put("revision",revision);v.put("saved",d.body);db.update("documents",v,"id=? AND revision=?",new String[]{id,""+expected});
-      db.execSQL("DELETE FROM revisions WHERE doc=? AND revision<=?",new Object[]{id,revision-MAX_HISTORY});db.setTransactionSuccessful();
+      db.execSQL("DELETE FROM revisions WHERE doc=? AND revision<=?",new Object[]{id,revision-MAX_HISTORY});
+      // Bound retained source volume as well as revision count.
+      while(true){try(Cursor size=db.rawQuery("SELECT coalesce(sum(length(body)),0) FROM revisions WHERE doc=?",new String[]{id})){
+        size.moveToFirst();if(size.getLong(0)<=1048576)break;}
+        db.execSQL("DELETE FROM revisions WHERE doc=? AND revision=(SELECT min(revision) FROM revisions WHERE doc=?)",new Object[]{id,id});
+      }db.setTransactionSuccessful();
     }finally{db.endTransaction();}return get(id);
   }
   public List<Integer> history(String id){List<Integer> out=new ArrayList<>();try(Cursor c=getReadableDatabase().rawQuery("SELECT revision FROM revisions WHERE doc=? ORDER BY revision DESC",new String[]{id})){while(c.moveToNext())out.add(c.getInt(0));}return out;}

@@ -60,7 +60,7 @@ def main():
     has('data.json','cp05_created_document');capture('CP05_EDITOR_NARROW')
     touch('Save revision','android.widget.Button');has('Saved revision 1','cp05_first_checkpoint')
     touch('Tools','android.widget.Button');touch('Format / validate JSON','android.widget.Button')
-    has('Draft saved locally','cp05_formatted_draft')
+    has('Local draft','cp05_formatted_draft')
     touch('Save revision','android.widget.Button');has('Saved revision 2','cp05_second_checkpoint')
     # Type into actual native EditText; no SQLite/session injection.
     nodes=dump('cp05_editor_target');fields=[n for n in nodes if n.get('class')=='android.widget.EditText']
@@ -77,7 +77,7 @@ def main():
     assert c.execute('SELECT count(*) FROM revisions').fetchone()[0]==2;c.close()
     reopen();has('CP05_NATIVE_TYPED_MARKER','cp05_cold_draft_recovered')
     touch('History','android.widget.Button');touch('Revision 1');touch('Recover as draft','android.widget.Button')
-    has('Draft saved locally','cp05_history_recovery')
+    has('Local draft','cp05_history_recovery')
     c=db();d=c.execute('SELECT * FROM documents').fetchone();r=c.execute('SELECT body FROM revisions WHERE revision=1').fetchone()[0]
     assert d['body']==r and d['revision']==2,'history must recover draft without rolling back revision';c.close()
     reopen();touch('Tools','android.widget.Button');touch('Stage a copy','android.widget.Button');touch('Append draft','android.widget.Button');has('JM draft updated','cp05_session_native_consequence');touch('Close','android.widget.Button')

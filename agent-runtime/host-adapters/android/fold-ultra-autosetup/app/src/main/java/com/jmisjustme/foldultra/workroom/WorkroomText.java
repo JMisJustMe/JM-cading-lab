@@ -61,8 +61,16 @@ public final class WorkroomText {
       throw new IllegalArgumentException("Enter one email address without line breaks");
     if(subject==null||subject.length()>160||subject.contains("\r")||subject.contains("\n"))
       throw new IllegalArgumentException("Subject must be one line, up to 160 characters");
-    String encoded=java.util.Base64.getEncoder().encodeToString(subject.getBytes(StandardCharsets.UTF_8));
+    StringBuilder encoded=new StringBuilder(),part=new StringBuilder();
+    // Each encoded-word remains under RFC 2047's 75-character limit.
+    for(int at=0;at<subject.length();){int cp=subject.codePointAt(at);String next=new String(Character.toChars(cp));
+      if((part.toString()+next).getBytes(StandardCharsets.UTF_8).length>36){
+        if(encoded.length()>0)encoded.append("\r\n ");
+        encoded.append("=?UTF-8?B?").append(java.util.Base64.getEncoder().encodeToString(part.toString().getBytes(StandardCharsets.UTF_8))).append("?=");part.setLength(0);
+      }part.append(next);at+=Character.charCount(cp);
+    }
+    if(part.length()>0||encoded.length()==0){if(encoded.length()>0)encoded.append("\r\n ");encoded.append("=?UTF-8?B?").append(java.util.Base64.getEncoder().encodeToString(part.toString().getBytes(StandardCharsets.UTF_8))).append("?=");}
     String data=java.util.Base64.getMimeEncoder(76,new byte[]{13,10}).encodeToString(checked(body).getBytes(StandardCharsets.UTF_8));
-    return checked("To: "+to+"\r\nSubject: =?UTF-8?B?"+encoded+"?=\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\nX-Unsent: 1\r\n\r\n"+data+"\r\n");
+    return checked("To: "+to+"\r\nSubject: "+encoded+"\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\nX-Unsent: 1\r\n\r\n"+data+"\r\n");
   }
 }

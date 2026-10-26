@@ -30,6 +30,15 @@ jobs:
         run: python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/verify_prelaunch.py
       - name: Offline USB bridge unit tests
         run: python3 -m unittest discover -s agent-runtime/host-adapters/android/fold-ultra-autosetup/tools -p 'test_*.py' -v
+      - name: JM Original Structures independent JVM execution · 49 checks
+        run: |
+          set -euo pipefail
+          ROOT=agent-runtime/host-adapters/android/fold-ultra-autosetup
+          mkdir -p /tmp/jm-structures-classes
+          javac -encoding UTF-8 -d /tmp/jm-structures-classes \
+            "$ROOT/app/src/main/java/com/jmisjustme/foldultra/JMOriginalStructures.java" \
+            "$ROOT/tools/JMOriginalStructuresProof.java"
+          java -cp /tmp/jm-structures-classes com.jmisjustme.foldultra.JMOriginalStructuresProof
       - name: Compile Fold prelaunch
         shell: bash
         working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup

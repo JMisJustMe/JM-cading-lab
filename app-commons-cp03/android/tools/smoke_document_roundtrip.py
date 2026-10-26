@@ -22,6 +22,20 @@ def tap(label,scrolls=0):
      adb('shell','input','tap',str((q[0]+q[2])//2),str((q[1]+q[3])//2));time.sleep(1.1);return True
   if a<scrolls: adb('shell','input','swipe','400','810','400','275','350');time.sleep(.9)
  return False
+def tap_document(filename):
+ tree=get_tree()
+ def walk(node,parents):
+  if filename==node.attrib.get('text',''):
+   clickable=next((x for x in reversed(parents) if x.attrib.get('clickable')=='true'),None)
+   target=clickable or node
+   q=list(map(int,re.findall(r'\\d+',target.attrib.get('bounds',''))))
+   if len(q)==4:
+    adb('shell','input','tap',str((q[0]+q[2])//2),str((q[1]+q[3])//2))
+    time.sleep(1.4);return True
+  for child in node:
+   if walk(child,parents+[node]):return True
+  return False
+ return walk(tree,[])
 def shot(name):
  with (OUT/(name+'.png')).open('wb') as out:subprocess.run(['adb','exec-out','screencap','-p'],stdout=out,check=True)
 def wait(text,limit=30):
@@ -56,10 +70,10 @@ try:
  shot('export-verified')
  # Change draft before importing; so import has an observable state consequence.
  assert tap('VERIFY + IMPORT .JSON',scrolls=4),'import control unreachable'
- stamp('Android document read picker opened',wait('Browse',15) or wait('Recent',12))
+ stamp('Android document read picker opened',wait('Downloads',15) or wait('Recent',12))
  shot('open-picker')
  filename='JM_APP_COMMONS_NATIVE_CP04.json'
- assert tap(filename,scrolls=3),'exported JSON not selectable in picker'
+ assert tap_document(filename),'exported JSON tile not selectable in picker'
  stamp('verified source approval shown',wait('Adopt verified external',22))
  assert tap('ADOPT TO DRAFT'),'adopt approval missing'
  stamp('native source adopted after verifying JSON',wait('NATIVE IMPORT VERIFIED',15))

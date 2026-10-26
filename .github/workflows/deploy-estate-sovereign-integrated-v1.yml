@@ -35,6 +35,7 @@ on:
       - "estate/**"
       - "fresh-app-lab/**"
       - "games-beyond/**"
+      - "mmzg-runtime-v0.6/**"
       - "lyrics/**"
       - "money-menu/**"
       - "market-lab/**"
@@ -135,7 +136,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in access apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory visual-story; do
+          for dir in access apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab mmzg-runtime-v0.6 navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -336,6 +337,12 @@ jobs:
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
           test -s cloudflare-estate/games-beyond/index.html
+          # Preserve the existing MMZG body exactly; the carrier must not synthesize or rewrite it.
+          for file in index.html mmzg_runtime_core_v0_6.js manifest.webmanifest service_worker.js; do
+            test -s "cloudflare-estate/mmzg-runtime-v0.6/$file"
+            cmp -s "mmzg-runtime-v0.6/$file" "cloudflare-estate/mmzg-runtime-v0.6/$file" || { echo "MMZG source/body byte mismatch: $file"; exit 1; }
+          done
+          echo "MMZG v0.6 original 4/4 bodies preserved byte-for-byte in assembled carrier"
           test -s cloudflare-estate/market-lab/index.html
           test -s cloudflare-estate/ecostate-gripcube-v5.css
           test -s cloudflare-estate/ecostate-gripcube-v5.js
@@ -400,6 +407,30 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove published MMZG v0.6 source bytes after Estate deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev/mmzg-runtime-v0.6'
+          for file in index.html mmzg_runtime_core_v0_6.js manifest.webmanifest service_worker.js; do
+            expected="$(sha256sum "mmzg-runtime-v0.6/$file" | cut -d' ' -f1)"
+            delivered=0
+            for attempt in $(seq 1 20); do
+              code="$(curl -sSL --max-time 20 --connect-timeout 8 -H 'Cache-Control: no-cache' -o "$RUNNER_TEMP/mmzg-public-response" -w '%{http_code}' "$base/$file?jm-mmzg-proof=$GITHUB_RUN_ID-$attempt" || true)"
+              if [ "$code" = 200 ]; then
+                received="$(sha256sum "$RUNNER_TEMP/mmzg-public-response" | cut -d' ' -f1)"
+                if [ "$received" = "$expected" ]; then
+                  delivered=1
+                  echo "MMZG PUBLIC PASS $file SHA-256=$received"
+                  break
+                fi
+              fi
+              sleep 3
+            done
+            [ "$delivered" = 1 ] || { echo "MMZG PUBLIC HOLD $file (missing or mismatched)"; exit 1; }
+          done
+          echo 'MMZG_PUBLIC_CANONICAL_SOURCE_PARITY=PASS_4_OF_4'
 
       - name: Prove canonical Estate source and shared nervous system
         shell: bash

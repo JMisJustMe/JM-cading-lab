@@ -26,6 +26,10 @@ def main():
     adb("install",str(apk),timeout=80)
     adb("shell","wm","size","720x1600")
     adb("shell","wm","density","320")
+    # On a clean APK the app preferences do not exist until its first native
+    # launch. Prove cold initialization before comparing untouched JM state.
+    adb("shell","am","start","-W","-n",MAIN)
+    time.sleep(1.5)
     before=pref_values()
     inject(INPUT)
     has("SOURCE CONTACT / Android Share","cp04_owner_share_review")

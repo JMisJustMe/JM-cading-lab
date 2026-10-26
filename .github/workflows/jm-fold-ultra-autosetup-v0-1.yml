@@ -86,7 +86,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
-          target: google_apis
+          # This full-body lane needs native Android controls, not Google APIs.
+          # The prior Google APIs Pixel 6 image repeatedly raised Pixel Launcher
+          # ANRs (run 40273267502), obscuring authentic native Continue touches.
+          # Keep the independent CP04 Share lane on google_apis for coverage.
+          target: default
           arch: x86_64
           profile: pixel_6
           emulator-boot-timeout: 700

@@ -59,7 +59,7 @@ def main():
         if edits:
             import re
             bounds=edits[0].get("bounds","")
-            m=re.fullmatch(r"\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]",bounds)
+            m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",bounds)
             if not m:raise AssertionError("HOLD: native editor lacks bounds")
             x1,y1,x2,y2=map(int,m.groups())
             if 110<=y1 and y2<=1500:

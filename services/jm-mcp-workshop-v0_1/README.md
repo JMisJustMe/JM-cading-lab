@@ -37,6 +37,6 @@ Response contains `structuredContent.result.total = 42`. A second client can use
 
 ## Evidence / release distinctions
 
-Local 76/76 automated regressions PASS: CP01 tests inherited, CP02 direct execution, ZIP child process, HTTP asset routes, origin guard, deterministic output and proof boundaries. JavaScript syntax PASS. GitHub CI is separate. Hosted Render service, live remote POST, ChatGPT+Gemini MCP connections and owner-device tests all require their own receipts before DING.
+Local 80/80 automated regressions PASS: CP01 tests inherited, CP02 direct execution, ZIP child process, HTTP asset routes, origin guard, deterministic output and proof boundaries. JavaScript syntax PASS. GitHub CI is separate. Hosted Render v0.2.0 is independently observed LIVE, with a GitHub Actions remote JSON-RPC test PASS and a separate browser GUI retest PASS after a same-origin HTTP 403 hotfix. Direct ChatGPT+Gemini MCP connections and owner Fold/device acceptance still require their own receipts before DING.
 
 **Keeper:** RECOVER BEFORE REBUILD · DO FOR SELF OFF OF OWN MERITS · MESH ≠ MERGE · SOURCE ≠ RUNTIME ≠ DEVICE · NO DING, NO CLAIM.

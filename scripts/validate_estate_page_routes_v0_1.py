@@ -116,6 +116,7 @@ def resolve_reference(page: Path, raw: str) -> tuple[bool, str]:
 def main() -> int:
     pages = sorted(page for page in ROOT.rglob("*.html") if ".git" not in page.parts)
     missing: list[dict[str, str]] = []
+    carrier_holds: list[dict[str, str]] = []
     kinds: dict[str, int] = {}
     total = 0
     recovered = set()
@@ -135,8 +136,9 @@ def main() -> int:
             if reason == "generated_source_recovered_sha_pass":
                 recovered.add(ref)
             if not valid:
-                missing.append({"page": page.relative_to(ROOT).as_posix(),
-                                "element": kind, "reference": ref, "reason": reason})
+                issue = {"page": page.relative_to(ROOT).as_posix(),
+                         "element": kind, "reference": ref, "reason": reason}
+                (missing if page.name == "index.html" else carrier_holds).append(issue)
 
     # Explicitly prove BOTH generated FUTARIZED bodies, including a target
     # not currently reached by a particular HTML page.
@@ -148,15 +150,35 @@ def main() -> int:
             missing.append({"page": "FUTARIZED_SOURCE_CARRIAGE",
                             "element": "reconstruction", "reference": target,
                             "reason": str(exc)})
-    print(f"ESTATE SOURCE ROUTE GUARD: {len(pages)} HTML pages; {total} literal HTML/SW references")
+    active_pages = sum(page.name == "index.html" for page in pages)
+    print(f"ESTATE SOURCE ROUTE GUARD: {len(pages)} HTML pages ({active_pages} strict index entry pages); {total} literal HTML/SW references")
     print("RECOVERY: " + ", ".join(sorted(recovered)))
     print("KINDS: " + json.dumps(kinds, sort_keys=True))
+    # Historical, non-entry HTML is an inherited source carrier until proved
+    # self-contained. Missing companions must remain visible but cannot
+    # sentence a preserved ancestor to deletion or pretend it was deployed.
+    report = {"schema": "jm.estate-source-route-holds/0.1",
+              "boundary": "source-only; not public deployment or device proof",
+              "strict_active_entry_missing": missing,
+              "non_entry_carrier_holds": carrier_holds,
+              "verified_futarized_targets": sorted(recovered),
+              "scanned_html": len(pages), "active_index_pages": active_pages,
+              "literal_references": total}
+    out = ROOT / "audit-output" / "JM_ESTATE_SOURCE_ROUTE_HOLDS_v0_1.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print(f"HOLD: {len(carrier_holds)} unresolved references in non-entry source carriers, emitted at {out.relative_to(ROOT)}")
+    groups: dict[str, int] = {}
+    for item in carrier_holds:
+        groups[item["page"]] = groups.get(item["page"], 0) + 1
+    for name, count in sorted(groups.items(), key=lambda x: (-x[1], x[0])):
+        print(f"  CARRIER HOLD {count:2d} {name}")
     if missing:
-        print("FAIL: unresolved source/route evidence:")
+        print("FAIL: unresolved ACTIVE index entry source/route evidence:")
         for item in missing:
             print(json.dumps(item, sort_keys=True))
         return 1
-    print("PASS — all source-level reference targets accounted for; no deployment/device proof claimed")
+    print("PASS — every ACTIVE index-page source route accounted for; non-entry descendants stay HOLD, not DEAD; no deployment/device proof claimed")
     return 0
 
 

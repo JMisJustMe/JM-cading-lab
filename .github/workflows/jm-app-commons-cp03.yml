@@ -29,8 +29,8 @@ jobs:
           node test-strict-cp03.mjs
           mkdir -p /tmp/jm-appcommons-java
           javac -encoding UTF-8 -d /tmp/jm-appcommons-java android/app/src/main/java/com/jmisjustme/foldultra/JMOriginalStructures.java android/app/src/main/java/com/jmisjustme/foldultra/JMAppCommonsCapsule.java JMAppCommonsCapsuleProof.java JMAppCommonsExtendedProof.java
-          java -cp /tmp/jm-appcommons-java com.jmisjustme.foldultra.JMAppCommonsCapsuleProof
-          java -cp /tmp/jm-appcommons-java com.jmisjustme.foldultra.JMAppCommonsExtendedProof
+          java -cp /tmp/jm-appcommons-java com.jmisjustme.foldultra.JMAppCommonsCapsuleProof fixture-valid-capsule.json fixture-tampered.json
+          java -cp /tmp/jm-appcommons-java com.jmisjustme.foldultra.JMAppCommonsExtendedProof extended-fixtures
           python3 android/tools/verify_native_source.py
   native-build:
     needs: portable-test

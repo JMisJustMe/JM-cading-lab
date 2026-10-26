@@ -10,25 +10,48 @@
 
 **Source boundary:** The original JM M001 CP16 ContactGate, typed Mesh Contact Runner, private carrier hashes/IDs/receipts and the Library evidence ledger stay in their original separate private authority. No private source bytes are committed to this public repository. Work can pass local files from existing owner custody when authorised. Future build workflows may invoke this adapter before proposing a redundant upload, but no existing build pipeline is automatically intercepted by this addition.
 
-**Actual JM Closure & Handoff PACKAGE-stage contact (draft branch):** The existing `scripts/jm_build_closure.py` accepts optional `--admission-candidate` and `--admission-keeper` **only alongside `--stage PACKAGE --state PASS`**. When supplied, it directly executes this same admission organ before changing the closure state. `SAME_BYTES_ROLE_HOLD` and `HOLD_INVALID` prevent PACKAGE PASS, with the original ledger still OPEN; `DISTINCT_BYTES` may pass to the existing separate evidence check but cannot alone grant package, upload, owner approval, or retirement authority. With no admission flags, pre-existing closure behaviour is unchanged. Real private user carriers are never fetched in GitHub CI.
+## Mandatory production admission
 
-Example (local files and independent evidence; no uploading):
+The original `JM_M001_Carrier_Admission_Gate_v0_1.py` is unchanged. The thin
+`jm_m001_production_admission.py` policy adapter calls it for every applicable
+PACKAGE PASS, including direct `update_stage` API calls. Omitting either the
+candidate or independent keeper is HOLD. A missing/corrupt keeper never means
+that a package is new.
+
+- Distinct bytes may enter the existing separate evidence gate.
+- Same bytes require `--reuse-existing` to resolve PACKAGE without another
+  upload, or an exact pinned separate role in
+  `registry/storage-admission/approved-roles.json`.
+- The role registry is empty. A CLI role name or a protected label cannot
+  approve itself. A reviewed role must bind candidate/keeper SHA, distinct
+  responsibilities and an independently readable evidence file by SHA.
+- `PACKAGE N/A` retains its existing applicability rule and explanation.
+  It is not upload permission.
 
 ```bash
-python3 scripts/jm_build_closure.py \
-  --state-file /path/to/existing/closure.json \
-  --stage PACKAGE --state PASS \
-  --evidence "native:independently-verified-package-receipt" \
-  --admission-candidate /path/to/proposed.zip \
-  --admission-keeper /path/to/existing-keeper.zip
+python3 scripts/jm_build_closure.py --state-file /path/to/closure.json \
+  --stage PACKAGE --state PASS --evidence external:verified-package \
+  --admission-candidate /path/to/candidate.zip \
+  --admission-keeper /path/to/keeper.zip
 ```
 
-**Integrated test:** `.github/workflows/jm-build-closure-handoff.yml` executes real CLI transitions on synthetic valid, invalid and duplicate ZIPs: three false PASS states blocked before ledger mutation, and distinct package + independent evidence enters PACKAGE while FREEZE remains OPEN. The generic synthetic self-test is separate in `.github/workflows/jm-m001-carrier-admission.yml`. Neither route intercepts every producer's uploads automatically. New build owners must opt into the PACKAGE guard when the delivery has a known keeper.
+Controlled routes changed:
 
-**Route:** proposed delivery + retained house → local byte/hash/CRC contact → typed decision → normal closure evidence gate → role/owner gate → separately authorised upload or reuse. No deletion or account quota claim in this adapter.
+| Route | Mandatory consequence |
+|---|---|
+| Closure PACKAGE PASS, API and CLI | Check before ledger write; duplicate additional carriage HOLD; explicit keeper reuse recorded |
+| Advanced Generator package workflow | Build in scratch; check before output replacement; identical members also reuse despite old ZIP timestamp differences; reuse skips artifact upload and metadata commit |
 
-**Standard:** recover before rebuild; body ≠ carrier ≠ route ≠ seat; no Ding without a consequence; integration ≠ replacement.
+`python3 scripts/test_jm_m001_production_admission.py -v` tests actual public JM
+package bytes plus explicitly labelled test descendants and role authorities.
+Private RIOT carriers are tested only in the authorised Work host, never CI.
+The separate-role test registry is a fixture, not actual owner approval.
 
+Boundary: these routes have no ChatGPT upload API. This is not account-wide
+interception. Other Android/RouteCore artifact workflows have separate producer,
+keeper and deployment contracts; they are not silently redirected or blocked by
+this change. Their migration requires mapped independent keeper inputs, not a
+blanket assertion that a successful artifact build authorises native intake.
 
 ## Real product contact — KICSHIFT original portable source
 

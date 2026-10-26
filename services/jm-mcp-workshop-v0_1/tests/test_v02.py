@@ -126,6 +126,24 @@ class V02Http(unittest.TestCase):
                 self.assertIn(typ,headers['Content-Type']);self.assertGreater(len(data),200)
     def test_unknown_path_rejected(self):self.assertEqual(self.get('/etc/passwd')[0],404)
     def test_get_mcp_rejected(self):self.assertEqual(self.get('/mcp')[0],405)
+    def _origin_post(self,origin):
+        c=http.client.HTTPConnection('127.0.0.1',self.port,timeout=3)
+        body=json.dumps({'jsonrpc':'2.0','id':8,'method':'tools/list','params':{}})
+        c.request('POST','/mcp',body=body,headers={'Content-Type':'application/json','Origin':origin})
+        r=c.getresponse();code=r.status;response=r.read();c.close()
+        return code,response
+    def test_canonical_hosted_browser_origin_allowed(self):
+        code,response=self._origin_post('https://jm-mcp-workshop.onrender.com')
+        self.assertEqual(code,200,response[:250])
+    def test_same_origin_local_browser_allowed(self):
+        code,response=self._origin_post('http://127.0.0.1:'+str(self.port))
+        self.assertEqual(code,200,response[:250])
+    def test_origin_suffix_spoof_denied(self):
+        code,response=self._origin_post('https://jm-mcp-workshop.onrender.com.evil.example')
+        self.assertEqual(code,403)
+    def test_unlisted_external_site_denied(self):
+        code,response=self._origin_post('https://not-jm.example')
+        self.assertEqual(code,403)
     def test_jsonrpc_direct_run(self):
         c=http.client.HTTPConnection('127.0.0.1',self.port,timeout=3)
         payload=json.dumps({'jsonrpc':'2.0','id':42,'method':'tools/call','params':{'name':'workshop_run','arguments':{'recipe':score(),'arguments':{'score':42,'bonus':8}}}})

@@ -182,7 +182,7 @@ jobs:
           if-no-files-found: error
 
   prove-agi-runtime-factory:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy
     timeout-minutes: 15
     steps:

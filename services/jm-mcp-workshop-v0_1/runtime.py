@@ -111,6 +111,33 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
         return
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):return
+        def _safe_trace(self, status):
+            """Low-data ingress observability. Never log raw headers, URL queries, IP or payload."""
+            route=self.path.split('?',1)[0]
+            if route not in ('/mcp','/mcp/','/healthz'):return
+            raw_origin=self.headers.get('Origin')
+            if raw_origin is None:origin_class='absent'
+            elif raw_origin=='null':origin_class='null'
+            elif raw_origin=='https://gemini.google.com':origin_class='gemini_web'
+            elif raw_origin=='https://chatgpt.com':origin_class='chatgpt_web'
+            elif raw_origin=='https://jm-mcp-workshop.onrender.com':origin_class='workshop_ui'
+            elif raw_origin.startswith('http://127.0.0.1') or raw_origin.startswith('http://localhost'):
+                origin_class='local'
+            else:origin_class='other'
+            version=self.headers.get('MCP-Protocol-Version')
+            approved=PROTOCOLS+(MODERN,'2024-11-05')
+            protocol=version if version in approved else ('absent' if version is None else 'other')
+            rpc_method=getattr(self,'_jm_rpc_method','unparsed')
+            safe_methods={'initialize','notifications/initialized','ping','server/discover',
+                'tools/list','tools/call','resources/list','resources/read',
+                'prompts/list','prompts/get'}
+            if rpc_method not in safe_methods:rpc_method='other' if rpc_method!='unparsed' else 'unparsed'
+            print(_j({'event':'JM_WORKSHOP_INGRESS_CP05','http_method':self.command if self.command in
+                      ('GET','HEAD','POST','OPTIONS') else 'other',
+                      'path':route,'origin_class':origin_class,
+                      'mcp_version_header':protocol,
+                      'rpc_method':rpc_method,
+                      'status':int(status)}),flush=True)
         def _send_asset(self, name, mime):
             """Only predefined local UI assets; never read a caller-selected path."""
             data=(pathlib.Path(__file__).resolve().parent/name).read_bytes()
@@ -121,6 +148,7 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             self.send_header('X-Content-Type-Options','nosniff')
             self.send_header('Referrer-Policy','no-referrer')
             self.send_header('Content-Security-Policy', "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+            self._safe_trace(200)
             self.end_headers()
             self.wfile.write(data)
         def _cors_headers(self,status):
@@ -144,6 +172,7 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             self.send_header('Cache-Control','no-store')
             self.send_header('X-Content-Type-Options','nosniff')
             self._cors_headers(status)
+            self._safe_trace(status)
             self.end_headers()
             if data:self.wfile.write(data)
         def _origin_allowed(self):
@@ -197,6 +226,9 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             if n<1 or n>MAX_BODY:return self._send(413,{'error':'body size exceeded'})
             try:payload=json.loads(self.rfile.read(n),object_pairs_hook=_reject_duplicates)
             except (ValueError,TypeError):return self._send(400,_err(None,-32700,'invalid JSON'))
+            if isinstance(payload,dict):
+                raw_method=payload.get('method')
+                self._jm_rpc_method=raw_method if isinstance(raw_method,str) else 'other'
             modern=version_header==MODERN or (
                 isinstance(payload,dict) and isinstance(payload.get('params'),dict)
                 and isinstance(payload['params'].get('_meta'),dict)

@@ -146,3 +146,29 @@ for compatibility. Device rollout and Samsung physical tests remain HOLD.
   runtime PASS. Generic Android is not a physical Samsung Fold Ding.
 
 **Recover → inherit → improve → test → compare → Ding → promote → preserve.**
+
+
+## JM Companion Doors CP01 — optional external-app launch (26 October 2026)
+
+**Additive descendant of protected v1.0 PR #445**; keeps the same native package,
+versionCode, configuration schema, permission list, ProjectShelf, Intake, Contact,
+Return Point and Living Home CP07 approval gate. Contact 003 PR #447 is a separate
+Bixby/navigation branch and is **not** silently merged or overwritten here.
+
+- Open ROOT → **JM COMPANIONS** for eight owner-tapped HTTPS doors: JM Estate,
+  GitHub, ChatGPT, Gemini, Google Drive, Gmail, Dropbox, Microsoft Copilot.
+- Each destination has a fixed ID and exact HTTPS host. Before leaving the app,
+  the owner explicitly approves the handoff; Android may use the website or an
+  installed app. No automatic launch on reopening, no arbitrary incoming intent,
+  no password/token transfer, no provider API access and no modified APK.
+- The JM entry is first-party; every other destination is explicitly labelled
+  **EXTERNAL**. Provider branding/identities remain their own. The existing
+  Android Share intake remains opt-in and unchanged.
+- A source-level Python test checks the allowlist, confirmation, inherited
+  entry points and zero-permission manifest. Native compile and generic emulator
+  checks must complete separately; real Samsung Fold contact remains HOLD.
+- This is a usable navigation integration and a future connector mounting point,
+  **not proof of authenticated GitHub Apps, Google OAuth, OpenAI API, file
+  synchronisation or end-to-end service workflows.**
+- Do not install/upgrade over existing owner's APK without verified signing
+  compatibility. No uninstall, wipe, automatic promotion or permission change.

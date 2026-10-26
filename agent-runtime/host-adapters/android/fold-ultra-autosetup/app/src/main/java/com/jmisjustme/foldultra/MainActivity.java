@@ -276,7 +276,7 @@ public final class MainActivity extends Activity {
     }
     space(page,12);
     if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else if(tab==7)automationRoom();else if(tab==8)sessionRoom();else if(tab==9)reentryRoom();
-    else if(tab==10)intakeRoom();else contactRoom();
+    else if(tab==10)intakeRoom();else if(tab==11)contactRoom();else companionRoom();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -336,6 +336,7 @@ public final class MainActivity extends Activity {
     btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
     btn(page,"CREATIVE INTAKE / Owner-selected media →",false,()->{tab=10;render();});
     btn(page,"LIVING CONTACT / Scoped receipts →",false,()->{tab=11;render();});
+    btn(page,"JM COMPANIONS / Connected app doors →",false,()->{tab=12;render();});
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
     btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }
@@ -1060,6 +1061,34 @@ public final class MainActivity extends Activity {
       "Current JM contact receipts prove only their own local scope.",PURPLE);
     btn(page,"← JM root",false,()->{tab=0;render();});
   }
+  // CP01: first-party JM UI, explicit outbound handoff to independently owned providers.
+  // This does not claim their code, APIs, accounts or data as JM integrations.
+  void companionRoom(){
+    title("JM / COMPANION CONTACT · CP01","One working field. Many independent doors.",
+      "Open existing services via Android's supported HTTPS handoff. The provider or browser handles the account.");
+    LinearLayout guide=card("OWNER CONTROL / NO INVISIBLE CONNECTION","Every door asks first.",
+      "No passwords, tokens, private files, clipboard content or sessions are sent by JM. This is navigation, NOT provider API access or an unofficial modified APK.",TEAL);
+    label(guide,"Use Android Share back into JM only when you explicitly choose to.",13,MUTED,false);
+    for(JMCompanionDoors.Door door:JMCompanionDoors.DOORS){
+      LinearLayout c=card(door.kind+" / "+door.host,door.title,door.purpose,door.kind.equals("JM SOURCE")?TEAL:BLUE);
+      btn(c,"Open "+door.title+"  ↗",false,()->confirmCompanion(door));
+    }
+    card("NEXT / NOT CLAIMED","Authenticated integration stays separate",
+      "GitHub App grants, Google OAuth, AI provider APIs and third-party clients require their own contracts and approval. No external API credentials live in this APK.",PURPLE);
+    btn(page,"← Return to JM Root",false,()->{tab=0;render();});
+  }
+  void confirmCompanion(JMCompanionDoors.Door door){
+    new AlertDialog.Builder(this)
+      .setTitle("Open "+door.title+" outside JM?")
+      .setMessage("Destination: "+door.host+"\n\nAndroid may open an installed app or a browser. "+door.title+
+        " remains independently operated; this action sends no JM note, file or account token.")
+      .setNegativeButton("Stay in JM",null)
+      .setPositiveButton("Open external door",(d,w)->{
+        try{startActivity(JMCompanionDoors.intentFor(door.id));}
+        catch(Exception e){Toast.makeText(this,"HOLD · No supported app/browser handoff",Toast.LENGTH_LONG).show();}
+      }).show();
+  }
+
   void markContact(String event){
     new AlertDialog.Builder(this).setTitle("Record JM owner observation?")
       .setMessage("Save only your observation of "+event+

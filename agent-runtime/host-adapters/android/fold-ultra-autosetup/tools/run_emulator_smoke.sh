@@ -174,3 +174,7 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_neg
 
 # The CP07 cloud-return native intake is a distinct synthetic-on-emulator gate.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_living_home_share.py
+
+# CP01 native touch proof: route to the JM companion room, inspect explicit
+# handoff confirmation and CANCEL before any third-party app opens.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_companion_room.py

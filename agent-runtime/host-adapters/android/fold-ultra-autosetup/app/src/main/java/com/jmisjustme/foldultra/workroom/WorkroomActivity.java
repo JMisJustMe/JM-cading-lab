@@ -60,15 +60,29 @@ public final class WorkroomActivity extends Activity {
     root.setOnApplyWindowInsetsListener((v,i)->{if(Build.VERSION.SDK_INT>=30){android.graphics.Insets safe=i.getInsets(WindowInsets.Type.systemBars()|WindowInsets.Type.ime());v.setPadding(dp(16),safe.top+dp(8),dp(16),safe.bottom+dp(8));}return i;});
     TextView heading=text("JM WORKROOM",24,ACCENT);heading.setTypeface(null,Typeface.BOLD);root.addView(heading);
     root.addView(text(subtitle,13,FAINT));
-    LinearLayout nav=new LinearLayout(this);root.addView(nav);
-    navButton(nav,"Documents",()->{if(flush())listing("");});
-    navButton(nav,"New",()->{if(flush())createDialog();});
-    navButton(nav,"Open file",()->{if(flush())openFile();});
-    navButton(nav,"Tools",()->{if(flush())tools();});
+    // Real 360dp phone surfaces need two readable touch columns; the
+    // expanded Workfield retains four. Keep identical actions and order.
+    controlGrid(root,new String[]{"Documents","New","Open file","Tools"},new Runnable[]{
+      ()->{if(flush())listing("");},()->{if(flush())createDialog();},
+      ()->{if(flush())openFile();},()->{if(flush())tools();}
+    });
     content=column();root.addView(content,new LinearLayout.LayoutParams(-1,0,1));
     setContentView(root);
   }
-  void navButton(LinearLayout p,String name,Runnable r){Button b=new Button(this);b.setText(name);b.setTextSize(12);b.setAllCaps(false);b.setTextColor(INK);p.addView(b,new LinearLayout.LayoutParams(0,dp(52),1));b.setOnClickListener(v->run(r));}
+  void controlGrid(LinearLayout target,String[] names,Runnable[] actions){
+    if(names.length!=actions.length)throw new IllegalArgumentException("Control/action mismatch");
+    int perRow=getResources().getConfiguration().screenWidthDp<500?2:4;
+    for(int i=0;i<names.length;i+=perRow){
+      LinearLayout row=new LinearLayout(this);
+      target.addView(row,new LinearLayout.LayoutParams(-1,-2));
+      for(int j=i;j<Math.min(i+perRow,names.length);j++){
+        Button b=new Button(this);b.setText(names[j]);b.setTextSize(12);
+        b.setAllCaps(false);b.setTextColor(INK);b.setMinHeight(dp(52));
+        row.addView(b,new LinearLayout.LayoutParams(0,dp(52),1));
+        Runnable action=actions[j];b.setOnClickListener(v->run(action));
+      }
+    }
+  }
   EditText input(String hint,String value){EditText e=new EditText(this);e.setTextColor(INK);e.setHintTextColor(FAINT);e.setHint(hint);e.setTextSize(15);e.setText(value);return e;}
   interface Change {void changed(String value);}
   void watch(EditText e,Change change){e.addTextChangedListener(new TextWatcher(){public void beforeTextChanged(CharSequence s,int st,int c,int a){}public void onTextChanged(CharSequence s,int st,int before,int c){change.changed(s.toString());}public void afterTextChanged(Editable e){}});}
@@ -106,11 +120,11 @@ public final class WorkroomActivity extends Activity {
   void edit(){
     if(doc==null){listing("");return;}doc=store.get(doc.id);screen="edit";
     base(doc.title+" · "+doc.project+" · revision "+doc.revision);
-    LinearLayout actions=new LinearLayout(this);content.addView(actions);
-    navButton(actions,"Save revision",()->{if(flush()){doc=store.checkpoint(doc.id,doc.revision);status.setText("Saved revision "+doc.revision+" · "+WorkroomText.stats(doc.body));}});
-    navButton(actions,"Preview",()->{if(flush())preview(false);});
-    navButton(actions,"Export",()->{if(flush())export(doc.title,doc.body);});
-    navButton(actions,"History",()->{if(flush())history();});
+    controlGrid(content,new String[]{"Save revision","Preview","Export","History"},new Runnable[]{
+      ()->{if(flush()){doc=store.checkpoint(doc.id,doc.revision);status.setText("Saved revision "+doc.revision+" · "+WorkroomText.stats(doc.body));}},
+      ()->{if(flush())preview(false);},()->{if(flush())export(doc.title,doc.body);},
+      ()->{if(flush())history();}
+    });
     status=text((doc.body.equals(doc.saved)?"Saved":"Local draft")+" · "+WorkroomText.stats(doc.body),12,FAINT);content.addView(status);
     editor=input("Write or paste your source here",doc.body);editor.setGravity(Gravity.TOP|Gravity.START);
     editor.setTypeface(Typeface.MONOSPACE);editor.setTextSize(getResources().getConfiguration().screenWidthDp>=600?17:15);

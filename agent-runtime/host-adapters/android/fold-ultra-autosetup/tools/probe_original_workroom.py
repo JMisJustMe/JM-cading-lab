@@ -17,7 +17,13 @@ def equal_before_after(before,after,keys):
         assert before.get(key)==after.get(key),(key,"unexpected non-JM-Structure mutation")
 
 def main():
-    # CP01–CP03 have run. Enter JM through its real root button.
+    # Match the bounded physical touch coordinate field of the inherited
+    # auditor: 720x1600 / 320 dpi. On the runner default 1080x2400,
+    # its safety rule refuses buttons beyond y=1500, even when visible.
+    # Device screen-size change applies ONLY to this disposable emulator.
+    adb("shell","wm","size","720x1600")
+    adb("shell","wm","density","320")
+    # Fresh standalone or inherited mode: enter through genuine native UI.
     adb("shell","am","force-stop",PKG)
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(1.5)

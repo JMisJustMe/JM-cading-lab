@@ -9,6 +9,7 @@ any future write capability.  Separate from JM Build Mesh.
 """
 from __future__ import annotations
 import json
+import pathlib
 import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -102,12 +103,25 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
         return
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):return
+        def _send_asset(self, name, mime):
+            """Only predefined local UI assets; never read a caller-selected path."""
+            data=(pathlib.Path(__file__).resolve().parent/name).read_bytes()
+            self.send_response(200)
+            self.send_header('Content-Type',mime)
+            self.send_header('Content-Length',str(len(data)))
+            self.send_header('Cache-Control','no-store')
+            self.send_header('X-Content-Type-Options','nosniff')
+            self.send_header('Referrer-Policy','no-referrer')
+            self.send_header('Content-Security-Policy', "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+            self.end_headers()
+            self.wfile.write(data)
         def _send(self,status,body,ctype='application/json'):
             data=_j(body).encode('utf-8') if body is not None else b''
             self.send_response(status)
             self.send_header('Content-Type',ctype)
             self.send_header('Content-Length',str(len(data)))
             self.send_header('Cache-Control','no-store')
+            self.send_header('X-Content-Type-Options','nosniff')
             self.end_headers()
             if data:self.wfile.write(data)
         def _origin_allowed(self):
@@ -123,7 +137,10 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             import hmac
             return hmac.compare_digest(self.headers.get('Authorization',''), 'Bearer '+token)
         def do_GET(self):
-            if self.path in ('/','/healthz'):
+            if self.path in ('/','/workshop') and name=='JM MCP WORKSHOP': return self._send_asset('workshop.html','text/html; charset=utf-8')
+            if self.path=='/workshop.css' and name=='JM MCP WORKSHOP': return self._send_asset('workshop.css','text/css; charset=utf-8')
+            if self.path=='/workshop.js' and name=='JM MCP WORKSHOP': return self._send_asset('workshop.js','application/javascript; charset=utf-8')
+            if self.path=='/healthz':
                 self._send(200,{'service':name,'version':version,'mcp_endpoint':'/mcp',
                       'safety':'READ_ONLY_DECLARATIVE','authorization_required':bool(os.environ.get('JM_WORKSHOP_TOKEN'))})
             elif self.path=='/mcp':self._send(405,{'error':'Streamable HTTP: POST JSON-RPC to /mcp. SSE GET is not enabled.'})

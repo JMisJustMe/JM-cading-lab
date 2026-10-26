@@ -64,17 +64,24 @@ def tap(fragment:str,label:str):
     # down through the real screen. Never tap guessed coordinates.
     for index in range(12):
         nodes=dump("find_"+label+"_"+str(index))
-        found=match(nodes,fragment)
-        # Favor exact or prefix text and visible Button nodes.
+        # A text label is never an interactive tap target. Require a real
+        # android.widget.Button; refuse touches obstructed by Android bars.
+        found=[n for n in match(nodes,fragment)
+               if n.get("class")=="android.widget.Button"]
         found=sorted(found,key=lambda n:(
-            0 if n.get("text","").startswith(fragment) else 1,
-            0 if n.get("class")=="android.widget.Button" else 1))
+            0 if n.get("text","").startswith(fragment) else 1))
         if found:
             text=found[0].get("text","")
             bounds=found[0].get("bounds","")
             m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",bounds)
             if not m:raise AssertionError(f"Control lacks bounds {label}: {text}")
             x1,y1,x2,y2=map(int,m.groups())
+            if y1<110 or y2>1500:
+                # Bring the button fully inside the safe touch area; don't tap
+                # system chrome or infer a press from UI hierarchy alone.
+                if y1<110: swipe("down")
+                else: swipe("up")
+                continue
             adb("shell","input","tap",str((x1+x2)//2),str((y1+y2)//2))
             time.sleep(.55)
             RECEIPTS.append({"check":label,"result":"PASS","control":text})
@@ -90,27 +97,42 @@ def pref_values():
     return {n.get("name"):n.get("value",n.text) for n in root}
 
 
-def advance_stage(button, expected, label, previous):
-    """Acknowledge a *recorded* Pixel Launcher ANR, then repeat one real tap.
+def scroll_header(fragment, label):
+    """Find the actual top-of-stage native heading, never a guessed state."""
+    for i in range(12):
+        nodes=dump("header_"+label+"_"+str(i))
+        if match(nodes,fragment):
+            RECEIPTS.append({"check":label,"result":"PASS",
+                             "visible_header":fragment})
+            return
+        swipe("down")
+    capture("FAIL_HEADER_"+label)
+    raise AssertionError("Expected JM stage heading not visible: "+fragment)
 
-    Never treat ANR dismissal or a synthetic preference write as a JM PASS.
-    Retry only if the old stage is still visible and environment evidence exists.
+
+def advance_stage(button, expected, label, previous, expected_number):
+    """One real touch, monotonic saved state, then visible UI.
+
+    Pixel Launcher ANR can obstruct a press. Only one bounded retry may occur
+    if the previous stage is truly still saved and visible. Never change prefs.
     """
+    before=pref_values()
+    assert int(before.get("stage","0"))==expected_number-1, (label,"unexpected starting stage",before.get("stage"))
     tap(button,"advance_"+label)
-    try:
-        has(expected,label)
-    except AssertionError:
-        marker=OUT/("UI_check_"+label+"_ENVIRONMENT.json")
-        if not marker.exists():
-            raise
-        events=json.loads(marker.read_text())
-        if not any("Pixel Launcher ANR" in e.get("obstruction","") for e in events):
-            raise
-        has(previous,label+"_pixel_anr_old_stage_guard")
-        tap(button,"advance_"+label+"_pixel_anr_replay")
-        has(expected,label+"_after_pixel_anr_replay")
-        RECEIPTS.append({"check":label+"_pixel_launcher_recovery",
-                         "result":"PASS","scope":"environmental overlay, one bounded real tap"})
+    time.sleep(.65)
+    current=pref_values()
+    if current.get("stage")!=str(expected_number):
+        # If actual native state did not advance, recover the old heading and
+        # one real button before issuing a second bounded native touch.
+        assert current.get("stage")==str(expected_number-1),(label,"unexpected stage",current.get("stage"))
+        scroll_header(previous,label+"_old_stage")
+        tap(button,"advance_"+label+"_bounded_retry")
+        time.sleep(.65)
+        current=pref_values()
+    assert current.get("stage")==str(expected_number),(label,"native stage did not advance",current.get("stage"))
+    scroll_header(expected,label+"_rendered")
+    RECEIPTS.append({"check":label+"_native_stage",
+                     "result":"PASS","stage":expected_number,"physical_fold":False})
 
 def main():
     # Previous emulator gate leaves the disposable installation in 'ready=false'
@@ -122,10 +144,10 @@ def main():
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(2)
     has("INITIAL OPENING","arrival")
-    advance_stage("Begin the opening","YOUR PRIORITY","priority","INITIAL OPENING")
-    advance_stage("Continue","SAME ROOT","paired_fields","YOUR PRIORITY")
-    advance_stage("Continue","GALAXY + JM","galaxy_discovery","SAME ROOT")
-    advance_stage("Continue","READY / USER AUTHORITY","owner_entry","GALAXY + JM")
+    advance_stage("Begin the opening","YOUR PRIORITY","priority","INITIAL OPENING",1)
+    advance_stage("Continue","SAME ROOT","paired_fields","YOUR PRIORITY",2)
+    advance_stage("Continue","GALAXY + JM","galaxy_discovery","SAME ROOT",3)
+    advance_stage("Continue","READY / USER AUTHORITY","owner_entry","GALAXY + JM",4)
     tap("ENTER JM FOLD ULTRA","enter_owner_workfield")
     has("JM PAIRED ROOT","native_root")
     p=pref_values()

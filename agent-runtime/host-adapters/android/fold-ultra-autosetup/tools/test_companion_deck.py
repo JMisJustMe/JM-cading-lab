@@ -30,7 +30,8 @@ class CompanionDeck(unittest.TestCase):
         self.assertIn("void companionRoom()",MAIN)
         self.assertIn("void confirmCompanion(JMCompanionDoors.Door door)",MAIN)
         self.assertIn('tab=12;render();',MAIN)
-        self.assertIn('else if(tab==11)contactRoom();else companionRoom();',MAIN)
+        self.assertIn('else if(tab==12)companionRoom();',MAIN)
+        self.assertIn('else JMOriginalWorkroom.render(this);',MAIN)
         self.assertIn('.setNegativeButton("Stay in JM",null)',MAIN)
         self.assertIn('.setPositiveButton("Open external door"',MAIN)
         self.assertIn("JMCompanionDoors.intentFor(door.id)",MAIN)
@@ -41,7 +42,7 @@ class CompanionDeck(unittest.TestCase):
         self.assertNotIn("Authorization",JAVA)
         self.assertNotIn("READ_EXTERNAL_STORAGE",JAVA)
     def test_owner_scoped_trace_and_return_path(self):
-        self.assertIn('if(last>=0&&last<=12)tab=last;',MAIN)
+        self.assertIn('if(last>=0&&last<=13)tab=last;',MAIN)
         self.assertIn('Open JM source intake',MAIN)
         self.assertIn('tab=10;render();',MAIN)
         self.assertIn('Open JM contact receipts',MAIN)

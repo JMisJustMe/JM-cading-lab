@@ -139,6 +139,13 @@ jobs:
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
+          # Source-only MMZG public delivery organ. Carry only the four
+          # public assets, never unrelated receipts or owner data.
+          mkdir -p cloudflare-estate/mmzg-runtime-v0.6
+          for file in index.html mmzg_runtime_core_v0_6.js manifest.webmanifest service_worker.js; do
+            cp "mmzg-runtime-v0.6/$file" "cloudflare-estate/mmzg-runtime-v0.6/$file"
+          done
+
           # Source carriage remains in GitHub custody; the canonical Cloudflare carrier serves the reconstructed body.
           mkdir -p cloudflare-estate/assets
           cp -a assets/ecostate-v3 cloudflare-estate/assets/ecostate-v3
@@ -270,6 +277,12 @@ jobs:
         run: |
           set -euo pipefail
           test -s cloudflare-estate/index.html
+          # Require exact original MMZG source bytes in the published bundle.
+          for file in index.html mmzg_runtime_core_v0_6.js manifest.webmanifest service_worker.js; do
+            test -s "cloudflare-estate/mmzg-runtime-v0.6/$file"
+            cmp "mmzg-runtime-v0.6/$file" "cloudflare-estate/mmzg-runtime-v0.6/$file"
+          done
+          echo 'MMZG v0.6 Cloudflare four-source byte custody PASS'
           test -s cloudflare-estate/estate-return-route.js
           grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/career/index.html
@@ -447,6 +460,10 @@ jobs:
             ['/recovery/', 'data-jm-estate-integration="v1"'],
             ['/games-beyond/', 'Games&Beyond'],
             ['/market-lab/', 'JM Market Ecosystem Lab'],
+            ['/mmzg-runtime-v0.6/index.html', 'MMZG Runtime v0.6'],
+            ['/mmzg-runtime-v0.6/mmzg_runtime_core_v0_6.js', 'MMZG-BOUNDARY-EXCEED-0.6'],
+            ['/mmzg-runtime-v0.6/manifest.webmanifest', 'JM MorseMinus ZeroGrip Runtime'],
+            ['/mmzg-runtime-v0.6/service_worker.js', 'MMZG_CACHE_PREFIX'],
             ['/visual-story/', 'FIRST WATCHABLE SCENE'],
           ];
           let pending=checks.slice();

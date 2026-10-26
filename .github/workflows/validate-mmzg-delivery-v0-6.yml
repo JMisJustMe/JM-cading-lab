@@ -1,0 +1,44 @@
+name: MMZG v0.6 Source and Offline Delivery Proof
+
+on:
+  pull_request:
+    paths:
+      - 'mmzg-runtime-v0.6/**'
+      - 'scripts/test_mmzg_delivery_v0_6.js'
+      - '.github/workflows/validate-mmzg-delivery-v0-6.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'mmzg-runtime-v0.6/**'
+      - 'scripts/test_mmzg_delivery_v0_6.js'
+      - '.github/workflows/validate-mmzg-delivery-v0-6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    name: 32 native-JS source and simulated offline tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check both original runtime and delivery source syntax
+        run: |
+          set -euo pipefail
+          node --check mmzg-runtime-v0.6/mmzg_runtime_core_v0_6.js
+          node --check mmzg-runtime-v0.6/service_worker.js
+          node --check scripts/test_mmzg_delivery_v0_6.js
+      - name: Original MMZG execution plus 32 isolated service worker host simulations
+        run: node scripts/test_mmzg_delivery_v0_6.js
+      - name: Report contact boundary without overclaim
+        run: |
+          echo 'SOURCE_AND_VM_SIMULATION=PASS'
+          echo 'ACTUAL_BROWSER_INSTALL=HOLD'
+          echo 'LIVE_WEBSITE_DELIVERY=HOLD'
+          echo 'OWNER_FOLD_DEVICE_CONTACT=HOLD'
+          echo 'NATIVE_ANDROID_APK=NOT_CLAIMED'

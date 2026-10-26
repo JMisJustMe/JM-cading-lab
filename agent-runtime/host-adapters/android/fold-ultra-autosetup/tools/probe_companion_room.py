@@ -30,6 +30,12 @@ def main():
     has("Open GitHub outside JM?","companions_approval_gate")
     capture("COMPANIONS_APPROVAL_DIALOG")
     tap("Stay in JM","companions_cancel_launch")
+    # The dialog was opened below the fold. Dismissal rightly keeps that scroll
+    # position, so a top-only UI assertion would be a false negative.
+    has("Open GitHub","companions_cancel_stays_on_same_card")
+    from audit_ui_flow import swipe
+    for _ in range(9):
+        swipe("down")
     has("One working field. Many independent doors.","companions_cancel_returns")
     after=pref_values()
     protected=["root","project.shelf","session.deck","reentry.points",

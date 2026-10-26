@@ -123,6 +123,16 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             self.send_header('Content-Security-Policy', "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
             self.end_headers()
             self.wfile.write(data)
+        def _cors_headers(self):
+            """Browser contact: allow only exact admitted origins (never wildcard)."""
+            origin=self.headers.get('Origin','')
+            if origin and self._origin_allowed():
+                self.send_header('Access-Control-Allow-Origin',origin)
+                self.send_header('Vary','Origin')
+                self.send_header('Access-Control-Allow-Methods','POST, OPTIONS')
+                self.send_header('Access-Control-Allow-Headers',
+                    'Accept, Authorization, Content-Type, MCP-Protocol-Version, Mcp-Method, Mcp-Name, Mcp-Session-Id, Last-Event-ID')
+                self.send_header('Access-Control-Max-Age','600')
         def _send(self,status,body,ctype='application/json'):
             data=_j(body).encode('utf-8') if body is not None else b''
             self.send_response(status)
@@ -130,6 +140,7 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
             self.send_header('Content-Length',str(len(data)))
             self.send_header('Cache-Control','no-store')
             self.send_header('X-Content-Type-Options','nosniff')
+            self._cors_headers()
             self.end_headers()
             if data:self.wfile.write(data)
         def _origin_allowed(self):
@@ -158,6 +169,17 @@ def serve(name,version,tools,handlers,resources=None,read_resource=None):
                       'safety':'READ_ONLY_DECLARATIVE','authorization_required':bool(os.environ.get('JM_WORKSHOP_TOKEN'))})
             elif self.path=='/mcp':self._send(405,{'error':'Streamable HTTP: POST JSON-RPC to /mcp. SSE GET is not enabled.'})
             else:self._send(404,{'error':'unknown path'})
+        def do_OPTIONS(self):
+            # A browser sends preflight before JSON-RPC POST (Content-Type application/json).
+            if self.path!='/mcp':return self._send(404,{'error':'unknown path'})
+            if not self._origin_allowed():return self._send(403,{'error':'Origin forbidden'})
+            requested_method=self.headers.get('Access-Control-Request-Method','').upper()
+            if requested_method not in ('','POST'):return self._send(405,{'error':'Method forbidden'})
+            allowed={'accept','authorization','content-type','mcp-protocol-version',
+                     'mcp-method','mcp-name','mcp-session-id','last-event-id'}
+            requested={h.strip().lower() for h in self.headers.get('Access-Control-Request-Headers','').split(',') if h.strip()}
+            if not requested.issubset(allowed):return self._send(403,{'error':'Request header forbidden'})
+            return self._send(204,None)
         def do_POST(self):
             if self.path!='/mcp':return self._send(404,{'error':'unknown path'})
             if not self._origin_allowed():return self._send(403,{'error':'Origin forbidden'})

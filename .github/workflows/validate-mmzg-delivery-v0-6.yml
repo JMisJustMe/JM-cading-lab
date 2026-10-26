@@ -1,16 +1,18 @@
-name: MMZG v0.6 Source and Offline Delivery Proof
+name: MMZG v0.6 Real Browser and Offline Delivery Proof
 
 on:
   pull_request:
     paths:
       - 'mmzg-runtime-v0.6/**'
       - 'scripts/test_mmzg_delivery_v0_6.js'
+      - 'scripts/test_mmzg_browser_v0_6.cjs'
       - '.github/workflows/validate-mmzg-delivery-v0-6.yml'
   push:
     branches: [main]
     paths:
       - 'mmzg-runtime-v0.6/**'
       - 'scripts/test_mmzg_delivery_v0_6.js'
+      - 'scripts/test_mmzg_browser_v0_6.cjs'
       - '.github/workflows/validate-mmzg-delivery-v0-6.yml'
   workflow_dispatch:
 
@@ -19,26 +21,38 @@ permissions:
 
 jobs:
   prove:
-    name: 32 native-JS source and simulated offline tests
+    name: 32 source simulations and 32 real Chrome offline runs
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check both original runtime and delivery source syntax
+      - name: Check source syntax
         run: |
           set -euo pipefail
           node --check mmzg-runtime-v0.6/mmzg_runtime_core_v0_6.js
           node --check mmzg-runtime-v0.6/service_worker.js
           node --check scripts/test_mmzg_delivery_v0_6.js
-      - name: Original MMZG execution plus 32 isolated service worker host simulations
+          node --check scripts/test_mmzg_browser_v0_6.cjs
+      - name: Original runtime and 32 independent scoped offline host simulations
         run: node scripts/test_mmzg_delivery_v0_6.js
-      - name: Report contact boundary without overclaim
+      - name: Recover Chromium browser donor and local HTTP contact test driver
+        shell: bash
         run: |
-          echo 'SOURCE_AND_VM_SIMULATION=PASS'
-          echo 'ACTUAL_BROWSER_INSTALL=HOLD'
-          echo 'LIVE_WEBSITE_DELIVERY=HOLD'
-          echo 'OWNER_FOLD_DEVICE_CONTACT=HOLD'
+          set -euo pipefail
+          CHROME_BIN="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || true)"
+          test -n "$CHROME_BIN" || { echo 'HOLD: no Chrome runtime on runner'; exit 1; }
+          echo "CHROME_BIN=$CHROME_BIN" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_CORE_DIR=$RUNNER_TEMP/mmzg-browser/node_modules/playwright-core" >> "$GITHUB_ENV"
+          npm install --prefix "$RUNNER_TEMP/mmzg-browser" --no-save --no-package-lock --ignore-scripts playwright-core@1.56.1
+      - name: Real Chrome install, MMZG execution and offline reload
+        run: node scripts/test_mmzg_browser_v0_6.cjs
+      - name: Report proof boundaries
+        run: |
+          echo 'SOURCE_VM_SIMULATION=PASS_32'
+          echo 'REAL_CHROME_LOCAL_HTTP_OFFLINE=PASS_32'
+          echo 'PUBLIC_SITE_DEPLOYMENT=HOLD'
+          echo 'SAMSUNG_FOLD_CONTACT=HOLD'
           echo 'NATIVE_ANDROID_APK=NOT_CLAIMED'

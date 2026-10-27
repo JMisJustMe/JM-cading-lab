@@ -159,7 +159,7 @@ export class JMNetworkFederation {
         TraceBox:traceCount,
         Dings:queueDing?.dingDigest??null,
         CombiBind:binding.receipt.resultDigest,
-        ChoiceBox:choice.receipt.resultDigest
+        'Choice Box':choice.receipt.resultDigest
       },
       traceDigest:digest(trace.replay(traceId).map(x=>({type:x.type,body:x.body,proofDigest:x.proofDigest}))),
       messageDigest:digest(e.message),

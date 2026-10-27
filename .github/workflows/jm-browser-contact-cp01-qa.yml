@@ -1,0 +1,49 @@
+name: JM Browser Contact CP01 actual browser proof
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "access/browser-contact.html"
+      - "access/index.html"
+      - "tests/jm-browser-contact-cp01.spec.cjs"
+      - ".github/workflows/jm-browser-contact-cp01-qa.yml"
+  push:
+    branches: [main]
+    paths:
+      - "access/browser-contact.html"
+      - "access/index.html"
+      - "tests/jm-browser-contact-cp01.spec.cjs"
+      - ".github/workflows/jm-browser-contact-cp01-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contact-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Static integrity and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s access/browser-contact.html
+          grep -Fq 'JM Browser Contact CP01' access/index.html
+          grep -Fq 'Browser setting ≠ MCP tool execution' access/browser-contact.html
+          node --check tests/jm-browser-contact-cp01.spec.cjs
+      - name: Install browser test runner
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve real origin
+        run: |
+          python3 -m http.server 4187 --bind 127.0.0.1 >/tmp/jm-browser-contact-cp01.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4187/access/browser-contact.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Exercise actual Chromium browser worker, IndexedDB and reload
+        run: node tests/jm-browser-contact-cp01.spec.cjs

@@ -41,7 +41,8 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,fmt,*args):
         # Don't log URL query values or credentials.
         pass
-    def cors_headers(self):
+    def cors_headers(self,status):
+        if self.command=='OPTIONS' and status!=204:return
         origin=self.headers.get('Origin','')
         if origin and origin in self.server.browser_origins:
             self.send_header('Access-Control-Allow-Origin',origin)
@@ -59,7 +60,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Referrer-Policy','no-referrer')
         self.send_header('X-Frame-Options','DENY')
-        self.cors_headers()
+        self.cors_headers(status)
         for k,v in (headers or {}).items():self.send_header(k,v)
         self.end_headers()
         if data:self.wfile.write(data)

@@ -96,7 +96,7 @@ export async function sendDeviceContact({host,port,token,certPem,pin,packet}){
       res.on('end',()=>{
         const answer=Buffer.concat(data).toString('utf8');
         if(!eq(res.headers['x-jm-response-signature'],sign(key,answer)))return reject(err('RESPONSE_SIGNATURE_INVALID'));
-        let parsed;try{parsed=JSON.parse(answer);}catch{return reject(err('RESPONSE_INVALID_JSON');}
+        let parsed;try{parsed=JSON.parse(answer);}catch{return reject(err('RESPONSE_INVALID_JSON'));}
         if(parsed?.schema!==PROTOCOL||(parsed.result==='persisted'&&(parsed.id!==packet.id||!/^[a-f0-9]{64}$/.test(parsed.sha256||''))))return reject(err('RESPONSE_SCHEMA_INVALID'));
         resolve({status:res.statusCode,...parsed});
       });

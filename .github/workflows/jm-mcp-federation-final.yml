@@ -24,3 +24,24 @@ jobs:
           node --check app-commons-cp03/mcp-stdio.mjs
           node --check app-commons-cp03/http-mcp-cp06.mjs
           node --test app-commons-cp03/test-http-cp06.mjs
+      - name: Reconstruct verified standalone MCP ZIP with exact SHA-256
+        run: |
+          mkdir -p dist
+          python3 - <<'PY'
+          import base64,hashlib,pathlib
+          f=pathlib.Path('services/jm-federation-receipt-cp01/standalone_mcp_zip.b64')
+          encoded=f.read_text().splitlines()[-1]
+          archive=base64.b64decode(encoded,validate=True)
+          digest=hashlib.sha256(archive).hexdigest()
+          assert digest=='b9d04050d20edfebd454a7ad3ecceee00ee9f4d8a81481b80814ca2ba4ba8faa'
+          assert len(archive)==10100
+          pathlib.Path('dist/JM_MCP_jm_federation_receipt_cp01_v0_2.zip').write_bytes(archive)
+          print('PACKAGE_FLAZ_PASS',digest,len(archive))
+          PY
+      - name: Seat independent executable CP01 as a verified downloadable Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_MCP_FEDERATION_RECEIPT_CP01_STANDALONE
+          path: dist/JM_MCP_jm_federation_receipt_cp01_v0_2.zip
+          if-no-files-found: error
+          retention-days: 30

@@ -98,14 +98,14 @@ test('32 mixed original MCP operations across source and capsules',async()=>{
   for(let i=0;i<32;i++){
     const k=i%4,iteration=Math.floor(i/4);
     if(k===0){
-      const source='# JM Heading '+iteration+'\\n- [ ] Task '+iteration;
+      const source='# JM Heading '+iteration+'\n- [ ] Task '+iteration;
       const r=await invoke('jm_original_inspect',{source});
       assert.equal(r.status,200,'inspect '+iteration);
       assert.equal(r.data.result.isError,false);
       assert.equal(r.data.result.structuredContent.headings,1);
       assert.equal(r.data.result.structuredContent.tasks,1);
     }else if(k===1){
-      const r=await invoke('jm_original_compare',{before:'round '+iteration+'\\nold',after:'round '+iteration+'\\nnew'});
+      const r=await invoke('jm_original_compare',{before:'round '+iteration+'\nold',after:'round '+iteration+'\nnew'});
       assert.equal(r.status,200,'compare '+iteration);
       assert.equal(r.data.result.structuredContent.added,1);
       assert.equal(r.data.result.structuredContent.removed,1);

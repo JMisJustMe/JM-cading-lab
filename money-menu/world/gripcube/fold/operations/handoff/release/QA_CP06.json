@@ -1,0 +1,518 @@
+{
+  "schema": "JM.BusinessWorld.CP06.QA/1.0",
+  "total": 121,
+  "passed": 121,
+  "checks": [
+    {
+      "name": "fold-portrait: CP06 initialized",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: 8 source offers",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: source offers includes Secrets of Silence",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: live gates all false",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: 6 faces remain",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: CP06 desk visible",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: CP05 preserved hidden",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: CP05 tab restores CP05",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: CP06 restore",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: missing fields rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: complete draft enables export",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: parsed source-matched draft",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: no payment claim in draft",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: shown live hold",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: source-mutated draft rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: forged live payment rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: tampered payment environment rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: edits invalidate previously prepared pack",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: three-decimal price rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: negative price rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: release gate opens",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: no overflow",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: no unsolicited requests",
+      "pass_": true
+    },
+    {
+      "name": "fold-portrait: no JS exceptions",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: CP06 initialized",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: 8 source offers",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: source offers includes Secrets of Silence",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: live gates all false",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: 6 faces remain",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: CP06 desk visible",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: CP05 preserved hidden",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: CP05 tab restores CP05",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: CP06 restore",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: missing fields rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: complete draft enables export",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: parsed source-matched draft",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: no payment claim in draft",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: shown live hold",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: source-mutated draft rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: forged live payment rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: tampered payment environment rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: edits invalidate previously prepared pack",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: three-decimal price rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: negative price rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: release gate opens",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: no overflow",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: no unsolicited requests",
+      "pass_": true
+    },
+    {
+      "name": "fold-landscape: no JS exceptions",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: CP06 initialized",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: 8 source offers",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: source offers includes Secrets of Silence",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: live gates all false",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: 6 faces remain",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: CP06 desk visible",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: CP05 preserved hidden",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: CP05 tab restores CP05",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: CP06 restore",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: missing fields rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: complete draft enables export",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: parsed source-matched draft",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: no payment claim in draft",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: shown live hold",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: source-mutated draft rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: forged live payment rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: tampered payment environment rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: edits invalidate previously prepared pack",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: three-decimal price rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: negative price rejected",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: release gate opens",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: no overflow",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: no unsolicited requests",
+      "pass_": true
+    },
+    {
+      "name": "fold-short-landscape: no JS exceptions",
+      "pass_": true
+    },
+    {
+      "name": "tablet: CP06 initialized",
+      "pass_": true
+    },
+    {
+      "name": "tablet: 8 source offers",
+      "pass_": true
+    },
+    {
+      "name": "tablet: source offers includes Secrets of Silence",
+      "pass_": true
+    },
+    {
+      "name": "tablet: live gates all false",
+      "pass_": true
+    },
+    {
+      "name": "tablet: 6 faces remain",
+      "pass_": true
+    },
+    {
+      "name": "tablet: CP06 desk visible",
+      "pass_": true
+    },
+    {
+      "name": "tablet: CP05 preserved hidden",
+      "pass_": true
+    },
+    {
+      "name": "tablet: CP05 tab restores CP05",
+      "pass_": true
+    },
+    {
+      "name": "tablet: CP06 restore",
+      "pass_": true
+    },
+    {
+      "name": "tablet: missing fields rejected",
+      "pass_": true
+    },
+    {
+      "name": "tablet: complete draft enables export",
+      "pass_": true
+    },
+    {
+      "name": "tablet: parsed source-matched draft",
+      "pass_": true
+    },
+    {
+      "name": "tablet: no payment claim in draft",
+      "pass_": true
+    },
+    {
+      "name": "tablet: shown live hold",
+      "pass_": true
+    },
+    {
+      "name": "tablet: source-mutated draft rejected",
+      "pass_": true
+    },
+    {
+      "name": "tablet: forged live payment rejected",
+      "pass_": true
+    },
+    {
+      "name": "tablet: tampered payment environment rejected",
+      "pass_": true
+    },
+    {
+      "name": "tablet: edits invalidate previously prepared pack",
+      "pass_": true
+    },
+    {
+      "name": "tablet: three-decimal price rejected",
+      "pass_": true
+    },
+    {
+      "name": "tablet: negative price rejected",
+      "pass_": true
+    },
+    {
+      "name": "tablet: release gate opens",
+      "pass_": true
+    },
+    {
+      "name": "tablet: no overflow",
+      "pass_": true
+    },
+    {
+      "name": "tablet: no unsolicited requests",
+      "pass_": true
+    },
+    {
+      "name": "tablet: no JS exceptions",
+      "pass_": true
+    },
+    {
+      "name": "laptop: CP06 initialized",
+      "pass_": true
+    },
+    {
+      "name": "laptop: 8 source offers",
+      "pass_": true
+    },
+    {
+      "name": "laptop: source offers includes Secrets of Silence",
+      "pass_": true
+    },
+    {
+      "name": "laptop: live gates all false",
+      "pass_": true
+    },
+    {
+      "name": "laptop: 6 faces remain",
+      "pass_": true
+    },
+    {
+      "name": "laptop: CP06 desk visible",
+      "pass_": true
+    },
+    {
+      "name": "laptop: CP05 preserved hidden",
+      "pass_": true
+    },
+    {
+      "name": "laptop: CP05 tab restores CP05",
+      "pass_": true
+    },
+    {
+      "name": "laptop: CP06 restore",
+      "pass_": true
+    },
+    {
+      "name": "laptop: missing fields rejected",
+      "pass_": true
+    },
+    {
+      "name": "laptop: complete draft enables export",
+      "pass_": true
+    },
+    {
+      "name": "laptop: parsed source-matched draft",
+      "pass_": true
+    },
+    {
+      "name": "laptop: no payment claim in draft",
+      "pass_": true
+    },
+    {
+      "name": "laptop: shown live hold",
+      "pass_": true
+    },
+    {
+      "name": "laptop: source-mutated draft rejected",
+      "pass_": true
+    },
+    {
+      "name": "laptop: forged live payment rejected",
+      "pass_": true
+    },
+    {
+      "name": "laptop: tampered payment environment rejected",
+      "pass_": true
+    },
+    {
+      "name": "laptop: edits invalidate previously prepared pack",
+      "pass_": true
+    },
+    {
+      "name": "laptop: three-decimal price rejected",
+      "pass_": true
+    },
+    {
+      "name": "laptop: negative price rejected",
+      "pass_": true
+    },
+    {
+      "name": "laptop: release gate opens",
+      "pass_": true
+    },
+    {
+      "name": "laptop: no overflow",
+      "pass_": true
+    },
+    {
+      "name": "laptop: no unsolicited requests",
+      "pass_": true
+    },
+    {
+      "name": "laptop: no JS exceptions",
+      "pass_": true
+    },
+    {
+      "name": "parent source exactly recovered",
+      "pass_": true
+    }
+  ],
+  "conditions": [
+    [
+      "fold-portrait",
+      390,
+      844
+    ],
+    [
+      "fold-landscape",
+      815,
+      610
+    ],
+    [
+      "fold-short-landscape",
+      740,
+      480
+    ],
+    [
+      "tablet",
+      768,
+      1024
+    ],
+    [
+      "laptop",
+      1440,
+      900
+    ]
+  ]
+}

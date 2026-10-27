@@ -55,8 +55,11 @@ def pinned_sha(value):
 
 
 def require_existing_regular_file(path):
-    path = Path(path).resolve(strict=True)
-    if not path.is_file() or path.is_symlink():
+    path = Path(path).absolute()
+    if path.is_symlink():
+        hold("SYMLINK_CARRIER_REFUSED")
+    path = path.resolve(strict=True)
+    if not path.is_file():
         hold("SOURCE_NOT_REGULAR_FILE")
     if path.stat().st_size > MAX_BYTES:
         hold("SOURCE_TOO_LARGE")

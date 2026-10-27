@@ -1,0 +1,58 @@
+{
+  "schema": "JM.BusinessWorld.CP08.IntegrityManifest/1",
+  "issued": "2026-10-27",
+  "parent": "CP07 Stripe Evidence Gateway",
+  "parent_gateway_sha256": "b178934f459049cab55a376c4476d837138ad34eadff752879879bf6fb8cd7d1",
+  "claim": "LOCAL_SANDBOX_EDITION_FLAZ_54_OF_54_TESTS",
+  "stripe_connect": "HISTORICAL_SANDBOX_PROVIDER_READBACK_ONLY",
+  "files": {
+    "gateway.mjs": {
+      "bytes": 14732,
+      "sha256": "29ae3c7c002e5e84db22be9fc0001a0babaae14e963769cabf595a96c60a4120"
+    },
+    "gateway.test.mjs": {
+      "bytes": 18302,
+      "sha256": "c57361190afa4f4a76fad931ad3b39beedc6978db34efdeab8c710eee4115466"
+    },
+    "sandbox-demo.html": {
+      "bytes": 8404,
+      "sha256": "befcd9841f73ec7d3aa687f092eea0f75be7d0238916acad1b047df6280410bb"
+    },
+    "package.json": {
+      "bytes": 289,
+      "sha256": "8da74a64e47cf251e220e7d8c5025bdc36406f22a521e28a776c24f054b1c957"
+    },
+    "00_OPEN_FIRST.md": {
+      "bytes": 4698,
+      "sha256": "069aabafe478fa2e3d4516ab6dfd1473a67b3e4eda79016e4a1af5142b23076d"
+    },
+    "CP08_SECURITY_AND_RELEASE_GATES.md": {
+      "bytes": 3961,
+      "sha256": "8c7c256cbb6407aee3dea7ab3273a4be13ac7805b912f674a3f9b7e2c2c37868"
+    },
+    "CP08_BIAT_FLAZ_RECEIPT.md": {
+      "bytes": 2349,
+      "sha256": "54d91f9fb60ec678f27ce283ce3a3be4e675a18fe98cb685352c1ab50f04c4ca"
+    },
+    "PROVIDER_CONTACT_CP08.json": {
+      "bytes": 820,
+      "sha256": "4cc4214881a4be2b7a5e97cc6f806244b89b39750c6a0a0080ee35776260b3d1"
+    },
+    "TEST_RESULTS.txt": {
+      "bytes": 9303,
+      "sha256": "b72bcc6455d35cdac4b0f3ed47425cf3d086b3a2eb29477751665573e8380c56"
+    },
+    "CP08_FOLD_PORTRAIT_SANDBOX_OPERATOR.png": {
+      "bytes": 85208,
+      "sha256": "ddad1f96db7b3eb459f92a87d6541991c343c6577d8bf038489a547065df63f8"
+    },
+    "CP08_FOLD_UNFOLDED_SANDBOX_OPERATOR.png": {
+      "bytes": 131365,
+      "sha256": "22f11c6a8eec3d82c37e2c30f41e4a150c13ef4afcc502503a012d0863f9e604"
+    },
+    "CP08_LAPTOP_SANDBOX_OPERATOR.png": {
+      "bytes": 135064,
+      "sha256": "108fe401cf8287f978c74af2540f7e75421b65d7db7db0c0f134d4f1232d029a"
+    }
+  }
+}

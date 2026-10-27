@@ -1,0 +1,30 @@
+name: JM Business World CP08 — Sandbox Regression
+on:
+  pull_request:
+    paths:
+      - 'money-menu/world/gateway/cp08/**'
+      - '.github/workflows/jm-business-world-cp08.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-sandbox-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prohibit accidental live credential use
+        run: |
+          if grep -R 'sk_live_' money-menu/world/gateway/cp08/gateway.mjs money-menu/world/gateway/cp08/sandbox-demo.html; then
+            echo "Live secret pattern found; manual review required" >&2
+            exit 1
+          fi
+      - name: Syntax
+        working-directory: money-menu/world/gateway/cp08
+        run: node --check gateway.mjs
+      - name: Bounded local gateway tests (no real Stripe keys)
+        working-directory: money-menu/world/gateway/cp08
+        run: node --test gateway.test.mjs

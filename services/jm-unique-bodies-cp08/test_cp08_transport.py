@@ -8,17 +8,24 @@ def choose_port():
  with socket.socket() as s:s.bind(('127.0.0.1',0));return s.getsockname()[1]
 class TestCP08Transport(unittest.TestCase):
  def setUp(self):
-  self.tmp=tempfile.TemporaryDirectory();self.db=str(Path(self.tmp.name)/'atlas.sqlite3');self.port=choose_port();self.start()
+  self.tmp=tempfile.TemporaryDirectory();self.db=str(Path(self.tmp.name)/'atlas.sqlite3');self.port=choose_port()
+  try:self.start()
+  except BaseException:
+   if hasattr(self,'proc'):self.stop()
+   self.tmp.cleanup()
+   raise
  def tearDown(self):
   self.stop();self.tmp.cleanup()
  def start(self):
   env=os.environ.copy();env.update({'JM_BODIES_TOKEN':TOKEN,'CP08_PUBLIC_ORIGIN':f'http://127.0.0.1:{self.port}'})
   self.proc=subprocess.Popen([sys.executable,str(BASE/'cp08_gateway.py'),'--host','127.0.0.1','--port',str(self.port),'--db',self.db],env=env,cwd=BASE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-  for _ in range(200):
+  for _ in range(400):
    try:
     with urllib.request.urlopen(f'http://127.0.0.1:{self.port}/health',timeout=.5) as r:
      if json.load(r)['ok']:return
-   except Exception:time.sleep(.03)
+   except Exception:
+    if self.proc.poll() is not None:break
+    time.sleep(.03)
   raise RuntimeError('CP08 server not ready; exit='+str(self.proc.poll()))
  def stop(self):
   self.proc.terminate()

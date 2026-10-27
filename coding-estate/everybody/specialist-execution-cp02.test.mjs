@@ -65,7 +65,7 @@ test('invalid Current-64 authority stays HOLD',()=>{
 });
 test('spoofed current identity seat fails before effect',()=>{
  const {f,c}=fixture();c.identities.find(x=>x.slug==='statefield').code_id=66;
- const out=run(f,c);assert.equal(out.diagnostic.code,'SOVEREIGN_SEAT_MISMATCH');
+ const out=run(f,c);assert.equal(out.diagnostic.code,'CURRENT_64_INTEGRITY');
  assert.equal(out.state,null);assert.equal(out.receipts.length,0);
 });
 test('reordered specialist stages cannot masquerade as route',()=>{

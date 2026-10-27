@@ -1,0 +1,334 @@
+TAP version 13
+# Subtest: 01 source-controlled original offer has immutable 1499 GBP
+ok 1 - 01 source-controlled original offer has immutable 1499 GBP
+  ---
+  duration_ms: 1.648672
+  type: 'test'
+  ...
+# Subtest: 02 test key accepted and live API key rejected
+ok 2 - 02 test key accepted and live API key rejected
+  ---
+  duration_ms: 11.614875
+  type: 'test'
+  ...
+# Subtest: 03 admin token too short rejected
+ok 3 - 03 admin token too short rejected
+  ---
+  duration_ms: 3.783189
+  type: 'test'
+  ...
+# Subtest: 04 HTTPS site origin required
+ok 4 - 04 HTTPS site origin required
+  ---
+  duration_ms: 1.651455
+  type: 'test'
+  ...
+# Subtest: 05 unsupported offer refused
+ok 5 - 05 unsupported offer refused
+  ---
+  duration_ms: 1.660959
+  type: 'test'
+  ...
+# Subtest: 06 invalid buyer address refused
+ok 6 - 06 invalid buyer address refused
+  ---
+  duration_ms: 2.170005
+  type: 'test'
+  ...
+# Subtest: 07 all three independent consent flags required
+ok 7 - 07 all three independent consent flags required
+  ---
+  duration_ms: 1.811646
+  type: 'test'
+  ...
+# Subtest: 08 unknown consent version refuses pre-sale
+ok 8 - 08 unknown consent version refuses pre-sale
+  ---
+  duration_ms: 0.826119
+  type: 'test'
+  ...
+# Subtest: 09 short or unsafe idempotency key refused
+ok 9 - 09 short or unsafe idempotency key refused
+  ---
+  duration_ms: 1.19857
+  type: 'test'
+  ...
+# Subtest: 10 server ignores client edited amount, uses 1499
+ok 10 - 10 server ignores client edited amount, uses 1499
+  ---
+  duration_ms: 18.855108
+  type: 'test'
+  ...
+# Subtest: 11 replay same request uses same checkout and one provider call
+ok 11 - 11 replay same request uses same checkout and one provider call
+  ---
+  duration_ms: 17.646735
+  type: 'test'
+  ...
+# Subtest: 12 same request key with different user rejected
+ok 12 - 12 same request key with different user rejected
+  ---
+  duration_ms: 21.020804
+  type: 'test'
+  ...
+# Subtest: 13 uncertain Stripe network failure persists and retry recovers
+ok 13 - 13 uncertain Stripe network failure persists and retry recovers
+  ---
+  duration_ms: 23.316618
+  type: 'test'
+  ...
+# Subtest: 14 ledger has correct schema and test environment
+ok 14 - 14 ledger has correct schema and test environment
+  ---
+  duration_ms: 16.216782
+  type: 'test'
+  ...
+# Subtest: 15 no fulfilment until signed paid event
+ok 15 - 15 no fulfilment until signed paid event
+  ---
+  duration_ms: 17.101658
+  type: 'test'
+  ...
+# Subtest: 16 forged signature refused
+ok 16 - 16 forged signature refused
+  ---
+  duration_ms: 16.519952
+  type: 'test'
+  ...
+# Subtest: 17 expired webhook timestamp refused
+ok 17 - 17 expired webhook timestamp refused
+  ---
+  duration_ms: 17.988053
+  type: 'test'
+  ...
+# Subtest: 18 valid signed sandbox paid -> paid TEST status
+ok 18 - 18 valid signed sandbox paid -> paid TEST status
+  ---
+  duration_ms: 23.061776
+  type: 'test'
+  ...
+# Subtest: 19 valid duplicated webhook event ignored
+ok 19 - 19 valid duplicated webhook event ignored
+  ---
+  duration_ms: 20.911783
+  type: 'test'
+  ...
+# Subtest: 20 changed amount rejects
+ok 20 - 20 changed amount rejects
+  ---
+  duration_ms: 12.904391
+  type: 'test'
+  ...
+# Subtest: 21 changed currency rejects
+ok 21 - 21 changed currency rejects
+  ---
+  duration_ms: 10.72494
+  type: 'test'
+  ...
+# Subtest: 22 changed source offer rejects
+ok 22 - 22 changed source offer rejects
+  ---
+  duration_ms: 11.730594
+  type: 'test'
+  ...
+# Subtest: 23 changed order reference rejects
+ok 23 - 23 changed order reference rejects
+  ---
+  duration_ms: 12.060499
+  type: 'test'
+  ...
+# Subtest: 24 incorrect sandbox/live flag rejects
+ok 24 - 24 incorrect sandbox/live flag rejects
+  ---
+  duration_ms: 12.865777
+  type: 'test'
+  ...
+# Subtest: 25 incomplete checkout cannot be marked paid
+ok 25 - 25 incomplete checkout cannot be marked paid
+  ---
+  duration_ms: 19.179484
+  type: 'test'
+  ...
+# Subtest: 26 unpaid async session remains unpaid
+ok 26 - 26 unpaid async session remains unpaid
+  ---
+  duration_ms: 15.278507
+  type: 'test'
+  ...
+# Subtest: 27 delayed async success can move unpaid to paid
+ok 27 - 27 delayed async success can move unpaid to paid
+  ---
+  duration_ms: 24.008141
+  type: 'test'
+  ...
+# Subtest: 28 late failed event never reverses paid evidence
+ok 28 - 28 late failed event never reverses paid evidence
+  ---
+  duration_ms: 17.097744
+  type: 'test'
+  ...
+# Subtest: 29 manual release digest must be exact SHA256
+ok 29 - 29 manual release digest must be exact SHA256
+  ---
+  duration_ms: 16.100808
+  type: 'test'
+  ...
+# Subtest: 30 paid test creates ready-to-deliver not delivered
+ok 30 - 30 paid test creates ready-to-deliver not delivered
+  ---
+  duration_ms: 18.834632
+  type: 'test'
+  ...
+# Subtest: 31 restart readback retains signed paid evidence
+ok 31 - 31 restart readback retains signed paid evidence
+  ---
+  duration_ms: 43.371386
+  type: 'test'
+  ...
+# Subtest: 32 public order status requires exact unguessable capability
+ok 32 - 32 public order status requires exact unguessable capability
+  ---
+  duration_ms: 14.185682
+  type: 'test'
+  ...
+# Subtest: 33 owner admin check uses minimum required token
+ok 33 - 33 owner admin check uses minimum required token
+  ---
+  duration_ms: 0.887814
+  type: 'test'
+  ...
+# Subtest: 34 server nonlocal bind prohibited
+ok 34 - 34 server nonlocal bind prohibited
+  ---
+  duration_ms: 0.947226
+  type: 'test'
+  ...
+# Subtest: 35 lockfile rejects simultaneous owner process
+ok 35 - 35 lockfile rejects simultaneous owner process
+  ---
+  duration_ms: 6.600268
+  type: 'test'
+  ...
+# Subtest: 36 HTTP status never exposes order without capability, admin requires Bearer
+ok 36 - 36 HTTP status never exposes order without capability, admin requires Bearer
+  ---
+  duration_ms: 60.907384
+  type: 'test'
+  ...
+# Subtest: 37 HTTP webhook rejects unsigned posts
+ok 37 - 37 HTTP webhook rejects unsigned posts
+  ---
+  duration_ms: 20.367595
+  type: 'test'
+  ...
+# Subtest: 38 HTTP request size cap enforced
+ok 38 - 38 HTTP request size cap enforced
+  ---
+  duration_ms: 6.904451
+  type: 'test'
+  ...
+# Subtest: 39 malformed webhook JSON rejected without event write
+ok 39 - 39 malformed webhook JSON rejected without event write
+  ---
+  duration_ms: 1.689579
+  type: 'test'
+  ...
+# Subtest: 40 unknown signed webhook event recorded as ignored
+ok 40 - 40 unknown signed webhook event recorded as ignored
+  ---
+  duration_ms: 12.520851
+  type: 'test'
+  ...
+# Subtest: 41 concurrent duplicate checkout invocations share one order and one provider call
+ok 41 - 41 concurrent duplicate checkout invocations share one order and one provider call
+  ---
+  duration_ms: 32.281482
+  type: 'test'
+  ...
+# Subtest: 42 forged paid flag on checkout cannot transfer paid truth
+ok 42 - 42 forged paid flag on checkout cannot transfer paid truth
+  ---
+  duration_ms: 19.149968
+  type: 'test'
+  ...
+# Subtest: 43 cross-order signed event cannot release wrong order
+ok 43 - 43 cross-order signed event cannot release wrong order
+  ---
+  duration_ms: 33.369043
+  type: 'test'
+  ...
+# Subtest: 44 payment event with payment mode other than payment rejected
+ok 44 - 44 payment event with payment mode other than payment rejected
+  ---
+  duration_ms: 16.204307
+  type: 'test'
+  ...
+# Subtest: 45 unsupported checkout idempotency key rejected without writes
+ok 45 - 45 unsupported checkout idempotency key rejected without writes
+  ---
+  duration_ms: 1.168691
+  type: 'test'
+  ...
+# Subtest: 46 state cannot be paid by event for unknown order
+ok 46 - 46 state cannot be paid by event for unknown order
+  ---
+  duration_ms: 14.187089
+  type: 'test'
+  ...
+# Subtest: 47 environment never includes live-money claim in response
+ok 47 - 47 environment never includes live-money claim in response
+  ---
+  duration_ms: 17.061124
+  type: 'test'
+  ...
+# Subtest: 48 owner release never marks digital files delivered
+ok 48 - 48 owner release never marks digital files delivered
+  ---
+  duration_ms: 18.032625
+  type: 'test'
+  ...
+# Subtest: 49 full HTTP /checkout -> signed webhook -> status -> authenticated release
+ok 49 - 49 full HTTP /checkout -> signed webhook -> status -> authenticated release
+  ---
+  duration_ms: 39.650503
+  type: 'test'
+  ...
+# Subtest: 50 visiting a checkout success page does not mutate any paid state
+ok 50 - 50 visiting a checkout success page does not mutate any paid state
+  ---
+  duration_ms: 14.706294
+  type: 'test'
+  ...
+# Subtest: 51 corrupt ledger fails closed rather than resetting as empty
+ok 51 - 51 corrupt ledger fails closed rather than resetting as empty
+  ---
+  duration_ms: 12.498173
+  type: 'test'
+  ...
+# Subtest: 52 rate limit rejects the thirteenth checkout request on one local client
+ok 52 - 52 rate limit rejects the thirteenth checkout request on one local client
+  ---
+  duration_ms: 173.851053
+  type: 'test'
+  ...
+# Subtest: 53 local sandbox operator UI is served but labels itself test only
+ok 53 - 53 local sandbox operator UI is served but labels itself test only
+  ---
+  duration_ms: 4.410411
+  type: 'test'
+  ...
+# Subtest: 54 UI uses no-dead-controls hidden rule and has two compact mobile views
+ok 54 - 54 UI uses no-dead-controls hidden rule and has two compact mobile views
+  ---
+  duration_ms: 1.505704
+  type: 'test'
+  ...
+1..54
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1086.764498

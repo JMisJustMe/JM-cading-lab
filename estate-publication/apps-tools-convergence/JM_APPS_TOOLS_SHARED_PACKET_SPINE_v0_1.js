@@ -7,7 +7,9 @@
   const BUS_KEY='jm.apps.tools.shared.bus.v1';
   const MAX=250;
   const safeParse=(raw,fallback)=>{try{return JSON.parse(raw)??fallback}catch{return fallback}};
-  const read=()=>safeParse(localStorage.getItem(BUS_KEY),'[]')||[];
+  // CP01 forward repair: missing/corrupt/foreign saved data must always yield an array.
+  // The frozen v0.1 FLAZ source remains recoverable at its pinned ancestor commit.
+  const read=()=>{const rows=safeParse(localStorage.getItem(BUS_KEY),[]);return Array.isArray(rows)?rows:[]};
   const write=(rows)=>localStorage.setItem(BUS_KEY,JSON.stringify(rows.slice(0,MAX)));
   const uid=(p='JMP')=>`${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
   const now=()=>new Date().toISOString();

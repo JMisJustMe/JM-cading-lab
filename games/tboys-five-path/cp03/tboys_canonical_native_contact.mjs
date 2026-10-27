@@ -1,7 +1,7 @@
 // JM T-BOYS five-path CP03 — exact canonical Game-CODING + JM GameCore execution.
 // New receiving test only. Both sovereign runtime implementations are imported unchanged.
 import assert from 'node:assert/strict';
-import { GameCoding, GameCodingRuntime, JMGameCore, JMGameCoreRuntime, gameChain } from '../../coding-estate/sovereign-ten/direct/game-native.mjs';
+import { GameCoding, GameCodingRuntime, JMGameCore, JMGameCoreRuntime, gameChain } from '../../../coding-estate/sovereign-ten/direct/game-native.mjs';
 const GAME = `
 entity TboysField {
  holder = "NEUTRAL"

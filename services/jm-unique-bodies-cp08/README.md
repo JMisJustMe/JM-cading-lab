@@ -149,3 +149,56 @@ Successful local HTTP CI earns only the dual-grant/one-shot/export/restore
 claim. Actual Render transfer, independent off-host storage, physical Fold,
 ChatGPT/Gemini account access, durable redeploy and production promotion
 remain HOLD until their own DINGs.
+
+## CP11 read-only live-to-cold reconciliation (no auto-deployment)
+
+**Critical sequencing correction:** Do NOT deploy CP10 as a way of extracting
+the current live CP08 SQLite database from its existing Render Free instance.
+Render redeploy/instance replacement may erase the original ephemeral
+\`/tmp\` storage before the CP10 endpoint is available. An archive of a
+replacement empty instance is **not** recovery of the old one.
+
+The existing CP08 \`atomic_contact_history\` tool is a **read-only evidence
+route**, not a full source database export. Its run/event hashes cannot be
+inverted into the lost original SQLite or receipts. It is still useful to
+check whether a separately captured CP09 complete database archive matches
+the exact current live history at a particular observation point.
+
+The new \`cp11_predeploy_gate.py\` first authenticates and checks the
+**offline original full SQLite archive** using CP09, then contacts the
+existing deployed CP08 \`/mcp\` through an authenticated, bounded POST calling
+ONLY \`atomic_contact_history\`. The bearer is read only from a local
+environment variable, never printed; remote URLs must be HTTPS except
+the test-only local loopback case, redirects are refused, and a different
+origin never receives the token. The complete deterministic CP07 history
+fingerprint, original run count, event count and body count must match the
+saved archive. A new write, a forged receipt or a missing archive earns HOLD.
+
+Example operator command ONLY after an authorised full archive has already
+been obtained, separately protected and its SHA verified:
+
+\`\`\`sh
+cd services/jm-unique-bodies-cp08
+# Supply JM_BODIES_TOKEN privately outside shell history; never paste into chat.
+python3 cp11_predeploy_gate.py \
+  --endpoint https://jm-unique-bodies-cp08-contact.onrender.com \
+  --archive /owner/private/JM_CP09_ATLAS_CUSTODY.zip \
+  --expect-sha256 <separately-stored-archive-SHA-256>
+\`\`\`
+
+The successful result is deliberately named
+\`LIVE_COLD_RECEIPTS_MATCH_OBSERVED\` and sets
+\`deployment_safe:false\`. It is **not a green deploy permit**: remote
+bearer-authenticated JSON is not independently signed attestation, writing
+may resume immediately afterwards, and a verified ZIP on the same ephemeral
+instance is not off-host durability. External custody, owner deployment
+approval, quiescing concurrent writers, and a separately verified independent
+restore are still essential.
+
+**Current production blocker is not fixed by CP11 alone:** A CP09 archive
+of the current Render SQLite is NOT known to exist. There is no existing
+safe mechanism to create an in-place full archive from the live Free
+instance without replacing its process. If no full archive can be obtained,
+DO NOT pretend that a history JSON proof reconstructs the original bytes.
+Do not modify Render environment, trigger a deployment or switch branches
+as an automatic consequence of this script.

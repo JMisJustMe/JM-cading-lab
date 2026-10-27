@@ -45,6 +45,9 @@ class Handler(BaseHTTPRequestHandler):
         # Don't log URL query values or credentials.
         pass
     def cors_headers(self,status):
+        # The private raw-Atlas custody path (including its refusals) must
+        # NEVER gain browser CORS rights from the unrelated /mcp channel.
+        if urlsplit(self.path).path!='/mcp':return
         if self.command=='OPTIONS' and status!=204:return
         origin=self.headers.get('Origin','')
         if origin and origin in self.server.browser_origins:

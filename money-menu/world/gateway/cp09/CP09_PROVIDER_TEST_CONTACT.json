@@ -1,0 +1,27 @@
+{
+  "schema": "JM.BusinessWorld.CP09.ProviderContact/1",
+  "date": "2026-10-27",
+  "provider": "Stripe",
+  "environment": "test",
+  "account_context": "JM estate/FTR sandbox",
+  "session_id": "cs_test_a1hOYllt11v5xLhXZUVJAGFEDv5rQLcsiENFZ7tv7vhO5M4rVQvX7RuiYz",
+  "offer_id": "jm-secrets-of-silence",
+  "amount_minor": 1499,
+  "currency": "gbp",
+  "checkout_status": "open",
+  "payment_status": "unpaid",
+  "livemode": false,
+  "client_reference_id": "jm_cp09_provider_smoke_20261027",
+  "metadata": {
+    "jm_live_sale": "false",
+    "jm_offer_id": "jm-secrets-of-silence",
+    "jm_purpose": "CP09_provider_test_only"
+  },
+  "evidence": "Created through connected Stripe test API and independently retrieved through GET session",
+  "payment_verified": false,
+  "webhook_received": false,
+  "merchant_live_authorized": false,
+  "delivery_verified": false,
+  "production_claim": false,
+  "scope": "REAL_STRIPE_TEST_SESSION_CREATED_AND_READ_BACK_UNPAID"
+}

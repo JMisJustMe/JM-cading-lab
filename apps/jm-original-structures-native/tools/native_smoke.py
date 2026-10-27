@@ -64,7 +64,12 @@ def main():
  adb('shell','am','start','-W','-n',PKG+'/.MainActivity')
  time.sleep(9)
  ns=nodes('first_running')
- assert any('Save'==n.get('text') for n in ns),'Native Save missing'
+ save_buttons=[n for n in ns if n.get('text')=='Save' and n.get('class')=='android.widget.Button']
+ assert len(save_buttons)==1,'Native Save missing'
+ safe=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',save_buttons[0]['bounds'])
+ assert safe,'Save button lacks actual bounds'
+ x,y,x2,y2=map(int,safe.groups())
+ assert 38<=y<y2<=1500,('HOLD: Save obscured by Android system bars',y,y2)
  assert any('JM NATIVE WORKROOM READY' in n.get('text','').upper() for n in ns),('Embedded source+GripCube not verified at runtime',ns)
  # WebView content may be absent from uiautomator's accessibility tree even
  # while real JavaScript runs. Native readiness is proved by JS checking

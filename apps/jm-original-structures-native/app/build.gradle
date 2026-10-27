@@ -1,0 +1,14 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'me.jmisjustme.originalstructures'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'me.jmisjustme.originalstructures'
+        minSdk 26
+        targetSdk 35
+        versionCode 8
+        versionName '0.8-native-candidate'
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+dependencies { implementation 'androidx.webkit:webkit:1.14.0' }

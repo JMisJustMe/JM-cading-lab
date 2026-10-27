@@ -12,10 +12,31 @@ def adb(*args,check=True):
  return p.stdout
 
 def nodes(tag):
- adb('shell','uiautomator','dump','/sdcard/jm_native_ui.xml')
- src=adb('exec-out','cat','/sdcard/jm_native_ui.xml')
- (OUT/(tag+'.xml')).write_bytes(src)
- return [v.attrib for v in ET.fromstring(src).iter('node')]
+ # Generic Android 35 can raise its OWN Quickstep or Pixel Launcher ANR.
+ # Only those two EXACT OS messages qualify; do not clear JM app faults.
+ events=[]
+ for attempt in range(7):
+  adb('shell','uiautomator','dump','/sdcard/jm_native_ui.xml')
+  src=adb('exec-out','cat','/sdcard/jm_native_ui.xml')
+  (OUT/(tag+f'_{attempt}.xml')).write_bytes(src)
+  ns=[v.attrib for v in ET.fromstring(src).iter('node')]
+  observed={n.get('text','') for n in ns}
+  labels=[name for name in ("Quickstep isn't responding","Pixel Launcher isn't responding") if name in observed]
+  if not labels:
+   if events:(OUT/(tag+'_ANDROID_LAUNCHER_OBSTRUCTIONS.json')).write_text(json.dumps(events,indent=2))
+   return ns
+  assert len(labels)==1,'HOLD: multiple Android launcher dialogs'
+  waits=[n for n in ns if n.get('text')=='Wait' and n.get('class')=='android.widget.Button']
+  assert len(waits)==1,'HOLD: Android launcher dialog cannot be safely cleared'
+  m=re.fullmatch(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',waits[0]['bounds'])
+  assert m,'HOLD: missing native OS Wait bounds'
+  x,y,x2,y2=map(int,m.groups())
+  assert 0<=x<x2<=720 and 0<=y<y2<=1600,'HOLD: Android system dialog bounds'
+  events.append({'environment':'generic Android emulator','obstruction':labels[0],
+                 'action':'Wait','attempt':attempt,'jm_ui_proven':False})
+  adb('shell','input','tap',str((x+x2)//2),str((y+y2)//2));time.sleep(1.4)
+ (OUT/(tag+'_ANDROID_LAUNCHER_OBSTRUCTIONS.json')).write_text(json.dumps(events,indent=2))
+ raise AssertionError('HOLD: native UI obscured by Android launcher after bounded retries')
 
 def tap_button(label,tag):
  ns=nodes(tag)

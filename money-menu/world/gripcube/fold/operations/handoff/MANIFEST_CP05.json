@@ -1,0 +1,93 @@
+{
+  "schema": "JM.BusinessWorld.CP05.Manifest/1.0",
+  "issued": "2026-10-27",
+  "proof": "LOCAL_QA_159_OF_159__LIVE_COMMERCE_OPEN",
+  "parent": "JM Business World CP04",
+  "parent_sha256": "8df2347d5d6dddb13f41c81dc9ba404b32a3b1edce7288ece7cf49f1c5dc0526",
+  "descendant_sha256": "27895ef0ce9bfecb3167bd9dd2205431feed99375a6aa905d3f78fd23da37050",
+  "source_count": {
+    "routes": 242,
+    "route_five_fields": 1210,
+    "houses": 11,
+    "offers": 8,
+    "gripcube_views": 6
+  },
+  "checks": {
+    "browser_pass": 135,
+    "browser_total": 135,
+    "adversarial_pass": 24,
+    "adversarial_total": 24
+  },
+  "business_gates": {
+    "physical_cp05_owner_test": false,
+    "company_formation_verified": false,
+    "live_processor_verified": false,
+    "buyer_identity_verified": false,
+    "signed_acceptance_verified": false,
+    "live_payment_verified": false,
+    "delivery_verified": false,
+    "revenue_verified": false
+  },
+  "files": [
+    {
+      "filename": "JM_BUSINESS_WORLD_CP05_HANDOFF_OPEN.html",
+      "sha256": "27895ef0ce9bfecb3167bd9dd2205431feed99375a6aa905d3f78fd23da37050",
+      "bytes": 159581
+    },
+    {
+      "filename": "cp05.css",
+      "sha256": "469fdea4250dbd05f022459b917a4f6d2344d28510308770a8f051f8f234f199",
+      "bytes": 3539
+    },
+    {
+      "filename": "cp05.js",
+      "sha256": "4d0de03591d3de0d2f874d6e00950ae369cd9677d58e58474a895d3cb21d0427",
+      "bytes": 18380
+    },
+    {
+      "filename": "build_cp05.py",
+      "sha256": "151296e15b29d3778ca7922f53b984e28b2159b2f5f8df4c6a3f221541704f3d",
+      "bytes": 22602
+    },
+    {
+      "filename": "test_cp05.py",
+      "sha256": "a90f18f08f5c8ae0dc6811f4ade1f731d636609cc4dd75128b0464f03b094b9c",
+      "bytes": 7805
+    },
+    {
+      "filename": "test_cp05_adversarial.py",
+      "sha256": "d165859afcc3d032ff98e2b7e06c1afea5d5fd0c73b0c63de51de7603649fe5e",
+      "bytes": 6021
+    },
+    {
+      "filename": "QA_CP05.json",
+      "sha256": "e0b8995fbcd9d20584dc92f6e6eff00476ae1dcb65741a475647b61175f18f7f",
+      "bytes": 18283
+    },
+    {
+      "filename": "QA_CP05_ADVERSARIAL.json",
+      "sha256": "6e22eb8202e709d24d374791b6c2818c773d52076583d63695cde1acea4f0df6",
+      "bytes": 2060
+    },
+    {
+      "filename": "CP05_FOLD_PORTRAIT_INITIAL.png",
+      "sha256": "832a05fc8d2e7ad9d96f031662cdc5134ce3822646d9bb7136bb79b04b97515a",
+      "bytes": 145319
+    },
+    {
+      "filename": "CP05_FOLD_UNFOLDED_INITIAL.png",
+      "sha256": "4baf1c2171aa7b388786525c1517f5e9adcedbf5c5b1bf37acd481320fa142c9",
+      "bytes": 187820
+    },
+    {
+      "filename": "CP05_LAPTOP_INITIAL.png",
+      "sha256": "cdd437f27f6478576d61b42dfb87349e1a11c060f00b1ecaf093822b99af45d1",
+      "bytes": 299852
+    },
+    {
+      "filename": "00_OPEN_FIRST_CP05.md",
+      "sha256": "f220b4f63435492a3c9872e2be9d21301003cd8e75fd78aff9fc9c0d33e9bf35",
+      "bytes": 4691
+    }
+  ]
+}

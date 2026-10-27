@@ -64,12 +64,17 @@ class OperatorOnlyCustody(unittest.TestCase):
         raise RuntimeError('gateway refused to start: '+error[:600])
 
     def stop(self):
-        if self.proc and self.proc.poll() is None:
-            self.proc.terminate()
-            try:self.proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                self.proc.kill()
-                self.proc.wait()
+        if self.proc is None:return
+        try:
+            if self.proc.poll() is None:
+                self.proc.terminate()
+                try:self.proc.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    self.proc.kill()
+                    self.proc.wait()
+        finally:
+            if self.proc.stderr is not None:self.proc.stderr.close()
+            self.proc=None
 
     @property
     def origin(self):

@@ -33,6 +33,44 @@ python3 cp09_custody.py restore /offline/OWNER_CP09_ATLAS.zip /local/private/rec
   encrypt for transit and retain separately. Never upload it to public
   GitHub, paste it into chats or treat it as an impersonal cache.
 
+## Optional remote owner export (disabled by default)
+
+**Actual gateway addition, NOT live-deployed:** `GET /custody/export` returns
+one validated owner ZIP only to a non-browser client bearing **both** the
+existing CP08 `Authorization: Bearer ...` secret and an independent
+`X-JM-Custody-Token` secret. It refuses any `Origin` (including Gemini and
+ChatGPT), denies missing or invalid secrets, refuses HTTP Range and never
+sends CORS grants or logs database contents. The single request takes a
+SQLite online snapshot, verifies the original CP07 receipt/event/state
+history, and returns the full offline archive over the existing HTTPS host.
+
+The route is completely absent unless a future owner-authorised deployment
+sets **both** `JM_CP09_EXPORT_ENABLE=1` and a separate, new
+`JM_CP09_EXPORT_SECRET` of 32+ characters; the second secret must differ
+from `JM_BODIES_TOKEN`. Never put either secret in Git, issues or chat.
+
+Example for an **owner-controlled HTTPS client only** after the feature
+is deliberately deployed and the secrets are separately provisioned:
+
+```sh
+curl --fail --show-error --silent \
+  -H "Authorization: Bearer ${JM_BODIES_TOKEN}" \
+  -H "X-JM-Custody-Token: ${JM_CP09_EXPORT_SECRET}" \
+  "https://YOUR-EXISTING-CP08-HOST/custody/export" \
+  --output OWNER_CP09_ATLAS.zip
+python3 cp09_custody.py verify OWNER_CP09_ATLAS.zip
+```
+
+The ZIP contains complete **unencrypted potentially private owner data**.
+Protect it before transfer and on any receiving device. Do not use shared
+logs or browser downloads as evidence of protected custody. A downloaded
+archive is not durable until it actually exists on independently retained
+owner-controlled storage with exact checksum readback.
+
+**The currently live Render Free service is intentionally unchanged.**
+Enabling export there is a separate owner-authorised production action,
+not proof of permanent hosting or restore across redeployments.
+
 ## Strict deployment / user-authority boundary
 
 This provides a **working local, portable offline custody and independent
@@ -41,7 +79,7 @@ using `/tmp` cannot preserve this capsule across restarts by merely
 creating it on that same container. The archive must actually leave the
 ephemeral host for separately authorised durable owner-controlled storage.
 
-There is **no new HTTP endpoint**, no wider MCP tool grant, no cross-app
+There is **no enabled new HTTP endpoint by default**, no wider MCP tool grant, no cross-app
 database mount, no tokens or credentials handled by the CLI, no mutation
 of a live Render service and no claim of automatic cloud restoration.
 

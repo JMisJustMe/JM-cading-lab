@@ -4,6 +4,8 @@ on:
     paths:
       - 'services/jm-unique-bodies-cp08/cp09_custody.py'
       - 'services/jm-unique-bodies-cp08/test_cp09_custody.py'
+      - 'services/jm-unique-bodies-cp08/test_cp09_export_http.py'
+      - 'services/jm-unique-bodies-cp08/cp08_gateway.py'
       - 'services/jm-unique-bodies-cp08/CP09_CUSTODY.md'
       - '.github/workflows/jm-unique-bodies-cp09-cold-custody.yml'
   workflow_dispatch:
@@ -23,11 +25,11 @@ jobs:
           node-version: '22'
       - name: Verify CP09 CLI syntax
         working-directory: services/jm-unique-bodies-cp08
-        run: python3 -m py_compile cp09_custody.py test_cp09_custody.py
+        run: python3 -m py_compile cp09_custody.py test_cp09_custody.py test_cp09_export_http.py cp08_gateway.py
       - name: Actually execute original JM donor → Atlas → backup → delete → restore
         working-directory: services/jm-unique-bodies-cp08
         run: |
-          python3 -m unittest -v test_cp09_custody 2>&1 | tee cp09_actual_receipt.log
+          python3 -m unittest -v test_cp09_custody test_cp09_export_http 2>&1 | tee cp09_actual_receipt.log
           test ${PIPESTATUS[0]} -eq 0
       - name: Preserve bounded CI evidence only, never owner archive/database
         uses: actions/upload-artifact@v4

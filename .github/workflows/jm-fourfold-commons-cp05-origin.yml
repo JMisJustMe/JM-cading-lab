@@ -1,0 +1,45 @@
+name: JM FOURFOLD to APP COMMONS CP05 Real-Origin Contact
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/fourfold-commons-real-origin-cp05.mjs'
+      - '.github/workflows/jm-fourfold-commons-cp05-origin.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/integration/fourfold-commons-real-origin-cp05.mjs'
+      - '.github/workflows/jm-fourfold-commons-cp05-origin.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-origin-contact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover original source without adding another copy to main
+        run: |
+          git fetch --no-tags --depth=1 origin 5babf3a2e4920d264199b5ec4e085af14f77503d
+          mkdir -p qa/cp05-source
+          git show 5babf3a2e4920d264199b5ec4e085af14f77503d:app-commons-cp03/JM_APP_COMMONS_CP04.html > qa/cp05-source/JM_APP_COMMONS_CP04.html
+          test -s qa/cp05-source/JM_APP_COMMONS_CP04.html
+      - name: Install existing Playwright Chromium test runtime
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Execute native HTTP-origin handoff and true disk restart
+        env:
+          JM_COMMONS_HTML: qa/cp05-source/JM_APP_COMMONS_CP04.html
+        run: node coding-estate/integration/fourfold-commons-real-origin-cp05.mjs
+      - name: Upload scope-specific screenshots and JSON receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-fourfold-to-commons-cp05-real-origin-receipts
+          path: qa/jm-fourfold-commons-cp05/
+          retention-days: 30
+          if-no-files-found: warn

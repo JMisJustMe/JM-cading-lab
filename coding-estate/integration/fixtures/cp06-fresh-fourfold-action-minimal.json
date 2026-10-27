@@ -1,0 +1,84 @@
+{
+  "schema": "JM.FOURFOLD.AppCommonsIntake/CP04",
+  "route": {
+    "producer": "FOURFOLD ARENA",
+    "receiver": "JM APP//COMMONS CP04",
+    "kind": "read-only gameplay event custody; NOT a runnable game import"
+  },
+  "capsule": {
+    "schema": "JM.GameContact.FOURFOLD.CP03/1.0",
+    "source": {
+      "body": "FOURFOLD ARENA",
+      "version": "v0.22.1 Owner Contact Polish RC1"
+    },
+    "nativeProof": {
+      "parse": "success",
+      "compiler": "success",
+      "runtime": "success"
+    },
+    "game": {
+      "screen": "battle",
+      "crew": [
+        "PUSH",
+        "PULL",
+        "PROJECT",
+        "FOLD"
+      ],
+      "units": [
+        {
+          "team": "player",
+          "key": "PUSH"
+        },
+        {
+          "team": "player",
+          "key": "PULL"
+        },
+        {
+          "team": "player",
+          "key": "PROJECT"
+        },
+        {
+          "team": "player",
+          "key": "FOLD"
+        },
+        {
+          "team": "enemy",
+          "key": "BUILD"
+        },
+        {
+          "team": "enemy",
+          "key": "STEAL"
+        },
+        {
+          "team": "enemy",
+          "key": "HEAT"
+        },
+        {
+          "team": "enemy",
+          "key": "SPORE"
+        }
+      ],
+      "turns": 1,
+      "traceCount": 22,
+      "lastPacket": {
+        "schema": "JM.FOURFOLD.COUNTER_ACTION/0.13-JM3",
+        "matchId": "FF-MVR79Z8H",
+        "actorTeam": "player",
+        "turn": 1,
+        "actions": [
+          {
+            "role": "PRIMARY",
+            "fighter": "PUSH",
+            "power": false,
+            "vector": {
+              "x": 1,
+              "y": 0
+            },
+            "force": 0.78,
+            "at": 0
+          }
+        ]
+      }
+    }
+  }
+}

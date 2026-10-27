@@ -1,4 +1,4 @@
-import asyncio,json,os,socket,subprocess,sys,tempfile,time,urllib.request
+import asyncio,json,os,socket,subprocess,sys,tempfile,time,urllib.request,shutil
 from pathlib import Path
 from playwright.async_api import async_playwright
 BASE=Path(__file__).resolve().parent
@@ -18,7 +18,11 @@ async def main():
    else:raise RuntimeError('server start HOLD')
    out=[]
    async with async_playwright() as p:
-    browser=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--disable-dev-shm-usage'])
+    # Same original Playwright test; discover runner-provisioned Chromium
+    # instead of hardcoding the earlier enterprise-container executable path.
+    chrome=os.environ.get('JM_CHROMIUM') or shutil.which('chromium') or shutil.which('google-chrome') or shutil.which('chromium-browser')
+    if not chrome:raise RuntimeError('HOLD_NO_EXECUTABLE_CHROMIUM')
+    browser=await p.chromium.launch(executable_path=chrome,args=['--no-sandbox','--disable-dev-shm-usage'])
     for width in (390,700):
      page=await browser.new_page(viewport={'width':width,'height':852},accept_downloads=True)
      errors=[];requests=[]

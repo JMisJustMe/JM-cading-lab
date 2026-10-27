@@ -185,5 +185,33 @@ class OperatorOnlyCustody(unittest.TestCase):
         self.assertEqual(sorted(vals),[200,409])
 
 
+    def test_09_tampered_live_atlas_refuses_any_export(self):
+        import sqlite3
+        self.stop()
+        with sqlite3.connect(self.db) as db:
+            db.execute("UPDATE atomic_contact_runs SET receipt_hash='broken'")
+        self.start(enabled=True)
+        code,headers,body=self.request()
+        self.assertEqual(code,503)
+        self.assertNotIn('X-JM-Archive-SHA256',headers)
+        self.assertIn(b'CUSTODY_SNAPSHOT_HOLD',body)
+        # Fail closed: do not reuse the one-shot ticket after integrity failure.
+        self.assertEqual(self.request()[0],409)
+
+    def test_10_shared_original_and_custody_token_refuses_boot(self):
+        self.stop()
+        env=os.environ.copy()
+        env.update({'JM_BODIES_TOKEN':BEARER,
+            'JM_BODIES_CUSTODY_TOKEN':BEARER,
+            'CP08_CUSTODY_EXPORT_ONCE':'1',
+            'CP08_PUBLIC_ORIGIN':self.origin})
+        process=subprocess.run([sys.executable,str(ROOT/'cp08_gateway.py'),
+            '--host','127.0.0.1','--port',str(self.port),
+            '--db',str(self.db)],cwd=ROOT,env=env,
+            capture_output=True,text=True,timeout=8)
+        self.assertNotEqual(process.returncode,0)
+        self.assertIn('independent JM_BODIES_CUSTODY_TOKEN',process.stderr)
+
+
 if __name__=='__main__':
     unittest.main(verbosity=2)

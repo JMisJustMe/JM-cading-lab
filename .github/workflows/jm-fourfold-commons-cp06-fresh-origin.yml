@@ -1,0 +1,54 @@
+name: JM FOURFOLD Commons CP06 Fresh Game Event to Real-Origin Custody
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/fourfold-commons-real-origin-cp05.mjs'
+      - 'coding-estate/integration/fixtures/cp06-fresh-fourfold-action-minimal.json'
+      - '.github/workflows/jm-fourfold-commons-cp06-fresh-origin.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/integration/fourfold-commons-real-origin-cp05.mjs'
+      - 'coding-estate/integration/fixtures/cp06-fresh-fourfold-action-minimal.json'
+      - '.github/workflows/jm-fourfold-commons-cp06-fresh-origin.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-custody:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover exact protected-lineage APP COMMONS runtime (no original game source in repository)
+        run: |
+          git fetch --no-tags --depth=1 origin 5babf3a2e4920d264199b5ec4e085af14f77503d
+          mkdir -p qa/cp06-source
+          git show 5babf3a2e4920d264199b5ec4e085af14f77503d:app-commons-cp03/JM_APP_COMMONS_CP04.html > qa/cp06-source/JM_APP_COMMONS_CP04.html
+          test -s qa/cp06-source/JM_APP_COMMONS_CP04.html
+      - name: Prepare existing JM Chromium test runner
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Non-regression CP05 original synthetic witness with real disk profiles
+        env:
+          JM_COMMONS_HTML: qa/cp06-source/JM_APP_COMMONS_CP04.html
+        run: node coding-estate/integration/fourfold-commons-real-origin-cp05.mjs
+      - name: CP06 fresh real FOURFOLD action through APP COMMONS native origin/consent/restart
+        env:
+          JM_COMMONS_HTML: qa/cp06-source/JM_APP_COMMONS_CP04.html
+          JM_CP06_FRESH_EVENT: coding-estate/integration/fixtures/cp06-fresh-fourfold-action-minimal.json
+        run: node coding-estate/integration/fourfold-commons-real-origin-cp05.mjs
+      - name: Upload both ancestral and CP06 receipt/screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-fourfold-commons-cp06-native-origin-receipts
+          path: |
+            qa/jm-fourfold-commons-cp05/
+            qa/jm-fourfold-commons-cp06/
+          retention-days: 30
+          if-no-files-found: warn

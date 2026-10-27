@@ -157,3 +157,29 @@ test('successful native fixture does not elevate to historical or physical proof
  assert.equal(out.receipts[3].canonicalDingScope,'SOURCE_AND_PORTABLE_RUNTIME_ONLY');
  assert(!JSON.stringify(out).includes('PHYSICAL_FOLD_PASS'));
 });
+
+test('all current identity IDs must stay 1..64, not only the four selected',()=>{
+ const {f,c}=fixture();c.identities[30].code_id=999;
+ assert.equal(run(f,c).diagnostic.code,'CURRENT_64_INTEGRITY');
+});
+test('unrelated duplicate current identity also blocks the specialist route',()=>{
+ const {f,c}=fixture();c.identities[40].slug=c.identities[41].slug;
+ assert.equal(run(f,c).diagnostic.code,'CURRENT_64_INTEGRITY');
+});
+test('unrelated native fixture collision cannot pass',()=>{
+ const {f,c}=fixture();f.bodies[8].id=f.bodies[7].id;
+ assert.equal(run(f,c).diagnostic.code,'NATIVE_ID_COLLISION');
+});
+test('current count boundary cannot be quietly revised to inflate adjacent coding',()=>{
+ const {f,c}=fixture();c.counts.adjacent_non_code_organs=45;
+ assert.equal(run(f,c).diagnostic.code,'CURRENT_64_BOUNDARY');
+});
+test('real UI keeps old editor and CP01 while mounting CP02 usable controls',()=>{
+ const html=readFileSync(join(dir,'canonical-native-v2.html'),'utf8');
+ for(const id of ['body','source','run','restore','scope','identity-counts','specialist-run','energy','by','threshold','points','team','specialist-result']){
+  assert.match(html,new RegExp('id="'+id+'"'));
+ }
+ assert.match(html,/specialistPrograms\(registry,inputs\)/);
+ assert.match(html,/executeSpecialistLine\(programs,registry,currentAuthority\)/);
+ assert.match(html,/specialistRun\.disabled=true/);
+});

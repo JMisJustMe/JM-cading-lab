@@ -1,0 +1,47 @@
+{
+  "schema": "JM.NetworkCODEGORNIZATION.FLAZ/1",
+  "date": "2026-10-27",
+  "owner": "JM",
+  "status": "CANDIDATE_RUNTIME_PASSED_NOT_PROMOTED",
+  "base_main": "15c5720774b7ec6f94254713d7156c3f07aeb3ab",
+  "baseline_checkpoint": "30e39df69577676bf4d31054e5dc863c90094b7e",
+  "tested_candidate_commit": "7d0407d1d5b1782f9b2b741939a58f3bfe9a1fef",
+  "pull_request": "https://github.com/JMisJustMe/JM-cading-lab/pull/506",
+  "ci_run": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40430072967",
+  "checks": {
+    "native": 41,
+    "durable": 30,
+    "peer": 28,
+    "total": 99,
+    "failed": 0
+  },
+  "source_git_blob_sha": {
+    "coding-estate/sovereign-ten/direct/native-core.mjs": "1f5d1d2f6567fc5532c4ad57e2f329638f050048",
+    "coding-estate/sovereign-ten/direct/language-native.mjs": "921907bf861114c89df6bb31553d298ef9a32db9",
+    "coding-estate/sovereign-ten/direct/route-proof-native.mjs": "c1a76ccb99282abea85cd4aebf6858dd04be5019",
+    "coding-estate/sovereign-batch-six/direct/native-core.mjs": "b33045c45ca61bdc6010645776fbf7b319dfab33",
+    "coding-estate/sovereign-batch-six/direct/runtime-composition-native.mjs": "f379af4ffd13beb55ab64434e565bd6bf1bc8dc5",
+    "network-codegornization/cp01/jm-network-federation.mjs": "482ef7ed45c95616cbfacee8b74d512c25040618",
+    "network-codegornization/cp01/selftest.mjs": "e6097939bf83376cc205b4fe9ac4404ba7d123d1",
+    "network-codegornization/cp02/jm-durable-spool.mjs": "d480a3f3a87a6e453a06bd17db7caf35cc5c987a",
+    "network-codegornization/cp02/selftest.mjs": "4f8fa9bbbbc3dfee631c7a1b639aee47e77bd756",
+    "network-codegornization/cp02/cold-process-probe.mjs": "ab9af6a5ab6963d8b9f2bc43ff9f9e763f7b22a6",
+    "network-codegornization/cp03/jm-private-contact.mjs": "602e9da2814a4ed560f98d99c8da92aa4e317dfb",
+    "network-codegornization/cp03/selftest.mjs": "8015a9f3917722265e305c9e0aadd6ad77f66d68",
+    "network-codegornization/cp03/receiver-process.mjs": "0531c91ef7ab139537b2a2ff5bb364870145e93d",
+    ".github/workflows/jm-network-codegornization-cp01.yml": "5939d94427daa857747ddbe94e6602c146591635"
+  },
+  "scopes": {
+    "runtime_native": "PASS on GitHub Linux Node 22",
+    "local_atomic_persistence": "PASS on GitHub Linux Node 22",
+    "independent_process_loopback_http": "PASS HMAC authenticated localhost peer",
+    "user_android_device": "HOLD",
+    "user_laptop": "HOLD",
+    "interdevice_lan": "HOLD",
+    "external_dns": "HOLD",
+    "smtp_imap": "HOLD",
+    "cloud": "HOLD",
+    "production_security": "HOLD"
+  },
+  "rule": "MESH_NE_MERGE;INTEGRATION_NE_REPLACEMENT;NO_DING_NO_CLAIM;RECOVER_BEFORE_REBUILD"
+}

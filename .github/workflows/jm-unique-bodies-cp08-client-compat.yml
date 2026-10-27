@@ -41,3 +41,29 @@ jobs:
           assert Path('Dockerfile').is_file()
           print('PASS · original donor hashes unchanged')
           PY
+
+  actual-local-chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@v1
+      - name: Install Playwright driver (reuse actual hosted Chrome)
+        run: python3 -m pip install --disable-pip-version-check playwright==1.56.0
+      - name: Original actual Chromium Fold portal — real localhost HTTP, 32 contacts, replay, 390 and 700px
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          JM_CHROMIUM="$(command -v google-chrome)" python3 test_cp08_browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp08-original-fold-portal-chromium-evidence
+          path: services/CP08_DIRECT_HTTP_BROWSER_*.png
+          if-no-files-found: warn
+          retention-days: 14

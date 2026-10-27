@@ -102,3 +102,50 @@ carrier into a separate approved host; verified post-host-redeploy history
 and original donor replay. No production durability crown from this local
 backup/restore test alone. Existing separate JM Market Survivor PostgreSQL
 is **not** a recipient by default.
+
+## CP10 operator-only one-shot export for a live ephemeral service (candidate)
+
+CP09 protects an **accessible local SQLite file**, but Render Free does not
+make its running `/tmp` database available to the owner's machine through
+the ordinary public portal. CP10 provides a narrow **read-only extraction
+route** using CP09's genuine SQLite-consistent, hash-pinned archive.
+
+The new `POST /custody/export` route is disabled by default. It never appears
+in `tools/list`; it is not an MCP write tool or browser-facing button. Only a
+deliberate `CP08_CUSTODY_EXPORT_ONCE=1` setting **plus** a separate strong
+`JM_BODIES_CUSTODY_TOKEN` (>=32 characters, not the original bearer) can
+start it. When enabled it requires both the original owner bearer
+`Authorization: Bearer ...` **and** `X-JM-Custody-Grant`, forbids browser
+Origin and Cookie, forbids query strings and request bodies, returns the
+consistent zipped Atlas plus external SHA-256 checksum, and permits only
+**one successful export attempt per process**. No credentials or source DB
+are written into logs.
+
+Owner-controlled transfer procedure **after separately approved deploy,
+secret configuration and off-host private storage are available**:
+
+```sh
+# Obtain secrets privately from the authorised hosting controls,
+# never paste them into ChatGPT, a repo, CI log or screenshot.
+curl --fail-with-body --show-error --silent \
+  -X POST \
+  -H "Authorization: Bearer ${JM_BODIES_TOKEN}" \
+  -H "X-JM-Custody-Grant: ${JM_BODIES_CUSTODY_TOKEN}" \
+  -D JM_CP10_RESPONSE_HEADERS.txt \
+  -o JM_CP10_ATLAS_CUSTODY.zip \
+  "https://jm-unique-bodies-cp08-contact.onrender.com/custody/export"
+# Read X-JM-Archive-SHA256 from the private response headers,
+# verify with CP09 atlas_custody.py and store ZIP + digest independently.
+```
+
+Do **not** enable the export route or deploy this candidate merely to test
+it. The downloaded archive is **unencrypted**, so carry it only over valid
+owner-approved HTTPS and store it in independently protected encrypted
+private storage. Deactivate the route after the single export. A Free
+instance reset, deletion or replacement **before export** can lose data;
+this capability does not magically recover an already-lost instance.
+
+Successful local HTTP CI earns only the dual-grant/one-shot/export/restore
+claim. Actual Render transfer, independent off-host storage, physical Fold,
+ChatGPT/Gemini account access, durable redeploy and production promotion
+remain HOLD until their own DINGs.

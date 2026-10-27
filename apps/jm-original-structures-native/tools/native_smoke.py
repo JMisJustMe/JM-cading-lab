@@ -42,8 +42,13 @@ def main():
  adb('shell','wm','size','720x1600');adb('shell','wm','density','320')
  adb('shell','am','start','-W','-n',PKG+'/.MainActivity')
  time.sleep(9)
- ns=nodes('first_running'); assert any('Save'==n.get('text') for n in ns),'Native Save missing'
- assert any('JM ORIGINAL STRUCTURES' in n.get('text','').upper() for n in ns),'Embedded JM source not rendered'
+ ns=nodes('first_running')
+ assert any('Save'==n.get('text') for n in ns),'Native Save missing'
+ assert any('JM NATIVE WORKROOM READY' in n.get('text','').upper() for n in ns),('Embedded source+GripCube not verified at runtime',ns)
+ # WebView content may be absent from uiautomator's accessibility tree even
+ # while real JavaScript runs. Native readiness is proved by JS checking
+ # #source, state, GripCube and worker organ, NOT by an accessibility guess.
+ (OUT/'CP08_FIRST_RENDER.png').write_bytes(adb('exec-out','screencap','-p'))
  tap_button('Save','real_owner_save')
  raw=snapshot();state=check_record(raw)
  print('PASS native UI render, owner Save -> app-private AtomicFile -> SHA-256 readback',flush=True)

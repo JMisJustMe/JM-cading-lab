@@ -29,11 +29,14 @@ node network-codegornization/cp01/selftest.mjs
 ```
 The tests are composed from original donor source (relative imports) and require Node 22+.
 
-## Proposed next build
-CP02: File-backed atomic spool with replay/CRC/hash verification, cross-process cold-restart tests and real adapter negotiation.
-CP03: Account-bound authentication and appropriately scoped SMTP/IMAP provider adapter; SPF/DKIM/DMARC and delivery receipts.
-CP04: Owner-device contact, failover, privacy audit and independent network/DNS control.
-No new public root or DNS change; Cloudflare in-chat connector not in this execution path.
+## Actual descendants
+- CP02: `../cp02/jm-durable-spool.mjs` — atomic plaintext local file spool, SHA-256 integrity, duplicate refusal and independent-process recovery.
+- CP03: `../cp03/jm-private-contact.mjs` — HMAC-signed localhost HTTP contact to a separate receiving process, with durable custody.
+- **99/99 bounded checks PASS** at tested commit `7d0407d1d5b1782f9b2b741939a58f3bfe9a1fef` (GitHub Actions run 40430072967).
+- Whole-push provenance and HOLDs: `../FLAZ/CP01_CP03_WHOLE_PUSH_OPEN_FIRST_2026-10-27.md`.
+
+## Remaining CP04+ work
+Actual physical owner-device Fold↔laptop contact; secure private transport and account authentication; real domain and managed mailbox configuration; provider SMTP/IMAP receipt tests; backup/restore and failover. No public root or DNS changes made. Cloudflare in-chat connector is not in the execution path.
 
 ## Evidence state
 - Pre-run: source implementation completed in a GitHub draft branch; CI/physical device contact **not automatically proven**.

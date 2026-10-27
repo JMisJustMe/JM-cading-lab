@@ -1,0 +1,38 @@
+name: JM GONG CP04 — evidence scope requests (public safe)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scoped-advisory:
+    name: CP04 source change to evidence-scope request (no Fold PASS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: CP04 projection adversarial tests
+        run: node --test tools/gong/tests/gong_scope_cp04.test.js
+      - name: Produce bounded CP03 source advisory
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p gong-cp04-output
+          node tools/gong/gong_ci_cp03.js --base "$BASE_SHA" --head "$HEAD_SHA" --json gong-cp04-output/cp03_source_advisory.json --markdown gong-cp04-output/cp03_source_advisory.md
+      - name: Request protected evidence matching without importing protected evidence
+        run: |
+          node tools/gong/gong_scope_request_cp04.js --advisory gong-cp04-output/cp03_source_advisory.json --json gong-cp04-output/gong_cp04_evidence_request.json --markdown gong-cp04-output/gong_cp04_evidence_request.md
+      - name: Upload non-authoritative scope request
+        uses: actions/upload-artifact@v4
+        with:
+          name: gong-cp04-evidence-scope-request
+          path: gong-cp04-output/
+          retention-days: 14

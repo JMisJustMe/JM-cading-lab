@@ -1,0 +1,36 @@
+name: JM GONG CP05 — sovereign family change lanes (public-safe)
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  family-candidate-advisory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: CP05 public-safe family-lane tests
+        run: node --test tools/gong/tests/gong_family_cp05.test.js
+      - name: Analyze changed source under CP03 and CP04
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p gong-cp05-output
+          node tools/gong/gong_ci_cp03.js --base "$BASE_SHA" --head "$HEAD_SHA" --json gong-cp05-output/cp03.json
+          node tools/gong/gong_scope_request_cp04.js --advisory gong-cp05-output/cp03.json --json gong-cp05-output/cp04.json
+          node tools/gong/gong_family_plan_cp05.js --input gong-cp05-output/cp04.json --json gong-cp05-output/cp05.json
+      - name: Preserve non-authoritative advisory evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-gong-cp05-family-change-lanes
+          path: gong-cp05-output/
+          retention-days: 14

@@ -5,7 +5,12 @@
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const cfg=window.JM_ENV_CONFIG;if(!cfg)throw new Error('JM_ENV_CONFIG missing');
 const spine=window.JMAppsToolsSpine;if(!spine)throw new Error('JMAppsToolsSpine missing');
-let state=spine.loadState(cfg.id,{rooms:{},active:cfg.rooms[0]?.id||null});
+function normaliseState(raw){
+  const base=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};
+  return {...base,rooms:base.rooms&&typeof base.rooms==='object'&&!Array.isArray(base.rooms)?base.rooms:{},
+    active:typeof base.active==='string'?base.active:(cfg.rooms[0]?.id||null)};
+}
+let state=normaliseState(spine.loadState(cfg.id,{rooms:{},active:cfg.rooms[0]?.id||null}));
 const $=s=>document.querySelector(s);
 function roomState(id){return state.rooms[id]||(state.rooms[id]={})}
 function save(){spine.saveState(cfg.id,state)}
@@ -16,9 +21,9 @@ $('#room').querySelectorAll('[data-field]').forEach(el=>el.oninput=()=>{rs[el.da
 $('#primary').onclick=()=>runRoom(r,rs);$('#clearRoom').onclick=()=>{state.rooms[r.id]={};save();renderRoom()};
 }
 function runRoom(r,rs){const payload={};for(const f of r.fields||[])payload[f.id]=rs[f.id]||'';payload.route=r.route;payload.environment=cfg.label;payload.room=r.label;const p=spine.emit(r.kind||`capability.${r.id}`,`${cfg.label} / ${r.label}`,payload,{environment:cfg.id,room:r.id,donor:r.donor});rs._result=`Packet ${p.id} created · ${r.next||'ready for next contact'}`;save();$('#result').textContent=rs._result;renderBus();}
-function renderBus(){const rows=spine.read().filter(p=>p?.meta?.environment===cfg.id||p?.source?.startsWith(cfg.label)).slice(0,10);$('#bus').innerHTML=rows.length?rows.map(p=>`<article><b>${esc(p.kind)}</b><span>${esc(p.source)}</span><small>${esc(p.id)} · ${esc(p.created_at)}</small></article>`).join(''):'<p class="muted">No packets in this environment yet.</p>'}
+function renderBus(){const rows=spine.read().filter(p=>p&&typeof p==='object'&&(p.meta?.environment===cfg.id||(typeof p.source==='string'&&p.source.startsWith(cfg.label)))).slice(0,10);$('#bus').innerHTML=rows.length?rows.map(p=>`<article><b>${esc(p.kind)}</b><span>${esc(p.source)}</span><small>${esc(p.id)} · ${esc(p.created_at)}</small></article>`).join(''):'<p class="muted">No packets in this environment yet.</p>'}
 function render(){renderNav();renderRoom();renderBus();$('#envTitle').textContent=cfg.label;$('#envSub').textContent=cfg.subtitle;}
-function installPortableControls(){const bar=$('.toolbar');if(!bar)return;const exp=document.createElement('button');exp.textContent='EXPORT ENVIRONMENT';exp.onclick=()=>spine.download(`JM_${cfg.id.toUpperCase()}_PORTABLE_${Date.now()}.json`,spine.exportEnvironment(cfg.id));const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{const f=picker.files?.[0];if(!f)return;try{const obj=await spine.readFile(f);const result=spine.importEnvironment(cfg.id,obj);state=result.state||{rooms:{},active:cfg.rooms[0]?.id||null};render();alert(`Environment restored · ${result.packets} packet(s) loaded`)}catch(err){alert(`Import stopped: ${err.message||err}`)}finally{picker.value=''}};bar.append(exp,imp,picker)}
+function installPortableControls(){const bar=$('.toolbar');if(!bar)return;const exp=document.createElement('button');exp.textContent='EXPORT ENVIRONMENT';exp.onclick=()=>spine.download(`JM_${cfg.id.toUpperCase()}_PORTABLE_${Date.now()}.json`,spine.exportEnvironment(cfg.id));const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{const f=picker.files?.[0];if(!f)return;try{const obj=await spine.readFile(f);const preview=spine.previewEnvironment(cfg.id,obj);if(!confirm(`Replace saved work for ${cfg.label}? This loads ${preview.accepted} packet(s), skips ${preview.rejected} invalid row(s) and truncates ${preview.truncated} old row(s). Export your current environment first if you need a backup.`))return;const result=spine.importEnvironment(cfg.id,obj);state=normaliseState(result.state);render();alert(`Environment restored · ${result.packets} packet(s) loaded`)}catch(err){alert(`Import stopped: ${err.message||err}`)}finally{picker.value=''}};bar.append(exp,imp,picker)}
 window.addEventListener('jm:packet',renderBus);window.addEventListener('jm:bus-cleared',renderBus);window.addEventListener('jm:bus-imported',renderBus);
 document.addEventListener('DOMContentLoaded',()=>{render();installPortableControls();$('#exportBus').onclick=()=>spine.download(`JM_${cfg.id.toUpperCase()}_BUS_${Date.now()}.json`,spine.exportBus());$('#clearBus').onclick=()=>{if(confirm('Clear the shared local packet bus? Donor files are untouched.'))spine.clear()}});
 })();

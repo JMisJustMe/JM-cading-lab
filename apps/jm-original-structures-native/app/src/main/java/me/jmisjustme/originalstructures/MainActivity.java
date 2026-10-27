@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.AtomicFile;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowInsets;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -74,6 +75,14 @@ public final class MainActivity extends Activity {
     @Override public void onCreate(Bundle state){super.onCreate(state);
         storage=new AtomicFile(new File(getFilesDir(),"jm_original_checkpoint.json"));
         LinearLayout root=new LinearLayout(this);root.setOrientation(LinearLayout.VERTICAL);root.setBackgroundColor(Color.rgb(5,13,25));
+        // Android 15 enforces edge-to-edge. Keep owner Save/Verify controls
+        // below system status icons and above the gesture navigation bar.
+        if(android.os.Build.VERSION.SDK_INT>=35){root.setOnApplyWindowInsetsListener((v,insets)->{
+            int top=insets.getInsets(WindowInsets.Type.statusBars()).top;
+            int bottom=insets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+            v.setPadding(0,top,0,bottom);
+            return insets;
+        });}
         LinearLayout bar=new LinearLayout(this);bar.setOrientation(LinearLayout.HORIZONTAL);
         button(bar,"Save",()->snapshot(true));
         button(bar,"Verify",this::verifyNative);
@@ -203,7 +212,7 @@ public final class MainActivity extends Activity {
                     .setNegativeButton("Keep current",(d,w)->display("JM READY · private vault retained"))
                     .setPositiveButton("Restore",(d,w)->applyRestore(data)).show();
             });
-        }catch(Exception missing){display("JM READY · native vault empty or HOLD · use Save to create first snapshot");}
+        }catch(Exception missing){display("JM NATIVE WORKROOM READY · vault empty or HOLD · use Save");}
     }
     private void restoreNative(){try{String text=readSnapshot();new AlertDialog.Builder(this)
         .setTitle("Recover checked JM snapshot?")

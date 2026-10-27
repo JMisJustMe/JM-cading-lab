@@ -1,0 +1,34 @@
+name: JM Coding Specialist Execution CP02
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/specialist-execution-cp02*.mjs'
+      - 'coding-estate/everybody/canonical-native-v2.html'
+      - 'coding-estate/everybody/canonical-native-v2.mjs'
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - '.github/workflows/jm-coding-specialist-execution-cp02.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/everybody/specialist-execution-cp02*.mjs'
+      - 'coding-estate/everybody/canonical-native-v2.html'
+      - 'coding-estate/everybody/canonical-native-v2.mjs'
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - '.github/workflows/jm-coding-specialist-execution-cp02.yml'
+permissions:
+  contents: read
+jobs:
+  specialist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Real-source specialist effects, rollback and source gates
+        run: node --test coding-estate/everybody/specialist-execution-cp02.test.mjs
+      - name: CP01 identity source compatibility
+        run: node --test coding-estate/everybody/current-64-identity-rail.test.mjs

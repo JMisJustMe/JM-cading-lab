@@ -1,0 +1,105 @@
+{
+  "schema": "JM.FileGrabber.NativeCP09.QA/1.0",
+  "checks": [
+    {
+      "name": "sha:AndroidManifest.xml",
+      "pass": true
+    },
+    {
+      "name": "sha:MainActivity.java",
+      "pass": true
+    },
+    {
+      "name": "sha:NativeShareGate.java",
+      "pass": true
+    },
+    {
+      "name": "sha:NativeVaultTruth.java",
+      "pass": true
+    },
+    {
+      "name": "sha:build.gradle.kts",
+      "pass": true
+    },
+    {
+      "name": "new application identity",
+      "pass": true
+    },
+    {
+      "name": "old app identity absent in installable applicationId",
+      "pass": true
+    },
+    {
+      "name": "distinct visible label",
+      "pass": true
+    },
+    {
+      "name": "auto backup disabled",
+      "pass": true
+    },
+    {
+      "name": "singleTop",
+      "pass": true
+    },
+    {
+      "name": "send action",
+      "pass": true
+    },
+    {
+      "name": "send multiple action",
+      "pass": true
+    },
+    {
+      "name": "launcher preserved",
+      "pass": true
+    },
+    {
+      "name": "new and cold share handled",
+      "pass": true
+    },
+    {
+      "name": "no share direct private vault",
+      "pass": true
+    },
+    {
+      "name": "owner confirmation",
+      "pass": true
+    },
+    {
+      "name": "no persist on ACTION_SEND",
+      "pass": true
+    },
+    {
+      "name": "accepted content only",
+      "pass": true
+    },
+    {
+      "name": "existing native restore retained",
+      "pass": true
+    },
+    {
+      "name": "original file acquisition retained",
+      "pass": true
+    },
+    {
+      "name": "same html native contract retained",
+      "pass": true
+    },
+    {
+      "name": "javac suites",
+      "pass": true
+    },
+    {
+      "name": "native share 19/19",
+      "pass": true
+    },
+    {
+      "name": "native inherited vault 34/34",
+      "pass": true
+    }
+  ],
+  "total": 24,
+  "passed": 24,
+  "native_share": "CP09_SHARE_GATE_PASS=19",
+  "native_vault": "TOTAL 34/34 PASS"
+}

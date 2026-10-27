@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { compatibilityBetween, planEstateRoute, validateRegistry } from "./router-core.mjs";
-import { runAllAdoptionProofs } from "./adoption-proofs.mjs";
+import { runAllAdoptionProofs, runGameAdoptionProof } from "./adoption-proofs.mjs";
 
 const readJSON = name => JSON.parse(fs.readFileSync(new URL(name, import.meta.url), "utf8"));
 const registryManifest = readJSON("./REGISTRY.json");
@@ -95,6 +95,42 @@ check("12 privacy gate remains explicit and non-green", () => {
   expect(/CURRENT REPOSITORY VISIBILITY:[^\n]*PUBLIC/i.test(privacy), "PUBLIC_VISIBILITY_NOT_RECORDED");
   expect(/NOT CLOSED/i.test(privacy), "PRIVACY_FALSE_GREEN");
   return { status: "external-admin-action-required" };
+});
+
+
+check("13 game integration transfers identity, input and consequence, rejects foreign contact", () => {
+  const proof = runGameAdoptionProof();
+  const c = proof.continuity;
+  expect(!!c && c.identityPreserved, "GAME_IDENTITY_NOT_CARRIED");
+  expect(c.carriedInput === "aim" && c.carriedChoice === "aim", "GAME_INPUT_NOT_CARRIED");
+  expect(c.visualConsequence === "armed", "GAME_VISUAL_CONSEQUENCE_NOT_CARRIED");
+  expect(c.permissionNegativeHeld && c.identityNegativeHeld, "GAME_NEGATIVE_GUARDS_NOT_HELD");
+  expect(c.handoffBodies.length === 4 && c.convergingBranch.length === 2, "GAME_CONTACT_BODIES_MISSING");
+  return c;
+});
+
+
+check("14 every declared direct compatibility edge targets existing sovereign IDs", () => {
+  const byId = new Map(registry.bodies.map(body => [body.id, body]));
+  const families = new Set(registry.bodies.map(body => body.family));
+  const seen = new Set();
+  for (const pair of matrix.directPairs) {
+    expect(byId.has(pair.from), `MISSING_EDGE_SOURCE:${pair.from}`);
+    expect(byId.has(pair.to), `MISSING_EDGE_TARGET:${pair.to}`);
+    expect(pair.from !== pair.to, `SELF_EDGE:${pair.from}`);
+    expect(typeof pair.relation === "string" && pair.relation.length > 0, `EDGE_RELATION_MISSING:${pair.from}`);
+    const key = `${pair.from}=>${pair.to}`;
+    expect(!seen.has(key), `DUPLICATE_EDGE:${key}`);
+    seen.add(key);
+    const actual = compatibilityBetween(byId.get(pair.from), byId.get(pair.to), matrix);
+    expect(actual.mode === "direct" && actual.relation === pair.relation, `EDGE_NOT_ROUTABLE:${key}`);
+  }
+  for (const rule of matrix.familyRules) {
+    expect(rule.from === "*" || families.has(rule.from), `UNKNOWN_FAMILY_SOURCE:${rule.from}`);
+    expect(rule.to === "*" || families.has(rule.to), `UNKNOWN_FAMILY_TARGET:${rule.to}`);
+  }
+  // This is registry/link conformance, not proof that every pair executes on every host.
+  return { bodies: byId.size, directPairsValidated: seen.size, familyRulesValidated: matrix.familyRules.length, contactScope: "declared-contract-only" };
 });
 
 const failed = checks.filter(check => !check.passed);

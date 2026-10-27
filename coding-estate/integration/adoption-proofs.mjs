@@ -50,30 +50,94 @@ export function runGameAdoptionProof() {
     render: immediate
   }`;
 
+  // CP01: carry real outputs forward. Parallel unit successes are not a handoff proof.
   const game = { name: "FOURFOLD", identity: "FOURFOLD", capabilities: ["drag", "aim", "touch"] };
   const forge = GameForge.execute(forgeSource, game, {
     attachTrace: value => ({ ...value, traceAttached: true }),
     attachInput: value => ({ ...value, inputAttached: true }),
     buildGame: value => ({ ...value, built: true })
   });
-  const play = PLAYFORM.execute(playSource, { region: "arena", type: "drag", value: "aim" }, {});
-  const seed = Seedform.execute(seedSource, { permission: "player", choice: "aim", combo: "drag-release" }, {});
+  requireTrue(forge.state.distinct && forge.state.outputs.android, "GAME_FORGE_FAILED");
+  requireTrue(forge.state.built.inputAttached && forge.state.built.traceAttached, "GAME_ADAPTERS_NOT_CARRIED");
+
+  // GameForge -> PLAYFORM -> Seedform -> JM Visual Interaction Runtime.
+  const gesture = {
+    region: "arena",
+    type: forge.state.built.capabilities.includes("drag") ? "drag" : "tap",
+    value: forge.state.built.capabilities.includes("aim") ? "aim" : "move"
+  };
+  const play = PLAYFORM.execute(playSource, gesture, { bodyIdentity: forge.state.identity });
+  const carriedGesture = play.state.play.lastInput;
+  const seed = Seedform.execute(seedSource, {
+    permission: "player",
+    choice: carriedGesture.value,
+    combo: "drag-release"
+  }, play.state);
+
+  // Separate timed-pattern branch contacts the same visual outcome.
   const pattern = PatternTapping.execute(tapSource, [
     { tap: "left", time: 1000 },
     { tap: "right", time: 1240 }
   ]);
-  const visual = JMVisualGraft.execute(visualSource, { aim: { state: "armed" } });
-  const interaction = JMVisualRuntime.execute(interactionSource, { type: "drag", value: "aim" }, {});
+  const visual = JMVisualGraft.execute(visualSource, { aim: { state: pattern.state.bodyState } });
+  const interaction = JMVisualRuntime.execute(
+    interactionSource,
+    carriedGesture,
+    { ...seed.state, aim: { state: pattern.state.bodyState } }
+  );
 
-  requireTrue(forge.state.distinct && forge.state.outputs.android, "GAME_FORGE_FAILED");
   requireTrue(play.result.mutuallyExecutable && seed.result.governed, "GAME_INPUT_FAILED");
   requireTrue(pattern.state.temporal && visual.state.mechanicLinked && interaction.result.consequenceReadable, "GAME_CONTACT_FAILED");
+  requireTrue(
+    interaction.state.bodyIdentity === forge.state.identity &&
+    interaction.state.play.lastInput.value === "aim" &&
+    interaction.state.seed.choice.choice === "aim" &&
+    interaction.state.seed.choice.permission === "player" &&
+    interaction.state.input.last === "aim" &&
+    interaction.state.aim.state === visual.state.state,
+    "GAME_HANDOFF_CONTINUITY_FAILED"
+  );
+
+  // A foreign permission must fail rather than silently cross the contact boundary.
+  let foreignPermissionHeld = false;
+  try {
+    Seedform.execute(seedSource, { permission: "intruder", choice: "aim", combo: "drag-release" }, play.state);
+  } catch (error) {
+    foreignPermissionHeld = error.code === "SEED_PERMISSION";
+  }
+  requireTrue(foreignPermissionHeld, "GAME_PERMISSION_NEGATIVE_TEST_FAILED");
+
+  // A forged identity must not be accepted by the producing body.
+  let foreignIdentityHeld = false;
+  try {
+    GameForge.execute(forgeSource, { ...game, identity: "OTHER_GAME" }, {
+      attachTrace: value => value,
+      attachInput: value => value,
+      buildGame: value => value
+    });
+  } catch (error) {
+    foreignIdentityHeld = error.code === "GAMEFORGE_IDENTITY";
+  }
+  requireTrue(foreignIdentityHeld, "GAME_IDENTITY_NEGATIVE_TEST_FAILED");
+
+  const continuity = {
+    scope: "bounded local in-process native-module contact; not Android device or whole-estate compatibility",
+    identityPreserved: interaction.state.bodyIdentity === forge.state.identity,
+    carriedInput: interaction.state.input.last,
+    carriedChoice: interaction.state.seed.choice.choice,
+    visualConsequence: interaction.state.aim.state,
+    permissionNegativeHeld: foreignPermissionHeld,
+    identityNegativeHeld: foreignIdentityHeld,
+    handoffBodies: ["GameForge", "PLAYFORM", "Seedform", "JM Visual Interaction Runtime"],
+    convergingBranch: ["Pattern-Tapping", "JMVisualGraft"]
+  };
 
   return {
     name: "game",
     project: "FOURFOLD integration proof",
     bodies: ["GameForge", "PLAYFORM", "Seedform Choice Interface", "Pattern-Tapping", "JMVisualGraft", "JM Visual Interaction Runtime"],
     passed: true,
+    continuity,
     receipts: [forge, play, seed, pattern, visual, interaction].map(result => result.receipt.resultDigest)
   };
 }

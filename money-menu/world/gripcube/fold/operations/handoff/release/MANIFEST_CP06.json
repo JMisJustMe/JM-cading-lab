@@ -1,0 +1,94 @@
+{
+  "schema": "JM.BusinessWorld.CP06.Manifest/1.0",
+  "issued": "2026-10-27",
+  "parent": "CP05",
+  "parent_sha256": "27895ef0ce9bfecb3167bd9dd2205431feed99375a6aa905d3f78fd23da37050",
+  "descendant_sha256": "e21f23b791fd2d4045bc9fba2b6d3f375254952deecae4d997f294968f5f8b33",
+  "local_qa": {
+    "browser": {
+      "passed": 121,
+      "total": 121
+    },
+    "tamper_and_import": {
+      "passed": 20,
+      "total": 20
+    },
+    "total": 141
+  },
+  "source_counts": {
+    "routes": 242,
+    "offers": 8,
+    "houses": 11,
+    "gripcube_faces": 6
+  },
+  "live_claims": {
+    "payment_verified": false,
+    "legal_contract_verified": false,
+    "company_incorporated": false,
+    "customer_sale_verified": false,
+    "actual_delivery_verified": false,
+    "fresh_physical_fold_cp06": false
+  },
+  "files": [
+    {
+      "filename": "JM_BUSINESS_WORLD_CP06_RELEASE_GATE_OPEN.html",
+      "bytes": 181872,
+      "sha256": "e21f23b791fd2d4045bc9fba2b6d3f375254952deecae4d997f294968f5f8b33"
+    },
+    {
+      "filename": "cp06.css",
+      "bytes": 3789,
+      "sha256": "81b8ed0f1405439e1c8a3c99b02fbdb25687166b65861385942baf51ca561844"
+    },
+    {
+      "filename": "cp06.js",
+      "bytes": 18411,
+      "sha256": "3519edbd8d2072a412c048aa9108da5dcc1c2f1ac0a50db276330ba961a38d14"
+    },
+    {
+      "filename": "00_OPEN_FIRST_CP06.md",
+      "bytes": 4842,
+      "sha256": "37c452657a97b565262225725cdc299bf1bab4c1e39a5e4f62aa05f53ce030a5"
+    },
+    {
+      "filename": "PROVIDER_RELEASE_CONTRACT_CP06.json",
+      "bytes": 1784,
+      "sha256": "acd155430932b24cb91e967480a480777289b09596ad90d8a2e5159ecc50ddd6"
+    },
+    {
+      "filename": "QA_CP06.json",
+      "bytes": 11013,
+      "sha256": "641a07061fe80ee5f352f12b342650cf679453803cf8de1c976e943cf24a5d57"
+    },
+    {
+      "filename": "QA_CP06_IMPORT_TAMPER.json",
+      "bytes": 1726,
+      "sha256": "634d22f46918ec9b3fa4aea470d4ad0a342306af34b676f48b75138d7b8a1609"
+    },
+    {
+      "filename": "test_cp06.py",
+      "bytes": 7560,
+      "sha256": "6e1bdc79b8a60c916b5782385f193472dbac96e13396fec7043daf1054ddc9dc"
+    },
+    {
+      "filename": "test_cp06_import.py",
+      "bytes": 4175,
+      "sha256": "42eb871bba1150a839e9df722b099eedc88b3a96eae24350368128a5d98653f3"
+    },
+    {
+      "filename": "fold-portrait_cp06_release.png",
+      "bytes": 153567,
+      "sha256": "6ea09f95e8834920ec33bf91fdd9c96106f5b72b1b03f35a88c9f4a351fda3f6"
+    },
+    {
+      "filename": "fold-landscape_cp06_release.png",
+      "bytes": 194704,
+      "sha256": "232e2d632ec005d200c85fb5df76dd1fe27eefbb2abc4dd14ff0bd3490b5d5c7"
+    },
+    {
+      "filename": "laptop_cp06_release.png",
+      "bytes": 318564,
+      "sha256": "96416912dd8da03c860c9485d7e2f42e66843a68b5d9fe078079e9c1c1957d19"
+    }
+  ]
+}

@@ -42,6 +42,11 @@ def main():
         if not any("JM PAIRED ROOT" in n.get("text","") for n in dump("original_initial")):
             adb("shell","input","keyevent","4")
             time.sleep(.5)
+    # After CP03 companion flow the persistent JM masthead is still visible,
+    # but the active room can remain COMPANION. Go through the actual ROOT
+    # button before searching for the Original Structures tool.
+    # This must be a real Android control touch, not tab/state injection.
+    tap("ROOT","original_explicit_root_tab")
     scroll_header("JM PAIRED ROOT","original_root_return")
     before=pref_values()
     tap("JM ORIGINAL STRUCTURES","original_enter")

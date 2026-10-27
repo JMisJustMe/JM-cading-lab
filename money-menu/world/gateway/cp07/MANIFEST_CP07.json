@@ -1,0 +1,24 @@
+{
+  "schema": "JM.BusinessWorld.CP07.Release/1",
+  "scope": "local sandbox gateway, not live or deployed",
+  "tests": "12/12 PASS",
+  "parent": "CP06 release readiness, unchanged",
+  "entries": {
+    "gateway.mjs": {
+      "size": 9612,
+      "sha256": "b178934f459049cab55a376c4476d837138ad34eadff752879879bf6fb8cd7d1"
+    },
+    "gateway.test.mjs": {
+      "size": 7749,
+      "sha256": "292c47083c7e61392b0aac53870793bc2769bcf81d8ee9a1071f4b9863806d87"
+    },
+    "TEST_RESULTS.txt": {
+      "size": 2544,
+      "sha256": "8b4bf6875cbd8bbbb8a7dfad5f6ec7ec83fac92c35ad931413740af7560a3bd1"
+    },
+    "00_OPEN_FIRST.md": {
+      "size": 4337,
+      "sha256": "c24466dceceb3ba0cc9b709c26742751da58060141506006ed7369cb447a2092"
+    }
+  }
+}

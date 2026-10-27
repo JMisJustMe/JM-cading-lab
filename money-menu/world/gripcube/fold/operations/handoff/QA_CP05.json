@@ -1,0 +1,819 @@
+{
+  "date": "2026-10-27",
+  "type": "Chromium real HTML/JS viewport-and-delta tests, NOT physical Samsung Fold or live commerce",
+  "total": 135,
+  "passed": 135,
+  "failed": 0,
+  "tests": [
+    {
+      "viewport": "fold-portrait",
+      "test": "242 inherited routes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "8 unchanged source offers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "six cube faces",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "CP04 workbench preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "CP05 dual panels mounted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "zero document horizontal overflow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "no fake paid/contract status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "CP04 proposal still generates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "CP05 obtains exact current CP04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "original selected offer preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "unticked acknowledgement holds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "interested intent can be prepared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "customer intent schema and stage correct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "independent receipt never claims acceptance/paid",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "exact matched reply imports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "tampered price blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "tampered rights blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "rejected import does not erase original",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "fulfilment review plan generated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "not asserted as live order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "no evidence self-verification",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "typed payment ref remains unverified",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "edited evidence invalidates export",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "unexplained change response held",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "meaningful change request export allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "no runtime JS errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "fold-portrait",
+      "test": "no background external network requests",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "242 inherited routes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "8 unchanged source offers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "six cube faces",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "CP04 workbench preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "CP05 dual panels mounted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "zero document horizontal overflow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "no fake paid/contract status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "CP04 proposal still generates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "CP05 obtains exact current CP04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "original selected offer preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "unticked acknowledgement holds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "interested intent can be prepared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "customer intent schema and stage correct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "independent receipt never claims acceptance/paid",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "exact matched reply imports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "tampered price blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "tampered rights blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "rejected import does not erase original",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "fulfilment review plan generated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "not asserted as live order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "no evidence self-verification",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "typed payment ref remains unverified",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "edited evidence invalidates export",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "unexplained change response held",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "meaningful change request export allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "no runtime JS errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "fold-open-landscape",
+      "test": "no background external network requests",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "242 inherited routes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "8 unchanged source offers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "six cube faces",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "CP04 workbench preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "CP05 dual panels mounted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "zero document horizontal overflow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "no fake paid/contract status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "CP04 proposal still generates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "CP05 obtains exact current CP04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "original selected offer preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "unticked acknowledgement holds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "interested intent can be prepared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "customer intent schema and stage correct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "independent receipt never claims acceptance/paid",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "exact matched reply imports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "tampered price blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "tampered rights blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "rejected import does not erase original",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "fulfilment review plan generated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "not asserted as live order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "no evidence self-verification",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "typed payment ref remains unverified",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "edited evidence invalidates export",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "unexplained change response held",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "meaningful change request export allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "no runtime JS errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "short-landscape",
+      "test": "no background external network requests",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "tablet",
+      "test": "242 inherited routes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "8 unchanged source offers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "six cube faces",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "CP04 workbench preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "CP05 dual panels mounted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "zero document horizontal overflow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "no fake paid/contract status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "CP04 proposal still generates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "CP05 obtains exact current CP04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "original selected offer preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "unticked acknowledgement holds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "interested intent can be prepared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "customer intent schema and stage correct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "independent receipt never claims acceptance/paid",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "exact matched reply imports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "tampered price blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "tampered rights blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "rejected import does not erase original",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "fulfilment review plan generated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "not asserted as live order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "no evidence self-verification",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "typed payment ref remains unverified",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "edited evidence invalidates export",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "unexplained change response held",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "meaningful change request export allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "tablet",
+      "test": "no runtime JS errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "tablet",
+      "test": "no background external network requests",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "laptop",
+      "test": "242 inherited routes",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "8 unchanged source offers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "six cube faces",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "CP04 workbench preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "CP05 dual panels mounted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "zero document horizontal overflow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "no fake paid/contract status",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "CP04 proposal still generates",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "CP05 obtains exact current CP04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "original selected offer preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "unticked acknowledgement holds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "interested intent can be prepared",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "customer intent schema and stage correct",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "independent receipt never claims acceptance/paid",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "exact matched reply imports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "tampered price blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "tampered rights blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "rejected import does not erase original",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "fulfilment review plan generated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "not asserted as live order",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "no evidence self-verification",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "typed payment ref remains unverified",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "edited evidence invalidates export",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "unexplained change response held",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "meaningful change request export allowed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "viewport": "laptop",
+      "test": "no runtime JS errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "viewport": "laptop",
+      "test": "no background external network requests",
+      "pass": true,
+      "detail": "[]"
+    }
+  ]
+}

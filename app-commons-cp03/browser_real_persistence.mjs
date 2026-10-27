@@ -74,7 +74,7 @@ try {
   pass('web owner-review gate accepts native Java capsule',
     await p.locator('#applyImportBtn').isEnabled()&&
     (await p.locator('#importStatus').innerText()).includes('VERIFIED'));
-  p.once('dialog',dialog=>dialog.accept());
+  // A single context-level dialog listener already exists; no duplicate acceptance.
   await p.locator('#applyImportBtn').click();
   pass('browser actual source adopted after Java return',
     (await p.locator('#source').inputValue()).includes('Native Java return proof'));

@@ -10,12 +10,14 @@ import json
 import os
 import re
 import sys
+import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
 
 import server
 import cp07_atomic_runtime as cp07
+import cp09_custody as custody
 
 ROOT=Path(__file__).resolve().parent
 VERSION='0.8.0-cp08'
@@ -30,8 +32,9 @@ PREFLIGHT_HEADERS={
 class Gateway(ThreadingHTTPServer):
     daemon_threads=True
     allow_reuse_address=True
-    def __init__(self,addr,atlas,secret,origin,extra_origins=()):
+    def __init__(self,addr,atlas,secret,origin,extra_origins=(),custody_secret=''):
         self.atlas=atlas;self.secret=secret;self.origin=origin.rstrip('/')
+        self.custody_secret=custody_secret
         self.browser_origins=frozenset((self.origin,*extra_origins))
         super().__init__(addr,Handler)
 
@@ -42,6 +45,9 @@ class Handler(BaseHTTPRequestHandler):
         # Don't log URL query values or credentials.
         pass
     def cors_headers(self,status):
+        # The private raw-Atlas custody path (including its refusals) must
+        # NEVER gain browser CORS rights from the unrelated /mcp channel.
+        if urlsplit(self.path).path!='/mcp':return
         if self.command=='OPTIONS' and status!=204:return
         origin=self.headers.get('Origin','')
         if origin and origin in self.server.browser_origins:
@@ -88,6 +94,43 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         route=urlsplit(self.path)
         if route.query:return self.reply(400,{'error':'QUERY_STRINGS_DISABLED'})
+        if route.path=='/custody/export':
+            # Separate offline owner-custody channel. Disabled unless BOTH an
+            # explicit server-side switch and a second owner secret are set.
+            # No browser Origin/CORS: even an admitted MCP browser origin does
+            # not gain full raw SQLite custody.
+            if not self.server.custody_secret:
+                return self.reply(404,{'error':'CUSTODY_EXPORT_DISABLED'})
+            if self.headers.get('Origin') is not None:
+                return self.reply(403,{'error':'BROWSER_CUSTODY_HOLD'})
+            if not self.authenticated():
+                return self.reply(401,{'error':'BEARER_REQUIRED'})
+            custody_auth=self.headers.get('X-JM-Custody-Token','')
+            if not hmac.compare_digest(custody_auth.encode(),
+                                       self.server.custody_secret.encode()):
+                return self.reply(401,{'error':'SECOND_OWNER_SECRET_REQUIRED'})
+            if self.headers.get('Range') is not None:
+                return self.reply(400,{'error':'RANGE_NOT_SUPPORTED'})
+            try:
+                with tempfile.TemporaryDirectory() as temporary:
+                    archive=Path(temporary)/'cp09-cold-owner-custody.zip'
+                    custody.capsule_backup(Path(self.server.atlas.db_path),archive)
+                    packed=archive.read_bytes()
+            except (OSError,ValueError):
+                return self.reply(409,{'error':'CUSTODY_INTEGRITY_HOLD'})
+            # Never log, cache, inline-print, or attach this private content.
+            self.send_response(200)
+            self.send_header('Content-Type','application/zip')
+            self.send_header('Content-Disposition',
+                'attachment; filename="JM_CP09_OWNER_COLD_CUSTODY.zip"')
+            self.send_header('Content-Length',str(len(packed)))
+            self.send_header('Cache-Control','no-store, private')
+            self.send_header('X-Content-Type-Options','nosniff')
+            self.send_header('Referrer-Policy','no-referrer')
+            self.send_header('Cross-Origin-Resource-Policy','same-origin')
+            self.end_headers()
+            self.wfile.write(packed)
+            return
         if route.path=='/health':return self.reply(200,{'ok':True,'version':VERSION,'persistence':'SQLITE_BACKEND_HOST_DEPENDENT','mode':'MCP_ACTUAL_HTTP'})
         if route.path not in ('/','/fold'):return self.reply(404,{'error':'NOT_FOUND'})
         data=(ROOT/'CP08_FOLD_PORTAL.html').read_bytes()
@@ -163,8 +206,15 @@ def main():
     if any(not re.fullmatch(r'https://[A-Za-z0-9.-]+(?::[0-9]{1,5})?',x)
            or x.endswith('.') for x in extra):
         raise SystemExit('HOLD: CP08_ALLOWED_BROWSER_ORIGINS requires exact HTTPS origins')
+    switch=os.getenv('JM_CP09_EXPORT_ENABLE','')
+    if switch not in ('','0','1'):
+        raise SystemExit('HOLD: JM_CP09_EXPORT_ENABLE must be 0 or 1')
+    custody_secret=os.getenv('JM_CP09_EXPORT_SECRET','')
+    if switch=='1' and (len(custody_secret)<32 or custody_secret==token):
+        raise SystemExit('HOLD: CP09 export requires an independent 32+ character owner secret')
+    if switch!='1':custody_secret=''
     atlas=server.Atlas(args.db);cp07.init(atlas)
-    with Gateway((args.host,args.port),atlas,token,explicit,extra) as g:
+    with Gateway((args.host,args.port),atlas,token,explicit,extra,custody_secret) as g:
         print('CP08 ready /health /fold /mcp',file=sys.stderr,flush=True)
         g.serve_forever()
 if __name__=='__main__':main()

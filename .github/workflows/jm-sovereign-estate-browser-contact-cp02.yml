@@ -1,0 +1,37 @@
+name: JM Sovereign Estate Integration Browser Contact CP02
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/**'
+      - '.github/workflows/jm-sovereign-estate-browser-contact-cp02.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/integration/**'
+      - '.github/workflows/jm-sovereign-estate-browser-contact-cp02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  chromium-contact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runtime (existing Playwright QA family)
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test real HTTP and ES module contacts at phone tablet desktop viewports
+        run: node coding-estate/integration/browser-contact-cp02.mjs
+      - name: Upload browsed screenshots and machine-readable receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-sovereign-estate-browser-contact-cp02
+          path: qa/sovereign-estate-integration-cp02/
+          if-no-files-found: warn
+          retention-days: 30

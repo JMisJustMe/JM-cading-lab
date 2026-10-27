@@ -91,3 +91,51 @@ test('32 fresh HTTP -> authentic stdio tool calls',async()=>{
    assert.equal(r.data.result.isError,false);
  }
 });
+
+
+test('32 mixed original MCP operations across source and capsules',async()=>{
+  let capsule;
+  for(let i=0;i<32;i++){
+    const k=i%4,iteration=Math.floor(i/4);
+    if(k===0){
+      const source='# JM Heading '+iteration+'\\n- [ ] Task '+iteration;
+      const r=await invoke('jm_original_inspect',{source});
+      assert.equal(r.status,200,'inspect '+iteration);
+      assert.equal(r.data.result.isError,false);
+      assert.equal(r.data.result.structuredContent.headings,1);
+      assert.equal(r.data.result.structuredContent.tasks,1);
+    }else if(k===1){
+      const r=await invoke('jm_original_compare',{before:'round '+iteration+'\\nold',after:'round '+iteration+'\\nnew'});
+      assert.equal(r.status,200,'compare '+iteration);
+      assert.equal(r.data.result.structuredContent.added,1);
+      assert.equal(r.data.result.structuredContent.removed,1);
+    }else if(k===2){
+      const source='JM project '+iteration+' checked';
+      const r=await invoke('jm_capsule_create',{name:'JM CP06 '+iteration,source,snapshots:[]});
+      assert.equal(r.status,200,'create '+iteration);
+      assert.equal(r.data.result.isError,false);
+      capsule=r.data.result.structuredContent;
+      assert.equal(capsule.payload.source,source);
+      assert.equal(capsule.payload.authority,'OWNER_REVIEW_REQUIRED');
+    }else{
+      const r=await invoke('jm_capsule_verify',{capsule});
+      assert.equal(r.status,200,'verify '+iteration);
+      assert.equal(r.data.result.isError,false);
+      assert.equal(r.data.result.structuredContent.verified,true);
+      assert.equal(r.data.result.structuredContent.checksum,capsule.checksum);
+    }
+  }
+});
+test('eight tampered capsules are held by the original MCP recipient',async()=>{
+  const created=await invoke('jm_capsule_create',{name:'JM Integrity',source:'source survives',snapshots:[]});
+  assert.equal(created.status,200);
+  const original=created.data.result.structuredContent;
+  for(let i=0;i<8;i++){
+    const damaged=structuredClone(original);
+    damaged.payload.source='tampered '+i;
+    const r=await invoke('jm_capsule_verify',{capsule:damaged});
+    assert.equal(r.status,200,'tamper '+i);
+    assert.equal(r.data.result.isError,true);
+    assert.match(r.data.result.content[0].text,/HOLD|mismatch/i);
+  }
+});

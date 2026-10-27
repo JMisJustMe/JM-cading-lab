@@ -1,0 +1,37 @@
+{
+  "schema": "JM.FileGrabberVisualang.NativeCP09/1.0",
+  "parent_pr": 524,
+  "parent_head_sha": "957efcb39cb93bb9dc6f88dcee4bcdf5abdf4eb7",
+  "app_id": "com.jmisjustme.filegrabbervisualang.cp09",
+  "old_app_id": "com.jmisjustme.filegrabbervisualang",
+  "role": "SIDE_BY_SIDE_DEBUG_TEST__NOT_VAULT_MIGRATION",
+  "boundaries": [
+    "Android per-package private storage isolation: earlier vault not accessed, not migrated",
+    "debug signer not stable across GitHub builds",
+    "ACTION_SEND stream intake copies bytes via Android ContentResolver only",
+    "install actual Android untested",
+    "native iframe JavascriptInterface exposure requires further review"
+  ],
+  "files": {
+    "AndroidManifest.xml": {
+      "bytes": 1271,
+      "sha256": "1dd4dade8492c3ec8ef8c008b568bddb6550ea68babfd272916b109904707f29"
+    },
+    "MainActivity.java": {
+      "bytes": 24762,
+      "sha256": "4304b8e5ba7feca0c1fa4ef7056bfab0084243be53788db8d07a5fdab24743c4"
+    },
+    "NativeShareGate.java": {
+      "bytes": 1081,
+      "sha256": "aad28eee4af50fa14d944244bcabf301f28e3554bec689d753feedc8fc230a56"
+    },
+    "NativeVaultTruth.java": {
+      "bytes": 2342,
+      "sha256": "1cb75d7c5f27d98d90ac2365b40d8da50c406f0aa57e094d987f45fbf7bb1f7f"
+    },
+    "build.gradle.kts": {
+      "bytes": 654,
+      "sha256": "62f26000dcc67fd291f80ea7f90c92274dc7e10abfdedb82db784b8c19751ef2"
+    }
+  }
+}

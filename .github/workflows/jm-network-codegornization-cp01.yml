@@ -1,0 +1,32 @@
+name: JM Network CODEGORNIZATION CP01
+on:
+  push:
+    paths:
+      - 'network-codegornization/**'
+      - '.github/workflows/jm-network-codegornization-cp01.yml'
+      - 'coding-estate/sovereign-ten/direct/**'
+      - 'coding-estate/sovereign-batch-six/direct/**'
+  pull_request:
+    paths:
+      - 'network-codegornization/**'
+      - '.github/workflows/jm-network-codegornization-cp01.yml'
+      - 'coding-estate/sovereign-ten/direct/**'
+      - 'coding-estate/sovereign-batch-six/direct/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  jm-native-federation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check network-codegornization/cp01/jm-network-federation.mjs
+          node --check network-codegornization/cp01/selftest.mjs
+      - name: Run native donor composition and negative-path checks
+        run: node network-codegornization/cp01/selftest.mjs

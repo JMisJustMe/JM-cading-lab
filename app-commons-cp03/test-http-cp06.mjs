@@ -29,7 +29,7 @@ before(async()=>{
   const port=await freePort();
   base='http://127.0.0.1:'+port;
   child=spawn(process.execPath,['app-commons-cp03/http-mcp-cp06.mjs'],{
-    cwd:new URL('../../../',import.meta.url).pathname,
+    cwd:new URL('../',import.meta.url).pathname,
     env:{...process.env,HOST:'127.0.0.1',PORT:String(port),JM_COMMONS_TOKEN:TOKEN,JM_COMMONS_ORIGIN:base},
     stdio:['ignore','pipe','pipe']
   });

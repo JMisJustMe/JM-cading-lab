@@ -1,0 +1,65 @@
+name: JM Unique Bodies CP08 — remote HTTPS safe-contact verifier
+
+on:
+  push:
+    branches:
+      - verify/jm-cp08-remote-safe-20261027
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remote_read_and_auth_hold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact deployed CP08 commit and negative-auth guards over HTTPS
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, ssl, time, urllib.request, urllib.error
+          from urllib.parse import urlsplit
+          root='https://jm-unique-bodies-cp08-contact.onrender.com'
+          assert urlsplit(root).scheme=='https'
+          def call(path,method='GET',data=None,headers=None):
+              req=urllib.request.Request(root+path,data=data,method=method,headers=headers or {})
+              try:
+                  with urllib.request.urlopen(req,timeout=25,context=ssl.create_default_context()) as f:
+                      return f.status,dict(f.headers),f.read(100000)
+              except urllib.error.HTTPError as e:
+                  return e.code,dict(e.headers),e.read(100000)
+          last=None
+          for attempt in range(25):
+              try:
+                  status,h,b=call('/health')
+                  if status==200:break
+                  last='HTTP '+str(status)
+              except Exception as e:last=type(e).__name__
+              time.sleep(5)
+          else:raise SystemExit('HOLD: remote health not verified: '+str(last))
+          data=json.loads(b)
+          assert data.get('ok') is True,data
+          assert data.get('version')=='0.8.0-cp08',data
+          assert data.get('mode')=='MCP_ACTUAL_HTTP',data
+          print('PASS 1 remote HTTPS /health returns CP08 actual advertised version')
+          status,h,b=call('/fold')
+          assert status==200,status
+          assert 'text/html' in h.get('Content-Type',''),h
+          assert "script-src 'sha256-" in h.get('Content-Security-Policy',''),h
+          assert 'JM' in b.decode('utf-8'),len(b)
+          print('PASS 2 remote HTTPS /fold is actual CSP-protected browser interface')
+          req=b'{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+          status,h,b=call('/mcp','POST',req,{'Content-Type':'application/json'})
+          assert status==401,(status,b[:100])
+          assert json.loads(b).get('error')=='BEARER_REQUIRED',b
+          print('PASS 3 absent bearer rejected at protected remote /mcp')
+          status,h,b=call('/mcp','POST',req,{'Content-Type':'application/json','Authorization':'Bearer WRONG_TEST_ONLY_TOKEN'})
+          assert status==401,(status,b[:100])
+          print('PASS 4 wrong bearer rejected at protected remote /mcp')
+          status,h,b=call('/mcp','POST',req,{'Content-Type':'application/json','Origin':'https://gemini.google.com.attacker.test'})
+          assert status==403,(status,b[:100])
+          print('PASS 5 spoofed Origin rejected at protected remote /mcp')
+          print('REMOTE_SAFE_CONTACT_5_5_PASS; AUTHENTICATED_TOOL_CALL_HOLD; GEMINI_AND_FOLD_OWNER_CONTACT_HOLD; ATLAS_DURABLE_HOLD')
+          PY

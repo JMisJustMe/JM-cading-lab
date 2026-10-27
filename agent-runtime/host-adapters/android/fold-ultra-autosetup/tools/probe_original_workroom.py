@@ -102,7 +102,9 @@ def main():
     saved=pref_values()
     assert saved.get("jm.original.v0.1.snapshot")=="JM original structure"
     assert saved.get("jm.original.v0.1.revision")=="1"
-    assert saved.get("jm.original.v0.1.previous","")==""
+    # Java saveWithConsent persists the *actual prior snapshot*, not an
+    # assumed empty string. Verify authentic ancestor custody instead.
+    assert saved.get("jm.original.v0.1.previous","")==before.get("jm.original.v0.1.snapshot",""), ("prior-snapshot mismatch", saved.get("jm.original.v0.1.previous"), before.get("jm.original.v0.1.snapshot"))
     equal_before_after(before,saved,("root","project.shelf","session.deck","reentry.points","project.active","ready"))
     tap("EXACT DIFF","original_diff_touch")
     has("JM line comparison","original_diff_dialog")

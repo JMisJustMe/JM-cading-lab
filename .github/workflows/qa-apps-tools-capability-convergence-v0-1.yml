@@ -20,6 +20,8 @@ jobs:
         run: |
           node --check estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js
           node --check estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js
+      - name: CP01 shared packet spine cold-start and recovery regression
+        run: node estate-publication/apps-tools-convergence/qa_shared_packet_spine_cp01.js
       - name: Environment integrity
         shell: python
         run: |

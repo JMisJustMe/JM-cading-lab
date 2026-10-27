@@ -3,6 +3,9 @@ on:
   push:
     branches: [feat/jm-guider-cp05-contactive-governed-source-20261027]
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths: ['jm-guider/cp05/**', '.github/workflows/jm-guider-cp05-public.yml']
 jobs:
   verify-public-contact:
     runs-on: ubuntu-latest

@@ -85,6 +85,12 @@ class CP13Tests(unittest.TestCase):
         self.house.unlink();os.link(self.root,self.house);self.assertEqual(self.ev()['decision'],'HOLD')
     def test_corrupt_zip_rejected(self):
         self.root.write_bytes(self.root.read_bytes()[:32]);self.assertEqual(self.ev()['decision'],'HOLD')
+    def test_exact_protected_donor_minus_single_terminal_lf_accepted(self):
+        raw=Path(DONOR).read_bytes()
+        canonical=raw if raw.endswith(b'\n') else raw+b'\n'
+        p=self.d/'valid_one_missing_lf.py'
+        p.write_bytes(canonical[:-1])
+        self.assertTrue(hasattr(cp.donor_import(p),'assess'))
     def test_donor_file_tamper_refused(self):
         p=self.d/'false_donor.py';p.write_bytes(Path(DONOR).read_bytes()+b'\n# fake')
         with self.assertRaisesRegex(ValueError,'DONOR_SHA_MISMATCH'):cp.donor_import(p)

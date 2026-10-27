@@ -70,14 +70,25 @@ def main():
  assert safe,'Save button lacks actual bounds'
  x,y,x2,y2=map(int,safe.groups())
  assert 38<=y<y2<=1500,('HOLD: Save obscured by Android system bars',y,y2)
- assert any('JM NATIVE WORKROOM READY' in n.get('text','').upper() for n in ns),('Embedded source+GripCube not verified at runtime',ns)
+ # Both states are emitted only AFTER the embedded source, live state,
+ # GripCube and independent worker have passed the JavaScript readiness gate.
+ labels=[n.get('text','').upper() for n in ns]
+ assert any('JM NATIVE WORKROOM READY' in s or
+            'NATIVE RECOVERED · CURRENT STATE MATCHES PRIVATE VAULT' in s
+            for s in labels),('Embedded source+GripCube not verified at runtime',labels)
+ previous=None
+ try:previous=snapshot()
+ except AssertionError:pass
  # WebView content may be absent from uiautomator's accessibility tree even
  # while real JavaScript runs. Native readiness is proved by JS checking
  # #source, state, GripCube and worker organ, NOT by an accessibility guess.
  (OUT/'CP08_FIRST_RENDER.png').write_bytes(adb('exec-out','screencap','-p'))
  tap_button('Save','real_owner_save')
  raw=snapshot();state=check_record(raw)
- print('PASS native UI render, owner Save -> app-private AtomicFile -> SHA-256 readback',flush=True)
+ if previous is not None:
+  check_record(previous)
+  assert raw['savedUtcMs']>previous['savedUtcMs'],('HOLD: explicit Save did not update native snapshot',raw['savedUtcMs'],previous['savedUtcMs'])
+ print('PASS native JS/GripCube readiness, safe owner Save, app-private AtomicFile and SHA-256 readback',flush=True)
  (OUT/'CP08_NATIVE_WRITTEN_SNAPSHOT.json').write_text(json.dumps({'schema':raw['schema'],'sha256':raw['sha256'],'revision':state['revision'],'project_count':len(state['projects'])},indent=2))
  adb('shell','am','force-stop',PKG)
  adb('shell','am','start','-W','-n',PKG+'/.MainActivity')

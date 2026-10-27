@@ -17,7 +17,8 @@ class TestCP08Transport(unittest.TestCase):
  def tearDown(self):
   self.stop();self.tmp.cleanup()
  def start(self):
-  env=os.environ.copy();env.update({'JM_BODIES_TOKEN':TOKEN,'CP08_PUBLIC_ORIGIN':f'http://127.0.0.1:{self.port}'})
+  env=os.environ.copy();env.update({'JM_BODIES_TOKEN':TOKEN,'CP08_PUBLIC_ORIGIN':f'http://127.0.0.1:{self.port}',
+    'CP08_ALLOWED_BROWSER_ORIGINS':getattr(self,'browser_origins','')})
   self.proc=subprocess.Popen([sys.executable,str(BASE/'cp08_gateway.py'),'--host','127.0.0.1','--port',str(self.port),'--db',self.db],env=env,cwd=BASE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
   for _ in range(400):
    try:
@@ -96,4 +97,80 @@ class TestCP08Transport(unittest.TestCase):
   with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:out=list(executor.map(call,range(4)))
   self.assertEqual(len([r for r in out if not r.get('isError')]),4,out)
   self.assertEqual(self.http()[1]['result']['structuredContent']['total_atlas_contact_events'],2)
+ def browser_contact(self,origin=None,method='OPTIONS',headers=None,payload=None,token=TOKEN):
+  hdr=dict(headers or {})
+  if origin is not None:hdr['Origin']=origin
+  if method=='POST':
+   hdr['Content-Type']='application/json'
+   if token is not None:hdr['Authorization']='Bearer '+token
+  request=urllib.request.Request(f'http://127.0.0.1:{self.port}/mcp',
+     data=json.dumps(payload).encode() if payload is not None else None,
+     method=method,headers=hdr)
+  try:
+   with urllib.request.urlopen(request,timeout=15) as resp:
+    return resp.status,{k.lower():v for k,v in resp.headers.items()},resp.read()
+  except urllib.error.HTTPError as err:
+   return err.code,{k.lower():v for k,v in err.headers.items()},err.read()
+ def test_10_default_provider_origin_and_preflight_held(self):
+  p={'jsonrpc':'2.0','id':2,'method':'tools/list','params':{}}
+  code,headers,_=self.browser_contact('https://gemini.google.com',
+   headers={'Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'authorization,content-type'})
+  self.assertEqual(code,403);self.assertNotIn('access-control-allow-origin',headers)
+  code,headers,_=self.browser_contact('https://chatgpt.com',method='POST',payload=p)
+  self.assertEqual(code,403);self.assertNotIn('access-control-allow-origin',headers)
+ def test_11_opt_in_origin_preflight_and_security_negatives(self):
+  self.stop()
+  self.browser_origins='https://gemini.google.com,https://chatgpt.com'
+  self.start()
+  pre={'Access-Control-Request-Method':'POST',
+       'Access-Control-Request-Headers':'authorization,content-type,mcp-protocol-version,mcp-method'}
+  for o in ('https://chatgpt.com','https://gemini.google.com'):
+   code,h,b=self.browser_contact(o,headers=pre)
+   self.assertEqual(code,204,(o,code,b))
+   self.assertEqual(b,b'')
+   self.assertEqual(h.get('access-control-allow-origin'),o)
+   self.assertEqual(h.get('vary'),'Origin')
+   self.assertIn('authorization',h.get('access-control-allow-headers',''))
+  code,h,_=self.browser_contact('https://untrusted.example',headers=pre)
+  self.assertEqual(code,403);self.assertNotIn('access-control-allow-origin',h)
+  code,h,_=self.browser_contact('https://chatgpt.com',headers={**pre,'Access-Control-Request-Method':'DELETE'})
+  self.assertEqual(code,405);self.assertNotIn('access-control-allow-origin',h)
+  code,h,_=self.browser_contact('https://chatgpt.com',headers={**pre,'Access-Control-Request-Headers':'authorization,x-danger'})
+  self.assertEqual(code,403);self.assertNotIn('access-control-allow-origin',h)
+  p={'jsonrpc':'2.0','id':2,'method':'tools/list','params':{}}
+  code,h,b=self.browser_contact('https://chatgpt.com',method='POST',payload=p)
+  self.assertEqual(code,200,b)
+  self.assertEqual(h.get('access-control-allow-origin'),'https://chatgpt.com')
+  self.assertEqual({x['name'] for x in json.loads(b)['result']['tools']},
+    {'atomic_contact_history','atomic_contact_execute'})
+  code,h,_=self.browser_contact('https://chatgpt.com',method='POST',payload=p,token=None)
+  self.assertEqual(code,401);self.assertEqual(h.get('access-control-allow-origin'),'https://chatgpt.com')
+  code,h,_=self.browser_contact(None,headers=pre)
+  self.assertEqual(code,403);self.assertNotIn('access-control-allow-origin',h)
+ def test_12_modern_discovery_requires_exact_headers(self):
+  self.stop()
+  self.browser_origins='https://gemini.google.com'
+  self.start()
+  payload={'jsonrpc':'2.0','id':7,'method':'server/discover',
+   'params':{'_meta':{'io.modelcontextprotocol/protocolVersion':'2026-07-28'}}}
+  valid={'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover',
+   'Accept':'application/json, text/event-stream'}
+  code,h,body=self.browser_contact('https://gemini.google.com',method='POST',headers=valid,payload=payload)
+  self.assertEqual(code,200,body)
+  value=json.loads(body)['result']
+  self.assertIn('2026-07-28',value['supportedVersions'])
+  self.assertEqual(value.get('resultType'),'complete')
+  self.assertEqual(h.get('access-control-allow-origin'),'https://gemini.google.com')
+  for overrides,expected in [
+      ({'MCP-Protocol-Version':'2025-11-25'},400),
+      ({'Mcp-Method':'tools/list'},400),
+      ({'Accept':'application/json'},406)]:
+   code,_,_=self.browser_contact('https://gemini.google.com',method='POST',
+      headers={**valid,**overrides},payload=payload)
+   self.assertEqual(code,expected)
+  code,_,_=self.browser_contact('https://gemini.google.com',method='POST',payload=payload)
+  self.assertEqual(code,400)
+  code,_,body=self.browser_contact('https://gemini.google.com',method='POST',
+   payload={'jsonrpc':'2.0','id':8,'method':'initialize','params':{'protocolVersion':'2025-11-25'}})
+  self.assertEqual(code,200,body)
 if __name__=='__main__':unittest.main(verbosity=2)

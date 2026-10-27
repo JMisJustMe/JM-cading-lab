@@ -1,8 +1,19 @@
-import asyncio,json,os,socket,subprocess,sys,tempfile,time,urllib.request
+import asyncio,json,os,socket,subprocess,sys,tempfile,time,urllib.request,shutil
 from pathlib import Path
 from playwright.async_api import async_playwright
 BASE=Path(__file__).resolve().parent
 TOKEN='cp08.browser.test.secret.0123456789'
+async def wait_status(page, expected, timeout=25000):
+ # Playwright wait_for_function uses in-page eval, forbidden by the app's
+ # deliberately strict hash-pinned CSP. Poll the actual visible text instead.
+ deadline=time.monotonic()+timeout/1000
+ seen=''
+ while time.monotonic()<deadline:
+  seen=await page.locator('#status').inner_text()
+  if expected in seen:return seen
+  await asyncio.sleep(.15)
+ raise AssertionError(f'HOLD: expected status {expected!r}; actual {seen!r}')
+
 async def main():
  with tempfile.TemporaryDirectory() as tmp:
   with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
@@ -18,7 +29,11 @@ async def main():
    else:raise RuntimeError('server start HOLD')
    out=[]
    async with async_playwright() as p:
-    browser=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox','--disable-dev-shm-usage'])
+    # Same original Playwright test; discover runner-provisioned Chromium
+    # instead of hardcoding the earlier enterprise-container executable path.
+    chrome=os.environ.get('JM_CHROMIUM') or shutil.which('chromium') or shutil.which('google-chrome') or shutil.which('chromium-browser')
+    if not chrome:raise RuntimeError('HOLD_NO_EXECUTABLE_CHROMIUM')
+    browser=await p.chromium.launch(executable_path=chrome,args=['--no-sandbox','--disable-dev-shm-usage'])
     for width in (390,700):
      page=await browser.new_page(viewport={'width':width,'height':852},accept_downloads=True)
      errors=[];requests=[]
@@ -27,16 +42,16 @@ async def main():
      await page.goto(origin+'/fold')
      await page.locator('#secret').fill(TOKEN)
      await page.locator('#connect').click()
-     await page.wait_for_function("document.querySelector('#status').textContent.includes('LIVE MCP VERIFIED')",timeout=25000)
+     await wait_status(page,'LIVE MCP VERIFIED',25000)
      if width==390:
       await page.locator('#thirtytwo').click()
-      await page.wait_for_function("document.querySelector('#status').textContent.includes('MCP PERSISTENCE PASS')",timeout=90000)
+      await wait_status(page,'MCP PERSISTENCE PASS',90000)
       assert await page.locator('#events').inner_text()=='64'
       await page.locator('#replay').click()
-      await page.wait_for_function("document.querySelector('#status').textContent.includes('EXACT REPLAY PASS')",timeout=15000)
+      await wait_status(page,'EXACT REPLAY PASS',15000)
      else:
       await page.locator('#both').click()
-      await page.wait_for_function("document.querySelector('#status').textContent.includes('MCP PERSISTENCE PASS')",timeout=25000)
+      await wait_status(page,'MCP PERSISTENCE PASS',25000)
       assert await page.locator('#events').inner_text()=='66'
      assert not errors,errors
      assert not any(x['url'].startswith('file:') for x in requests)

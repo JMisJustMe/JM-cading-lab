@@ -1,0 +1,69 @@
+name: JM Unique Bodies CP08 · bounded client-compat proof
+on:
+  pull_request:
+    paths:
+      - 'services/jm-unique-bodies-cp08/**'
+      - '.github/workflows/jm-unique-bodies-cp08-client-compat.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-atlas-and-client-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile original JM Python and native Node carrier
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 -m py_compile cp08_gateway.py server.py cp07_atomic_runtime.py
+          node --check native_donor_exec.mjs
+      - name: Original HTTP/socket/Atlas evidence plus exact browser-origin security and modern MCP discovery
+        working-directory: services/jm-unique-bodies-cp08
+        run: python3 -m unittest -v test_cp08_transport
+      - name: Guard Docker and original donor identities
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import cp07_atomic_runtime as a
+          root=Path('vendor/jm-sovereign-batch-three')
+          for name,digest in a.native.PINS.items():
+              if name in ('native-core.mjs','native-corpus.mjs','field-primitives-native.mjs'):
+                  actual=a.native.sha((root/name).read_bytes())
+                  assert actual==digest,(name,digest,actual)
+          assert Path('Dockerfile').is_file()
+          print('PASS · original donor hashes unchanged')
+          PY
+
+  actual-local-chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: browser-actions/setup-chrome@v1
+      - name: Install Playwright driver (reuse actual hosted Chrome)
+        run: python3 -m pip install --disable-pip-version-check playwright==1.56.0
+      - name: Original actual Chromium Fold portal — real localhost HTTP, 32 contacts, replay, 390 and 700px
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          JM_CHROMIUM="$(command -v google-chrome)" python3 test_cp08_browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp08-original-fold-portal-chromium-evidence
+          path: services/CP08_DIRECT_HTTP_BROWSER_*.png
+          if-no-files-found: warn
+          retention-days: 14

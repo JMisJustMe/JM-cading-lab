@@ -35,3 +35,26 @@ If no disk volume is attached, claim only temporary hosted runtime persistence d
 The inherited `server.py`, `cp07_atomic_runtime.py`, `native_contact_runtime.py`, `native_donor_exec.mjs` and three original native modules have been copied byte-for-byte from CP07. CP08 only introduces its own gateway, page, security limits, packaging and tests. The CP07 FLAZ ZIP is included separately unmodified. 
 
 Boundary: source execution / typed transport / native consequence / visible owner contact must be reported as separate evidence categories. No Ding for untested remote conditions.
+
+## Candidate-only exact-origin browser MCP compatibility
+
+The CP08 bearer-authenticated gateway is **not** opened to arbitrary browser origins.
+Existing same-origin Fold contact and authenticated no-Origin server-to-server calls
+stay as before. An owner may **separately** authorise specific HTTPS browser
+origins by setting `CP08_ALLOWED_BROWSER_ORIGINS` to a comma-separated list
+(e.g. `https://chatgpt.com,https://gemini.google.com`). An unset variable
+means no external provider browser-origin access. Wildcard, remote HTTP
+and malformed entries fail at boot; unauthenticated calls still return 401.
+
+This candidate inherits Workshop CP04's exact-origin `OPTIONS /mcp` preflight,
+allowed-header constraints, `Vary: Origin` and non-wildcard CORS response.
+Denied/ambiguous preflight gets no access grant. Existing Atlas `server/discover`
+is admitted only with an explicit modern 2026-07-28 MCP header contract and
+modern Accept. Original `atomic_contact_execute` / `atomic_contact_history`
+tool scope remains unchanged. Other tools and external state writes remain blocked.
+
+**Production restrictions remain unchanged:** this branch is not deployed;
+real owner-provider account contact and token provisioning require separate
+approval; Free Render SQLite is ephemeral and does not satisfy durable remote
+Atlas/redeploy recovery. A browser-compatible tool is not an authorised game
+execution or a new source owner.

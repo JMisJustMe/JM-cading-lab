@@ -15,6 +15,16 @@
 .identity-rail .rail-fields select{width:100%;min-height:46px}
 .identity-rail .seat-list{font-size:.9rem;overflow-wrap:anywhere}
 .identity-rail .rail-counts{font-weight:800;color:var(--hot)}
+
+.specialist{margin-top:14px;padding:16px}
+.specialist h2{margin:0 0 8px;font-size:1.18rem}
+.specialist p{color:var(--muted)}
+.specialist-controls{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
+.specialist-controls label{font-size:.86rem}
+.specialist-controls input{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;padding:8px;background:#090f19;color:var(--text);font:inherit}
+.specialist-controls input:focus-visible,.specialist button:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
+.specialist button{margin:7px 0;max-width:370px}
+@media(max-width:650px){.specialist-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -47,17 +57,50 @@
 <p class="boundary">Current canonical completion is authoritative for present builds. Historical-source recovery remains a separate evidence axis.</p>
 </section>
 </div>
+<section class="panel specialist" aria-labelledby="specialist-title">
+<h2 id="specialist-title">CP02 · Different coding bodies, different real consequences</h2>
+<p>Route-Code → StateField → Formula-Born Code → Game-CODING. Four separate JM native programs use the existing compiler, then a bounded host effects bridge runs route, state, arithmetic and scoring. No historical/native-process/physical-device claim.</p>
+<div class="specialist-controls">
+<div><label for="energy">Energy</label><input id="energy" type="number" min="0" max="100" value="3"></div>
+<div><label for="by">Add</label><input id="by" type="number" min="-100" max="100" value="5"></div>
+<div><label for="threshold">Score threshold</label><input id="threshold" type="number" min="0" max="1000" value="7"></div>
+<div><label for="points">Points</label><input id="points" type="number" min="0" max="100" step="1" value="2"></div>
+<div><label for="team">Team</label><input id="team" type="text" value="bird" maxlength="24" spellcheck="false"></div>
+</div>
+<button class="primary" id="specialist-run" disabled>Run four sovereign effects</button>
+<pre role="status" aria-live="polite" id="specialist-result">Identity authority is being checked before specialist execution.</pre>
+<p class="boundary">CP02 passes only when each body source validates AND its specific host-side effect commits. An invalid stage returns HOLD_ROLLED_BACK; prior attempted effects cannot be declared a committed result.</p>
+</section>
 </main>
 <script type="module">
 import { loadFederatedRegistry } from './registry-loader.mjs';
 import { canonicalNativeSpec, compileCanonicalNative, fixtureCanonicalNativeSource } from './canonical-native-v2.mjs';
 import { EXACT_HISTORICAL_NATIVE_IDS } from './native-router-v2.mjs';
 import { reconcileCodingEstate } from './current-64-identity-rail.mjs';
+import { specialistPrograms, executeSpecialistLine } from './specialist-execution-cp02.mjs';
 const registry=await loadFederatedRegistry();
 const bodySelect=document.querySelector('#body');const source=document.querySelector('#source');const meta=document.querySelector('#meta');const specBox=document.querySelector('#spec');const result=document.querySelector('#result');
 document.querySelector('#count').textContent=registry.bodies.length;
 for(const body of [...registry.bodies].sort((a,b)=>a.name.localeCompare(b.name))){const option=document.createElement('option');option.value=body.id;option.textContent=`${body.name} · ${body.id}`;bodySelect.append(option)}
 let identityRail=null;
+let currentAuthority=null;
+const specialistOutput=document.querySelector('#specialist-result');
+const specialistRun=document.querySelector('#specialist-run');
+specialistRun.addEventListener('click',()=>{
+ try {
+   if(!currentAuthority||!identityRail) throw new Error('Source authority not confirmed');
+   const inputs={};
+   for(const key of ['energy','by','threshold','points'])inputs[key]=Number(document.getElementById(key).value);
+   inputs.team=document.getElementById('team').value;
+   const programs=specialistPrograms(registry,inputs);
+   const outcome=executeSpecialistLine(programs,registry,currentAuthority);
+   specialistOutput.textContent=JSON.stringify(outcome,null,2);
+   specialistOutput.className=outcome.ok?'ok':'error';
+ }catch(err){
+   specialistOutput.textContent='HOLD — '+String(err.message||err);
+   specialistOutput.className='error';
+ }
+});
 function active(){return registry.bodies.find(body=>body.id===bodySelect.value)}
 function load(){const body=active();const spec=canonicalNativeSpec(body);source.value=fixtureCanonicalNativeSource(body);meta.innerHTML=`<div><b>Family:</b> ${spec.family}</div><div><b>Kind:</b> ${body.kind}</div><div><b>Current degree:</b> 10 / 10</div><div><b>Historical adapter:</b> ${EXACT_HISTORICAL_NATIVE_IDS.includes(body.id)?'exact recovered subset':'separate/unrecovered'}</div><div><b>Law:</b> ${body.law}</div>`;if(identityRail){const seat=identityRail.rows.find(row=>row.nativeId===body.id);const note=document.createElement('div');note.textContent=seat.codeId===null?'Identity rail: native engineering fixture only, not a Current-64 seat.':'Identity rail: Current-64 seat '+seat.codeId+' · '+seat.baseline.replaceAll('_',' ')+' (policy selection, not process execution)';meta.append(note)}
 specBox.textContent=JSON.stringify(spec,null,2);result.textContent='Fixture loaded. Press Run native proof.';result.className=''}
@@ -84,6 +127,9 @@ try {
   if(responses.some(response=>!response.ok))throw new Error('read-only registry fetch failed');
   const [current,policy]=await Promise.all(responses.map(response=>response.json()));
   identityRail=reconcileCodingEstate(registry,current,policy);
+  currentAuthority=current;
+  specialistRun.disabled=false;
+  specialistOutput.textContent='Source authority recovered. Edit the fields and run four distinct JM body-native programs.';
   const c=identityRail.counts;
   document.querySelector('#identity-status').textContent='READ-ONLY RECONCILED · No merged identities; policy selection ≠ process execution.';
   document.querySelector('#identity-counts').textContent=c.linked+' linked · '+c.nativeOnly+' native-only · '+c.currentWithoutFixture+' current without native fixture · '+c.adjacentNonCode+' adjacent organs (separate)';
@@ -92,6 +138,8 @@ try {
 } catch(error) {
   document.querySelector('#identity-status').textContent='HOLD — coding identity rail unavailable or inconsistent ('+String(error.message)+'). Existing native workbench remains independent.';
   document.querySelector('#identity-counts').textContent='No inferred 64/12 state.';
+  specialistOutput.textContent='HOLD — source authority not reconciled. CP02 execution locked.';
+  specialistRun.disabled=true;
 }
 filterNative();
 </script>

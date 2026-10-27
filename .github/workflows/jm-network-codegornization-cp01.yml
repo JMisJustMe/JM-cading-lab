@@ -30,7 +30,10 @@ jobs:
           node --check network-codegornization/cp01/selftest.mjs
           node --check network-codegornization/cp02/jm-durable-spool.mjs
           node --check network-codegornization/cp02/selftest.mjs
+          node --check network-codegornization/cp03/jm-private-contact.mjs
+          node --check network-codegornization/cp03/selftest.mjs
       - name: Run native donor composition and negative-path checks
         run: |
           node network-codegornization/cp01/selftest.mjs
           node network-codegornization/cp02/selftest.mjs
+          node network-codegornization/cp03/selftest.mjs

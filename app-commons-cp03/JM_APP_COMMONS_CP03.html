@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10141c">
+<title>JM APP//COMMONS — Original Workroom</title>
+<style>
+:root{--bg:#0b1017;--pane:#151c27;--pane2:#101722;--border:#2a3746;--text:#f2f4f5;--mute:#a0afc0;--accent:#b5f37b;--warn:#f1bd76;--red:#fa8b91;--blue:#88b9ff;--radius:17px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#20313a 0,transparent 40%),radial-gradient(ellipse at 95% 30%,#182231 0,transparent 50%),var(--bg);color:var(--text);min-height:100dvh;font-size:15px}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}a{color:var(--accent)}
+.shell{max-width:1260px;margin:auto;padding:18px clamp(14px,3vw,36px) 36px}.top{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap}.identity{display:flex;gap:12px;align-items:center}.sigil{background:var(--accent);color:#111a10;font-size:20px;font-weight:950;letter-spacing:-2px;width:48px;height:48px;display:grid;place-items:center;border-radius:14px;box-shadow:0 0 25px #b5f37b30}.eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--accent);text-transform:uppercase}.brand{font-weight:900;letter-spacing:-.02em;font-size:18px;margin-top:2px}.pill{border:1px solid var(--border);border-radius:50px;padding:8px 12px;color:var(--mute);font-size:12px;font-weight:750;background:#0d141e}.pill strong{color:var(--accent)}
+.hero{border:1px solid #314653;background:linear-gradient(120deg,#172b32,#18202d 60%,#222a31);border-radius:23px;padding:clamp(20px,4vw,38px);position:relative;overflow:hidden}.hero:before{content:'';position:absolute;border:1px solid #8cbd7766;border-radius:50%;width:260px;height:260px;right:-100px;top:-100px;box-shadow:0 0 0 39px #89e77808,0 0 0 78px #89e77805;pointer-events:none}h1{font-size:clamp(29px,4.8vw,52px);line-height:1.04;letter-spacing:-.052em;margin:12px 0;max-width:750px}h1 em{color:var(--accent);font-style:normal}.hero p{max-width:570px;color:#c5d1d8;line-height:1.56;margin:10px 0 0}.stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.stat{background:#0c151c88;border:1px solid #3c4b55;border-radius:10px;padding:8px 11px;font-size:12px;color:#c9d5de}.stat b{color:var(--accent)}
+.tabs{display:flex;overflow-x:auto;gap:8px;margin:22px 0 16px;scrollbar-width:none}.tab{min-height:46px;white-space:nowrap;background:transparent;color:var(--mute);border:1px solid var(--border);border-radius:11px;padding:10px 17px;font-weight:800}.tab[aria-selected=true]{background:var(--accent);color:#14200e;border-color:var(--accent)}
+.panel{border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(145deg,#18212c,#111923);overflow:hidden}.panel-head{padding:18px 20px 13px;display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid var(--border)}h2{font-size:19px;letter-spacing:-.02em;margin:0}h3{font-size:15px;margin:0 0 10px}small,.sub{color:var(--mute)}.sub{line-height:1.5;margin:5px 0 0;font-size:13px}.content{padding:20px}.columns{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}.stack{display:grid;gap:16px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.btn{border:1px solid #465563;background:#25313c;color:#e8f1fa;font-weight:800;padding:10px 14px;border-radius:11px;min-height:44px;display:inline-flex;gap:7px;align-items:center;justify-content:center}.btn:hover{border-color:#b5f37b}.btn.primary{background:var(--accent);color:#162410;border-color:var(--accent)}.btn.warn{color:var(--warn)}.btn.secondary{background:transparent}.btn.ghost{background:transparent;border:0;color:var(--mute);padding:8px}.btn.full{width:100%}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}.field label{font-size:12px;letter-spacing:.045em;font-weight:850;color:#becbd6}.field input,.field textarea,.field select{background:#0b121b;color:#eaf5f7;border:1px solid #354555;border-radius:11px;padding:12px;width:100%;min-width:0;min-height:45px}.field textarea{min-height:310px;line-height:1.56;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;tab-size:2}.split-title{display:flex;justify-content:space-between;align-items:center;gap:9px}.tag{border:1px solid #395165;border-radius:8px;font-size:11px;letter-spacing:.04em;padding:5px 8px;color:#b4c4d2;font-weight:800}.tag.pass{border-color:#587d4a;color:var(--accent)}.tag.hold{border-color:#815642;color:var(--warn)}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{background:#0c141f;border:1px solid #2a3948;padding:14px;border-radius:12px}.metric .num{font-size:24px;font-weight:900;letter-spacing:-.04em}.metric .label{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}.hash{font-size:11px;color:var(--mute);overflow-wrap:anywhere;line-height:1.65;background:#0a1118;padding:11px;border:1px solid #243440;border-radius:9px}.outline{white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,monospace;font-size:12px;color:#ccd8df;line-height:1.7;max-height:165px;overflow-y:auto}.receipt{background:#0b1718;border:1px solid #335c4d;border-radius:11px;padding:13px 15px;color:#bce3c5;font-size:12px;line-height:1.65}.receipt.warn{background:#211a16;border-color:#6b4831;color:#f4c49b}.snap{padding:13px;background:#0e1721;border:1px solid #314454;border-radius:11px;display:flex;justify-content:space-between;align-items:center;gap:12px}.snap .name{font-size:13px;font-weight:850;overflow-wrap:anywhere}.snap small{font-size:11px}.separator{border:0;border-top:1px solid var(--border);margin:18px 0}.diff{white-space:pre-wrap;overflow:auto;background:#070e16;border:1px solid #354251;border-radius:12px;padding:15px;font-size:12px;font-family:ui-monospace,monospace;max-height:430px;line-height:1.6}.diff .add{color:#b7f3ac}.diff .del{color:#ffaaaa}.diff .same{color:#a4b4bf}.twin{display:grid;grid-template-columns:1fr 1fr;gap:10px}.route{display:flex;align-items:center;gap:10px;background:#0d1720;border:1px solid #324350;border-radius:13px;padding:13px}.route .mark{width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;background:#263542;border-radius:9px;font-weight:900;color:var(--accent)}.route p{margin:3px 0;color:var(--mute);font-size:12px;line-height:1.45}.route h3{margin:0}.chev{font-size:23px;color:var(--accent);text-align:center}.log{font-size:12px;color:var(--mute);line-height:1.8}.log div{border-bottom:1px solid #253240;padding:5px 0}.lineages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.lane{border:1px solid #375064;border-radius:13px;background:#0d1822;padding:15px}.lane h3{color:var(--accent)}.lane p{font-size:12px;color:var(--mute);line-height:1.5;margin:0}.foot{margin-top:26px;font-size:12px;color:var(--mute);text-align:center;line-height:1.6}input[type=file]{max-width:100%}.hidden{display:none!important}
+@media(max-width:800px){.columns,.lineages{grid-template-columns:1fr}.hero:before{opacity:.5}.shell{padding-top:12px}.panel-head{padding:14px 16px}.content{padding:15px}.tabs{margin-top:16px}.top{margin-bottom:15px}.field textarea{min-height:265px}}
+@media(max-width:420px){.twin{grid-template-columns:1fr}.hero{padding:19px}.detail-grid{gap:7px}.metric{padding:10px}.btn{padding:10px 11px}.identity{gap:8px}}
+</style></head>
+<body><main class="shell">
+<header class="top"><div class="identity"><div class="sigil">JM</div><div><div class="eyebrow">JM ECOSTATE / INDEPENDENT APP</div><div class="brand">APP<span style="color:var(--accent)">//</span>COMMONS <span class="sub">CP03</span></div></div></div><div class="pill">● <strong>LOCAL ENGINE</strong> · OFFLINE FIRST</div></header>
+<section class="hero"><div class="eyebrow">ORIGINAL WORKROOM · INHERITED MECHANISM</div><h1>One capability.<br><em>More than one doorway.</em></h1><p>Inspect original source, compare actual changes, preserve recoverable snapshots and carry a verifiable project capsule. Built from the native JM Original Structures semantics, without replacing its Android body.</p><div class="stats"><div class="stat"><b>01</b> independent web app</div><div class="stat"><b>06</b> local MCP tools</div><div class="stat"><b>00</b> account permissions</div><div class="stat">Owner controls every export</div></div></section>
+<nav class="tabs" aria-label="Rooms"><button class="tab" role="tab" data-tab="workroom" aria-selected="true">✦ Workroom</button><button class="tab" role="tab" data-tab="lineage" aria-selected="false">◈ Snapshots</button><button class="tab" role="tab" data-tab="passport" aria-selected="false">▣ Passport</button><button class="tab" role="tab" data-tab="federation" aria-selected="false">↗ App federation</button></nav>
+<section id="workroom" role="tabpanel"><div class="columns"><div class="stack"><article class="panel"><div class="panel-head"><div><h2>Source canvas</h2><p class="sub">Your independent local buffer · UTF-8 digest</p></div><span class="tag" id="bufferState">UNSAVED</span></div><div class="content"><div class="field"><label for="projectName">PROJECT IDENTITY</label><input id="projectName" maxlength="80" autocomplete="off" value="JM Original Project" aria-label="Project name"></div><div class="field"><div class="split-title"><label for="source">ORIGINAL SOURCE</label><span class="sub" id="charCount">0 / 10,000</span></div><textarea id="source" spellcheck="false" placeholder="# Your original application&#10;&#10;Describe what it does, or paste your source here.&#10;&#10;- [ ] First capability&#10;- [ ] First contact"></textarea></div><div class="toolbar"><button id="inspectBtn" class="btn primary">⌁ Inspect source</button><button id="saveBtn" class="btn">◉ Make snapshot</button><button id="demoBtn" class="btn secondary">Load demo</button><button id="resetBtn" class="btn warn secondary">New buffer</button></div><p class="sub">Private by default. This file makes no external network requests. Local storage depends on browser permissions; export is your portable recovery route.</p></div></article><div id="notification" class="receipt" role="status">READY · Open a source, or load the demonstration.</div></div><div class="stack"><article class="panel"><div class="panel-head"><h2>Structural signal</h2><span id="engineState" class="tag">NO INSPECTION</span></div><div class="content"><div class="detail-grid"><div class="metric"><div class="num" id="words">—</div><div class="label">words</div></div><div class="metric"><div class="num" id="lines">—</div><div class="label">lines</div></div><div class="metric"><div class="num" id="headings">—</div><div class="label">headings</div></div><div class="metric"><div class="num" id="tasks">—</div><div class="label">open tasks</div></div></div><h3 style="margin-top:18px">SHA-256 source identity</h3><div id="hash" class="hash">No digest yet</div><h3 style="margin-top:17px">Structure / headings</h3><div id="outline" class="outline sub">Inspection required</div><h3 style="margin-top:17px">Open work</h3><div id="todo" class="outline sub">Inspection required</div></div></article><article class="panel"><div class="panel-head"><h2>Consequence trace</h2><span class="tag">LOCAL ONLY</span></div><div class="content"><div id="activity" class="log">No operations yet.</div></div></article></div></div></section>
+<section id="lineage" class="hidden" role="tabpanel"><div class="columns"><article class="panel"><div class="panel-head"><div><h2>Protected local snapshots</h2><p class="sub">A recovery is a buffer action, not a rewrite of its ancestor.</p></div><span class="tag">MAX 12</span></div><div class="content"><div class="toolbar" style="margin-bottom:14px"><button id="snapshotBtn" class="btn primary">+ Capture current buffer</button><button id="compareBtn" class="btn">↔ Compare latest</button></div><div id="snapshots" class="stack"></div></div></article><article class="panel"><div class="panel-head"><div><h2>Actual change field</h2><p class="sub">Bounded 160-line exact LCS · no AI claims</p></div><span id="diffState" class="tag">HOLD</span></div><div class="content"><div id="diffSummary" class="receipt warn">Make a snapshot to compare.</div><h3 style="margin-top:15px">Before → after</h3><div id="patch" class="diff">No comparison yet.</div><div class="toolbar" style="margin-top:12px"><button id="recoverBtn" class="btn warn">↶ Recover selected snapshot to buffer</button><select id="snapshotSelect" aria-label="Choose snapshot to recover" style="background:#0b121b;color:#fff;border:1px solid #384859;border-radius:10px;min-height:44px;padding:8px;max-width:100%"></select></div></div></article></div></section>
+<section id="passport" class="hidden" role="tabpanel"><div class="columns"><article class="panel"><div class="panel-head"><div><h2>Portable project passport</h2><p class="sub">A checkable capsule you can carry between independent surfaces.</p></div><span class="tag pass">OWNER REVIEW</span></div><div class="content"><p class="sub">The passport contains the current source and up to twelve snapshots, each digest-bound. A checksum detects changes, not who authored or signed the document. Import never grants account access.</p><div class="toolbar" style="margin:17px 0"><button id="exportBtn" class="btn primary">↓ Export .json capsule</button><button id="copyBtn" class="btn">Copy checksum</button><button id="copyPassportBtn" class="btn">Copy full capsule JSON</button></div><div class="hash" id="capsuleHash">Build your first capsule to see its checksum.</div><hr class="separator"><div class="field"><label for="importFile">IMPORT VALIDATED CAPSULE · JSON ONLY</label><input id="importFile" type="file" accept="application/json,.json"></div><div class="field"><label for="capsulePaste">OR PASTE CAPSULE JSON · FROM ANOTHER SURFACE</label><textarea id="capsulePaste" rows="3" style="min-height:98px" placeholder="Paste a JM capsule here for verification before adoption"></textarea></div><button id="stagePasteBtn" class="btn">Verify pasted capsule</button><div id="importStatus" class="receipt warn" style="margin-top:12px">No incoming capsule selected.</div><div class="toolbar" style="margin-top:12px"><button id="applyImportBtn" class="btn warn" disabled>Apply imported project (replaces current local buffer)</button></div></div></article><article class="panel"><div class="panel-head"><h2>Custody boundary</h2></div><div class="content"><div class="route"><div class="mark">01</div><div><h3>Original source</h3><p>Actual text + source hash, never a guess.</p></div></div><div class="chev">↓</div><div class="route"><div class="mark">02</div><div><h3>Local snapshots</h3><p>Exactly recoverable, protected by digests.</p></div></div><div class="chev">↓</div><div class="route"><div class="mark">03</div><div><h3>Capsule export</h3><p>Canonical payload/checksum, explicit owner action.</p></div></div><div class="chev">↓</div><div class="route"><div class="mark">04</div><div><h3>Independent receiver</h3><p>Import verification before any receiving state change.</p></div></div></div></article></div></section>
+<section id="federation" class="hidden" role="tabpanel"><article class="panel"><div class="panel-head"><div><h2>One body. Separate surfaces.</h2><p class="sub">No phantom transport, no implied AI authority.</p></div><span class="tag hold">HOST CONTACT OPEN</span></div><div class="content"><div class="lineages"><div class="lane"><h3>JM Android / Fold</h3><p>Protected native Original Structures CP01 stays untouched. CP02.1 established a tested Java capsule verifier. CP03 adds strict duplicate-key intake and prepares an independent Android carrier; hosted and physical Android contact remain separate gates.</p></div><div class="lane"><h3>JM APP//COMMONS</h3><p>This real, independent offline web room: edit, inspect, compare, recover, validate and export.</p></div><div class="lane"><h3>MCP tool adapter</h3><p>Local stdio: inspect, compare, compose capsule, verify, compare inherited snapshot and workroom metadata. Executes without credentials or a backend server.</p></div></div><div class="receipt" style="margin-top:16px">SOURCE → SIGNAL → CONTACT → STATE CHANGE → TRACE → RECOVERY → OUTPUT<br><strong>CP03 native Android compilation, host embedding and physical-device execution: HOLD until evidenced. Original CP01 owner Samsung visual contact is separately preserved.</strong></div><hr class="separator"><h3>Independent app family · design route</h3><div class="twin"><div class="route"><div class="mark">⌘</div><div><h3>JM AI Workroom</h3><p>Future bounded inference using a selected, authorised engine — not implied here.</p></div></div><div class="route"><div class="mark">◧</div><div><h3>JM Files & Storage</h3><p>Future scoped files and recoverable routing — no current filesystem access.</p></div></div><div class="route"><div class="mark">◈</div><div><h3>JM Code Workroom</h3><p>Reuse these exact original source mechanics; Git transport remains separate.</p></div></div><div class="route"><div class="mark">✉</div><div><h3>JM Communications</h3><p>Later own state and consented transport; no messaging access here.</p></div></div></div><p class="sub" style="margin-top:18px">This is the portability seam; it does not claim that the entire Estate has been integrated. Existing Build Mesh, Workshop and Live Experience retain distinct MCP authority.</p></div></article></section>
+<div class="foot">JM APP//COMMONS CP03 · STRICT INTAKE / NATIVE ASCENT · <strong>DO FOR SELF OFF OF OWN MERITS</strong><br>No external scripts · no tracking · no sign-in · no automatic outgoing data.</div>
+</main><script>
+/* JM APP//COMMONS CP02 — portable descendant mechanism, independently implemented
+   from JMOriginalStructures.java; original Android source is not altered.
+   No network, account data, project writes, or AI-generated content. */
+const SCHEMA = 'JM.OriginalStructures/0.1';
+const CAPSULE_SCHEMA = 'JM.AppCommons.Capsule/0.1';
+const MAX_CHARS = 10000, MAX_DIFF_LINES = 160, MAX_CAPSULE_BYTES = 200000;
+function checked(text) {
+  if(typeof text !== 'string' || text.length > MAX_CHARS || text.includes('\u0000'))
+    throw new Error('HOLD: source must be text, at most 10,000 UTF-16 units, without NUL.');
+  // UTF-8 / Java parity is asserted only for well-formed Unicode.
+  for(let i=0;i<text.length;i++){
+    const c=text.charCodeAt(i);
+    if(c>=0xD800&&c<=0xDBFF){
+      if(i+1>=text.length||text.charCodeAt(i+1)<0xDC00||text.charCodeAt(i+1)>0xDFFF)
+        throw new Error('HOLD: unpaired Unicode surrogate; preserve source outside this portability boundary.');
+      i++;
+    }else if(c>=0xDC00&&c<=0xDFFF)
+      throw new Error('HOLD: unpaired Unicode surrogate; preserve source outside this portability boundary.');
+  }
+  return text;
+}
+function sha256(source) {
+  const bytes = new TextEncoder().encode(source); // standard UTF-8, matches Java organ
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let h=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const l=bytes.length, padded=Math.ceil((l+9)/64)*64, buf=new Uint8Array(padded); buf.set(bytes); buf[l]=0x80;
+  const bitCount=BigInt(l)*8n;
+  for(let j=0;j<8;j++)buf[padded-1-j]=Number((bitCount>>BigInt(8*j))&255n);
+  const rotr=(x,n)=>(x>>>n)|(x<<(32-n));
+  for(let at=0;at<padded;at+=64){
+    const w=new Uint32Array(64);
+    for(let j=0;j<16;j++){let k=at+4*j; w[j]=((buf[k]<<24)|(buf[k+1]<<16)|(buf[k+2]<<8)|buf[k+3])>>>0;}
+    for(let j=16;j<64;j++){
+      let a=w[j-15], b=w[j-2];
+      let s0=rotr(a,7)^rotr(a,18)^(a>>>3),s1=rotr(b,17)^rotr(b,19)^(b>>>10);
+      w[j]=(w[j-16]+s0+w[j-7]+s1)>>>0;
+    }
+    let [a,b,c,d,e,f,g,hh]=h;
+    for(let j=0;j<64;j++){
+      const s1=rotr(e,6)^rotr(e,11)^rotr(e,25),ch=(e&f)^(~e&g);
+      const t1=(hh+s1+ch+K[j]+w[j])>>>0;
+      const s0=rotr(a,2)^rotr(a,13)^rotr(a,22),maj=(a&b)^(a&c)^(b&c);
+      const t2=(s0+maj)>>>0;
+      hh=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+    }
+    [a,b,c,d,e,f,g,hh].forEach((x,i)=>{h[i]=(h[i]+x)>>>0;});
+  }
+  return h.map(x=>x.toString(16).padStart(8,'0')).join('');
+}
+function inspect(source){
+  const s=checked(source), lines=s.length?s.split('\n'):[];
+  const matches=s.match(/[\p{L}\p{N}]+/gu)||[];
+  let headings=0,tasks=0,httpsLinks=0,outline='',todo='';
+  for(const line of lines){
+    const h=line.match(/^#{1,6}[ \t]+(.+)$/),t=line.match(/^\s*(?:[-*][ \t]+)?(?:\[ \]|TODO:?)[ \t]*(.+)$/i);
+    if(h){headings++;if(outline.length<2500)outline+='• '+h[1].trim()+'\n';}
+    if(t){tasks++;if(todo.length<2500)todo+='☐ '+t[1].trim()+'\n';}
+    httpsLinks += (line.match(/https:\/\/[^\s<>()]+/g)||[]).length;
+  }
+  return {schema:SCHEMA,chars:s.length,bytes:new TextEncoder().encode(s).length,lines:lines.length,words:matches.length,unique:new Set(matches.map(w=>w.toLowerCase())).size,headings,tasks,httpsLinks,hash:sha256(s),outline:outline.trim()||'(No Markdown headings)',todo:todo.trim()||'(No open task markers)'};
+}
+function compare(before,after){
+  const a=checked(before),b=checked(after),x=a? a.split('\n'):[],y=b?b.split('\n'):[];
+  if(x.length>MAX_DIFF_LINES||y.length>MAX_DIFF_LINES)throw new Error('HOLD: exact diff exceeds 160 lines; preserve and split comparison.');
+  const n=x.length,m=y.length,lcs=Array.from({length:n+1},()=>new Int32Array(m+1));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)lcs[i][j]=x[i]===y[j]?1+lcs[i+1][j+1]:Math.max(lcs[i+1][j],lcs[i][j+1]);
+  let i=0,j=0,added=0,removed=0,unchanged=0,patch='';
+  while(i<n||j<m){
+    let kind,line;
+    if(i<n&&j<m&&x[i]===y[j]){kind=' ';line=x[i++];j++;unchanged++;}
+    else if(j<m&&(i===n||lcs[i][j+1]>=lcs[i+1][j])){kind='+';line=y[j++];added++;}
+    else{kind='-';line=x[i++];removed++;}
+    if(patch.length<6000)patch+=kind+' '+line+'\n';
+  }
+  return {schema:'JM.OriginalStructures.Difference/0.1',added,removed,unchanged,beforeHash:sha256(a),afterHash:sha256(b),patch:patch.slice(0,6000)||'(Both sources empty)'};
+}
+function stableJSON(value){
+  if(value===null||typeof value!=='object')return JSON.stringify(value);
+  if(Array.isArray(value))return '['+value.map(stableJSON).join(',')+']';
+  return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stableJSON(value[k])).join(',')+'}';
+}
+function createCapsule(state){
+  const name=typeof state.name==='string'?state.name.trim():'';
+  if(!name||name.length>80)throw new Error('HOLD: project name must be 1–80 characters.');
+  checked(name);
+  const source=checked(state.source||''),snapshots=state.snapshots||[];
+  if(!Array.isArray(snapshots)||snapshots.length>12)throw new Error('HOLD: at most 12 local snapshots.');
+  const records=snapshots.map((s,i)=>{
+    const text=checked(s.text),hash=sha256(text);
+    if(s.hash!==hash)throw new Error('HOLD: snapshot #'+(i+1)+' digest mismatch.');
+    const created=String(s.created||''),label=String(s.label||'');
+    if(created.length>64||label.length>80)throw new Error('HOLD: snapshot metadata exceeds portable bounds.');
+    checked(created);checked(label);
+    return {text,hash,created,label};
+  });
+  const payload={schema:CAPSULE_SCHEMA,name,source,sourceHash:sha256(source),snapshots:records,origin:'JM APP//COMMONS · LOCAL ONLY',authority:'OWNER_REVIEW_REQUIRED',revision:1};
+  const capsule={payload,checksum:sha256(stableJSON(payload))};
+  const portableBytes=new TextEncoder().encode(stableJSON(capsule)).length;
+  if(portableBytes>MAX_CAPSULE_BYTES)throw new Error('HOLD: capsule exceeds 200,000 UTF-8 bytes accepted by the native receiver; original source and snapshots remain intact.');
+  return capsule;
+}
+/** CP03 cross-language intake. Reject duplicate object keys and non-integer JSON
+ * before ordinary JSON.parse can silently discard input evidence. Mirrors
+ * JMAppCommonsCapsule.Json's meaningful number/key constraints. */
+function parseStrictJSON(raw,maxBytes=MAX_CAPSULE_BYTES){
+  if(typeof raw!=='string'||new TextEncoder().encode(raw).length>maxBytes)
+    throw new Error('HOLD: JSON exceeds portable UTF-8 bound.');
+  let at=0;
+  const err=msg=>{throw new Error('HOLD: strict JSON '+msg+' at offset '+at);};
+  const ws=()=>{while(at<raw.length&&/^[\t\n\r ]$/.test(raw[at]))at++;};
+  function string(){
+    if(raw[at]!=='"')err('string expected');
+    const start=at++;
+    while(at<raw.length){
+      const c=raw.charCodeAt(at++);
+      if(c===34)return JSON.parse(raw.slice(start,at));
+      if(c<32)err('control byte');
+      if(c===92){
+        if(at>=raw.length)err('unfinished escape');
+        const esc=raw[at++];
+        if(esc==='u'){
+          if(!/^[0-9a-fA-F]{4}$/.test(raw.slice(at,at+4)))err('Unicode escape');
+          at+=4;
+        }else if(!'"\\/bfnrt'.includes(esc))err('invalid escape');
+      }
+    }
+    err('unterminated string');
+  }
+  function value(depth){
+    if(depth>=24)err('nesting limit');ws();
+    if(raw[at]==='{'){
+      at++;ws();const names=new Set();if(raw[at]==='}'){at++;return;}
+      while(true){ws();const name=string();if(names.has(name))err('duplicate key '+name);
+        names.add(name);ws();if(raw[at++]!==':')err('colon expected');
+        value(depth+1);ws();const sep=raw[at++];if(sep==='}')break;if(sep!==',')err('object comma expected');
+      }return;
+    }
+    if(raw[at]==='['){
+      at++;ws();if(raw[at]===']'){at++;return;}
+      while(true){value(depth+1);ws();const sep=raw[at++];if(sep===']')break;if(sep!==',')err('array comma expected');}return;
+    }
+    if(raw[at]==='"'){string();return;}
+    for(const literal of ['true','false','null'])if(raw.startsWith(literal,at)){
+      at+=literal.length;return;
+    }
+    const match=/^-?(?:0|[1-9][0-9]*)/.exec(raw.slice(at));
+    if(!match)err('value expected');
+    at+=match[0].length;
+    if(!Number.isInteger(Number(match[0]))||Number(match[0])<-2147483648||Number(match[0])>2147483647)
+      err('integer outside native boundary');
+    if(at<raw.length&&!/[,}\]\s]/.test(raw[at]))err('only integer numbers accepted');
+  }
+  value(0);ws();if(at!==raw.length)err('trailing data');
+  return JSON.parse(raw);
+}
+function receiveCapsuleJSON(raw){
+  return validateCapsule(parseStrictJSON(raw));
+}
+
+function validateCapsule(c){
+  if(!c||Array.isArray(c)||typeof c!=='object'||!c.payload||typeof c.checksum!=='string')throw new Error('HOLD: invalid capsule envelope.');
+  const p=c.payload;
+  if(p.schema!==CAPSULE_SCHEMA||p.origin!=='JM APP//COMMONS · LOCAL ONLY'||p.authority!=='OWNER_REVIEW_REQUIRED'||p.revision!==1)throw new Error('HOLD: unsupported capsule schema or authority.');
+  if(sha256(stableJSON(p))!==c.checksum)throw new Error('HOLD: payload checksum mismatch.');
+  if(sha256(checked(p.source))!==p.sourceHash)throw new Error('HOLD: working source digest mismatch.');
+  const renewed=createCapsule({name:p.name,source:p.source,snapshots:p.snapshots});
+  if(stableJSON(renewed)!==stableJSON(c))throw new Error('HOLD: capsule contains invalid or unexpected structure.');
+  return {name:p.name,source:p.source,snapshots:p.snapshots,checksum:c.checksum};
+}
+
+(() => {
+'use strict';
+const STORE='jm.appcommons.cp01.project', $=id=>document.getElementById(id), q=s=>document.querySelectorAll(s);
+const newState=()=>({name:'JM Original Project',source:'',snapshots:[]});
+let state=newState(),analysis=null,difference=null,staged=null,history=[],persistable=true,storageHold=false;
+const stamp=()=>new Date().toISOString();
+function log(type,message){history.unshift({type,message,time:new Date().toLocaleTimeString()});history=history.slice(0,8);$('activity').replaceChildren(...history.map(e=>{let p=document.createElement('div');p.textContent=`${e.time} · ${e.type} · ${e.message}`;return p;}));}
+function notice(message,hold=false){$('notification').textContent=(hold?'HOLD · ':'CONTACT · ')+message;$('notification').className='receipt'+(hold?' warn':'');}
+function persist(){if(storageHold){notice('Previous stored data failed verification. Export it separately; do not overwrite without explicit reset.',true);return false;}try{localStorage.setItem(STORE,JSON.stringify(state));const readback=JSON.parse(localStorage.getItem(STORE));if(stableJSON(readback)!==stableJSON(state))throw Error('Post-write mismatch');persistable=true;return true;}catch(e){persistable=false;notice('Local persistence HOLD; export a capsule for recovery.',true);return false;}}
+function digest(){return sha256(state.source);}
+function current(){state.name=$('projectName').value;state.source=$('source').value;$('charCount').textContent=state.source.length+' / 10,000';$('bufferState').textContent=state.snapshots.length&&state.snapshots[0].hash===digest()?'MATCHES SNAPSHOT':'WORKING BUFFER';}
+function invalidate(){analysis=null;difference=null;$('engineState').textContent='INSPECTION DUE';$('engineState').className='tag';}
+function hydrate(){ $('projectName').value=state.name;$('source').value=state.source;current();drawSnapshots();$('patch').textContent='No comparison yet.';drawMetrics(null); }
+function drawMetrics(data){for(const field of ['words','lines','headings','tasks'])$(field).textContent=data?data[field]:'—';$('hash').textContent=data?data.hash:'No digest yet';$('outline').textContent=data?data.outline:'Inspection required';$('todo').textContent=data?data.todo:'Inspection required';$('engineState').textContent=data?'INSPECTED':'NO INSPECTION';$('engineState').className='tag'+(data?' pass':'');}
+function inspectNow(){try{current();analysis=inspect(state.source);drawMetrics(analysis);persist();notice('Source inspected. SHA-256 '+analysis.hash.slice(0,14)+'…');log('INSPECT','bytes '+analysis.bytes+' / words '+analysis.words);}catch(e){notice(e.message,true);log('HOLD',e.message);}}
+function capture(){try{current();const a=inspect(state.source);if(state.snapshots[0]?.hash===a.hash)throw Error('Identical snapshot already current; duplicate not created.');const s={text:state.source,hash:a.hash,created:stamp(),label:state.name};state.snapshots.unshift(s);state.snapshots=state.snapshots.slice(0,12);const durable=persist();drawSnapshots();notice('Snapshot '+a.hash.slice(0,12)+'… '+(durable?'stored and read back':'IN MEMORY ONLY — export required')+'; digest '+(sha256(state.snapshots[0].text)===a.hash?'PASS':'HOLD'),!durable);log('SNAPSHOT','created '+a.hash.slice(0,12));$('bufferState').textContent='MATCHES SNAPSHOT';}catch(e){notice(e.message,true);log('HOLD',e.message);}}
+function drawSnapshots(){let box=$('snapshots');box.replaceChildren();$('snapshotSelect').replaceChildren();state.snapshots.forEach((s,i)=>{let card=document.createElement('div');card.className='snap';let div=document.createElement('div');div.innerHTML='<div class="name"></div><small></small>';div.querySelector('.name').textContent='#'+(state.snapshots.length-i)+' · '+s.label;div.querySelector('small').textContent=s.created.replace('T',' ').slice(0,19)+' · '+s.hash.slice(0,18)+'…';card.append(div);let badge=document.createElement('span');badge.className='tag pass';badge.textContent=sha256(s.text)===s.hash?'DIGEST OK':'HOLD';card.append(badge);box.append(card);let option=document.createElement('option');option.value=String(i);option.textContent='#'+(state.snapshots.length-i)+' · '+s.hash.slice(0,8);$('snapshotSelect').append(option);});if(!state.snapshots.length){let p=document.createElement('p');p.className='sub';p.textContent='No snapshots yet. Capture your first original state to unlock lineage and recovery.';box.append(p);}}
+function doCompare(){try{current();if(!state.snapshots.length)throw Error('A protected snapshot is required for comparison.');const s=state.snapshots[Number($('snapshotSelect').value)||0];if(!s||sha256(s.text)!==s.hash)throw Error('Protected snapshot digest mismatch.');difference=compare(s.text,state.source);$('diffState').textContent='EXECUTED';$('diffState').className='tag pass';$('diffSummary').textContent=`+${difference.added} added · −${difference.removed} removed · ${difference.unchanged} unchanged. Hashes: ${difference.beforeHash.slice(0,12)}… → ${difference.afterHash.slice(0,12)}…`;$('diffSummary').className='receipt';$('patch').replaceChildren(...difference.patch.split('\n').map(line=>{const div=document.createElement('div');div.textContent=line;div.className=line.startsWith('+')?'add':line.startsWith('-')?'del':'same';return div;}));notice('Exact line comparison completed against selected snapshot.');log('COMPARE',`+${difference.added} / -${difference.removed}`);}catch(e){$('diffState').textContent='HOLD';$('diffState').className='tag hold';$('diffSummary').textContent=e.message;$('diffSummary').className='receipt warn';notice(e.message,true);}}
+function recover(){try{const s=state.snapshots[Number($('snapshotSelect').value)||0];if(!s)throw Error('No selected snapshot.');if(sha256(s.text)!==s.hash)throw Error('Snapshot digest mismatch.');if(state.source!==s.text&&!confirm('Recover selected snapshot INTO the working buffer? Other saved snapshots stay untouched.'))return;state.source=s.text;persist();$('source').value=state.source;current();invalidate();drawMetrics(null);notice('Selected snapshot restored to working buffer; originals retained.');log('RECOVER',s.hash.slice(0,12));}catch(e){notice(e.message,true);}}
+function exportCapsule(){try{current();const capsule=createCapsule(state);const check=validateCapsule(capsule);const data=stableJSON(capsule);let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='JM_APP_COMMONS_'+state.name.replace(/[^a-z0-9-]+/gi,'_').slice(0,42)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);$('capsuleHash').textContent='SHA-256 capsule checksum: '+check.checksum;notice('Capsule locally composed, verified and handed to browser download.');log('EXPORT','checksum '+check.checksum.slice(0,12));return capsule;}catch(e){notice(e.message,true);log('HOLD',e.message);return null;}}
+function stageCapsule(raw){staged=null;$('applyImportBtn').disabled=true;try{if(new TextEncoder().encode(raw).length>200000)throw Error('HOLD: imported capsule exceeds native 200,000-byte UTF-8 limit.');const checkedState=receiveCapsuleJSON(raw);staged=checkedState;$('importStatus').textContent=`VERIFIED · ${checkedState.name} · ${checkedState.snapshots.length} snapshots · ${checkedState.checksum.slice(0,18)}… No state changed.`;$('importStatus').className='receipt';$('applyImportBtn').disabled=false;log('VERIFY','incoming capsule accepted for review');}catch(e){staged=null;$('importStatus').textContent=e.message;$('importStatus').className='receipt warn';notice(e.message,true);}}
+async function stageImport(file){if(!file)return;try{if(file.size>200000)throw Error('Capsule too large');stageCapsule(await file.text());}catch(e){notice(e.message,true);}}
+function applyImport(){if(!staged)return;if(!confirm('Replace this local working project with the validated imported project? Export the current project first if you wish to keep it.'))return;const old=state;state={name:staged.name,source:staged.source,snapshots:staged.snapshots};try{if(!persist())throw Error('Import write/readback HOLD; no adoption');hydrate();invalidate();staged=null;$('applyImportBtn').disabled=true;$('importStatus').textContent='Imported project passed checksum verification and state application.';notice('Validated capsule applied to the independent local workroom.');log('IMPORT','restored '+state.snapshots.length+' snapshots');switchTab('workroom');}catch(e){state=old;persist();notice(e.message,true);}}
+function switchTab(tab){q('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab?'true':'false'));for(const name of ['workroom','lineage','passport','federation'])$(name).classList.toggle('hidden',name!==tab);if(tab==='lineage'){drawSnapshots();doCompare();}if(tab==='passport'){try{$('capsuleHash').textContent='Current portable checksum · '+createCapsule(state).checksum;}catch(e){$('capsuleHash').textContent=e.message;}}}
+function boot(){try{const saved=localStorage.getItem(STORE);if(saved){const data=JSON.parse(saved);state={name:data.name,source:data.source,snapshots:data.snapshots};createCapsule(state);notice('Recovered prior CP01–CP03 local state; snapshot hashes validated.');log('RECOVERY','saved browser workroom loaded');}}catch(e){state=newState();storageHold=true;notice('Stored state verification HOLD. Original browser storage will NOT be overwritten; use a capsule or reset explicitly.',true);}hydrate();}
+q('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>switchTab(btn.dataset.tab)));
+$('source').addEventListener('input',()=>{current();invalidate();persist();});$('projectName').addEventListener('input',()=>{current();persist();});
+$('inspectBtn').onclick=inspectNow;$('saveBtn').onclick=capture;$('snapshotBtn').onclick=capture;$('compareBtn').onclick=doCompare;$('recoverBtn').onclick=recover;
+$('snapshotSelect').onchange=()=>doCompare();
+$('demoBtn').onclick=()=>{if(state.source&&!confirm('Replace current WORKING BUFFER with demonstration? Snapshots remain safe.'))return;state.source='# JM ORIGINAL APPLICATION\n\nA first-party JM app based on independently implemented structures.\n\n## First contact\n- [ ] Examine structure\n- [ ] Snapshot an earned state\n- [ ] Compare a revision\n\n## Host boundaries\nLocal execution is real. Remote AI and provider access are not claimed.\nhttps://modelcontextprotocol.io\n';$('source').value=state.source;current();invalidate();persist();inspectNow();log('DEMO','demonstration loaded into working buffer');};
+$('resetBtn').onclick=()=>{if(storageHold){if(!confirm('Invalid prior browser storage exists. Clear and replace that invalid store? Export outside this app first if needed.'))return;storageHold=false;}if(state.source&&!confirm('Clear working buffer? Saved snapshots remain.'))return;state.source='';$('source').value='';current();invalidate();drawMetrics(null);persist();notice('New working buffer created. Existing snapshots preserved.');};
+$('exportBtn').onclick=exportCapsule;$('copyBtn').onclick=async()=>{try{const c=createCapsule(state);await navigator.clipboard.writeText(c.checksum);notice('Checksum copied to clipboard.');}catch(e){$('capsuleHash').textContent='Copy unavailable; checksum: '+createCapsule(state).checksum;notice('Clipboard unavailable in this context; checksum displayed.',true);}};
+$('copyPassportBtn').onclick=async()=>{try{const c=createCapsule(state);await navigator.clipboard.writeText(stableJSON(c));notice('Full verified capsule copied; choose a receiver yourself.');}catch(e){notice('Clipboard unavailable; use Export .json capsule. '+e.message,true);}};
+$('stagePasteBtn').onclick=()=>stageCapsule($('capsulePaste').value);
+$('importFile').onchange=e=>stageImport(e.target.files?.[0]);$('applyImportBtn').onclick=applyImport;
+boot();
+})();
+</script></body></html>

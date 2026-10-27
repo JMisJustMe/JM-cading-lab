@@ -1,0 +1,44 @@
+name: JM Unique Bodies CP10 · disabled-default operator custody export
+on:
+  pull_request:
+    paths:
+      - 'services/jm-unique-bodies-cp08/cp08_gateway.py'
+      - 'services/jm-unique-bodies-cp08/atlas_custody.py'
+      - 'services/jm-unique-bodies-cp08/test_cp10_custody_export.py'
+      - '.github/workflows/jm-unique-bodies-cp10-one-shot-custody.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-atlas-locked-custody-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile original JM Atlas custody and gateway
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 -m py_compile cp08_gateway.py atlas_custody.py test_cp10_custody_export.py
+          node --check native_donor_exec.mjs
+      - name: Actual localhost TCP HTTP dual token once-only export, restore, donor replay and refusal adversaries
+        working-directory: services/jm-unique-bodies-cp08
+        run: python3 -m unittest -v test_cp10_custody_export
+      - name: Prove no production enablement or new public MCP tool
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          g=Path('cp08_gateway.py').read_text()
+          d=Path('Dockerfile').read_text()
+          assert "CP08_CUSTODY_EXPORT_ONCE" in g
+          assert "custody_flag=='1'" in g
+          assert "ALLOWED={'atomic_contact_execute','atomic_contact_history'}" in g
+          assert "CP08_CUSTODY_EXPORT_ONCE" not in d
+          print("PASS: default disabled, no new public MCP tool, Docker unchanged")
+          PY

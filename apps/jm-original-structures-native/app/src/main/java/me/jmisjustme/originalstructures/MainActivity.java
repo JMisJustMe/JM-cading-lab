@@ -108,11 +108,27 @@ public final class MainActivity extends Activity {
                 // The bridge can signal a write only; its method accepts no filename,
                 // bytes, arbitrary command or network destination. Android reads JM's
                 // own state from the trusted bundled main-frame after the signal.
-                String js="(function(){if(!window.JMNativeBridge||window.__jmNativeHook)return;"+
-                  "window.__jmNativeHook=true;const nativePriorSave=save;"+
-                  "save=function(){nativePriorSave();window.JMNativeBridge.dirty();};"+
-                  "window.JMNativeBridge.ready();return 'JM native save hook installed';})()";
-                v.evaluateJavascript(js,x->{ready=true;display("JM NATIVE · offline workroom · protected private vault");reviewColdRecovery();});
+                // Do not infer WebView runtime readiness from onPageFinished or
+                // a native toolbar alone. Require the actual protected JM
+                // source editor, GripCube, finish organ and live source state.
+                String js="(function(){try{"+
+                  "if(!document.getElementById('source')||!window.JMGripCube||"+
+                  "!window.JMFinish||typeof state!=='object'||typeof save!=='function')"+
+                  "return 'HOLD: JM runtime or source editor missing';"+
+                  "if(!window.__jmNativeHook){const prior=save;"+
+                  "save=function(){prior();window.JMNativeBridge.dirty();};"+
+                  "window.__jmNativeHook=true;}"+
+                  "return 'JM_NATIVE_WORKROOM_READY';"+
+                  "}catch(e){return 'HOLD: '+e.message;}})()";
+                v.evaluateJavascript(js,x->{
+                    String checked=value(x);
+                    if(!"JM_NATIVE_WORKROOM_READY".equals(checked)){
+                        ready=false;display("HOLD · embedded JM workroom failed: "+checked);return;
+                    }
+                    ready=true;
+                    display("JM NATIVE WORKROOM READY · source + GripCube + worker");
+                    reviewColdRecovery();
+                });
             }
         });
         browser.setWebChromeClient(new WebChromeClient(){

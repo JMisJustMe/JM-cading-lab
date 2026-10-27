@@ -1,0 +1,26 @@
+name: JM MCP Federation Final FLAZ — standalone and hosted contact
+
+on:
+  push:
+    branches:
+      - flaz/jm-mcp-federation-final-20261027
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  final_contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Recover SHA-pinned originals from the independent final bench
+        uses: actions/checkout@v4
+      - name: Execute full standalone MCP and four-service remote contact battery
+        run: python3 -u services/jm-federation-receipt-cp01/test_final_federation.py
+      - name: Preserve APP COMMONS local HTTP-native CP06 non-regression
+        run: |
+          node --check app-commons-cp03/core.mjs
+          node --check app-commons-cp03/mcp-stdio.mjs
+          node --check app-commons-cp03/http-mcp-cp06.mjs
+          node --test app-commons-cp03/test-http-cp06.mjs

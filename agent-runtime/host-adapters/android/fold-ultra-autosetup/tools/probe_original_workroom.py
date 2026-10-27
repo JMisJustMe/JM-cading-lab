@@ -67,13 +67,16 @@ def main():
             m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",bounds)
             if not m:raise AssertionError("HOLD: native editor lacks bounds")
             x1,y1,x2,y2=map(int,m.groups())
-            if 110<=y1 and y2<=1500:
+            # A partially clipped EditText is still touchable when its
+            # intersection with the app safe viewport provides real area.
+            # Evidence: [60,101][660,338] was repeatedly visible; insisting
+            # y1 >= 110 made the test oscillate past a valid editor.
+            safe_top=max(y1,130)
+            safe_bottom=min(y2,1460)
+            if safe_bottom-safe_top>=50:
                 editor=edits[0]
                 break
-            # The first upward movement can leave the editor underneath
-            # Android's status bar (observed y=70..307). Reverse direction
-            # until its actual touch bounds are safe, rather than overscrolling.
-            if y1<110:
+            if y1<110 and y2<=180:
                 swipe("down")
                 continue
         swipe("up")

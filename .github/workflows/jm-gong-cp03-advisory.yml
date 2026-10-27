@@ -1,0 +1,52 @@
+name: JM GONG CP03 — advisory change-scope retest
+on:
+  pull_request:
+    paths:
+      - '**/*.html'
+      - '**/*.htm'
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.css'
+      - '**/*.ts'
+      - '**/*.tsx'
+      - '**/*.gd'
+      - '**/*.py'
+      - '**/*.json'
+      - 'tools/gong/**'
+      - '.github/workflows/jm-gong-cp03-advisory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  advisory:
+    name: Non-blocking source-delta advisory (no device PASS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test GONG CP03 classifier
+        run: node --test tools/gong/tests/gong_cp03.test.js
+      - name: Inspect actual PR source changes
+        if: github.event_name == 'pull_request'
+        env:
+          GONG_BASE: ${{ github.event.pull_request.base.sha }}
+          GONG_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p gong-receipts
+          node tools/gong/gong_ci_cp03.js --base "$GONG_BASE" --head "$GONG_HEAD" --json gong-receipts/receipt.json --markdown gong-receipts/summary.md
+          cat gong-receipts/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve advisory receipt
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gong-cp03-readonly-receipt
+          path: gong-receipts/
+          if-no-files-found: ignore
+          retention-days: 14

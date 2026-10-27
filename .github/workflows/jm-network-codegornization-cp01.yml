@@ -28,5 +28,9 @@ jobs:
         run: |
           node --check network-codegornization/cp01/jm-network-federation.mjs
           node --check network-codegornization/cp01/selftest.mjs
+          node --check network-codegornization/cp02/jm-durable-spool.mjs
+          node --check network-codegornization/cp02/selftest.mjs
       - name: Run native donor composition and negative-path checks
-        run: node network-codegornization/cp01/selftest.mjs
+        run: |
+          node network-codegornization/cp01/selftest.mjs
+          node network-codegornization/cp02/selftest.mjs

@@ -63,13 +63,14 @@ public final class MainActivity extends Activity {
         try { Object v=new JSONTokener(js).nextValue();return v==JSONObject.NULL?null:String.valueOf(v); }
         catch(Exception ignored){return null;}
     }
+    private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
     private void display(String msg){status.setText(msg);}
     private void notice(String msg){Toast.makeText(this,msg,Toast.LENGTH_LONG).show();}
     private void error(String context,Exception e){display("HOLD · "+context+": "+e.getMessage());}
     private Button button(LinearLayout bar,String label,Runnable action){
         Button b=new Button(this);b.setText(label);b.setTextSize(10);
         b.setTextColor(Color.WHITE);b.setAllCaps(false);
-        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,46,1);
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(48),1);
         bar.addView(b,p);b.setOnClickListener(v->action.run());return b;
     }
     @Override public void onCreate(Bundle state){super.onCreate(state);
@@ -88,10 +89,10 @@ public final class MainActivity extends Activity {
         button(bar,"Verify",this::verifyNative);
         button(bar,"Restore",this::restoreNative);
         button(bar,"Export",this::exportNative);
-        root.addView(bar,new LinearLayout.LayoutParams(-1,48));
+        root.addView(bar,new LinearLayout.LayoutParams(-1,dp(52)));
         status=new TextView(this);status.setTextColor(Color.rgb(163,232,216));status.setTextSize(11);status.setGravity(Gravity.CENTER_VERTICAL);
-        status.setPadding(12,0,8,0);display("JM NATIVE · protected workroom loading");
-        root.addView(status,new LinearLayout.LayoutParams(-1,33));
+        status.setPadding(dp(12),0,dp(8),0);display("JM NATIVE · protected workroom loading");
+        root.addView(status,new LinearLayout.LayoutParams(-1,dp(32)));
         browser=new WebView(this);
         browser.setBackgroundColor(Color.rgb(5,13,25));browser.setOverScrollMode(View.OVER_SCROLL_NEVER);
         WebSettings s=browser.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);

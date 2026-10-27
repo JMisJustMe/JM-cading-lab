@@ -1,0 +1,78 @@
+{
+  "schema": "JM.BusinessWorld.CP04.IntegrityAndProof/1.0",
+  "date": "2026-10-27",
+  "status": "LOCAL_QA_PASS__OWNER_CP04_FOLD_OPEN__LIVE_SALES_OPEN",
+  "parent_CP03_sha256": "8bdef12ffac0246b583450df4f69d4d3f3ff2108cc931f7e7a7d0974bad00e21",
+  "new_html_sha256": "8df2347d5d6dddb13f41c81dc9ba404b32a3b1edce7288ece7cf49f1c5dc0526",
+  "protected_data_source": "JM Money Menu v1.1 / v1.2 contact",
+  "route_count": 242,
+  "offers_from_source": 8,
+  "gripcube_views": 6,
+  "QA": {
+    "headless_chromium": {
+      "pass": 160,
+      "total": 160
+    },
+    "adversarial": {
+      "pass": 17,
+      "total": 17
+    },
+    "combined": {
+      "pass": 177,
+      "total": 177
+    }
+  },
+  "truth_boundary": "No physical CP04 Fold touch proof, no acceptance, no verified live payment, no company incorporation, no production deployment, no sales recorded.",
+  "files": [
+    {
+      "name": "JM_BUSINESS_WORLD_CP04_OPERATIONS_OPEN.html",
+      "size_bytes": 137660,
+      "sha256": "8df2347d5d6dddb13f41c81dc9ba404b32a3b1edce7288ece7cf49f1c5dc0526"
+    },
+    {
+      "name": "cp04.css",
+      "size_bytes": 4277,
+      "sha256": "e6e6ae8d49efbbaaf9a084a8ba953c433f79495e2ef2834584631913c6c4a667"
+    },
+    {
+      "name": "cp04.js",
+      "size_bytes": 13571,
+      "sha256": "bb8b3d48aa5367edc437955e0fd1fffde01b79ff90db5fe5b0e179cd23734610"
+    },
+    {
+      "name": "test_cp04.py",
+      "size_bytes": 6850,
+      "sha256": "20486294a15efe2ac57606f6f083167c509210332e130c674df875c805584dd5"
+    },
+    {
+      "name": "test_cp04_adversarial.py",
+      "size_bytes": 4456,
+      "sha256": "53e38a0e4b2f79903ba813057b6ecd155e673f6b69ce1b071851dcd34ca0d652"
+    },
+    {
+      "name": "QA_CP04.json",
+      "size_bytes": 17570,
+      "sha256": "bdbde8836bd3cea5912a6e2758c563ab86a1466172943ecdd46ee6bc464db54b"
+    },
+    {
+      "name": "QA_CP04_ADVERSARIAL.json",
+      "size_bytes": 1438,
+      "sha256": "411eab7d9c6e67342f9a8eb6ed4c047fffd0f193c9ffe98f41e814d24a01f4e0"
+    },
+    {
+      "name": "CP04_FOLD-PORTRAIT_PROOF.png",
+      "size_bytes": 141817,
+      "sha256": "a43ca597f508c84b7e6c717fd5b6fe41e9e188922cf257e18d745ddea1d41cfd"
+    },
+    {
+      "name": "CP04_FOLD-LANDSCAPE_PROOF.png",
+      "size_bytes": 184985,
+      "sha256": "a7440893fd5c4167690e63bba1c6d5113907c8853e932abf8cebdb36f462951c"
+    },
+    {
+      "name": "README_CP04.md",
+      "size_bytes": 4199,
+      "sha256": "d5d9ee9feb8dc82c0efe14bdfa0dcabce7e7296ca34d334b73d883b269a1ebd5"
+    }
+  ]
+}

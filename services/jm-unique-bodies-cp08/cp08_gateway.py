@@ -20,12 +20,19 @@ import cp07_atomic_runtime as cp07
 ROOT=Path(__file__).resolve().parent
 VERSION='0.8.0-cp08'
 ALLOWED={'atomic_contact_execute','atomic_contact_history'}
+# Inherited CORS discipline from sovereign JM MCP Workshop CP04.
+# Extra browser origins are strictly opt-in. No implicit provider grants.
+PREFLIGHT_HEADERS={
+    'accept','authorization','content-type','mcp-protocol-version',
+    'mcp-method','mcp-name','mcp-session-id','last-event-id'
+}
 
 class Gateway(ThreadingHTTPServer):
     daemon_threads=True
     allow_reuse_address=True
-    def __init__(self,addr,atlas,secret,origin):
+    def __init__(self,addr,atlas,secret,origin,extra_origins=()):
         self.atlas=atlas;self.secret=secret;self.origin=origin.rstrip('/')
+        self.browser_origins=frozenset((self.origin,*extra_origins))
         super().__init__(addr,Handler)
 
 class Handler(BaseHTTPRequestHandler):
@@ -34,8 +41,17 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,fmt,*args):
         # Don't log URL query values or credentials.
         pass
+    def cors_headers(self):
+        origin=self.headers.get('Origin','')
+        if origin and origin in self.server.browser_origins:
+            self.send_header('Access-Control-Allow-Origin',origin)
+            self.send_header('Vary','Origin')
+            self.send_header('Access-Control-Allow-Methods','POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers',
+                             ', '.join(sorted(PREFLIGHT_HEADERS)))
+            self.send_header('Access-Control-Max-Age','600')
     def reply(self,status,obj,headers=None):
-        data=server.canon(obj).encode('utf-8')
+        data=b'' if status==204 else server.canon(obj).encode('utf-8')
         self.send_response(status)
         self.send_header('Content-Type','application/json; charset=utf-8')
         self.send_header('Content-Length',str(len(data)))
@@ -43,14 +59,31 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Referrer-Policy','no-referrer')
         self.send_header('X-Frame-Options','DENY')
+        self.cors_headers()
         for k,v in (headers or {}).items():self.send_header(k,v)
-        self.end_headers();self.wfile.write(data)
+        self.end_headers()
+        if data:self.wfile.write(data)
     def authenticated(self):
         val=self.headers.get('Authorization','')
         return hmac.compare_digest(val.encode(),('Bearer '+self.server.secret).encode())
     def trusted_origin(self):
         o=self.headers.get('Origin')
-        return not o or o==self.server.origin
+        return not o or o in self.server.browser_origins
+    def do_OPTIONS(self):
+        route=urlsplit(self.path)
+        if route.path!='/mcp' or route.query:
+            return self.reply(404,{'error':'NOT_FOUND'})
+        # OPTIONS never authorizes a write: exact origin, method and headers only.
+        if not self.headers.get('Origin') or not self.trusted_origin():
+            return self.reply(403,{'error':'ORIGIN_HOLD'})
+        if self.headers.get('Access-Control-Request-Method','').upper()!='POST':
+            return self.reply(405,{'error':'METHOD_HOLD'})
+        requested={x.strip().lower() for x in
+            self.headers.get('Access-Control-Request-Headers','').split(',')
+            if x.strip()}
+        if not requested.issubset(PREFLIGHT_HEADERS):
+            return self.reply(403,{'error':'PREFLIGHT_HEADER_HOLD'})
+        return self.reply(204,None)
     def do_GET(self):
         route=urlsplit(self.path)
         if route.query:return self.reply(400,{'error':'QUERY_STRINGS_DISABLED'})
@@ -78,7 +111,7 @@ class Handler(BaseHTTPRequestHandler):
         try:r=json.loads(self.rfile.read(length))
         except (UnicodeDecodeError,json.JSONDecodeError):return self.reply(400,{'error':'INVALID_JSON'})
         if not isinstance(r,dict):return self.reply(400,{'error':'JSON_RPC_OBJECT_REQUIRED'})
-        if r.get('jsonrpc')!='2.0' or r.get('method') not in ('tools/list','tools/call','initialize','ping'):
+        if r.get('jsonrpc')!='2.0' or r.get('method') not in ('tools/list','tools/call','initialize','ping','server/discover'):
             return self.reply(403,{'error':'METHOD_HOLD'})
         if r.get('method')=='tools/call':
             p=r.get('params')
@@ -86,6 +119,23 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(403,{'error':'TOOL_SCOPE_HOLD'})
             a=p.get('arguments',{})
             if not isinstance(a,dict) or len(a)>6:return self.reply(400,{'error':'INVALID_TOOL_ARGUMENTS'})
+        # Match the existing JM Atlas dual-era HTTP contract rather than
+        # exposing server/discover without its required modern headers.
+        version=self.headers.get('MCP-Protocol-Version')
+        if version==server.MODERN:
+            accept=self.headers.get('Accept','')
+            if 'application/json' not in accept or 'text/event-stream' not in accept:
+                return self.reply(406,{'error':'MODERN_ACCEPT_HOLD'})
+            declared=((r.get('params') or {}).get('_meta') or {}).get(
+                'io.modelcontextprotocol/protocolVersion') if isinstance(r.get('params'),dict) else None
+            if declared!=version or self.headers.get('Mcp-Method')!=r.get('method'):
+                return self.reply(400,{'error':'MODERN_HEADER_MISMATCH'})
+            if r.get('method')=='tools/call' and self.headers.get('Mcp-Name')!=(r.get('params') or {}).get('name'):
+                return self.reply(400,{'error':'MODERN_TOOL_HEADER_MISMATCH'})
+        elif version and version not in server.VERSIONED:
+            return self.reply(400,{'error':'UNSUPPORTED_PROTOCOL_VERSION'})
+        if r.get('method')=='server/discover' and version!=server.MODERN:
+            return self.reply(400,{'error':'MODERN_DISCOVERY_REQUIRED'})
         # Delegate to authentic protected dispatcher, not an invented RPC implementation.
         reply=server.dispatch(self.server.atlas,r)
         if r['method']=='tools/list' and reply and 'result' in reply:
@@ -107,8 +157,13 @@ def main():
         else:raise SystemExit('HOLD: CP08_PUBLIC_ORIGIN must be set when binding beyond localhost')
     if not re.fullmatch(r'https://[\w.-]+(?::\d+)?|http://(?:127\.0\.0\.1|localhost)(?::\d+)?',explicit):
         raise SystemExit('HOLD: CP08_PUBLIC_ORIGIN requires HTTPS (except loopback)')
+    # Additional browser origins are opt-in and never wildcard or HTTP remote.
+    extra=tuple(x.strip() for x in os.getenv('CP08_ALLOWED_BROWSER_ORIGINS','').split(',') if x.strip())
+    if any(not re.fullmatch(r'https://[A-Za-z0-9.-]+(?::[0-9]{1,5})?',x)
+           or x.endswith('.') for x in extra):
+        raise SystemExit('HOLD: CP08_ALLOWED_BROWSER_ORIGINS requires exact HTTPS origins')
     atlas=server.Atlas(args.db);cp07.init(atlas)
-    with Gateway((args.host,args.port),atlas,token,explicit) as g:
+    with Gateway((args.host,args.port),atlas,token,explicit,extra) as g:
         print('CP08 ready /health /fold /mcp',file=sys.stderr,flush=True)
         g.serve_forever()
 if __name__=='__main__':main()

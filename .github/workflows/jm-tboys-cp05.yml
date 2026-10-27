@@ -1,0 +1,33 @@
+name: JM T-Boys CP05 — four sovereign execution bodies
+on:
+  push:
+    branches:
+      - feat/jm-tboys-cp05-governed-field-20261027
+    paths:
+      - 'games/tboys-five-path/cp05/**'
+      - '.github/workflows/jm-tboys-cp05.yml'
+  workflow_dispatch:
+jobs:
+  sovereign-recipient:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inherited native sovereign checks
+        run: node coding-estate/sovereign-ten/direct/native-selftest.mjs
+      - name: Original CP03 native recipient non-regression
+        run: node games/tboys-five-path/cp03/tboys_canonical_native_contact.mjs > /tmp/tboys-cp03-regression.json
+      - name: CP05 four real native bodies recipient test
+        run: node games/tboys-five-path/cp05/tboys_governed_field.mjs > games/tboys-five-path/cp05/native_receipt.json
+      - name: Carry canonical body source and proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-tboys-cp05-native-sources
+          path: |
+            games/tboys-five-path/cp05/native_receipt.json
+            games/tboys-five-path/cp05/tboys_governed_field.mjs
+            coding-estate/sovereign-ten/direct/native-core.mjs
+            coding-estate/sovereign-ten/direct/language-native.mjs
+            coding-estate/sovereign-ten/direct/game-native.mjs

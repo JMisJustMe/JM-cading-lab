@@ -34,6 +34,9 @@ jobs:
           java -cp /tmp/jm-appcommons-java com.jmisjustme.foldultra.JMAppCommonsCapsuleProof fixture-valid-capsule.json fixture-tampered.json
           java -cp /tmp/jm-appcommons-java com.jmisjustme.foldultra.JMAppCommonsExtendedProof extended-fixtures
           python3 android/tools/verify_native_source.py
+      - name: APP COMMONS launcher-ANR fail-closed regression
+        working-directory: app-commons-cp03
+        run: python3 -m unittest discover -s android/tools -p 'test_launcher_guard.py' -v
   native-build:
     needs: portable-test
     runs-on: ubuntu-latest

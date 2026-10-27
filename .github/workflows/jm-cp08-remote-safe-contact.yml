@@ -47,7 +47,7 @@ jobs:
           status,h,b=call('/fold')
           assert status==200,status
           assert 'text/html' in h.get('Content-Type',''),h
-          assert "script-src 'sha256-" in h.get('Content-Security-Policy',''),h
+          assert "script-src 'sha256-" in h.get('Content-Security-Policy',h.get('content-security-policy','')),h
           assert 'JM' in b.decode('utf-8'),len(b)
           print('PASS 2 remote HTTPS /fold is actual CSP-protected browser interface')
           req=b'{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'

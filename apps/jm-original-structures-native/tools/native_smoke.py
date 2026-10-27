@@ -76,9 +76,16 @@ def main():
  assert any('JM NATIVE WORKROOM READY' in s or
             'NATIVE RECOVERED · CURRENT STATE MATCHES PRIVATE VAULT' in s
             for s in labels),('Embedded source+GripCube not verified at runtime',labels)
- previous=None
- try:previous=snapshot()
- except AssertionError:pass
+ # Absence of a FIRST checkpoint is expected. Distinguish missing file
+ # from a present but corrupt/empty file, which must remain HOLD.
+ probe=subprocess.run(['adb','shell','run-as',PKG,'ls','files/jm_original_checkpoint.json'],
+                      capture_output=True,timeout=35)
+ if probe.returncode==0:
+  previous=snapshot()  # present but malformed file must raise
+ else:
+  reason=(probe.stdout+probe.stderr).decode(errors='replace').lower()
+  assert 'no such file' in reason,('HOLD: native checkpoint inaccessible',reason)
+  previous=None
  # WebView content may be absent from uiautomator's accessibility tree even
  # while real JavaScript runs. Native readiness is proved by JS checking
  # #source, state, GripCube and worker organ, NOT by an accessibility guess.

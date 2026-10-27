@@ -28,6 +28,14 @@ h2{font-size:1.4rem;margin:0 0 12px}.grid{display:grid;grid-template-columns:rep
 <details><summary>Technical trace and limits</summary><pre id="trace">Not run.</pre></details>
 <textarea class="hidden" id="receipt" readonly aria-label="Receipt text"></textarea>
 </section>
+<section class="panel" id="jm-cp02-contact" aria-labelledby="jm-cp02-title"><span class="cardtag">CP02 · Additive network and MCP relay</span><h2 id="jm-cp02-title">Prove remote source contact</h2>
+<p>Make one user-triggered, read-only cross-origin HTTPS request to your existing GitHub repository, compare the returned Git blob identity with a pinned known-good file, and prepare an independent capsule for the connected JM Build Mesh. No credentials, URL forwarding, or automatic write actions.</p>
+<p class="route">api.github.com/repos/JMisJustMe/JM-cading-lab</p>
+<div class="results"><article><div id="cp02net" class="metric">OPEN</div><small>External source contact</small></article><article><div id="cp02pin" class="metric">OPEN</div><small>Exact source identity</small></article><article><div id="cp02mcp" class="metric">HOLD</div><small>Hosted MCP receipt</small></article></div>
+<div class="actions"><button type="button" id="cp02probe" class="btn primary">Check actual HTTPS source</button><button type="button" id="cp02copy" class="btn" disabled>Copy MCP handoff</button></div>
+<p id="cp02result" role="status" aria-live="polite">The remote network gate has not been attempted in this session.</p>
+<details><summary>Network contact and capsule trace</summary><pre id="cp02trace">Unattempted.</pre></details>
+<p class="scope">MCP is a separate host route: only a real connected ChatGPT tool invocation can close that gate. Preparing a capsule does not imply that an MCP received it.</p></section>
 <section class="panel"><h2>What a pass actually means</h2><ol><li><strong>Worker PASS:</strong> a real Web Worker on this browser/origin returned the expected data 32 times; this does not prove the protected CP04's five-worker system.</li><li><strong>IndexedDB PASS:</strong> browser storage wrote and read 32 independently identified records during this run; it does not prove crash recovery or another application's storage.</li><li><strong>Re-entry:</strong> a later page load can read the previous checkpoint. Reload the page to check. This is not a substitute for a physical Fold screenshot or a full crash test.</li><li><strong>Permission HOLD:</strong> this page cannot detect ChatGPT's site permission, logged-in status, background browser automation or MCP use; those require their own contact and receipt.</li></ol><p class="scope">SOURCE → SIGNAL → CONTACT FIELD → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT</p></section></main>
 <footer>JM Browser Contact CP01 · Additive Access Mesh adapter · 27 October 2026 · No remote mutation or telemetry · No Ding without evidence.</footer>
 <script>
@@ -57,5 +65,32 @@ if(worker)worker.terminate();if(db)db.close();if(url)URL.revokeObjectURL(url);
 const receipt={schema:"JM_BROWSER_CONTACT_CP01",version:1,session,origin:location.origin,protocol:location.protocol,started,finished:stamp(),worker:{pass:wpass,total:32,status:wpass===32?"PASS":"HOLD"},indexeddb:{pass:dpass,total:32,status:dpass===32?"PASS":"HOLD"},reentry:"NOT_PROVEN_BY_THIS_RUN",chatgpt_browser_permission:"NOT_OBSERVABLE",mcp_contact:"NOT_TESTED",android_native:"NOT_TESTED",cp04_five_workers:"NOT_TESTED",errors:failures};
 latest=receipt;$("trace").textContent=JSON.stringify(receipt,null,2);$("copy").disabled=false;try{localStorage.setItem(KEY,JSON.stringify(receipt));}catch(e){receipt.local_storage="HOLD: "+String(e.message||e);$("trace").textContent=JSON.stringify(receipt,null,2);}
 const pass=wpass===32&&dpass===32;show("summary",pass?"BROWSER RUNTIME 32/32 + 32/32 PASS — OTHER GATES OPEN":"BROWSER RUNTIME PARTIAL — HOLD");show("progress",pass?"Live local browser round trips verified. Copy receipt; reload separately to check persistence.":"Partial result. Open technical trace for the exact HOLD. No Ding on failed gate.");btn.disabled=false;});
+})();
+</script><script id="jm-browser-contact-cp02">
+(()=>{"use strict";
+const get=id=>document.getElementById(id),SOURCE="https://api.github.com/repos/JMisJustMe/JM-cading-lab/contents/tests/jm-browser-contact-cp01.spec.cjs?ref=main",
+PIN="570f711ed3b55d68e2a52b6f7f86d1792fd03780";
+let capsule=null;
+const set=(id,t)=>get(id).textContent=String(t);
+function build(source,proof){return {schema:"JM.BrowserContact.McpHandoff/2",body:"JM ECOSTATE Browser Contact CP02",source_authority:"JMisJustMe/JM-cading-lab",source_path:"tests/jm-browser-contact-cp01.spec.cjs",source_blob_expected:PIN,source_blob_observed:source||null,proof:proof,host:"browser",origin:location.origin,client_recorded_at:new Date().toISOString(),requested_host_tool:"JM ECOSTATE Build Mesh Native MCP v0.8.6",requested_method:"build_mesh_status",requested_arguments:{probe_navigator:true},local_cp01_prior_receipt_reentry:(()=>{try{const p=JSON.parse(localStorage.getItem("jm-browser-contact-last-run-cp01")||"null");return !!(p&&p.schema==="JM_BROWSER_CONTACT_CP01"&&p.worker.pass===32&&p.indexeddb.pass===32);}catch{return false;}})(),mcp_transport:"UNPROVEN_REQUIRES_CONNECTED_MCP_INVOCATION",cp04_five_workers:"NOT_TESTED_BY_CP02",android_native:"NOT_TESTED_BY_CP02",permission_state:"NOT_READABLE_BY_WEBPAGE"};}
+get("cp02probe").addEventListener("click",async()=>{
+const b=get("cp02probe");b.disabled=true;get("cp02copy").disabled=true;set("cp02net","RUN");set("cp02pin","RUN");set("cp02result","Contacting the fixed public GitHub source over actual HTTPS...");
+let source=null,result="HOLD",failure=null,status=null;
+try{
+const timeout=AbortSignal.timeout(10000);
+const res=await fetch(SOURCE,{method:"GET",headers:{"Accept":"application/vnd.github+json"},signal:timeout,cache:"no-store",credentials:"omit",redirect:"error"});
+status=res.status;
+if(!res.ok)throw Error("HTTP_"+res.status);
+const data=await res.json();
+if(data.path!=="tests/jm-browser-contact-cp01.spec.cjs"||data.type!=="file"||typeof data.sha!=="string")throw Error("SOURCE_SCHEMA_MISMATCH");
+source=data.sha;
+result=source===PIN?"PASS_EXACT_GITHUB_BLOB":"HOLD_SOURCE_HEAD_CHANGED";
+set("cp02net","PASS");set("cp02pin",source===PIN?"PASS":"HOLD");
+}catch(e){failure=String(e&&e.name?e.name+":"+e.message:e).slice(0,180);set("cp02net","HOLD");set("cp02pin","HOLD");}
+capsule=build(source,result);capsule.remote={status:status,error:failure};set("cp02trace",JSON.stringify(capsule,null,2));get("cp02copy").disabled=false;
+set("cp02result",result==="PASS_EXACT_GITHUB_BLOB"?"GitHub HTTPS contact and pinned source identity PASS. The hosted MCP handoff remains separate.":"Network/source HOLD: "+(failure||result));
+b.disabled=false;
+});
+get("cp02copy").addEventListener("click",async()=>{if(!capsule)return;const contents="JM CP02 MCP HANDOFF — please call the already connected JM ECOSTATE Build Mesh Native MCP build_mesh_status tool with probe_navigator=true and report actual host invocation separately from the browser source receipt. Capsule follows:\n"+JSON.stringify(capsule);try{await navigator.clipboard.writeText(contents);set("cp02result","Handoff capsule copied. Paste it into a ChatGPT message; the MCP has not yet received it.");}catch(e){set("cp02result","Clipboard restricted. Open Network contact and capsule trace to copy the JSON manually.");get("cp02trace").parentElement.open=true;}});
 })();
 </script></body></html>

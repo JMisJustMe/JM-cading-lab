@@ -1,0 +1,39 @@
+name: JM Unique Bodies CP09 · actual cold-custody recovery
+on:
+  pull_request:
+    paths:
+      - 'services/jm-unique-bodies-cp08/cp09_custody.py'
+      - 'services/jm-unique-bodies-cp08/test_cp09_custody.py'
+      - 'services/jm-unique-bodies-cp08/CP09_CUSTODY.md'
+      - '.github/workflows/jm-unique-bodies-cp09-cold-custody.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-cp07-cold-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify CP09 CLI syntax
+        working-directory: services/jm-unique-bodies-cp08
+        run: python3 -m py_compile cp09_custody.py test_cp09_custody.py
+      - name: Actually execute original JM donor → Atlas → backup → delete → restore
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 -m unittest -v test_cp09_custody 2>&1 | tee cp09_actual_receipt.log
+          test ${PIPESTATUS[0]} -eq 0
+      - name: Preserve bounded CI evidence only, never owner archive/database
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp09-cold-custody-test-receipt
+          path: services/jm-unique-bodies-cp08/cp09_actual_receipt.log
+          if-no-files-found: warn
+          retention-days: 14

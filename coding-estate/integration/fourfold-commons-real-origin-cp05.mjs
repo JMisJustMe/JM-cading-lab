@@ -18,13 +18,14 @@ const html=fs.readFileSync(source,'utf8');
 const script=html.split('<script>').at(-1)?.split('</script>')[0];
 const originalJS='edb8b585e984f87e2ee8b6378c306ec28f32919fe07ad64b99c82e0e0f00c4fc';
 if(crypto.createHash('sha256').update(script).digest('hex')!==originalJS)throw Error('HOLD: RECIPIENT_RUNTIME_NOT_CURRENT_PROVEN');
+const fixturePath=process.env.JM_CP06_FRESH_EVENT || '';
 const receipt={schema:'JM.FOURFOLD.APP_COMMONS.ORIGIN_CONTACT/CP05',sourceRuntimeSHA256:originalJS,
   sourceScope:'Original APP//COMMONS CP04 browser runtime; public historical carrier with exact JS identity to protected current Library HTML',
   producerScope:'Minimised metadata projection of separately proved FOURFOLD CP04 PUSH event; actual game executable NOT rerun here',
   physicalDevice:false,hostedMCP:false,claimsNativeBrowserOrigin:true,profiles:[],passed:0,failed:0};
-const out=path.resolve('qa/jm-fourfold-commons-cp05');
+const out=path.resolve(fixturePath ? 'qa/jm-fourfold-commons-cp06' : 'qa/jm-fourfold-commons-cp05');
 fs.mkdirSync(out,{recursive:true});
-const witness=JSON.stringify({
+const defaultWitness=JSON.stringify({
  schema:'JM.FOURFOLD.AppCommonsIntake/CP04',
  provenance:'MINIMISED_CP04_PROVENANCE_WITNESS_NOT_GAME_CODE',
  route:{producer:'FOURFOLD ARENA',receiver:'JM APP//COMMONS CP04',kind:'read-only gameplay event custody'},
@@ -36,6 +37,40 @@ const witness=JSON.stringify({
     lastPacket:{actorTeam:'player',actions:[{fighter:'PUSH',role:'PRIMARY',force:.78}]}}
  }
 },null,2);
+const nativeFixture=fixturePath ? fs.readFileSync(fixturePath,'utf8') : '';
+const witness=fixturePath ? nativeFixture : defaultWitness;
+receipt.preflight=[];
+if(fixturePath){
+  receipt.schema='JM.FOURFOLD.APP_COMMONS.ORIGIN_CONTACT/CP06';
+  receipt.producerScope='Fresh original FOURFOLD action performed separately under protected source in CP06 producer test; SHA-pinned minimised data only is carried to real-origin receiving browser';
+  receipt.sourceEventOriginalHash='01a811736a842c4f09348712ba28b36ed92cae3aa5e0ad1221649b15f4177aa2';
+  receipt.sourceEventProtectedGameHash='47c7c7ace4d9617e2a0a6adaa0b5b01892c76ae7fb233472eca1b50bf2b04cee';
+  const data=JSON.parse(nativeFixture);
+  const test=(name,ok)=>{receipt.preflight.push({name,passed:!!ok});if(!ok)throw Error('HOLD:CP06:'+name);};
+  const digest=crypto.createHash('sha256').update(nativeFixture).digest('hex');
+  test('source-derived-fixture-sha-pinned',digest==='0e9314b5754cd2b25ddf5b90c51cdf6d36d977bc8b3937e574a17d6f58e3a483');
+  const accepts=o=>o?.schema==='JM.FOURFOLD.AppCommonsIntake/CP04' &&
+    o.route?.producer==='FOURFOLD ARENA'&&o.route?.receiver==='JM APP//COMMONS CP04' &&
+    o.capsule?.source?.body==='FOURFOLD ARENA' &&
+    o.capsule?.source?.version==='v0.22.1 Owner Contact Polish RC1' &&
+    ['parse','compiler','runtime'].every(k=>o.capsule?.nativeProof?.[k]==='success') &&
+    o.capsule?.game?.screen==='battle'&&o.capsule?.game?.crew?.length===4&&
+    o.capsule?.game?.units?.length===8 &&
+    o.capsule?.game?.lastPacket?.actorTeam==='player' &&
+    o.capsule?.game?.lastPacket?.actions?.[0]?.fighter==='PUSH';
+  test('minimised-CP04-intake-contract',accepts(data));
+  test('original-game-identity',data.capsule.source.body==='FOURFOLD ARENA');
+  test('original-compiler-runtime-triplet',Object.values(data.capsule.nativeProof).every(x=>x==='success'));
+  test('real-eight-units-four-crew',data.capsule.game.units.length===8&&data.capsule.game.crew.length===4);
+  test('real-primary-PUSH-event',data.capsule.game.lastPacket.actions[0].fighter==='PUSH'&&
+    data.capsule.game.lastPacket.matchId==='FF-MVR79Z8H'&&data.capsule.game.turns===1);
+  const foreign=structuredClone(data);foreign.capsule.source.body='FOREIGN GAME';
+  test('foreign-game-hold',!accepts(foreign));
+  const failed=structuredClone(data);failed.capsule.nativeProof.runtime='fail';
+  test('failed-runtime-hold',!accepts(failed));
+  receipt.minimisedFixtureSHA256=digest;
+}
+
 const server=http.createServer((req,res)=>{
  if(req.url!=='/JM_APP_COMMONS_CP04.html'){res.writeHead(404);res.end('Not found');return;}
  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});
@@ -149,8 +184,8 @@ try{
  }
 }finally{
  await new Promise(resolve=>server.close(resolve));
- receipt.passed=receipt.profiles.flatMap(x=>x.checks).filter(x=>x.passed).length;
- receipt.failed=receipt.profiles.flatMap(x=>x.checks).filter(x=>!x.passed).length+receipt.profiles.filter(x=>x.error).length;
+ receipt.passed=receipt.preflight.filter(x=>x.passed).length+receipt.profiles.flatMap(x=>x.checks).filter(x=>x.passed).length;
+ receipt.failed=receipt.preflight.filter(x=>!x.passed).length+receipt.profiles.flatMap(x=>x.checks).filter(x=>!x.passed).length+receipt.profiles.filter(x=>x.error).length;
  fs.writeFileSync(path.join(out,'receipt.json'),JSON.stringify(receipt,null,2)+'\n');
  console.log(JSON.stringify({suite:receipt.schema,passed:receipt.passed,failed:receipt.failed,profiles:receipt.profiles.map(x=>({name:x.profile,checks:x.checks.length,error:x.error||null})),physicalDevice:false}));
  if(receipt.failed)process.exitCode=1;

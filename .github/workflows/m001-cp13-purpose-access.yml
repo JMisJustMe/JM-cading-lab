@@ -1,0 +1,29 @@
+name: JM M001 CP13 Purpose & Access Gate
+
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_AND_ACCESS_OVERLAY_CP13.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_ACCESS_CP13_TESTS.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py'
+      - '.github/workflows/m001-cp13-purpose-access.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  purpose-and-access-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Protected source-admission self tests
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_Carrier_Admission_Gate_v0_1.py --self-test
+      - name: CP13 refusal and review-only tests
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_PURPOSE_ACCESS_CP13_TESTS.py

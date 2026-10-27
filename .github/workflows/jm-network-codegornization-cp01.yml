@@ -1,4 +1,4 @@
-name: JM Network CODEGORNIZATION CP01
+name: JM Network CODEGORNIZATION CP01-CP04
 on:
   push:
     paths:
@@ -18,13 +18,13 @@ permissions:
 jobs:
   jm-native-federation:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax check
+      - name: Syntax check inherited and CP04 candidate
         run: |
           node --check network-codegornization/cp01/jm-network-federation.mjs
           node --check network-codegornization/cp01/selftest.mjs
@@ -32,8 +32,12 @@ jobs:
           node --check network-codegornization/cp02/selftest.mjs
           node --check network-codegornization/cp03/jm-private-contact.mjs
           node --check network-codegornization/cp03/selftest.mjs
-      - name: Run native donor composition and negative-path checks
+          node --check network-codegornization/cp04/jm-device-contact.mjs
+          node --check network-codegornization/cp04/cli.mjs
+          node --check network-codegornization/cp04/selftest.mjs
+      - name: Execute native original donors and CP04 loopback TLS fixtures
         run: |
           node network-codegornization/cp01/selftest.mjs
           node network-codegornization/cp02/selftest.mjs
           node network-codegornization/cp03/selftest.mjs
+          node network-codegornization/cp04/selftest.mjs

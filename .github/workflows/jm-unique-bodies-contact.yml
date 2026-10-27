@@ -32,4 +32,9 @@ jobs:
         if: always()
         with:
           name: jm-unique-bodies-native-contact-proof
-          path: native-contact-proof.json
+          path: |
+            native-contact-proof.json
+            coding-estate/sovereign-batch-three/direct/native-core.mjs
+            coding-estate/sovereign-batch-three/direct/field-primitives-native.mjs
+            coding-estate/sovereign-batch-three/direct/native-corpus.mjs
+            experiments/unique-bodies-contact/native-contact-smoke.mjs

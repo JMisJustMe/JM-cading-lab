@@ -1,0 +1,30 @@
+name: JM M001 CP16 Provider Cold Byte Contact
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PROVIDER_CONTACT_CP15.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PROVIDER_CONTACT_CP15_TESTS.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_AND_ACCESS_OVERLAY_CP13.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py'
+      - '.github/workflows/m001-cp16-provider-cold-contact.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-provider-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Protected M001 admission checks
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_Carrier_Admission_Gate_v0_1.py --self-test
+      - name: Protected CP13 purpose/access tests
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_PURPOSE_ACCESS_CP13_TESTS.py
+      - name: CP16 independent-provider cold byte checks
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_PROVIDER_CONTACT_CP15_TESTS.py

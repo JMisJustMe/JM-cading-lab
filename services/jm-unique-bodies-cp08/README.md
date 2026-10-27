@@ -58,3 +58,47 @@ real owner-provider account contact and token provisioning require separate
 approval; Free Render SQLite is ephemeral and does not satisfy durable remote
 Atlas/redeploy recovery. A browser-compatible tool is not an authorised game
 execution or a new source owner.
+
+## CP09 standalone OFFLINE Atlas custody and no-overwrite restore (additive)
+
+**Why:** The existing live CP08 Render Free service is genuinely online, but
+`JM_BODIES_DB=/tmp/jm-cp08-atlas.sqlite3` is an ephemeral carrier. Local
+SQLite restart and visible browser contact do **not** establish remote backup
+or survival across Render redeploy. Do not treat the live Free instance as the
+sole keeper of irreplaceable original JM Atlas state.
+
+This CP09 descendant provides a **local operator-owned backup carrier**, not
+a public MCP tool, external upload, scheduled backup or a change to the live
+Render process. The existing Atlas, protected CP07 atomic runtime, original
+ContactBand/GlyphBody JS donors and identity remain unchanged.
+
+After obtaining legitimate operator access to a copy of the actual database,
+use on an authorised host (preferably while writes are stopped; snapshot is a
+SQLite-consistent point in time, not a live migration protocol):
+
+```sh
+cd services/jm-unique-bodies-cp08
+python3 atlas_custody.py snapshot --db ./atlas.sqlite3 --archive ./JM_CP09_COLD_VAULT.zip
+# Print the independent archive SHA from the output and KEEP IT separately.
+python3 atlas_custody.py verify --archive ./JM_CP09_COLD_VAULT.zip --expect-sha256 <64-character-sha-from-export>
+python3 atlas_custody.py restore --archive ./JM_CP09_COLD_VAULT.zip --expect-sha256 <64-character-sha-from-export> --db ./restored-atlas.sqlite3 --apply
+```
+
+Restore refuses a missing independent SHA256 pin, modified/tampered archives,
+extra ZIP entries, invalid SQLite or CP07 receipt/hash history, non-existing
+destination directory and **any existing destination file**. Atomic exclusive
+fresh-path publication never overwrites the source or recipient. The source
+database is opened read-only through SQLite's online backup API; the staged
+SQLite copy is independently integrity-checked before ZIP publication. A
+restored database must still pass original CP07 history and replay with zero
+new writes; tests provide that exact local contact. Archive contents are
+**not encrypted** and may contain original JM data: save only into owner
+approved encrypted/private custody, not public GitHub, Render logs or chat.
+
+Required additional production gates: authorised read/export of live CP08
+Render database *before* any suspension/redeploy; actual independent off-host
+durable storage and access; owner-held SHA pin; restore from that external
+carrier into a separate approved host; verified post-host-redeploy history
+and original donor replay. No production durability crown from this local
+backup/restore test alone. Existing separate JM Market Survivor PostgreSQL
+is **not** a recipient by default.

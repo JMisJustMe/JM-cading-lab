@@ -1,0 +1,41 @@
+name: JM Unique Bodies CP09 · offline cold custody and exact restore
+on:
+  pull_request:
+    paths:
+      - 'services/jm-unique-bodies-cp08/atlas_custody.py'
+      - 'services/jm-unique-bodies-cp08/test_atlas_custody.py'
+      - '.github/workflows/jm-unique-bodies-cp09-cold-custody.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cold-archive-and-new-host-restore:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check original executable donor and CP09 custody syntax
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 -m py_compile atlas_custody.py test_atlas_custody.py
+          node --check native_donor_exec.mjs
+      - name: Real original Node -> CP07 SQLite -> cold ZIP -> pinned new-path restore, with adversarial holds
+        working-directory: services/jm-unique-bodies-cp08
+        run: python3 -m unittest -v test_atlas_custody
+      - name: Preserve strict source path / deployment separation
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('cp08_gateway.py').read_text()
+          assert 'import atlas_custody' not in s
+          assert 'atlas_custody.py' not in Path('Dockerfile').read_text()
+          assert "ALLOWED={'atomic_contact_execute','atomic_contact_history'}" in s
+          print('PASS: offline-only recovery, no public write endpoint or deployment change')
+          PY

@@ -4,6 +4,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright-core';
 import { validateCapsule,parseStrictJSON } from './core.mjs';
 const html=fs.readFileSync('JM_APP_COMMONS_CP04.html');
@@ -37,6 +38,22 @@ try {
   const downloaded=fs.readFileSync(await dl[0].path(),'utf8');const obj=parseStrictJSON(downloaded);
   const verified=validateCapsule(obj);
   pass('real browser downloaded verified capsule',verified.snapshots.length===1&&verified.source.includes('cross-door candidate'));
+  // Real Chrome's downloaded bytes enter the independently compiled native
+  // Java receiver and return through its exact checked capsule emitter.
+  const inputPath=path.join(userDir,'browser-export.json');
+  const classes=path.join(userDir,'native-java-classes');
+  fs.mkdirSync(classes,{recursive:true});
+  fs.writeFileSync(inputPath,downloaded,'utf8');
+  execFileSync('javac',['-encoding','UTF-8','-d',classes,
+    'android/app/src/main/java/com/jmisjustme/foldultra/JMOriginalStructures.java',
+    'android/app/src/main/java/com/jmisjustme/foldultra/JMAppCommonsCapsule.java',
+    'JMAppCommonsChromeRelay.java']);
+  const nativeResponse=execFileSync('java',['-cp',classes,
+    'com.jmisjustme.foldultra.JMAppCommonsChromeRelay',inputPath],
+    {encoding:'utf8',maxBuffer:240000});
+  const nativeCapsule=validateCapsule(parseStrictJSON(nativeResponse));
+  pass('real Chrome export accepted by original native Java verifier',
+    nativeCapsule.source.includes('Native Java return proof')&&nativeCapsule.snapshots.length===1);
   await ctx.close();ctx=null;
   // This is a new browser process with the SAME disk profile, unlike set_content.
   ctx=await launch();p=ctx.pages()[0]||await ctx.newPage();p.on('pageerror',e=>errors.push(String(e)));p.on('dialog',d=>d.accept());
@@ -49,6 +66,21 @@ try {
   await p.reload();pass('recovery persists after true page reload',await p.locator('#source').inputValue()===firstSource);
   await p.locator('[data-tab="proof"]').click();await p.locator('#proofBtn').click();
   pass('browser post-reload checks remain valid',await p.locator('#proofState').innerText()==='LOCAL PASS');
+  // Return receipt is actually staged and adopted by the HTML workroom UI,
+  // not inserted into localStorage, and must survive a real page reload.
+  await p.locator('[data-tab="passport"]').click();
+  await p.locator('#capsulePaste').fill(nativeResponse);
+  await p.locator('#stagePasteBtn').click();
+  pass('web owner-review gate accepts native Java capsule',
+    await p.locator('#applyImportBtn').isEnabled()&&
+    (await p.locator('#importStatus').innerText()).includes('VERIFIED'));
+  p.once('dialog',dialog=>dialog.accept());
+  await p.locator('#applyImportBtn').click();
+  pass('browser actual source adopted after Java return',
+    (await p.locator('#source').inputValue()).includes('Native Java return proof'));
+  await p.reload();
+  pass('returned native-source identity survives browser reload',
+    (await p.locator('#source').inputValue())===nativeCapsule.source);
   const original=await p.evaluate(()=>localStorage.getItem('jm.appcommons.cp01.project'));
   await p.evaluate(()=>{const k='jm.appcommons.cp01.project';const x=JSON.parse(localStorage.getItem(k));x.snapshots[0].text='TAMPERED';localStorage.setItem(k,JSON.stringify(x));});
   const tampered=await p.evaluate(()=>localStorage.getItem('jm.appcommons.cp01.project'));

@@ -1,0 +1,25 @@
+# JM APP//COMMONS CP06 — isolated Render Blueprint, not an existing-service edit.
+# Based on the verified 2026-10-27 candidate: source + GitHub Actions 17/17.
+# This does not create or deploy the service until an authorised Blueprint sync.
+# No keys, tokens, original project data or private owner source committed.
+services:
+  - type: web
+    name: jm-app-commons-cp06-mcp
+    runtime: node
+    repo: https://github.com/JMisJustMe/JM-cading-lab
+    branch: feat/jm-app-commons-cp06-mcp-20261027
+    plan: free
+    region: frankfurt
+    autoDeployTrigger: off
+    buildCommand: node --check app-commons-cp03/core.mjs && node --check app-commons-cp03/mcp-stdio.mjs && node --check app-commons-cp03/http-mcp-cp06.mjs
+    startCommand: node app-commons-cp03/http-mcp-cp06.mjs
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render creates a fresh 256-bit random secret at initial Blueprint sync.
+      # Do not commit the generated value into source or chat; never disable auth.
+      - key: JM_COMMONS_TOKEN
+        generateValue: true
+      - key: JM_COMMONS_ORIGIN
+        value: https://jm-app-commons-cp06-mcp.onrender.com

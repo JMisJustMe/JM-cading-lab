@@ -61,7 +61,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type','text/html; charset=utf-8')
         self.send_header('Content-Length',str(len(data)))
         self.send_header('Cache-Control','no-store')
-        self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-MTJq6KSrJ0I00D/9Ycs4DXpTNxu5hxT8t7cBHy5YEbc='; connect-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+        self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-FbhmsiYxmIBOgA8FINdnCKzejRxHcOADYpGG9sQ/3ks='; connect-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Referrer-Policy','no-referrer')
         self.send_header('X-Frame-Options','DENY')

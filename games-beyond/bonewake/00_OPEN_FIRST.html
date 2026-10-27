@@ -28,6 +28,23 @@
 <link rel="stylesheet" href="./bonewake-p04.css">
 <link rel="stylesheet" href="./bonewake-p05.css">
 <link rel="stylesheet" href="./bonewake-estate-standard.css">
+
+<!-- JM CP05: additive first-flick guide; gameplay scripts remain exact -->
+<style id="jm-first-wake-guide-style">
+#jmWakeHelpButton{position:fixed;z-index:801;right:max(10px,env(safe-area-inset-right));top:100px;min-width:45px;min-height:45px;border:2px solid #83e5ff;border-radius:12px;background:#031d28f0;color:#e3feff;font:800 12px system-ui;box-shadow:0 2px 15px #0008;touch-action:manipulation}
+#jmWakeHelp[hidden]{display:none!important}
+#jmWakeHelp{position:fixed;inset:0;z-index:9998;background:#03101bea;display:grid;place-items:center;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));overflow-y:auto}
+#jmWakeHelp .jm-steps{width:min(510px,100%);max-height:100%;overflow-y:auto;padding:clamp(17px,4vw,27px);border:2px solid #89f1e4;border-radius:20px;background:linear-gradient(160deg,#103448,#04151c 80%);color:#effffb;font:500 16px/1.45 system-ui;box-shadow:0 5px 45px #001}
+#jmWakeHelp h2{font:bold clamp(22px,6vw,32px)/1.12 system-ui;margin:7px 0;color:#fff}
+#jmWakeHelp p{color:#cee9e7;margin:10px 0}
+#jmWakeHelp ol{margin:12px 0 16px;padding-left:22px}
+#jmWakeHelp li{margin-bottom:10px}
+#jmWakeHelp strong{color:#ffdb7b}
+#jmWakeHelpClose{display:block;width:100%;min-height:48px;border:0;border-radius:13px;background:#90f7e8;color:#04242b;font:800 16px system-ui}
+#jmWakeHelpClose:focus-visible,#jmWakeHelpButton:focus-visible{outline:3px solid #ffc967;outline-offset:3px}
+#jmWakeHelp small{display:block;color:#bbd9d4;margin-top:8px}
+@media(max-height:460px){#jmWakeHelp .jm-steps{font-size:13px}#jmWakeHelp li{margin-bottom:5px}#jmWakeHelp h2{font-size:20px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -158,5 +175,31 @@
 <script src="./bonewake-render-p04.js"></script>
 <script src="./bonewake-input.js"></script>
 <script src="./bonewake-estate-runtime.js"></script>
+
+<!-- Exact-input source-confirmed guidance: lever selects Dropwake; canvas touch begins aim -->
+<button id="jmWakeHelpButton" type="button" aria-label="How to play Bonewake Arena" aria-expanded="false" aria-controls="jmWakeHelp">? PLAY</button>
+<div id="jmWakeHelp" role="dialog" aria-modal="true" aria-labelledby="jmWakeHelpTitle" hidden>
+ <div class="jm-steps">
+  <small>HUMANIMALS · FIRST WAKE · QUICK START</small>
+  <h2 id="jmWakeHelpTitle">Wake the arena in four moves.</h2>
+  <ol>
+   <li><strong>OPTIONAL:</strong> tap WAKE POOL to weight creatures, then choose a MOMENT LEADER. Your choices influence the reel; they don't dictate it.</li>
+   <li><strong>HOLD & RELEASE</strong> the WAKE LEVER. A Dropwake creature appears on the board.</li>
+   <li><strong>IMPORTANT:</strong> touch that Dropwake <em>inside the central game board</em>, drag backwards to aim, then <strong>release your finger to flick it</strong>. The lever alone does not launch.</li>
+   <li>After launch, press <strong>LEFT / RIGHT REFLEX</strong> (or the lower board halves) to keep bodies alive and wake fossil routes. Break the Enemy Core.</li>
+  </ol>
+  <p>Try it once; your arena changes through actual contact. You can reopen this guide anytime.</p>
+  <button id="jmWakeHelpClose" type="button">GOT IT — FIRST WAKE</button>
+  <small>Only visitor guidance has been added. The frozen v1.12 game's own input rules stay intact.</small>
+ </div>
+</div>
+<script id="jm-first-wake-guide-script">(()=>{'use strict';
+const guide=document.getElementById('jmWakeHelp'),toggle=document.getElementById('jmWakeHelpButton'),close=document.getElementById('jmWakeHelpClose');
+const show=()=>{guide.hidden=false;toggle.setAttribute('aria-expanded','true');close.focus({preventScroll:true})};
+const hide=()=>{guide.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus({preventScroll:true})};
+toggle.addEventListener('click',()=>guide.hidden?show():hide());close.addEventListener('click',hide);
+guide.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();hide()}if(e.key==='Tab'){e.preventDefault();close.focus()}});
+let first=true;try{first=sessionStorage.getItem('jm-bonewake-firstwake-guide-v1')!=='seen';if(first)sessionStorage.setItem('jm-bonewake-firstwake-guide-v1','seen')}catch(_){}
+if(first)show();})();</script>
 </body>
 </html>

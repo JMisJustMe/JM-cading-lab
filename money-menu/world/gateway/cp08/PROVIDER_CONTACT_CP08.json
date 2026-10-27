@@ -1,0 +1,20 @@
+{
+  "schema":"JM.BusinessWorld.ProviderContact/CP08",
+  "checked_at":"2026-10-27",
+  "provider":"Stripe",
+  "connection":"JM estate/FTR sandbox",
+  "mode":"test",
+  "observed":"DIRECT_STRIPE_API_READBACK_OF_HISTORICAL_CP07_ANCESTOR_FIRST_SALE_SESSION",
+  "legacy_session_id_redacted":true,
+  "object":"checkout.session",
+  "checkout_status":"complete",
+  "payment_status":"paid",
+  "amount_minor":1499,
+  "currency":"gbp",
+  "livemode":false,
+  "historical_route":"JM Providings First Sale Deployment 001 / Secrets of Silence",
+  "actual_cp08_network_checkout_created":false,
+  "actual_cp08_signed_provider_webhook_received":false,
+  "external_customer_or_live_money_proven":false,
+  "scope":"Provider observation is real but historical sandbox; it does not certify new gateway-to-Stripe connectivity or a live sale."
+}

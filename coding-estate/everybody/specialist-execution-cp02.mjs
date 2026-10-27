@@ -48,7 +48,8 @@ function semanticEffects(bodyId,ops,ctx){
    return {next,effect:'route_opened',delta:copy(next.route)};
   }
   case 'statefield':{
-   if(ops.length!==1||ctx.route?.to!==bodyId)fail('STATE_ROUTE_REQUIRED');
+   if(ops.length!==1)fail('SPECIALIST_OPERATION_COUNT');
+   if(ctx.route?.to!==bodyId)fail('STATE_ROUTE_REQUIRED');
    const v=val(0,'STATE');fields(v,['key','value']);
    if(v.key!=='energy')fail('STATE_FIELD_NOT_ALLOWED');
    next.energy=number(v.value,{min:0,max:100});
@@ -64,7 +65,8 @@ function semanticEffects(bodyId,ops,ctx){
    return {next,effect:'formula_add',delta:{before:ctx.energy,by,pressure:next.pressure}};
   }
   case 'game-coding':{
-   if(ops.length!==3||!Object.hasOwn(ctx,'pressure'))fail('GAME_STATE_REQUIRED');
+   if(ops.length!==3)fail('SPECIALIST_OPERATION_COUNT');
+   if(!Object.hasOwn(ctx,'pressure'))fail('GAME_STATE_REQUIRED');
    const rule=val(0,'RULE'),step=val(1,'STEP'),score=val(2,'SCORE');
    fields(rule,['kind','field','gte','points','team']);fields(step,['turn']);fields(score,['team']);
    const team=slug(rule.team);

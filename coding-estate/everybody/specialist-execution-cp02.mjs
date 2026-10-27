@@ -87,6 +87,14 @@ export function executeSpecialistLine(programs,registry,current64){
   if(!Array.isArray(programs)||programs.length!==SPECIALIST_LINE.length)fail('FOUR_SPECIALIST_STEPS_REQUIRED');
   if(registry?.schema!=='jm.everybody.registry-federation/1.1'||!Array.isArray(registry.bodies)||registry.bodies.length!==100)fail('NATIVE_REGISTRY_REQUIRED');
   if(current64?.schema!=='JM.CodingEstate.Current64/1.0'||current64.identities?.length!==64)fail('CURRENT_64_REQUIRED');
+  if(current64.counts?.current_coding_identities!==64||current64.counts?.adjacent_non_code_organs!==44)
+    fail('CURRENT_64_BOUNDARY');
+  const seatIds=current64.identities.map(x=>x.code_id);
+  const seatSlugs=current64.identities.map(x=>x.slug);
+  if(seatIds.some((id,i)=>id!==i+1)||new Set(seatSlugs).size!==64||seatSlugs.some(x=>typeof x!=='string'||!x))
+    fail('CURRENT_64_INTEGRITY');
+  if(new Set(registry.bodies.map(x=>x.id)).size!==100)
+    fail('NATIVE_ID_COLLISION');
   const seats=new Map(current64.identities.map(x=>[x.slug,x]));
   let state={};const receipts=[];
   for(let i=0;i<SPECIALIST_LINE.length;i++){

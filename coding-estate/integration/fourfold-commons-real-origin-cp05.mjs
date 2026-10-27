@@ -18,6 +18,7 @@ const html=fs.readFileSync(source,'utf8');
 const script=html.split('<script>').at(-1)?.split('</script>')[0];
 const originalJS='edb8b585e984f87e2ee8b6378c306ec28f32919fe07ad64b99c82e0e0f00c4fc';
 if(crypto.createHash('sha256').update(script).digest('hex')!==originalJS)throw Error('HOLD: RECIPIENT_RUNTIME_NOT_CURRENT_PROVEN');
+const fixturePath=process.env.JM_CP06_FRESH_EVENT || '';
 const receipt={schema:'JM.FOURFOLD.APP_COMMONS.ORIGIN_CONTACT/CP05',sourceRuntimeSHA256:originalJS,
   sourceScope:'Original APP//COMMONS CP04 browser runtime; public historical carrier with exact JS identity to protected current Library HTML',
   producerScope:'Minimised metadata projection of separately proved FOURFOLD CP04 PUSH event; actual game executable NOT rerun here',
@@ -36,7 +37,6 @@ const defaultWitness=JSON.stringify({
     lastPacket:{actorTeam:'player',actions:[{fighter:'PUSH',role:'PRIMARY',force:.78}]}}
  }
 },null,2);
-const fixturePath=process.env.JM_CP06_FRESH_EVENT || '';
 const nativeFixture=fixturePath ? fs.readFileSync(fixturePath,'utf8') : '';
 const witness=fixturePath ? nativeFixture : defaultWitness;
 receipt.preflight=[];

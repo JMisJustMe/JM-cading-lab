@@ -89,7 +89,7 @@ def retry(url,method="GET",payload=None,headers=None):
   time.sleep(3)
  raise AssertionError("remote HOLD "+url+" "+last)
 for name,base in SITES.items():
- h="/health" if name=="unique_bodies" else "/healthz"
+ h="/health" if name in ("unique_bodies","build_mesh") else "/healthz"
  status,raw=retry(base+h)
  assert status==200,(name,status,raw[:200])
  v=json.loads(raw)

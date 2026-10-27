@@ -1,0 +1,28 @@
+'use strict';const t=require('node:test'),a=require('node:assert/strict'),os=require('node:os'),fs=require('node:fs'),path=require('node:path'),H=s=>require('node:crypto').createHash('sha256').update(s).digest('hex'),G=require('../gong_auto_checks_cp06.js');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'gong06-public-'));fs.writeFileSync(path.join(root,'good.js'),'const jm=1;\n');fs.writeFileSync(path.join(root,'broken.js'),'const = 1;');fs.writeFileSync(path.join(root,'good.json'),'{}\n');fs.writeFileSync(path.join(root,'bad.json'),'{broken');fs.writeFileSync(path.join(root,'good.py'),'def test(): return 1\n');fs.writeFileSync(path.join(root,'broken.py'),'def test(\n');fs.writeFileSync(path.join(root,'source.html'),'<html><body>ok</body></html>');
+function signed(x){return {...x,digest:H(JSON.stringify(x))}}
+function make(files=[{path:'good.js',kind:'M',changes:['script_logic']}]){
+ const advisory=signed({schema:'JM_GONG_CP03_READONLY_ADVISORY_v1',changedFiles:files,governance:{ownerDevicePassClaimed:false,physicalFoldTestPerformed:false},head:'1'.repeat(40),base:'2'.repeat(40)});
+ const plan=signed({schema:'JM_GONG_CP05_PUBLIC_FAMILY_LANE_PLAN_v1',changedScopes:files.map(f=>({path:f.path,risks:f.changes,candidateLane:'APP_TOOL_CANDIDATE',actualSovereignFamilyResolved:false,knownPhysicalDeviceProof:false,privateEvidenceLookupRequired:true,minimumChecks:['LOCAL_SOURCE_SMOKE_ONLY']})),publicPrivateEvidenceContents:false,sourceFamilyVerification:'PRIVATE_SOVEREIGN_AUTHORITY_PENDING',physicalFoldRun:false,descendantFoldPass:false,releaseAuthorized:false});return {advisory,plan};
+}
+function call(files){const {advisory,plan}=make(files);return G.run({advisory,plan,cwd:root});}
+t('valid JS syntax executed (not behaviour)',()=>{const x=call([{path:'good.js',kind:'M',changes:['script_logic']}]);a.equal(x.counts.parsedPassed,1);a.equal(x.results[0].safeCheck.check,'NODE_SYNTAX');a.equal(x.claims.foldPass,false)});
+t('bad JS fails closed',()=>a.equal(call([{path:'broken.js',kind:'M',changes:['script_logic']}]).counts.parsedHeld,1));
+t('JSON parse checked',()=>a.equal(call([{path:'good.json',kind:'M',changes:['script_logic']}]).counts.parsedPassed,1));
+t('bad JSON is held',()=>a.equal(call([{path:'bad.json',kind:'M',changes:['script_logic']}]).counts.parsedHeld,1));
+t('Python AST parse checked',()=>a.equal(call([{path:'good.py',kind:'M',changes:['script_logic']}]).counts.parsedPassed,1));
+t('invalid Python syntax held',()=>a.equal(call([{path:'broken.py',kind:'M',changes:['script_logic']}]).counts.parsedHeld,1));
+t('HTML without safe parser no simulated pass',()=>a.equal(call([{path:'source.html',kind:'M',changes:['styling']}]).results[0].safeCheck.result,'NOT_APPLICABLE'));
+t('missing changed source held',()=>a.equal(call([{path:'missing.js',kind:'M',changes:['script_logic']}]).counts.parsedHeld,1));
+t('deleted source not falsely linted',()=>a.equal(call([{path:'gone.js',kind:'D',changes:['major_structure']}]).results[0].safeCheck.check,'DELETED_SOURCE'));
+t('unsafe traversal held',()=>a.equal(call([{path:'../secret.js',kind:'A',changes:['major_structure']}]).counts.parsedHeld,1));
+t('absolute path held',()=>a.equal(call([{path:'/etc/passwd',kind:'A',changes:['major_structure']}]).counts.parsedHeld,1));
+t('symlink path held',()=>{fs.symlinkSync(path.join(root,'good.js'),path.join(root,'alias.js'));a.equal(call([{path:'alias.js',kind:'M',changes:['script_logic']}]).counts.parsedHeld,1);});
+t('unknown check cannot become Fold proof',()=>{const {advisory,plan}=make();plan.changedScopes[0].minimumChecks=['TARGETED_NATIVE_INSTALL_CHECK'];delete plan.digest;plan.digest=H(JSON.stringify(plan));const x=G.run({advisory,plan,cwd:root});a.equal(x.results[0].directSensitiveScope,true);a.equal(x.claims.deviceRun,false);});
+t('touched CP05 receipt detected',()=>{const {advisory,plan}=make();plan.changedScopes[0].risks=['unknown_high_risk'];a.throws(()=>G.run({advisory,plan,cwd:root}),/TAMPERED/)});
+t('independently forged changed path mismatch detected',()=>{const {advisory,plan}=make();plan.changedScopes[0].path='totally_different.js';delete plan.digest;plan.digest=H(JSON.stringify(plan));a.throws(()=>G.run({advisory,plan,cwd:root}),/FAMILY_SOURCE_PROOF_CONFLICT/)});
+t('do not accept public device PASS claims',()=>{const {advisory,plan}=make();plan.descendantFoldPass=true;delete plan.digest;plan.digest=H(JSON.stringify(plan));a.throws(()=>G.run({advisory,plan,cwd:root}),/PROOF_INFLATION/)});
+t('do not accept pseudo private registry',()=>{const {advisory,plan}=make();plan.publicPrivateEvidenceContents=true;delete plan.digest;plan.digest=H(JSON.stringify(plan));a.throws(()=>G.run({advisory,plan,cwd:root}),/PROOF_INFLATION/)});
+t('duplicate changed paths fail',()=>{const {advisory,plan}=make();advisory.changedFiles.push({...advisory.changedFiles[0]});delete advisory.digest;advisory.digest=H(JSON.stringify(advisory));plan.changedScopes.push({...plan.changedScopes[0]});delete plan.digest;plan.digest=H(JSON.stringify(plan));a.throws(()=>G.run({advisory,plan,cwd:root}),/DUPLICATE_ADVISORY_PATH/)});
+t('does not grant release even when all parsers pass',()=>{const x=call([{path:'good.js',kind:'M',changes:['script_logic']},{path:'good.py',kind:'M',changes:['script_logic']}]);a.equal(x.counts.parsedPassed,2);a.equal(x.claims.releaseAuthorized,false);a.equal(x.claims.foldPass,false);});
+t('no manual retest demanded by default for ordinary JS syntax',()=>a.equal(call([{path:'good.js',kind:'M',changes:['script_logic']}]).counts.scopedContactPending,0));

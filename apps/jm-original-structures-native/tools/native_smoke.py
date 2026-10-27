@@ -70,6 +70,7 @@ def main():
  assert safe,'Save button lacks actual bounds'
  x,y,x2,y2=map(int,safe.groups())
  assert 38<=y<y2<=1500,('HOLD: Save obscured by Android system bars',y,y2)
+ assert y2-y>=80,('HOLD: native controls clipped by raw-pixel layout',y,y2)
  # Both states are emitted only AFTER the embedded source, live state,
  # GripCube and independent worker have passed the JavaScript readiness gate.
  labels=[n.get('text','').upper() for n in ns]

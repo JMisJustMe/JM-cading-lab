@@ -31,7 +31,14 @@ def donor_import(path):
     p=Path(path)
     if not p.is_file() or p.is_symlink():
         raise ValueError('DONOR_NOT_REGULAR')
-    if hashlib.sha256(p.read_bytes()).hexdigest()!=DONOR_SHA:
+    raw=p.read_bytes()
+    # GitHub's text carrier may omit ONE terminal LF from the exact Library
+    # source. This does not broaden source authority: the byte stream with
+    # precisely one added LF must match the protected canonical SHA-256.
+    exact=(hashlib.sha256(raw).hexdigest()==DONOR_SHA)
+    exact_terminal_lf=(not raw.endswith(b'\n') and
+                       hashlib.sha256(raw+b'\n').hexdigest()==DONOR_SHA)
+    if not (exact or exact_terminal_lf):
         raise ValueError('DONOR_SHA_MISMATCH')
     spec=importlib.util.spec_from_file_location('jm_m001_protected_gate_cp13',p)
     mod=importlib.util.module_from_spec(spec)

@@ -6,6 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {spawn,execFileSync} from 'node:child_process';
 import https from 'node:https';
+import tls from 'node:tls';
 import {JMDurableSpool} from '../cp02/jm-durable-spool.mjs';
 import {startDeviceReceiver,sendDeviceContact,createPacket,fingerprint,privateIPv4,normalizePin,pairToken} from './jm-device-contact.mjs';
 const tests=[];
@@ -27,7 +28,14 @@ const packet=(id,channel='device',message='JM LOCAL TLS CONTACT FIXTURE')=>creat
 let child;
 try{
   await check('01 IPv4 receiver is loopback',()=>assert.equal(receiver.server.address().address,'127.0.0.1'));
-  await check('02 server negotiates only TLS13',()=>assert.equal(receiver.server._tlsOptions.minVersion,'TLSv1.3'));
+  await check('02 genuine socket negotiates TLS13',async()=>await new Promise((resolve,reject)=>{
+    const socket=tls.connect({host:'127.0.0.1',port:receiver.port,ca:cert,
+      rejectUnauthorized:true,minVersion:'TLSv1.3',maxVersion:'TLSv1.3'},()=>{
+      try{assert.equal(socket.getProtocol(),'TLSv1.3');socket.end();resolve();}
+      catch(e){socket.destroy();reject(e);}
+    });
+    socket.once('error',reject);
+  }));
   await check('03 certificate pin matches presented cert',()=>assert.equal(receiver.fingerprint,fingerprint(cert)));
   await check('04 pin colon form normalization',()=>assert.equal(normalizePin(receiver.fingerprint.match(/../g).join(':')),receiver.fingerprint));
   await check('05 real TLS device message reaches disk',async()=>{

@@ -8,7 +8,7 @@ import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
-const root = fileURLToPath(new URL('../../', import.meta.url));
+const root = resolve(fileURLToPath(new URL('../../', import.meta.url)));
 const output = resolve(root, 'qa', 'sovereign-estate-integration-cp02');
 await mkdir(output, { recursive: true });
 const contentType = {
@@ -68,7 +68,7 @@ try {
     };
     try {
       const response = await page.goto(base+'/coding-estate/integration/00_OPEN_FIRST.html',{waitUntil:'networkidle',timeout:45000});
-      check('HTTP-200-original-surface',response.status()===200);
+      check('HTTP-200-original-surface-status-'+response.status(),response.status()===200);
       await page.waitForFunction(() => document.querySelectorAll('#bodyGrid .body-card').length === 100, {timeout:15000});
       check('100-sovereign-bodies-render',await page.locator('#bodyGrid .body-card').count()===100);
       check('42-direct-links-render',await page.locator('#compatGrid .compat-card[data-from]').count()===42);

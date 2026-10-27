@@ -6,6 +6,11 @@ on:
       - 'estate-publication/apps-tools-convergence/**'
       - 'governance/human-scale/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_ADDENDUM_v0_1.md'
       - '.github/workflows/qa-apps-tools-capability-convergence-v0-1.yml'
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-convergence/**'
+      - 'governance/human-scale/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_ADDENDUM_v0_1.md'
+      - '.github/workflows/qa-apps-tools-capability-convergence-v0-1.yml'
   workflow_dispatch:
 
 permissions:

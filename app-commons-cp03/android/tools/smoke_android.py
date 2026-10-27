@@ -1,5 +1,6 @@
 """CP04 disposable Android API35 touch/cold-restart proof, NOT an owner's Fold."""
 import subprocess,time,xml.etree.ElementTree as ET,json, pathlib,re,sys
+import launcher_guard
 OUT=pathlib.Path('android-smoke-proof');OUT.mkdir(exist_ok=True)
 COMP='com.jmisjustme.appcommons/com.jmisjustme.foldultra.AppCommonsActivity'
 results=[]
@@ -14,6 +15,8 @@ def wait_ready(seconds=48):
  while time.monotonic()<deadline:
   try:
    last=dump()
+   if launcher_guard.resolve(last, OUT):
+    continue  # System overlay cleared; JM editor still unproven.
    nodes=list(last.iter('node'))
    values=[n.attrib.get('text','') for n in nodes]
    if any('APP//COMMONS' in x for x in values) and any(n.attrib.get('class','').endswith('EditText') for n in nodes):
@@ -76,6 +79,12 @@ try:
  with (OUT/'native-cp04.png').open('wb') as out: subprocess.run(['adb','exec-out','screencap','-p'],stdout=out,check=True)
 except Exception as e:
  results.append({'test':'test runner exception','pass':False,'error':str(e)})
+ # Capture a failure frame rather than turning an OS ANR into a JM PASS.
+ try:
+  with (OUT/'hold.png').open('wb') as image:
+   subprocess.run(['adb','exec-out','screencap','-p'],stdout=image,check=True,timeout=20)
+ except (OSError,subprocess.SubprocessError):
+  pass
 finally:
  (OUT/'receipt.json').write_text(json.dumps({'environment':'Generic Android API35 emulator, disposable local data','tests':results,'passed':sum(x['pass'] for x in results),'total':len(results),'ownerSamsung':False},indent=2))
  print((OUT/'receipt.json').read_text())

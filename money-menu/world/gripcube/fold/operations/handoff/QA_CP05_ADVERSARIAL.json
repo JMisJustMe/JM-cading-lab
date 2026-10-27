@@ -1,0 +1,103 @@
+{
+  "total": 24,
+  "passed": 24,
+  "failed": [],
+  "checks": [
+    {
+      "test": "exact route 242 identity parity and 1210 five-field values",
+      "pass": true
+    },
+    {
+      "test": "all 8 original offers unchanged",
+      "pass": true
+    },
+    {
+      "test": "CP04 original proposal source intact",
+      "pass": true
+    },
+    {
+      "test": "six original views exist",
+      "pass": true
+    },
+    {
+      "test": "switch hides long CP04 form but preserves source",
+      "pass": true
+    },
+    {
+      "test": "sandbox-book imported while remaining unverified",
+      "pass": true
+    },
+    {
+      "test": "interest file nonbinding stage",
+      "pass": true
+    },
+    {
+      "test": "interest response all claims false",
+      "pass": true
+    },
+    {
+      "test": "reject fake offer id",
+      "pass": true
+    },
+    {
+      "test": "reject forged source price",
+      "pass": true
+    },
+    {
+      "test": "reject forged source readiness",
+      "pass": true
+    },
+    {
+      "test": "reject claimed verified payment",
+      "pass": true
+    },
+    {
+      "test": "reject forged customer stage",
+      "pass": true
+    },
+    {
+      "test": "reject modified price in response",
+      "pass": true
+    },
+    {
+      "test": "reject changed deliverable",
+      "pass": true
+    },
+    {
+      "test": "reject changed rights",
+      "pass": true
+    },
+    {
+      "test": "reject altered local match reference",
+      "pass": true
+    },
+    {
+      "test": "reject affirmative identity claims",
+      "pass": true
+    },
+    {
+      "test": "reject unknown intent",
+      "pass": true
+    },
+    {
+      "test": "valid original still roundtrips",
+      "pass": true
+    },
+    {
+      "test": "decline only creates nonbinding customer intent",
+      "pass": true
+    },
+    {
+      "test": "manual reference cannot verify payment",
+      "pass": true
+    },
+    {
+      "test": "no live order/revenue claims",
+      "pass": true
+    },
+    {
+      "test": "return to CP04 without source loss",
+      "pass": true
+    }
+  ]
+}

@@ -23,4 +23,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jm-tboys-cp03-canonical-native
-          path: games/tboys-five-path/cp03/native_receipt.json
+          path: |\n            games/tboys-five-path/cp03/native_receipt.json\n            coding-estate/sovereign-ten/direct/native-core.mjs\n            coding-estate/sovereign-ten/direct/game-native.mjs

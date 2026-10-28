@@ -111,18 +111,16 @@ function registerApps(html){
   return original.length;
 }
 async function retrieve(path){
-  const res=await fetch(new URL(path,root),{cache:'no-store',headers:{Accept:'application/json, text/html'}});
-  if(!res.ok){
-    // The integrated workroom donor remains in its original GitHub source corridor;
-    // Cloudflare does not copy the private/source estate-publication tree.
-    if(path.startsWith('estate-publication/apps-tools-convergence/') && res.status===404){
-      const raw='https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/main/'+path;
-      const source=await fetch(raw,{cache:'no-store'});
-      if(!source.ok)throw Error('original GitHub source HTTP '+source.status);
-      return source.json();
-    }
-    throw Error('HTTP '+res.status);
+  // The existing public GitHub source is the authoritative workroom record;
+  // do not clone its source tree into the canonical Cloudflare deployment.
+  if(path.startsWith('estate-publication/apps-tools-convergence/')){
+    const raw='https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/main/'+path;
+    const source=await fetch(raw,{cache:'no-store'});
+    if(!source.ok)throw Error('original GitHub source HTTP '+source.status);
+    return source.json();
   }
+  const res=await fetch(new URL(path,root),{cache:'no-store',headers:{Accept:'application/json, text/html'}});
+  if(!res.ok)throw Error('HTTP '+res.status);
   return path.endsWith('.html')?res.text():res.json();
 }
 async function consume(path){

@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feat/jm-commons-receipt-oauth-gateways-20261028
+      - feat/jm-commons-receipt-cp10-dual-era-20261028
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,6 +16,7 @@ jobs:
       - name: Python source syntax and inherited OAuth donor integrity
         run: |
           python3 -m py_compile services/jm-mcp-oauth-relays/independent_realm_gateway.py
+          python3 -m py_compile services/jm-unique-bodies-cp08/cp10_dual_era.py
           python3 -m py_compile services/jm-unique-bodies-cp08/cp09_oauth.py
           python3 -m py_compile services/jm-unique-bodies-cp08/cp09_remote_admission.py
       - name: Real isolated HTTP socket integration, client PKCE, scope denial, upstream token safety

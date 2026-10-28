@@ -1,5 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/sh
-# EXAMPLE only. Install under ~/.termux/boot/ deliberately, after owner approval.
-# Termux:Boot must be launched once; do not use wake lock by default.
-cd "$HOME/JM_WORKSPACE/JM-cading-lab" || exit 2
-python agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py mailbox --loop >> "$HOME/.jm-phone-mailbox.log" 2>&1
+# JM Phone Commander — OPTIONAL Termux:Boot example only.
+# Not installed by GitHub, not enabled automatically, not a proof of Android reboot survival.
+# Owner must install and open Termux:Boot once, review battery and GitHub credentials,
+# then deliberately copy this template under ~/.termux/boot/ if desired.
+set -eu
+umask 077
+LAUNCHER="$HOME/jmphone"
+STATE="$HOME/.config/jm-phone-commander"
+if [ ! -f "$LAUNCHER" ]; then exit 2; fi
+mkdir -p "$STATE"
+# No wake lock by default; do not defeat Android battery or user controls.
+# Shell redirects only non-secret status and mailbox event summaries.
+exec sh "$LAUNCHER" mailbox --loop --interval 90 >> "$STATE/termux-boot-mailbox.log" 2>&1

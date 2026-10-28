@@ -1,4 +1,9 @@
-const APP_VERSION = "0.2.0-estate-integration.1";
+const APP_VERSION = "0.3.0-original-ui-contact-cp02";
+const CP02_URI = "ui://jm3232-navigator/airborne-source-cp02.html";
+const ORIGINAL_BROWSER = "https://jmisjustme-estate.pages.dev/navigator/";
+const APPROVED_CARRIER_SHA = "b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569";
+const LIVE_CARRIER_WITH_RETURN_SHA = "2ece6163a5ca81ff89ca056ffc9d508eefd04977dbe8ae470573f0e664ec4d8a";
+const MAX_ORIGINAL_BYTES = 7_000_000;
 const SOURCE_MCP = "https://navigator-live-contact.jm-inline-contact-probe.pages.dev/mcp";
 const INTEGRATION_REGISTRY = "https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json";
 const SUPPORTED_PROTOCOLS = new Set(["2025-06-18", "2025-03-26"]);
@@ -20,12 +25,69 @@ const toolMeta = () => ({
 });
 
 const TOOLS = [
+  // This is a render-only MCP Apps tool: no owner writes or new browser shell.
+  { name:"navigator_render_original_browser", title:"Open original JM3232 in ChatGPT",
+    description:"Request the authentic, hash-verified public JM3232 AIRBORNE browser source directly in ChatGPT's MCP Apps UI. Rendering and interaction remain host-dependent; this does not open a new browser or grant owner write access.",
+    inputSchema:{type:"object",properties:{},additionalProperties:false},
+    outputSchema:OUTPUT_OBJECT,
+    annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:true},
+    _meta:{...toolMeta(),ui:{resourceUri:CP02_URI},"openai/outputTemplate":CP02_URI}
+  },
+
   { name:"search", title:"Search the JM Estate", description:"Find JM Estate bodies, Navigator routes, Radius Lexicon terms, receipts, public doors, or source records. Returns stable IDs for fetch and does not change state.", inputSchema:{type:"object",properties:{query:{type:"string",minLength:1},limit:{type:"integer",minimum:1,maximum:25,default:8},sources:{type:"array",items:{type:"string"}}},required:["query"],additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
   { name:"fetch", title:"Fetch an Estate source", description:"Retrieve one preserved Estate source record by stable ID, including its public-safe meaning, authority, route, relationships, flags, and source metadata. Does not change state.", inputSchema:{type:"object",properties:{id:{type:"string",minLength:1}},required:["id"],additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
   { name:"navigator_resolve_rootword", title:"Resolve a RootWord", description:"Return public-safe Radius Lexicon meaning, good stretches, misuse edges, source boundaries, Visualang route, and wordplay face for a JM term without changing state.", inputSchema:{type:"object",properties:{term:{type:"string",minLength:1}},required:["term"],additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
   { name:"navigator_return_lineage", title:"Return source lineage", description:"Return public-safe source authority, lineage locators, connections, and claim boundary for a known Estate or Radius record without changing state or reproducing raw source excerpts.", inputSchema:{type:"object",properties:{id:{type:"string",minLength:1}},required:["id"],additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
   { name:"navigator_bridge_status", title:"Inspect bridge status", description:"Inspect public source counts and the live Estate integration boundary without exposing owner runtime state or changing Navigator state.", inputSchema:{type:"object",properties:{},additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
 ];
+
+const CP02_CSP = {
+  connectDomains: ["https://jmisjustme-estate.pages.dev"],
+  resourceDomains: ["https://jmisjustme-estate.pages.dev"],
+  frameDomains: [],
+};
+const CP02_RESOURCE = {
+  uri: CP02_URI,
+  name: "Original JM3232 AIRBORNE v1.5.2 — direct source contact",
+  title: "JM3232 Original Browser",
+  description: "Direct loading of the authentic public browser carrier HTML in the ChatGPT MCP Apps frame, with pinned SHA-256 source-contact gate.",
+  mimeType: "text/html;profile=mcp-app",
+  _meta: {
+    ui: { prefersBorder:false, csp:CP02_CSP },
+    "openai/ui": { availableDisplayModes:["inline","fullscreen"] },
+    "openai/widgetDescription": "JM3232's actual AIRBORNE browser source is rendered in the ChatGPT component sandbox, not redrawn or nested in another iframe.",
+  },
+};
+
+function byteToHex(buffer){
+  return Array.from(new Uint8Array(buffer), b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function loadOriginalBrowser(){
+  // Do not propagate cookies, credentials, host tokens, or private owner state.
+  const res = await fetch(ORIGINAL_BROWSER, {
+    method:"GET", credentials:"omit", redirect:"error",
+    headers:{accept:"text/html"},
+    cf:{cacheTtl:0,cacheEverything:false},
+  });
+  if(!res.ok || !String(res.headers.get("content-type")||"").includes("text/html")) throw new Error("Canonical browser source unavailable.");
+  const len = Number(res.headers.get("content-length")||0);
+  if(len > MAX_ORIGINAL_BYTES) throw new Error("Canonical source size gate.");
+  const bytes = await res.arrayBuffer();
+  if(bytes.byteLength > MAX_ORIGINAL_BYTES) throw new Error("Canonical source size gate.");
+  const sha = byteToHex(await crypto.subtle.digest("SHA-256", bytes));
+  if(sha !== APPROVED_CARRIER_SHA && sha !== LIVE_CARRIER_WITH_RETURN_SHA) {
+    throw new Error("Canonical browser source hash changed; contact held pending lineage proof.");
+  }
+  const html = new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+  if(!html.includes('v1.5.2 · AIRBORNE') || !html.includes('data-jm-airborne-canonical-door="v1.5.2"'))
+    throw new Error("Canonical browser identity marker missing.");
+  // A minimal BASE carrier adapter makes the authentic external resources resolve.
+  // No rebuilt layout/DOM, app code, third-party nested iframe, or source substitution.
+  if(!/<head(?:\s[^>]*)?>/i.test(html)) throw new Error("Original head marker missing.");
+  const carrier = html.replace(/<head(\s[^>]*)?>/i, (head)=>
+    head+'<base href="'+ORIGINAL_BROWSER+'">');
+  return {carrier,sha,sourceBytes:bytes.byteLength};
+}
 
 function json(data,status=200,extra={}){
   return new Response(JSON.stringify(data),{status,headers:{"content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","access-control-expose-headers":"Mcp-Session-Id",...extra}});
@@ -58,7 +120,7 @@ function sanitizeStructured(name,v){
   if(name==="fetch") return safeFetch(v);
   if(name==="navigator_resolve_rootword") return {term:v?.term||"",entry:safeFetch(v?.entry),meaning_radius:keep(v?.meaning_radius,["core_use","good_stretches","bad_stretches","misuse_edges","forbidden_collapses"]),root_action:v?.root_action||"",use_law:v?.use_law||"",visual_face:keep(v?.visual_face,["text_glyph","shape_logic","route_diagram","image_family"]),wordplay_face:keep(v?.wordplay_face,["operation","source_form","sound_form","alternate_readings","mechanism","public_note"]),claim_boundary:keep(v?.claim_boundary,["claim_status","d_level","boundary"]),alternatives:Array.isArray(v?.alternatives)?v.alternatives.map(safeResultRow):[]};
   if(name==="navigator_return_lineage") return {id:v?.id||"",title:v?.title||"",source:v?.source||"",source_file:v?.source_file||"",preserved:v?.preserved||"",lineage:safeLineage(v?.lineage),connections:Array.isArray(v?.connections)?v.connections:[],authority:safeAuthority(v?.authority),boundary:v?.boundary||""};
-  if(name==="navigator_bridge_status") return {name:"JM3232 Navigator",version:APP_VERSION,state:"PUBLIC_PLUGIN_READ_ONLY_INTEGRATED",source_counts:v?.source_counts||{},boundary:"Public descendant: five read-only retrieval tools; no owner runtime state, write tools, raw source excerpts, or shared mutable user state are exposed."};
+  if(name==="navigator_bridge_status") return {name:"JM3232 Navigator",version:APP_VERSION,state:"PUBLIC_PLUGIN_READ_ONLY_INTEGRATED",source_counts:v?.source_counts||{},boundary:"Public descendant: five inherited read-only retrieval tools and one render-only UI surface; no owner runtime state, write tools, raw source excerpts, or shared mutable user state are exposed."};
   return v;
 }
 function sanitizeToolResult(name,result){if(!result||typeof result!=="object")return result; return {...result,structuredContent:sanitizeStructured(name,result.structuredContent||{})};}
@@ -185,11 +247,15 @@ async function handleMcp(request){
     if(method==="initialize"){
       const requested=params.protocolVersion||DEFAULT_PROTOCOL;
       const protocol=SUPPORTED_PROTOCOLS.has(requested)?requested:DEFAULT_PROTOCOL;
-      return json(rpcResult(id,{protocolVersion:protocol,capabilities:{tools:{listChanged:false}},serverInfo:{name:"JM3232 Navigator — Public Read-Only Integrated Descendant",version:APP_VERSION},instructions:"Search before fetch. Preserve source identity. Five public read-only tools only. Bridge status also reports the public-safe Estate integration registry. Owner write-state remains outside the public Plugin."}));
+      return json(rpcResult(id,{protocolVersion:protocol,capabilities:{tools:{listChanged:false},resources:{listChanged:false}},serverInfo:{name:"JM3232 Navigator — Public Read-Only Integrated Descendant",version:APP_VERSION},instructions:"Search before fetch. Preserve source identity. Six public read-only tools, including one original-source render surface. Bridge status also reports the public-safe Estate integration registry. Owner write-state remains outside the public Plugin."}));
     }
     if(method==="ping") return json(rpcResult(id,{}));
     if(method==="tools/list") return json(rpcResult(id,{tools:TOOLS}));
     if(method==="tools/call"){
+      if(params.name==="navigator_render_original_browser"){
+        if(Object.keys(params.arguments||{}).length) return json(rpcError(id,-32602,"Render tool accepts no parameters."),400);
+        return json(rpcResult(id,localToolResult({identity:"jm://navigator",canonical:ORIGINAL_BROWSER,source_status:"PINNED_SOURCE_REQUESTED",host_render_state:"UNVERIFIED",owner_write_exposed:false,claim:"Direct original carrier resource; final ChatGPT host render and Internet return are separate gates."})));
+      }
       if(!ALLOWED_TOOLS.has(params.name)) return json(rpcError(id,-32602,`Tool is not exposed on the public read-only descendant: ${params.name}`),400);
       const args=params.arguments||{};
       if(params.name==="fetch"||params.name==="navigator_return_lineage"){
@@ -216,8 +282,20 @@ async function handleMcp(request){
       if(params.name==="navigator_bridge_status") safe.structuredContent.estate_integration=await integrationStatus();
       return json(rpcResult(id,safe));
     }
-    if(method==="resources/list") return json(rpcResult(id,{resources:[]}));
-    if(method==="resources/read") return json(rpcError(id,-32602,"The public submission descendant does not expose an MCP UI resource.",400),400);
+    if(method==="resources/list") return json(rpcResult(id,{resources:[CP02_RESOURCE]}));
+    if(method==="resources/read"){
+      if(params.uri !== CP02_URI) return json(rpcError(id,-32602,"Unknown UI resource."),400);
+      try{
+        const original=await loadOriginalBrowser();
+        return json(rpcResult(id,{contents:[{
+          uri:CP02_URI,mimeType:"text/html;profile=mcp-app",text:original.carrier,
+          _meta:{...CP02_RESOURCE._meta,"jm/source_sha256":original.sha,"jm/source_bytes":original.sourceBytes,
+            "jm/source_status":"EXACT_LIVE_CARRIER_PINNED_HOST_UNVERIFIED"}
+        }]}));
+      }catch(e){
+        return json(rpcError(id,-32010,String(e?.message||e)),502);
+      }
+    }
     return json(rpcError(id,-32601,`Method not found: ${method}`),404);
   }catch(e){return json(rpcError(id,-32603,String(e?.message||e)),500);}
 }
@@ -229,7 +307,7 @@ export default {
     if(url.pathname==="/mcp"&&request.method==="POST") return handleMcp(request);
     if(url.pathname==="/mcp") return json(rpcError(null,-32000,"This plugin endpoint accepts MCP POST requests."),405);
     if(url.pathname==="/integration") return json(await integrationStatus());
-    if(url.pathname==="/health") return json({ok:true,name:"JM3232 Navigator",version:APP_VERSION,state:"PUBLIC_PLUGIN_READ_ONLY_INTEGRATED",tool_count:TOOLS.length,resource_count:0,shared_mutable_user_state:false,raw_source_excerpts:false,estate_integration:await integrationStatus()});
+    if(url.pathname==="/health") return json({ok:true,name:"JM3232 Navigator",version:APP_VERSION,state:"PUBLIC_PLUGIN_READ_ONLY_INTEGRATED",tool_count:TOOLS.length,resource_count:1,shared_mutable_user_state:false,raw_source_excerpts:false,estate_integration:await integrationStatus()});
     return env.ASSETS.fetch(request);
   }
 };

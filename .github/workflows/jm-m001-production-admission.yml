@@ -51,6 +51,8 @@ jobs:
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_APK_LINEAGE_RESTORE_CP27_TESTS.py
       - name: Prove CP28 four exact independent TIWIN source editions
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_CHAIN_RESTORE_CP28_TESTS.py
+      - name: Prove CP31 fail-closed pre-retirement assessment without native delete
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_PRE_RETIREMENT_EXECUTION_CP31_TESTS.py
       - name: Prove CP30 SUIT guarded export with no repeated 10MB carriage
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_SUIT_EXPORT_CP30_TESTS.py
       - name: Prove CP32 frozen Android carrier admission and signer-role nonregression

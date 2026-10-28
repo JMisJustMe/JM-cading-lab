@@ -19,6 +19,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove CP21 build-entry adversarial enforcement
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_BUILD_ENTRY_CP21_TESTS.py
+      - name: Hold changed cold-only and high-byte carriers until proven
+        shell: bash
+        env:
+          JM_M001_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+        run: |
+          set -euo pipefail
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_BUILD_ENTRY_CP21_INTEGRATION.py \
+            --repo . --base "$JM_M001_BASE_SHA"
       - name: Preserve original gate and closure regression
         run: |
           python3 agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py --self-test

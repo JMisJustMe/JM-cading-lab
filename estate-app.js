@@ -319,6 +319,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
   const SESSION_KEY = 'jm-owner-vault-key';
   let editing = null;
   let proofBusy = false;
+  const DOCUMENT_INSTANCE = crypto.randomUUID(); // changes on a genuine document reload
   const PROOF_PENDING = 'jm-owner-vault-cp08-pending';
   const PROOF_RECEIPT = 'jm-owner-vault-cp08-receipt';
   const LOCAL = {
@@ -649,6 +650,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       return v?.schema==='JM.OwnerVault.ProofPending/0.1'&&
         /^cp08-[a-f0-9]{32}$/.test(v.sourceInstanceId)&&
         /^[a-f0-9-]{36}$/.test(v.nonce)&&
+        /^[a-f0-9-]{36}$/.test(v.createdDocumentInstance)&&
         /^[a-f0-9]{64}$/.test(v.sha256)&&
         ['prepared','reload','cleanup'].includes(v.phase)?v:null;
     } catch{return null;}
@@ -659,7 +661,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     let r=null;
     try{r=JSON.parse(localStorage.getItem(PROOF_RECEIPT)||'null');}catch{}
     const exportButton=el('jmVaultExportProof');
-    if(exportButton)exportButton.disabled=!(r?.schema==='JM.OwnerVault.AuthenticatedDeviceProof/0.1'&&r.outcome==='PASS');
+    if(exportButton)exportButton.disabled=!!p||!(r?.schema==='JM.OwnerVault.AuthenticatedDeviceProof/0.1'&&r.outcome==='PASS');
     proofMessage(p?'CP08 HOLD: '+p.phase+' checkpoint. Unlock your original Owner Vault and press Prove to resume.':
       r?.outcome==='PASS'?'CP08 PASS: authenticated private write, independent reload/readback and exact test cleanup proved on this browser. Export receipt.':
       'No authenticated private owner-device proof performed.');
@@ -713,7 +715,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         p.bodyId=b.id;p.firstRead=true;p.phase='reload';savePending(p);
       }
       if(p.phase==='reload') {
-        if(!afterReload){location.reload();return;}
+        if(!afterReload || p.createdDocumentInstance===DOCUMENT_INSTANCE){location.reload();return;}
         const b=await findTestBody(p);await checkTestBody(p,b);
         p.bodyId=b.id;p.reloaded=true;p.phase='cleanup';savePending(p);
       }
@@ -732,7 +734,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     const p={schema:'JM.OwnerVault.ProofPending/0.1',nonce,
       sourceInstanceId:'cp08-'+nonce.replace(/-/g,''),
       sha256:await hashText(proofHTML(nonce)),createdAt:new Date().toISOString(),
-      phase:'prepared',firstRead:false,reloaded:false};
+      phase:'prepared',firstRead:false,reloaded:false,createdDocumentInstance:DOCUMENT_INSTANCE};
     try{savePending(p);}catch(e){proofMessage('CP08 HOLD: no durable device checkpoint. No write attempted.');return;}
     proofBusy=true;
     try{

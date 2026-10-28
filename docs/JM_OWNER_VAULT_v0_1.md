@@ -174,3 +174,9 @@ The existing private DELETE route now refuses to remove an indexed HTML source w
 The existing Fake-R2 suite includes a source → revision chain: attempted ancestor deletion must preserve exact index and both stored HTML objects, both remain independently downloadable, then deliberate leaf-first deletion succeeds. This is **synthetic regression only** until CI and real authenticated storage tests independently confirm the result.
 
 **Boundary:** This is direct-child referential integrity, not full offsite backup, cryptographic authorship, cross-provider cold restoration or multiwriter atomicity. Private owner data, credentials, production deployment and native originals are untouched; the PR remains draft and unmerged.
+
+## CP14 — Duplicate body-ID custody ambiguity gate (28 October 2026)
+
+The existing Owner Vault index must contain unique nonempty body IDs. A JSON record with two entries carrying the same ID previously passed shallow shape validation, making source lookup ambiguous and allowing a DELETE to remove both index entries while deleting only one source object. CP14 now fails closed with private HTTP 503 `PRIVATE_CUSTODY_HOLD` before any index-dependent GET, upload, snapshot or DELETE proceeds. No automatic deduplication, source deletion or identity collapse occurs. The original index bytes remain available for deliberate owner recovery.
+
+The inherited synthetic Fake-R2 regression injects a duplicate ID, checks all five affected API routes, proves both original HTML and corrupt index remain byte-identical, then restores the exact healthy index and verifies source download and explicit deletion still work. This is a **candidate draft**: actual CI, authenticated R2, physical device, independent cold restore, concurrent-writer atomicity and production propagation are separate gates. This safeguard does not retrospectively repair a previously damaged index or authorise native Library retirement.

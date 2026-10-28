@@ -174,3 +174,22 @@ python3 agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_CHAIN_REST
 ```
 
 New full-output directory only. All four native `libfile_` purposes remain distinct, and no native write/retirement permission is inferred. No public TIWIN deployment, physical Android installation or fresh app functional run is claimed by this storage test.
+
+
+## CP29 — exact Visual Creation original source and processing-intake recovery
+
+This is a **read-only M001 recipient**, not another Visual Creation studio or archive authority. Its 7 separately named original Library ZIPs are CP07, CP08, CP09, CP17, CP18, original processing intake V1 and expanded processing intake V2. Existing CP18 original full archive already embeds exact whole-ZIP copies of CP07, CP08, CP09 and CP17 (independent full SHA-256 match). V2 retains 34 exact-member identities from V1 and a `zstd --patch-from` delta recovers the entire *original zipped* V1 binary in 28,966 bytes. **Same bytes within a larger source is an independent recovery path, not native-link retirement authority.**
+
+**Authentic evidence (28 October 2026):** 7 original native source releases **96,878,664 bytes**, **391/391 original ZIP members CRC PASS**. Two separate unmodified full anchors: CP18 **33,701,970 bytes**, processing intake V2 **31,354,499 bytes**. One 5-member PRIVATE recovery pack **23,024 bytes**, SHA-256 `fdf7068d99251555074b415abaa032ea6d1630cd12324160c8a528ec943a6600`. Complete cold representation **65,079,493 bytes**, or **31,799,171 bytes conditional less carriage** than storing all seven full release ZIPs in that tier. **Actual ChatGPT Library quota saving = 0 bytes measured; all 7 originals KEEP.**
+
+CP29 private pack contains source pins, the 28,966-byte V2→V1 patch, offline README, generic CP29 restorer and protected existing CP25 exact-patch restorer. Private original bytes and full per-native-ID source manifest are NOT placed in GitHub. The three provider files are in existing owner-only Google Drive `JM Estate Cold Recovery`. Fresh independent full raw Google Drive readback 3/3 original SHA and byte length PASS; extracting the CP29 restorer from **downloaded** private pack reconstructed 7/7 exact original full ZIP binaries and 391/391 member checks PASS. This was independently compared with separately materialized live native Library originals.
+
+Public source: `JM_M001_VISUAL_LINEAGE_RESTORE_CP29.py`, `JM_M001_VISUAL_LINEAGE_RESTORE_CP29_TESTS.py`, and this existing M001 CI step. CP29 inherits CP25 directly; no new compressor, registry, source-engine replacement or public/private-data exposure. Synthetic 26-case test suite exercises full 7-output byte identity, missing/native-role refusal, changed hashes, forged retirement, unsafe filenames/nested paths, malformed/corrupted private packs, changed anchors, symlinks, no-overwrite and zero quota claim.
+
+Use on an owner-controlled laptop with `zstd` CLI and Python 3.10+, with the CP29 script adjacent to the existing CP25 source:
+
+```sh
+python3 JM_M001_VISUAL_LINEAGE_RESTORE_CP29.py --pack JM_M001_CP29_VISUAL_CREATION_COLD_RECOVERY_PRIVATE.zip --cp18 JM_VISUAL_CREATION_CP18_PRIVATE_SOURCE_AND_RUNNABLES.zip --v2 JM_VISUAL_CREATION_WHOLE_MATERIAL_PROCESSING_INTAKE_V2_2026-10-27.zip --output-dir NEW_VISUAL_SEVEN
+```
+
+This recovery test does NOT certify current owner-device visuals, remote deployment, browser writeback, public publishing, or source equivalence between independent source families. No source, direct native Library URL, CP18 lineage/CP19 private host or original media is retired.

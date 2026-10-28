@@ -117,3 +117,21 @@ CP05 adds **EDIT SOURCE** beside the existing private Vault Preview, Download an
 The server requires the selected body ID and its expected SHA-256. A stale base version, mismatched hash, non-HTML input or full index fails closed. After saving, the client re-fetches the new private HTML and verifies both its exact content and SHA-256 before showing a successful private-save message. Every separately intended body retains its independent identity. The source editor does not publish an app or modify GitHub/deployed source automatically.
 
 **Proof boundary:** CI tests the private API against a synthetic R2 store, checks the mirrored existing Owner Room source, and production workflow checks a public-safe policy marker. Actual owner-key authenticated production write/reload/readback on a real device is a separate gate. No private key or owner document is placed in public source.
+
+## FLAZ CP05–CP06 · bounded closure 28 October 2026
+
+The existing source and deployment receipts close private editing and direct Owner Room contact at **source, test, and public-safe deployed-code** scope. CP05 mainline source commit `1d432648cc171285c649b4d29372855658683910`; CP06 `18a57bb92b64d63f70d2be51bf23db84382a92f7`. The durable Owner Vault readiness receipt verified at `2026-10-28T16:09:35.733270+00:00` confirms both the live API policy and deployed Owner Room editor-source markers. The existing synthetic-R2 tests and phone/desktop browser journeys passed. **Real authenticated owner production writes, physical-device restoration and Estate-wide independent editing remain separately unpassed.**
+
+## CP07 · local preservation and private-to-device recovery
+
+An actual data-loss route was identified in the original local mounting code: when `localStorage.setItem` failed, its catch block cleared the entire in-memory mounted shelf and removed the storage key. The 12-item `.slice(0,12)` could also silently evict older bodies.
+
+CP07 corrects this *inside the existing Estate*:
+
+- Local HTML imports commit through one atomic storage call, then update in-memory state. On quota, existing mounted content remains unchanged.
+- At 12 bodies, importing or restoring refuses without evicting the oldest. Existing removals use the same atomic/rollback discipline.
+- The original Owner Vault offers **RESTORE TO DEVICE** for each private HTML version. The owner signs in through the existing private session; HTML bytes are fetched privately and SHA-256 checked against that exact version before entering the current local mounted shelf.
+- Every restored local copy carries its private version ID, source identity, ancestor ID and SHA-256. Repeat restoration is idempotent. Ordinary local-shelf Sync skips already-restored Vault copies so a readback cannot accidentally create another private body or revert the current head.
+- The browser reloads the original Estate after a committed local restore, demonstrating durable device storage instead of an in-memory-only display.
+
+**Proof boundary:** synthetic authenticated browser tests, source mirroring and existing deployment rail are the scope of the CP07 implementation; a real owner device/vault-key roundtrip is a separate next proof gate. No key is stored in code and no private user document is copied by this source change.

@@ -45,7 +45,7 @@ def compile_family_receipt(donors, observed_root_names=None):
       'm27': ('23 images / 4,570,243 B', 'CANDIDATE RETIRE / STORAGE OPERATIONAL TRACE',
               'No deletion executed.', 'Owner approval is still required before mutation.'),
       'm28': ('16 / 4,658,335 B', '8 / 3,586,066 B', '4 / 3,473,856 B',
-              '8 / 3,214,600 B', 'No deletion')
+              '8 / 3,214,600 B', 'NO DELETION')
     }
     for key,markers in required.items():
         for marker in markers:

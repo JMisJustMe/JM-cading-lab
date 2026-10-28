@@ -57,7 +57,16 @@ jobs:
           if p<len(body) or p<len(canonical):
               print('Live delta segment (repr, <=320 bytes):',repr(body[p:len(body)-t][:320]))
               print('Canonical delta segment (repr, <=320 bytes):',repr(canonical[p:len(canonical)-t][:320]))
+          # Public carrier's separately governed contextual return organ was added
+          # after original v1.5.2 promotion (PR #268). Do not erase it or inflate
+          # byte-difference into a new sovereign source body.
+          injected=b'<script defer src="/estate-return-route.js" data-jm-context-return-route="v0.1"></script>\\n'.replace(b'\\n',b'\n')
+          assert len(injected)==90, 'expected bounded 90-byte carrier overlay'
+          live_expected=canonical.replace(b'</body>',injected+b'</body>',1)
+          assert len(live_expected)==6183409
           assert len(body)>1_000_000, 'public browser response is unexpectedly small'
-          assert sha==expected, 'live canonical browser differs from recorded v1.5.2 carrier; do not claim exact source contact'
+          assert body==live_expected, 'live browser is not exact original plus proved return-route overlay'
+          assert b'JM.EstateReturnRoute/0.1' in Path('estate-return-route.js').read_bytes(), 'overlay source missing'
+          print('LIVE_RECONCILIATION=PASS SOURCE_EXACT_PLUS_90_BYTE_CARRIER_ORGAN; NOT same carrier hash')
           # Header absence is not host iframe acceptance.
           PY

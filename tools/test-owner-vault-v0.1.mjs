@@ -672,3 +672,69 @@ console.log('PASS: CP14 duplicate-ID custody corruption holds every index route 
 console.log('PASS: JM Owner Vault CP12 index-before-delete, orphan HOLD, unique exact snapshot readback.');
 console.log('PASS: JM Owner Vault CP11 persisted-state, dedupe and unchanged-revision integrity gates.');
 console.log('PASS: JM Owner Vault current-main private editor, immutable ancestry, capacity gate, exact R2 body/index integrity on uploads/revisions/downloads.');
+
+
+// CP15: concurrent editors must never both receive success when they read
+// the same old R2 index or state. No real owner key, bucket or device is used.
+function pauseMatchingGets(storage, key, required = 2) {
+  const get = storage.get.bind(storage);
+  let entered = 0;
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  storage.get = async function(candidate) {
+    const snapshot = await get(candidate); // Snapshot BEFORE either writer commits.
+    if (candidate === key && entered < required) {
+      entered += 1;
+      if (entered === required) release();
+      await gate;
+    }
+    return snapshot;
+  };
+}
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  await storage.put(indexKey, JSON.stringify({
+    schema: 'JM.OwnerVault/0.1.BodyIndex', updated_at: null, bodies: []
+  }));
+  pauseMatchingGets(storage, indexKey);
+  const upload = suffix => call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'upload-body', body: {
+      name: 'CP15 independent ' + suffix, sourceInstanceId: 'cp15-source-' + suffix,
+      content: '<!doctype html><html><body>CP15 ' + suffix + '</body></html>'
+    }
+  } });
+  const outcomes = await Promise.all([upload('alpha'), upload('bravo')]);
+  assert.deepEqual(outcomes.map(x => x.status).sort(), [201, 409],
+    'Only one competing R2 index compare-and-swap may succeed');
+  const conflict = outcomes.find(x => x.status === 409);
+  assert.equal((await conflict.json()).error, 'PRIVATE_CONCURRENT_WRITE_CONFLICT');
+  const manifest = await (await call({ env: isolatedEnv, key })).json();
+  assert.equal(manifest.bodies.length, 1, 'The winning committed index remains intact');
+  assert.match(manifest.bodies[0].name, /CP15 independent/);
+  assert.equal(storage.map.has(indexKey), true);
+  // The refused writer may leave UUID-keyed orphan bytes for owner recovery,
+  // but MUST NOT advertise lost-update success or delete any source bytes.
+}
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const stateKey = 'jm-owner-vault/v0.1/state.json';
+  await storage.put(stateKey, JSON.stringify({
+    schema: 'JM.OwnerVault/0.1.State', updated_at: null,
+    state: { notes: 'original', favourites: [], recent: [] }
+  }));
+  pauseMatchingGets(storage, stateKey);
+  const save = notes => call({ method: 'PUT', env: isolatedEnv, key, body: { state: { notes } } });
+  const outcomes = await Promise.all([save('first-editor'), save('second-editor')]);
+  assert.deepEqual(outcomes.map(x => x.status).sort(), [200, 409],
+    'Only one simultaneous state write is permitted to replace the old version');
+  assert.equal((await outcomes.find(x => x.status === 409).json()).error,
+    'PRIVATE_CONCURRENT_WRITE_CONFLICT');
+  const state = await (await call({ env: isolatedEnv, key })).json();
+  assert.ok(['first-editor','second-editor'].includes(state.state.notes));
+}
+console.log('PASS: CP15 atomic R2 version-CAS prevents silent concurrent index/state lost updates; single-writer custody remains intact.');

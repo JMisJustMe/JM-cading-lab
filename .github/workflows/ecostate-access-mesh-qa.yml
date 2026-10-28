@@ -67,6 +67,8 @@ jobs:
           grep -Fq 'Edit this game in existing Games & Beyond' navigator/estate-integration/index.html
           grep -Fq 'openRequestedSourceEditor()' games-beyond/app.js
           node --check games-beyond/app.js
+          node --check games-beyond/catalogue-v0-6-core-loader.js
+          grep -Fq "if(new URLSearchParams(location.search).has('jm-edit'))return;" games-beyond/catalogue-v0-6-core-loader.js
           python3 -m json.tool games-beyond/payload-manifest.json >/dev/null
           test -s books/index.html
           test -s visual-story/index.html

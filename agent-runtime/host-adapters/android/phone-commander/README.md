@@ -6,22 +6,41 @@
 
 This adds an Android/Termux execution route while the laptop is off. It does **not** replace Desktop Commander or claim a remote agent can connect to arbitrary Termux shells. It reuses the existing JM runtime, GitHub connector, Termux already proven on the owner's Samsung, and a private GitHub issue mailbox.
 
-## Phone setup (existing Termux)
+## Phone setup (existing Termux) — recover actual path first
 
-Use the same `~/JM_WORKSPACE/JM-cading-lab` directory you already established. Never overwrite it. In Termux:
+**Observed on Samsung, 28 October 2026:** Python 3.13.13 and Git 2.54 were already installed; `gh` 2.95 was installed successfully. The earlier assumed `~/JM_WORKSPACE/JM-cading-lab` directory did **not** exist; the 20 October phone runtime instead ran from `~/downloads`. A working on-phone repository checkout path was never verified. Never assume a chat source path is present on the Android device.
+
+Run the following **only after Termux returns to a `~ $` shell prompt**. Do not paste subsequent commands while `pkg install` is still executing: installation processes may consume shell input.
 
 ```bash
-pkg install -y python git gh
-mkdir -p "$HOME/JM_WORKSPACE"
-# If JM-cading-lab does not already exist:
-git clone --depth 1 https://github.com/JMisJustMe/JM-cading-lab.git "$HOME/JM_WORKSPACE/JM-cading-lab"
-# If it already exists, leave the working tree untouched.
-python "$HOME/JM_WORKSPACE/JM-cading-lab/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py" status
+set -e
+ROOT="$HOME/JM_WORKSPACE/JM-cading-lab"
+if [ ! -f "$ROOT/agent-runtime/jm_agent_runtime.py" ]; then
+  FOUND="$(find "$HOME" -maxdepth 7 -type f -path '*/agent-runtime/jm_agent_runtime.py' -print -quit 2>/dev/null || true)"
+  if [ -n "$FOUND" ]; then ROOT="${FOUND%/agent-runtime/jm_agent_runtime.py}"; fi
+fi
+if [ ! -f "$ROOT/agent-runtime/jm_agent_runtime.py" ]; then
+  if [ -e "$ROOT" ]; then
+    echo "HOLD: existing destination is not a verified JM repository; left untouched"
+    exit 1
+  fi
+  mkdir -p "$HOME/JM_WORKSPACE"
+  git clone --depth 1 --branch feat/jm-phone-commander-v0-1-20261028 https://github.com/JMisJustMe/JM-cading-lab.git "$ROOT"
+fi
+SCRIPT="$ROOT/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py"
+if [ ! -f "$SCRIPT" ]; then
+  git -C "$ROOT" fetch origin feat/jm-phone-commander-v0-1-20261028
+  git -C "$ROOT" show origin/feat/jm-phone-commander-v0-1-20261028:agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py > "$HOME/jm_phone_commander.py"
+  SCRIPT="$HOME/jm_phone_commander.py"
+fi
+python "$SCRIPT" --workspace "$ROOT" status
+if ! gh auth status >/dev/null 2>&1; then gh auth login; fi
+python "$SCRIPT" --workspace "$ROOT" mailbox
 ```
 
-When the PR is merged, update an existing *clean* checkout with `git pull --ff-only`. If a local working tree contains edits, do not overwrite them; inspect differences first. For an immediate trial before merge, take the files from the PR branch or the standalone bundle.
+This searches for an existing JM runtime tree first, preserves all existing local projects/downloads, and only shallow-clones the repo if no compatible checkout is found. No source changes, Git pushes, owner edit grants or arbitrary shell actions are performed by the status-only mailbox test. The test issue is `JMisJustMe/JM-ai-studio-surface#1`, created by the connected owner's GitHub account. Successful physical execution must create a returned receipt in that private issue and close it; an open issue with no comment is still HOLD.
 
-If you already have `gh auth login` working, **reuse it**; otherwise run `gh auth login` interactively in Termux. Never paste a GitHub token into ChatGPT, an issue, source code, or a commit. The mailbox only works with a token allowed to read/write issues in the pre-existing **private** `JMisJustMe/JM-ai-studio-surface` repo. `GH_TOKEN`/`JM_PHONE_GH_TOKEN` are supported as session-only alternatives (no plaintext token files). With `gh`, authorise the account locally on your phone.
+Once the real checkout path is known, use that path in all subsequent Termux commands. `JM_WORKSPACE` can be set to an existing working tree to avoid future path assumptions. Never overwrite a local working tree. When this PR is merged, inspect local changes before using `git pull --ff-only`.
 
 ## Commands (execute the exact existing JM core, not a copied agent)
 

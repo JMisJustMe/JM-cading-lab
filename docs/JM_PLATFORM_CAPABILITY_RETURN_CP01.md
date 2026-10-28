@@ -37,3 +37,17 @@ Bring actual Cloud Contact v0.5 server onto an owner-operated dynamic-process ho
 * Local Node dynamic service supervisor (`supervisor.mjs`): spawn *existing* entrypoint with explicit owner filesystem authority, loopback-only bind, readiness probe, bounded crash restart and shutdown. Does not alter Cloud Contact source or claim Internet hosting.
 * Stripe **test-key-only** provider reader (`stripe-test-verifier.mjs`): owner-run GET account + PaymentIntent, account ID cross-check, verified amount/mode/order-reference shape, no client-origin claim. Both modules carry synthetic adversarial Node tests.
 * This is not Stripe's entire feature set, nor even a live payment acceptance integration. Actual public hosting, authenticated sandbox account contact and legally compliant live customer sales remain separate OPEN gates.
+
+## CP02 hardening review — 28 October 2026
+
+Recovered development authority: PR #560, head `6732097304edd928c836b307a8d4bbb5bb62a355`, base `2e3f0399d68014644b4793d3472c091acf10d247`. GitHub readback: open draft, no submitted reviews, all 13 head workflow runs successful. This is branch-scoped evidence, not promotion or production proof. Build Mesh plan identity: `JMOP-a95da55f56a038e4ac8f8959`.
+
+Reproduced before repair: provider-await loss of a concurrently created order; competing successful payment overwrites; refund overwriting intervening delivery; absent independently supplied checkpoint comparison; ancestor-symlink static-store escape; unrelated occupied-port readiness accepted; invalid probe timeout accepted; nested private store permitted inside public source. The checkpoint case adds the missing external-checkpoint API; it is not a claim that hash chains alone promised independent anchoring.
+
+Repairs retain the existing host adapter and Money Menu identities: fail-closed local writer locking and fresh state at commit, payment/refund replay checks, explicit checkpoint prefix validation, filesystem ancestry guards, source/store overlap refusal, bounded provider/readiness streams, occupied-port startup refusal, lifecycle/timeout guards and non-disclosing HTTP integrity errors.
+
+Evidence: 24 Node test groups, including four independent Node writer processes creating 32 retained orders; malformed/oversized provider replies; raw hostile HTTP paths; immutable release/rollback and process crash/restart tests. Local runtime: Node v24.22.1 on Linux; configured CI runtime remains Node 22 and must be re-read on the new head. Host-adapter conformance (9 adapters, Node/Python parity), sovereign-agent contract and 37 scoped-memory adapter tests pass. No production deployment or external payment occurred.
+
+Activation trace used the existing sovereign runtime and Current-64 registry: 12 runtime-spine identities selected, 52 available/not selected. Selection does not mean 12 OS processes were spawned. Registry SHA-256: `67851b13f3e6e2082617c9b43106d3e2f657c05b50d98e644ac7d418dc8a94b4`.
+
+Promotion boundaries: independent checkpoint custody/rotation, crash-lock operator recovery, trusted filesystem parents, single-operator static mutation, cooperative loopback settings, unauthenticated readiness/process race, real Cloud Contact v0.5 runtime, actual Stripe sandbox contact, persistent remote storage, encrypted backup/restore, TLS and owner-device contact remain explicit. No independently operable platform is claimed. New-head CI, review acceptance and exact post-merge readback are required before closing Phase 1.

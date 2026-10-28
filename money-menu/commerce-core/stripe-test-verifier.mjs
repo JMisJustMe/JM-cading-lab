@@ -9,9 +9,14 @@ export function makeStripeTestVerifier({secretKey,accountId,request=fetch}={}){
   let response;
   try{response=await request('https://api.stripe.com'+endpoint,{method:'GET',redirect:'manual',headers:{Authorization:'Bearer '+secretKey,Accept:'application/json'},signal:AbortSignal.timeout(7500)})}
   catch{throw Error('STRIPE_LOOKUP_UNAVAILABLE')}
-  need(response.status===200&&response.headers.get('content-type')?.includes('application/json'),'STRIPE_LOOKUP_UNVERIFIED');
-  const content=await response.text();need(content.length<=1024*512,'STRIPE_RESPONSE_LIMIT');
-  try{return JSON.parse(content)}catch{throw Error('STRIPE_RESPONSE_INVALID')}
+  if(response.status!==200||response.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json'){await response.body?.cancel();throw Error('STRIPE_LOOKUP_UNVERIFIED')}
+  const reader=response.body?.getReader();need(reader,'STRIPE_RESPONSE_INVALID');
+  const chunks=[];let size=0;
+  try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;
+   if(size>512*1024){await reader.cancel();throw Error('STRIPE_RESPONSE_LIMIT')}chunks.push(Buffer.from(value))}
+  }catch(e){if(e.message==='STRIPE_RESPONSE_LIMIT')throw e;throw Error('STRIPE_RESPONSE_UNAVAILABLE')}finally{reader.releaseLock()}
+  let value;try{value=JSON.parse(Buffer.concat(chunks).toString('utf8'))}catch{throw Error('STRIPE_RESPONSE_INVALID')}
+  need(value&&typeof value==='object'&&!Array.isArray(value),'STRIPE_RESPONSE_INVALID');return value;
  };
  async function verifyAccount(){const account=await get('/v1/account');need(account.object==='account'&&account.id===accountId,'STRIPE_ACCOUNT_MISMATCH');return account.id}
  async function verifyPayment(providerRef){

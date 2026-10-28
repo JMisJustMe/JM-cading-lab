@@ -7,7 +7,8 @@ import {fileURLToPath} from 'node:url';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const fail=message=>{throw Error(message)};
 const nameOK=s=>typeof s==='string'&&/^[a-z0-9][a-z0-9-]{0,47}$/.test(s);
-const appDir=(store,name)=>path.join(path.resolve(store),'apps',nameOK(name)?name:fail('INVALID_APP_NAME'));
+const guard=file=>{let cursor=path.parse(path.resolve(file)).root;for(const part of path.resolve(file).slice(cursor.length).split(path.sep)){cursor=path.join(cursor,part);try{if(fs.lstatSync(cursor).isSymbolicLink())fail('UNSAFE_STORE_PATH')}catch(e){if(e.code==='ENOENT')break;throw e}}};
+const appDir=(store,name)=>{const dir=path.join(path.resolve(store),'apps',nameOK(name)?name:fail('INVALID_APP_NAME'));guard(dir);return dir};
 const safe=s=>typeof s==='string'&&s.split('/').every(p=>p&&p!=='.'&&p!=='..'&&!p.includes('\\')&&!p.includes('\0'));
 const atomic=(file,value)=>{
  fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});
@@ -15,7 +16,7 @@ const atomic=(file,value)=>{
  try{fs.writeFileSync(fd,JSON.stringify(value,null,2));fs.fsyncSync(fd)}finally{fs.closeSync(fd)}
  fs.renameSync(tmp,file);
 };
-const read=file=>{if(!fs.lstatSync(file).isFile()||fs.lstatSync(file).isSymbolicLink())fail('INVALID_STATE_CARRIER');return JSON.parse(fs.readFileSync(file))};
+const read=file=>{guard(file);if(!fs.lstatSync(file).isFile()||fs.lstatSync(file).isSymbolicLink())fail('INVALID_STATE_CARRIER');return JSON.parse(fs.readFileSync(file))};
 const releaseDir=(store,name,id)=>path.join(appDir(store,name),'releases',/^[0-9a-f]{64}$/.test(id)?id:fail('BAD_RELEASE_ID'));
 function state(store,name){
  const file=path.join(appDir(store,name),'state.json');if(!fs.existsSync(file))fail('APP_NOT_DEPLOYED');
@@ -42,7 +43,7 @@ function asset(store,name,id,logical){
  const m=manifest(store,name,id),entry=m.entries.find(e=>e.file===logical);if(!entry)return null;
  if(!safe(logical))fail('BAD_ASSET_PATH');const root=path.join(releaseDir(store,name,id),'site');let parent=root;
  for(const segment of logical.split('/').slice(0,-1)){parent=path.join(parent,segment);const st=fs.lstatSync(parent);if(!st.isDirectory()||st.isSymbolicLink())fail('ASSET_DIRECTORY_TAMPER')}
- const file=path.join(root,...logical.split('/')),st=fs.lstatSync(file);
+ const file=path.join(root,...logical.split('/'));guard(file);const st=fs.lstatSync(file);
  if(!st.isFile()||st.isSymbolicLink()||st.size!==entry.size)fail('ASSET_TAMPER');
  const bytes=fs.readFileSync(file);if(sha(bytes)!==entry.sha256)fail('ASSET_TAMPER');return bytes;
 }
@@ -50,6 +51,7 @@ export function verifyRelease(store,name,id){const m=manifest(store,name,id);for
 export function deploy(store,name,source){
  const home=appDir(store,name),root=path.resolve(source),stored=path.resolve(store);
  if(root===stored||root.startsWith(stored+path.sep))fail('SOURCE_INSIDE_STORE');
+ if(stored.startsWith(root+path.sep))fail('SOURCE_STORE_OVERLAP');
  const entries=scan(root),id=sha(JSON.stringify(entries)),dest=releaseDir(store,name,id);
  fs.mkdirSync(path.dirname(dest),{recursive:true,mode:0o700});
  if(!fs.existsSync(dest)){
@@ -88,7 +90,7 @@ export function createServer(store){return http.createServer((req,res)=>{
   let s;try{s=state(store,m[1])}catch(e){if(e.message==='APP_NOT_DEPLOYED')return end(404,Buffer.from('{"error":"APP_NOT_FOUND"}'));throw e}
   const bytes=asset(store,m[1],s.current,logical);if(!bytes)return end(404,Buffer.from('{"error":"ASSET_NOT_FOUND"}'));
   return end(200,bytes,types[path.extname(logical).toLowerCase()]||'application/octet-stream');
- }catch(e){return end(503,Buffer.from(JSON.stringify({error:'INTEGRITY_HOLD',detail:e.message})))}}
+ }catch(e){return end(503,Buffer.from(JSON.stringify({error:'INTEGRITY_HOLD',detail:'RELEASE_VERIFICATION_FAILED'})))}}
 )}
 export async function cli(argv=process.argv.slice(2)){
  const [cmd,a,b,c]=argv;

@@ -48,3 +48,20 @@ test('JM Stripe test adapter refuses spoofed account and non-200 replies',async(
  const badResponse=makeStripeTestVerifier({secretKey:key,accountId:acct,request:async()=>mock({error:'denied'},401)});
  await assert.rejects(badResponse.verifyPayment(intent),/STRIPE_LOOKUP_UNVERIFIED/);
 });
+test('malformed, null, array, redirects, wrong content-type and interrupted replies fail closed',async()=>{
+ const cases=[
+  [()=>mock(null),/STRIPE_RESPONSE_INVALID/],[()=>mock([]),/STRIPE_RESPONSE_INVALID/],
+  [()=>new Response('{',{headers:{'content-type':'application/json'}}),/STRIPE_RESPONSE_INVALID/],
+  [()=>new Response('{}',{status:302,headers:{location:'https://example.test','content-type':'application/json'}}),/STRIPE_LOOKUP_UNVERIFIED/],
+  [()=>new Response('{}',{headers:{'content-type':'text/html'}}),/STRIPE_LOOKUP_UNVERIFIED/],
+  [()=>new Response('{}',{headers:{'content-type':'application/jsonp'}}),/STRIPE_LOOKUP_UNVERIFIED/],
+  [()=>new Response(new ReadableStream({start(c){c.error(Error('interrupted'))}}),{headers:{'content-type':'application/json'}}),/STRIPE_RESPONSE_UNAVAILABLE/],
+  [()=>{throw Error('network unavailable')},/STRIPE_LOOKUP_UNAVAILABLE/]
+ ];
+ for(const [response,error] of cases){const adapter=makeStripeTestVerifier({secretKey:key,accountId:acct,request:async()=>response()});await assert.rejects(adapter.verifyPayment(intent),error)}
+});
+test('oversized chunked provider reply is cancelled before full buffering',async()=>{
+ let cancelled=false;const body=new ReadableStream({pull(c){c.enqueue(new Uint8Array(65536))},cancel(){cancelled=true}});
+ const adapter=makeStripeTestVerifier({secretKey:key,accountId:acct,request:async()=>new Response(body,{headers:{'content-type':'application/json'}})});
+ await assert.rejects(adapter.verifyPayment(intent),/STRIPE_RESPONSE_LIMIT/);assert.equal(cancelled,true);
+});

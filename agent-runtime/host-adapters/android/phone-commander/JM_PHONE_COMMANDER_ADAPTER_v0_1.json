@@ -1,0 +1,28 @@
+{
+  "schema": "JM.PhoneCommanderHostAdapter/0.1",
+  "version": "0.1.0",
+  "date": "2026-10-28",
+  "authority_class": "HOST_ADAPTER_NOT_SOURCE_AUTHORITY",
+  "name": "JM Phone Commander — Android/Termux",
+  "parent": "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md",
+  "canonical_core": "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+  "code": "agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py",
+  "source_repository": "JMisJustMe/JM-cading-lab",
+  "mailbox_repository": "JMisJustMe/JM-ai-studio-surface",
+  "mailbox_private_required": true,
+  "commands": ["status", "git-status", "route", "read-file", "edit-file"],
+  "no_arbitrary_shell": true,
+  "edit_policy": "private owner mailbox + short owner-device grant + explicit confirmation + expected source SHA256 + backup + exact readback",
+  "proof": {
+    "local_fixture": "28/28 PASS, 2026-10-28",
+    "source_repo_contact": "PASS: GitHub connector read existing parent and confirmed private mailbox repository",
+    "phone_runtime": "OPEN",
+    "remote_issue_roundtrip": "OPEN",
+    "physical_owner_edit": "OPEN",
+    "boot_recovery": "OPEN",
+    "codex_contact": "OPEN",
+    "proof_level": "FUNCTION_LOCAL_FIXTURE_ONLY"
+  },
+  "do_not_claim": ["laptop remote access", "constant phone wakefulness", "phone remote command completion", "blanket external permissions", "Android host contact", "Codex host contact"],
+  "keeper": "CHANGE THE PLUG, NOT THE BODY; NO DING NO CLAIM"
+}

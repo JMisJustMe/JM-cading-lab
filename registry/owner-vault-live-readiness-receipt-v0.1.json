@@ -1,6 +1,6 @@
 {
   "schema": "JM.OwnerVaultLiveReadinessReceipt/0.1",
-  "verified_utc": "2026-10-28T16:09:35.733270+00:00",
+  "verified_utc": "2026-10-28T17:09:50.220834+00:00",
   "state": "LIVE_READINESS_PASS",
   "host": "https://jmisjustme-estate.pages.dev",
   "http_status": "200",
@@ -20,10 +20,11 @@
   "public_editor_policy": "PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY",
   "cp05_public_editor_policy_verified": true,
   "cp06_deployed_owner_editor_source_verified": true,
-  "source_commit": "18a57bb92b64d63f70d2be51bf23db84382a92f7",
-  "workflow_run": "40723171452",
+  "cp07_deployed_local_recovery_source_verified": true,
+  "source_commit": "e3867b3f4e64498cf218cbb71b204bf9b97150cf",
+  "workflow_run": "40732975768",
   "authenticated_write_read_delete_proof": false,
   "owner_secret_value_recorded": false,
   "ding": false,
-  "claim_boundary": "On mainline this receipt proves the deployed public-safe Owner Vault API policy AND deployed Owner Room JavaScript source markers for editing/recovery. It does NOT prove owner-key authentication, a real private save, physical owner-device reload, cross-device persistence, or a fully published JM creation."
+  "claim_boundary": "Mainline receipt: public-safe Vault API policy and deployed browser-code markers for private editing, CP07 local recovery, no eviction and quota preservation. It does NOT prove actual owner-key write, owner-device local restore, cross-device recovery or public creation propagation; those require separate authenticated owner contact."
 }

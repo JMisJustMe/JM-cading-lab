@@ -102,7 +102,7 @@ if (lineage.id !== 'JM-BUILD-MESH-001' || lineage.authority?.primary !== 'JM.Car
 if (JSON.stringify(lineage).includes('receipt_chain_head')) throw new Error('private lineage state leaked');
 
 x = await rpc(7,'resources/list');
-if(!x.res.ok || x.json.result.resources.length!==1 || x.json.result.resources[0].uri!=='ui://jm3232-navigator/airborne-source-cp02.html')throw new Error('original body UI missing');
+if(!x.res.ok || x.json.result.resources.length!==1 || x.json.result.resources[0].uri!=='ui://jm3232-navigator/airborne-chatgpt-cp03.html')throw new Error('original body UI missing');
 const resource=x.json.result.resources[0];
 if(resource._meta?.ui?.csp?.frameDomains?.length!==0 || resource._meta?.ui?.csp?.connectDomains?.[0]!=='https://jmisjustme-estate.pages.dev')throw new Error('resource origin or nested frame policy changed');
 x = await rpc(8,'tools/call',{name:'navigator_render_original_browser',arguments:{}});
@@ -111,7 +111,7 @@ x = await rpc(9,'tools/call',{name:'navigator_render_original_browser',arguments
 if(x.res.ok || !x.json.error)throw new Error('render accepted arbitrary URL');
 x = await rpc(10,'resources/read',{uri:'ui://unknown/original.html'});
 if(x.res.ok || !x.json.error)throw new Error('unknown UI resource accepted');
-x = await rpc(11,'resources/read',{uri:'ui://jm3232-navigator/airborne-source-cp02.html'});
+x = await rpc(11,'resources/read',{uri:'ui://jm3232-navigator/airborne-chatgpt-cp03.html'});
 if(x.res.ok || !x.json.error || !String(x.json.error.message).includes('source'))throw new Error('invalid/unavailable original source not rejected');
 if(health.resource_count!==1 || health.tool_count!==7)throw new Error('health new surface not accounted for');
 x=await rpc(12,'tools/call',{name:'navigator_internet_search',arguments:{query:'A'}});

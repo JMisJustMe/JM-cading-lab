@@ -299,6 +299,7 @@ jobs:
           test -s cloudflare-estate/navigator/index.html
           test -s cloudflare-estate/navigator/stringline.json
           test -s cloudflare-estate/navigator/estate-integration/index.html
+          grep -Fq 'Edit registered source (GitHub)' cloudflare-estate/navigator/estate-integration/index.html
           test -s cloudflare-estate/navigator/estate-integration/public-registry.json
           test -s cloudflare-estate/navigator/estate-integration/bridge.js
           test -s cloudflare-estate/access/index.html
@@ -464,6 +465,7 @@ jobs:
             ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],
+            ['/navigator/estate-integration/', 'Edit registered source (GitHub)'],
             ['/navigator/estate-integration/public-registry.json', 'JM.Estate.PublicNervousSystem/1'],
             ['/access/', 'One door.'],
             ['/apps/', 'data-jm-estate-integration="v1"'],

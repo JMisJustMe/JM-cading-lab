@@ -50,6 +50,7 @@ jobs:
           set -euo pipefail
           test -s access/index.html
           grep -Fq 'jm-estate-body-projection-v1' navigator/estate-integration/index.html
+          grep -Fq 'Edit registered source (GitHub)' navigator/estate-integration/index.html
           test -s books/index.html
           test -s visual-story/index.html
           test -s market-lab/index.html
@@ -110,12 +111,20 @@ jobs:
                     const items=api?.getRows()||[];
                     const keys=items.map(x=>x.id);
                     const app=items.find(x=>x.id==='Apps & tools:benefitmerge');
+                    const edited=items.filter(x=>x.sourceFile);
+                    const direct=items.find(x=>x.id==='Public routes:theory/cause-must-pass/00_open_first.html');
                     return {count:items.length,unique:keys.length===new Set(keys).size,
                       appsBranches:app?.versions?.length||0,holds:api?.getHolds()||[],
+                      sourceEdits:edited.length,sourceLinksRendered:document.querySelectorAll('#bodyList a.owner-edit').length,
+                      sourceSafe:edited.every(x=>x.ownerEdit==='https://github.com/JMisJustMe/JM-cading-lab/edit/main/'+x.sourceFile.split('/').map(encodeURIComponent).join('/')&&!x.sourceFile.includes('..')),
+                      directEditable:!!direct?.ownerEdit,
+                      appNotMisrepresented:!items.some(x=>x.group==='Apps & tools'&&x.ownerEdit),
                       member:items.some(x=>x.group==='Games'),coder:items.some(x=>x.group==='Coding & runtimes'),
                       song:items.some(x=>x.group==='Music & lyrics'),theory:items.some(x=>x.group==='Theory')};
                   });
                   if(audit.count<90||!audit.unique||audit.appsBranches!==2||audit.holds.length||
+                      audit.sourceEdits<10||audit.sourceLinksRendered!==audit.sourceEdits||!audit.sourceSafe||
+                      !audit.directEditable||!audit.appNotMisrepresented||
                       !audit.member||!audit.coder||!audit.song||!audit.theory){
                     throw new Error(vp.name+' sovereign body projection gate failed: '+JSON.stringify(audit));
                   }

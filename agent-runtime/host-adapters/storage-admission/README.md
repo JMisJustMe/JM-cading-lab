@@ -154,3 +154,23 @@ python3 agent-runtime/host-adapters/storage-admission/JM_M001_APK_LINEAGE_RESTOR
 ```
 
 Never equate same-file SHA with same delivery-role authority. The generated APKs are exact-byte recoveries, not proven replacements for existing owner-visible Library links or Play Store/install identity. No source overwrite, native file Trash operation, deletion, APK signature modification or quota-saving claim is authorized by CP27. Public CI exercises only synthetic fixtures and keeps every previous M001 test.
+
+
+## CP28 — TIWIN four original source editions, lossless cold recovery
+
+CP28 reuses the existing M001 CP25 whole-byte restoration engine. It does **not** replace the TIWIN FIND × SIGNAL app, its distinct version identity, original source-code editability, account database backups or native file links. It preserves the actual source ZIP bytes for TIWIN CP05 Live Pulse, CP06 Pager Receipts, CP07 owner-ready PWA candidate and CP08 engineering completion as four independently named versions.
+
+**Exact owner-private proof, 28 October 2026:** 4 native ZIPs / **62,045,302 B** original carriage, all original SHA-256 and ZIP CRC PASS. Current CP08 23,208,037 B source retained whole; CP05–07 patches are 60,981 B + 74,260 B + 132,184 B. A private owner-only recovery pack with manifest, patches, offline instructions, unchanged CP25 restorer and CP28 script is **235,289 B**, SHA-256 `14818669fb40b584bd84192fe1fb5294d7cf8113bb9c16fbb265c4b455dde12e`.
+
+**Cold representation = 23,443,326 B**, or **38,601,976 B conditional less carriage**, if all four full packages would otherwise be held in a second cold store. Zero native Library files retired; zero account quota reduction measured or claimed. Distinct source and direct-download purposes are protected.
+
+Independent external contact: unchanged CP08 full anchor and private 235,289 B delta pack both uploaded to existing owner-only Google Drive `JM Estate Cold Recovery`, re-downloaded as exact provider bytes **2/2 SHA PASS**, and reconstructed **4/4 full original ZIPs byte-exact**, including ZIP-member CRC. Only the generic restorer, synthetic 40-case adversarial tests and this README are in the public editable GitHub repo; private ZIP source data/manifests are never published.
+
+Offline run with `zstd` and Python 3.10+:
+
+```sh
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_CHAIN_RESTORE_CP28.py --pack /private/JM_M001_CP28_TIWIN_FOUR_EDITIONS_PRIVATE_COLD_DELTA.zip --anchor /private/TIWIN_CP08_ENGINEERING_COMPLETION_FULL_SOURCE.zip --output-dir /new/TIWIN_CP05_CP08_RESTORED
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_CHAIN_RESTORE_CP28_TESTS.py
+```
+
+New full-output directory only. All four native `libfile_` purposes remain distinct, and no native write/retirement permission is inferred. No public TIWIN deployment, physical Android installation or fresh app functional run is claimed by this storage test.

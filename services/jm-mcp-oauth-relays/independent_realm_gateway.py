@@ -86,6 +86,31 @@ class RealmAdmission(RemoteAdmission):
             redirect=one(params,"redirect_uri")
             requested=one(params,"scope",self.config["default_scope"])
             scopes=set(requested.split())
+            if rec is None and self.realm=="receipt":
+                # Recover only the otherwise lost *public* ChatGPT DCR
+                # identity. This gives NO bearer/token/tool authority;
+                # exact callback, audience, scope, and S256 are mandatory.
+                # No other realm or callback may inherit this exception.
+                challenge=one(params,"code_challenge")
+                known_callback=(isinstance(redirect,str) and
+                    re.fullmatch(r"https://chatgpt\\.com/connector/oauth/[A-Za-z0-9_-]{1,180}",redirect) is not None)
+                candidate=(isinstance(client,str) and
+                    re.fullmatch(r"[A-Za-z0-9_-]{54}",client) is not None and
+                    known_callback and scopes=={"receipt:issue"} and
+                    one(params,"response_type")=="code" and
+                    one(params,"code_challenge_method")=="S256" and
+                    valid_pkce(challenge) and
+                    one(params,"resource")==self.resource)
+                state=one(params,"state","")
+                candidate=candidate and isinstance(state,str) and len(state)<=1024
+                # Bound public self-recovery to deter unbounded RAM growth.
+                count=sum(bool(v.get("public_callback_recovered")) for v in self.clients.values())
+                if candidate and count<32:
+                    rec={"redirect_uris":[redirect],"method":"none",
+                         "created":time.time(),
+                         "client_name":"ChatGPT (recovered public callback)",
+                         "public_callback_recovered":True}
+                    self.clients[client]=rec
             if rec is None:
                 raise ValueError("CLIENT_REGISTRATION_MISSING")
             if redirect not in rec["redirect_uris"] or not scopes or not scopes<=self.config["scopes"]:

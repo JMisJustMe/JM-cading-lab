@@ -558,10 +558,12 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     if (!editing) return;
     const action = el('jmVaultSaveRevision');
     action.disabled = true;
+    let attempted = null;
     try {
       const content = el('jmVaultEditorText').value;
       const base = { ...editing };
       if (!/<html|<!doctype/i.test(content)) throw new Error('NOT_STANDALONE_HTML');
+      attempted = { ...base, content, hash: await hashText(content) };
       const result = await request('', {
         method: 'POST',
         body: JSON.stringify({ action: 'revise-body', baseId: base.baseId, expectedSha256: base.expectedSha256, content })
@@ -582,6 +584,24 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       message(`Private revision saved and SHA-256 readback verified (${revisionId.slice(0,8)}…). Original body retained. Public source/deployment unchanged.`);
     } catch (error) {
       if (error.status === 401) { setKey(''); authLabel(false); closeEditor(); }
+      else if (attempted && error.status !== 400 && error.status !== 413) {
+        // If an HTTP response or readback failed, recover the existing target
+        // consequence. Never replay a possibly committed revision mutation.
+        try {
+          const index = await request('');
+          const candidate = (index.bodies || []).find(item => item.previousVersionId === attempted.baseId && item.sha256 === attempted.hash);
+          if (candidate) {
+            const response = await request(`?body=${encodeURIComponent(candidate.id)}`);
+            const recovered = await response.text();
+            if (recovered === attempted.content && await hashText(recovered) === attempted.hash) {
+              closeEditor();
+              await refreshRemote();
+              message(`Private revision recovered by exact SHA-256 readback (${candidate.id.slice(0,8)}…). No duplicate save issued. Original retained.`);
+              return;
+            }
+          }
+        } catch { /* Recovery is a bounded read-only contact, not authority to retry a write. */ }
+      }
       message(`Revision HOLD: ${error.message}. No deployment or verified-save claim made.`);
     } finally { action.disabled = false; }
   }

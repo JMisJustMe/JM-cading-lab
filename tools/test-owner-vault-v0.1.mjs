@@ -572,6 +572,7 @@ console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor pr
   assert.equal(storage.map.has(originalKey) || storage.map.has(childKey), false);
   assert.equal((await (await call({ env: isolatedEnv, key })).json()).bodies.length, 0);
 }
+console.log('PASS: CP13 referenced original retained, both revisions downloadable, leaf-first deletion explicit.');
 {
   const storage = new FakeR2();
   const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };

@@ -1,4 +1,5 @@
-const APP_VERSION = "0.3.0-original-ui-contact-cp02";
+const APP_VERSION = "0.4.0-chatgpt-internet-cp03";
+const CP03_URI = "ui://jm3232-navigator/airborne-chatgpt-cp03.html";
 const CP02_URI = "ui://jm3232-navigator/airborne-source-cp02.html";
 const ORIGINAL_BROWSER = "https://jmisjustme-estate.pages.dev/navigator/";
 const APPROVED_CARRIER_SHA = "b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569";
@@ -14,6 +15,7 @@ const ALLOWED_TOOLS = new Set([
   "navigator_resolve_rootword",
   "navigator_return_lineage",
   "navigator_bridge_status",
+  "navigator_internet_search",
 ]);
 const OWNED_HOSTS = new Set(["jmisjustme.github.io", "jmisjustme-estate.pages.dev"]);
 
@@ -31,7 +33,14 @@ const TOOLS = [
     inputSchema:{type:"object",properties:{},additionalProperties:false},
     outputSchema:OUTPUT_OBJECT,
     annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:true},
-    _meta:{...toolMeta(),ui:{resourceUri:CP02_URI},"openai/outputTemplate":CP02_URI}
+    _meta:{...toolMeta(),ui:{resourceUri:CP03_URI},"openai/outputTemplate":CP03_URI}
+  },
+
+  { name:"navigator_internet_search", title:"Search the public Internet inside JM3232",
+    description:"Read-only web search results and source-labelled snippets for the original JM3232 browser; returns results into the existing browser UI without redirecting search to a different browser. Provider availability is indicated rather than invented.",
+    inputSchema:{type:"object",properties:{query:{type:"string",minLength:2,maxLength:180},limit:{type:"integer",minimum:1,maximum:10,default:6}},required:["query"],additionalProperties:false},
+    outputSchema:OUTPUT_OBJECT,annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:true},
+    _meta:{...toolMeta(),ui:{visibility:["model","app"]}}
   },
 
   { name:"search", title:"Search the JM Estate", description:"Find JM Estate bodies, Navigator routes, Radius Lexicon terms, receipts, public doors, or source records. Returns stable IDs for fetch and does not change state.", inputSchema:{type:"object",properties:{query:{type:"string",minLength:1},limit:{type:"integer",minimum:1,maximum:25,default:8},sources:{type:"array",items:{type:"string"}}},required:["query"],additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
@@ -41,16 +50,35 @@ const TOOLS = [
   { name:"navigator_bridge_status", title:"Inspect bridge status", description:"Inspect public source counts and the live Estate integration boundary without exposing owner runtime state or changing Navigator state.", inputSchema:{type:"object",properties:{},additionalProperties:false}, outputSchema:OUTPUT_OBJECT, annotations:ro, _meta:toolMeta() },
 ];
 
+
+// Original app has the only whole-browser UI. This is a bounded CARRIER delta.
+const CP03_BRIDGE_SOURCE="\n// JM original-browser CP03 carrier adapter (not a substitute browser).\n(function(){\n  'use strict';\n  const KEY='jm3232UnifiedBrowserV1_1';\n  const schema='JM3232.ChatGPTReturn/0.1';\n  const api=window.openai;\n  const saved=api && api.widgetState;\n  if (saved && saved.schema===schema && saved.navigator && typeof saved.navigator==='object') {\n    try {\n      const current=localStorage.getItem(KEY);\n      if(!current){localStorage.setItem(KEY,JSON.stringify(saved.navigator));}\n    } catch(_) {}\n  }\n  let receiptNumber=0;\n  const persist=function(nav){\n    try {\n      if(!api || typeof api.setWidgetState!=='function')return;\n      const snapshot={\n        schema:schema,\n        navigator:{\n          version:nav.version,\n          tabs:(nav.tabs||[]).slice(0,12),\n          activeTab:nav.activeTab,\n          bookmarks:(nav.bookmarks||[]).slice(0,60),\n          history:(nav.history||[]).slice(0,35),\n          receipts:(nav.receipts||[]).slice(0,35),\n          settings:nav.settings,\n        },\n        at:new Date().toISOString()\n      };\n      api.setWidgetState(snapshot);\n    }catch(_){}\n  };\n  async function invoke(name,args){\n    if(api && typeof api.callTool==='function'){\n      const result=await api.callTool(name,args);\n      return result && (result.structuredContent || result);\n    }\n    // MCP Apps standard bridge. The host owns the transport.\n    if(window.parent===window)throw Error('MCP host is not available');\n    const id='jm3232-'+(++receiptNumber);\n    return await new Promise((resolve,reject)=>{\n      const onMessage=event=>{\n        if(event.source!==window.parent)return;\n        const msg=event.data;\n        if(msg && msg.jsonrpc==='2.0' && msg.id===id){\n          window.removeEventListener('message',onMessage);\n          clearTimeout(timer);\n          if(msg.error)reject(Error(msg.error.message||'Host rejected search'));\n          else resolve(msg.result && (msg.result.structuredContent||msg.result));\n        }\n      };\n      const timer=setTimeout(()=>{\n        window.removeEventListener('message',onMessage);\n        reject(Error('Host MCP bridge is not responding'));\n      },13000);\n      window.addEventListener('message',onMessage);\n      window.parent.postMessage({jsonrpc:'2.0',id,method:'tools/call',\n        params:{name,arguments:args}},'*');\n    });\n  }\n  const internet=async function(query){\n    const value=String(query||'').trim();\n    if(value.length<2||value.length>180)return [];\n    const result=await invoke('navigator_internet_search',{query:value,limit:8});\n    const items=Array.isArray(result.results)?result.results:[];\n    const translated=items.map((r,i)=>({\n      id:'jm-chatgpt-web-'+i+'-'+value.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,60),\n      kind:'jm-internet-result',\n      title:String(r.title||'Web result'),\n      description:String(r.snippet||''),\n      url:String(r.url||''),\n      source:'JM Internet Contact · '+String(r.provider||'Public web'),\n      meta:String(r.source_status||'source-returned')\n    })).filter(r=>/^https:\\/\\//i.test(r.url));\n    const stamp={schema: schema, query:value, results:translated.length,\n      providers:result.provider_status||[],status:result.status||'UNKNOWN',\n      at:new Date().toISOString()};\n    try{\n      const previous=(api && api.widgetState)||{};\n      if(api&&typeof api.setWidgetState==='function')\n        api.setWidgetState({...previous, lastInternetReceipt:stamp});\n    }catch(_){}\n    return translated;\n  };\n  window.JM3232_CHATGPT_BRIDGE=Object.freeze({internet,persist});\n})();";
+const CP03_FETCH_CONTACT=";if(store.settings.remote&&window.JM3232_CHATGPT_BRIDGE?.internet){jobs.push(window.JM3232_CHATGPT_BRIDGE.internet(q).then(rows=>{for(const row of rows)results.push(row)}).catch(e=>{trace('CHATGPT_INTERNET_HOLD',{target:q,boundary:String(e?.message||e).slice(0,160)})}))}";
+const CP03_SEARCH_ANCHOR="source:'Public web handoff'}];const jobs=[];";
+const CP03_SAVE_ANCHOR="function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store))}catch(e){memoryPersist=JSON.parse(JSON.stringify(store))}}";
+const CP03_SAVE_REPLACEMENT=CP03_SAVE_ANCHOR.replace("function saveStore(){","function saveStore(){window.JM3232_CHATGPT_BRIDGE?.persist(store);");
+function adaptChatGPTRenderCarrier(html){
+  if(html.split(CP03_SEARCH_ANCHOR).length!==2)throw new Error("Original AIRBORNE web-search anchor changed.");
+  if(html.split(CP03_SAVE_ANCHOR).length!==2)throw new Error("Original AIRBORNE state-save anchor changed.");
+  if(!html.includes("</head>"))throw new Error("Original head missing.");
+  const head='<script data-jm-cp03="host-bridge">'+CP03_BRIDGE_SOURCE.replace(/<\/script/gi,"<\\/script")+'</script>\n';
+  const result=html.replace("</head>",head+"</head>")
+    .replace(CP03_SEARCH_ANCHOR,CP03_SEARCH_ANCHOR+CP03_FETCH_CONTACT)
+    .replace(CP03_SAVE_ANCHOR,CP03_SAVE_REPLACEMENT);
+  return {html:result,sourceAdapter:CP03_BRIDGE_SOURCE,patchCount:2,
+    carrierDelta:"one additive host adapter; two exact in-source connection points"};
+}
+
 const CP02_CSP = {
   connectDomains: ["https://jmisjustme-estate.pages.dev"],
   resourceDomains: ["https://jmisjustme-estate.pages.dev"],
   frameDomains: [],
 };
 const CP02_RESOURCE = {
-  uri: CP02_URI,
-  name: "Original JM3232 AIRBORNE v1.5.2 — direct source contact",
+  uri: CP03_URI,
+  name: "Original JM3232 AIRBORNE v1.5.2 — in-chat Internet contact",
   title: "JM3232 Original Browser",
-  description: "Direct loading of the authentic public browser carrier HTML in the ChatGPT MCP Apps frame, with pinned SHA-256 source-contact gate.",
+  description: "Original hash-pinned JM3232 browser with additive in-chat Internet tool return and widget-state carrier contacts.",
   mimeType: "text/html;profile=mcp-app",
   _meta: {
     ui: { prefersBorder:false, csp:CP02_CSP },
@@ -84,9 +112,73 @@ async function loadOriginalBrowser(){
   // A minimal BASE carrier adapter makes the authentic external resources resolve.
   // No rebuilt layout/DOM, app code, third-party nested iframe, or source substitution.
   if(!/<head(?:\s[^>]*)?>/i.test(html)) throw new Error("Original head marker missing.");
-  const carrier = html.replace(/<head(\s[^>]*)?>/i, (head)=>
-    head+'<base href="'+ORIGINAL_BROWSER+'">');
-  return {carrier,sha,sourceBytes:bytes.byteLength};
+  const carrier = html.replace(/<head(\s[^>]*)?>/i,(head)=>head+'<base href="'+ORIGINAL_BROWSER+'">');
+  const adapted=adaptChatGPTRenderCarrier(carrier);
+  return {carrier:adapted.html,sha,sourceBytes:bytes.byteLength,
+    delta:{searchAnchor:CP03_SEARCH_ANCHOR.length,saveAnchor:CP03_SAVE_ANCHOR.length,adapterLength:CP03_BRIDGE_SOURCE.length}};
+}
+
+
+function argsStrictInternet(args){
+  if(!args||typeof args!=="object"||Array.isArray(args)||Object.keys(args).some(k=>!["query","limit"].includes(k)))
+    throw new Error("Internet search arguments rejected.");
+  if(typeof args.query!=="string"||args.query.trim().length<2||args.query.length>180)
+    throw new Error("Internet search query must be 2–180 characters.");
+  const limit=args.limit===undefined?6:args.limit;
+  if(!Number.isInteger(limit)||limit<1||limit>10)throw new Error("Internet search limit must be 1–10.");
+  return {query:args.query.trim(),limit};
+}
+function decodeXml(text){
+  return String(text||"").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1")
+    .replace(/&#(\d+);/g,(_,x)=>String.fromCodePoint(Math.min(Number(x),0x10ffff)))
+    .replace(/&#x([0-9a-f]+);/gi,(_,x)=>String.fromCodePoint(Math.min(parseInt(x,16),0x10ffff)))
+    .replace(/&(amp|lt|gt|quot|apos|#39);/g,(_,x)=>({amp:"&",lt:"<",gt:">",quot:'"',apos:"'", "#39":"'"}[x]));
+}
+function safeInternetUrl(value){
+  try{const u=new URL(String(value||"").trim());if(u.protocol!=="https:"||u.username||u.password||u.hostname.endsWith(".local")||!u.hostname.includes("."))return "";
+    return u.href.slice(0,1800);
+  }catch{return ""}
+}
+function rssField(item,name){
+  const m=item.match(new RegExp("<"+name+"(?:\\s[^>]*)?>([\\s\\S]*?)</"+name+">","i"));
+  return m?decodeXml(m[1].replace(/<[^>]*>/g,"")).trim():"";
+}
+function parseBingRss(xml,limit){
+  if(!/<rss\b/i.test(xml))throw Error("Search provider returned no RSS.");
+  return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].slice(0,limit*3).map(m=>({
+    title:rssField(m[1],"title").slice(0,220),
+    snippet:rssField(m[1],"description").slice(0,650),
+    url:safeInternetUrl(rssField(m[1],"link")),provider:"Bing RSS",source_status:"SOURCE_RETURNED"
+  })).filter(x=>x.title&&x.url).slice(0,limit);
+}
+async function internetSearch({query,limit}){
+ const providers=[],results=[];
+ const tasks=[
+  (async()=>{try{
+    const url="https://www.bing.com/search?format=rss&q="+encodeURIComponent(query);
+    const res=await fetch(url,{headers:{accept:"application/rss+xml,application/xml,text/xml"},redirect:"manual"});
+    if(!res.ok)throw Error("HTTP "+res.status);
+    const xml=await res.text();
+    if(xml.length>700000)throw Error("Provider response size exceeded");
+    const parsed=parseBingRss(xml,limit);
+    results.push(...parsed);
+    providers.push({provider:"Bing RSS",status:parsed.length?"RESULTS":"EMPTY",count:parsed.length});
+  }catch(_){providers.push({provider:"Bing RSS",status:"UNAVAILABLE",count:0});}})(),
+  (async()=>{try{
+    const url="https://en.wikipedia.org/w/api.php?action=opensearch&search="+encodeURIComponent(query)+"&limit="+Math.min(limit,5)+"&namespace=0&format=json&origin=*";
+    const res=await fetch(url,{redirect:"manual"});if(!res.ok)throw Error("Wikipedia not available");
+    const data=await res.json();if(!Array.isArray(data)||!Array.isArray(data[1]))throw Error("Bad Wikipedia data");
+    const rows=data[1].slice(0,limit).map((title,i)=>({title:String(title).slice(0,220),snippet:String(data[2]?.[i]||"Wikipedia result").slice(0,650),url:safeInternetUrl(data[3]?.[i]),provider:"Wikipedia",source_status:"SOURCE_RETURNED"})).filter(x=>x.url);
+    results.push(...rows);
+    providers.push({provider:"Wikipedia",status:rows.length?"RESULTS":"EMPTY",count:rows.length});
+  }catch(_){providers.push({provider:"Wikipedia",status:"UNAVAILABLE",count:0});}})()
+ ];
+ await Promise.allSettled(tasks);
+ const unique=[...new Map(results.map(x=>[x.url,x])).values()];
+ const output=unique.slice(0,limit);
+ return {schema:"JM3232.InternetContact/0.1",query,status:output.length?"RESULTS":"NO_RESULTS_OR_PROVIDERS_UNAVAILABLE",results:output,
+  provider_status:providers,return_route:"ORIGINAL_JM3232_WEB_RESULTS",receipt:{source:"live_public_query",returned:output.length,provider_count:providers.length,checked_at:new Date().toISOString()},
+  boundary:"Search result snippets inside original JM3232 UI. Third-party page rendering and complete Web search coverage not claimed."};
 }
 
 function json(data,status=200,extra={}){
@@ -247,11 +339,14 @@ async function handleMcp(request){
     if(method==="initialize"){
       const requested=params.protocolVersion||DEFAULT_PROTOCOL;
       const protocol=SUPPORTED_PROTOCOLS.has(requested)?requested:DEFAULT_PROTOCOL;
-      return json(rpcResult(id,{protocolVersion:protocol,capabilities:{tools:{listChanged:false},resources:{listChanged:false}},serverInfo:{name:"JM3232 Navigator — Public Read-Only Integrated Descendant",version:APP_VERSION},instructions:"Search before fetch. Preserve source identity. Six public read-only tools, including one original-source render surface. Bridge status also reports the public-safe Estate integration registry. Owner write-state remains outside the public Plugin."}));
+      return json(rpcResult(id,{protocolVersion:protocol,capabilities:{tools:{listChanged:false},resources:{listChanged:false}},serverInfo:{name:"JM3232 Navigator — Public Read-Only Integrated Descendant",version:APP_VERSION},instructions:"Search before fetch. Preserve source identity. Seven public read-only tools, including original-source browser render and in-app Internet search. Bridge status also reports the public-safe Estate integration registry. Owner write-state remains outside the public Plugin."}));
     }
     if(method==="ping") return json(rpcResult(id,{}));
     if(method==="tools/list") return json(rpcResult(id,{tools:TOOLS}));
     if(method==="tools/call"){
+      if(params.name==="navigator_internet_search"){
+        return json(rpcResult(id,localToolResult(await internetSearch(argsStrictInternet(params.arguments||{})))));
+      }
       if(params.name==="navigator_render_original_browser"){
         if(Object.keys(params.arguments||{}).length) return json(rpcError(id,-32602,"Render tool accepts no parameters."),400);
         return json(rpcResult(id,localToolResult({identity:"jm://navigator",canonical:ORIGINAL_BROWSER,source_status:"PINNED_SOURCE_REQUESTED",host_render_state:"UNVERIFIED",owner_write_exposed:false,claim:"Direct original carrier resource; final ChatGPT host render and Internet return are separate gates."})));
@@ -284,13 +379,13 @@ async function handleMcp(request){
     }
     if(method==="resources/list") return json(rpcResult(id,{resources:[CP02_RESOURCE]}));
     if(method==="resources/read"){
-      if(params.uri !== CP02_URI) return json(rpcError(id,-32602,"Unknown UI resource."),400);
+      if(params.uri !== CP03_URI) return json(rpcError(id,-32602,"Unknown UI resource."),400);
       try{
         const original=await loadOriginalBrowser();
         return json(rpcResult(id,{contents:[{
-          uri:CP02_URI,mimeType:"text/html;profile=mcp-app",text:original.carrier,
+          uri:CP03_URI,mimeType:"text/html;profile=mcp-app",text:original.carrier,
           _meta:{...CP02_RESOURCE._meta,"jm/source_sha256":original.sha,"jm/source_bytes":original.sourceBytes,
-            "jm/source_status":"EXACT_LIVE_CARRIER_PINNED_HOST_UNVERIFIED"}
+            "jm/source_status":"HASH_PINNED_ORIGINAL_PLUS_CP03_HOST_BRIDGE_HOST_UNVERIFIED","jm/carrier_delta":original.delta}
         }]}));
       }catch(e){
         return json(rpcError(id,-32010,String(e?.message||e)),502);

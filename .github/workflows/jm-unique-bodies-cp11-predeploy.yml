@@ -1,0 +1,41 @@
+name: JM Unique Bodies CP11 - read-only predeploy custody gate
+on:
+  pull_request:
+    paths:
+      - 'services/jm-unique-bodies-cp08/cp11_predeploy_gate.py'
+      - 'services/jm-unique-bodies-cp08/test_cp11_predeploy_gate.py'
+      - '.github/workflows/jm-unique-bodies-cp11-predeploy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fail-closed-live-cold-reconciliation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile JM CP11 custody gate
+        working-directory: services/jm-unique-bodies-cp08
+        run: python3 -m py_compile cp11_predeploy_gate.py test_cp11_predeploy_gate.py
+      - name: Test authentic JM donor SQLite and live read-only HTTP against pinned backup
+        working-directory: services/jm-unique-bodies-cp08
+        run: python3 -m unittest -v test_cp11_predeploy_gate
+      - name: Assert no deployment or public endpoint enabled
+        working-directory: services/jm-unique-bodies-cp08
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('cp11_predeploy_gate.py').read_text()
+          assert '"atomic_contact_history"' in s
+          assert '"atomic_contact_execute"' not in s
+          assert 'deployment_safe": False' in s
+          assert 'trigger_deploy' not in s
+          assert "CP08_CUSTODY_EXPORT_ONCE" not in s
+          print("PASS: read-only comparison; no deployment authority or new endpoint")
+          PY

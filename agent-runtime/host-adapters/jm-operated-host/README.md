@@ -31,3 +31,13 @@ The supervisor checks that its port is unoccupied before the initial spawn, vali
 ### CP03 preflight recovery
 
 An occupied local port is a **pre-spawn refusal**. Once that listener is released, the *same* `JMNodeSupervisor` instance may retry `start()`; concurrent calls during preflight remain refused. This does not relax port-race, process-identity or public-deployment limits. A started or explicitly stopped instance is not automatically reset for reuse. See `hardening.test.mjs` for the actual occupied → refused → released → ready test.
+
+### CP04 opt-in cooperative readiness proof
+
+The pre-existing readiness check accepts a local JSON response from the expected port but cannot prove that the responder is the supervised child. CP04 adds an **optional** per-spawn challenge, without changing the default behavior of older JM services.
+
+For a trusted existing Node service that supports the challenge, construct `new JMNodeSupervisor({entry, cwd, port, readinessProof: true})`. The supervisor passes a freshly generated 48-character hex value to that child in `JM_SUPERVISOR_PROOF`; the service must include `supervisorProof: process.env.JM_SUPERVISOR_PROOF` in its existing successful JSON `/ready` response, alongside `ok: true` and `ready: true` (or the existing `JM_NODE_TEST` scope). The supervisor rejects missing/wrong values, rotates the challenge on every restart, and does not include it in `status()`. Do not log, store or publicly return the challenge outside the loopback readiness response. The CLI's existing default remains unchanged.
+
+This is **cooperative readiness evidence**, not process identity attestation, authenticated TLS, a privilege boundary or a safe Internet control endpoint. A hostile process with access to the child environment or loopback traffic may still obtain the challenge. Enabling this option against an existing service that does not echo the challenge deliberately produces `SUPERVISED_READINESS_HOLD`; do not enable until that service supports the contract. The child must still be trusted and deployed through its existing owner-controlled source route.
+
+Test: `node --test proof.test.mjs`. Tests cover default compatibility, correct challenge, bad/missing challenge refusal, injected-environment override, rotation after crash, status non-disclosure, and inherited CP03 occupied-port retry. External host deployment, physical Fold acceptance, managed TLS and cross-machine persistence remain OPEN.

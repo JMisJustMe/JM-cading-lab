@@ -35,3 +35,5 @@ jobs:
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_EXACT_DELTA_RESTORE_CP25_TESTS.py
       - name: Prove CP26 eight distinct edition exact restoration and fail-closed roles
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_EDITIONS_RESTORE_CP26_TESTS.py
+      - name: Prove CP27 13 exact Slingfall installers and separate delivery roles
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_APK_LINEAGE_RESTORE_CP27_TESTS.py

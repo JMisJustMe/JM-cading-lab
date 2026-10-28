@@ -25,3 +25,11 @@ jobs:
           python3 scripts/jm_build_closure.py --self-test
       - name: Execute production admission on public JM package bytes
         run: python3 scripts/test_jm_m001_production_admission.py -v
+      - name: Prove CP22 postprocessed lineage and media receipt retention
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_POSTPROCESS_RETENTION_CP22_TESTS.py
+      - name: Prove CP23 Magnifying Glass / media / M001 donor bridge
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_REAL_EVIDENCE_BRIDGE_CP23_TESTS.py
+      - name: Prove CP24 operational trace retirement review versus protected originals
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_PROCESS_CAPTURE_FAMILY_CP24_TESTS.py
+      - name: Prove CP25 exact delta reconstruction
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_EXACT_DELTA_RESTORE_CP25_TESTS.py

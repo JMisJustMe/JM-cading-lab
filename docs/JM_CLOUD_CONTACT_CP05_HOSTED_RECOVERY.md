@@ -18,7 +18,7 @@ The frozen JM Cloud Contact v0.5.0 source in CP03 is a valid ancestor but **not 
 4. Stops the server, then invokes the existing **CP04** `createColdBackup` (no backup during live writes). Performs decrypt/verify/readback and checks the encrypted carrier does not contain raw state identifiers or private-key headers.
 5. Rejects the wrong encryption key and a tampered authentication tag without creating a restore target.
 6. Deletes only disposable original test state after confirmed shutdown; decrypts the backup into a different state directory.
-7. Cold-starts the actual unchanged server against that restored directory, checking readiness and the **exact same space, receipt hash, signed signature, key ID and state/key digests**.
+7. Cold-starts the actual unchanged server against that restored directory, checking readiness and the **exact same space, receipt hash, key ID and state/key digests**, with valid ECDSA signatures independently verified before and after restore (signature bytes need not be identical).
 8. Cleans up the entire private temporary test directory. No credentials, state payloads or signing keys are copied to GitHub or the evidence artifact.
 
 Run in a trusted Node 22+ environment with the exact hosted donor source checked out and its published package dependencies installed:

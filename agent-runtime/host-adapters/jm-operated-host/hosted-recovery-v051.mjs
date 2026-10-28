@@ -58,8 +58,15 @@ export async function proveHostedRecovery(source){
   assert.ok(spaces.spaces.some(s=>s.spaceId===spaceId),'SPACE_MISSING');
   const receipt=(await call(base,'/v5/spaces/'+spaceId+'/receipt',{auth:true})).receipt;
   const keyInfo=await call(base,'/receipt-key');
+  assert.equal(receipt.publicKeyId,keyInfo.keyId,'RECEIPT_SIGNER_IDENTITY_MISMATCH');
+  assert.ok(typeof receipt.publicSig==='string'&&receipt.publicSig.length>0,'UNSIGNED_RECEIPT');
+  const publicKey=crypto.createPublicKey({key:keyInfo.publicKeyJwk,format:'jwk'});
+  assert.ok(crypto.verify('sha256',Buffer.from(receipt.receiptHash),
+   {key:publicKey,dsaEncoding:'ieee-p1363'},Buffer.from(receipt.publicSig,'base64url')),'INVALID_RECEIPT_SIGNATURE');
+  // ECDSA may issue different valid signatures for identical messages: compare
+  // the stable receipt hash, public key and verified signature status, not bytes.
   return {receiptHash:receipt.receiptHash,keyId:keyInfo.keyId,
-   publicSig:receipt.publicSig,stateSha256:hash(fs.readFileSync(path.join(stateDir,stateFile))),
+   publicSignatureVerified:true,stateSha256:hash(fs.readFileSync(path.join(stateDir,stateFile))),
    signingSha256:hash(fs.readFileSync(path.join(stateDir,signFile)))};
  };
  try{

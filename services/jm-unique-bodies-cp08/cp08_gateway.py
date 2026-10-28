@@ -10,12 +10,16 @@ import json
 import os
 import re
 import sys
+import tempfile
+import threading
+import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
 
 import server
 import cp07_atomic_runtime as cp07
+import atlas_custody
 
 ROOT=Path(__file__).resolve().parent
 VERSION='0.8.0-cp08'
@@ -30,9 +34,14 @@ PREFLIGHT_HEADERS={
 class Gateway(ThreadingHTTPServer):
     daemon_threads=True
     allow_reuse_address=True
-    def __init__(self,addr,atlas,secret,origin,extra_origins=()):
+    def __init__(self,addr,atlas,secret,origin,extra_origins=(),
+                 custody_enabled=False,custody_token=''):
         self.atlas=atlas;self.secret=secret;self.origin=origin.rstrip('/')
         self.browser_origins=frozenset((self.origin,*extra_origins))
+        self.custody_enabled=custody_enabled
+        self.custody_token=custody_token
+        self.custody_lock=threading.Lock()
+        self.custody_consumed=False
         super().__init__(addr,Handler)
 
 class Handler(BaseHTTPRequestHandler):
@@ -42,6 +51,9 @@ class Handler(BaseHTTPRequestHandler):
         # Don't log URL query values or credentials.
         pass
     def cors_headers(self,status):
+        # Original Workshop/CP09 donor: private custody route and its refusals
+        # must never gain browser CORS privileges from the separate MCP route.
+        if urlsplit(self.path).path!='/mcp':return
         if self.command=='OPTIONS' and status!=204:return
         origin=self.headers.get('Origin','')
         if origin and origin in self.server.browser_origins:
@@ -100,8 +112,51 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Referrer-Policy','no-referrer')
         self.send_header('X-Frame-Options','DENY')
         self.end_headers();self.wfile.write(data)
+    def custody_export(self):
+        # Disabled by default. No browser Origin, cookies, query or GET export.
+        # Exact owner bearer + separately issued private custody grant required.
+        if not self.server.custody_enabled:
+            return self.reply(404,{'error':'NOT_FOUND'})
+        if self.headers.get('Origin') is not None or self.headers.get('Cookie') is not None:
+            return self.reply(403,{'error':'NON_BROWSER_OPERATOR_ONLY'})
+        if not self.authenticated():
+            return self.reply(401,{'error':'BEARER_REQUIRED'})
+        supplied=self.headers.get('X-JM-Custody-Grant','')
+        if not hmac.compare_digest(supplied.encode(),self.server.custody_token.encode()):
+            return self.reply(403,{'error':'CUSTODY_GRANT_REQUIRED'})
+        if self.headers.get('Content-Length','0') not in ('','0'):
+            return self.reply(413,{'error':'EMPTY_POST_REQUIRED'})
+        with self.server.custody_lock:
+            if self.server.custody_consumed:
+                return self.reply(409,{'error':'CUSTODY_ONCE_ALREADY_CONSUMED'})
+            self.server.custody_consumed=True
+        try:
+            with tempfile.TemporaryDirectory(prefix='jmcp10-one-shot-') as temp:
+                archive=Path(temp)/'JM_CP10_ATLAS_CUSTODY.zip'
+                saved=atlas_custody.snapshot(self.server.atlas.db_path,archive)
+                self.send_response(200)
+                self.send_header('Content-Type','application/zip')
+                self.send_header('Content-Length',str(archive.stat().st_size))
+                self.send_header('Cache-Control','private, no-store')
+                self.send_header('X-Content-Type-Options','nosniff')
+                self.send_header('Content-Disposition',
+                                 'attachment; filename="JM_CP10_ATLAS_CUSTODY.zip"')
+                self.send_header('X-JM-Archive-SHA256',saved['archive_sha256'])
+                self.send_header('X-JM-Export-One-Shot','true')
+                self.send_header('Referrer-Policy','no-referrer')
+                self.end_headers()
+                with archive.open('rb') as source:
+                    while chunk:=source.read(65536):
+                        self.wfile.write(chunk)
+        except (OSError,ValueError,sqlite3.Error) as exc:
+            # No sensitive source data or secret leaked into error response/log.
+            try:return self.reply(503,{'error':'CUSTODY_SNAPSHOT_HOLD'})
+            except (OSError,BrokenPipeError):return
+
     def do_POST(self):
         route=urlsplit(self.path)
+        if route.path=='/custody/export' and not route.query:
+            return self.custody_export()
         if route.path!='/mcp' or route.query:return self.reply(404,{'error':'NOT_FOUND'})
         if not self.trusted_origin():return self.reply(403,{'error':'ORIGIN_HOLD'})
         if not self.authenticated():return self.reply(401,{'error':'BEARER_REQUIRED'})
@@ -163,8 +218,15 @@ def main():
     if any(not re.fullmatch(r'https://[A-Za-z0-9.-]+(?::[0-9]{1,5})?',x)
            or x.endswith('.') for x in extra):
         raise SystemExit('HOLD: CP08_ALLOWED_BROWSER_ORIGINS requires exact HTTPS origins')
+    custody_flag=os.getenv('CP08_CUSTODY_EXPORT_ONCE','').strip()
+    custody_token=os.getenv('JM_BODIES_CUSTODY_TOKEN','')
+    if custody_flag not in ('','0','1'):
+        raise SystemExit('HOLD: CP08_CUSTODY_EXPORT_ONCE must be 0 or 1')
+    if custody_flag=='1' and (len(custody_token)<32 or custody_token==token):
+        raise SystemExit('HOLD: independent JM_BODIES_CUSTODY_TOKEN of >=32 characters required')
     atlas=server.Atlas(args.db);cp07.init(atlas)
-    with Gateway((args.host,args.port),atlas,token,explicit,extra) as g:
+    with Gateway((args.host,args.port),atlas,token,explicit,extra,
+                 custody_enabled=custody_flag=='1',custody_token=custody_token) as g:
         print('CP08 ready /health /fold /mcp',file=sys.stderr,flush=True)
         g.serve_forever()
 if __name__=='__main__':main()

@@ -55,6 +55,7 @@ Therefore:
 | AIRBORNE browser/web carrier | Precedent carrier | HOST_CONTACT | sovereign-agent browser wrapper + owner-device |
 | GitHub Actions | Execution carrier | FUNCTION | not an owner/device identity surface |
 | Android / phone | Host adapter | TRANSPORT | compiled APK carries canonical session/runtime contract; Android execution + owner-device remain OPEN |
+| **Android / Termux Phone Commander** | **Separate host adapter** | **HOST_CONTACT** | Five guarded command types + owner-granted exact edit/restore and manual launcher proven on Samsung; automatic Android reboot, backup-byte audit and Codex remain OPEN; see `android/phone-commander/JM_PHONE_COMMANDER_CP09_OWNER_PROOF.md` |
 | Codex / repository agent | Host adapter | FUNCTION | repository wrapper executes against portable core; exact Codex host contact remains OPEN |
 | Cloud execution/deployment | Route family | DECLARED | exact provider/recipient adapter proof |
 | Other compatible host | Future route | DECLARED | thinnest adapter + complete conformance run |

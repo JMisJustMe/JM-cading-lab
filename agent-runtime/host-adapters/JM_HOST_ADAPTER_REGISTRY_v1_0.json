@@ -1,6 +1,6 @@
 {
   "schema": "JM.HostAdapterRegistry/1.0",
-  "date": "2026-10-04",
+  "date": "2026-10-28",
   "state": "CURRENT_CONFORMANCE_MATRIX",
   "authority_class": "EVIDENCE_TYPED_ADAPTER_REGISTRY",
   "contract": "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json",
@@ -156,6 +156,34 @@
       "boundary": "Android debug APK transport/build proof only. The package carries the canonical runtime contract and a deterministic session capsule; Android execution, physical install and owner-device contact remain OPEN.",
       "next_gate": "Run exact Android host contact (emulator or device) and verify the capsule is loaded before advancing beyond TRANSPORT.",
       "executable": "agent-runtime/host-adapters/android/app"
+    },
+    {
+      "id": "android-termux-phone-commander",
+      "name": "JM Phone Commander v0.1 — existing JM core via owner-operated Android/Termux",
+      "adapter_class": "HOST_ADAPTER",
+      "target_surface": "physical Samsung/Termux + private owner GitHub Issue mailbox (manual on-demand execution)",
+      "proof_level": "HOST_CONTACT",
+      "executable": "agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
+        "authority_preservation": "PASS",
+        "routing_meaning": "PASS",
+        "host_contact": "PASS",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "agent-runtime/host-adapters/android/phone-commander/JM_PHONE_COMMANDER_CP09_OWNER_PROOF.md",
+        "agent-runtime/host-adapters/android/phone-commander/JM_PHONE_COMMANDER_ADAPTER_v0_1.json",
+        "agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py",
+        "agent-runtime/host-adapters/android/phone-commander/jmphone-reenter.sh",
+        ".github/workflows/jm-phone-commander-conformance.yml"
+      ],
+      "boundary": "Nine privately persisted owner-phone receipts: all five bounded commands, negative protected-path refusal, reversible owner-granted README edit, independent restored-source readback, and shell-invoked launcher. This is NOT the separate Android APK carrier. HOST_CONTACT does not certify unattended reboot, cryptographic device identity, OS-backed token storage, backup bytes, independent Codex or Work invocation.",
+      "next_gate": "Owner-controlled independent boot/restart and backup file inspection; verify Android battery/credential strategy before any opt-in background service. Exact new hosts require their own proof."
     },
     {
       "id": "codex-repository-agent-adapter",

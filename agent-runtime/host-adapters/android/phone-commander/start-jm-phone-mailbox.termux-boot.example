@@ -1,0 +1,14 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# JM Phone Commander — OPTIONAL Termux:Boot example only.
+# Not installed by GitHub, not enabled automatically, not a proof of Android reboot survival.
+# Owner must install and open Termux:Boot once, review battery and GitHub credentials,
+# then deliberately copy this template under ~/.termux/boot/ if desired.
+set -eu
+umask 077
+LAUNCHER="$HOME/jmphone"
+STATE="$HOME/.config/jm-phone-commander"
+if [ ! -f "$LAUNCHER" ]; then exit 2; fi
+mkdir -p "$STATE"
+# No wake lock by default; do not defeat Android battery or user controls.
+# Shell redirects only non-secret status and mailbox event summaries.
+exec sh "$LAUNCHER" mailbox --loop --interval 90 >> "$STATE/termux-boot-mailbox.log" 2>&1

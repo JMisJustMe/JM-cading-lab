@@ -21,6 +21,15 @@ REL = "release"
 SOURCE_ARCHIVE = "JMISJUSTME_LIVING_ESTATE_v1.5_H1_ANDROID_CARRIER_SOURCE.zip"
 RECEIPT = "ANDROID_CARRIER_BUILD_RECEIPT.json"
 PRODUCTS = ("debugApk", "proofAab", "universalApk")
+# The original frozen ZIP has only eight members; later current sources are
+# a separate, unpromoted source edition and must not be silently collapsed.
+HISTORIC_MEMBERS = (
+    "README.md", "settings.gradle.kts", "build.gradle.kts",
+    "gradle.properties", "app/build.gradle.kts",
+    "app/src/main/AndroidManifest.xml",
+    "app/src/main/res/values/styles.xml",
+    "app/src/main/java/com/jmisjustme/livingestate/MainActivity.java",
+)
 SOURCE_MEMBERS = (
     "README.md", "PRE_PHONE_VERIFICATION.md",
     "settings.gradle.kts", "build.gradle.kts", "gradle.properties",
@@ -37,6 +46,13 @@ def fail(reason):
             "rebuild": False, "release_authorised": False,
             "native_retirement_authorised": False, "native_mutations": 0,
             "quota_savings_claimed_bytes": 0}
+
+
+def source_hold(reason, archived):
+    out = fail(reason)
+    out.update(status="SOURCE_EDITION_HOLD", archived_members=archived,
+               boundary="Original frozen product retained; distinct later source requires separate version and signer.")
+    return out
 
 
 def file_bytes(path, *, limit=30_000_000):
@@ -92,20 +108,29 @@ def admission(project):
         with zipfile.ZipFile(io.BytesIO(archive)) as z:
             infos = z.infolist()
             names = [i.filename for i in infos]
-            if (len(names) != len(set(names)) or len(names) != len(SOURCE_MEMBERS) + 1
-                    or set(names) != set(SOURCE_MEMBERS) | {"CONTACT_PACK_MANIFEST.json"}):
-                return fail("SOURCE_ARCHIVE_MEMBER_SET_CHANGED")
+            original_members = set(SOURCE_MEMBERS) | {"CONTACT_PACK_MANIFEST.json"}
+            if len(names) != len(set(names)):
+                return fail("DUPLICATE_SOURCE_ARCHIVE_MEMBERS")
             if any(i.is_dir() or i.file_size > 25_000_000 or
                    PurePosixPath(i.filename).is_absolute() or
                    ".." in PurePosixPath(i.filename).parts for i in infos):
                 return fail("UNSAFE_SOURCE_ARCHIVE")
             if z.testzip() is not None:
                 return fail("SOURCE_ARCHIVE_CRC_REFUSAL")
+            if set(names) == set(HISTORIC_MEMBERS):
+                changed = []
+                for name in HISTORIC_MEMBERS:
+                    if z.read(name) != file_bytes(project / name):
+                        changed.append(name)
+                return source_hold("FROZEN_EIGHT_MEMBER_SOURCE_NOT_CURRENT:" +
+                                   ",".join(changed[:5]), len(HISTORIC_MEMBERS))
+            if set(names) != original_members:
+                return fail("UNKNOWN_SOURCE_ARCHIVE_MEMBER_SET")
             # Compare actual authorial source directly. Rebuilt run receipts are
             # *not* authorial source and must not trigger a needless full rebuild.
             for name in SOURCE_MEMBERS:
                 if z.read(name) != file_bytes(project / name):
-                    return fail("CHANGED_AUTHORIAL_SOURCE:" + name)
+                    return source_hold("CHANGED_AUTHORIAL_SOURCE:" + name, len(SOURCE_MEMBERS))
         return {
             "schema": SCHEMA, "status": "REUSE_FROZEN_H1",
             "rebuild": False, "release_authorised": False,
@@ -143,7 +168,7 @@ def main():
             stream.write("release_authorised=false\n")
             stream.write("status=" + result["status"] + "\n")
     print(json.dumps(result, sort_keys=True, indent=2))
-    return 0 if result["status"] in ("REUSE_FROZEN_H1", "CI_ONLY_MANUAL_BUILD") else 2
+    return 0 if result["status"] in ("REUSE_FROZEN_H1", "CI_ONLY_MANUAL_BUILD", "SOURCE_EDITION_HOLD") else 2
 
 
 if __name__ == "__main__":

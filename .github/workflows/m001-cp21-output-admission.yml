@@ -1,0 +1,22 @@
+name: M001 CP21 Output Admission
+on:
+  push:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_OUTPUT_ADMISSION_CP21*.py'
+      - '.github/workflows/m001-cp21-output-admission.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_OUTPUT_ADMISSION_CP21*.py'
+      - '.github/workflows/m001-cp21-output-admission.yml'
+jobs:
+  m001-cp21:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original M001 admission regression
+        run: python agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py --self-test
+      - name: CP21 source-pinned anti-bloat regression
+        run: python agent-runtime/host-adapters/storage-admission/JM_M001_OUTPUT_ADMISSION_CP21_TESTS.py

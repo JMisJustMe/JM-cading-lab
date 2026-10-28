@@ -47,7 +47,8 @@ class OperatorOnlyCustody(unittest.TestCase):
         env.update({'JM_BODIES_TOKEN':BEARER,
             'JM_BODIES_CUSTODY_TOKEN':grant,
             'CP08_CUSTODY_EXPORT_ONCE':'1' if enabled else '0',
-            'CP08_PUBLIC_ORIGIN':'http://127.0.0.1:'+str(self.port)})
+            'CP08_PUBLIC_ORIGIN':'http://127.0.0.1:'+str(self.port),
+            'CP08_ALLOWED_BROWSER_ORIGINS':'https://gemini.google.com,https://chatgpt.com'})
         self.proc=subprocess.Popen([sys.executable,str(ROOT/'cp08_gateway.py'),
             '--host','127.0.0.1','--port',str(self.port),
             '--db',str(self.db)],cwd=ROOT,env=env,
@@ -100,6 +101,10 @@ class OperatorOnlyCustody(unittest.TestCase):
         code,headers,data=self.request()
         self.assertEqual(code,404)
         self.assertNotIn(b'SQLite',data)
+        # Even a permitted MCP browser origin may not inspect custody refusals.
+        code,browser_headers,_=self.request(origin='https://gemini.google.com')
+        self.assertEqual(code,404)
+        self.assertNotIn('Access-Control-Allow-Origin',browser_headers)
         self.assertEqual(before,atlas_custody.sha_file(self.db))
 
     def test_01_enabled_requires_both_secrets(self):
@@ -142,9 +147,15 @@ class OperatorOnlyCustody(unittest.TestCase):
     def test_04_browser_origins_and_cookies_refused(self):
         self.start(enabled=True)
         for kw in [{'origin':self.origin},{'origin':'https://gemini.google.com'},
-                   {'cookie':'session=anything'}]:
-            code,_,_=self.request(**kw)
+                   {'origin':'https://chatgpt.com'},{'cookie':'session=anything'}]:
+            code,headers,_=self.request(**kw)
             self.assertEqual(code,403)
+            self.assertNotIn('Access-Control-Allow-Origin',headers)
+        # An admitted origin with missing credentials must also never obtain
+        # browser CORS authority on the private raw-database export path.
+        code,headers,_=self.request(origin='https://gemini.google.com',bearer=None)
+        self.assertEqual(code,403)
+        self.assertNotIn('Access-Control-Allow-Origin',headers)
         self.assertEqual(self.request()[0],200)
 
     def test_05_get_query_or_body_cannot_export(self):
@@ -211,6 +222,31 @@ class OperatorOnlyCustody(unittest.TestCase):
             capture_output=True,text=True,timeout=8)
         self.assertNotEqual(process.returncode,0)
         self.assertIn('independent JM_BODIES_CUSTODY_TOKEN',process.stderr)
+
+
+    def test_11_mcp_browser_cors_still_granted_without_custody_access(self):
+        self.start(enabled=True)
+        allowed='https://gemini.google.com'
+        preflight=urllib.request.Request(self.origin+'/mcp',method='OPTIONS',headers={
+            'Origin':allowed,
+            'Access-Control-Request-Method':'POST',
+            'Access-Control-Request-Headers':'authorization,content-type'})
+        with urllib.request.urlopen(preflight,timeout=10) as response:
+            self.assertEqual(response.status,204)
+            self.assertEqual(response.headers.get('Access-Control-Allow-Origin'),allowed)
+        # Existing genuine MCP tool list remains accessible with original bearer.
+        payload={'jsonrpc':'2.0','id':12,'method':'tools/list','params':{}}
+        post=urllib.request.Request(self.origin+'/mcp',data=json.dumps(payload).encode(),
+             headers={'Authorization':'Bearer '+BEARER,
+                      'Content-Type':'application/json','Origin':allowed})
+        with urllib.request.urlopen(post,timeout=10) as response:
+            self.assertEqual(response.status,200)
+            self.assertEqual(response.headers.get('Access-Control-Allow-Origin'),allowed)
+            self.assertEqual({t['name'] for t in json.load(response)['result']['tools']},
+                {'atomic_contact_history','atomic_contact_execute'})
+        code,headers,_=self.request(origin=allowed)
+        self.assertEqual(code,403)
+        self.assertNotIn('Access-Control-Allow-Origin',headers)
 
 
 if __name__=='__main__':

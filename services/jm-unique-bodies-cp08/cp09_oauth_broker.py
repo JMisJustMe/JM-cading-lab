@@ -12,6 +12,7 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlsplit,parse_qs
 from cp09_oauth import consent_form,parse_form
+from cp10_dual_era import CP10ProtocolError, prepare, discover, adapt_response
 from cp09_remote_admission import RemoteAdmission,UPSTREAM
 ALLOWED={'atomic_contact_execute','atomic_contact_history'}
 TRUSTED={'https://chatgpt.com','https://gemini.google.com'}
@@ -163,6 +164,12 @@ class Handler(BaseHTTPRequestHandler):
                 if 'id' in request:
                     return self.reply(400,{'error':'NOTIFICATION_ID_HOLD'})
                 return self.empty_response(202)
+            try:
+                modern,forwarded=prepare(request,self.headers)
+            except CP10ProtocolError as error:
+                return self.reply(error.status,error.rpc(request.get('id')))
+            if modern and method=='server/discover':
+                return self.reply(200,discover(request['id'],'JM Unique Bodies CP09 OAuth Transport','0.10.0-cp10'))
             if method not in ('initialize','ping','tools/list','tools/call'):
                 return self.reply(403,{'error':'RPC_METHOD_HOLD'})
             if method=='tools/call':
@@ -172,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
                 name=params['name']
                 needed='cp08:execute' if name=='atomic_contact_execute' else 'cp08:read'
                 if needed not in scope:return self.reply(403,{'error':'OAUTH_SCOPE_HOLD'})
-            raw=json.dumps(request,separators=(',',':')).encode()
+            raw=json.dumps(forwarded,separators=(',',':')).encode()
             upstream_req=urllib.request.Request(self.server.admission.upstream,data=raw,method='POST',
                 headers={'Content-Type':'application/json','Authorization':'Bearer '+owner,'Accept':'application/json'})
             with urllib.request.urlopen(upstream_req,timeout=35) as result:
@@ -188,7 +195,7 @@ class Handler(BaseHTTPRequestHandler):
                         x for x in response['result'].get('tools',[]) if
                         (x['name']=='atomic_contact_history' and 'cp08:read' in scope) or
                         (x['name']=='atomic_contact_execute' and 'cp08:execute' in scope)]
-                return self.reply(200,response)
+                return self.reply(200,adapt_response(response,modern))
         except (ValueError,TypeError,UnicodeDecodeError,json.JSONDecodeError):
             return self.reply(400,{'error':'INVALID_BOUNDED_RPC'})
         except (urllib.error.URLError,OSError):

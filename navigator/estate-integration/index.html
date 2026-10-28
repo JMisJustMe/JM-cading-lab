@@ -6,7 +6,30 @@
 <meta name="theme-color" content="#080b10">
 <title>JM Estate Integration v1</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#080b10;color:#f5f7fb}*{box-sizing:border-box}body{margin:0}main{width:min(980px,100%);margin:auto;padding:20px}.hero,.card{border:1px solid #273140;border-radius:18px;background:#101720}.hero{padding:24px}.hero h1{margin:.1em 0;font-size:clamp(2rem,8vw,4.6rem);line-height:.92}.muted{color:#aab5c5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}.card{padding:15px}.pill{display:inline-block;border:1px solid #344258;border-radius:999px;padding:4px 8px;font-size:.72rem}.ok{color:#8df3ad}.hold{color:#ffd27a}a{color:#9de9ff;word-break:break-word}.route{display:block;text-decoration:none}.route:hover{border-color:#65dffc}.k{font-size:.72rem;color:#93a1b5;text-transform:uppercase;letter-spacing:.06em}.v{font-weight:800;margin:.25rem 0}.top{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block;padding:10px 12px;border-radius:12px;background:#172337;border:1px solid #30405c;color:#fff;text-decoration:none;font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#070a0f;padding:12px;border-radius:12px;border:1px solid #273140}</style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#080b10;color:#f5f7fb}*{box-sizing:border-box}body{margin:0}main{width:min(980px,100%);margin:auto;padding:20px}.hero,.card{border:1px solid #273140;border-radius:18px;background:#101720}.hero{padding:24px}.hero h1{margin:.1em 0;font-size:clamp(2rem,8vw,4.6rem);line-height:.92}.muted{color:#aab5c5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}.card{padding:15px}.pill{display:inline-block;border:1px solid #344258;border-radius:999px;padding:4px 8px;font-size:.72rem}.ok{color:#8df3ad}.hold{color:#ffd27a}a{color:#9de9ff;word-break:break-word}.route{display:block;text-decoration:none}.route:hover{border-color:#65dffc}.k{font-size:.72rem;color:#93a1b5;text-transform:uppercase;letter-spacing:.06em}.v{font-weight:800;margin:.25rem 0}.top{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block;padding:10px 12px;border-radius:12px;background:#172337;border:1px solid #30405c;color:#fff;text-decoration:none;font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#070a0f;padding:12px;border-radius:12px;border:1px solid #273140}
+/* Existing integration header wraps on narrow devices. This is layout, not concealment. */
+.hero .pill,#routes .k,#routes .v,#routes .muted{max-width:100%;overflow-wrap:anywhere;word-break:break-word;white-space:normal}
+#routes .card{min-width:0;max-width:100%}
+/* JM body-contact projection. Existing source registries stay authoritative. */
+#bodyContact{margin-top:18px;min-width:0;max-width:100%;overflow-wrap:anywhere}.bodytools{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
+.bodytools label{display:flex;flex:1 1 180px;min-width:0;max-width:100%;flex-direction:column;gap:5px;overflow-wrap:anywhere}
+.bodytools label input,.bodytools label select{box-sizing:border-box;display:block;width:100%;max-width:100%;min-width:0;flex:none}
+#bodyContact .bodylist,#bodyContact .bodyitem,#bodyContact .bodyitem>*{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.bodytools input,.bodytools select{flex:1 1 220px;min-width:0;max-width:100%;padding:12px;color:#f4f9ff;background:#0b111b;border:1px solid #40516b;border-radius:12px;font:inherit}
+.bodytools input:focus-visible,.bodytools select:focus-visible,.bodyitem a:focus-visible{outline:3px solid #8deaff;outline-offset:3px}
+.bodylist{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:11px;margin-top:14px}
+.bodyitem{border:1px solid #28384d;border-radius:17px;padding:15px;background:#101923}
+.bodyitem h3{margin:6px 0;font-size:1.04rem;line-height:1.24;overflow-wrap:anywhere}
+.bodyitem p{font-size:.87rem;color:#b5c6d7;line-height:1.45;overflow-wrap:anywhere}
+.bodyitem small{display:block;color:#98b7d0;margin-top:8px;overflow-wrap:anywhere}
+.bodyitem a{color:#98efff;font-weight:800}
+.bodyitem .category{font-size:.73rem;color:#83eeb4;letter-spacing:.055em;text-transform:uppercase}
+.bodyitem .branch{color:#f4d28c;font-size:.76rem;line-height:1.35}
+#bodySummary{margin-top:10px;color:#b9cadd;font-size:.9rem}
+#bodyFailures{color:#f3d18a;margin:8px 0;font-size:.88rem;white-space:pre-wrap}
+#bodyContact .notice{border-left:3px solid #e8c471;padding-left:12px;color:#bdc9d8}
+
+</style>
 </head>
 <body>
 <main>
@@ -17,6 +40,20 @@
 <div class="top"><a class="btn" href="../../">Estate</a><a class="btn" href="../">Navigator</a><a class="btn" href="../../recovery/">Recovery</a></div>
 </section>
 <section class="grid" id="routes"></section>
+
+<section class="hero" id="bodyContact" aria-labelledby="bodyContactTitle">
+  <div class="k">Sovereign body contact · original registries · no new copies</div>
+  <h2 id="bodyContactTitle">All relevant bodies, one existing Estate route.</h2>
+  <p class="muted">Search the public-safe source references already held by JM. One card per logical body, with independently purposeful versions retained as branches. A House link is an entry route, not proof of a standalone live deployment. Private originals are never published by this page.</p>
+  <div class="bodytools">
+    <label for="bodyFind" class="k">Find a body <input id="bodyFind" type="search" placeholder="Game, coding body, app, theory, tool…" autocomplete="off"></label>
+    <label for="bodyType" class="k">Working field <select id="bodyType"><option value="all">All bodies</option></select></label>
+  </div>
+  <div id="bodySummary" role="status" aria-live="polite">Loading original Estate sources…</div>
+  <div id="bodyFailures" role="status"></div>
+  <div id="bodyList" class="bodylist" aria-label="Unique JM body contact routes"></div>
+  <p class="notice">Read-through only. The original body and editable source remain at their authoritative custody location. Published links do not imply owner writeback, cross-device persistence, complete public source, or a completed play/release test.</p>
+</section>
 <section class="card"><div class="k">Bridge trace</div><pre id="trace">Waiting for shared bridge…</pre></section>
 </main>
 <script defer src="./bridge.js" data-jm-surface="estate-integration"></script>
@@ -35,5 +72,131 @@ window.addEventListener('jm-estate-integration-hold',e=>{
   document.getElementById('trace').textContent=e.detail.error;
 });
 </script>
+
+<script id="jm-estate-body-projection-v1">
+(()=>{
+'use strict';
+const root=new URL('../../',location.href);
+const rows=new Map();
+const inputs=['registry/estate-map.json','registry/estate-head-public-current.json','games-beyond/registry.json','apps/index.html','coding-estate/everybody/body-registry.json','coding-estate/everybody/body-registry-extension-01.json','coding-estate/everybody/body-registry-extension-02.json','registry/theory-wing.json','registry/lyrics-house.json','estate-publication/apps-tools-convergence/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY_v0_1.json'];
+const failures=[];
+const counts={};
+const core=new Set(['index.html','navigator/','apps/','theory/','lyrics/','recovery/','career/']);
+const byId=id=>document.getElementById(id);
+function localRoute(value){
+  if(typeof value!=='string'||!value||value.startsWith('/')||value.includes('..')||/^[a-z]+:/i.test(value))return null;
+  const url=new URL(value,root);
+  return url.origin===root.origin?url.href:null;
+}
+function cleanPath(v){return String(v||'').replace(/^\/+/,'').replace(/^\.\//,'');}
+function remember(key,group,name,where,status,detail,origin,version){
+  if(!name||!group)return;
+  const href=localRoute(cleanPath(where));
+  const id=group+':'+String(key).toLowerCase();
+  const item=rows.get(id)||{id,group,name:String(name),href,states:[],details:[],sources:[],versions:[]};
+  if(href&&!item.href)item.href=href;
+  if(status&&!item.states.includes(String(status)))item.states.push(String(status));
+  if(detail&&!item.details.includes(String(detail)))item.details.push(String(detail));
+  if(origin&&!item.sources.includes(origin))item.sources.push(origin);
+  if(version&&!item.versions.includes(String(version)))item.versions.push(String(version));
+  rows.set(id,item);
+}
+function door(x,source){
+  const path=cleanPath(x.path);
+  if(!path||core.has(path)||core.has(path.replace(/index\.html$/,'')))return;
+  remember(path,'Public routes',x.body||x.name,path,x.state||'RECORDED',null,source);
+}
+function registerApps(html){
+  const marker=html.match(/const APPS=(\[[\s\S]*?\]);\s*const APP_STAT_COUNTS=/);
+  if(!marker)throw Error('Apps House inline public register changed format (HOLD: not guessed)');
+  const original=JSON.parse(marker[1]);
+  original.forEach(a=>{
+    if(!Array.isArray(a)||a.length<4)return;
+    remember(a[0].toLowerCase(),'Apps & tools',a[0],'apps/',a[3],a[2],'apps/index.html',a[1]);
+  });
+  return original.length;
+}
+async function retrieve(path){
+  // The existing public GitHub source is the authoritative workroom record;
+  // do not clone its source tree into the canonical Cloudflare deployment.
+  if(path.startsWith('estate-publication/apps-tools-convergence/')){
+    // Read the original file when the source host serves it; never accept an SPA
+    // HTML fallback as JSON, and never copy the workroom subtree to the public site.
+    try{
+      const original=await fetch(new URL(path,root),{cache:'no-store'});
+      if(original.ok && /application\/json/i.test(original.headers.get('content-type')||''))
+        return original.json();
+    }catch{}
+    const raw='https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/main/'+path;
+    const source=await fetch(raw,{cache:'no-store'});
+    if(!source.ok)throw Error('original GitHub source HTTP '+source.status);
+    return source.json();
+  }
+  const res=await fetch(new URL(path,root),{cache:'no-store',headers:{Accept:'application/json, text/html'}});
+  if(!res.ok)throw Error('HTTP '+res.status);
+  return path.endsWith('.html')?res.text():res.json();
+}
+async function consume(path){
+  try{
+    const data=await retrieve(path);
+    if(path==='registry/estate-map.json')data.live_github_routes.forEach(x=>door(x,path));
+    else if(path==='registry/estate-head-public-current.json')data.public_house_routes.forEach(x=>door(x,path));
+    else if(path==='games-beyond/registry.json')(data.registered_bodies||[]).forEach(x=>remember(x.id,'Games',x.name,'games-beyond/',x.stage,x.role,path,x.version));
+    else if(path==='apps/index.html'){counts[path]=registerApps(data);return;}
+    else if(path.includes('coding-estate/everybody/'))(data.bodies||[]).forEach(x=>remember(x.id,'Coding & runtimes',x.name,'coding-estate/everybody/',x.status,x.kind,path));
+    else if(path==='registry/theory-wing.json')(data.current_best_mounts||[]).forEach(x=>remember(x.id,'Theory',x.name,x.route,x.main_release,x.public_boundary,path,x.current_best));
+    else if(path==='registry/lyrics-house.json'){
+      (data.current_crown_pair||[]).forEach(x=>remember(x.name.toLowerCase(),'Music & lyrics',x.name,'lyrics/','PUBLIC PROJECTION',x.role,path,x.version));
+      (data.protected_branches||[]).forEach(x=>remember(x.name.toLowerCase(),'Music & lyrics',x.name,'lyrics/','PRIVATE SOURCE PROTECTED',x.status,path,x.version));
+    }
+    else if(path.includes('JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY'))(data.environments||[]).forEach(x=>remember(x.id,'Integrated workrooms',x.id.replace(/-/g,' '),x.path,'ASSISTANT-SIDE SOURCE',x.route,path));
+    counts[path]=Array.isArray(data.live_github_routes)?data.live_github_routes.length:
+      Array.isArray(data.public_house_routes)?data.public_house_routes.length:
+      Array.isArray(data.registered_bodies)?data.registered_bodies.length:
+      Array.isArray(data.bodies)?data.bodies.length:
+      Array.isArray(data.current_best_mounts)?data.current_best_mounts.length:
+      Array.isArray(data.environments)?data.environments.length:1;
+  }catch(error){failures.push(path+': '+String(error.message||error));}
+}
+function extraDoor(key,name,href,detail){
+  remember(key,'Public routes',name,href,'PUBLIC ACCESS ROUTE',detail,'existing Estate access');
+}
+function render(){
+  const list=byId('bodyList');
+  const wanted=byId('bodyFind').value.trim().toLowerCase();
+  const type=byId('bodyType').value;
+  const selected=[...rows.values()].filter(x=>(type==='all'||x.group===type)&&(!wanted||[x.name,x.group,x.states.join(' '),x.details.join(' '),x.versions.join(' ')].join(' ').toLowerCase().includes(wanted))).sort((a,b)=>a.group.localeCompare(b.group)||a.name.localeCompare(b.name));
+  list.replaceChildren();
+  const fragment=document.createDocumentFragment();
+  for(const x of selected){
+    const item=document.createElement('article');item.className='bodyitem';
+    const cat=document.createElement('div');cat.className='category';cat.textContent=x.group;item.appendChild(cat);
+    const h=document.createElement('h3');h.textContent=x.name;item.appendChild(h);
+    const info=document.createElement('p');info.textContent=x.details[0]||x.states[0]||'Source-registered';item.appendChild(info);
+    if(x.versions.length){const ver=document.createElement('p');ver.className='branch';ver.textContent=(x.versions.length>1?'Preserved branches ('+x.versions.length+'): ':'Registered version: ')+x.versions.join(' · ');item.appendChild(ver);}
+    const state=document.createElement('small');state.textContent='Recorded: '+(x.states.join(' · ')||'source reference')+' | source '+x.sources.join(' + ');item.appendChild(state);
+    if(x.href){const link=document.createElement('a');link.href=x.href;link.textContent=x.group==='Games'||x.group==='Apps & tools'||x.group==='Coding & runtimes'||x.group==='Music & lyrics'?'Enter authoritative House':'Open existing route';item.appendChild(link);}
+    fragment.appendChild(item);
+  }
+  list.appendChild(fragment);
+  const originN=Object.keys(counts).length;
+  const sourceN=Object.values(counts).reduce((a,b)=>a+b,0);
+  byId('bodySummary').textContent=selected.length+' shown · '+rows.size+' unique routed body identities · '+sourceN+' source records contacted from '+originN+'/'+inputs.length+' registries · '+failures.length+' source holds. Branches are not deleted or counted as duplicate bodies.';
+}
+byId('bodyFind').addEventListener('input',render);
+byId('bodyType').addEventListener('change',render);
+Promise.all(inputs.map(consume)).then(()=>{
+  extraDoor('access','JM Current Access Mesh','access/','Existing cross-House access.');
+  extraDoor('books','JM Books & Written Bodies','books/','Existing written-body projections; original manuscripts retain custody.');
+  extraDoor('visual-story','JM Comics & Visual Story','visual-story/','Existing visual-story and comic access routes.');
+  const select=byId('bodyType');
+  [...new Set([...rows.values()].map(x=>x.group))].sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;select.appendChild(o);});
+  byId('bodyFailures').textContent=failures.length?'Source holds — no inferred substitute:\n'+failures.join('\n'):'';
+  render();
+}).catch(error=>{byId('bodyFailures').textContent='Body contact HOLD: '+String(error.message||error);});
+window.JM_ESTATE_BODY_PROJECTION={schema:'JM.Estate.BodyContactProjection/1',getRows:()=>[...rows.values()].map(x=>({id:x.id,group:x.group,name:x.name,route:x.href,versions:[...x.versions],sources:[...x.sources]})),getHolds:()=>[...failures]};
+})();
+</script>
+
 </body>
 </html>

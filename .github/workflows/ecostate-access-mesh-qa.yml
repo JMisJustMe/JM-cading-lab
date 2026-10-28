@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'access/**'
+      - 'navigator/estate-integration/index.html'
       - 'books/**'
       - 'visual-story/**'
       - 'market-lab/**'
@@ -19,6 +20,7 @@ on:
     branches: [main]
     paths:
       - 'access/**'
+      - 'navigator/estate-integration/index.html'
       - 'books/**'
       - 'visual-story/**'
       - 'market-lab/**'
@@ -47,6 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           test -s access/index.html
+          grep -Fq 'jm-estate-body-projection-v1' navigator/estate-integration/index.html
           test -s books/index.html
           test -s visual-story/index.html
           test -s market-lab/index.html
@@ -80,7 +83,8 @@ jobs:
             ['/access/','One door.'],
             ['/books/','56 ≠ 98 ≠ 45'],
             ['/visual-story/','FIRST WATCHABLE SCENE'],
-            ['/market-lab/','JM Market Ecosystem Lab']
+            ['/market-lab/','JM Market Ecosystem Lab'],
+            ['/navigator/estate-integration/','All relevant bodies, one existing Estate route.']
           ];
           const viewports=[
             {name:'phone',width:390,height:844},
@@ -98,15 +102,33 @@ jobs:
                 const response=await page.goto('http://127.0.0.1:4178'+path,{waitUntil:'networkidle'});
                 const body=await page.textContent('body');
                 const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+                const overflowItems=overflow?await page.evaluate(()=>[...document.querySelectorAll('*')].filter(el=>el.getBoundingClientRect().right>document.documentElement.clientWidth+1).slice(0,7).map(el=>({tag:el.tagName,id:el.id,cls:String(el.className).slice(0,60),right:Math.round(el.getBoundingClientRect().right)}))):[];
+                if(path==='/navigator/estate-integration/'){
+                  await page.waitForFunction(()=>document.querySelector('#bodySummary')?.textContent?.includes('unique routed body identities'),{timeout:15000});
+                  const audit=await page.evaluate(()=>{
+                    const api=window.JM_ESTATE_BODY_PROJECTION;
+                    const items=api?.getRows()||[];
+                    const keys=items.map(x=>x.id);
+                    const app=items.find(x=>x.id==='Apps & tools:benefitmerge');
+                    return {count:items.length,unique:keys.length===new Set(keys).size,
+                      appsBranches:app?.versions?.length||0,holds:api?.getHolds()||[],
+                      member:items.some(x=>x.group==='Games'),coder:items.some(x=>x.group==='Coding & runtimes'),
+                      song:items.some(x=>x.group==='Music & lyrics'),theory:items.some(x=>x.group==='Theory')};
+                  });
+                  if(audit.count<90||!audit.unique||audit.appsBranches!==2||audit.holds.length||
+                      !audit.member||!audit.coder||!audit.song||!audit.theory){
+                    throw new Error(vp.name+' sovereign body projection gate failed: '+JSON.stringify(audit));
+                  }
+                }
                 if(!response?.ok()||!body.includes(needle)||overflow||errors.length){
-                  throw new Error(`${vp.name} ${path} failed: status=${response?.status()} needle=${body.includes(needle)} overflow=${overflow} errors=${errors.join('|')}`);
+                  throw new Error(`${vp.name} ${path} failed: status=${response?.status()} needle=${body.includes(needle)} overflow=${overflow} offenders=${JSON.stringify(overflowItems)} errors=${errors.join('|')}`);
                 }
                 pass++;
                 await page.close();
               }
             }
             await browser.close();
-            if(pass!==8) throw new Error('Expected 8 contacts, got '+pass);
-            console.log('DING — CURRENT ACCESS MESH: 8/8 browser contacts PASS · 100%');
+            if(pass!==10) throw new Error('Expected 10 contacts, got '+pass);
+            console.log('DING — CURRENT ACCESS MESH AND BODY CONTACT: 10/10 browser contacts PASS · 100%');
           })();
           NODE

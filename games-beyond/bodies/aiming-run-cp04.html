@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Aiming Run — CP04 Original Shot Contact</title>
+<style>
+:root{color-scheme:dark;--bg:#080b12;--panel:#131c2d;--line:#304563;--txt:#f3f6ff;--muted:#b6c5df;--hot:#6ce3d5;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% -10%,#1c3450,var(--bg) 55%);color:var(--txt);font:16px/1.4 system-ui,sans-serif}
+main{width:min(1180px,100%);margin:auto;padding:10px 12px 28px}
+header,.panel{padding:14px;border:1px solid var(--line);border-radius:17px;background:var(--panel);margin-bottom:10px}
+header h1{margin:0;font-size:clamp(1.35rem,4vw,2.1rem)}p{margin:7px 0;color:var(--muted);line-height:1.5}
+a{color:var(--hot)}.role{font-size:.85rem;color:var(--gold);font-weight:700}
+#game{width:100%;height:clamp(610px,82vh,920px);border:1px solid var(--line);border-radius:14px;background:#050810}
+h2{margin:0 0 7px;font-size:1.1rem}label{font-weight:700;font-size:.88rem}
+form{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+form>div{min-width:0;display:grid;gap:4px}
+input{width:100%;min-width:0;padding:12px 8px;min-height:45px;background:#090e19;color:var(--txt);border:1px solid #4a5f80;border-radius:9px;font:inherit}
+.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+button{min-height:48px;flex:1 1 220px;border:1px solid #6685ad;border-radius:12px;padding:9px 12px;background:#183249;color:white;font:800 1rem system-ui;cursor:pointer}
+button.primary{background:var(--hot);border-color:var(--hot);color:#092322}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+pre{white-space:pre-wrap;word-break:break-word;background:#090e19;border:1px solid #3b5272;border-radius:11px;padding:11px;max-height:330px;overflow:auto}
+.pass{color:#7bf9b5}.hold{color:#ffb1b8}
+@media(max-width:720px){main{padding:8px}header,.panel{padding:11px}form{grid-template-columns:repeat(2,minmax(0,1fr))}#game{height:70vh;min-height:600px}}
+</style></head><body><main>
+<header><div class="role">JM GAMES&BEYOND × JM CODING ESTATE — CP04 original-shot recipient workroom</div>
+<h1>Aiming Run — real gameplay event recipient</h1>
+<p>Play the original JM Aiming Run directly below. The optional control panel changes its <strong>live target-motion speed</strong> through Route-Code → StateField → Formula-Born Code → Game-CODING. No game score or simulated hit is manufactured.</p>
+<p><a href="aiming-run-v0-1a.html">Open the original unchanged Aiming Run by itself</a> · Original source stays sovereign.</p></header>
+<iframe id="game" title="Original playable Aiming Run v0.1A" src="aiming-run-v0-1a.html" loading="eager"></iframe>
+<section class="panel" aria-labelledby="controls-title">
+<h2 id="controls-title">CP03 · Controlled coding-to-game contact</h2>
+<p>Adjust source inputs, then apply a bounded pressure change to this game's current track. Changes are reversible, only when the game's run is not in motion. All normal aiming, physics and scoring remain the game's own.</p>
+<form id="inputs" onsubmit="return false">
+<div><label for="energy">Energy</label><input id="energy" name="energy" type="number" min="0" max="100" step="1" value="3"></div>
+<div><label for="by">Add pressure</label><input id="by" name="by" type="number" min="-100" max="100" step="1" value="5"></div>
+<div><label for="threshold">Threshold</label><input id="threshold" name="threshold" type="number" min="0" max="1000" value="7"></div>
+<div><label for="points">CP02 only points</label><input id="points" name="points" type="number" min="0" max="100" step="1" value="2"></div>
+<div><label for="team">Source team label</label><input id="team" name="team" type="text" maxlength="24" value="bird" spellcheck="false"></div>
+</form>
+<div class="controls"><button type="button" class="primary" disabled id="apply">Apply real target-motion delta</button><button type="button" disabled id="restore">Restore game track</button></div>
+<p id="status" role="status" aria-live="polite">Recovering original game, native registry and Current-64 source authority…</p>
+<pre id="receipt" aria-label="Recipient evidence and state comparison">No game recipient mutation claimed.</pre>
+<p><strong>Scope:</strong> This is a governed JS/browser companion, not a fresh physical Fold PASS, APK, production rollout, permanent game change or online multiplayer. The original playable HTML stays unchanged.</p>
+</section>
+<section class="panel" aria-labelledby="shot-contact-title">
+<h2 id="shot-contact-title">CP04 · Original shot → real target response</h2>
+<p>Arm contact, start the original game, then <strong>touch the cyan launcher, pull back and release</strong>. Only the original game's actual \`shot_release\` event and continuous receipt chain can drive the JM coding pipeline. The game's own target amplitude changes while the real game is playing.</p>
+<div class="controls"><button type="button" class="primary" id="arm-shot" disabled>Arm next genuine shot</button><button type="button" id="restore-shot" disabled>Restore amplitude after pausing</button></div>
+<p id="shot-status" role="status" aria-live="polite">Recovering CP04 event-contact authority…</p>
+<pre id="shot-receipt" aria-label="Original gameplay event and mechanic effect">No original gameplay event consumed. No hit, score or shot manufactured.</pre>
+<p class="role">One shot can be consumed once. Player scoring, collisions, aim, launcher and hit mechanics belong exclusively to the original game. Pause the game before restoring the amplitude.</p>
+</section></main>
+<script type="module">
+import {loadFederatedRegistry} from '../../coding-estate/everybody/registry-loader.mjs';
+import {reconcileCodingEstate} from '../../coding-estate/everybody/current-64-identity-rail.mjs';
+import {specialistPrograms,executeSpecialistLine} from '../../coding-estate/everybody/specialist-execution-cp02.mjs';
+import {applyAimingRunCP03,restoreAimingRunCP03} from './aiming-run-cp03-recipient.mjs';
+import {applyOriginalShotResponseCP04,restoreOriginalShotResponseCP04} from './aiming-run-cp04-shot-contact.mjs';
+const $=id=>document.getElementById(id),frame=$('game'),apply=$('apply'),restore=$('restore'),status=$('status'),receipt=$('receipt');
+let native,current,ready=false;
+function game(){try{return frame.contentWindow?.AimingRun??null}catch{return null}}
+function readInputs(){
+ const v={};for(const k of ['energy','by','threshold','points']){const input=$(k);if(input.value.trim()==='')throw Error('EMPTY_'+k);v[k]=Number(input.value)}
+ v.team=$('team').value;return v;
+}
+function updateButtons(){apply.disabled=!ready||!game();restore.disabled=!ready||!game()}
+frame.addEventListener('load',()=>{updateButtons();if(game())status.textContent=ready?'Original Aiming Run ready. Governed coding route ready.':'Original Aiming Run ready; recovering coding authority.';else status.textContent='HOLD: actual original game window not found.'});
+(async()=>{
+ try{
+  native=await loadFederatedRegistry(['../../coding-estate/everybody/body-registry.json','../../coding-estate/everybody/body-registry-extension-01.json','../../coding-estate/everybody/body-registry-extension-02.json']);
+  const urls=['../../coding-estate/JM_CODING_ESTATE_CURRENT_64.json','../../coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'];
+  const res=await Promise.all(urls.map(p=>fetch(p,{cache:'no-store'})));
+  if(res.some(x=>!x.ok))throw Error('SOURCE_FETCH_HOLD');
+  [current]=await Promise.all(res.map(x=>x.json())).then(([c,p])=>{reconcileCodingEstate(native,c,p);return [c,p]});
+  ready=true;updateButtons();status.textContent=game()?'Ready: real Aiming Run and governed JM coding authority loaded.':'HOLD: source loaded but original game not found.';
+ }catch(error){ready=false;updateButtons();status.textContent='HOLD: '+String(error.message||error)}
+})();
+function show(result){receipt.textContent=JSON.stringify(result,null,2);receipt.className=result.ok?'pass':'hold';status.textContent=(result.ok?'CONTACT VERIFIED: ':'HOLD: ')+result.status}
+apply.addEventListener('click',()=>{
+ if(!ready||!game()){show({ok:false,status:'AUTHORITY_OR_GAME_NOT_READY'});return}
+ try{
+  const programs=specialistPrograms(native,readInputs());
+  const produced=executeSpecialistLine(programs,native,current);
+  const result=applyAimingRunCP03(produced,game());
+  show(result);
+ }catch(error){show({ok:false,status:'BUILDER_HOLD',diagnostic:String(error.message||error)})}
+});
+restore.addEventListener('click',()=>show(restoreAimingRunCP03(game())));
+const armShot=$('arm-shot'),restoreShot=$('restore-shot'),shotStatus=$('shot-status'),shotReceipt=$('shot-receipt');
+let shotTimer=null;
+function renderShot(out){shotReceipt.textContent=JSON.stringify(out,null,2);shotReceipt.className=out.ok?'pass':'hold';shotStatus.textContent=(out.ok?'CONTACT VERIFIED: ':'HOLD: ')+out.status;}
+function stopArm(){if(shotTimer!==null){clearInterval(shotTimer);shotTimer=null;}armShot.textContent='Arm next genuine shot';}
+function refreshShot(){armShot.disabled=!ready||!game();restoreShot.disabled=!ready||!game();}
+frame.addEventListener('load',()=>{stopArm();refreshShot();shotStatus.textContent='Original game loaded. CP04 shot event not yet contacted.';});
+const previousClick=armShot;
+previousClick.addEventListener('click',()=>{
+ if(!ready||!game()){renderShot({ok:false,status:'GAME_OR_AUTHORITY_HOLD'});return;}
+ if(shotTimer!==null){stopArm();shotStatus.textContent='Shot contact disarmed.';return;}
+ armShot.textContent='Disarm shot contact';shotStatus.textContent='ARMED — start original game and release an actual launcher shot.';
+ shotTimer=setInterval(()=>{
+  const result=applyOriginalShotResponseCP04(game(),native,current);
+  if(result.ok){stopArm();renderShot(result);return;}
+  // No eligible real event yet: stay armed. All other HOLDs are reported.
+  if(/NO_ORIGINAL_SHOT_EVENT|NO_ACTUAL_PROJECTILE|SHOT_NOT_DURING_LIVE_GAME/.test(result.diagnostic??''))return;
+  stopArm();renderShot(result);
+ },55);
+});
+restoreShot.addEventListener('click',()=>{stopArm();renderShot(restoreOriginalShotResponseCP04(game()));});
+refreshShot();
+</script></body></html>

@@ -1,0 +1,33 @@
+name: JM M001 CP17 Cross-Provider Cold Rail Contact
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_COLD_RAIL_CORRELATOR_CP17.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_COLD_RAIL_CORRELATOR_CP17_TESTS.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PROVIDER_CONTACT_CP15.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_AND_ACCESS_OVERLAY_CP13.py'
+      - '.github/workflows/m001-cp17-cold-rail-correlator.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cold-rail-nondestructive-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Protected M001 donor self-test
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_Carrier_Admission_Gate_v0_1.py --self-test
+      - name: Protected CP13 purpose-access regression
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_PURPOSE_ACCESS_CP13_TESTS.py
+      - name: Protected CP16 independent-provider byte contact
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_PROVIDER_CONTACT_CP15_TESTS.py
+      - name: CP17 cross-rail correlation -- candidate does not mean permission
+        working-directory: agent-runtime/host-adapters/storage-admission
+        run: python JM_M001_COLD_RAIL_CORRELATOR_CP17_TESTS.py

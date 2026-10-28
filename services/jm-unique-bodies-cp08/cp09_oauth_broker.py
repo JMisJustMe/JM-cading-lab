@@ -195,7 +195,7 @@ class Handler(BaseHTTPRequestHandler):
                         x for x in response['result'].get('tools',[]) if
                         (x['name']=='atomic_contact_history' and 'cp08:read' in scope) or
                         (x['name']=='atomic_contact_execute' and 'cp08:execute' in scope)]
-                return self.reply(200,adapt_response(response,modern))
+                return self.reply(200,adapt_response(response,modern,method,'JM Unique Bodies CP09 OAuth Transport','0.10.1-cp10'))
         except (ValueError,TypeError,UnicodeDecodeError,json.JSONDecodeError):
             return self.reply(400,{'error':'INVALID_BOUNDED_RPC'})
         except (urllib.error.URLError,OSError):

@@ -9,6 +9,8 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'docs/JM_OWNER_VAULT_v0_1.md'
+      - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
       - '.github/workflows/test-owner-vault-v0-1.yml'
   pull_request:
@@ -19,6 +21,8 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'docs/JM_OWNER_VAULT_v0_1.md'
+      - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
       - '.github/workflows/test-owner-vault-v0-1.yml'
   workflow_dispatch:
@@ -48,6 +52,8 @@ jobs:
           node --check estate-owner-vault.js
           node --input-type=module --check < functions/api/owner/vault.js
           node tools/test-owner-vault-v0.1.mjs
+          python3 -m json.tool registry/owner-vault-contract-v0.1.json >/dev/null
+          grep -Fq 'ONLY_SAME_SOURCE_INSTANCE_AND_BYTES' registry/owner-vault-contract-v0.1.json
           python3 -m py_compile tools/apply-owner-vault-v0.1.py
       - name: Verify exact one-body owner-room graft and service worker preservation
         shell: bash

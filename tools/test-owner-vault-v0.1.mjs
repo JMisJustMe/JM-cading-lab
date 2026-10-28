@@ -274,7 +274,8 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   const manifest=(await (await call({env,key})).json()).bodies;
   assert.equal(manifest.length,6);
   assert.equal(new Set(manifest.map(x=>x.id)).size,6);
-  for(const id of [a.body.id,b.body.id,revision.body.id,reverted.id,legacy.id,legacyNew.id]) {
+  // CP13: explicitly delete descendant leaves before their referenced originals.
+  for(const id of [reverted.id,revision.body.id,a.body.id,b.body.id,legacyNew.id,legacy.id]) {
     assert.equal((await call({method:'DELETE',env,key,query:`?body=${id}`})).status,200);
   }
   assert.equal((await (await call({env,key})).json()).bodies.length,0);

@@ -96,7 +96,9 @@ jobs:
 
           listed = rpc(2, "tools/list", {})
           names = [t["name"] for t in listed["tools"]]
-          assert names == EXPECTED, names
+          assert len(names) == len(set(names)), 'duplicate live MCP tool names'
+          assert [name for name in names if name in EXPECTED] == EXPECTED, names
+          # New v0.8.x tools are allowed; no historical route can disappear or reorder.
 
           status = call(3, "build_mesh_status", {"probe_navigator":True})
           nav = status["navigator_contact"]

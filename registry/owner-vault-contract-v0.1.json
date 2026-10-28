@@ -9,7 +9,11 @@
     "provider_graft": "Cloudflare R2",
     "pages_binding": "JM_OWNER_VAULT",
     "owner_secret": "JM_OWNER_VAULT_KEY",
-    "stored_state": ["owner notes", "favourites", "recent routes"],
+    "stored_state": [
+      "owner notes",
+      "favourites",
+      "recent routes"
+    ],
     "stored_bodies": "standalone HTML bytes explicitly synced by the owner",
     "snapshot_rule": "metadata/state snapshots do not duplicate HTML object bytes"
   },
@@ -18,7 +22,9 @@
     "Nothing uploads without explicit owner sync",
     "Private durable copy is not public publication",
     "Connect does not mean merge",
-    "Duplicate HTML bytes are not re-stored",
+    "Identical bytes are not identical identity: every independently intended body use is preserved",
+    "Only exact same-source-instance and same-bytes retries are idempotent",
+    "No older intended body is silently evicted at index capacity",
     "No Ding, No Claim"
   ],
   "security_boundary": {
@@ -29,5 +35,16 @@
     "future_upgrade": "Cloudflare Access identity/JWT gate may replace the session key without changing the storage contract"
   },
   "publication_boundary": "R2 owner-vault objects remain private working custody. Deliberate promotion to a canonical public repository body continues through the governed permanent HTML body pipeline and separate deployment proof.",
-  "ding": false
+  "ding": false,
+  "current_source_policy": {
+    "checkpoint": "CP04 2026-10-28",
+    "state": "SOURCE_AND_SYNTHETIC_CONTRACT_TESTED_LIVE_DEPLOYMENT_POLICY_READBACK_OPEN",
+    "source_instance_identity": "Existing local mounted-body id; preserves separate intended uses even with identical HTML bytes, name and filename",
+    "replay_idempotence": "ONLY_SAME_SOURCE_INSTANCE_AND_BYTES",
+    "edit_revision": "Same mounted-body id with changed bytes appends a new version; previousVersionId links the ancestor",
+    "legacy_missing_source_id": "Preserve as a distinct record; do not deduplicate by hash alone",
+    "index_capacity": "FAIL_CLOSED_NO_IDENTITY_EVICTION",
+    "body_bytes_storage": "Separate R2 object per distinct intended use; no physical deduplication of separately purposeful copies",
+    "original_historical_state_retained": true
+  }
 }

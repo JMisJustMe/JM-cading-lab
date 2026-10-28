@@ -1,0 +1,34 @@
+name: JM APP COMMONS CP06 HTTP MCP exact-inheritance contact
+
+on:
+  push:
+    branches:
+      - feat/jm-app-commons-cp06-mcp-20261027
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'app-commons-cp03/**'
+      - '.github/workflows/jm-app-commons-cp06-mcp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  actual_stdio_http_bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Recover actual first-party source at this candidate head
+        uses: actions/checkout@v4
+      - name: Use Node 22 with no external server dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check unchanged original adapter and new HTTP carrier syntax
+        run: |
+          node --check app-commons-cp03/mcp-stdio.mjs
+          node --check app-commons-cp03/core.mjs
+          node --check app-commons-cp03/http-mcp-cp06.mjs
+          node --check app-commons-cp03/test-http-cp06.mjs
+      - name: Execute real local HTTP to native stdio MCP carrier tests
+        run: node --test app-commons-cp03/test-http-cp06.mjs

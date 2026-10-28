@@ -1,0 +1,29 @@
+name: JM MCP Client Adapters Gemini Local Independent Transport
+on:
+  push:
+    branches:
+      - feat/jm-mcp-gemini-local-client-20261028
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual_transport_contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile first-party client carrier with no secret in source
+        run: python3 -m py_compile services/jm-mcp-client-adapters/stdio_http_bearer_proxy.py
+      - name: Test actual stdio and HTTP from independently launched processes
+        run: python3 -m unittest -v services/jm-mcp-client-adapters/test_proxy.py
+      - name: Ensure Gemini CLI configuration includes separate source identities
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          f=pathlib.Path('services/jm-mcp-client-adapters/gemini-cli-additive.example.json')
+          j=json.loads(f.read_text())
+          names=set(j['mcpServers'])
+          assert names=={'jm-app-commons','jm-federation-receipt'}
+          assert all(e.get('trust') is False and 'env' in e for e in j['mcpServers'].values())
+          print('GEMINI_CLI_CONFIG_ADDENDUM_PASS')
+          PY

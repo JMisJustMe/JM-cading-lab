@@ -295,7 +295,7 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
 
 // Full index is a HOLD, never a reason to evict an older purposeful use.
 {
-  const protectedBodies=Array.from({length:2000},(_,i)=>({id:'protected-'+i,sourceInstanceId:'preserved-'+i,sha256:'old-'+i}));
+  const protectedBodies=Array.from({length:2000},(_,i)=>({id:'protected-'+i,sourceInstanceId:'preserved-'+i,sha256:String(i).padStart(64,'0')}));
   const indexKey='jm-owner-vault/v0.1/bodies/index.json';
   bucket.map.set(indexKey,{body:JSON.stringify({schema:'JM.OwnerVault/0.1.BodyIndex',bodies:protectedBodies})});
   const before=bucket.map.size;
@@ -776,3 +776,56 @@ console.log('PASS: CP15 atomic R2 version-CAS prevents silent concurrent index/s
     'second-device-after-reload');
 }
 console.log('PASS: CP16 last-observed state revision rejects stale owner-device writes and permits verified reload.');
+
+
+// CP17: explicitly corrupted integrity metadata must not silently downgrade
+// verified source custody. Keep the corrupt original index and HTML unchanged.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const html = '<!doctype html><html><body>CP17 protected original</body></html>';
+  const created = await call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'upload-body', body: { name: 'CP17 source', sourceInstanceId: 'cp17-source-0001', content: html }
+  } });
+  assert.equal(created.status, 201);
+  const original = (await created.json()).body;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const bodyKey = `jm-owner-vault/v0.1/bodies/${original.id}.html`;
+  const healthyRecord = storage.map.get(indexKey);
+  const healthyIndex = healthyRecord.body;
+  const damagedCases = [
+    ['invalid-present-digest', { sha256: 'not-a-valid-sha256' }],
+    ['invalid-byte-count', { bytes: '0' }],
+    ['invalid-ancestry-type', { previousVersionId: 42 }],
+    ['invalid-instance-type', { sourceInstanceId: { unexpected: true } }]
+  ];
+  for (const [label, fields] of damagedCases) {
+    const damaged = JSON.parse(healthyIndex);
+    Object.assign(damaged.bodies[0], fields);
+    const corruptIndex = JSON.stringify(damaged, null, 2);
+    storage.map.set(indexKey, { ...healthyRecord, body: corruptIndex });
+    const routes = [
+      () => call({ env: isolatedEnv, key }),
+      () => call({ env: isolatedEnv, key, query: `?body=${original.id}` }),
+      () => call({ method: 'POST', env: isolatedEnv, key, body: {
+        action: 'upload-body', body: { name: 'blocked', sourceInstanceId: 'cp17-source-0002', content: html }
+      } }),
+      () => call({ method: 'POST', env: isolatedEnv, key, body: { action: 'snapshot' } }),
+      () => call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${original.id}` })
+    ];
+    for (const route of routes) {
+      const response = await route();
+      assert.equal(response.status, 503, label + ': corrupt custody must fail closed');
+      assert.equal((await response.json()).error, 'PRIVATE_CUSTODY_HOLD');
+      assert.equal(storage.map.get(indexKey).body, corruptIndex);
+      assert.equal(storage.map.get(bodyKey).body, html);
+    }
+  }
+  storage.map.set(indexKey, healthyRecord);
+  const restored = await call({ env: isolatedEnv, key, query: `?body=${original.id}` });
+  assert.equal(restored.status, 200);
+  assert.equal(await restored.text(), html);
+  assert.equal(restored.headers.get('x-jm-body-integrity'), 'sha256-verified');
+}
+console.log('PASS: CP17 malformed integrity/index metadata cannot downgrade source verification or destroy originals; exact recovery works.');

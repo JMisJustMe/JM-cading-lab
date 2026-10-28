@@ -93,7 +93,7 @@ class RealmAdmission(RemoteAdmission):
                 # No other realm or callback may inherit this exception.
                 challenge=one(params,"code_challenge")
                 known_callback=(isinstance(redirect,str) and
-                    re.fullmatch(r"https://chatgpt\\.com/connector/oauth/[A-Za-z0-9_-]{1,180}",redirect) is not None)
+                    re.fullmatch(r"https://chatgpt[.]com/connector/oauth/[A-Za-z0-9_-]{1,180}",redirect) is not None)
                 candidate=(isinstance(client,str) and
                     re.fullmatch(r"[A-Za-z0-9_-]{54}",client) is not None and
                     known_callback and scopes=={"receipt:issue"} and

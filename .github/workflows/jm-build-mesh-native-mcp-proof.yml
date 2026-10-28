@@ -159,7 +159,8 @@ jobs:
               "builds":["SHIFT//FIELD","KICSHIFT","JM Target Bridge","JM GripCube"],
               "max_nodes":8
           })
-          assert len(mesh["nodes"]) >= 4
+          assert {"shiftfield", "targetbridge", "gripcube-rpa"} <= {n["id"] for n in mesh["nodes"]}, mesh
+          # Unrecovered KICSHIFT is not fabricated to hit an old count.
 
           comparison = call(12, "compare_builds", {
               "builds":["JM LLM Core","JM LLM #2","JM AGI Lab"]

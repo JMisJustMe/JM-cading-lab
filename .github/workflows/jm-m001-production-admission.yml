@@ -25,3 +25,5 @@ jobs:
           python3 scripts/jm_build_closure.py --self-test
       - name: Execute production admission on public JM package bytes
         run: python3 scripts/test_jm_m001_production_admission.py -v
+      - name: Prove CP22 postprocessed lineage and media receipt retention
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_POSTPROCESS_RETENTION_CP22_TESTS.py

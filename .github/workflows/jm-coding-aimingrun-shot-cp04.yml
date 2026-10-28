@@ -1,0 +1,47 @@
+name: JM CP04 Original Aiming Run Shot Contact
+on:
+  pull_request:
+    paths:
+      - 'games-beyond/bodies/aiming-run-cp04*'
+      - 'games-beyond/bodies/aiming-run-v0-1a.html'
+      - 'tests/jm-coding-aimingrun-cp04.browser.mjs'
+      - 'coding-estate/everybody/specialist-execution-cp02*.mjs'
+      - '.github/workflows/jm-coding-aimingrun-shot-cp04.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'games-beyond/bodies/aiming-run-cp04*'
+      - 'tests/jm-coding-aimingrun-cp04.browser.mjs'
+      - '.github/workflows/jm-coding-aimingrun-shot-cp04.yml'
+permissions:
+  contents: read
+jobs:
+  original-shot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: CP04 source adversarial event and rollback
+        run: node --test games-beyond/bodies/aiming-run-cp04-shot-contact.test.mjs
+      - name: Inherit CP03 actual game recipient source tests
+        run: node --test games-beyond/bodies/aiming-run-cp03-recipient.test.mjs
+      - name: Inherit CP02 specialist source and runtime tests
+        run: node --test coding-estate/everybody/specialist-execution-cp02.test.mjs
+      - name: Inherit CP01 identity rail source tests
+        run: node --test coding-estate/everybody/current-64-identity-rail.test.mjs
+      - name: Install known JM Playwright Chromium
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Play actual Aiming Run input under Chromium and prove mechanics
+        run: node tests/jm-coding-aimingrun-cp04.browser.mjs
+      - name: Preserve viewport screenshots and machine receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-coding-aimingrun-cp04-browser
+          path: qa/jm-coding-aimingrun-cp04/
+          if-no-files-found: ignore

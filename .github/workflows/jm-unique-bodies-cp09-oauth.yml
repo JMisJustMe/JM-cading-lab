@@ -25,6 +25,11 @@ jobs:
         run: |
           cd services/jm-unique-bodies-cp08
           python3 -m unittest -v test_cp09_oauth
+      - name: Prove OAuth broker delegates real original CP08 contact without duplicate Atlas
+        run: |
+          cd services/jm-unique-bodies-cp08
+          python3 -m py_compile cp09_remote_admission.py cp09_oauth_broker.py
+          python3 -m unittest -v test_cp09_remote_broker
       - name: Preserve exact CP08 regression against inherited original source
         run: |
           cd services/jm-unique-bodies-cp08

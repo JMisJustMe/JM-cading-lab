@@ -69,7 +69,7 @@
     if(raw===null)return fallback;
     return assertState(parseSaved(raw,'ENVIRONMENT_STATE',fallback));
   };
-  const saveState=(env,state)=>{assertState(state);localStorage.setItem(stateKey(env),JSON.stringify(state));return state};
+  const saveState=(env,state)=>{assertState(state);localStorage.setItem(stateKey(env),JSON.stringify(state));if(JSON.stringify(loadState(env))!==JSON.stringify(state))throw new Error('ENVIRONMENT_SAVE_READBACK_HOLD');return state};
   const exportEnvironment=(env)=>({
     schema:'jm.apps.tools.portable-environment/1.0',
     environment:env,exported_at:now(),state:loadState(env,{rooms:{},active:null}),packets:read()
@@ -87,10 +87,10 @@
     validatePackets(merged);
     const sk=stateKey(env);
     const beforeState=localStorage.getItem(sk),beforeBus=localStorage.getItem(BUS_KEY);
-    let written=false;
+    let written=false,busWritten=false;
     try{
       localStorage.setItem(sk,JSON.stringify(nextState));written=true;
-      localStorage.setItem(BUS_KEY,JSON.stringify(merged));
+      localStorage.setItem(BUS_KEY,JSON.stringify(merged));busWritten=true;
       const afterState=loadState(env,{rooms:{},active:null}),afterBus=read();
       if(JSON.stringify(afterState)!==JSON.stringify(nextState)||
          JSON.stringify(afterBus)!==JSON.stringify(merged))
@@ -99,7 +99,7 @@
       if(written){
         try{
           if(beforeState===null)localStorage.removeItem(sk);else localStorage.setItem(sk,beforeState);
-          if(beforeBus===null)localStorage.removeItem(BUS_KEY);else localStorage.setItem(BUS_KEY,beforeBus);
+          if(busWritten){if(beforeBus===null)localStorage.removeItem(BUS_KEY);else localStorage.setItem(BUS_KEY,beforeBus);}
         }catch(rollbackError){
           throw new Error('ENVIRONMENT_IMPORT_ROLLBACK_HOLD: '+rollbackError.message);
         }

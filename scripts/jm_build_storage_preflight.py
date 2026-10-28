@@ -41,11 +41,12 @@ def preflight(repo: Path, paths: list[str], cp21, donor) -> dict:
     repo = repo.resolve(strict=True)
     items=[]
     for path in paths:
-        p=(repo/path).resolve()
+        source=repo/path
+        if source.is_symlink():
+            raise ValueError('NEW_SYMLINK_REFUSED:'+path)
+        p=source.resolve()
         if not p.is_relative_to(repo):
             raise ValueError('OUTSIDE_REPO')
-        if p.is_symlink():
-            raise ValueError('NEW_SYMLINK_REFUSED:'+path)
         if not p.is_file():
             # Git submodules/dangling entries don't permit byte-level admission.
             raise ValueError('ADDED_ITEM_NOT_REGULAR_FILE:'+path)

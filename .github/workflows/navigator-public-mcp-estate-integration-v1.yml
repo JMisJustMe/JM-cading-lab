@@ -91,7 +91,7 @@ jobs:
             registry="$(curl --fail --silent --show-error "$ESTATE/navigator/estate-integration/public-registry.json?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
             health="$(curl --fail --silent --show-error "$MCP/health?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
             if printf '%s' "$registry" | grep -q 'JM.Estate.PublicNervousSystem/1' \
-              && printf '%s' "$health" | grep -q '0.3.0-original-ui-contact-cp02' \
+              && printf '%s' "$health" | grep -q '0.4.0-chatgpt-internet-cp03' \
               && printf '%s' "$health" | grep -q '"state":"CONNECTED"'; then
               ready=1
               printf '%s' "$registry" > "$RUNNER_TEMP/public-registry.json"
@@ -119,12 +119,12 @@ jobs:
           let x=await rpc(1,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'JM Estate integration live proof',version:'1'}});
           if(!x.r.ok||x.j.error) throw new Error('initialize failed');
           x=await rpc(2,'tools/list');
-          if(!x.r.ok||x.j.result.tools.length!==6) throw new Error('five inherited + one render-tool boundary failed');
+          if(!x.r.ok||x.j.result.tools.length!==7) throw new Error('five inherited + one render-tool boundary failed');
           const names=x.j.result.tools.map(t=>t.name);
           for(const n of ['search','fetch','navigator_resolve_rootword','navigator_return_lineage','navigator_bridge_status'])if(!names.includes(n))throw new Error('inherited tool lost: '+n);
-          if(!names.includes('navigator_render_original_browser'))throw new Error('original render tool absent');
+          if(!names.includes('navigator_render_original_browser')||!names.includes('navigator_internet_search'))throw new Error('original render/internet tools absent');
           if(x.j.result.tools.some(t=>t.annotations?.readOnlyHint!==true||t.annotations?.destructiveHint!==false)) throw new Error('read-only annotations failed');
-          if(x.j.result.tools.filter(t=>t.name!=='navigator_render_original_browser').some(t=>t.annotations?.openWorldHint!==false))throw new Error('inherited private-openWorld boundary failed');
+          if(x.j.result.tools.filter(t=>!['navigator_render_original_browser','navigator_internet_search'].includes(t.name)).some(t=>t.annotations?.openWorldHint!==false))throw new Error('inherited private-openWorld boundary failed');
           x=await rpc(3,'tools/call',{name:'navigator_bridge_status',arguments:{}});
           if(!x.r.ok||x.j.error) throw new Error('bridge status failed');
           const s=x.j.result.structuredContent;
@@ -140,8 +140,8 @@ jobs:
             canonicalEstate:process.env.ESTATE+'/',
             integrationRegistry:process.env.ESTATE+'/navigator/estate-integration/public-registry.json',
             navigatorPublicMcp:base+'/mcp',
-            version:'0.3.0-original-ui-contact-cp02',
-            toolCount:6,
+            version:'0.4.0-chatgpt-internet-cp03',
+            toolCount:7,
             readOnly:true,
             estateIntegration:s.estate_integration,
             ownerWriteExposed:false,
@@ -176,11 +176,11 @@ jobs:
       - run: npm install --no-save --no-audit --no-fund wrangler@4
       - name: Assemble existing public adapter in isolated preview directory
         run: |
-          mkdir -p "$RUNNER_TEMP/jm3232-cp02-preview/privacy" "$RUNNER_TEMP/jm3232-cp02-preview/support"
-          cp navigator/mcp-public-v1/worker.mjs "$RUNNER_TEMP/jm3232-cp02-preview/_worker.js"
-          cp navigator/mcp-public-v1/index.html "$RUNNER_TEMP/jm3232-cp02-preview/index.html"
-          cp navigator/mcp-public-v1/privacy/index.html "$RUNNER_TEMP/jm3232-cp02-preview/privacy/index.html"
-          cp navigator/mcp-public-v1/support/index.html "$RUNNER_TEMP/jm3232-cp02-preview/support/index.html"
+          mkdir -p "$RUNNER_TEMP/jm3232-cp03-preview/privacy" "$RUNNER_TEMP/jm3232-cp03-preview/support"
+          cp navigator/mcp-public-v1/worker.mjs "$RUNNER_TEMP/jm3232-cp03-preview/_worker.js"
+          cp navigator/mcp-public-v1/index.html "$RUNNER_TEMP/jm3232-cp03-preview/index.html"
+          cp navigator/mcp-public-v1/privacy/index.html "$RUNNER_TEMP/jm3232-cp03-preview/privacy/index.html"
+          cp navigator/mcp-public-v1/support/index.html "$RUNNER_TEMP/jm3232-cp03-preview/support/index.html"
       - name: Deploy only to preview branch; NEVER canonical production plugin branch
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -188,42 +188,42 @@ jobs:
         run: |
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
-          npx wrangler pages deploy "$RUNNER_TEMP/jm3232-cp02-preview" \
+          npx wrangler pages deploy "$RUNNER_TEMP/jm3232-cp03-preview" \
             --project-name=jm-inline-contact-probe \
-            --branch=jm3232-cp02-preview \
+            --branch=jm3232-cp03-preview \
             --commit-hash="$GITHUB_SHA" \
             --commit-dirty=true
       - name: Verify deployed preview MCP tool, resource and protected bytes
         env:
-          CP02_PREVIEW: https://jm3232-cp02-preview.jm-inline-contact-probe.pages.dev
+          CP03_PREVIEW: https://jm3232-cp03-preview.jm-inline-contact-probe.pages.dev
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import {createHash} from 'node:crypto';
           import fs from 'node:fs';
-          const base=process.env.CP02_PREVIEW, sha=b=>createHash('sha256').update(b).digest('hex');
+          const base=process.env.CP03_PREVIEW, sha=b=>createHash('sha256').update(b).digest('hex');
           async function rpc(id,method,params={}){
             const response=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});
             return {response,result:await response.json()};
           }
           let health;
           for(let attempt=0;attempt<18;attempt++){
-            const res=await fetch(base+'/health?cp02proof='+process.env.GITHUB_RUN_ID+'-'+attempt);
-            if(res.ok){health=await res.json();if(health.version==='0.3.0-original-ui-contact-cp02')break;}
+            const res=await fetch(base+'/health?cp03proof='+process.env.GITHUB_RUN_ID+'-'+attempt);
+            if(res.ok){health=await res.json();if(health.version==='0.4.0-chatgpt-internet-cp03')break;}
             await new Promise(resolve=>setTimeout(resolve,5000));
           }
-          assert.equal(health?.version,'0.3.0-original-ui-contact-cp02');
-          assert.equal(health.tool_count,6);
+          assert.equal(health?.version,'0.4.0-chatgpt-internet-cp03');
+          assert.equal(health.tool_count,7);
           assert.equal(health.resource_count,1);
           assert.equal(health.shared_mutable_user_state,false);
-          let x=await rpc(1,'tools/list');assert.equal(x.result.result.tools.length,6);
+          let x=await rpc(1,'tools/list');assert.equal(x.result.result.tools.length,7);
           x=await rpc(2,'resources/list');assert.equal(x.result.result.resources.length,1);
           assert.equal(x.result.result.resources[0]._meta.ui.csp.frameDomains.length,0);
           x=await rpc(3,'tools/call',{name:'navigator_render_original_browser',arguments:{}});
           assert.equal(x.result.result.structuredContent.host_render_state,'UNVERIFIED');
           x=await rpc(4,'tools/call',{name:'navigator_create_stringreceipt',arguments:{action:'BLOCKED'}});
           assert.notEqual(x.response.status,200,'write tool must stay refused');
-          x=await rpc(5,'resources/read',{uri:'ui://jm3232-navigator/airborne-source-cp02.html'});
+          x=await rpc(5,'resources/read',{uri:'ui://jm3232-navigator/airborne-chatgpt-cp03.html'});
           assert.equal(x.response.status,200,JSON.stringify(x.result.error||{}));
           const c=x.result.result.contents[0];
           const html=c.text;
@@ -231,18 +231,18 @@ jobs:
           assert.ok(html.includes('<base href="https://jmisjustme-estate.pages.dev/navigator/">'));
           const rest=html.replace('<base href="https://jmisjustme-estate.pages.dev/navigator/">','');
           assert.equal(sha(Buffer.from(rest,'utf8')),c._meta['jm/source_sha256']);
-          assert.equal(c._meta['jm/source_status'],'EXACT_LIVE_CARRIER_PINNED_HOST_UNVERIFIED');
+          assert.equal(c._meta['jm/source_status'],'HASH_PINNED_ORIGINAL_PLUS_CP03_HOST_BRIDGE_HOST_UNVERIFIED');
           const receipt={schema:'JM.JM3232.CP02.PreviewReceipt/1.0',test:'LIVE_PREVIEW_MCP_RESOURCE',result:'PASS',host_ding:false,
             preview:base,canonical:'https://jmisjustme-estate.pages.dev/navigator/',
             source_sha256:c._meta['jm/source_sha256'],source_bytes:c._meta['jm/source_bytes'],
-            source_roundtrip:true,tools:6,existing_tools_preserved:true,mutable_tools_exposed:false,
+            source_roundtrip:true,tools:7,existing_tools_preserved:true,mutable_tools_exposed:false,
             note:'Actual ChatGPT client display/touch and Internet result stay OPEN.'};
-          fs.writeFileSync('JM3232_CP02_PREVIEW_RECEIPT.json',JSON.stringify(receipt,null,2)+'\n');
+          fs.writeFileSync('JM3232_CP03_PREVIEW_RECEIPT.json',JSON.stringify(receipt,null,2)+'\n');
           console.log(JSON.stringify(receipt,null,2));
           NODE
       - uses: actions/upload-artifact@v4
         with:
-          name: jm3232-cp02-preview-proof
-          path: JM3232_CP02_PREVIEW_RECEIPT.json
+          name: jm3232-cp03-preview-proof
+          path: JM3232_CP03_PREVIEW_RECEIPT.json
           if-no-files-found: error
           retention-days: 30

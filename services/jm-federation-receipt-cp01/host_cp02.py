@@ -43,5 +43,32 @@ def main():
         sys.path.insert(0,path)
         os.chdir(path)
         print('JM_FEDERATION_CP02_EXACT_SOURCE_HOSTED_READY',flush=True)
+        if os.environ.get('JM_RECEIPT_HOST_SELFTEST')=='1':
+            from threading import Thread
+            import json, time
+            from urllib.request import Request, urlopen
+            def verify_local_runtime():
+                endpoint='http://127.0.0.1:'+os.environ.get('PORT','10000')+'/mcp'
+                headers={'Content-Type':'application/json','Authorization':'Bearer '+token,
+                         'Accept':'application/json, text/event-stream'}
+                args={'gate':'JMOP-HOST-PROOF','admission':'PUBLIC_SAFE_CONTACT_ONLY',
+                      'provider':'RENDER_HOST_LOCAL','fold':'UNOBSERVED','workshop':'EXACT_CP01'}
+                body={'jsonrpc':'2.0','id':32,'method':'tools/call',
+                      'params':{'name':'jm_federation_receipt_cp01','arguments':args}}
+                for retry in range(15):
+                    time.sleep(0.5)
+                    try:
+                        req=Request(endpoint,data=json.dumps(body).encode(),headers=headers,method='POST')
+                        with urlopen(req,timeout=5) as response:
+                            obj=json.loads(response.read())
+                        output=obj['result']['structuredContent']
+                        if output.get('remote_device_proven') is not False or not output['receipt'].startswith('JM_FED_CP01|GATE=JMOP-HOST-PROOF'):
+                            raise ValueError('RECEIPT_SCOPE_MISMATCH')
+                        print('JM_CP02_HOSTED_AUTH_SELFTEST PASS original MCP receipt and scope',flush=True)
+                        return
+                    except Exception:
+                        continue
+                print('JM_CP02_HOSTED_AUTH_SELFTEST HOLD no verified authenticated tool consequence',flush=True)
+            Thread(target=verify_local_runtime,daemon=True).start()
         runpy.run_path(str(out/'server.py'),run_name='__main__')
 if __name__=='__main__':main()

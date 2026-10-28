@@ -221,4 +221,74 @@ class TestRemoteBroker(unittest.TestCase):
     {'Content-Type':'application/json','Authorization':'Bearer '+t['access_token']})
   self.assertEqual(s,400)
 
+
+ def modern(self,method,token=None,name=None,arguments=None,version="2026-07-28",headers=None):
+  meta={"io.modelcontextprotocol/protocolVersion":version,
+        "io.modelcontextprotocol/clientInfo":{"name":"jm-cp10-test","version":"1.0"},
+        "io.modelcontextprotocol/clientCapabilities":{}}
+  params={"_meta":meta}
+  if name is not None:params.update({"name":name,"arguments":arguments or {}})
+  h={"Content-Type":"application/json","Accept":"application/json, text/event-stream",
+     "MCP-Protocol-Version":version,"Mcp-Method":method}
+  if token:h["Authorization"]="Bearer "+token
+  if name is not None:h["Mcp-Name"]=name
+  h.update(headers or {})
+  return self.call(self.cp09,"/mcp","POST",
+    {"jsonrpc":"2.0","id":20261028,"method":method,"params":params},h)
+
+ def test_19_modern_discovery_is_authenticated_and_no_engine_substitution(self):
+  self.assertEqual(self.modern("server/discover")[0],401)
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  status,_,raw=self.modern("server/discover",t["access_token"])
+  self.assertEqual(status,200,raw)
+  result=json.loads(raw)["result"]
+  self.assertEqual(result["resultType"],"complete")
+  self.assertIn("2026-07-28",result["supportedVersions"])
+  self.assertEqual(result["capabilities"],{"tools":{}})
+  self.assertNotIn(OWNER,raw.decode())
+
+ def test_20_modern_read_list_and_real_original_history_call(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  status,_,raw=self.modern("tools/list",t["access_token"])
+  self.assertEqual(status,200,raw)
+  result=json.loads(raw)["result"]
+  self.assertEqual(result["resultType"],"complete")
+  self.assertEqual([v["name"] for v in result["tools"]],["atomic_contact_history"])
+  status,_,raw=self.modern("tools/call",t["access_token"],
+      "atomic_contact_history",{})
+  self.assertEqual(status,200,raw)
+  self.assertEqual(json.loads(raw)["result"]["resultType"],"complete")
+  status,_,raw=self.modern("tools/call",t["access_token"],
+      "atomic_contact_execute",{"run_key":"cp10.must.not.write","apply":True})
+  self.assertEqual(status,403,raw)
+
+ def test_21_modern_header_spoof_rejected_before_original(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  status,_,raw=self.modern("tools/list",t["access_token"],
+      headers={"Mcp-Method":"tools/call"})
+  self.assertEqual(status,400,raw)
+  self.assertEqual(json.loads(raw)["error"]["code"],-32020)
+  status,_,raw=self.modern("tools/call",t["access_token"],
+      "atomic_contact_history",{},headers={"Mcp-Name":"atomic_contact_execute"})
+  self.assertEqual(status,400,raw)
+  self.assertEqual(json.loads(raw)["error"]["code"],-32020)
+
+ def test_22_modern_unknown_method_fails_with_jsonrpc_404(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  status,_,raw=self.modern("resources/list",t["access_token"])
+  self.assertEqual(status,404,raw)
+  self.assertEqual(json.loads(raw)["error"]["code"],-32601)
+
+ def test_23_modern_unsupported_version_reports_scope_of_support(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  status,_,raw=self.modern("server/discover",t["access_token"],version="2099-01-01")
+  self.assertEqual(status,400,raw)
+  self.assertEqual(json.loads(raw)["error"]["code"],-32022)
+  self.assertIn("2026-07-28",json.loads(raw)["error"]["data"]["supported"])
+
 if __name__=='__main__':unittest.main(verbosity=2)

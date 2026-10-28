@@ -24,6 +24,10 @@ class FakeR2 {
       this.dropNextStateWrite = false;
       return;
     }
+    if (this.dropNextSnapshotWrite && key.includes('/snapshots/')) {
+      this.dropNextSnapshotWrite = false;
+      return;
+    }
     let stored = String(body);
     if (this.tamperNextStateWrite && key.endsWith('/state.json')) {
       this.tamperNextStateWrite = false;
@@ -37,9 +41,19 @@ class FakeR2 {
       this.tamperNextIndexWrite = false;
       stored = stored.replace('PRIVATE_DURABLE_COPY_NOT_PUBLICATION', 'CORRUPTED_INDEX_ENTRY');
     }
+    if (this.tamperNextSnapshotWrite && key.includes('/snapshots/')) {
+      this.tamperNextSnapshotWrite = false;
+      stored += '\n';
+    }
     this.map.set(key, { body: stored, options });
   }
-  async delete(key) { this.map.delete(key); }
+  async delete(key) {
+    if (this.dropNextBodyDelete && key.endsWith('.html')) {
+      this.dropNextBodyDelete = false;
+      return;
+    }
+    this.map.delete(key);
+  }
 }
 
 const source = await fs.readFile(new URL('../functions/api/owner/vault.js', import.meta.url), 'utf8');
@@ -488,5 +502,78 @@ console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor pr
   assert.equal(restored.status, 200);
   assert.equal((await (await call({env:stateEnv,key:stateEnv.JM_OWNER_VAULT_KEY})).json()).state.notes, 'restored note');
 }
+// CP12: deletion must never remove the only held source before a verified index
+// update. Snapshot acknowledgement must prove uniquely named, persisted bytes.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const html = '<!doctype html><html><body>CP12 synthetic source</body></html>';
+  const created = await call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'upload-body', body: { name: 'CP12 source', sourceInstanceId: 'cp12-source-0001', content: html }
+  } });
+  assert.equal(created.status, 201);
+  const id = (await created.json()).body.id;
+  const bodyKey = `jm-owner-vault/v0.1/bodies/${id}.html`;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const originalIndex = storage.map.get(indexKey).body;
+  storage.dropNextIndexWrite = true;
+  const refused = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${id}` });
+  assert.equal(refused.status, 409);
+  assert.equal((await refused.json()).error, 'BODY_INDEX_READBACK_MISMATCH');
+  assert.equal(storage.map.get(indexKey).body, originalIndex);
+  assert.equal(storage.map.get(bodyKey).body, html, 'Index failure must not delete the only source');
+  const damagedSource = storage.map.get(bodyKey);
+  storage.map.set(bodyKey, { ...damagedSource, body: html + '<!-- corrupted -->' });
+  const badSource = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${id}` });
+  assert.equal(badSource.status, 409);
+  assert.equal((await badSource.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.equal(storage.map.get(indexKey).body, originalIndex);
+  storage.map.set(bodyKey, damagedSource);
+  const removed = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${id}` });
+  assert.equal(removed.status, 200);
+  assert.equal(storage.map.has(bodyKey), false);
+  assert.equal((await (await call({ env: isolatedEnv, key })).json()).bodies.length, 0);
+}
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const created = await call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'upload-body', body: { name: 'CP12 orphan test', sourceInstanceId: 'cp12-source-0002',
+      content: '<html><body>synthetic orphan</body></html>' }
+  } });
+  const id = (await created.json()).body.id;
+  const objectKey = `jm-owner-vault/v0.1/bodies/${id}.html`;
+  storage.dropNextBodyDelete = true;
+  const blocked = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${id}` });
+  assert.equal(blocked.status, 409);
+  assert.equal((await blocked.json()).error, 'BODY_DELETE_READBACK_MISMATCH');
+  assert.equal(storage.map.has(objectKey), true, 'Interrupted delete retains orphan for manual recovery');
+  assert.equal((await (await call({ env: isolatedEnv, key })).json()).bodies.length, 0);
+}
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const snapshot = () => call({ method: 'POST', env: isolatedEnv, key, body: { action: 'snapshot' } });
+  const a = await snapshot(), b = await snapshot();
+  assert.equal(a.status, 201);
+  assert.equal(b.status, 201);
+  const firstKey = (await a.json()).snapshot.key, secondKey = (await b.json()).snapshot.key;
+  assert.notEqual(firstKey, secondKey, 'Rapid snapshots must not overwrite one another');
+  assert.equal(storage.map.has(firstKey) && storage.map.has(secondKey), true);
+  storage.dropNextSnapshotWrite = true;
+  const dropped = await snapshot();
+  assert.equal(dropped.status, 409);
+  assert.equal((await dropped.json()).error, 'SNAPSHOT_READBACK_MISMATCH');
+  storage.tamperNextSnapshotWrite = true;
+  const tampered = await snapshot();
+  assert.equal(tampered.status, 409);
+  assert.equal((await tampered.json()).error, 'SNAPSHOT_READBACK_MISMATCH');
+  assert.equal([...storage.map.keys()].filter(k => k.includes('/snapshots/')).length, 3,
+    'Tampered snapshot retained for investigation, never acknowledged as intact');
+}
+console.log('PASS: JM Owner Vault CP12 index-before-delete, orphan HOLD, unique exact snapshot readback.');
 console.log('PASS: JM Owner Vault CP11 persisted-state, dedupe and unchanged-revision integrity gates.');
 console.log('PASS: JM Owner Vault current-main private editor, immutable ancestry, capacity gate, exact R2 body/index integrity on uploads/revisions/downloads.');

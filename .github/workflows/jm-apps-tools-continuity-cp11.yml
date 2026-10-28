@@ -1,0 +1,136 @@
+name: JM Apps & Tools CP11 — Independent Workroom Continuity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "estate-publication/apps-tools-convergence/**"
+      - "apps/index.html"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
+      - ".github/workflows/jm-apps-tools-continuity-cp11.yml"
+  push:
+    branches: [main]
+    paths:
+      - "estate-publication/apps-tools-convergence/**"
+      - "apps/index.html"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
+      - ".github/workflows/jm-apps-tools-continuity-cp11.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  continuity-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original shared-spine syntax and fault injection
+        run: |
+          set -euo pipefail
+          node --check estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js
+          node --check estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js
+          node estate-publication/apps-tools-convergence/test-continuity-cp11.mjs
+          node - <<'NODE'
+          const fs=require('node:fs'), assert=require('node:assert/strict');
+          const house=fs.readFileSync('apps/index.html','utf8');
+          assert.match(house,/data-cp11="four-original-workrooms"/);
+          const envs=['evidence-governance','creation-publication','contact-practice','route-ftr'];
+          for(const env of envs){
+            assert(house.includes('/estate-publication/apps-tools-convergence/'+env+'/index.html'));
+            const path='estate-publication/apps-tools-convergence/'+env+'/index.html';
+            assert(fs.readFileSync(path,'utf8').includes('JM_ENV_CONFIG='));
+          }
+          const workflow=fs.readFileSync('.github/workflows/deploy-estate-sovereign-integrated-v1.yml','utf8');
+          assert(workflow.includes("env_src='estate-publication/apps-tools-convergence'"));
+          assert(workflow.includes("find \"$env_dst\" -type f | wc -l"));
+          console.log('CP11 public-safe exact 8-file allowlist and 4/4 existing Apps House workroom doors prepared; live serving not yet proved');
+          NODE
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Start local original workrooms
+        run: |
+          python3 -m http.server 4178 >/tmp/jm-cp11-workrooms.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4178/estate-publication/apps-tools-convergence/evidence-governance/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          exit 1
+      - name: Four original workrooms — source save, fresh reload, independent portable import and quota HOLD
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const fs=require('node:fs');
+          const environments=['evidence-governance','creation-publication','contact-practice','route-ftr'];
+          const base='http://127.0.0.1:4178/estate-publication/apps-tools-convergence/';
+          const once=()=>new Date().toISOString().replace(/[-:.Z]/g,'');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try {
+              for(const [index,env] of environments.entries()){
+                const context=await browser.newContext({viewport:index%2?{width:1366,height:900}:{width:390,height:844},acceptDownloads:true});
+                const page=await context.newPage();
+                page.on('dialog',d=>d.accept());
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                const url=base+env+'/index.html';
+                await page.goto(url,{waitUntil:'domcontentloaded'});
+                await page.locator('#continuityStatus').waitFor();
+                if(!(await page.locator('#continuityStatus').innerText()).includes('Device-local source ready'))throw Error('No first-boot persistence indicator '+env);
+                const first=page.locator('#room [data-field]').first();
+                const field=await first.getAttribute('data-field');
+                const value='CP11 '+env+' '+once();
+                await first.fill(value);
+                await page.waitForFunction(x=>JSON.parse(localStorage.getItem('jm.apps.tools.env.'+x.env+'.v1')||'{}')?.rooms?.[x.room]?.[x.field]===x.value,
+                  {env,room:await page.evaluate(()=>window.JM_ENV_CONFIG.rooms[0].id),field,value});
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.locator('#continuityStatus').waitFor();
+                if((await page.locator('#room [data-field]').first().inputValue())!==value)throw Error('Reload lost original room draft '+env);
+                await page.locator('#primary').click();
+                await page.waitForFunction(()=>document.querySelector('#result')?.textContent?.includes('Packet ') &&
+                  window.JMAppsToolsSpine.read().length===1,{timeout:12000});
+                const id=await page.evaluate(()=>window.JMAppsToolsSpine.read()[0].id);
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(id=>window.JMAppsToolsSpine.read().some(x=>x.id===id),id);
+                const download=page.waitForEvent('download');
+                await page.getByRole('button',{name:'EXPORT ENVIRONMENT'}).click();
+                const delivered=await download;
+                const bytes=fs.readFileSync(await delivered.path());
+                const pack=JSON.parse(bytes.toString('utf8'));
+                if(pack.environment!==env||pack.packets[0].id!==id)throw Error('Portable export lost original packet '+env);
+                const separate=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});
+                const target=await separate.newPage();target.on('dialog',d=>d.accept());
+                await target.goto(url,{waitUntil:'domcontentloaded'});
+                await target.locator('#continuityStatus').waitFor();
+                await target.locator('.toolbar input[type=file]').setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
+                await target.waitForFunction(id=>window.JMAppsToolsSpine.read().some(x=>x.id===id),id,{timeout:12000});
+                if((await target.locator('#room [data-field]').first().inputValue())!==value)throw Error('Fresh browser import lost creator field '+env);
+                await target.reload({waitUntil:'domcontentloaded'});
+                if((await target.locator('#room [data-field]').first().inputValue())!==value)throw Error('Fresh browser reload lost imported state '+env);
+
+                // A user-input save that cannot persist must never silently replace old data.
+                const before=await target.evaluate(x=>localStorage.getItem('jm.apps.tools.env.'+x+'.v1'),env);
+                await target.evaluate(x=>{
+                  const old=Storage.prototype.setItem;
+                  Storage.prototype.setItem=function(k,v){if(k==='jm.apps.tools.env.'+x+'.v1')throw new DOMException('Device full','QuotaExceededError');return old.call(this,k,v)};
+                },env);
+                await target.locator('#room [data-field]').first().fill('UNCOMMITTED QUOTA BODY');
+                await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('SAVE HOLD'),{timeout:12000});
+                const after=await target.evaluate(x=>localStorage.getItem('jm.apps.tools.env.'+x+'.v1'),env);
+                if(before!==after)throw Error('Quota mutated existing saved state '+env);
+                if(errors.length)throw Error('Original workroom browser errors '+env+': '+errors.join('|'));
+                await context.close();await separate.close();passed++;
+              }
+              if(passed!==4)throw Error('CP11 less than four sovereign workrooms');
+              console.log('CP11 4/4 workrooms PASS: first-write bus, state save, reload, packet emit/reload, portable export, independent-browser import/reload, quota fail-closed; NO deployed-live claim');
+            } finally {await browser.close()}
+          })().catch(error=>{console.error('CP11_WORKROOM_HOLD',error);process.exitCode=1});
+          NODE

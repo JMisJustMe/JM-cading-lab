@@ -164,4 +164,32 @@ class TestRemoteBroker(unittest.TestCase):
   self.assertIn(b'restart ChatGPT authorisation',body)
   self.assertNotIn(OWNER.encode(),body)
 
+ def test_13_cold_upstream_503_retries_then_checks_exact_original_tools(self):
+  from unittest.mock import patch
+  from io import BytesIO
+  from cp09_remote_admission import RemoteAdmission
+  class ValidResponse:
+   status=200
+   def __enter__(self):return self
+   def __exit__(self,*args):return False
+   def read(self,n):
+    return json.dumps({'result':{'tools':[{'name':'atomic_contact_execute'},{'name':'atomic_contact_history'}]}}).encode()
+  expired=urllib.error.HTTPError(self.cp08+'/mcp',503,'cold upstream',{},BytesIO(b''))
+  a=RemoteAdmission(self.cp09,self.cp08+'/mcp')
+  with patch('cp09_remote_admission.urllib.request.urlopen',side_effect=[expired,ValidResponse()]) as fake:
+   with patch('cp09_remote_admission.time.sleep',return_value=None):
+    good,reason=a.check_owner(OWNER)
+  self.assertTrue(good);self.assertEqual(reason,'VERIFIED')
+  self.assertEqual(fake.call_count,2)
+ def test_14_rejected_owner_token_never_retried(self):
+  from unittest.mock import patch
+  from io import BytesIO
+  from cp09_remote_admission import RemoteAdmission
+  denied=urllib.error.HTTPError(self.cp08+'/mcp',401,'unauthorised',{},BytesIO(b''))
+  a=RemoteAdmission(self.cp09,self.cp08+'/mcp')
+  with patch('cp09_remote_admission.urllib.request.urlopen',side_effect=denied) as fake:
+   good,reason=a.check_owner('X'*48)
+  self.assertFalse(good);self.assertEqual(reason,'OWNER_TOKEN_NOT_ACCEPTED')
+  self.assertEqual(fake.call_count,1)
+
 if __name__=='__main__':unittest.main(verbosity=2)

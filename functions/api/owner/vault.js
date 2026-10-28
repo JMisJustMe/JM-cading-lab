@@ -489,6 +489,57 @@ async function downloadBody(bucket, id) {
   return new Response(stored.content, { headers });
 }
 
+// CP19: explicit, owner-authenticated, read-only portable recovery of ONE
+// version chain. No extra R2 objects, silent backup claims or automatic writes.
+async function exportBodyLineage(bucket, id) {
+  if (!/^[0-9a-f-]{36}$/i.test(id || '')) {
+    return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_BODY_ID_REQUIRED' }, 400);
+  }
+  const originalIndex = await readJson(bucket, INDEX_KEY,
+    { schema: `${SCHEMA}.BodyIndex`, updated_at: null, bodies: [] });
+  const byId = new Map(originalIndex.bodies.map(item => [item.id, item]));
+  let selected = byId.get(id);
+  if (!selected) return json({ schema: SCHEMA, error: 'BODY_NOT_FOUND' }, 404);
+  const versions = [];
+  const MAX_VERSIONS = 16;
+  const MAX_TOTAL_BYTES = 32 * 1024 * 1024;
+  let totalBytes = 0;
+  while (selected) {
+    if (versions.length >= MAX_VERSIONS) {
+      return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_VERSION_LIMIT', max_versions: MAX_VERSIONS }, 409);
+    }
+    // Historical sources without a verified digest can still be downloaded
+    // individually, but MUST NOT be described as an exact recovery packet.
+    if (!/^[a-f0-9]{64}$/i.test(selected.sha256 || '')
+      || !Number.isSafeInteger(selected.bytes) || selected.bytes < 0) {
+      return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_UNVERIFIED_LEGACY_SOURCE' }, 409);
+    }
+    if (selected.bytes + totalBytes > MAX_TOTAL_BYTES) {
+      return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_BYTE_LIMIT', max_bytes: MAX_TOTAL_BYTES }, 413);
+    }
+    const source = await verifiedBody(bucket, `${BODY_PREFIX}/${selected.id}.html`,
+      selected.sha256, selected.bytes);
+    totalBytes += new TextEncoder().encode(source.content).byteLength;
+    versions.push({ metadata: selected, content: source.content });
+    selected = selected.previousVersionId ? byId.get(selected.previousVersionId) : null;
+  }
+  // The index must not have changed while bytes were being assembled.
+  // A race can invalidate custody even if each held body was immutable.
+  const currentIndex = await readJson(bucket, INDEX_KEY,
+    { schema: `${SCHEMA}.BodyIndex`, updated_at: null, bodies: [] });
+  if (JSON.stringify(currentIndex) !== JSON.stringify(originalIndex)
+    || readVersions.get(currentIndex) !== readVersions.get(originalIndex)) {
+    throw new VaultWriteConflict();
+  }
+  return json({
+    schema: `${SCHEMA}.LineageExport`, selected_id: id,
+    exported_at: new Date().toISOString(), version_count: versions.length,
+    source_bytes: totalBytes, order: 'SELECTED_HEAD_TO_OLDEST_ANCESTOR',
+    versions,
+    boundary: 'AUTHENTICATED_ON_DEMAND_EXPORT. NOT A COLD BACKUP UNTIL SAVED AND INDEPENDENTLY VERIFIED OUTSIDE THIS HOST.'
+  }, 200, { 'content-disposition': `attachment; filename="JM_Vault_Lineage_${id}.json"` });
+}
+
 async function handleOwnerRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -515,6 +566,7 @@ async function handleOwnerRequest(context) {
 
   if (request.method === 'GET') {
     const bodyId = url.searchParams.get('body');
+    if (mode === 'export-lineage') return exportBodyLineage(bucket, bodyId);
     if (bodyId) return downloadBody(bucket, bodyId);
     return json(await manifest(bucket));
   }

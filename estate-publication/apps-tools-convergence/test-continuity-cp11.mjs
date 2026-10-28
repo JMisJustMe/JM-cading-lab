@@ -56,7 +56,7 @@ check('CP11 import merges distinct original environmental packets, commits and r
   const t=runtime({[key]:JSON.stringify([p('old','route-ftr')]),[stateKey('evidence-governance')]:JSON.stringify(originalState)});
   const result=t.spine.importEnvironment('evidence-governance',{schema:'jm.apps.tools.portable-environment/1.0',environment:'evidence-governance',state:nextState,packets:[p('new','evidence-governance')]});
   assert.equal(result.packets,1);assert.equal(result.mergedPackets,2);
-  assert.deepEqual(t.spine.read().map(x=>x.id),['new','old']);
+  assert.equal(JSON.stringify(t.spine.read().map(x=>x.id)),JSON.stringify(['new','old']));
   assert.equal(t.spine.loadState('evidence-governance').rooms.gem.source,'IMPORT EXACT');
 });
 check('CP11 failed second write rolls back exact prior environment and bus, no fake packet event',()=>{
@@ -78,7 +78,7 @@ check('CP11 full packet bus refuses new writes, keeps original 250 with original
   const rows=Array.from({length:250},(_,i)=>p('kept-'+i,'route-ftr'));
   const t=runtime({[key]:JSON.stringify(rows)});
   assert.throws(()=>t.spine.emit('new','source',{},{}),/FULL_EXPORT_BEFORE_NEW_WRITE/);
-  assert.deepEqual(t.spine.read().map(x=>x.id),rows.map(x=>x.id));
+  assert.equal(JSON.stringify(t.spine.read().map(x=>x.id)),JSON.stringify(rows.map(x=>x.id)));
 });
 check('CP11 over-capacity portable merge aborts before modifying any key',()=>{
   const rows=Array.from({length:250},(_,i)=>p('kept-'+i,'route-ftr'));

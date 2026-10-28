@@ -304,6 +304,10 @@ jobs:
           test -s cloudflare-estate/navigator/stringline.json
           test -s cloudflare-estate/navigator/estate-integration/index.html
           grep -Fq 'Edit registered source (GitHub)' cloudflare-estate/navigator/estate-integration/index.html
+          grep -Fq 'sourceContacts:x.sourceContacts.map' cloudflare-estate/navigator/estate-integration/index.html
+          grep -Fq 'Edit existing workroom source (GitHub)' cloudflare-estate/navigator/estate-integration/index.html
+          grep -Fq 'APP_SOURCE_CONTACTS=' cloudflare-estate/apps/index.html
+          grep -Fq 'Only explicitly recovered, exact-version public carrier files' cloudflare-estate/apps/index.html
           grep -Fq 'Edit this game in existing Games & Beyond' cloudflare-estate/navigator/estate-integration/index.html
           test -s cloudflare-estate/games-beyond/app.js
           grep -Fq 'openRequestedSourceEditor()' cloudflare-estate/games-beyond/app.js
@@ -493,6 +497,8 @@ jobs:
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],
             ['/navigator/estate-integration/', 'Edit registered source (GitHub)'],
+            ['/navigator/estate-integration/', 'sourceContacts:x.sourceContacts.map'],
+            ['/apps/', 'APP_SOURCE_CONTACTS='],
             ['/navigator/estate-integration/', 'Edit this game in existing Games & Beyond'],
             ['/games-beyond/app.js', 'openRequestedSourceEditor'],
             ['/navigator/estate-integration/', 'Owner custody'],

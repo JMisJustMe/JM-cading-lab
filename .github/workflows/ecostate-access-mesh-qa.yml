@@ -6,6 +6,7 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'apps/index.html'
       - 'games-beyond/app.js'
       - 'games-beyond/registry.json'
       - 'games-beyond/payload-manifest.json'
@@ -27,6 +28,7 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'apps/index.html'
       - 'games-beyond/app.js'
       - 'games-beyond/registry.json'
       - 'games-beyond/payload-manifest.json'
@@ -64,6 +66,22 @@ jobs:
           grep -Fq 'jm-estate-body-projection-v1' navigator/estate-integration/index.html
           grep -Fq "'Owner custody','JM Owner Vault" navigator/estate-integration/index.html
           grep -Fq 'Edit registered source (GitHub)' navigator/estate-integration/index.html
+          grep -Fq 'const APP_SOURCE_CONTACTS=' apps/index.html
+          grep -Fq 'sourceContacts:x.sourceContacts.map' navigator/estate-integration/index.html
+          grep -Fq 'Edit existing workroom source (GitHub)' navigator/estate-integration/index.html
+          node - <<'NODE'
+          const fs=require('node:fs'),assert=require('node:assert/strict');
+          const html=fs.readFileSync('apps/index.html','utf8');
+          const apps=JSON.parse(html.match(/const APPS=(\[[\s\S]*?\]);\s*const APP_STAT_COUNTS=/)[1]);
+          const contacts=JSON.parse(html.match(/const APP_SOURCE_CONTACTS=(\[[\s\S]*?\]);\s*const LABELS=/)[1]);
+          assert.equal(apps.length,45);assert.equal(contacts.length,4);
+          assert.equal(new Set(contacts.map(x=>x.name+'|'+x.version)).size,contacts.length);
+          for(const c of contacts){assert(apps.some(a=>a[0]===c.name&&a[1]===c.version));assert.match(c.sourceFile,/^[A-Za-z0-9_./-]+\.html$/);assert(!c.sourceFile.includes('..'));assert(fs.readFileSync(c.sourceFile,'utf8').toLowerCase().includes('<html'))}
+          const reg=JSON.parse(fs.readFileSync('estate-publication/apps-tools-convergence/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY_v0_1.json','utf8'));
+          assert.equal(reg.environments.length,4);
+          for(const x of reg.environments){assert.match(x.path,/^estate-publication\/apps-tools-convergence\/[a-z-]+\/index\.html$/);assert(fs.readFileSync(x.path,'utf8').toLowerCase().includes('<html'))}
+          console.log('CP10 4/4 exact version public carriers and 4/4 original workroom source files verified. No private edit inferred.');
+          NODE
           grep -Fq 'Edit this game in existing Games & Beyond' navigator/estate-integration/index.html
           grep -Fq 'openRequestedSourceEditor()' games-beyond/app.js
           node --check games-beyond/app.js
@@ -137,6 +155,10 @@ jobs:
                     const exactGames=items.filter(x=>x.group==='Games'&&x.sourceFile);
                     const unmounted=items.filter(x=>x.group==='Games'&&x.id.startsWith('Games:jmstudios-'));
                     const playform=items.find(x=>x.id==='Games:playform');
+                    const apps=items.filter(x=>x.group==='Apps & tools');
+                    const appSources=apps.flatMap(x=>x.sourceContacts||[]);
+                    const workrooms=items.filter(x=>x.group==='Integrated workrooms');
+                    const lyric=items.find(x=>x.id==='Apps & tools:jm lyricstudio');
                     return {count:items.length,unique:keys.length===new Set(keys).size,
                       appsBranches:app?.versions?.length||0,holds:api?.getHolds()||[],
                       sourceEdits:edited.length,sourceLinksRendered:document.querySelectorAll('#bodyList a.owner-edit').length,
@@ -148,6 +170,11 @@ jobs:
                       exactGameFilesSafe:exactGames.every(x=>/^games-beyond\/bodies\/[a-z0-9-]+\.html$/.test(x.sourceFile)),
                       unmountedProtected:unmounted.length===2&&unmounted.every(x=>!x.editorRoute&&!x.ownerEdit),
                       playformBoundary:playform?.sourceNote?.includes('frozen original source protected'),
+                      appSourcesCount:appSources.length,
+                      appSourcesSafe:appSources.every(x=>x.ownerEdit==='https://github.com/JMisJustMe/JM-cading-lab/edit/main/'+x.path.split('/').map(encodeURIComponent).join('/')&&!x.path.includes('..')),
+                      appVersionBoundary:(lyric?.sourceContacts||[]).length===1&&lyric.sourceContacts[0].version==='v0.5 Whole-Estate Mount'&&lyric.versions.includes('v2.0 Direct branch'),
+                      workroomsSourceOnly:workrooms.length===4&&workrooms.every(x=>!x.route&&!!x.ownerEdit&&x.sourceFile?.startsWith('estate-publication/apps-tools-convergence/')),
+                      sourceCards:document.querySelectorAll('#bodyList a.app-source-edit').length,
                       appNotMisrepresented:!items.some(x=>x.group==='Apps & tools'&&x.ownerEdit),
                       member:items.some(x=>x.group==='Games'),coder:items.some(x=>x.group==='Coding & runtimes'),
                       song:items.some(x=>x.group==='Music & lyrics'),theory:items.some(x=>x.group==='Theory')};
@@ -157,6 +184,7 @@ jobs:
                       !audit.directEditable||!audit.ownerRouteProtected||!audit.appNotMisrepresented||
                       audit.gameEditors!==21||audit.exactGames!==6||!audit.gameEditorsSafe||!audit.exactGameFilesSafe||
                       !audit.unmountedProtected||!audit.playformBoundary||
+                      audit.appSourcesCount!==4||!audit.appSourcesSafe||!audit.appVersionBoundary||!audit.workroomsSourceOnly||audit.sourceCards!==4||
                       !audit.member||!audit.coder||!audit.song||!audit.theory){
                     throw new Error(vp.name+' sovereign body projection gate failed: '+JSON.stringify(audit));
                   }
@@ -172,6 +200,40 @@ jobs:
             if(pass!==10) throw new Error('Expected 10 contacts, got '+pass);
             console.log('DING — CURRENT ACCESS MESH AND BODY CONTACT: 10/10 browser contacts PASS · 100%');
           })();
+          NODE
+      - name: CP10 Apps House exact-version public editing contacts (phone and desktop)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try {
+              for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport});
+                await page.goto('http://127.0.0.1:4178/apps/',{waitUntil:'networkidle'});
+                const actual=await page.evaluate(()=>{
+                  const registered=APPS.length;
+                  const contacts=APP_SOURCE_CONTACTS;
+                  const links=[...document.querySelectorAll('#grid a.sourceEdit')];
+                  const body=document.body.innerText;
+                  return {registered,contacts:contacts.length,links:links.map(a=>({text:a.textContent,url:a.href,target:a.target,rel:a.rel})),
+                    explicitBoundary:body.includes('Only explicitly recovered, exact-version public carrier files get source edit links')};
+                });
+                if(actual.registered!==45||actual.contacts!==4||actual.links.length!==4||!actual.explicitBoundary)throw Error('Apps House contact census '+JSON.stringify(actual));
+                for(const link of actual.links)if(!link.url.startsWith('https://github.com/JMisJustMe/JM-cading-lab/edit/main/')||link.target!=='_blank'||!link.rel.includes('noopener'))throw Error('Unsafe app edit link '+JSON.stringify(link));
+                // Preserve version separation: the v2.0 alternate is not the v0.5 public shell.
+                await page.locator('#q').fill('JM LyricStudio');
+                const views=await page.locator('#grid .card').count();
+                const edits=await page.locator('#grid .card a.sourceEdit').count();
+                if(views!==2||edits!==1)throw Error('LyricStudio branches collapsed or duplicated '+views+'/'+edits);
+                await page.locator('#q').fill('Cartoon Studio');
+                if((await page.locator('#grid .card').count())!==1||await page.locator('#grid .card a.sourceEdit').count())throw Error('Preparation body gained an imaginary editor');
+                await page.close();
+              }
+              console.log('CP10 2/2 real Apps House phone/desktop contacts PASS, four grounded public carrier links, v0.5/v2.0 separation, prep HOLD');
+            } finally {await browser.close()}
+          })().catch(e=>{console.error('CP10_APPS_SOURCE_HOLD',e);process.exitCode=1});
           NODE
       - name: Browser proof of existing private editor (synthetic authenticated Vault)
         shell: bash

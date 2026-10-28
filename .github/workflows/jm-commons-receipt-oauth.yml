@@ -19,3 +19,5 @@ jobs:
           python3 -m py_compile services/jm-unique-bodies-cp08/cp09_remote_admission.py
       - name: Real isolated HTTP socket integration, client PKCE, scope denial, upstream token safety
         run: python3 -m unittest -v services/jm-mcp-oauth-relays/test_realm_gateways.py
+      - name: Real external HTTPS authentication and OAuth discovery on both Render hosts
+        run: python3 -m unittest -v services/jm-mcp-oauth-relays/test_live_oauth_hosts.py

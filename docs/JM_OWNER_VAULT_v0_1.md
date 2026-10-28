@@ -135,3 +135,16 @@ CP07 corrects this *inside the existing Estate*:
 - The browser reloads the original Estate after a committed local restore, demonstrating durable device storage instead of an in-memory-only display.
 
 **Proof boundary:** synthetic authenticated browser tests, source mirroring and existing deployment rail are the scope of the CP07 implementation; a real owner device/vault-key roundtrip is a separate next proof gate. No key is stored in code and no private user document is copied by this source change.
+
+
+## CP08 — Authenticated owner-session contact harness (28 October 2026)
+
+The original Owner Room adds **Prove private save → reload → recovery**. This only operates after the owner explicitly presses the button and authenticates with the already-supported owner-session key **inside the Estate**, never through ChatGPT.
+
+1. It creates a random, uniquely named *temporary test body* (not an owner's real creation). A local checkpoint is saved **before** any private write. If a network acknowledgement is lost, the test looks up the original unique private source ID; it **never replays** a potentially committed write.
+2. It checks the exact temporary HTML bytes and SHA-256 through the authenticated private API. A real page reload then independently fetches and checks the exact content again.
+3. After both checks, the existing delete route removes only the precisely identified CP08 temporary body. The owner-key session, temporary identity, name, file name and hash gates prevent unrelated JM creations being deleted. The returned private index must show the temporary record gone.
+4. Only then does the browser record **PASS**, in a private on-device receipt with no owner key or personal content. The owner can export a stand-alone JSON proof. Interrupted tests remain **HOLD**, with a recoverable checkpoint, and are not silently restarted as a new test.
+
+The repository and live workflow can prove *the harness is coded, browser-tested and deployed*, but **cannot honestly claim the owner has used their own authenticated session**. Synthetic browser tests are intentionally labelled synthetic; no live key is invented, fetched, displayed, or transported into a CI job. On-device owner proof is a distinct explicit-contact DING, and separate from independent editing of all Estate bodies and from testing another physical device.
+

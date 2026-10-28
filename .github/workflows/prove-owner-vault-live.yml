@@ -39,6 +39,7 @@ jobs:
           # After merging, REQUIRE_CP05 waits for the actual live editor policy.
           export REQUIRE_CP05='${{ github.event_name == 'pull_request' && '0' || '1' }}'
           export REQUIRE_CP07='${{ github.event_name == 'pull_request' && '0' || '1' }}'
+          export REQUIRE_CP08='${{ github.event_name == 'pull_request' && '0' || '1' }}'
           http='000'
           status='{}'
           sw=''
@@ -86,6 +87,14 @@ jobs:
                      && grep -Fq 'Previous mounted bodies remain unchanged.' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
                      && grep -Fq 'No existing body was removed.' "$RUNNER_TEMP/jm-owner-room-live-client.js"; then
                      client_ok=1
+                  fi
+                fi
+                if [ "$client_ok" = '1' ] && [ "$REQUIRE_CP08" = '1' ]; then
+                  client_ok=0
+                  if grep -Fq 'Prove private save → reload → recovery' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
+                    && grep -Fq 'JM.OwnerVault.AuthenticatedDeviceProof/0.1' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
+                    && grep -Fq 'CP08_CLEANUP_NOT_AUTHORISED' "$RUNNER_TEMP/jm-owner-room-live-client.js"; then
+                    client_ok=1
                   fi
                 fi
                 if [ "$client_ok" = '1' ]; then
@@ -138,12 +147,13 @@ jobs:
               'cp05_public_editor_policy_verified': passed and status.get('editor_policy') == 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY',
               'cp06_deployed_owner_editor_source_verified': passed and os.environ.get('CLIENT_EDITOR') == '1',
               'cp07_deployed_local_recovery_source_verified': passed and os.environ.get('CLIENT_EDITOR') == '1',
+              'cp08_owner_initiated_proof_interface_deployed': passed and os.environ.get('CLIENT_EDITOR') == '1',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'authenticated_write_read_delete_proof': False,
               'owner_secret_value_recorded': False,
               'ding': False,
-              'claim_boundary': 'Mainline receipt: public-safe Vault API policy and deployed browser-code markers for private editing, CP07 local recovery, no eviction and quota preservation. It does NOT prove actual owner-key write, owner-device local restore, cross-device recovery or public creation propagation; those require separate authenticated owner contact.'
+              'claim_boundary': 'Live source check confirms CP08 owner-initiated proof interface, not execution. Authenticated owner-session write/reload/read/delete remains false until the owner runs the isolated browser proof; cross-device and full-Estate editing still separate.'
           }
           Path('registry/owner-vault-live-readiness-receipt-v0.1.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY

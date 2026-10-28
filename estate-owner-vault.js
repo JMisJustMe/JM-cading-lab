@@ -4,6 +4,10 @@
   const API = './api/owner/vault';
   const SESSION_KEY = 'jm-owner-vault-key';
   let editing = null;
+  let proofBusy = false;
+  const DOCUMENT_INSTANCE = crypto.randomUUID(); // changes on a genuine document reload
+  const PROOF_PENDING = 'jm-owner-vault-cp08-pending';
+  const PROOF_RECEIPT = 'jm-owner-vault-cp08-receipt';
   const LOCAL = {
     notes: 'jm-estate-owner-notes',
     favourites: 'jm-estate-favourites',
@@ -69,6 +73,8 @@
       .jm-vault-editor[hidden]{display:none}
       .jm-vault-editor textarea{display:block;box-sizing:border-box;width:100%;min-height:260px;max-width:100%;resize:vertical;margin:.65rem 0;background:#09111b;border:1px solid #44647a;border-radius:10px;color:#f7fbff;padding:12px;font:13px/1.48 ui-monospace,monospace}
       .jm-vault-editor button{margin-right:.55rem;margin-bottom:.35rem;min-height:44px}
+      .jm-vault-proof{padding:1rem;margin:1rem 0;border:1px solid rgba(127,240,166,.32);border-radius:14px;background:rgba(9,27,29,.7)}
+      .jm-vault-proof p{font-size:.84rem;color:var(--muted,#a9b1c2)}
       @media(max-width:680px){.jm-vault-card{align-items:flex-start;flex-direction:column}.jm-vault-card-actions{width:100%;justify-content:flex-start}}
     `;
     document.head.appendChild(style);
@@ -92,6 +98,15 @@
         <button class="button quiet" id="jmVaultLock" type="button">Lock</button>
       </div>
       <p class="jm-vault-note" id="jmVaultMessage" role="status" aria-live="polite">Checking whether the durable storage binding is mounted on this host.</p>
+      <section class="jm-vault-proof" id="jmVaultOwnerProof" aria-label="Owner-device private proof">
+        <strong>CP08 · Owner-session persistence proof</strong>
+        <p>Only after you press Prove: save a freshly generated, temporary test body; verify private bytes; reload this page; verify again; delete only that exact test body. Your existing JM creations are never read, changed or deleted.</p>
+        <div class="jm-vault-actions">
+          <button class="button secondary" type="button" id="jmVaultProveRoundtrip">Prove private save → reload → recovery</button>
+          <button class="button quiet" type="button" id="jmVaultExportProof" disabled>Export owner proof receipt</button>
+        </div>
+        <p class="jm-vault-note" id="jmVaultProofStatus" role="status" aria-live="polite">Not run on this device; no private owner proof claimed.</p>
+      </section>
       <div class="jm-vault-remote" id="jmVaultRemote" aria-live="polite"></div>
       <section class="jm-vault-editor" id="jmVaultEditor" hidden aria-label="Private HTML source editor">
         <strong id="jmVaultEditorTitle">Private body source</strong>
@@ -310,6 +325,128 @@
     } finally { action.disabled = false; }
   }
 
+  // All proof mutations are owner-initiated and restricted to an ephemeral
+  // sourceInstanceId. No existing user's creation may pass the cleanup gate.
+  const proofName='JM CP08 TEMPORARY CONTACT PROOF';
+  const proofFile='JM_CP08_TEMPORARY_CONTACT_PROOF.html';
+  const proofHTML=nonce=>'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>JM CP08</title></head><body><p>Temporary owner contact '+nonce+'</p></body></html>';
+  function getPending() {
+    try {
+      const v=JSON.parse(localStorage.getItem(PROOF_PENDING)||'null');
+      return v?.schema==='JM.OwnerVault.ProofPending/0.1'&&
+        /^cp08-[a-f0-9]{32}$/.test(v.sourceInstanceId)&&
+        /^[a-f0-9-]{36}$/.test(v.nonce)&&
+        /^[a-f0-9-]{36}$/.test(v.createdDocumentInstance)&&
+        /^[a-f0-9]{64}$/.test(v.sha256)&&
+        ['prepared','reload','cleanup'].includes(v.phase)?v:null;
+    } catch{return null;}
+  }
+  const proofMessage=t=>{const n=el('jmVaultProofStatus');if(n)n.textContent=t;};
+  function proofState() {
+    const p=getPending();
+    let r=null;
+    try{r=JSON.parse(localStorage.getItem(PROOF_RECEIPT)||'null');}catch{}
+    const exportButton=el('jmVaultExportProof');
+    if(exportButton)exportButton.disabled=!!p||!(r?.schema==='JM.OwnerVault.AuthenticatedDeviceProof/0.1'&&r.outcome==='PASS');
+    proofMessage(p?'CP08 HOLD: '+p.phase+' checkpoint. Unlock your original Owner Vault and press Prove to resume.':
+      r?.outcome==='PASS'?'CP08 PASS: authenticated private write, independent reload/readback and exact test cleanup proved on this browser. Export receipt.':
+      'No authenticated private owner-device proof performed.');
+  }
+  const savePending=p=>localStorage.setItem(PROOF_PENDING,JSON.stringify(p));
+  async function findTestBody(p) {
+    const index=await request('');
+    const matches=(index.bodies||[]).filter(b=>b.sourceInstanceId===p.sourceInstanceId &&
+      b.sha256===p.sha256 && b.name===proofName && b.fileName===proofFile &&
+      b.previousVersionId==null && /^[0-9a-f-]{36}$/i.test(b.id));
+    if(matches.length!==1)throw new Error(matches.length?'CP08_IDENTITY_AMBIGUOUS':'CP08_TEMP_BODY_NOT_FOUND');
+    if(p.bodyId && p.bodyId!==matches[0].id)throw new Error('CP08_TEMP_ID_CHANGED');
+    return matches[0];
+  }
+  async function checkTestBody(p,b) {
+    const bytes=await (await request('?body='+encodeURIComponent(b.id))).text();
+    if(bytes!==proofHTML(p.nonce)||await hashText(bytes)!==p.sha256)
+      throw new Error('CP08_PRIVATE_READBACK_MISMATCH');
+  }
+  async function closeTest(p) {
+    if(p.phase!=='cleanup'||p.reloaded!==true||p.firstRead!==true)throw new Error('CP08_CLEANUP_NOT_AUTHORISED');
+    const b=await findTestBody(p);
+    await checkTestBody(p,b);
+    const result=await request('?body='+encodeURIComponent(b.id),{method:'DELETE'});
+    if(result.outcome!=='PRIVATE_COPY_REMOVED'||result.body?.id!==b.id)throw new Error('CP08_DELETE_RECEIPT_MISMATCH');
+    const after=await request('');
+    if((after.bodies||[]).some(x=>x.id===b.id||x.sourceInstanceId===p.sourceInstanceId))throw new Error('CP08_DELETE_NOT_VERIFIED');
+    const receipt={
+      schema:'JM.OwnerVault.AuthenticatedDeviceProof/0.1',outcome:'PASS',
+      created_at:p.createdAt,verified_at:new Date().toISOString(),
+      authenticated_private_write:true,first_readback:true,independent_reload_readback:true,
+      temporary_body_exact_cleanup:true,temporary_identity:p.sourceInstanceId,
+      content_sha256:p.sha256,private_owner_content_contacted:false,owner_secret_recorded:false,
+      cross_device_proof:false,public_deployment_proof:false,
+      boundary:'Real owner-session and original browser reload only. No whole-Estate or other-device claim.'
+    };
+    localStorage.setItem(PROOF_RECEIPT,JSON.stringify(receipt));
+    localStorage.removeItem(PROOF_PENDING);
+    proofState();
+  }
+  async function resumeTest(afterReload=false) {
+    if(proofBusy)return;
+    const p=getPending();
+    if(!p){proofState();return;}
+    if(!key()){proofMessage('CP08 HOLD: owner session locked. Unlock locally before resuming.');return;}
+    proofBusy=true;
+    try{
+      if(p.phase==='prepared') {
+        // Recover a lost POST response by lookup; NEVER replay the POST.
+        const b=await findTestBody(p);await checkTestBody(p,b);
+        p.bodyId=b.id;p.firstRead=true;p.phase='reload';savePending(p);
+      }
+      if(p.phase==='reload') {
+        if(!afterReload || p.createdDocumentInstance===DOCUMENT_INSTANCE){location.reload();return;}
+        const b=await findTestBody(p);await checkTestBody(p,b);
+        p.bodyId=b.id;p.reloaded=true;p.phase='cleanup';savePending(p);
+      }
+      if(p.phase==='cleanup') {
+        if(!afterReload){location.reload();return;}
+        await closeTest(p);
+      }
+    }catch(e){if(e.status===401){setKey('');authLabel(false);}proofMessage('CP08 HOLD: '+e.message+'. No further write or unrelated deletion attempted.');}
+    finally{proofBusy=false;}
+  }
+  async function startTest() {
+    if(proofBusy)return;
+    if(!(await ensureUnlocked()))return;
+    if(getPending()){void resumeTest(false);return;}
+    const nonce=crypto.randomUUID();
+    const p={schema:'JM.OwnerVault.ProofPending/0.1',nonce,
+      sourceInstanceId:'cp08-'+nonce.replace(/-/g,''),
+      sha256:await hashText(proofHTML(nonce)),createdAt:new Date().toISOString(),
+      phase:'prepared',firstRead:false,reloaded:false,createdDocumentInstance:DOCUMENT_INSTANCE};
+    try{savePending(p);}catch(e){proofMessage('CP08 HOLD: no durable device checkpoint. No write attempted.');return;}
+    proofBusy=true;
+    try{
+      proofMessage('Only the temporary CP08 test body is being saved...');
+      const out=await request('',{method:'POST',body:JSON.stringify({action:'upload-body',
+        body:{name:proofName,fileName:proofFile,sourceInstanceId:p.sourceInstanceId,content:proofHTML(nonce)}})});
+      if(!['BODY_STORED','DUPLICATE_ALREADY_HELD'].includes(out.outcome))throw new Error('CP08_UPLOAD_RECEIPT_INVALID');
+      const b=await findTestBody(p);if(out.body?.id!==b.id)throw new Error('CP08_UPLOAD_ID_MISMATCH');
+      await checkTestBody(p,b);
+      p.bodyId=b.id;p.firstRead=true;p.phase='reload';savePending(p);
+      proofMessage('Private write and readback proved. Reloading to test independent recovery...');
+      location.reload();
+    }catch(e){if(e.status===401){setKey('');authLabel(false);}proofMessage('CP08 HOLD: '+e.message+'. Checkpoint retained; no duplicate POST will be issued.');}
+    finally{proofBusy=false;}
+  }
+  function exportTestReceipt() {
+    try{
+      const v=JSON.parse(localStorage.getItem(PROOF_RECEIPT)||'null');
+      if(v?.outcome!=='PASS'||v?.schema!=='JM.OwnerVault.AuthenticatedDeviceProof/0.1')throw new Error('NO_VERIFIED_PROOF');
+      const u=URL.createObjectURL(new Blob([JSON.stringify(v,null,2)+'\n'],{type:'application/json'}));
+      const a=document.createElement('a');a.href=u;a.download='JM_OWNER_VAULT_CP08_OWNER_PROOF.json';
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);
+      proofMessage('Bounded owner-device proof exported. No owner key or personal JM body content included.');
+    }catch(e){proofMessage('Proof export HOLD: '+e.message);}
+  }
+
   async function previewRemote(id, name) {
     try {
       const response = await request(`?body=${encodeURIComponent(id)}`);
@@ -455,6 +592,8 @@
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);
     el('jmVaultSnapshot')?.addEventListener('click', snapshot);
+    el('jmVaultProveRoundtrip')?.addEventListener('click',startTest);
+    el('jmVaultExportProof')?.addEventListener('click',exportTestReceipt);
     el('jmVaultSaveRevision')?.addEventListener('click', saveRevision);
     el('jmVaultCancelEdit')?.addEventListener('click', closeEditor);
     el('jmVaultLock')?.addEventListener('click', () => {
@@ -467,7 +606,11 @@
     installStyle();
     if (!buildPanel()) return;
     bind();
-    status();
+    proofState();
+    void status().then(()=>{
+      const p=getPending();
+      if(p&&key()&&(p.phase==='reload'||p.phase==='cleanup'))void resumeTest(true);
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });

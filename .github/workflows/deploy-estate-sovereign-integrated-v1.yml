@@ -373,6 +373,8 @@ jobs:
           grep -Fq 'One Estate.' cloudflare-estate/navigator/estate-integration/index.html
           grep -Fq 'Save private revision &amp; verify readback' cloudflare-estate/estate-app.js
           grep -Fq 'RESTORE TO DEVICE' cloudflare-estate/estate-app.js
+          grep -Fq 'Prove private save → reload → recovery' cloudflare-estate/estate-app.js
+          grep -Fq 'CP08_CLEANUP_NOT_AUTHORISED' cloudflare-estate/estate-app.js
           grep -Fq 'Previous mounted bodies remain unchanged.' cloudflare-estate/estate-app.js
           grep -Fq 'No existing body was removed.' cloudflare-estate/estate-app.js
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/navigator/index.html
@@ -474,6 +476,8 @@ jobs:
             ['/api/owner/vault?mode=status', 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY'],
             ['/api/owner/vault?mode=status', 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY'],
             ['/estate-app.js', 'RESTORE TO DEVICE'],
+            ['/estate-app.js', 'JM.OwnerVault.AuthenticatedDeviceProof/0.1'],
+            ['/estate-app.js', 'CP08_CLEANUP_NOT_AUTHORISED'],
             ['/estate-app.js', 'Previous mounted bodies remain unchanged.'],
             ['/estate-app.js', 'No existing body was removed.'],
             ['/navigator/', 'v1.5.2 · AIRBORNE'],

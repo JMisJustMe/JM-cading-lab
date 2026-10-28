@@ -38,8 +38,8 @@
   "publication_boundary": "R2 owner-vault objects remain private working custody. Deliberate promotion to a canonical public repository body continues through the governed permanent HTML body pipeline and separate deployment proof.",
   "ding": false,
   "current_source_policy": {
-    "checkpoint": "CP07 2026-10-28",
-    "state": "CP07_FLAZ_COMPLETE_SOURCE_BROWSER_QA_DEPLOYED_READBACK; REAL_OWNER_DEVICE_CONTACT_HOLD",
+    "checkpoint": "CP08 2026-10-28",
+    "state": "CP05_CP07_BOUNDED_FLAZ_COMPLETE; CP08_OWNER_INITIATED_ROUNDTRIP_SOURCE_TESTING; LIVE_OWNER_AUTHENTICATED_CONTACT_HOLD",
     "source_instance_identity": "Existing local mounted-body id; preserves separate intended uses even with identical HTML bytes, name and filename",
     "replay_idempotence": "ONLY_SAME_SOURCE_INSTANCE_AND_BYTES",
     "edit_revision": "Same mounted-body id with changed bytes appends a new version; previousVersionId links the ancestor",
@@ -65,6 +65,21 @@
       "full_shelf": "12-body cap refuses import without evicting existing bodies",
       "provenance": "Local copy has independent local ID plus vaultBodyId, sourceInstanceId, SHA-256 and previousVersionId",
       "live_proof": "Source and synthetic phone/desktop browser proof PASS; public deployed Owner Room code proof PASS via recorded GitHub live receipt; real owner-key save/reload/recovery NOT proved."
+    },
+    "owner_auth_proof": {
+      "scope": "Existing Owner Room; single explicit owner-initiated temporary HTML private test",
+      "planned_gates": [
+        "authentication within existing owner session",
+        "temporary isolated private R2 write and immediate SHA-256 readback",
+        "actual page reload followed by independent authenticated readback",
+        "delete only exact temporary ID after content identity gate",
+        "manifest absence check and exportable JSON receipt"
+      ],
+      "mutation_boundary": "Only random CP08 temporary body after owner press; no original JM creations read or modified",
+      "no_duplicate": "A pending checkpoint must never replay a possibly committed upload; use exact private index readback",
+      "receipt": "Browser-local verified receipt can be exported; no owner secret is stored or placed in GitHub",
+      "real_owner_proof_status": "HOLD until owner clicks test on production under their own private authenticated session",
+      "different_device_proof_status": "HOLD"
     }
   },
   "flaz_cp05_cp06_2026_10_28": {

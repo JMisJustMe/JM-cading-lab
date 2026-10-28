@@ -136,3 +136,21 @@ python3 agent-runtime/host-adapters/storage-admission/JM_M001_EDITIONS_RESTORE_C
 **Bounded genuine contact, 28 October 2026:** eight original distinct Music CP01–CP08 ZIPs totalling 221,184,666 B; two full anchor ZIPs 55,219,071 B; six patch bytes 20,640,733 B; single private 10-member delta pack 20,659,338 B; combined cold representation 75,878,409 B. Exact reconstruction 8/8 from native sources, and separately 8/8 from **independently downloaded owner-private Google Drive cold files** (two exact anchors plus delta pack), including whole-file SHA-256 and ZIP CRC. Conditional cold-carriage difference 145,306,257 B; **actual native Library quota savings 0 B measured**. Original native hot carriers and separate purposes all remain KEEP/HOLD.
 
 Private CP26 pack and original source archives live in the owner's existing JM Estate Cold Recovery house, **not the public repo**. Small source, regression and detailed FLAZ receipts live separately in the existing private JM Estate Storage Steward Library house. This public GitHub lane contains only reusable executable code, synthetic tests and bounded accounting. For offline recovery, the private pack also includes the original CP25 and CP26 source plus a README. The CI workflow inherits the earlier M001 gate/CP22–CP25 tests; CP26 adds a 20-check adversarial synthetic run without publishing original content.
+
+
+## CP27 — byte-exact Slingfall APK installer lineage
+
+CP27 reuses original M001 CP25 byte-exact `zstd --patch-from` restoration, and the CP26 multi-edition/purpose-preserving approach, for **13 distinct Slingfall native Library APK carrier identities**. These are **11 distinct complete APK bytes** plus two separate same-byte distribution roles. `JM_M001_APK_LINEAGE_RESTORE_CP27.py` reconstructs all 13 *named* APK carriers from one protected full CP17 native APK and 10 private patch members, creating a new directory only after all whole-file SHA-256, exact size, ZIP member CRC/count and source signing-metadata-presence checks pass.
+
+Private, owner-only source custody (not in public GitHub): original live Library APKs; owner-private Google Drive `JM Estate Cold Recovery` contains the unmodified CP17 anchor and `JM_M001_CP27_SLINGFALL_PRIVATE_COLD_DELTA.zip`. The private pack includes the source manifest with original separate `libfile_` carrier IDs, roles, SHA-256 pins, patch bytes, original CP25 code, CP27 code and offline readme.
+
+**Bounded actual result (28 October 2026):** 13 live APKs total **363,104,095 bytes**; one full CP17 anchor **27,978,260 bytes**; 10 exact delta files together **597,171 bytes**; portable private delta pack **623,837 bytes**; cold representation **28,602,097 bytes**; conditional carriage difference **334,501,998 bytes**. All 13 reconstituted original bytes and ZIP CRCs passed locally, and independent downloaded external carrier bytes exactly matched their pinned source SHA-256; the independently restored external working set was compared 13/13 against exact originals. Original native Library identities retained unchanged. Account quota savings **zero measured**, owner-device APK install/signer trust not re-tested.
+
+To use outside ChatGPT with Python and `zstd` CLI:
+
+```sh
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_APK_LINEAGE_RESTORE_CP27.py --pack /private/JM_M001_CP27_SLINGFALL_PRIVATE_COLD_DELTA.zip --anchor /private/JM_SLINGFALL_CP17_SIX_TACTICS_FOLD_TEST.apk --output-dir /new/RESTORED_ALL_13
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_APK_LINEAGE_RESTORE_CP27_TESTS.py
+```
+
+Never equate same-file SHA with same delivery-role authority. The generated APKs are exact-byte recoveries, not proven replacements for existing owner-visible Library links or Play Store/install identity. No source overwrite, native file Trash operation, deletion, APK signature modification or quota-saving claim is authorized by CP27. Public CI exercises only synthetic fixtures and keeps every previous M001 test.

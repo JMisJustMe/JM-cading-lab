@@ -738,3 +738,41 @@ function pauseMatchingGets(storage, key, required = 2) {
   assert.ok(['first-editor','second-editor'].includes(state.state.notes));
 }
 console.log('PASS: CP15 atomic R2 version-CAS prevents silent concurrent index/state lost updates; single-writer custody remains intact.');
+
+
+// CP16: independent owner sessions cannot overwrite an observed state head
+// after another editor's sequential (rather than simultaneous) commit.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const baseline = await (await call({ env: isolatedEnv, key })).json();
+  assert.match(baseline.state_revision, /^[a-f0-9]{64}$/);
+  const first = await call({ method: 'PUT', env: isolatedEnv, key, body: {
+    state: { notes: 'first-device-preserved' }, expectedStateRevision: baseline.state_revision
+  } });
+  assert.equal(first.status, 200);
+  const firstResult = await first.json();
+  assert.notEqual(firstResult.state_revision, baseline.state_revision);
+  const stale = await call({ method: 'PUT', env: isolatedEnv, key, body: {
+    state: { notes: 'stale-device-clobber' }, expectedStateRevision: baseline.state_revision
+  } });
+  assert.equal(stale.status, 409);
+  assert.equal((await stale.json()).error, 'OWNER_STATE_HEAD_CHANGED');
+  const recovered = await (await call({ env: isolatedEnv, key })).json();
+  assert.equal(recovered.state.notes, 'first-device-preserved');
+  assert.equal(recovered.state_revision, firstResult.state_revision);
+  const fresh = await call({ method: 'PUT', env: isolatedEnv, key, body: {
+    state: { notes: 'second-device-after-reload' }, expectedStateRevision: recovered.state_revision
+  } });
+  assert.equal(fresh.status, 200);
+  assert.equal((await (await call({ env: isolatedEnv, key })).json()).state.notes,
+    'second-device-after-reload');
+  const invalid = await call({ method: 'PUT', env: isolatedEnv, key, body: {
+    state: { notes: 'invalid-precondition' }, expectedStateRevision: 'invalid'
+  } });
+  assert.equal(invalid.status, 409);
+  assert.equal((await (await call({ env: isolatedEnv, key })).json()).state.notes,
+    'second-device-after-reload');
+}
+console.log('PASS: CP16 last-observed state revision rejects stale owner-device writes and permits verified reload.');

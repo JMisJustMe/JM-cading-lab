@@ -56,7 +56,7 @@ class RemoteAdmission(Admission):
             if req is None or req['until']<=now:raise ValueError('CONSENT_EXPIRED')
         # Copy/pasting a file often includes a trailing newline or space.
         # Trim edge whitespace only; retain the original bearer byte pattern.
-        token=owner_token.strip(' \\t\\r\\n') if isinstance(owner_token,str) else owner_token
+        token=owner_token.strip() if isinstance(owner_token,str) else owner_token
         valid,reason=self.check_owner(token)
         if not valid:
             with self.lock:self.failed_login_at.append(time.time())

@@ -299,4 +299,35 @@ class RealHttp(unittest.TestCase):
    self.assertEqual(s,400,raw)
    self.assertEqual(json.loads(raw)['error']['code'],-32022)
 
+
+ def test_23_optional_client_info_per_realm(self):
+  for realm in CONFIGS:
+   s,t,_,_=self.approve(realm)
+   self.assertEqual(s,200)
+   headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream',
+       'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover',
+       'Authorization':'Bearer '+t['access_token']}
+   meta={'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+         'io.modelcontextprotocol/clientCapabilities':{}}
+   request=lambda m:{'jsonrpc':'2.0','id':45,'method':'server/discover',
+     'params':{'_meta':m}}
+   s,_,raw=self.hit(realm,'/mcp','POST',request(meta),headers)
+   self.assertEqual(s,200,raw)
+   s,_,raw=self.hit(realm,'/mcp','POST',request({**meta,
+      'io.modelcontextprotocol/clientInfo':{'name':123}}),headers)
+   self.assertEqual(s,400,raw)
+
+ def test_24_modern_list_private_zero_ttl_and_independent_identity(self):
+  for realm in CONFIGS:
+   s,t,_,_=self.approve(realm)
+   self.assertEqual(s,200)
+   s,_,raw=self.modern(realm,'tools/list',t['access_token'])
+   self.assertEqual(s,200,raw)
+   result=json.loads(raw)['result']
+   self.assertEqual(result['cacheScope'],'private')
+   self.assertEqual(result['ttlMs'],0)
+   self.assertEqual(result['_meta']['io.modelcontextprotocol/serverInfo']['name'],
+     'JM APP//COMMONS OAuth Connection CP07' if realm=='commons' else
+     'JM Federation Receipt OAuth Connection CP03')
+
 if __name__=='__main__':unittest.main(verbosity=2)

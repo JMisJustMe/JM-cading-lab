@@ -291,4 +291,32 @@ class TestRemoteBroker(unittest.TestCase):
   self.assertEqual(json.loads(raw)["error"]["code"],-32022)
   self.assertIn("2026-07-28",json.loads(raw)["error"]["data"]["supported"])
 
+
+ def test_24_optional_client_info_is_accepted_and_present_malformed_is_denied(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  token=t["access_token"]
+  headers={"Content-Type":"application/json","Accept":"application/json, text/event-stream",
+     "MCP-Protocol-Version":"2026-07-28","Mcp-Method":"server/discover",
+     "Authorization":"Bearer "+token}
+  base={"io.modelcontextprotocol/protocolVersion":"2026-07-28",
+       "io.modelcontextprotocol/clientCapabilities":{}}
+  req=lambda meta:{"jsonrpc":"2.0","id":42,"method":"server/discover","params":{"_meta":meta}}
+  status,_,raw=self.call(self.cp09,"/mcp","POST",req(base),headers)
+  self.assertEqual(status,200,raw)
+  status,_,raw=self.call(self.cp09,"/mcp","POST",req({**base,
+      "io.modelcontextprotocol/clientInfo":{"name":1}}),headers)
+  self.assertEqual(status,400,raw)
+
+ def test_25_modern_list_has_private_zero_ttl_and_server_identity(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  status,_,raw=self.modern("tools/list",t["access_token"])
+  self.assertEqual(status,200,raw)
+  data=json.loads(raw)["result"]
+  self.assertEqual(data["cacheScope"],"private")
+  self.assertEqual(data["ttlMs"],0)
+  self.assertEqual(data["_meta"]["io.modelcontextprotocol/serverInfo"]["name"],
+    "JM Unique Bodies CP09 OAuth Transport")
+
 if __name__=='__main__':unittest.main(verbosity=2)

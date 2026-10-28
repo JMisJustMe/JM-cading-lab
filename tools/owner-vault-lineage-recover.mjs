@@ -13,6 +13,7 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCHEMA = 'JM.OwnerVault/0.1.LineageExport';
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -156,7 +157,7 @@ async function main(args) {
   return restorePacket(input, output);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try { console.log(JSON.stringify(await main(process.argv.slice(2)))); }
   catch (error) {
     console.error(JSON.stringify({ outcome: 'HOLD_NO_RECOVERY', error: String(error.message).slice(0, 180),

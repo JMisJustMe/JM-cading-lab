@@ -149,12 +149,12 @@ async function uploadBody(bucket, payload) {
   const hash = await sha256Text(content);
   const index = await readJson(bucket, INDEX_KEY, { schema: `${SCHEMA}.BodyIndex`, updated_at: null, bodies: [] });
   const bodies = Array.isArray(index.bodies) ? index.bodies : [];
-  const sameInstance = sourceInstanceId && bodies.find(item => item.sourceInstanceId === sourceInstanceId && item.sha256 === hash);
-  if (sameInstance) {
-    return { duplicate: true, same_instance: true, body: sameInstance };
-  }
-  // A changed body with the same local identity is a new preserved revision.
+  // Only the CURRENT head may be treated as an exact retry. Reverting to an
+  // ancestor's bytes is a deliberate new revision, not an old-record lookup.
   const previous = sourceInstanceId ? bodies.find(item => item.sourceInstanceId === sourceInstanceId) : null;
+  if (previous && previous.sha256 === hash) {
+    return { duplicate: true, same_instance: true, body: previous };
+  }
   // Never silently evict an older purposeful body merely to meet the index limit.
   if (bodies.length >= 2000) return { error: json({ schema: SCHEMA, error: 'BODY_INDEX_CAPACITY_REACHED', max_bodies: 2000 }, 409) };
 
@@ -192,6 +192,62 @@ async function uploadBody(bucket, payload) {
   };
   await writeJson(bucket, INDEX_KEY, next);
   return { duplicate: false, body: metadata };
+}
+
+
+// Edit within the existing private Owner Vault. Preserve the selected ancestor
+// and the separately intended bodies; never replace the old R2 bytes.
+async function reviseBody(bucket, payload) {
+  const baseId = typeof payload?.baseId === 'string' ? payload.baseId : '';
+  const expected = typeof payload?.expectedSha256 === 'string' ? payload.expectedSha256 : '';
+  if (!/^[0-9a-f-]{36}$/i.test(baseId) || !/^[a-f0-9]{64}$/i.test(expected)) {
+    return { error: json({ schema: SCHEMA, error: 'REVISION_PRECONDITION_REQUIRED' }, 400) };
+  }
+  if (typeof payload?.content !== 'string' || !/<html|<!doctype/i.test(payload.content)) {
+    return { error: json({ schema: SCHEMA, error: 'NOT_STANDALONE_HTML' }, 400) };
+  }
+  const content = payload.content;
+  const byteCount = new TextEncoder().encode(content).byteLength;
+  if (byteCount > MAX_BODY_BYTES) {
+    return { error: json({ schema: SCHEMA, error: 'BODY_TOO_LARGE_FOR_V0_1', max_bytes: MAX_BODY_BYTES, actual_bytes: byteCount }, 413) };
+  }
+  const index = await readJson(bucket, INDEX_KEY, { schema: `${SCHEMA}.BodyIndex`, updated_at: null, bodies: [] });
+  const bodies = Array.isArray(index.bodies) ? index.bodies : [];
+  const base = bodies.find(item => item.id === baseId);
+  if (!base) return { error: json({ schema: SCHEMA, error: 'BODY_NOT_FOUND' }, 404) };
+  if (base.sha256 !== expected) return { error: json({ schema: SCHEMA, error: 'BODY_EXPECTED_HASH_MISMATCH' }, 409) };
+  const sourceInstanceId = base.sourceInstanceId || `vault-${base.id}`;
+  const current = bodies.find(item => item.sourceInstanceId === sourceInstanceId || (!base.sourceInstanceId && item.id === base.id));
+  if (!current || current.id !== baseId) {
+    return { error: json({ schema: SCHEMA, error: 'REVISION_HEAD_CHANGED', current_id: current?.id || null }, 409) };
+  }
+  const hash = await sha256Text(content);
+  if (hash === base.sha256) return { unchanged: true, body: base };
+  if (bodies.length >= 2000) {
+    return { error: json({ schema: SCHEMA, error: 'BODY_INDEX_CAPACITY_REACHED', max_bodies: 2000 }, 409) };
+  }
+  const id = crypto.randomUUID(), now = new Date().toISOString();
+  const fileName = safeFileName(base.fileName);
+  const name = boundedString(base.name, 500);
+  await bucket.put(`${BODY_PREFIX}/${id}.html`, content, {
+    httpMetadata: {
+      contentType: 'text/html; charset=utf-8',
+      contentDisposition: `attachment; filename="${fileName.replace(/"/g, '')}"`
+    },
+    customMetadata: { sha256: hash, bodyName: name.slice(0, 900) }
+  });
+  const record = {
+    id, name, fileName, bytes: byteCount, sha256: hash, sourceInstanceId,
+    previousVersionId: base.id, uploaded_at: now,
+    source: 'explicit-owner-revision',
+    status: 'PRIVATE_DURABLE_REVISION_NOT_PUBLICATION'
+  };
+  await writeJson(bucket, INDEX_KEY, {
+    schema: `${SCHEMA}.BodyIndex`,
+    updated_at: now,
+    bodies: [record, ...bodies]
+  });
+  return { unchanged: false, body: record };
 }
 
 async function deleteBody(bucket, id) {
@@ -283,6 +339,11 @@ export async function onRequest(context) {
     try { payload = await request.json(); }
     catch { return json({ schema: SCHEMA, error: 'INVALID_JSON' }, 400); }
 
+    if (payload?.action === 'revise-body') {
+      const outcome = await reviseBody(bucket, payload);
+      if (outcome.error) return outcome.error;
+      return json({ schema: SCHEMA, outcome: outcome.unchanged ? 'REVISION_UNCHANGED' : 'BODY_REVISION_STORED', ...outcome }, outcome.unchanged ? 200 : 201);
+    }
     if (payload?.action === 'upload-body') {
       const outcome = await uploadBody(bucket, payload);
       if (outcome.error) return outcome.error;

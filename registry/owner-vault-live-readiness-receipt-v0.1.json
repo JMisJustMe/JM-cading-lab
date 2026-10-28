@@ -1,6 +1,6 @@
 {
   "schema": "JM.OwnerVaultLiveReadinessReceipt/0.1",
-  "verified_utc": "2026-10-28T16:06:13.862700+00:00",
+  "verified_utc": "2026-10-28T16:09:35.733270+00:00",
   "state": "LIVE_READINESS_PASS",
   "host": "https://jmisjustme-estate.pages.dev",
   "http_status": "200",
@@ -19,10 +19,11 @@
   "cache_marker": "jm-web-estate-v1.4.13-ailatheo-entitlement-boundary",
   "public_editor_policy": "PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY",
   "cp05_public_editor_policy_verified": true,
-  "source_commit": "1d432648cc171285c649b4d29372855658683910",
-  "workflow_run": "40722529152",
+  "cp06_deployed_owner_editor_source_verified": true,
+  "source_commit": "18a57bb92b64d63f70d2be51bf23db84382a92f7",
+  "workflow_run": "40723171452",
   "authenticated_write_read_delete_proof": false,
   "owner_secret_value_recorded": false,
   "ding": false,
-  "claim_boundary": "This receipt proves public-safe function readiness and CP05 editor policy only when that marker is returned by the deployed API. It does NOT prove owner authentication, private body editing, owner-device reload or cross-device persistence; those require a separate owner-session proof."
+  "claim_boundary": "On mainline this receipt proves the deployed public-safe Owner Vault API policy AND deployed Owner Room JavaScript source markers for editing/recovery. It does NOT prove owner-key authentication, a real private save, physical owner-device reload, cross-device persistence, or a fully published JM creation."
 }

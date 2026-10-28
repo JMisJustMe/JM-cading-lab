@@ -1,0 +1,22 @@
+{
+  "schema": "JM.Family.Gifts.PublicPWA/1.5",
+  "version": "1.5",
+  "branch": "gh-pages",
+  "published_sources_commit": "1770d1ded18ef2b3879c756d946cc62dd8a62498",
+  "apps": [
+    {
+      "name": "Scripture Companion",
+      "path": "family-gifts/scripture-companion/",
+      "source": "family-gifts/scripture-companion/index.html",
+      "privacy": "local notes; public source"
+    },
+    {
+      "name": "Rim Route",
+      "path": "family-gifts/rim-route/",
+      "source": "family-gifts/rim-route/index.html",
+      "game_payload": "byte-exact inherited Rim Route v0.20"
+    }
+  ],
+  "physical_device_test": "PENDING",
+  "live_assets_test": "PENDING"
+}

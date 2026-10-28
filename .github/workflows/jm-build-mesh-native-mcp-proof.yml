@@ -89,10 +89,10 @@ jobs:
           init = rpc(1, "initialize", {
               "protocolVersion":"2025-06-18",
               "capabilities":{},
-              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.7.2"},
+              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.8.6"},
           })
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
-          assert init["serverInfo"]["version"] == "0.7.2", init
+          assert init["serverInfo"]["version"] == "0.8.6", init
 
           listed = rpc(2, "tools/list", {})
           names = [t["name"] for t in listed["tools"]]
@@ -204,7 +204,7 @@ jobs:
           assert buildmesh_gate["phase"] == "PLAN_ONLY", buildmesh_gate
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.7.2",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.6",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -233,11 +233,11 @@ jobs:
               "unknown_state":unknown["state"],
               "routeos_lineage_state":lineage["state"],
               "artifact_surface_profiles":status.get("artifact_surface_profiles"),
-              "claim_boundary":"Proves hosted v0.7.2 read-only capability-mesh and artifact-router reasoning, sovereign-sync contract generation, deterministic PLAN_ONLY operation gating, batching/caching and Build Mesh→Navigator contact. Raw private Library evidence remains local to the host; no write/mutation authority is claimed.",
+              "claim_boundary":"Proves hosted v0.8.6 read-only capability-mesh and artifact-router reasoning, sovereign-sync contract generation, deterministic PLAN_ONLY operation gating, batching/caching and Build Mesh→Navigator contact. Raw private Library evidence remains local to the host; no write/mutation authority is claimed.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_6.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -245,6 +245,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_6
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_6.json
           if-no-files-found: error

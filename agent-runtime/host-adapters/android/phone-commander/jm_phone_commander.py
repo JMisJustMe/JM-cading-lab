@@ -123,14 +123,20 @@ def execute(job, root, st):
                 "network_listener":"disabled by default"}
     if op=="git-status":
         if not shutil.which("git"): raise Hold("GIT_NOT_INSTALLED")
-        return {"result":"PASS","git":run(["git","status","--porcelain=v1","--untracked-files=no"],root),
-                "branch":run(["git","branch","--show-current"],root)}
+        git_state=run(["git","status","--porcelain=v1","--untracked-files=no"],root)
+        branch_state=run(["git","branch","--show-current"],root)
+        if git_state["exit_code"]!=0 or branch_state["exit_code"]!=0:
+            raise Hold("GIT_STATUS_FAILED")
+        return {"result":"PASS","git":git_state,"branch":branch_state}
     if op=="route":
         query=a.get("query","")
         if not isinstance(query,str) or not 1<=len(query)<=160 or any(ord(ch)<32 for ch in query):
             raise Hold("INVALID_ROUTE_QUERY")
-        return {"result":"PASS","core":run([sys.executable,"agent-runtime/jm_agent_runtime.py","--core-only",
-                                               "--surface","phone-termux","--query",query],root)}
+        core=run([sys.executable,"agent-runtime/jm_agent_runtime.py","--core-only",
+                  "--surface","phone-termux","--query",query],root)
+        if core["exit_code"]!=0:
+            raise Hold("JM_CORE_ROUTE_FAILED")
+        return {"result":"PASS","core":core}
     if op=="read-file":
         path=resolved_file(root,a.get("path"))
         data=path.read_bytes()

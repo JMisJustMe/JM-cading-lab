@@ -85,3 +85,23 @@ python3 agent-runtime/host-adapters/storage-admission/JM_M001_POSTPROCESS_RETENT
 Input schema: `JM.M001.PostprocessInput/1` with a `records` array. Each record requires `carrier_id`, `body_id`, `version`, `event_id`, `event_summary`, `kind` (`image`, `video`, `receipt`, `version`, `other`), `purpose`, `bytes`, `sha256`, `separate_uses`, `extracted_facts`, `proof_refs`, `recovery_refs`. Optional declared review fields are `extraction_complete`, `structured_custody_verified`, and `use_review` (`affirmatively_cleared` only for a review candidate). Output is a compact JSON index/receipt, **not a verified substitute for missing source bytes**.
 
 CP22 never touches original media, never overwrites an existing receipt, never deletes or updates the native Library and claims zero realised storage savings. The owner-purpose and recovery proof gates remain independent. An identical event/hash is only a comparison signal: individual roles/identities are not merged. Current production admission and original CP21 remain unchanged; an authorised host must supply its own real evidence before applying postprocessing.
+
+
+## CP23: Magnifying Glass × Storage Steward × CP22 evidence contact
+
+`JM_M001_REAL_EVIDENCE_BRIDGE_CP23.py` is an additive, read-only recipient of the **already established** JM Magnifying Glass CP05 pin set. It takes three original private-source manifest formats: CP04 Purpose Graph, CP02 image proof manifest and CP12 website edition/cold-restoration manifest. Their historical SHA-256 pins are checked against actual input bytes before parsing. CP04's internal graph digest and aggregate/protected-role invariants are separately checked.
+
+After host-local contact, the bridge sends **39 individual carrier records across 16 body/edition identities** to the existing CP22 compiler: 5 root-house pairs (10 carriers), 25 original images in 7 project houses, and 4 independent website edition ZIPs. It refuses to identify any original as disposable: all 39 are preserved as separate-use/source roles. Original media, code, per-carrier provider IDs, declared current-head decisions and private manifests are **not copied into public source control**.
+
+To use with existing private, authorized source files (run locally, not in public CI):
+
+```bash
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_REAL_EVIDENCE_BRIDGE_CP23.py \
+  --sources /path/to/authorized/three-source-manifest-folder \
+  --output /path/to/new-private-cp23-receipt.json
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_REAL_EVIDENCE_BRIDGE_CP23_TESTS.py
+```
+
+CP23 stdout contains counts only. The optional output file is created with exclusive new-file semantics and contains the owner-private detailed records; do not publish it. Pin verification proves **historical manifest exactness**, NOT fresh authenticated private provider state, exhaustive purpose release, live link recovery, a new-media pixel inspection, or storage quota savings. CP22 cannot infer a safe media deletion from an already compacted index.
+
+Synthetic CI tests exercise identity preservation, source-pinning, role spoof refusal and the zero-mutation/zero-savings boundary. CP04/CP05 source remains the sovereign inspection/provenance authority; this is only an additive M001 retention recipient.

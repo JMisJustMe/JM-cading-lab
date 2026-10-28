@@ -15,7 +15,18 @@ class FakeR2Object {
 class FakeR2 {
   constructor() { this.map = new Map(); }
   async get(key) { const item = this.map.get(key); return item ? new FakeR2Object(item) : null; }
-  async put(key, body, options = {}) { this.map.set(key, { body: String(body), options }); }
+  async put(key, body, options = {}) {
+    if (this.dropNextIndexWrite && key.endsWith('/bodies/index.json')) {
+      this.dropNextIndexWrite = false;
+      return;
+    }
+    let stored = String(body);
+    if (this.tamperNextBodyWrite && key.endsWith('.html')) {
+      this.tamperNextBodyWrite = false;
+      stored += '<!-- injected R2 corruption -->';
+    }
+    this.map.set(key, { body: stored, options });
+  }
   async delete(key) { this.map.delete(key); }
 }
 
@@ -261,4 +272,63 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   assert.equal((await call({ query: '?mode=status', env: {} })).status, 200);
 }
 
-console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion · no silent 2000-body eviction · CP05 corrupt-record fail-closed read/write/snapshot.');
+/* CP06: independent R2 readback and source integrity, without collapsing uses. */
+{
+  const isolated = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: isolated };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const html = '<!doctype html><html><body>CP06 verified source</body></html>';
+  const make = (sourceInstanceId, content = html) => call({
+    method: 'POST', env: isolatedEnv, key,
+    body: { action: 'upload-body', body: { sourceInstanceId, content } }
+  });
+  const create = await make('cp06-purpose-one');
+  assert.equal(create.status, 201);
+  const metadata = (await create.json()).body;
+  const objectKey = `jm-owner-vault/v0.1/bodies/${metadata.id}.html`;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const original = isolated.map.get(objectKey);
+  assert.equal(original.body, html);
+  const good = await call({ env: isolatedEnv, key, query: `?body=${metadata.id}` });
+  assert.equal(good.status, 200);
+  assert.equal(good.headers.get('x-jm-body-integrity'), 'sha256-verified');
+  assert.equal(await good.text(), html);
+
+  // Damaged source bytes must never be served as an authoritative download.
+  isolated.map.set(objectKey, { ...original, body: html + '<!-- tampered -->' });
+  const damaged = await call({ env: isolatedEnv, key, query: `?body=${metadata.id}` });
+  assert.equal(damaged.status, 409);
+  assert.equal((await damaged.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.match(isolated.map.get(objectKey).body, /tampered/);
+  // Same-byte-length mutation reaches the SHA-256 check, not just size guard.
+  isolated.map.set(objectKey, { ...original, body: html.replace('verified', 'tampered') });
+  const sameSizeTamper = await call({ env: isolatedEnv, key, query: `?body=${metadata.id}` });
+  assert.equal(sameSizeTamper.status, 409);
+  assert.equal((await sameSizeTamper.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  isolated.map.set(objectKey, original);
+  assert.equal((await call({ env: isolatedEnv, key, query: `?body=${metadata.id}` })).status, 200);
+
+  // A provider can acknowledge PUT yet persist changed bytes: do not index them.
+  const beforeIndex = isolated.map.get(indexKey).body;
+  isolated.tamperNextBodyWrite = true;
+  const failed = await make('cp06-purpose-two', html.replace('verified', 'changed'));
+  assert.equal(failed.status, 409);
+  assert.equal((await failed.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, beforeIndex);
+  assert.equal([...isolated.map.keys()].filter(k => k.endsWith('.html')).length, 2);
+
+  // An acknowledged index PUT that fails to persist must not return success.
+  isolated.dropNextIndexWrite = true;
+  const dropped = await make('cp06-purpose-three', html.replace('verified', 'third'));
+  assert.equal(dropped.status, 409);
+  assert.equal((await dropped.json()).error, 'BODY_INDEX_READBACK_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, beforeIndex);
+  assert.equal((await make('cp06-purpose-one')).status, 200);
+  assert.equal((await make('cp06-different-purpose')).status, 201);
+  isolated.map.delete(objectKey);
+  const missing = await call({ env: isolatedEnv, key, query: `?body=${metadata.id}` });
+  assert.equal(missing.status, 404);
+  assert.equal((await missing.json()).error, 'BODY_BYTES_MISSING');
+}
+
+console.log('PASS: JM Owner Vault CP04 use identity · CP05 corrupted-record HOLD · CP06 exact R2 body/index readback and tamper refusal.');

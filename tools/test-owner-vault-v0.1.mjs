@@ -535,6 +535,44 @@ console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor pr
   assert.equal(storage.map.has(bodyKey), false);
   assert.equal((await (await call({ env: isolatedEnv, key })).json()).bodies.length, 0);
 }
+// CP13: A retained descendant must never be left pointing at a deleted
+// original ancestor. Test real API calls against disposable fake R2 only.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const html = '<!doctype html><html><body>CP13 protected original</body></html>';
+  const uploaded = await call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'upload-body', body: { name: 'CP13 original', sourceInstanceId: 'cp13-ancestor-0001', content: html }
+  } });
+  assert.equal(uploaded.status, 201);
+  const original = (await uploaded.json()).body;
+  const revised = await call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'revise-body', baseId: original.id, expectedSha256: original.sha256,
+    content: html.replace('original', 'revision')
+  } });
+  assert.equal(revised.status, 201);
+  const child = (await revised.json()).body;
+  assert.equal(child.previousVersionId, original.id);
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const originalKey = `jm-owner-vault/v0.1/bodies/${original.id}.html`;
+  const childKey = `jm-owner-vault/v0.1/bodies/${child.id}.html`;
+  const beforeIndex = storage.map.get(indexKey).body;
+  const blocked = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${original.id}` });
+  assert.equal(blocked.status, 409);
+  assert.equal((await blocked.json()).error, 'BODY_ANCESTOR_STILL_REFERENCED');
+  assert.equal(storage.map.get(indexKey).body, beforeIndex, 'Refused deletion must preserve original index');
+  assert.equal(storage.map.get(originalKey).body, html, 'Original source bytes must remain held');
+  assert.equal(storage.map.has(childKey), true, 'Descendant source must remain held');
+  assert.equal((await call({ env: isolatedEnv, key, query: `?body=${original.id}` })).status, 200);
+  assert.equal((await call({ env: isolatedEnv, key, query: `?body=${child.id}` })).status, 200);
+  const deleteChild = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${child.id}` });
+  assert.equal(deleteChild.status, 200, 'Leaf revision may be explicitly removed');
+  const deleteOriginal = await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${original.id}` });
+  assert.equal(deleteOriginal.status, 200, 'Unreferenced original may then be explicitly removed');
+  assert.equal(storage.map.has(originalKey) || storage.map.has(childKey), false);
+  assert.equal((await (await call({ env: isolatedEnv, key })).json()).bodies.length, 0);
+}
 {
   const storage = new FakeR2();
   const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };

@@ -197,6 +197,7 @@ jobs:
               await page.locator('#jmVaultUnlock').waitFor({state:'attached',timeout:12000});
               await page.locator('#jmVaultUnlock').click();
               await page.locator('[data-vault-edit="'+id+'"]').click();
+              await page.waitForFunction(expected=>document.querySelector('#jmVaultEditorText')?.value===expected,original,{timeout:12000});
               if(await page.locator('#jmVaultEditorText').inputValue()!==original)throw Error('Original private HTML was not loaded exactly');
               await page.locator('#jmVaultEditorText').fill(edited);
               await page.locator('#jmVaultSaveRevision').click();

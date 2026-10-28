@@ -246,3 +246,54 @@ live authenticated R2, physical-device use and public deployed propagation
 are **distinct HOLD gates**. Nothing is called an independent backup solely
 because the API returned HTTP 200 or a synthetic test runner passed. Neither
 this branch nor a user's existing live owner data is mutated by CI tests.
+
+
+## CP20 — independently verified offline source recovery (draft, 28 October 2026)
+
+The original CP19 packet can be saved and carried outside this host. The
+**standalone, no-network, no-secret, no-R2** recipient is
+`tools/owner-vault-lineage-recover.mjs`. This is a reader of the ORIGINAL JM
+Owner Vault's source-complete export, not a new cloud vault, account or
+backup service. Requires Node.js 22+ (standard library only).
+
+From a local copy of the utility and an owner-saved JSON packet:
+
+```sh
+node owner-vault-lineage-recover.mjs --input JM_Vault_Lineage_<body-id>.json --verify-only
+node owner-vault-lineage-recover.mjs --input JM_Vault_Lineage_<body-id>.json --output-dir ./fresh-owner-recovery
+```
+
+The command verifies each UTF-8 original HTML SHA-256, length, unique native
+UUID, complete newest-to-oldest chain, original source-instance lineage and
+total byte count. It refuses tampered/missing ancestors, cross-purpose
+lineage, invalid filenames/IDs, symlink packet, overbounded body counts/sizes
+and existing output destinations. An explicit **new** output directory
+receives named `<original-id>.html` files (up to 16, 32 MiB total) and
+`recovery-manifest.json`, preserving the identity, original body metadata,
+individual editable source files and SHA-256 packet custody receipt. The
+program does not contact ChatGPT, the browser or the Vault, create other R2
+objects, delete originals, overwrite any existing folder, import into a
+live host or claim a public deployment.
+
+The existing `tools/test-owner-vault-v0.1.mjs` CI test copies ONLY the
+standalone utility and original exported JSON into a separate temporary
+directory, invokes the actual Node CLI to reconstruct three exact original
+versions, proves a distinct same-byte purpose was not merged, and uses
+adversarially malformed saved packets and an existing destination to prove
+fail-closed behaviour. Generated synthetic test files are disposed after
+testing; user artifacts are never accessed by the CI fixtures.
+
+**Honest boundary:** GitHub CI proves synthetic independent-file recovery
+using the saved packet format, not owner physical-device use, actual downloaded
+packet custody, private Cloudflare R2 data, independent offsite backup,
+human acceptance or production release. The packet SHA-256 is an
+integrity receipt, **not cryptographic authorship or a signer guarantee**;
+an adversary who can replace both packet contents and their checksums
+would need a separate authenticated anchor to be detected. Keep any real
+export private: it contains the complete owner's source HTML.
+The source candidate remains **DRAFT / UNMERGED**; live owner/device/prod
+gates stay HOLD.
+
+Governed by same-PR prospective Build Route Manifest
+`registry/build-routes/JM_OWNER_VAULT_CP20_OFFLINE_RECOVERY_BUILD_ROUTE_MANIFEST_v0.1.json`
+after native entry gate identified this new executable path.

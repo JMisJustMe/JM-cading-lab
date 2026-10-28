@@ -5,11 +5,15 @@ on:
     branches: [main]
     paths:
       - "estate-publication/apps-tools-convergence/**"
+      - "apps/index.html"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
       - ".github/workflows/jm-apps-tools-continuity-cp11.yml"
   push:
     branches: [main]
     paths:
       - "estate-publication/apps-tools-convergence/**"
+      - "apps/index.html"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
       - ".github/workflows/jm-apps-tools-continuity-cp11.yml"
   workflow_dispatch:
 
@@ -31,6 +35,21 @@ jobs:
           node --check estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js
           node --check estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js
           node estate-publication/apps-tools-convergence/test-continuity-cp11.mjs
+          node - <<'NODE'
+          const fs=require('node:fs'), assert=require('node:assert/strict');
+          const house=fs.readFileSync('apps/index.html','utf8');
+          assert.match(house,/data-cp11="four-original-workrooms"/);
+          const envs=['evidence-governance','creation-publication','contact-practice','route-ftr'];
+          for(const env of envs){
+            assert(house.includes('/estate-publication/apps-tools-convergence/'+env+'/index.html'));
+            const path='estate-publication/apps-tools-convergence/'+env+'/index.html';
+            assert(fs.readFileSync(path,'utf8').includes('JM_ENV_CONFIG='));
+          }
+          const workflow=fs.readFileSync('.github/workflows/deploy-estate-sovereign-integrated-v1.yml','utf8');
+          assert(workflow.includes("env_src='estate-publication/apps-tools-convergence'"));
+          assert(workflow.includes("find \"$env_dst\" -type f | wc -l"));
+          console.log('CP11 public-safe exact 8-file allowlist and 4/4 existing Apps House workroom doors prepared; live serving not yet proved');
+          NODE
       - name: Install Chromium
         run: |
           npm install --no-save playwright@1.54.1

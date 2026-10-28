@@ -276,7 +276,13 @@ jobs:
           node-version: "22"
       - name: Install browser harness (test-only, no browser engine claim)
         run: |
-          npm install --no-save --no-audit --no-fund playwright@1.56.0
-          npx playwright install --with-deps chromium
+          npm install --no-save --no-audit --no-fund playwright@latest
+          if command -v google-chrome >/dev/null; then
+            echo "JM_CHROME_EXECUTABLE=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          elif command -v chromium >/dev/null; then
+            echo "JM_CHROME_EXECUTABLE=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
       - name: Exercise original JM3232 UI on touch-width and laptop-width Chromium
         run: node navigator/mcp-public-v1/test-chatgpt-browser-emulation-cp03.mjs

@@ -76,4 +76,18 @@ class Live(unittest.TestCase):
    s,_,_=req(original+'/mcp','POST',{'jsonrpc':'2.0','id':3,'method':'tools/list','params':{}})
    self.assertEqual(s,401)
    print('LIVE_INVALID_REDIRECT_AND_ORIGINAL_BEARER_HOLD',realm,flush=True)
+
+ def test_05_live_modern_mcp_preflight_for_both_sovereign_realms(self):
+  for realm,(gateway,original,scope) in HOSTS.items():
+   q=urllib.request.Request(gateway+'/mcp',method='OPTIONS',headers={
+     'Origin':'https://gemini.google.com','Access-Control-Request-Method':'POST',
+     'Access-Control-Request-Headers':'Authorization,MCP-Protocol-Version,Mcp-Method,Mcp-Name'})
+   with urllib.request.urlopen(q,timeout=28) as response:
+    self.assertEqual(response.status,204)
+    allowed=response.headers.get('Access-Control-Allow-Headers','')
+    for field in ('MCP-Protocol-Version','Mcp-Method','Mcp-Name'):
+     self.assertIn(field,allowed)
+   print('LIVE_CP10_PREFLIGHT_FOR_'+realm.upper(),flush=True)
+
+
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -39,3 +39,24 @@ test('deployment refuses a private store nested inside its public source',()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jm-source-hardening-'));fs.writeFileSync(path.join(dir,'index.html'),'JM');
  try{assert.throws(()=>deploy(path.join(dir,'private-store'),'demo',dir),/SOURCE_STORE_OVERLAP/)}finally{fs.rmSync(dir,{recursive:true,force:true})}
 });
+
+test('supervisor can retry the same instance after an occupied-port preflight',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jm-supervisor-preflight-'));
+ const entry=path.join(dir,'ready.mjs');
+ fs.writeFileSync(entry,"import http from 'node:http';http.createServer((req,res)=>{res.setHeader('Content-Type','application/json');res.end(JSON.stringify({ok:true,scope:'JM_NODE_TEST'}))}).listen(Number(process.env.PORT),'127.0.0.1');");
+ const blocker=net.createServer();await new Promise(r=>blocker.listen(0,'127.0.0.1',r));
+ const port=blocker.address().port;
+ const runner=new JMNodeSupervisor({entry,cwd:dir,port,maxRestarts:0,timeoutMs:3500});
+ try{
+  await assert.rejects(runner.start(),/SERVICE_PORT_OCCUPIED/);
+  assert.equal(runner.status().running,false);
+  await assert.rejects(runner.start(),/SERVICE_PORT_OCCUPIED/);
+  await new Promise(r=>blocker.close(r));
+  const started=await runner.start();assert.equal(started.ok,true);
+  assert.equal(await runner.probe(),true);
+ }finally{
+  await runner.stop();
+  if(blocker.listening)await new Promise(r=>blocker.close(r));
+  fs.rmSync(dir,{recursive:true,force:true});
+ }
+});

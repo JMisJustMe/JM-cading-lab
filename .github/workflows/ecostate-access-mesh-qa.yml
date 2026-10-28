@@ -158,9 +158,13 @@ jobs:
           const next='550e8400-e29b-41d4-a716-446655440001';
           (async()=>{
             const browser=await chromium.launch({headless:true});
+            browser.on('disconnected',()=>console.log('Editor QA Chromium disconnected'));
+            try {
             let total=0;
             for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
               const page=await browser.newPage({viewport});
+              page.setDefaultTimeout(10000);
+              page.on('pageerror',e=>console.log('EDITOR_BROWSER_PAGEERROR',String(e).slice(0,260)));
               const records=new Map([[id,original]]);
               let bodies=[{id,name:'Original private use',fileName:'original.html',sha256:hex(original),bytes:Buffer.byteLength(original),sourceInstanceId:'local-independent-original',status:'PRIVATE_DURABLE_COPY_NOT_PUBLICATION'}];
               let writes=0;
@@ -188,7 +192,8 @@ jobs:
                 }
                 return send(405,{error:'METHOD_NOT_ALLOWED'});
               });
-              await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'networkidle'});
+              await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+              await page.locator('#jmVaultUnlock').waitFor({state:'attached',timeout:12000});
               await page.locator('#jmVaultUnlock').click();
               await page.locator('[data-vault-edit="'+id+'"]').click();
               if(await page.locator('#jmVaultEditorText').inputValue()!==original)throw Error('Original private HTML was not loaded exactly');
@@ -202,8 +207,8 @@ jobs:
               await page.close();
               total++;
             }
-            await browser.close();
             if(total!==2)throw Error('Expected two synthetic owner-editor viewport tests');
             console.log('CP05 private editor browser proof: 2/2 viewport journeys PASS · real UI · synthetic private Vault; not a live R2 credential test');
-          })().catch(e=>{console.error(e);process.exitCode=1});
+            } finally { await browser.close(); }
+          })().catch(e=>{console.error('EDITOR_BROWSER_QA_FAILED',e);process.exitCode=1});
           NODE

@@ -99,8 +99,47 @@ A remote edit issue must include `confirmation: OWNER_APPROVED_CODE_EDIT`, the e
 
 ## Evidence and no-regression checklist
 
-- `python -m unittest discover -s agent-runtime/host-adapters/android/phone-commander -p 'test_phone_commander.py' -v` — **28 local fixture tests passed on 28 Oct 2026**. Run again on the repository/CI.
+- `python -m unittest discover -s agent-runtime/host-adapters/android/phone-commander -p 'test_phone_commander.py' -v` — **30 off-device fixture tests passed in GitHub Actions run #40771978217 on 28 Oct 2026**. Run again on the repository/CI.
 - No existing file overwritten, ancestor or agent core replaced, host-adapter registry promoted, or Desktop Commander configuration changed.
 - `JM Phone Commander v0.1`: **FUNCTION (local fixture) proof only**. Phone physical device command, mailbox round trip, private issue receipt, owner-device write, reboot persistence and Codex separate-host contact remain **OPEN** until independently exercised.
 - Normal-chat access to GitHub and JM Build Mesh was directly observed on 28 Oct 2026; not a blanket plugin/access persistence guarantee.
 - If this descendant becomes verified, donate only reusable host-adapter/permission/continuity patterns to the JM Blueprint Plant; test each recipient separately.
+## CP02 owner-device contact checkpoint — no new root, no duplicated issue
+
+**Source authority:** existing PR #577 is DRAFT, not merged or deployed. The existing private mailbox has a single read-only owner-issued test at `JMisJustMe/JM-ai-studio-surface#1`; **do not create another test command**. Phone/device and independent Work/Codex proof are still OPEN.
+
+For an **unmerged** branch test on Termux without changing or overwriting the original JM checkout, use a distinct worktree:
+
+```bash
+pkg install -y python git gh
+cd "$HOME/JM_WORKSPACE/JM-cading-lab" || exit 1
+git fetch origin feat/jm-phone-commander-v0-1-20261028
+git worktree add --detach "$HOME/JM_WORKSPACE/JM-phone-commander-probe" FETCH_HEAD
+python "$HOME/JM_WORKSPACE/JM-phone-commander-probe/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py" --workspace "$HOME/JM_WORKSPACE/JM-phone-commander-probe" status
+```
+
+If the probe worktree already exists, **do not overwrite it**. Reuse or inspect its checked-out revision first. If the original checkout doesn't exist, preserve the existing workspace and follow the normal first-clone instructions above. Do not merge or use `git reset --hard` to prepare a probe.
+
+After a successful phone-local status and a locally authorised `gh auth login` (if needed), run the queued read-only mailbox test once:
+
+```bash
+python "$HOME/JM_WORKSPACE/JM-phone-commander-probe/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py" --workspace "$HOME/JM_WORKSPACE/JM-phone-commander-probe" mailbox
+```
+
+Inspect the **private** issue #1's bounded receipt. Do not publish tokens, local files, or private issue contents. A GitHub comment/closure without verified phone execution is not physical proof. The owner must separately approve each edit grant, and a read-only status success never authorises file editing.
+
+### Per-surface independent continuation acceptance
+
+| Gate | Receipt required | Current proof |
+| --- | --- | --- |
+| Normal ChatGPT | Direct GitHub + native Build Mesh response in ordinary chat | Observed 28 Oct 2026 (separate from host proof) |
+| Off-device source | Immutable Git commit, GitHub readback, actual CI test output | 30/30 PASS at `befc52ad987cceb8c19d7f754befe3652bccfda3`, run #40771978217 |
+| Physical owner phone | Local Termux `status` reports actual device platform and workspace | OPEN |
+| Private mailbox | Existing issue #1 is picked up by owner's phone; receipt, close, independent readback | OPEN |
+| ChatGPT Work | Independently invoke authorised read-only GitHub/Build Mesh and verify same source commit | OPEN |
+| Codex | Independently invoke authorised adapter or exact protected source and verify same commit | OPEN |
+| Owner edits | Locally granted, hash-matched test edit → backup → readback → reload; no stale-hash bypass | OPEN |
+| Recovery | Owner-controlled restart or reboot with custody preserved, no duplicate command execution | OPEN |
+| Production propagation | Owner-approved release, deployed readback, drift check | OPEN |
+
+No gate is promoted from a different environment's PASS; connector availability does not equate to OAuth, device control, persistent shared auth, or deployment. The private mailbox is opt-in and works only when the phone is running. Reusable JM BLUEPRINT PLANT adapters are **dependent on separately tested descendant-specific permission and host routes**.

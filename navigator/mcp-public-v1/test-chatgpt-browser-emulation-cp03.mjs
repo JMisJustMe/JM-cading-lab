@@ -39,6 +39,7 @@ try{
       }
     };
   });
+  page.on('pageerror',err=>console.log('JM BROWSER JS ERROR',String(err).slice(0,400)));
   await page.goto('about:blank');
   await page.route('**/*',route=>route.abort());
   await page.setContent(html,{waitUntil:'domcontentloaded',timeout:120000});
@@ -46,7 +47,19 @@ try{
   await page.locator('#searchInput').fill('OpenAI documentation');
   await page.locator('#scopeSelect').evaluate(el=>{el.value='web';el.dispatchEvent(new Event('change',{bubbles:true}));});
   await page.locator('#searchForm').evaluate(form=>form.requestSubmit());
-  await page.waitForFunction(()=>document.body.innerText.includes('JM CP03 Search Probe'),null,{timeout:30000});
+  try{
+    await page.waitForFunction(()=>document.body.innerText.includes('JM CP03 Search Probe'),null,{timeout:12000});
+  }catch(e){
+    console.log('JM UI DIAGNOSTICS',JSON.stringify(await page.evaluate(()=>({
+      hostApi:typeof window.openai, hostCallTool:typeof window.openai?.callTool,
+      bridgeInternet:typeof window.JM3232_CHATGPT_BRIDGE?.internet,
+      calls:window.__jmCalls, widgetState:window.__jmWidgetState?.schema,
+      visibleText:document.body.innerText.slice(0,1600),
+      searchValue:document.querySelector('#searchInput')?.value,
+      scopeValue:document.querySelector('#scopeSelect')?.value
+    }))));
+    throw e;
+  }
   const state=await page.evaluate(()=>({
     calls:window.__jmCalls,
     visible:document.body.innerText.includes('JM CP03 Search Probe'),

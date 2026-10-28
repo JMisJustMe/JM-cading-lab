@@ -209,11 +209,60 @@ jobs:
               const buttons=await page.locator('[data-vault-edit]').count();
               if(buttons!==2)throw Error('Revision and ancestor not both editable: '+buttons);
               if(await page.locator('#jmVaultEditor').isVisible())throw Error('Editor not closed after verified readback');
+
+              // CP07: recover the exact private revision to the real local Owner Room
+              // without issuing any additional remote writes or losing the ancestor.
+              await page.locator('[data-vault-restore="'+next+'"]').click();
+              await page.waitForFunction((revisionId)=>{
+                try{return JSON.parse(localStorage.getItem('jm-estate-mounted')||'[]').some(x=>x.vaultBodyId===revisionId)}catch{return false}
+              },next,{timeout:12000});
+              await page.waitForFunction(()=>document.querySelector('#mountedCount')?.textContent?.startsWith('1 '),{timeout:12000});
+              const local=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-estate-mounted')||'[]'));
+              if(local.length!==1||local[0].vaultBodyId!==next||local[0].content!==edited||local[0].vaultSha256!==hex(edited))
+                throw Error('CP07 local revision source/hash/readback mismatch');
+              await page.locator('[data-vault-restore="'+next+'"]').click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultMessage')?.textContent?.includes('already mounted locally'),{timeout:12000});
+              if((await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-estate-mounted')).length))!==1||writes!==1)
+                throw Error('CP07 repeated restore duplicated local or remote body');
+
+              // A full 12-body local shelf must not silently discard any body.
+              await page.evaluate(()=>{
+                const k='jm-estate-mounted',items=JSON.parse(localStorage.getItem(k));
+                for(let n=1;n<12;n++)items.push({id:'local-protected-'+n,name:'Protected '+n,fileName:'protected.html',bytes:18,content:'<!doctype html><html></html>',at:new Date().toISOString()});
+                localStorage.setItem(k,JSON.stringify(items));
+              });
+              await page.reload({waitUntil:'domcontentloaded'});
+              await page.locator('[data-vault-restore="'+id+'"]').click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultMessage')?.textContent?.includes('Local shelf is full'),{timeout:12000});
+              const full=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-estate-mounted')));
+              if(full.length!==12||!full.some(x=>x.id==='local-protected-11')||!full.some(x=>x.vaultBodyId===next))
+                throw Error('CP07 full shelf lost an original');
+
+              // Quota failures on local import must not wipe either durable or
+              // in-memory originals (the former source code did exactly this).
+              await page.evaluate(()=>{
+                const key='jm-estate-mounted',value=JSON.parse(localStorage.getItem(key));
+                localStorage.setItem(key,JSON.stringify(value.slice(0,1)));
+              });
+              await page.reload({waitUntil:'domcontentloaded'});
+              await page.evaluate(()=>{
+                const previous=Storage.prototype.setItem;
+                Storage.prototype.setItem=function(key,value){
+                  if(key==='jm-estate-mounted')throw new DOMException('Synthetic full device','QuotaExceededError');
+                  return previous.call(this,key,value);
+                };
+              });
+              await page.locator('#htmlMountInput').setInputFiles({name:'uncommitted-new.html',mimeType:'text/html',buffer:Buffer.from('<!doctype html><html><body>Not retained</body></html>')});
+              await page.waitForFunction(()=>document.querySelector('#toast')?.textContent?.includes('Previous mounted bodies remain unchanged'),{timeout:12000});
+              const afterQuota=await page.evaluate(()=>({durable:JSON.parse(localStorage.getItem('jm-estate-mounted')),count:document.querySelector('#mountedCount')?.textContent}));
+              if(afterQuota.durable.length!==1||afterQuota.durable[0].vaultBodyId!==next||!afterQuota.count.startsWith('1 '))
+                throw Error('CP07 quota failure altered protected local body');
+              if(writes!==1)throw Error('CP07 local recovery unexpectedly wrote to private Vault');
               await page.close();
               total++;
             }
             if(total!==2)throw Error('Expected two synthetic owner-editor viewport tests');
-            console.log('CP05 private editor browser proof: 2/2 viewport journeys PASS (1 normal acknowledgement, 1 lost-response recovered without duplicate mutation) · real UI · synthetic private Vault; not live R2 proof');
+            console.log('CP05/CP07 real Owner Room: 2/2 phone/desktop journeys PASS · private edit/readback · lost response recovery · local restore · repeat idempotence · full shelf preservation · quota non-erasure (synthetic vault)');
             } finally { await browser.close(); }
           })().catch(e=>{console.error('EDITOR_BROWSER_QA_FAILED',e);process.exitCode=1});
           NODE

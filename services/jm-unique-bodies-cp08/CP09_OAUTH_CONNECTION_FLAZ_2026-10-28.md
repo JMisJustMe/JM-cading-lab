@@ -33,3 +33,14 @@
 - Never confuse a successful registered client or source importer with a cross-client native tool-call DING.
 
 **No DING No Claim · MESH ≠ MERGE · BODY ≠ ROUTE ≠ SEAT · RECOVER BEFORE REBUILD.**
+
+
+## CP10 dual-era candidate — bounded BIAT → FLAZ evidence, 28 October 2026
+
+**Candidate only; no new live deployment:** `feat/jm-unique-bodies-cp10-dual-era-20261028`, draft PR [#557](https://github.com/JMisJustMe/JM-cading-lab/pull/557) against the protected CP09 OAuth branch. Original CP08 engine and Atlas, and live CP09 deployment, are not edited or replaced.
+
+**Actual CP10 code:** `cp10_dual_era.py` + bounded `cp09_oauth_broker.py` changes implement OAuth-gated MCP 2026-07-28 `server/discover`, request metadata/header checks, stripping modern metadata before original CP08 delegation, scoped native `tools/list` / `tools/call` and `resultType=complete` responses. Older client behavior is preserved. Modern tool-only compatibility is NOT a blanket certification of every MCP 2026 feature or client.
+
+**Adversarial evidence:** [GitHub Actions run 40630832105](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40630832105), SUCCESS at source/test commit `97b512d87ad5d92c38b63995edb657955102fca3`: 8 OAuth + 23 broker (including 5 new modern/negative tests) + 10 protected CP08 + 6 hosted HTTPS = **47/47 PASS**. The hosted checks use existing live CP09 and are NOT a CP10 production deploy or genuinely authorised ChatGPT/Gemini native invocation.
+
+**Bounded FLAZ:** F original protected; L candidate source and CI; A header spoof, anonymous, invalid version/method, denied write and original donor regression; Z this versioned candidate branch and PR. **Candidate implementation/test FLAZ CLOSED at synthetic/local/hosted-read scope; production deployment HOLD; owner-authorised ChatGPT/Gemini native `tools/list` and `tools/call` HOLD; OAuth restart persistence HOLD.** Do not promote this branch without independent production + owner-client proof. No DING No Claim; MESH ≠ MERGE.

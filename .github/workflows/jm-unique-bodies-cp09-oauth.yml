@@ -1,0 +1,31 @@
+name: JM Unique Bodies CP09 OAuth Authenticated Admission
+
+on:
+  push:
+    branches:
+      - feat/jm-unique-bodies-cp09-oauth-20261028
+  workflow_dispatch:
+
+permissions:
+  contents: read
+jobs:
+  authorisation_and_atomic_inheritance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Python compilation of separate OAuth organ and gateway
+        run: |
+          python3 -m py_compile services/jm-unique-bodies-cp08/cp09_oauth.py
+          python3 -m py_compile services/jm-unique-bodies-cp08/cp09_oauth_gateway.py
+      - name: Real local client registration, consent, PKCE and atomic donor execution
+        run: |
+          cd services/jm-unique-bodies-cp08
+          python3 -m unittest -v test_cp09_oauth
+      - name: Preserve exact CP08 regression against inherited original source
+        run: |
+          cd services/jm-unique-bodies-cp08
+          python3 -m unittest -v test_cp08_transport

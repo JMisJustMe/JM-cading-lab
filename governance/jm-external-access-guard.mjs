@@ -57,9 +57,9 @@ export async function sourceCheck(root, path) {
   }
 }
 
-export async function liveCheck(url, fetcher = fetch) {
+export async function liveCheck(url, fetcher = fetch, expected = 'html') {
   try {
-    const res = await fetcher(url, { method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(16000), headers: { 'Accept': 'text/html' } });
+    const res = await fetcher(url, { method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(16000), headers: { 'Accept': expected === 'json' ? 'application/json' : 'text/html' } });
     if (!res.ok) { await res.body?.cancel(); return { state: 'FAIL', http_status: res.status, reason: 'HTTP_NOT_OK' }; }
     // A login page or unrelated domain redirected with HTTP 200 is not the JM door.
     const finalUrl = res.url || url;
@@ -68,6 +68,22 @@ export async function liveCheck(url, fetcher = fetch) {
       return { state: 'FAIL', http_status: res.status, reason: 'CROSS_ORIGIN_REDIRECT', final_url: finalUrl };
     }
     const ct = res.headers.get('content-type') || '';
+    // Explicit registry JSON is a machine contract, not a broken HTML door.
+    if (expected === 'json') {
+      if (!/application\/(?:json|[a-z0-9.+-]+\+json)|text\/json/i.test(ct)) {
+        await res.body?.cancel();
+        return { state: 'FAIL', http_status: res.status, reason: 'NON_JSON_RESPONSE', content_type: ct };
+      }
+      const raw = await res.text();
+      try { JSON.parse(raw); } catch {
+        return { state: 'FAIL', http_status: res.status, reason: 'MALFORMED_JSON' };
+      }
+      return { state: 'PASS', http_status: res.status, final_url: finalUrl, media: 'json' };
+    }
+    if (expected !== 'html') {
+      await res.body?.cancel();
+      return { state: 'NOT_TESTED', reason: 'UNSUPPORTED_MEDIA_TYPE', expected };
+    }
     if (!/text\/html/i.test(ct)) { await res.body?.cancel(); return { state: 'FAIL', http_status: res.status, reason: 'NON_HTML_RESPONSE', content_type: ct }; }
     const reader = res.body?.getReader();
     if (!reader) return { state: 'FAIL', http_status: res.status, reason: 'NO_RESPONSE_BODY' };
@@ -88,7 +104,8 @@ export async function audit({ root, map, online = false, fetcher = fetch, concur
       const i = pointer++;
       const t = targets[i];
       const source = await sourceCheck(root, t.path);
-      const live = online ? await liveCheck(t.url, fetcher) : { state: 'NOT_TESTED', reason: 'OFFLINE_MODE' };
+      const media = t.path.endsWith('.json') ? 'json' : t.path.endsWith('.html') ? 'html' : 'unsupported';
+      const live = online ? await liveCheck(t.url, fetcher, media) : { state: 'NOT_TESTED', reason: 'OFFLINE_MODE' };
       results[i] = {
         ...t, source, live,
         // GitHub permission belongs to the signed-in owner; link presence cannot assert auth.
@@ -103,6 +120,8 @@ export async function audit({ root, map, online = false, fetcher = fetch, concur
   }
   await Promise.all(Array.from({ length: Math.min(Math.max(1, concurrency), targets.length) }, worker));
   const canonical = results.filter(x => x.tier === 'canonical');
+  const registered = results.filter(x => x.tier === 'registered');
+  const failed = results.filter(x => x.source.state !== 'PASS' || x.live.state !== 'PASS');
   return {
     schema: 'JM.ExternalAccess.ProofBoundary/1',
     checked_at: new Date().toISOString(),
@@ -111,8 +130,10 @@ export async function audit({ root, map, online = false, fetcher = fetch, concur
     checked_targets: results.length,
     online,
     canonical_ready: canonical.every(x => x.source.state === 'PASS' && x.live.state === 'PASS'),
+    registered_ready: registered.every(x => x.source.state === 'PASS' && x.live.state === 'PASS'),
+    source_live_failed_routes: failed.map(x => ({ path: x.path, source: x.source.state, live: x.live.state, reason: x.live.reason || x.source.reason || null })),
     whole_estate_externally_editable: 'NOT_PROVEN',
-    proof_boundary: 'Repository-source presence + live HTML response only. GitHub auth, owner editing, durable remote writes, deployment parity, cold reentry, and owner-device contact are NOT certified.',
+    proof_boundary: 'Repository-source presence + media-typed live HTML/JSON responses only. GitHub auth, owner editing, durable remote writes, deployment parity, cold reentry, and owner-device contact are NOT certified.',
     results
   };
 }
@@ -135,6 +156,6 @@ async function main() {
     const { appendFile } = await import('node:fs/promises');
     await appendFile(process.env.GITHUB_STEP_SUMMARY, lines.join('\n')+'\n');
   }
-  if (!report.canonical_ready && args.includes('--strict')) process.exitCode = 1;
+  if ((!report.canonical_ready && args.includes('--strict')) || ((!report.canonical_ready || !report.registered_ready) && args.includes('--strict-all'))) process.exitCode = 1;
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch(e => { console.error(e); process.exitCode = 2; });

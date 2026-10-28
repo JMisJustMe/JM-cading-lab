@@ -492,6 +492,42 @@
     }
   }
 
+  async function downloadLineageRemote(id) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      message('Reading verified private revision ancestry for local recovery export…');
+      const packet = await request(`?mode=export-lineage&body=${encodeURIComponent(id)}`);
+      if (packet.schema !== 'JM.OwnerVault/0.1.LineageExport'
+        || packet.selected_id !== id || !Array.isArray(packet.versions)
+        || packet.versions.length < 1 || packet.version_count !== packet.versions.length
+        || packet.versions.length > 16) throw new Error('LINEAGE_EXPORT_RECEIPT_INVALID');
+      let total = 0, expectedId = id;
+      for (const v of packet.versions) {
+        if (!v || !v.metadata || typeof v.content !== 'string'
+          || v.metadata.id !== expectedId
+          || !/^[a-f0-9]{64}$/i.test(v.metadata.sha256 || ''))
+          throw new Error('LINEAGE_EXPORT_ANCESTRY_INVALID');
+        const count = new TextEncoder().encode(v.content).byteLength;
+        if (count !== v.metadata.bytes || await hashText(v.content) !== v.metadata.sha256.toLowerCase())
+          throw new Error('LINEAGE_EXPORT_SOURCE_HASH_MISMATCH');
+        total += count;
+        expectedId = v.metadata.previousVersionId || null;
+      }
+      if (expectedId !== null || total !== packet.source_bytes || total > 32 * 1024 * 1024)
+        throw new Error('LINEAGE_EXPORT_INCOMPLETE_OR_OVERBOUNDED');
+      const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `JM_Vault_Lineage_${id}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      message(`Portable lineage export offered: ${packet.version_count} verified ${packet.version_count === 1 ? 'version' : 'versions'}. Keep the JSON outside this host and verify the saved file independently; no offsite custody is claimed yet.`);
+    } catch (error) {
+      message(`Lineage export HOLD: ${error.message}. No backup-success claim issued.`);
+    }
+  }
+
   async function restoreRemoteBody(body) {
     if (!(await ensureUnlocked())) return;
     try {
@@ -565,6 +601,7 @@
             <button type="button" data-vault-preview="${escapeHTML(body.id)}">PREVIEW</button>
             <button type="button" data-vault-edit="${escapeHTML(body.id)}">EDIT SOURCE</button>
             <button type="button" data-vault-download="${escapeHTML(body.id)}">DOWNLOAD</button>
+            <button type="button" data-vault-lineage="${escapeHTML(body.id)}">EXPORT LINEAGE</button>
             <button type="button" data-vault-restore="${escapeHTML(body.id)}">RESTORE TO DEVICE</button>
             <button type="button" class="danger" data-vault-delete="${escapeHTML(body.id)}">REMOVE</button>
           </div>
@@ -581,6 +618,10 @@
       shelf.querySelectorAll('[data-vault-download]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultDownload);
         if (body) downloadRemote(body.id, body.fileName);
+      }));
+      shelf.querySelectorAll('[data-vault-lineage]').forEach(button => button.addEventListener('click', () => {
+        const body = bodies.find(item => item.id === button.dataset.vaultLineage);
+        if (body) downloadLineageRemote(body.id);
       }));
       shelf.querySelectorAll('[data-vault-restore]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultRestore);

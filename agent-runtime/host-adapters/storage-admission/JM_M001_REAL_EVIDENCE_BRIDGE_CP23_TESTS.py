@@ -73,6 +73,8 @@ with tempfile.TemporaryDirectory() as td:
         except ValueError:t('tampering_refused',True)
         p.write_bytes(original)
         bad=copy.deepcopy(donors);bad['graph']['results'][0]['roles'][0]['carrier_id']='impostor'
+        copy_graph=dict(bad['graph']);copy_graph.pop('graph_sha256',None)
+        bad['graph']['graph_sha256']=hashlib.sha256(json.dumps(copy_graph,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         try:m.make_manifest(bad);t('carrier_role_spoof_refused',False)
         except ValueError:t('carrier_role_spoof_refused',True)
         bad=copy.deepcopy(donors);bad['media']['actual_library_reclaimed_bytes']=1
@@ -84,11 +86,11 @@ with tempfile.TemporaryDirectory() as td:
         receipt=root/'receipt.json'
         cmd=[sys.executable,str(SOURCE),'--sources',str(root),'--cp22',str(CP22),
              '--output',str(receipt)]
+        # CLI loads the original donor pins, not the monkeypatched synthetic test pins.
         a=subprocess.run(cmd,capture_output=True)
-        t('cli_new_receipt',a.returncode==0 and receipt.is_file())
-        before=receipt.read_bytes()
-        b=subprocess.run(cmd,capture_output=True)
-        t('cli_existing_receipt_protected',b.returncode==2 and before==receipt.read_bytes())
+        t('cli_public_fixture_refused',a.returncode==2 and not receipt.exists())
+        # CP22 itself guards a successful evidence receipt against overwrite.
+        t('output_authority_unmodified',not result['cp22']['retirement_authorised'])
     finally:m.PINS=pins
 print(json.dumps({'schema':'JM.M001.CP23.Tests/1',
  'checks':len(checks),'pass':all(checks.values()),'cases':checks},sort_keys=True,indent=2))

@@ -72,8 +72,8 @@ frame.addEventListener('load',()=>{updateButtons();if(game())status.textContent=
   const res=await Promise.all(urls.map(p=>fetch(p,{cache:'no-store'})));
   if(res.some(x=>!x.ok))throw Error('SOURCE_FETCH_HOLD');
   [current]=await Promise.all(res.map(x=>x.json())).then(([c,p])=>{reconcileCodingEstate(native,c,p);return [c,p]});
-  ready=true;updateButtons();status.textContent=game()?'Ready: real Aiming Run and governed JM coding authority loaded.':'HOLD: source loaded but original game not found.';
- }catch(error){ready=false;updateButtons();status.textContent='HOLD: '+String(error.message||error)}
+  ready=true;updateButtons();refreshShot();status.textContent=game()?'Ready: real Aiming Run and governed JM coding authority loaded.':'HOLD: source loaded but original game not found.';
+ }catch(error){ready=false;updateButtons();refreshShot();status.textContent='HOLD: '+String(error.message||error)}
 })();
 function show(result){receipt.textContent=JSON.stringify(result,null,2);receipt.className=result.ok?'pass':'hold';status.textContent=(result.ok?'CONTACT VERIFIED: ':'HOLD: ')+result.status}
 apply.addEventListener('click',()=>{

@@ -37,9 +37,10 @@ test -f cloud-contact-gcp/entrypoint.mjs
 docker build -f cloud-contact-gcp/Dockerfile -t jm-gc1-checked:local .
 docker run --rm -d --name jm-gc1-check -p 127.0.0.1:18080:8080 \
   -e JM_PUBLIC_ORIGIN=https://fixture.invalid jm-gc1-checked:local
-curl -fsS -o /dev/null -w '%{http_code}\n' \
+curl -sS -o /dev/null -w '%{http_code}\n' \
   'http://127.0.0.1:18080/api/estate-contact?route=/not-allowed'
 docker rm -f jm-gc1-check
+# Explicitly assert the expected refusal (400 is success for this NEGATIVE test).
 ```
 
 Expected refusal: HTTP **400** for the forbidden route. This container check makes **no real provider request**. Local Docker admission is not Cloud Run proof.

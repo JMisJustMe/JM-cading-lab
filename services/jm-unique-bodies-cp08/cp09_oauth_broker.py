@@ -121,7 +121,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length','0')
         self.send_header('Access-Control-Allow-Origin',origin)
         self.send_header('Access-Control-Allow-Methods','POST,OPTIONS')
-        self.send_header('Access-Control-Allow-Headers','Authorization,Content-Type,Accept,MCP-Protocol-Version')
+        self.send_header('Access-Control-Allow-Headers','Authorization,Content-Type,Accept,MCP-Protocol-Version,Mcp-Method,Mcp-Name')
         self.send_header('Vary','Origin')
         self.end_headers()
     def do_POST(self):

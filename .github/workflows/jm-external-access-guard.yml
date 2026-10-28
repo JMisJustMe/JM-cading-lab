@@ -1,0 +1,41 @@
+name: JM External Access & Source Guard
+on:
+  schedule:
+    - cron: '19 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/jm-external-access-guard.mjs'
+      - 'governance/tests/jm-external-access-guard.test.mjs'
+      - 'registry/estate-map.json'
+      - '.github/workflows/jm-external-access-guard.yml'
+  pull_request:
+    paths:
+      - 'governance/jm-external-access-guard.mjs'
+      - 'governance/tests/jm-external-access-guard.test.mjs'
+      - 'registry/estate-map.json'
+      - '.github/workflows/jm-external-access-guard.yml'
+permissions:
+  contents: read
+jobs:
+  contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test source/contact proof boundary
+        run: node --test governance/tests/jm-external-access-guard.test.mjs
+      - name: Check real published routes and repository sources
+        run: node governance/jm-external-access-guard.mjs --online --strict --out "$RUNNER_TEMP/jm-external-access-result.json"
+      - name: Preserve evidence including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-external-access-proof-${{ github.run_id }}
+          path: ${{ runner.temp }}/jm-external-access-result.json
+          if-no-files-found: warn
+          retention-days: 30

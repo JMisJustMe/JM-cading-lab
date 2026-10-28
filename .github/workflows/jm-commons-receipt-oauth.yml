@@ -1,0 +1,21 @@
+name: JM Separate APP Commons and Federation Receipt OAuth Gates
+on:
+  push:
+    branches:
+      - feat/jm-commons-receipt-oauth-gateways-20261028
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auth_by_real_transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python source syntax and inherited OAuth donor integrity
+        run: |
+          python3 -m py_compile services/jm-mcp-oauth-relays/independent_realm_gateway.py
+          python3 -m py_compile services/jm-unique-bodies-cp08/cp09_oauth.py
+          python3 -m py_compile services/jm-unique-bodies-cp08/cp09_remote_admission.py
+      - name: Real isolated HTTP socket integration, client PKCE, scope denial, upstream token safety
+        run: python3 -m unittest -v services/jm-mcp-oauth-relays/test_realm_gateways.py

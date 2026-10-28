@@ -672,7 +672,7 @@ jobs:
             try{
               const h=await fetch(base+'/health?proof='+Date.now()); const hj=await h.json();
               let x=await rpc(1,'tools/list');
-              if(!h.ok||hj.version!=='0.3.0-original-ui-contact-cp02'||x.j?.result?.tools?.length!==6) throw new Error('health/tool boundary not ready');
+              if(!h.ok||hj.version!=='0.4.0-chatgpt-internet-cp03'||x.j?.result?.tools?.length!==7) throw new Error('health/tool boundary not ready');
               x=await rpc(2,'tools/call',{name:'navigator_bridge_status',arguments:{}});
               const s=x.j?.result?.structuredContent;
               if(!x.r.ok||s?.estate_integration?.state!=='CONNECTED'||s?.estate_integration?.private_owner_write_published!==false) throw new Error('Estate registry not connected');

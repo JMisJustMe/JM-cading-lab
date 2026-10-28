@@ -54,6 +54,13 @@ class Suite(unittest.TestCase):
         r=m.safe_execute(self.job("route",{"query":"coding runtime"}),self.root,self.st)
         self.assertEqual("PASS",r["state"])
         self.assertEqual(0,r["consequence"]["core"]["exit_code"])
+    def test_route_nonzero_exit_is_hold(self):
+        (self.root/"agent-runtime"/"jm_agent_runtime.py").write_text("import sys;sys.exit(19)\n")
+        self.assert_hold(m.safe_execute(self.job("route",{"query":"coding runtime"}),self.root,self.st),"JM_CORE_ROUTE_FAILED")
+    def test_git_nonzero_exit_is_hold(self):
+        from unittest.mock import patch
+        with patch.object(m.shutil,"which",return_value="/usr/bin/git"), patch.object(m,"run",return_value={"exit_code":128,"stdout":"","stderr":"fatal"}):
+            self.assert_hold(m.safe_execute(self.job("git-status"),self.root,self.st),"GIT_STATUS_FAILED")
     def test_route_control_chars_rejected(self):self.assert_hold(m.safe_execute(self.job("route",{"query":"bad\nquery"}),self.root,self.st),"INVALID_ROUTE")
     def test_read_and_sha(self):
         x=m.safe_execute(self.job("read-file",{"path":"agent-runtime/doc.md"}),self.root,self.st)

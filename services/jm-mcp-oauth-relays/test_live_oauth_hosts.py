@@ -90,4 +90,21 @@ class Live(unittest.TestCase):
    print('LIVE_CP10_PREFLIGHT_FOR_'+realm.upper(),flush=True)
 
 
+
+ def test_06_live_authorization_failure_returns_safe_restart_instructions(self):
+  for realm,(gateway,original,scope) in HOSTS.items():
+   params=urllib.parse.urlencode({
+    'client_id':'UNREGISTERED_CLIENT_PROBE_ONLY_1234',
+    'redirect_uri':'https://chatgpt.com/connector_platform_oauth_redirect',
+    'response_type':'code','scope':scope,'state':'SECRET_TEST_STATE_NOT_TO_ECHO',
+    'code_challenge_method':'S256','code_challenge':'A'*43
+   })
+   status,_,raw=req(gateway+'/oauth/authorize?'+params)
+   self.assertEqual(status,400,raw)
+   obj=json.loads(raw)
+   self.assertEqual(obj['error'],'OAUTH_AUTHORIZATION_HOLD')
+   self.assertEqual(obj['cause'],'CLIENT_REGISTRATION_NOT_FOUND')
+   self.assertIn('Restart',obj['recovery'])
+   self.assertNotIn(b'SECRET_TEST_STATE_NOT_TO_ECHO',raw)
+
 if __name__=='__main__':unittest.main(verbosity=2)

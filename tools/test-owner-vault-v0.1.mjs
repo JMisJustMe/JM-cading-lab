@@ -902,3 +902,99 @@ console.log('PASS: CP17 malformed integrity/index metadata cannot downgrade sour
   assert.equal(new Set(finalIndex.map(x => x.id)).size, 4);
 }
 console.log('PASS: CP18 dangling/self/cross-purpose/reordered ancestry holds all custody routes, restores exact originals and preserves revision inheritance.');
+
+
+// CP19 portable exact-byte lineage export: a portable source packet needs
+// all selected ancestry, verified source contents, bounded size, and no
+// mutation, with a separate identity for each purposeful body.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const texts = [
+    '<!doctype html><html><body>CP19 source alpha</body></html>',
+    '<!doctype html><html><body>CP19 revision beta</body></html>',
+    '<!doctype html><html><body>CP19 revision gamma</body></html>'
+  ];
+  const create = (sourceInstanceId, content) => call({ method: 'POST', env: isolatedEnv, key,
+    body: { action: 'upload-body', body: { name: 'CP19', sourceInstanceId, content } } });
+  const entries = [];
+  for (const content of texts) {
+    const response = await create('cp19-lineage-primary', content);
+    assert.equal(response.status, 201);
+    entries.push((await response.json()).body);
+  }
+  const other = (await (await create('cp19-different-purpose', texts[0])).json()).body;
+  const url = `?mode=export-lineage&body=${entries[2].id}`;
+  assert.equal((await call({ env: isolatedEnv, query: url })).status, 401,
+    'Portable source packet must require the original private owner key');
+  const before = [...storage.map.entries()].map(([k,v])=>[k, v.body]);
+  const valid = await call({ env: isolatedEnv, key, query: url });
+  assert.equal(valid.status, 200);
+  assert.match(valid.headers.get('content-disposition'), /attachment/);
+  assert.match(valid.headers.get('cache-control'), /no-store/);
+  const exportPacket = await valid.json();
+  assert.equal(exportPacket.schema, 'JM.OwnerVault/0.1.LineageExport');
+  assert.equal(exportPacket.version_count, 3);
+  assert.equal(exportPacket.selected_id, entries[2].id);
+  assert.deepEqual(exportPacket.versions.map(x=>x.metadata.id),
+    [entries[2].id, entries[1].id, entries[0].id]);
+  assert.deepEqual(exportPacket.versions.map(x=>x.content), texts.slice().reverse());
+  for (const { metadata, content } of exportPacket.versions) {
+    assert.equal(fixtureEtag(content), metadata.sha256);
+    assert.equal(new TextEncoder().encode(content).byteLength, metadata.bytes);
+    assert.notEqual(metadata.id, other.id);
+  }
+  assert.deepEqual([...storage.map.entries()].map(([k,v])=>[k,v.body]), before,
+    'Read-only exact export must leave the original index and body objects unchanged');
+  const badId = await call({ env: isolatedEnv, key, query:'?mode=export-lineage&body=../../private' });
+  assert.equal(badId.status, 400);
+  const missing = await call({ env: isolatedEnv, key,
+    query:'?mode=export-lineage&body=00000000-0000-4000-8000-000000009999' });
+  assert.equal(missing.status, 404);
+  const oldestKey = `jm-owner-vault/v0.1/bodies/${entries[0].id}.html`;
+  const originalOldest = storage.map.get(oldestKey);
+  storage.map.set(oldestKey, { ...originalOldest, body: texts[0] + '<!-- tampered -->' });
+  const damaged = await call({ env: isolatedEnv, key, query:url });
+  assert.equal(damaged.status, 409);
+  assert.equal((await damaged.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  storage.map.set(oldestKey, originalOldest);
+  const heldIndex = storage.map.get(indexKey);
+  const index = JSON.parse(heldIndex.body);
+  index.bodies.find(x=>x.id===entries[0].id).sha256 = null;
+  storage.map.set(indexKey, { ...heldIndex, body: JSON.stringify(index,null,2) });
+  const unverified = await call({ env: isolatedEnv, key, query:url });
+  assert.equal(unverified.status, 409);
+  assert.equal((await unverified.json()).error, 'LINEAGE_EXPORT_UNVERIFIED_LEGACY_SOURCE');
+  storage.map.set(indexKey, heldIndex);
+  // A valid 25 MiB single body is allowed as ordinary Vault source, but an
+  // excessively large cumulative lineage packet is refused before copying.
+  const huge = JSON.parse(heldIndex.body);
+  huge.bodies.find(x=>x.id===entries[2].id).bytes = 25*1024*1024;
+  huge.bodies.find(x=>x.id===entries[1].id).bytes = 25*1024*1024;
+  storage.map.set(indexKey, { ...heldIndex, body: JSON.stringify(huge,null,2) });
+  const tooLarge = await call({ env: isolatedEnv, key, query:url });
+  assert.equal(tooLarge.status, 413);
+  assert.equal((await tooLarge.json()).error, 'LINEAGE_EXPORT_BYTE_LIMIT');
+  storage.map.set(indexKey, heldIndex);
+  // Force a competing index commit while the export reads the original HTML.
+  const get = storage.get.bind(storage);
+  let changed = false;
+  storage.get = async function(objectKey) {
+    const snap = await get(objectKey);
+    if (!changed && objectKey === oldestKey) {
+      changed = true;
+      const actual = this.map.get(indexKey);
+      const altered = JSON.parse(actual.body);
+      altered.updated_at = new Date(2030, 0, 1).toISOString();
+      await this.put(indexKey, JSON.stringify(altered, null, 2));
+    }
+    return snap;
+  };
+  const racing = await call({ env: isolatedEnv, key, query:url });
+  assert.equal(racing.status, 409);
+  assert.equal((await racing.json()).error, 'PRIVATE_CONCURRENT_WRITE_CONFLICT');
+  assert.equal(changed, true);
+}
+console.log('PASS: CP19 portable exact-byte lineage includes all protected ancestors, preserves distinct uses, rejects tamper/stale/unhashed/oversized exports and creates no new R2 records.');

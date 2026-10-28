@@ -148,3 +148,11 @@ The original Owner Room adds **Prove private save → reload → recovery**. Thi
 
 The repository and live workflow can prove *the harness is coded, browser-tested and deployed*, but **cannot honestly claim the owner has used their own authenticated session**. Synthetic browser tests are intentionally labelled synthetic; no live key is invented, fetched, displayed, or transported into a CI job. On-device owner proof is a distinct explicit-contact DING, and separate from independent editing of all Estate bodies and from testing another physical device.
 
+
+## CP09 custody convergence — source candidate, 28 October 2026
+
+Recovered the original Owner Vault and two prior unmerged strengthening candidates. On the current-main repair branch the existing API refuses a pre-existing malformed, unreadable or structurally invalid private body index or owner state with generic no-store HTTP 503 `PRIVATE_CUSTODY_HOLD` rather than mistaking it for an empty shelf. A genuinely absent first-run record still boots. Owner-state PUT checks the stored state first. Upload, revision, deletion, read and snapshot refuse a corrupt index without discarding existing private metadata. No automatic recovery, deletion or source publication occurs on HOLD.
+
+The same candidate inherits CP06's independent re-read of HTML body bytes, SHA-256 and full intended body index. These checks detect missing/altered write acknowledgements; they do **not** prove transactional multi-writer atomicity, durable rollback after partial failures, or physically independent offsite restore. Concurrent writes remain a separate architecture HOLD.
+
+The in-memory Fake-R2 regression court uses synthetic data only. CI success is **not** authenticated real-owner private-source editing, Cloudflare production propagation, physical device acceptance or independent owner recovery. Keep all these gates open until separately proved. See issue #591 and draft PR for branch audit evidence.

@@ -163,15 +163,15 @@ def consent_form(request_id,client_name,scope):
     name=html.escape(client_name,quote=True)
     scopes=html.escape(scope,quote=True)
     key=html.escape(request_id,quote=True)
-    return ("""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+    return f'''<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
 <title>JM Unique Bodies OAuth approval</title></head><body>
 <h1>JM Unique Bodies — owner approval</h1>
-<p>This requests access on behalf of: <strong>"""+name+"""</strong></p>
-<p>Permissions requested: <strong>"""+scopes+"""</strong></p>
-<p>Grant only when you recognise this connection. Enter your existing CP08 owner access token.
-Do not copy it into ChatGPT or Gemini chat.</p>
+<p>This requests access on behalf of: <strong>{name}</strong></p>
+<p>Permissions requested: <strong>{scopes}</strong></p>
+<p>Only approve a recognised client. Enter your existing CP08 owner token in this same-origin form.
+Never paste it into ChatGPT or Gemini chat.</p>
 <form method="post" action="/oauth/authorize">
-<input type="hidden" name="request_id" value=""""+key+"""">
+<input type="hidden" name="request_id" value="{key}">
 <label>JM CP08 owner token <input type="password" name="owner_access_token" required autocomplete="off"></label>
-<button type="submit">Approve this MCP connection</button>
-</form></body></html>""")
+<button type="submit">Approve this MCP connection</button></form></body></html>'''

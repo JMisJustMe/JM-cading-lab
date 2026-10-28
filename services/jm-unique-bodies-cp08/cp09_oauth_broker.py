@@ -82,6 +82,13 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError:raise ValueError('LENGTH_INVALID')
         if size<1 or size>n:raise ValueError('BODY_LIMIT')
         return self.rfile.read(size)
+    def empty_response(self,status,headers=None):
+        """MCP Streamable HTTP: 202 for client notifications has no body."""
+        self.send_response(status)
+        self.send_header('Content-Length','0')
+        self.send_header('Cache-Control','no-store')
+        for key,value in (headers or {}).items():self.send_header(key,value)
+        self.end_headers()
     def do_GET(self):
         path=urlsplit(self.path)
         if path.path=='/health' and not path.query:
@@ -99,7 +106,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply_html(consent_form(request_id,name,scope))
             except (ValueError,TypeError):
                 return self.reply(400,{'error':'OAUTH_AUTHORIZATION_HOLD'})
-        if path.path=='/mcp':return self.reply(401,{'error':'OAUTH_REQUIRED'})
+        if path.path=='/mcp':
+            auth=self.headers.get('Authorization','')
+            if not auth.startswith('Bearer ') or not self.server.admission.downstream(auth[7:])[0]:
+                return self.reply(401,{'error':'OAUTH_REQUIRED'})
+            return self.empty_response(405,{'Allow':'POST,OPTIONS'})
         return self.reply(404,{'error':'NOT_FOUND'})
     def do_OPTIONS(self):
         path=urlsplit(self.path)
@@ -148,6 +159,10 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(request,dict) or request.get('jsonrpc')!='2.0':
                 return self.reply(400,{'error':'RPC_OBJECT_HOLD'})
             method=request.get('method')
+            if method in ('notifications/initialized','notifications/cancelled'):
+                if 'id' in request:
+                    return self.reply(400,{'error':'NOTIFICATION_ID_HOLD'})
+                return self.empty_response(202)
             if method not in ('initialize','ping','tools/list','tools/call'):
                 return self.reply(403,{'error':'RPC_METHOD_HOLD'})
             if method=='tools/call':
@@ -161,7 +176,7 @@ class Handler(BaseHTTPRequestHandler):
             upstream_req=urllib.request.Request(self.server.admission.upstream,data=raw,method='POST',
                 headers={'Content-Type':'application/json','Authorization':'Bearer '+owner,'Accept':'application/json'})
             with urllib.request.urlopen(upstream_req,timeout=35) as result:
-                if result.status==202:return self.reply(202,{})
+                if result.status==202:return self.empty_response(202)
                 if result.status!=200:return self.reply(502,{'error':'UPSTREAM_HOLD'})
                 data=result.read(500001)
                 if len(data)>500000:return self.reply(502,{'error':'UPSTREAM_SIZE_HOLD'})

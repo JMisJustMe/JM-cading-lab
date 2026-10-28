@@ -1,0 +1,29 @@
+{
+  "name": "JM Rim Route · Brother Edition",
+  "short_name": "Rim Route",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#101b2e",
+  "background_color": "#080f19",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "games",
+    "sports"
+  ],
+  "orientation": "any"
+}

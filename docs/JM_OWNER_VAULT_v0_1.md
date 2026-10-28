@@ -109,3 +109,11 @@ The original policy collapsed differently intended copies when their HTML bytes 
 - The marked Owner Room graft now updates from its existing source safely without resetting newer service-worker versions or creating another public shell.
 
 **Proof status:** Source code and synthetic private-storage contract QA are required. The historical Owner Vault authenticated state-roundtrip receipt remains separate; it does not prove this CP04 policy on the current production backend. A live public-safe API policy marker and authenticated owner write/reload readback are distinct rollout gates. No secret or owner file is included in this document.
+
+## CP05 — Private source editing inside the existing Owner Room (28 October 2026)
+
+CP05 adds **EDIT SOURCE** beside the existing private Vault Preview, Download and Remove controls. A source textarea opens only after the existing owner-key authentication. Clicking **Save private revision & verify readback** submits the new HTML to the same private Vault API and creates a **new protected body/version**; it does not overwrite or retire the ancestor.
+
+The server requires the selected body ID and its expected SHA-256. A stale base version, mismatched hash, non-HTML input or full index fails closed. After saving, the client re-fetches the new private HTML and verifies both its exact content and SHA-256 before showing a successful private-save message. Every separately intended body retains its independent identity. The source editor does not publish an app or modify GitHub/deployed source automatically.
+
+**Proof boundary:** CI tests the private API against a synthetic R2 store, checks the mirrored existing Owner Room source, and production workflow checks a public-safe policy marker. Actual owner-key authenticated production write/reload/readback on a real device is a separate gate. No private key or owner document is placed in public source.

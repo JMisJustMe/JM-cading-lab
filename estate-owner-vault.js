@@ -3,6 +3,7 @@
 
   const API = './api/owner/vault';
   const SESSION_KEY = 'jm-owner-vault-key';
+  let editing = null;
   const LOCAL = {
     notes: 'jm-estate-owner-notes',
     favourites: 'jm-estate-favourites',
@@ -64,6 +65,10 @@
       .jm-vault-card-actions{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:flex-end}
       .jm-vault-card-actions button{border:0;border-radius:10px;padding:.55rem .7rem;background:rgba(255,255,255,.09);color:inherit;font-weight:800;cursor:pointer}
       .jm-vault-card-actions button.danger{color:#ff9aaa}
+      .jm-vault-editor{margin-top:1rem;padding:1rem;border:1px solid rgba(114,236,255,.38);border-radius:14px;background:rgba(7,15,24,.82)}
+      .jm-vault-editor[hidden]{display:none}
+      .jm-vault-editor textarea{display:block;box-sizing:border-box;width:100%;min-height:260px;max-width:100%;resize:vertical;margin:.65rem 0;background:#09111b;border:1px solid #44647a;border-radius:10px;color:#f7fbff;padding:12px;font:13px/1.48 ui-monospace,monospace}
+      .jm-vault-editor button{margin-right:.55rem;margin-bottom:.35rem;min-height:44px}
       @media(max-width:680px){.jm-vault-card{align-items:flex-start;flex-direction:column}.jm-vault-card-actions{width:100%;justify-content:flex-start}}
     `;
     document.head.appendChild(style);
@@ -77,7 +82,7 @@
     panel.className = 'owner-panel owner-wide jm-vault-panel';
     panel.innerHTML = `
       <div class="panel-head"><div><span class="jm-vault-kicker">PRIVATE DURABLE STORAGE</span><h2 style="margin:.28rem 0 0">JM Owner Vault</h2></div><span id="jmVaultCount">0 REMOTE BODIES</span></div>
-      <p class="jm-vault-copy">Your existing Owner Room stays local-first. This vault adds an explicit private R2 copy for notes, favourites, recent routes and mounted HTML bodies. <strong>Nothing uploads unless you press Sync.</strong></p>
+      <p class="jm-vault-copy">Your existing Owner Room stays local-first. This vault adds explicit private durable storage for notes, favourites, recent routes and mounted HTML. <strong>Nothing uploads until you press Sync or Save private revision.</strong> You can edit an existing private body and verify a new protected version without publishing it.</p>
       <div class="jm-vault-status"><span class="jm-vault-pill" id="jmVaultStatus" data-state="offline">CHECKING VAULT…</span><span class="jm-vault-pill" id="jmVaultAuth" data-state="locked">LOCKED</span></div>
       <div class="jm-vault-actions">
         <button class="button secondary" id="jmVaultUnlock" type="button">Unlock this session</button>
@@ -88,6 +93,13 @@
       </div>
       <p class="jm-vault-note" id="jmVaultMessage" role="status" aria-live="polite">Checking whether the durable storage binding is mounted on this host.</p>
       <div class="jm-vault-remote" id="jmVaultRemote" aria-live="polite"></div>
+      <section class="jm-vault-editor" id="jmVaultEditor" hidden aria-label="Private HTML source editor">
+        <strong id="jmVaultEditorTitle">Private body source</strong>
+        <p class="jm-vault-note">Editing a private Vault copy creates an additional protected revision. The ancestor is retained; no public app or website is deployed by this action.</p>
+        <label for="jmVaultEditorText" class="jm-vault-note">HTML source</label>
+        <textarea id="jmVaultEditorText" spellcheck="false" aria-label="Private body HTML source"></textarea>
+        <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveRevision" type="button">Save private revision &amp; verify readback</button><button class="button secondary" id="jmVaultCancelEdit" type="button">Cancel editing</button></div>
+      </section>
     `;
     grid.prepend(panel);
     return panel;
@@ -218,6 +230,84 @@
     }
   }
 
+
+  const hashText = async text => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].map(n=>n.toString(16).padStart(2,'0')).join('');
+  function closeEditor() {
+    editing = null;
+    const panel = el('jmVaultEditor');
+    if (panel) panel.hidden = true;
+    if (el('jmVaultEditorText')) el('jmVaultEditorText').value = '';
+  }
+
+  async function editRemote(id, name, expectedSha256) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      const response = await request(`?body=${encodeURIComponent(id)}`);
+      const source = await response.text();
+      if (await hashText(source) !== expectedSha256) throw new Error('VAULT_SOURCE_HASH_MISMATCH');
+      editing = { baseId: id, expectedSha256 };
+      el('jmVaultEditorTitle').textContent = `Editing private source: ${name}`;
+      el('jmVaultEditorText').value = source;
+      el('jmVaultEditor').hidden = false;
+      message('Private source loaded and SHA-256 verified. Save produces a new version; the original remains protected.');
+      el('jmVaultEditorText').focus();
+    } catch (error) {
+      message(`Private editor could not open: ${error.message}`);
+    }
+  }
+
+  async function saveRevision() {
+    if (!editing) return;
+    const action = el('jmVaultSaveRevision');
+    action.disabled = true;
+    let attempted = null;
+    try {
+      const content = el('jmVaultEditorText').value;
+      const base = { ...editing };
+      if (!/<html|<!doctype/i.test(content)) throw new Error('NOT_STANDALONE_HTML');
+      attempted = { ...base, content, hash: await hashText(content) };
+      const result = await request('', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'revise-body', baseId: base.baseId, expectedSha256: base.expectedSha256, content })
+      });
+      if (result.outcome === 'REVISION_UNCHANGED') {
+        message('No source difference: existing body preserved, no redundant revision stored.');
+        return;
+      }
+      if (result.outcome !== 'BODY_REVISION_STORED' || !result.body?.id || !result.body?.sha256 || result.body.previousVersionId !== base.baseId)
+        throw new Error('REVISION_RECEIPT_INVALID');
+      const reloaded = await request(`?body=${encodeURIComponent(result.body.id)}`);
+      const received = await reloaded.text();
+      if (received !== content || await hashText(received) !== result.body.sha256)
+        throw new Error('REVISION_READBACK_MISMATCH');
+      const revisionId = result.body.id;
+      closeEditor();
+      await refreshRemote();
+      message(`Private revision saved and SHA-256 readback verified (${revisionId.slice(0,8)}…). Original body retained. Public source/deployment unchanged.`);
+    } catch (error) {
+      if (error.status === 401) { setKey(''); authLabel(false); closeEditor(); }
+      else if (attempted && error.status !== 400 && error.status !== 413) {
+        // If an HTTP response or readback failed, recover the existing target
+        // consequence. Never replay a possibly committed revision mutation.
+        try {
+          const index = await request('');
+          const candidate = (index.bodies || []).find(item => item.previousVersionId === attempted.baseId && item.sha256 === attempted.hash);
+          if (candidate) {
+            const response = await request(`?body=${encodeURIComponent(candidate.id)}`);
+            const recovered = await response.text();
+            if (recovered === attempted.content && await hashText(recovered) === attempted.hash) {
+              closeEditor();
+              await refreshRemote();
+              message(`Private revision recovered by exact SHA-256 readback (${candidate.id.slice(0,8)}…). No duplicate save issued. Original retained.`);
+              return;
+            }
+          }
+        } catch { /* Recovery is a bounded read-only contact, not authority to retry a write. */ }
+      }
+      message(`Revision HOLD: ${error.message}. No deployment or verified-save claim made.`);
+    } finally { action.disabled = false; }
+  }
+
   async function previewRemote(id, name) {
     try {
       const response = await request(`?body=${encodeURIComponent(id)}`);
@@ -280,11 +370,16 @@
           <div><b>${escapeHTML(body.name)}</b><small>${Math.round((body.bytes || 0) / 1024)} KB · ${escapeHTML(body.status || 'PRIVATE COPY')} · ${escapeHTML((body.sha256 || '').slice(0, 12))}…</small></div>
           <div class="jm-vault-card-actions">
             <button type="button" data-vault-preview="${escapeHTML(body.id)}">PREVIEW</button>
+            <button type="button" data-vault-edit="${escapeHTML(body.id)}">EDIT SOURCE</button>
             <button type="button" data-vault-download="${escapeHTML(body.id)}">DOWNLOAD</button>
             <button type="button" class="danger" data-vault-delete="${escapeHTML(body.id)}">REMOVE</button>
           </div>
         </article>`).join('') : '<div class="empty-state">No private durable HTML body stored yet.</div>';
 
+      shelf.querySelectorAll('[data-vault-edit]').forEach(button => button.addEventListener('click', () => {
+        const body = bodies.find(item => item.id === button.dataset.vaultEdit);
+        if (body) editRemote(body.id, body.name, body.sha256);
+      }));
       shelf.querySelectorAll('[data-vault-preview]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultPreview);
         if (body) previewRemote(body.id, body.name);
@@ -308,8 +403,10 @@
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);
     el('jmVaultSnapshot')?.addEventListener('click', snapshot);
+    el('jmVaultSaveRevision')?.addEventListener('click', saveRevision);
+    el('jmVaultCancelEdit')?.addEventListener('click', closeEditor);
     el('jmVaultLock')?.addEventListener('click', () => {
-      setKey(''); authLabel(false); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
+      setKey(''); authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
       message('Vault locked. The session key was removed from this browser tab/session.');
     });
   }

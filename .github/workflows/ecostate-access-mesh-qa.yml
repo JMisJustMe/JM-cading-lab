@@ -15,6 +15,8 @@ on:
       - 'sitemap.xml'
       - 'sw.js'
       - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+      - 'estate-owner-vault.js'
+      - 'functions/api/owner/vault.js'
       - '.github/workflows/ecostate-access-mesh-qa.yml'
   push:
     branches: [main]
@@ -30,6 +32,8 @@ on:
       - 'sitemap.xml'
       - 'sw.js'
       - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+      - 'estate-owner-vault.js'
+      - 'functions/api/owner/vault.js'
       - '.github/workflows/ecostate-access-mesh-qa.yml'
   workflow_dispatch:
 
@@ -140,4 +144,73 @@ jobs:
             if(pass!==10) throw new Error('Expected 10 contacts, got '+pass);
             console.log('DING — CURRENT ACCESS MESH AND BODY CONTACT: 10/10 browser contacts PASS · 100%');
           })();
+          NODE
+      - name: Browser proof of existing private editor (synthetic authenticated Vault)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash}=require('node:crypto');
+          const hex=s=>createHash('sha256').update(s).digest('hex');
+          const original='<!doctype html><html><body><h1>Original private use</h1></body></html>';
+          const edited=original.replace('Original','Revised');
+          const id='550e8400-e29b-41d4-a716-446655440000';
+          const next='550e8400-e29b-41d4-a716-446655440001';
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            browser.on('disconnected',()=>console.log('Editor QA Chromium disconnected'));
+            try {
+            let total=0;
+            for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
+              const page=await browser.newPage({viewport});
+              page.setDefaultTimeout(10000);
+              page.on('pageerror',e=>console.log('EDITOR_BROWSER_PAGEERROR',String(e).slice(0,260)));
+              const records=new Map([[id,original]]);
+              let bodies=[{id,name:'Original private use',fileName:'original.html',sha256:hex(original),bytes:Buffer.byteLength(original),sourceInstanceId:'local-independent-original',status:'PRIVATE_DURABLE_COPY_NOT_PUBLICATION'}];
+              let writes=0;
+              await page.addInitScript(()=>{window.prompt=()=> 'synthetic-owner-key';});
+              await page.route('**/api/owner/vault*',async route=>{
+                const req=route.request(),u=new URL(req.url()),mode=u.searchParams.get('mode'),bodyId=u.searchParams.get('body');
+                const headers={'content-type':'application/json','cache-control':'no-store'};
+                const send=(status,obj)=>route.fulfill({status,headers,body:JSON.stringify(obj)});
+                if(mode==='status')return send(200,{schema:'JM.OwnerVault/0.1',ready:true,storage_bound:true,owner_key_configured:true});
+                if(req.headers()['x-jm-owner-key']!=='synthetic-owner-key')return send(401,{error:'OWNER_AUTH_REQUIRED'});
+                if(req.method()==='GET'&&bodyId){
+                  if(!records.has(bodyId))return send(404,{error:'BODY_NOT_FOUND'});
+                  return route.fulfill({status:200,headers:{'content-type':'text/html','cache-control':'no-store'},body:records.get(bodyId)});
+                }
+                if(req.method()==='GET')return send(200,{schema:'JM.OwnerVault/0.1',state:{notes:'',favourites:[],recent:[]},bodies});
+                if(req.method()==='POST'){
+                  const data=req.postDataJSON();
+                  if(data.action!=='revise-body')return send(400,{error:'UNEXPECTED_ACTION'});
+                  const old=bodies.find(b=>b.id===data.baseId);
+                  if(!old||old.sha256!==data.expectedSha256)return send(409,{error:'REVISION_PRECONDITION_REQUIRED'});
+                  if(data.content!==edited)return send(400,{error:'UNEXPECTED_SOURCE'});
+                  const saved={...old,id:next,sha256:hex(data.content),bytes:Buffer.byteLength(data.content),previousVersionId:id,status:'PRIVATE_DURABLE_REVISION_NOT_PUBLICATION'};
+                  records.set(next,data.content);bodies=[saved,...bodies];writes++;
+                  if(viewport.width===390)return send(502,{error:'SIMULATED_LOST_ACK_AFTER_COMMIT'});
+                  return send(201,{schema:'JM.OwnerVault/0.1',outcome:'BODY_REVISION_STORED',body:saved});
+                }
+                return send(405,{error:'METHOD_NOT_ALLOWED'});
+              });
+              await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+              await page.locator('#jmVaultUnlock').waitFor({state:'attached',timeout:12000});
+              await page.locator('#jmVaultUnlock').click();
+              await page.locator('[data-vault-edit="'+id+'"]').click();
+              await page.waitForFunction(expected=>document.querySelector('#jmVaultEditorText')?.value===expected,original,{timeout:12000});
+              if(await page.locator('#jmVaultEditorText').inputValue()!==original)throw Error('Original private HTML was not loaded exactly');
+              await page.locator('#jmVaultEditorText').fill(edited);
+              await page.locator('#jmVaultSaveRevision').click();
+              await page.waitForFunction(()=>{const t=document.querySelector('#jmVaultMessage')?.textContent||'';return t.includes('SHA-256 readback verified')||t.includes('recovered by exact SHA-256 readback')},{timeout:15000});
+              if(writes!==1||records.size!==2||records.get(id)!==original||records.get(next)!==edited)throw Error('Original/revision identity was not preserved');
+              const buttons=await page.locator('[data-vault-edit]').count();
+              if(buttons!==2)throw Error('Revision and ancestor not both editable: '+buttons);
+              if(await page.locator('#jmVaultEditor').isVisible())throw Error('Editor not closed after verified readback');
+              await page.close();
+              total++;
+            }
+            if(total!==2)throw Error('Expected two synthetic owner-editor viewport tests');
+            console.log('CP05 private editor browser proof: 2/2 viewport journeys PASS (1 normal acknowledgement, 1 lost-response recovered without duplicate mutation) · real UI · synthetic private Vault; not live R2 proof');
+            } finally { await browser.close(); }
+          })().catch(e=>{console.error('EDITOR_BROWSER_QA_FAILED',e);process.exitCode=1});
           NODE

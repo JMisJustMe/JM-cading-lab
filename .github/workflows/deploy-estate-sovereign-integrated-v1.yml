@@ -110,6 +110,7 @@ jobs:
           node --check unified-browser/jm-games-beyond-return-v1.js
           node --check functions/api/estate-contact.js
           node --input-type=module --check < functions/api/owner/vault.js
+          node --check estate-owner-vault.js
           node tools/test-owner-vault-v0.1.mjs
           node --check unified-browser/jm-cloud-workspace-client.mjs
           node --check unified-browser/jm-ailatheo-cloud-contact.mjs
@@ -369,6 +370,7 @@ jobs:
           grep -Fq 'estate-sovereign-integration' cloudflare-estate/navigator/stringline.json
           grep -Fq 'JM.Estate.PublicNervousSystem/1' cloudflare-estate/navigator/estate-integration/public-registry.json
           grep -Fq 'One Estate.' cloudflare-estate/navigator/estate-integration/index.html
+          grep -Fq 'Save private revision &amp; verify readback' cloudflare-estate/estate-app.js
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/navigator/index.html
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/apps/index.html
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/lyrics/index.html
@@ -466,6 +468,7 @@ jobs:
             ['/ailatheo/', 'Build it.'],
             ['/api/ailatheo?action=status', 'JM.AILatheoCustomer/0.1'],
             ['/api/owner/vault?mode=status', 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY'],
+            ['/api/owner/vault?mode=status', 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY'],
             ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],

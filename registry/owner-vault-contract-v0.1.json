@@ -39,7 +39,7 @@
   "ding": false,
   "current_source_policy": {
     "checkpoint": "CP07 2026-10-28",
-    "state": "CP05_CP06_BOUNDED_FLAZ_COMPLETE; CP07_DEVICE_RECOVERY_SOURCE_ADDED_TEST_PENDING",
+    "state": "CP07_FLAZ_COMPLETE_SOURCE_BROWSER_QA_DEPLOYED_READBACK; REAL_OWNER_DEVICE_CONTACT_HOLD",
     "source_instance_identity": "Existing local mounted-body id; preserves separate intended uses even with identical HTML bytes, name and filename",
     "replay_idempotence": "ONLY_SAME_SOURCE_INSTANCE_AND_BYTES",
     "edit_revision": "Same mounted-body id with changed bytes appends a new version; previousVersionId links the ancestor",
@@ -64,7 +64,7 @@
       "no_loss": "Local quota exceptions cannot erase original in-memory or persisted shelf",
       "full_shelf": "12-body cap refuses import without evicting existing bodies",
       "provenance": "Local copy has independent local ID plus vaultBodyId, sourceInstanceId, SHA-256 and previousVersionId",
-      "live_proof": "To be established by existing production readback and browser QA; not a real owner device test"
+      "live_proof": "Source and synthetic phone/desktop browser proof PASS; public deployed Owner Room code proof PASS via recorded GitHub live receipt; real owner-key save/reload/recovery NOT proved."
     }
   },
   "flaz_cp05_cp06_2026_10_28": {
@@ -92,5 +92,24 @@
       "independent editability of all Estate creations"
     ],
     "law": "PUBLIC CONTACT IS NOT PRIVATE OWNER PROOF; MESH IS NOT MERGE; NO DING NO CLAIM"
+  },
+  "flaz_cp07_2026_10_28": {
+    "status": "FLAZ_COMPLETE_BOUNDED",
+    "source_commit": "e3867b3f4e64498cf218cbb71b204bf9b97150cf",
+    "merged_pr": 581,
+    "exact_source_readback": "estate-app.js and estate-owner-vault.js verified from main",
+    "synthetic_browser_proof": "CP07 two viewport Owner Room runs passed: private-to-device restore, no repeat duplicate, full 12 body preserved, quota failure no erase",
+    "production_receipt": {
+      "file": "registry/owner-vault-live-readiness-receipt-v0.1.json",
+      "verified_utc": "2026-10-28T17:09:50.220834+00:00",
+      "workflow_run": "40732975768",
+      "cp07_deployed_local_recovery_source_verified": true
+    },
+    "gates_not_passed": [
+      "actual owner-key private HTML save/reload/readback",
+      "physical owner-device local re-entry/recovery",
+      "Estate-wide independent editing and deployment propagation"
+    ],
+    "law": "SOURCE IS NOT OWNER STORAGE PROOF; PUBLIC DEPLOYMENT IS NOT PRIVATE DATA MUTATION; NO DING NO CLAIM"
   }
 }

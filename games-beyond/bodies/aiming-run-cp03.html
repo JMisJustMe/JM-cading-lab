@@ -40,7 +40,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#090e19;border:1px sol
 <div class="controls"><button type="button" class="primary" disabled id="apply">Apply real target-motion delta</button><button type="button" disabled id="restore">Restore game track</button></div>
 <p id="status" role="status" aria-live="polite">Recovering original game, native registry and Current-64 source authority…</p>
 <pre id="receipt" aria-label="Recipient evidence and state comparison">No game recipient mutation claimed.</pre>
-<p>**Scope:** This is a governed JS/browser companion, not a fresh physical Fold PASS, APK, production rollout, permanent game change or online multiplayer. The original playable HTML stays unchanged.</p>
+<p><strong>Scope:</strong> This is a governed JS/browser companion, not a fresh physical Fold PASS, APK, production rollout, permanent game change or online multiplayer. The original playable HTML stays unchanged.</p>
 </section></main>
 <script type="module">
 import {loadFederatedRegistry} from '../../coding-estate/everybody/registry-loader.mjs';
@@ -58,7 +58,7 @@ function updateButtons(){apply.disabled=!ready||!game();restore.disabled=!ready|
 frame.addEventListener('load',()=>{updateButtons();if(game())status.textContent=ready?'Original Aiming Run ready. Governed coding route ready.':'Original Aiming Run ready; recovering coding authority.';else status.textContent='HOLD: actual original game window not found.'});
 (async()=>{
  try{
-  native=await loadFederatedRegistry();
+  native=await loadFederatedRegistry(['../../coding-estate/everybody/body-registry.json','../../coding-estate/everybody/body-registry-extension-01.json','../../coding-estate/everybody/body-registry-extension-02.json']);
   const urls=['../../coding-estate/JM_CODING_ESTATE_CURRENT_64.json','../../coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'];
   const res=await Promise.all(urls.map(p=>fetch(p,{cache:'no-store'})));
   if(res.some(x=>!x.ok))throw Error('SOURCE_FETCH_HOLD');

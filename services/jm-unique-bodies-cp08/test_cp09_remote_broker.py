@@ -132,4 +132,36 @@ class TestRemoteBroker(unittest.TestCase):
   s,_,b=self.call(self.cp09,'/oauth/register','POST',
    {'redirect_uris':['https://evil.example/hi']},{'Content-Type':'application/json'})
   self.assertEqual(s,400)
+ def test_10_copy_paste_trailing_whitespace_is_normalized_without_leaking_owner_secret(self):
+  s,_,_,_=self.approve(owner=OWNER+'  \\n')
+  self.assertEqual(s,302)
+ def test_11_wrong_valid_length_token_reports_safe_original_rejection(self):
+  s,_,raw=self.call(self.cp09,'/oauth/register','POST',
+   {'redirect_uris':[CLIENT],'client_name':'JM diagnostic client'},
+   {'Content-Type':'application/json'})
+  self.assertEqual(s,201)
+  client=json.loads(raw)['client_id']
+  query=urllib.parse.urlencode({'client_id':client,'redirect_uri':CLIENT,
+      'response_type':'code','code_challenge_method':'S256',
+      'code_challenge':pcode('C'*60),'scope':'cp08:read','state':'JM_DIAGNOSTIC',
+      'resource':self.cp09+'/mcp'})
+  s,_,html=self.call(self.cp09,'/oauth/authorize?'+query)
+  self.assertEqual(s,200)
+  req=re.search(rb'name="request_id" value="([^"]+)"',html).group(1).decode()
+  s,_,body=self.call(self.cp09,'/oauth/authorize','POST',
+   {'request_id':req,'owner_access_token':'X'*48},
+   {'Content-Type':'application/x-www-form-urlencoded'})
+  self.assertEqual(s,400)
+  self.assertIn(b'OWNER_TOKEN_NOT_ACCEPTED',body)
+  self.assertNotIn(OWNER.encode(),body)
+  self.assertNotIn(('X'*48).encode(),body)
+ def test_12_expired_or_restart_lost_request_reports_fresh_session_action(self):
+  s,_,body=self.call(self.cp09,'/oauth/authorize','POST',
+   {'request_id':'EXPIRED_OR_RESTART_LOST_REQUEST','owner_access_token':OWNER},
+   {'Content-Type':'application/x-www-form-urlencoded'})
+  self.assertEqual(s,400)
+  self.assertIn(b'CONSENT_EXPIRED',body)
+  self.assertIn(b'restart ChatGPT authorisation',body)
+  self.assertNotIn(OWNER.encode(),body)
+
 if __name__=='__main__':unittest.main(verbosity=2)

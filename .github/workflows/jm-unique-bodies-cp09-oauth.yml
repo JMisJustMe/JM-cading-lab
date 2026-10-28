@@ -34,3 +34,7 @@ jobs:
         run: |
           cd services/jm-unique-bodies-cp08
           python3 -m unittest -v test_cp08_transport
+      - name: Verify real external Render OAuth service without owner token exposure
+        run: |
+          cd services/jm-unique-bodies-cp08
+          python3 -m unittest -v test_cp09_remote_hosted

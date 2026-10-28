@@ -330,4 +330,18 @@ class RealHttp(unittest.TestCase):
      'JM APP//COMMONS OAuth Connection CP07' if realm=='commons' else
      'JM Federation Receipt OAuth Connection CP03')
 
+
+ def test_25_modern_mcp_browser_preflight_for_both_realm_seats(self):
+  for realm in CONFIGS:
+   s,h,b=self.hit(realm,'/mcp','OPTIONS',headers={
+     'Origin':'https://gemini.google.com',
+     'Access-Control-Request-Method':'POST',
+     'Access-Control-Request-Headers':'MCP-Protocol-Version,Mcp-Method,Mcp-Name,Authorization'})
+   self.assertEqual(s,204,b)
+   for name in ('MCP-Protocol-Version','Mcp-Method','Mcp-Name'):
+    self.assertIn(name,h.get('Access-Control-Allow-Headers',''))
+   s,_,_=self.hit(realm,'/mcp','OPTIONS',headers={
+     'Origin':'https://gemini.google.com.attacker.invalid'})
+   self.assertEqual(s,403)
+
 if __name__=='__main__':unittest.main(verbosity=2)

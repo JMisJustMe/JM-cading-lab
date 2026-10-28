@@ -67,12 +67,12 @@ const env = { JM_OWNER_VAULT: bucket, JM_OWNER_VAULT_KEY: 'correct-horse-estate-
   assert.equal(payload.state.notes, 'keeper');
 }
 
-let firstBodyId;
+let firstBodyId, secondUseId, changedRevisionId, legacyId;
 {
   const html = '<!doctype html><html><body><h1>JM Test Body</h1></body></html>';
   const response = await call({
     method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
-    body: { action: 'upload-body', body: { name: 'JM Test Body', fileName: 'jm-test.html', content: html } }
+    body: { action: 'upload-body', body: { name: 'JM Test Body', fileName: 'jm-test.html', sourceInstanceId: 'local-jm-first-purpose', content: html } }
   });
   assert.equal(response.status, 201);
   const payload = await response.json();
@@ -82,12 +82,52 @@ let firstBodyId;
 
   const duplicate = await call({
     method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
-    body: { action: 'upload-body', body: { name: 'Duplicate Name', fileName: 'duplicate.html', content: html } }
+    body: { action: 'upload-body', body: { name: 'JM Test Body', fileName: 'jm-test.html', sourceInstanceId: 'local-jm-first-purpose', content: html } }
   });
   assert.equal(duplicate.status, 200);
   const dupPayload = await duplicate.json();
   assert.equal(dupPayload.outcome, 'DUPLICATE_ALREADY_HELD');
   assert.equal(dupPayload.body.id, firstBodyId);
+  assert.equal(dupPayload.same_instance, true);
+
+  // Identical bytes, identical title and filename, but a separately mounted
+  // intended use: its identity must not collapse into the first use.
+  const distinct = await call({
+    method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
+    body: { action: 'upload-body', body: { name: 'JM Test Body', fileName: 'jm-test.html', sourceInstanceId: 'local-jm-second-purpose', content: html } }
+  });
+  assert.equal(distinct.status, 201);
+  const d = await distinct.json();
+  assert.equal(d.outcome, 'BODY_STORED');
+  secondUseId = d.body.id;
+  assert.notEqual(secondUseId, firstBodyId);
+  assert.equal(d.body.sha256, payload.body.sha256);
+
+  // Same source identity, changed content: append a new version; keep ancestor.
+  const changed = await call({
+    method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
+    body: { action: 'upload-body', body: { name: 'JM Test Body', fileName: 'jm-test.html', sourceInstanceId: 'local-jm-first-purpose', content: html.replace('JM Test Body', 'JM Revised Body') } }
+  });
+  assert.equal(changed.status, 201);
+  const c = await changed.json();
+  changedRevisionId = c.body.id;
+  assert.equal(c.body.previousVersionId, firstBodyId);
+  assert.notEqual(changedRevisionId, firstBodyId);
+
+  // A legacy client without stable identity cannot safely deduplicate by bytes.
+  const legacy = await call({
+    method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
+    body: { action: 'upload-body', body: { name: 'JM Test Body', fileName: 'jm-test.html', content: html } }
+  });
+  assert.equal(legacy.status, 201);
+  legacyId = (await legacy.json()).body.id;
+
+  const invalid = await call({
+    method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
+    body: { action: 'upload-body', body: { sourceInstanceId: '../unsafe', content: html } }
+  });
+  assert.equal(invalid.status, 400);
+  assert.equal((await invalid.json()).error, 'INVALID_SOURCE_INSTANCE_ID');
 }
 
 {
@@ -95,7 +135,8 @@ let firstBodyId;
   assert.equal(response.status, 200);
   const payload = await response.json();
   assert.equal(payload.state.notes, 'keeper');
-  assert.equal(payload.bodies.length, 1);
+  assert.equal(payload.bodies.length, 4);
+  assert.equal(new Set(payload.bodies.map(x => x.id)).size, 4);
   assert.equal(payload.bodies[0].status, 'PRIVATE_DURABLE_COPY_NOT_PUBLICATION');
 }
 
@@ -115,7 +156,7 @@ let firstBodyId;
   assert.equal(response.status, 201);
   const payload = await response.json();
   assert.equal(payload.outcome, 'SNAPSHOT_STORED');
-  assert.equal(payload.snapshot.body_count, 1);
+  assert.equal(payload.snapshot.body_count, 4);
 }
 
 {
@@ -124,7 +165,18 @@ let firstBodyId;
   const payload = await response.json();
   assert.equal(payload.outcome, 'PRIVATE_COPY_REMOVED');
   const after = await call({ env, key: env.JM_OWNER_VAULT_KEY });
-  assert.equal((await after.json()).bodies.length, 0);
+  const afterBodies = (await after.json()).bodies;
+  assert.equal(afterBodies.length, 3);
+  assert.ok(afterBodies.some(x => x.id === secondUseId));
+  assert.ok(afterBodies.some(x => x.id === changedRevisionId));
+  const stillAvailable = await call({ env, key: env.JM_OWNER_VAULT_KEY, query: `?body=${encodeURIComponent(secondUseId)}` });
+  assert.equal(stillAvailable.status, 200);
+  assert.match(await stillAvailable.text(), /JM Test Body/);
+  // Cleanup only targeted copies, never metadata siblings implicitly.
+  for(const id of [secondUseId, changedRevisionId, legacyId]){
+    assert.equal((await call({ method:'DELETE', env, key:env.JM_OWNER_VAULT_KEY, query:`?body=${encodeURIComponent(id)}` })).status, 200);
+  }
+  assert.equal((await (await call({env,key:env.JM_OWNER_VAULT_KEY})).json()).bodies.length, 0);
 }
 
-console.log('PASS: JM Owner Vault v0.1 fail-closed state/body/snapshot contract.');
+console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion.');

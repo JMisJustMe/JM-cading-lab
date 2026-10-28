@@ -19,12 +19,13 @@
   },
   "laws": [
     "Local-first remains valid",
-    "Nothing uploads without explicit owner sync",
+    "Nothing uploads without an explicit owner Sync or Save private revision action",
     "Private durable copy is not public publication",
     "Connect does not mean merge",
     "Identical bytes are not identical identity: every independently intended body use is preserved",
     "Only exact same-source-instance and same-bytes retries are idempotent",
     "No older intended body is silently evicted at index capacity",
+    "Every private source edit produces a separately preserved revision with a source hash and a new ID",
     "No Ding, No Claim"
   ],
   "security_boundary": {
@@ -37,14 +38,23 @@
   "publication_boundary": "R2 owner-vault objects remain private working custody. Deliberate promotion to a canonical public repository body continues through the governed permanent HTML body pipeline and separate deployment proof.",
   "ding": false,
   "current_source_policy": {
-    "checkpoint": "CP04 2026-10-28",
-    "state": "SOURCE_AND_SYNTHETIC_CONTRACT_TESTED_LIVE_DEPLOYMENT_POLICY_READBACK_OPEN",
+    "checkpoint": "CP05 2026-10-28",
+    "state": "SOURCE_AND_SYNTHETIC_PRIVATE_EDITOR_TESTS_REQUIRED; LIVE_ROLLOUT_AND_OWNER_DEVICE_PROOF_OPEN",
     "source_instance_identity": "Existing local mounted-body id; preserves separate intended uses even with identical HTML bytes, name and filename",
     "replay_idempotence": "ONLY_SAME_SOURCE_INSTANCE_AND_BYTES",
     "edit_revision": "Same mounted-body id with changed bytes appends a new version; previousVersionId links the ancestor",
     "legacy_missing_source_id": "Preserve as a distinct record; do not deduplicate by hash alone",
     "index_capacity": "FAIL_CLOSED_NO_IDENTITY_EVICTION",
     "body_bytes_storage": "Separate R2 object per distinct intended use; no physical deduplication of separately purposeful copies",
-    "original_historical_state_retained": true
+    "original_historical_state_retained": true,
+    "private_source_editor": {
+      "placement": "Existing Estate Owner Room / JM Owner Vault (not a new app)",
+      "action": "Explicit Save private revision & verify readback",
+      "auth": "Existing session-scoped owner key; no new credentials",
+      "revision": "Immutable new HTML R2 object with previousVersionId and stable use identity",
+      "verification": "Server hash + independent authenticated GET/readback checked against submitted HTML; no public deployment implied",
+      "conflict": "STALE_HEAD_OR_EXPECTED_HASH_REJECTED",
+      "permanence_boundary": "Private server-backed owner storage, not automatic public code or deployed app editing"
+    }
   }
 }

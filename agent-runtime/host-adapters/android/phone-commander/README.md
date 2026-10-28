@@ -101,9 +101,13 @@ A remote edit issue must include `confirmation: OWNER_APPROVED_CODE_EDIT`, the e
 
 - `python -m unittest discover -s agent-runtime/host-adapters/android/phone-commander -p 'test_phone_commander.py' -v` — **30 off-device fixture tests passed in GitHub Actions run #40771978217 on 28 Oct 2026**. Run again on the repository/CI.
 - No existing file overwritten, ancestor or agent core replaced, host-adapter registry promoted, or Desktop Commander configuration changed.
-- `JM Phone Commander v0.1`: **FUNCTION (local fixture) proof only**. Phone physical device command, mailbox round trip, private issue receipt, owner-device write, reboot persistence and Codex separate-host contact remain **OPEN** until independently exercised.
+- `JM Phone Commander v0.1`: **HOST_CONTACT demonstrated on physical Samsung/Termux** for status, existing core route, git-status, file-read, protected-path refusal, owner-granted hash-checked edit and exact restore. Independently read-backed private receipts #1–#8. Separate Android reboot/auto polling/backup-content/Codex host gates remain **OPEN**.
 - Normal-chat access to GitHub and JM Build Mesh was directly observed on 28 Oct 2026; not a blanket plugin/access persistence guarantee.
 - If this descendant becomes verified, donate only reusable host-adapter/permission/continuity patterns to the JM Blueprint Plant; test each recipient separately.
+## ARCHIVED CP02 snapshot (historical, superseded by live owner proof)
+
+> This CP02 snapshot recorded an earlier time when live phone access was OPEN. Its statements below are historical, **not the present proof state**. See CP08 below.
+
 ## CP02 owner-device contact checkpoint — no new root, no duplicated issue
 
 **Source authority:** existing PR #577 is DRAFT, not merged or deployed. The existing private mailbox has a single read-only owner-issued test at `JMisJustMe/JM-ai-studio-surface#1`; **do not create another test command**. Phone/device and independent Work/Codex proof are still OPEN.
@@ -143,3 +147,29 @@ Inspect the **private** issue #1's bounded receipt. Do not publish tokens, local
 | Production propagation | Owner-approved release, deployed readback, drift check | OPEN |
 
 No gate is promoted from a different environment's PASS; connector availability does not equate to OAuth, device control, persistent shared auth, or deployment. The private mailbox is opt-in and works only when the phone is running. Reusable JM BLUEPRINT PLANT adapters are **dependent on separately tested descendant-specific permission and host routes**.
+
+## CP08 — actual Samsung contact and re-entry (current)
+
+**Physical scope with independently recovered private GitHub receipts:** #1 status; #2 12/64 JM runtime routing; #3 Git clean tracked checkout; #4 exact source UTF-8 and SHA-256; #5 protected path HOLD; #6 phone README fingerprint; #7 owner-authorised temporary source edit with backup path and hash readback; #8 exact reverse edit and matching original SHA. Original phone README SHA-256 restored: `fdd88244694ae0c5f7fedb1dbc33519350d296036adc1c955fc502d40976f31c`. This is not blanket command authority.
+
+**Simplify future Termux entry:** the new `jmphone-reenter.sh` is a *thin host launcher*, not a new command service or a replacement for the sovereign agent. It discovers an existing JM tree, runs the existing Python commander and accepts the same bounded command arguments. It never creates a checkout or reads private GitHub credentials by itself.
+
+If the current Termux session still has `$ROOT` from successful tests, install the launcher one time (this **does not** update the tracked JM files):
+
+```sh
+git -C "$ROOT" fetch origin feat/jm-phone-commander-v0-1-20261028
+git -C "$ROOT" show origin/feat/jm-phone-commander-v0-1-20261028:agent-runtime/host-adapters/android/phone-commander/jmphone-reenter.sh > "$HOME/jmphone.new"
+sh -n "$HOME/jmphone.new"
+if [ -e "$HOME/jmphone" ]; then
+  echo "HOLD: existing ~/jmphone found; compare before replacing"
+else
+  mv "$HOME/jmphone.new" "$HOME/jmphone"
+  chmod 700 "$HOME/jmphone"
+fi
+```
+
+In a **fresh** Termux session thereafter, use `sh "$HOME/jmphone" status` or `sh "$HOME/jmphone" mailbox`; no previous `$ROOT` or `$SCRIPT` variables required. For manual foreground polling use `sh "$HOME/jmphone" mailbox --loop` only when desired and stop with Ctrl+C. It does **not** guarantee background longevity; Android may suspend or kill Termux. A new-session physical proof must be separately observed before marking that gate PASS.
+
+**Security:** GitHub CLI on Termux warned that its authorised token is stored in plaintext, inside Termux's app-private configuration. Do not paste or commit it. Owner may inspect filesystem permissions locally (`ls -ld ~/.config/gh; ls -l ~/.config/gh/hosts.yml`), and should not enable unattended boot until acceptable credential storage, privacy and battery behaviour are reviewed. Setting mode 0600 limits file reads by other Unix users but is **not encryption**.
+
+**Outstanding gates:** independent post-restoration readback; exact backup-content verification; fresh-session launcher; restart/reboot state continuity; explicit owner-approved optional Termux:Boot; encrypted/OS-backed credentials if available; exact Codex and external platform routes. Do not promote those without real receipts.

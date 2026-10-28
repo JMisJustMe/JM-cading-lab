@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "jm-app-commons": {
+      "command": "python",
+      "args": [
+        "services/jm-mcp-client-adapters/stdio_http_bearer_proxy.py",
+        "--target",
+        "commons"
+      ],
+      "env": {
+        "JM_COMMONS_REMOTE_TOKEN": "$JM_COMMONS_REMOTE_TOKEN"
+      },
+      "trust": false,
+      "timeout": 30000
+    },
+    "jm-federation-receipt": {
+      "command": "python",
+      "args": [
+        "services/jm-mcp-client-adapters/stdio_http_bearer_proxy.py",
+        "--target",
+        "receipt"
+      ],
+      "env": {
+        "JM_RECEIPT_REMOTE_TOKEN": "$JM_RECEIPT_REMOTE_TOKEN"
+      },
+      "trust": false,
+      "timeout": 30000
+    }
+  }
+}

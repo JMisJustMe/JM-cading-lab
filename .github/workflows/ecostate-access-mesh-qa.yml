@@ -266,3 +266,86 @@ jobs:
             } finally { await browser.close(); }
           })().catch(e=>{console.error('EDITOR_BROWSER_QA_FAILED',e);process.exitCode=1});
           NODE
+      - name: Browser proof of CP08 owner-initiated private proof (synthetic authenticated storage)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash,randomUUID}=require('node:crypto');
+          const hex=s=>createHash('sha256').update(s).digest('hex');
+          const oldId='550e8400-e29b-41d4-a716-446655440000';
+          const oldHTML='<!doctype html><html><body>PREEXISTING JM OWNER BODY - must not mutate</body></html>';
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try {
+              let passed=0;
+              for(const [index,viewport] of [{width:390,height:844},{width:1366,height:900}].entries()){
+                const page=await browser.newPage({viewport});
+                page.setDefaultTimeout(15000);
+                page.on('pageerror',e=>console.log('CP08_PAGEERROR',String(e).slice(0,400)));
+                const existing={id:oldId,sourceInstanceId:'local-existing-creation',name:'Existing JM source',fileName:'existing.html',sha256:hex(oldHTML),bytes:Buffer.byteLength(oldHTML),previousVersionId:null};
+                const records=new Map([[oldId,oldHTML]]);
+                let bodies=[existing],writes=0,deletes=0;
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp08-owner-key';});
+                await page.route('**/api/owner/vault*',async route=>{
+                  const q=route.request(),u=new URL(q.url()),method=q.method(),id=u.searchParams.get('body');
+                  const respond=(code,payload)=>route.fulfill({status:code,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(payload)});
+                  if(u.searchParams.get('mode')==='status')return respond(200,{ready:true,storage_bound:true,owner_key_configured:true});
+                  if(q.headers()['x-jm-owner-key']!=='synthetic-cp08-owner-key')return respond(401,{error:'OWNER_AUTH_REQUIRED'});
+                  if(method==='GET'&&id){
+                    if(!records.has(id))return respond(404,{error:'BODY_NOT_FOUND'});
+                    return route.fulfill({status:200,headers:{'content-type':'text/html','cache-control':'no-store'},body:records.get(id)});
+                  }
+                  if(method==='GET')return respond(200,{state:{notes:'',favourites:[],recent:[]},bodies});
+                  if(method==='POST'){
+                    const data=q.postDataJSON(),b=data.body||{};
+                    if(data.action!=='upload-body'||b.name!=='JM CP08 TEMPORARY CONTACT PROOF'||b.fileName!=='JM_CP08_TEMPORARY_CONTACT_PROOF.html'||!/^cp08-[a-f0-9]{32}$/.test(b.sourceInstanceId))
+                      return respond(400,{error:'UNEXPECTED_PROOF_MUTATION'});
+                    if(bodies.some(x=>x.sourceInstanceId===b.sourceInstanceId))return respond(409,{error:'REPLAY_FORBIDDEN'});
+                    const id=randomUUID(),meta={id,name:b.name,fileName:b.fileName,sourceInstanceId:b.sourceInstanceId,sha256:hex(b.content),bytes:Buffer.byteLength(b.content),previousVersionId:null};
+                    records.set(id,b.content);bodies=[meta,...bodies];writes++;
+                    if(index===0)return respond(502,{error:'SIMULATED_LOST_WRITE_ACK'});
+                    return respond(201,{outcome:'BODY_STORED',body:meta});
+                  }
+                  if(method==='DELETE'&&id){
+                    const item=bodies.find(x=>x.id===id);
+                    if(!item||!item.sourceInstanceId?.startsWith('cp08-')||item.name!=='JM CP08 TEMPORARY CONTACT PROOF')
+                      return respond(403,{error:'EXISTING_BODY_DELETE_BLOCKED'});
+                    records.delete(id);bodies=bodies.filter(x=>x.id!==id);deletes++;
+                    return respond(200,{outcome:'PRIVATE_COPY_REMOVED',body:item});
+                  }
+                  return respond(405,{error:'METHOD_NOT_ALLOWED'});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultProveRoundtrip').waitFor();
+                if(writes!==0||deletes!==0)throw Error('Proof mutated private storage before owner action');
+                await page.locator('#jmVaultProveRoundtrip').click();
+                if(index===0){
+                  await page.waitForFunction(()=>document.querySelector('#jmVaultProofStatus')?.textContent?.includes('HOLD'),{timeout:12000});
+                  if(writes!==1||deletes!==0)throw Error('Lost acknowledgement unexpectedly repeated test');
+                  await page.locator('#jmVaultProveRoundtrip').click();
+                }
+                await page.waitForFunction(()=>{
+                  const t=document.querySelector('#jmVaultProofStatus')?.textContent||'';
+                  return t.includes('CP08 PASS')||t.includes('CP08 HOLD:');
+                },{timeout:20000});
+                const final=await page.locator('#jmVaultProofStatus').textContent();
+                if(!final.includes('CP08 PASS'))throw Error('CP08 did not pass: '+final);
+                const receipt=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-owner-vault-cp08-receipt')||'null'));
+                if(receipt?.schema!=='JM.OwnerVault.AuthenticatedDeviceProof/0.1'||receipt?.outcome!=='PASS'||!receipt.independent_reload_readback||
+                  !receipt.temporary_body_exact_cleanup||receipt.owner_secret_recorded!==false||receipt.cross_device_proof!==false)
+                  throw Error('CP08 evidence was overstated or incomplete');
+                const pending=await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp08-pending'));
+                if(pending!==null||writes!==1||deletes!==1||bodies.length!==1||bodies[0].id!==oldId||records.get(oldId)!==oldHTML)
+                  throw Error('CP08 leaked a test body, replayed POST, or changed a real body');
+                const download=page.waitForEvent('download');
+                await page.locator('#jmVaultExportProof').click();
+                if((await download).suggestedFilename()!=='JM_OWNER_VAULT_CP08_OWNER_PROOF.json')
+                  throw Error('Proof export not available');
+                await page.close();passed++;
+              }
+              if(passed!==2)throw Error('Not all viewport and lost-response owner proof contacts passed');
+              console.log('DING CP08 2/2 synthetic browser journeys · owner click → private temp write → actual reload → SHA readback → exact cleanup → independent receipt · existing body intact');
+            } finally {await browser.close();}
+          })().catch(e=>{console.error('CP08_BROWSER_HOLD',e);process.exitCode=1});
+          NODE

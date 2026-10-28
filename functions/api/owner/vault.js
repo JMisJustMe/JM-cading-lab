@@ -254,6 +254,8 @@ export async function onRequest(context) {
       owner_key_configured: Boolean(env.JM_OWNER_VAULT_KEY),
       ready: Boolean(env.JM_OWNER_VAULT && env.JM_OWNER_VAULT_KEY),
       auth: 'X-JM-Owner-Key (session-entered; never embedded in public source)',
+      identity_policy: 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY',
+      overflow_policy: 'FAIL_CLOSED_NO_IDENTITY_EVICTION',
       public_claim: false
     });
   }

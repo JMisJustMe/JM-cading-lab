@@ -382,7 +382,7 @@ jobs:
                 const page=await browser.newPage({viewport});
                 page.setDefaultTimeout(30000);
                 const errors=[];
-                page.on('pageerror',e=>errors.push(String(e)));
+                page.on('pageerror',e=>errors.push(e.stack||String(e)));
                 const origin='http://127.0.0.1:4178/games-beyond/';
                 await page.goto(origin+'?jm-edit=fight-clash',{waitUntil:'domcontentloaded'});
                 await page.waitForFunction(()=>window.GamesBeyond?.activeEditorBodyId==='fight-clash'&&

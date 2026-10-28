@@ -1,6 +1,6 @@
 {
   "schema": "JM.OwnerVaultLiveReadinessReceipt/0.1",
-  "verified_utc": "2026-10-28T17:09:50.220834+00:00",
+  "verified_utc": "2026-10-28T17:20:55.188320+00:00",
   "state": "LIVE_READINESS_PASS",
   "host": "https://jmisjustme-estate.pages.dev",
   "http_status": "200",
@@ -21,10 +21,11 @@
   "cp05_public_editor_policy_verified": true,
   "cp06_deployed_owner_editor_source_verified": true,
   "cp07_deployed_local_recovery_source_verified": true,
-  "source_commit": "e3867b3f4e64498cf218cbb71b204bf9b97150cf",
-  "workflow_run": "40732975768",
+  "cp08_owner_initiated_proof_interface_deployed": true,
+  "source_commit": "d9efadb0315032569e9f69a5341645586c4b356b",
+  "workflow_run": "40734738762",
   "authenticated_write_read_delete_proof": false,
   "owner_secret_value_recorded": false,
   "ding": false,
-  "claim_boundary": "Mainline receipt: public-safe Vault API policy and deployed browser-code markers for private editing, CP07 local recovery, no eviction and quota preservation. It does NOT prove actual owner-key write, owner-device local restore, cross-device recovery or public creation propagation; those require separate authenticated owner contact."
+  "claim_boundary": "Live source check confirms CP08 owner-initiated proof interface, not execution. Authenticated owner-session write/reload/read/delete remains false until the owner runs the isolated browser proof; cross-device and full-Estate editing still separate."
 }

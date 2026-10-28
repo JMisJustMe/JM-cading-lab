@@ -372,6 +372,9 @@ jobs:
           grep -Fq 'JM.Estate.PublicNervousSystem/1' cloudflare-estate/navigator/estate-integration/public-registry.json
           grep -Fq 'One Estate.' cloudflare-estate/navigator/estate-integration/index.html
           grep -Fq 'Save private revision &amp; verify readback' cloudflare-estate/estate-app.js
+          grep -Fq 'RESTORE TO DEVICE' cloudflare-estate/estate-app.js
+          grep -Fq 'Previous mounted bodies remain unchanged.' cloudflare-estate/estate-app.js
+          grep -Fq 'No existing body was removed.' cloudflare-estate/estate-app.js
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/navigator/index.html
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/apps/index.html
           grep -Fq 'data-jm-estate-integration="v1"' cloudflare-estate/lyrics/index.html
@@ -470,6 +473,9 @@ jobs:
             ['/api/ailatheo?action=status', 'JM.AILatheoCustomer/0.1'],
             ['/api/owner/vault?mode=status', 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY'],
             ['/api/owner/vault?mode=status', 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY'],
+            ['/estate-app.js', 'RESTORE TO DEVICE'],
+            ['/estate-app.js', 'Previous mounted bodies remain unchanged.'],
+            ['/estate-app.js', 'No existing body was removed.'],
             ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],

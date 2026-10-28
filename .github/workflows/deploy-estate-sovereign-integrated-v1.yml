@@ -769,6 +769,93 @@ jobs:
           set -euo pipefail
           node governance/estate-integration/probe_live_integration_v1.mjs
 
+      - name: CP11 prove live exact-source bytes of four original workrooms
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, time, urllib.request
+          from datetime import datetime, timezone
+          root='estate-publication/apps-tools-convergence/'
+          files=[
+              'index.html',
+              'JM_CAPABILITY_ENVIRONMENT_v0_1.css',
+              'JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js',
+              'JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js',
+              'evidence-governance/index.html',
+              'creation-publication/index.html',
+              'contact-practice/index.html',
+              'route-ftr/index.html',
+          ]
+          base='https://jmisjustme-estate.pages.dev/'
+          verified=[]
+          for part in files:
+              path=root+part
+              expected=hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+              observed=None
+              for attempt in range(1,31):
+                  url=base+path+'?jm-cp11-live='+os.environ['GITHUB_RUN_ID']+'-'+str(attempt)
+                  try:
+                      request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','Accept':'text/html,*/*'})
+                      with urllib.request.urlopen(request,timeout=20) as result:
+                          if result.status==200:
+                              observed=hashlib.sha256(result.read()).hexdigest()
+                              if observed==expected:break
+                  except Exception:pass
+                  time.sleep(3)
+              if observed!=expected:
+                  raise SystemExit('CP11 LIVE SOURCE HOLD: '+path+' expected '+expected+' observed '+str(observed))
+              verified.append({'path':'/'+path,'sha256':expected,'http':200,'exact_bytes':True})
+              print('CP11 LIVE EXACT PASS '+path+' SHA256 '+expected)
+          for attempt in range(1,31):
+              try:
+                  url=base+'apps/?jm-cp11-live='+os.environ['GITHUB_RUN_ID']+'-'+str(attempt)
+                  request=urllib.request.Request(url,headers={'Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(request,timeout=20) as result:
+                      live_apps=result.read().decode('utf-8')
+                      if result.status==200 and 'data-cp11="four-original-workrooms"' in live_apps:break
+              except Exception:pass
+              time.sleep(3)
+          else:
+              raise SystemExit('CP11 LIVE APPS HOUSE ROUTE HOLD')
+          receipt={
+              'schema':'JM.AppsToolsWorkroomsLiveCarriageProof/1',
+              'verified_utc':datetime.now(timezone.utc).isoformat(),
+              'state':'LIVE_EXACT_SOURCE_PASS',
+              'source_commit':os.environ['GITHUB_SHA'],
+              'github_workflow_run':os.environ['GITHUB_RUN_ID'],
+              'host':base.rstrip('/'),
+              'files_verified':verified,
+              'file_count':len(verified),
+              'apps_house_entry_verified':True,
+              'real_owner_device_proof':False,
+              'owner_content_or_secrets_collected':False,
+              'automatic_github_writeback_proof':False,
+              'other_jm_apps_live_editability_proof':False,
+              'boundary':'Proves public canonical delivery of eight exact source-derived static workroom assets and Apps House links; local browser persistence, owner device interaction, and private full bodies are separate.'
+          }
+          pathlib.Path(os.environ['RUNNER_TEMP'],'jm-apps-tools-cp11-live.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+          PY
+
+      - name: CP11 preserve verified live workroom source receipt in GitHub
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          cp "$RUNNER_TEMP/jm-apps-tools-cp11-live.json" registry/apps-tools-cp11-live-carriage-receipt.json
+          git config user.name 'JM Apps & Tools Live Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/apps-tools-cp11-live-carriage-receipt.json
+          git diff --cached --quiet || git commit -m 'Record exact live source proof for four Apps & Tools workrooms [skip ci]'
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then pushed=1; break; fi
+            sleep 2
+          done
+          test "$pushed" = 1
+
       - uses: actions/upload-artifact@v4
         with:
           name: estate-sovereign-integrated-live-proof-v1

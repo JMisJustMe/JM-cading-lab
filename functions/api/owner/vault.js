@@ -62,6 +62,30 @@ async function sameSecret(provided, expected) {
   return mismatch === 0;
 }
 
+// Verify the bytes actually persisted by R2, not merely a successful PUT response.
+class VaultBodyIntegrityError extends Error {
+  constructor(code) {
+    super(code);
+    this.code = code;
+  }
+}
+
+async function verifiedBody(bucket, key, expectedHash, expectedBytes) {
+  const object = await bucket.get(key);
+  if (!object) throw new VaultBodyIntegrityError('BODY_BYTES_MISSING');
+  let content;
+  try { content = await object.text(); }
+  catch { throw new VaultBodyIntegrityError('BODY_BYTES_UNREADABLE'); }
+  if (expectedBytes != null && new TextEncoder().encode(content).byteLength !== expectedBytes) {
+    throw new VaultBodyIntegrityError('BODY_INTEGRITY_MISMATCH');
+  }
+  const hashVerified = typeof expectedHash === 'string' && /^[a-f0-9]{64}$/i.test(expectedHash);
+  if (hashVerified && await sha256Text(content) !== expectedHash.toLowerCase()) {
+    throw new VaultBodyIntegrityError('BODY_INTEGRITY_MISMATCH');
+  }
+  return { object, content, hashVerified };
+}
+
 async function readJson(bucket, key, fallback) {
   const object = await bucket.get(key);
   if (!object) return fallback;
@@ -76,6 +100,15 @@ async function writeJson(bucket, key, value) {
   await bucket.put(key, JSON.stringify(value, null, 2), {
     httpMetadata: { contentType: 'application/json; charset=utf-8' }
   });
+}
+
+// A successful index PUT must survive independent readback without losing
+// any existing purposeful bodies. This is detection, not a multi-writer lock.
+async function verifyIndexWrite(bucket, expected) {
+  const actual = await readJson(bucket, INDEX_KEY, null);
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new VaultBodyIntegrityError('BODY_INDEX_READBACK_MISMATCH');
+  }
 }
 
 async function requireOwner(request, env) {
@@ -172,6 +205,8 @@ async function uploadBody(bucket, payload) {
     customMetadata: { sha256: hash, bodyName: name.slice(0, 900) }
   });
 
+  await verifiedBody(bucket, objectKey, hash, byteCount);
+
   const metadata = {
     id,
     name,
@@ -191,6 +226,7 @@ async function uploadBody(bucket, payload) {
     bodies: [metadata, ...bodies]
   };
   await writeJson(bucket, INDEX_KEY, next);
+  await verifyIndexWrite(bucket, next);
   return { duplicate: false, body: metadata };
 }
 
@@ -236,17 +272,20 @@ async function reviseBody(bucket, payload) {
     },
     customMetadata: { sha256: hash, bodyName: name.slice(0, 900) }
   });
+  await verifiedBody(bucket, `${BODY_PREFIX}/${id}.html`, hash, byteCount);
   const record = {
     id, name, fileName, bytes: byteCount, sha256: hash, sourceInstanceId,
     previousVersionId: base.id, uploaded_at: now,
     source: 'explicit-owner-revision',
     status: 'PRIVATE_DURABLE_REVISION_NOT_PUBLICATION'
   };
-  await writeJson(bucket, INDEX_KEY, {
+  const nextIndex = {
     schema: `${SCHEMA}.BodyIndex`,
     updated_at: now,
     bodies: [record, ...bodies]
-  });
+  };
+  await writeJson(bucket, INDEX_KEY, nextIndex);
+  await verifyIndexWrite(bucket, nextIndex);
   return { unchanged: false, body: record };
 }
 
@@ -285,19 +324,19 @@ async function downloadBody(bucket, id) {
   const index = await readJson(bucket, INDEX_KEY, { bodies: [] });
   const target = (index.bodies || []).find(item => item.id === id);
   if (!target) return json({ schema: SCHEMA, error: 'BODY_NOT_FOUND' }, 404);
-  const object = await bucket.get(`${BODY_PREFIX}/${id}.html`);
-  if (!object) return json({ schema: SCHEMA, error: 'BODY_BYTES_MISSING' }, 404);
+  const stored = await verifiedBody(bucket, `${BODY_PREFIX}/${id}.html`, target.sha256, target.bytes);
 
   const headers = new Headers();
-  object.writeHttpMetadata?.(headers);
+  stored.object.writeHttpMetadata?.(headers);
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'no-store, max-age=0');
   headers.set('x-content-type-options', 'nosniff');
+  headers.set('x-jm-body-integrity', stored.hashVerified ? 'sha256-verified' : 'unverified-legacy');
   headers.set('content-disposition', `attachment; filename="${safeFileName(target.fileName)}"`);
-  return new Response(object.body, { headers });
+  return new Response(stored.content, { headers });
 }
 
-export async function onRequest(context) {
+async function handleOwnerRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const mode = url.searchParams.get('mode');
@@ -366,4 +405,19 @@ export async function onRequest(context) {
   }
 
   return json({ schema: SCHEMA, error: 'METHOD_NOT_ALLOWED' }, 405, { allow: 'GET, PUT, POST, DELETE' });
+}
+
+export async function onRequest(context) {
+  try {
+    return await handleOwnerRequest(context);
+  } catch (error) {
+    if (error instanceof VaultBodyIntegrityError) {
+      return json({
+        schema: SCHEMA,
+        error: error.code,
+        recovery: 'HOLD_SOURCE_BYTES_FOR_OWNER_INSPECTION_NO_AUTOMATIC_DELETION'
+      }, error.code === 'BODY_BYTES_MISSING' ? 404 : 409);
+    }
+    throw error;
+  }
 }

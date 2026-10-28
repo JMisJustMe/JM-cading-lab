@@ -15,7 +15,22 @@ class FakeR2Object {
 class FakeR2 {
   constructor() { this.map = new Map(); }
   async get(key) { const item = this.map.get(key); return item ? new FakeR2Object(item) : null; }
-  async put(key, body, options = {}) { this.map.set(key, { body: String(body), options }); }
+  async put(key, body, options = {}) {
+    if (this.dropNextIndexWrite && key.endsWith('/bodies/index.json')) {
+      this.dropNextIndexWrite = false;
+      return;
+    }
+    let stored = String(body);
+    if (this.tamperNextBodyWrite && key.endsWith('.html')) {
+      this.tamperNextBodyWrite = false;
+      stored += '<!-- injected R2 corruption -->';
+    }
+    if (this.tamperNextIndexWrite && key.endsWith('/bodies/index.json')) {
+      this.tamperNextIndexWrite = false;
+      stored = stored.replace('PRIVATE_DURABLE_COPY_NOT_PUBLICATION', 'CORRUPTED_INDEX_ENTRY');
+    }
+    this.map.set(key, { body: stored, options });
+  }
   async delete(key) { this.map.delete(key); }
 }
 
@@ -261,4 +276,83 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   assert.equal(JSON.parse(bucket.map.get(indexKey).body).bodies.length,2000);
 }
 
-console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor preservation, stale rejection, purpose isolation, exact-instance retries, legacy continuity and capacity fail-closed.');
+// Current-main integrity regression: uploads, private revisions, downloads and
+// the complete index must be independently read back before success is reported.
+{
+  const isolated = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: isolated };
+  const ownerKey = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const html = '<!doctype html><html><body>Source A</body></html>';
+  const upload = (instance, content) => call({
+    method: 'POST', env: isolatedEnv, key: ownerKey,
+    body: { action: 'upload-body', body: { sourceInstanceId: instance, content } }
+  });
+  const revise = (baseId, expectedSha256, content) => call({
+    method: 'POST', env: isolatedEnv, key: ownerKey,
+    body: { action: 'revise-body', baseId, expectedSha256, content }
+  });
+  const first = await upload('cp09-source-0001', html);
+  assert.equal(first.status, 201);
+  const ancestor = (await first.json()).body;
+  const bodyKey = `jm-owner-vault/v0.1/bodies/${ancestor.id}.html`;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const original = isolated.map.get(bodyKey);
+  const read = id => call({ env: isolatedEnv, key: ownerKey, query: `?body=${id}` });
+  const good = await read(ancestor.id);
+  assert.equal(good.status, 200);
+  assert.equal(good.headers.get('x-jm-body-integrity'), 'sha256-verified');
+  assert.equal(await good.text(), html);
+  assert.equal((await read(ancestor.id)).status, 200);
+
+  isolated.map.set(bodyKey, { ...original, body: html.replace('Source A', 'Source B') });
+  const sameLengthTamper = await read(ancestor.id);
+  assert.equal(sameLengthTamper.status, 409);
+  assert.equal((await sameLengthTamper.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.equal(isolated.map.get(bodyKey).body.includes('Source B'), true);
+  isolated.map.set(bodyKey, original);
+
+  const beforeIndex = isolated.map.get(indexKey).body;
+  isolated.tamperNextBodyWrite = true;
+  const badUpload = await upload('cp09-source-0002', html.replace('Source A', 'Source C'));
+  assert.equal(badUpload.status, 409);
+  assert.equal((await badUpload.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, beforeIndex);
+
+  isolated.dropNextIndexWrite = true;
+  const lostIndex = await upload('cp09-source-0003', html.replace('Source A', 'Source D'));
+  assert.equal(lostIndex.status, 409);
+  assert.equal((await lostIndex.json()).error, 'BODY_INDEX_READBACK_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, beforeIndex);
+
+  isolated.tamperNextIndexWrite = true;
+  const changedIndex = await upload('cp09-source-0004', html.replace('Source A', 'Source E'));
+  assert.equal(changedIndex.status, 409);
+  assert.equal((await changedIndex.json()).error, 'BODY_INDEX_READBACK_MISMATCH');
+  isolated.map.set(indexKey, { body: beforeIndex, options: isolated.map.get(indexKey).options });
+
+  const revisedHtml = html.replace('Source A', 'Source F');
+  const revised = await revise(ancestor.id, ancestor.sha256, revisedHtml);
+  assert.equal(revised.status, 201);
+  const descendant = (await revised.json()).body;
+  assert.equal(descendant.previousVersionId, ancestor.id);
+  assert.equal((await (await read(descendant.id)).text()), revisedHtml);
+  assert.equal((await (await read(ancestor.id)).text()), html);
+
+  const revisionIndex = isolated.map.get(indexKey).body;
+  isolated.tamperNextBodyWrite = true;
+  const badRevision = await revise(descendant.id, descendant.sha256, html.replace('Source A', 'Source G'));
+  assert.equal(badRevision.status, 409);
+  assert.equal((await badRevision.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, revisionIndex);
+
+  isolated.dropNextIndexWrite = true;
+  const lostRevision = await revise(descendant.id, descendant.sha256, html.replace('Source A', 'Source H'));
+  assert.equal(lostRevision.status, 409);
+  assert.equal((await lostRevision.json()).error, 'BODY_INDEX_READBACK_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, revisionIndex);
+  assert.equal((await read(descendant.id)).status, 200);
+  assert.equal((await read(ancestor.id)).status, 200);
+  assert.equal((await call({ env: isolatedEnv, key: 'wrong', query: `?body=${ancestor.id}` })).status, 401);
+}
+
+console.log('PASS: JM Owner Vault current-main private editor, immutable ancestry, capacity gate, exact R2 body/index integrity on uploads/revisions/downloads.');

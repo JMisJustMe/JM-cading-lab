@@ -23,6 +23,27 @@ def required_gates(contract,level):
             out.append(gate["id"])
     return out
 
+def evidence_is_repository_file(root, reference):
+    """Only an actual, regular JM repository file can count as local evidence."""
+    if not isinstance(reference, str) or not reference or "\\" in reference or "\x00" in reference:
+        return False
+    rel = pathlib.PurePosixPath(reference)
+    if rel.is_absolute() or ".." in rel.parts or reference.startswith("~"):
+        return False
+    try:
+        home = root.resolve(strict=True)
+        candidate = home
+        for part in rel.parts:
+            candidate = candidate / part
+            # Reject even in-tree symlink aliases: the path itself is not
+            # stable evidence of the claimed repository source bytes.
+            if candidate.is_symlink():
+                return False
+        return candidate.is_file() and candidate.resolve(strict=True).is_relative_to(home)
+    except (OSError, ValueError):
+        return False
+
+
 def core_out(cmd,query):
     return subprocess.check_output(cmd+["--core-only","--query",query],cwd=ROOT,text=True).strip()
 
@@ -70,10 +91,13 @@ def main():
         for gid,result in gates.items():
             if result not in RESULTS:
                 errors.append(f"{aid}: invalid {gid} result {result!r}")
-        evidence=adapter.get("evidence") or []
-        missing_paths=[p for p in evidence if not (ROOT/p).exists()]
-        if missing_paths:
-            errors.append(f"{aid}: missing evidence paths: {missing_paths}")
+        evidence=adapter.get("evidence")
+        if not isinstance(evidence, list):
+            errors.append(f"{aid}: evidence must be an array of repository paths")
+            evidence=[]
+        unsafe_paths=[repr(p) for p in evidence if not evidence_is_repository_file(ROOT,p)]
+        if unsafe_paths:
+            errors.append(f"{aid}: invalid/outside/missing evidence paths: {unsafe_paths}")
         pass_count=sum(1 for v in gates.values() if v=="PASS")
         if pass_count and not evidence:
             errors.append(f"{aid}: PASS gates require durable evidence")

@@ -114,22 +114,46 @@ function custodyShapeValid(record, key) {
   }
   return false;
 }
+// Attach the R2 read version privately to the parsed record. Never send an
+// ETag through JSON, turn it into owner authority or mistake a read for a lock.
+const readVersions = new WeakMap();
+class VaultWriteConflict extends Error {
+  constructor() { super('PRIVATE_CONCURRENT_WRITE_CONFLICT'); }
+}
 async function readJson(bucket, key, fallback) {
   let object;
   try { object = await bucket.get(key); }
   catch { throw new VaultCustodyHold(); }
-  if (!object) return fallback; // Legitimately absent first-run record.
+  if (!object) {
+    if (fallback && typeof fallback === 'object') readVersions.set(fallback, null);
+    return fallback; // Legitimate first-run absence: create-once CAS.
+  }
   let parsed;
   try { parsed = JSON.parse(await object.text()); }
   catch { throw new VaultCustodyHold(); }
   if (!custodyShapeValid(parsed, key)) throw new VaultCustodyHold();
+  readVersions.set(parsed, object.etag);
   return parsed;
 }
 
-async function writeJson(bucket, key, value) {
-  await bucket.put(key, JSON.stringify(value, null, 2), {
+async function writeJson(bucket, key, value, expectedPrevious = undefined) {
+  const options = {
     httpMetadata: { contentType: 'application/json; charset=utf-8' }
-  });
+  };
+  if (expectedPrevious !== undefined) {
+    if (!expectedPrevious || !readVersions.has(expectedPrevious)) throw new VaultCustodyHold();
+    const version = readVersions.get(expectedPrevious);
+    if (version === null) {
+      options.onlyIf = new Headers({ 'If-None-Match': '*' });
+    } else {
+      if (typeof version !== 'string' || !version) throw new VaultCustodyHold();
+      options.onlyIf = { etagMatches: version };
+    }
+  }
+  // R2 evaluates onlyIf against committed state atomically. A null return
+  // means the write was not stored; never acknowledge an editor's lost update.
+  const committed = await bucket.put(key, JSON.stringify(value, null, 2), options);
+  if (expectedPrevious !== undefined && committed === null) throw new VaultWriteConflict();
 }
 
 // A successful index PUT must survive independent readback without losing
@@ -184,14 +208,14 @@ async function manifest(bucket) {
 async function saveState(bucket, payload) {
   // A PUT may update a healthy state or create a genuinely absent state;
   // it may never overwrite an existing unreadable state.
-  await readJson(bucket, STATE_KEY, { schema: `${SCHEMA}.State`, state: safeState({}) });
+  const priorState = await readJson(bucket, STATE_KEY, { schema: `${SCHEMA}.State`, state: safeState({}) });
   const now = new Date().toISOString();
   const record = {
     schema: `${SCHEMA}.State`,
     updated_at: now,
     state: safeState(payload?.state)
   };
-  await writeJson(bucket, STATE_KEY, record);
+  await writeJson(bucket, STATE_KEY, record, priorState);
   await verifyStateWrite(bucket, record);
   return record;
 }
@@ -268,7 +292,7 @@ async function uploadBody(bucket, payload) {
     updated_at: now,
     bodies: [metadata, ...bodies]
   };
-  await writeJson(bucket, INDEX_KEY, next);
+  await writeJson(bucket, INDEX_KEY, next, index);
   await verifyIndexWrite(bucket, next);
   return { duplicate: false, body: metadata };
 }
@@ -331,7 +355,7 @@ async function reviseBody(bucket, payload) {
     updated_at: now,
     bodies: [record, ...bodies]
   };
-  await writeJson(bucket, INDEX_KEY, nextIndex);
+  await writeJson(bucket, INDEX_KEY, nextIndex, index);
   await verifyIndexWrite(bucket, nextIndex);
   return { unchanged: false, body: record };
 }
@@ -363,7 +387,7 @@ async function deleteBody(bucket, id) {
     updated_at: now,
     bodies: bodies.filter(item => item.id !== id)
   };
-  await writeJson(bucket, INDEX_KEY, nextIndex);
+  await writeJson(bucket, INDEX_KEY, nextIndex, index);
   await verifyIndexWrite(bucket, nextIndex);
   // If deletion is interrupted after index commit, the orphaned bytes are kept
   // for manual recovery. Never roll back the index by overwriting other writers.
@@ -496,6 +520,13 @@ export async function onRequest(context) {
   try {
     return await handleOwnerRequest(context);
   } catch (error) {
+    if (error instanceof VaultWriteConflict) {
+      return json({
+        schema: SCHEMA,
+        error: 'PRIVATE_CONCURRENT_WRITE_CONFLICT',
+        recovery: 'RELOAD_CURRENT_PRIVATE_STATE_AND_RETRY_WITH_CURRENT_HEAD'
+      }, 409);
+    }
     if (error instanceof VaultCustodyHold) {
       return json({
         schema: SCHEMA,

@@ -56,3 +56,34 @@ test('a healthy looking HTML page on another origin cannot spoof the requested d
   const fakeResponse={ok:true,status:200,url:'https://unrelated.example/hello',headers:{get:()=> 'text/html'},body:{cancel:async()=>{}}};
   assert.equal((await liveCheck('https://jmisjustme-estate.pages.dev/',async()=>fakeResponse)).reason,'CROSS_ORIGIN_REDIRECT');
 });
+
+test('registered JSON is validated as JSON, never falsely judged as HTML',async()=>{
+  const j=(value,media='application/json')=>new Response(value,{status:200,headers:{'content-type':media}});
+  assert.equal((await liveCheck('https://example.org/contract.json',async()=>j('{"ok":true}'),'json')).state,'PASS');
+  assert.equal((await liveCheck('https://example.org/contract.json',async()=>j('not json'),'json')).reason,'MALFORMED_JSON');
+  assert.equal((await liveCheck('https://example.org/contract.json',async()=>j('<html></html>','text/html'),'json')).reason,'NON_JSON_RESPONSE');
+  assert.equal((await liveCheck('https://example.org/contract.txt',async()=>j('{"ok":true}'),'unsupported')).state,'NOT_TESTED');
+});
+
+test('every registered source-to-live route has a separate fail-closed proof gate',async t=>{
+  const root=await mkdtemp(join(tmpdir(),'jm-access-json-'));t.after(()=>rm(root,{recursive:true,force:true}));
+  for(const c of CANONICAL){const p=join(root,c.path);await mkdir(dirname(p),{recursive:true});await writeFile(p,'<!doctype html>');}
+  const path='registry/estate-head-public-current.json';
+  await mkdir(dirname(join(root,path)),{recursive:true});
+  await writeFile(join(root,path),'{"schema":"JM.EstateHeadPublicCurrent/1.1"}');
+  const map={live_github_routes:[{path,body:'JM Estate Head — Public Authority'}]};
+  const fetcher=async url=>url.endsWith('.json')
+    ? new Response('{"schema":"JM.EstateHeadPublicCurrent/1.1"}',{status:200,headers:{'content-type':'application/json'}})
+    : new Response('<!doctype html><html></html>',{status:200,headers:{'content-type':'text/html'}});
+  const ok=await audit({root,map,online:true,fetcher});
+  assert.equal(ok.canonical_ready,true);
+  assert.equal(ok.registered_ready,true);
+  assert.equal(ok.source_live_failed_routes.length,0);
+  assert.equal(ok.whole_estate_externally_editable,'NOT_PROVEN');
+  const fail=await audit({root,map,online:true,fetcher:async url=>url.endsWith('.json')
+    ? new Response('not json',{status:200,headers:{'content-type':'application/json'}})
+    : fetcher(url)});
+  assert.equal(fail.canonical_ready,true);
+  assert.equal(fail.registered_ready,false);
+  assert.equal(fail.source_live_failed_routes[0].reason,'MALFORMED_JSON');
+});

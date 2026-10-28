@@ -311,6 +311,7 @@ export async function onRequest(context) {
       ready: Boolean(env.JM_OWNER_VAULT && env.JM_OWNER_VAULT_KEY),
       auth: 'X-JM-Owner-Key (session-entered; never embedded in public source)',
       identity_policy: 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY',
+      editor_policy: 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY',
       overflow_policy: 'FAIL_CLOSED_NO_IDENTITY_EVICTION',
       public_claim: false
     });

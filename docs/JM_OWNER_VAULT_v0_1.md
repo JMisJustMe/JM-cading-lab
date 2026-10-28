@@ -190,3 +190,28 @@ The existing private Owner Room reads a SHA-256 state-revision token with its au
 An explicitly present but malformed SHA-256 in an indexed body previously bypassed the digest comparison and could return source as `unverified-legacy`. CP17 makes such index metadata fail closed with `503 PRIVATE_CUSTODY_HOLD` rather than silently downgrading a formerly verified body. Malformed stored byte counts, source-instance types and ancestor-reference types are likewise refused before index-dependent reads or writes. The existing index and HTML bytes are not modified on HOLD. Legitimate missing legacy metadata remains compatible; this does **not** cryptographically verify historical hashless sources.
 
 The existing Fake-R2 court tests malformed metadata against manifest, download, upload, snapshot and delete, checks unchanged corrupt-index and source bytes, then restores the exact healthy index and verifies SHA-256 download. The inherited 2,000-body capacity fixture now uses syntactically valid synthetic hashes. No private source, owner credentials or native Library IDs are changed. Draft/unmerged source and synthetic tests are not authenticated R2, physical-device, full offsite restore or production propagation proof.
+
+
+## CP18 — revision ancestry custody coherence (draft, 28 October 2026)
+
+An existing private source's metadata must preserve its own complete ordered
+revision lineage, not merely contain a correctly typed `previousVersionId`.
+The same original Owner Vault API now rejects a body index whose revision
+points to a missing ancestor, points to itself or a newer record, or crosses
+into another separately intended source/purpose. The original `vault-{id}`
+legacy-version inheritance remains explicitly supported. **No repair or
+reordering is attempted on corrupted custody**: it returns the existing
+private `503 PRIVATE_CUSTODY_HOLD`, retaining the exact source bytes and
+index for verified owner recovery.
+
+The inherited Fake-R2 test court manufactures four malformed-ancestry cases,
+checks five index-dependent operations for each, proves no original body
+or corrupt index was changed on HOLD, then restores the exact healthy index,
+re-reads verified HTML and successfully creates the next valid revision.
+Distinct intended uses with identical source bytes stay distinct.
+
+This is a **bounded synthetic source-integrity change**, not independently
+verified cold backup, real R2 acceptance, actual device editing or deployed
+propagation. It remains on the existing CP09/CP15/CP16/CP17 draft branch;
+never merge/delete/retire origins solely on synthetic CI. The metadata-only
+snapshot is still *not* an independent backup of HTML source bytes.

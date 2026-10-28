@@ -179,4 +179,20 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   assert.equal((await (await call({env,key:env.JM_OWNER_VAULT_KEY})).json()).bodies.length, 0);
 }
 
-console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion.');
+// Full index is a HOLD, never a reason to evict an older purposeful use.
+{
+  const protectedBodies=Array.from({length:2000},(_,i)=>({id:'protected-'+i,sourceInstanceId:'preserved-'+i,sha256:'old-'+i}));
+  const indexKey='jm-owner-vault/v0.1/bodies/index.json';
+  bucket.map.set(indexKey,{body:JSON.stringify({schema:'JM.OwnerVault/0.1.BodyIndex',bodies:protectedBodies})});
+  const before=bucket.map.size;
+  const response=await call({
+    method:'POST',env,key:env.JM_OWNER_VAULT_KEY,
+    body:{action:'upload-body',body:{sourceInstanceId:'local-overflow-purpose',content:'<!doctype html><html><body>next</body></html>'}}
+  });
+  assert.equal(response.status,409);
+  assert.equal((await response.json()).error,'BODY_INDEX_CAPACITY_REACHED');
+  assert.equal(bucket.map.size,before);
+  assert.equal(JSON.parse(bucket.map.get(indexKey).body).bodies.length,2000);
+}
+
+console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion · no silent 2000-body eviction.');

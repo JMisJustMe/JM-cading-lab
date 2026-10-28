@@ -65,7 +65,7 @@ function byteToHex(buffer){
 async function loadOriginalBrowser(){
   // Do not propagate cookies, credentials, host tokens, or private owner state.
   const res = await fetch(ORIGINAL_BROWSER, {
-    method:"GET", credentials:"omit", redirect:"error",
+    method:"GET", credentials:"omit", redirect:"manual",
     headers:{accept:"text/html"},
     cf:{cacheTtl:0,cacheEverything:false},
   });

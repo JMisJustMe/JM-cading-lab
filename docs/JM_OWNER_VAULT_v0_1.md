@@ -215,3 +215,34 @@ verified cold backup, real R2 acceptance, actual device editing or deployed
 propagation. It remains on the existing CP09/CP15/CP16/CP17 draft branch;
 never merge/delete/retire origins solely on synthetic CI. The metadata-only
 snapshot is still *not* an independent backup of HTML source bytes.
+
+
+## CP19 — owner-triggered portable exact-source lineage export (draft, 28 October 2026)
+
+This extends the **original private Vault and Owner Room**, not another backup server.
+A new owner-authenticated `GET ?mode=export-lineage&body=<existing-uuid>`
+offers a `JM.OwnerVault/0.1.LineageExport` JSON file containing the selected
+private HTML source and each original ancestral revision, with unchanged
+per-version metadata, original IDs, source-instance identities, SHA-256 and
+UTF-8 byte counts. The original Owner Room adds an **EXPORT LINEAGE**
+button beside each existing private HTML revision; it independently validates
+the returned hashes and ancestry before offering a local browser download.
+The same action is kept in the established bundled Owner Room script.
+
+Safety boundaries: owner key required; read-only; no R2 backup copies or
+duplicate purpose; maximum 16 versions and 32 MiB of original source bytes
+per selected lineage, preflighted before source reads; legacy unverified
+digests refused as exact recovery; hash/byte mismatches refused; R2 index
+changed during export rejected as a concurrent conflict; no mutation of the
+original private index, source bytes or prior ancestors. Other distinct
+sources, even with identical HTML, are not silently exported or merged.
+
+**What this does and does not prove:** the JSON is owner-editable and contains
+actual source bytes needed for offline reconstruction, unlike the older
+metadata-only snapshots. A click offers a download; browser permission,
+the presence of the saved file on owner storage, cold re-open, independent
+hash verification of the saved bytes, offsite custody, private source import,
+live authenticated R2, physical-device use and public deployed propagation
+are **distinct HOLD gates**. Nothing is called an independent backup solely
+because the API returned HTTP 200 or a synthetic test runner passed. Neither
+this branch nor a user's existing live owner data is mutated by CI tests.

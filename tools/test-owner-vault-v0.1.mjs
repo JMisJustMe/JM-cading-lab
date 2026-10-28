@@ -197,20 +197,18 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
 }
 
 {
-  const response = await call({ method: 'DELETE', env, key: env.JM_OWNER_VAULT_KEY, query: `?body=${encodeURIComponent(firstBodyId)}` });
-  assert.equal(response.status, 200);
-  const payload = await response.json();
-  assert.equal(payload.outcome, 'PRIVATE_COPY_REMOVED');
-  const after = await call({ env, key: env.JM_OWNER_VAULT_KEY });
-  const afterBodies = (await after.json()).bodies;
-  assert.equal(afterBodies.length, 3);
-  assert.ok(afterBodies.some(x => x.id === secondUseId));
-  assert.ok(afterBodies.some(x => x.id === changedRevisionId));
+  // CP13 inherited behaviour: original cannot be removed while a revision
+  // retains a previousVersionId reference to it.
+  const blocked = await call({ method: 'DELETE', env, key: env.JM_OWNER_VAULT_KEY, query: `?body=${encodeURIComponent(firstBodyId)}` });
+  assert.equal(blocked.status, 409);
+  assert.equal((await blocked.json()).error, 'BODY_ANCESTOR_STILL_REFERENCED');
+  const before = await call({ env, key: env.JM_OWNER_VAULT_KEY });
+  assert.equal((await before.json()).bodies.length, 4);
   const stillAvailable = await call({ env, key: env.JM_OWNER_VAULT_KEY, query: `?body=${encodeURIComponent(secondUseId)}` });
   assert.equal(stillAvailable.status, 200);
   assert.match(await stillAvailable.text(), /JM Test Body/);
-  // Cleanup only targeted copies, never metadata siblings implicitly.
-  for(const id of [secondUseId, changedRevisionId, legacyId]){
+  // Explicit leaf-first cleanup retains both distinct purpose and ancestry.
+  for(const id of [changedRevisionId, firstBodyId, secondUseId, legacyId]){
     assert.equal((await call({ method:'DELETE', env, key:env.JM_OWNER_VAULT_KEY, query:`?body=${encodeURIComponent(id)}` })).status, 200);
   }
   assert.equal((await (await call({env,key:env.JM_OWNER_VAULT_KEY})).json()).bodies.length, 0);

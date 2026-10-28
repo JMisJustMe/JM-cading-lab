@@ -24,5 +24,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --check agent-runtime/host-adapters/jm-operated-host/host.mjs
+      - run: node --check agent-runtime/host-adapters/jm-operated-host/supervisor.mjs
       - run: node --check money-menu/commerce-core/ledger.mjs
-      - run: node --test agent-runtime/host-adapters/jm-operated-host/host.test.mjs money-menu/commerce-core/ledger.test.mjs
+      - run: node --check money-menu/commerce-core/stripe-test-verifier.mjs
+      - run: node --test agent-runtime/host-adapters/jm-operated-host/*.test.mjs money-menu/commerce-core/*.test.mjs

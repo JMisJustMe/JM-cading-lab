@@ -31,3 +31,9 @@ Create JM-owned implementations of useful external platform capabilities, starti
 ## Remaining larger programme
 
 Bring actual Cloud Contact v0.5 server onto an owner-operated dynamic-process host, with process supervision and persisted storage; verify backup/restore and real deployment on a separate controlled machine, then live domain reachability, TLS and device checks. Build authenticated Stripe sandbox verification (GET server-side) and authenticated provider webhook delivery with replay gates. Preserve prior Money Menu offer and terms authority; add actual lawful digital-delivery consent. Only after merchant/consumer/legal tests and explicit owner approval should real customer payments begin. Reserve managed-card networks and compliance for licensed partners.
+
+## CP02 forward inheritance within the same draft
+
+* Local Node dynamic service supervisor (`supervisor.mjs`): spawn *existing* entrypoint with explicit owner filesystem authority, loopback-only bind, readiness probe, bounded crash restart and shutdown. Does not alter Cloud Contact source or claim Internet hosting.
+* Stripe **test-key-only** provider reader (`stripe-test-verifier.mjs`): owner-run GET account + PaymentIntent, account ID cross-check, verified amount/mode/order-reference shape, no client-origin claim. Both modules carry synthetic adversarial Node tests.
+* This is not Stripe's entire feature set, nor even a live payment acceptance integration. Actual public hosting, authenticated sandbox account contact and legally compliant live customer sales remain separate OPEN gates.

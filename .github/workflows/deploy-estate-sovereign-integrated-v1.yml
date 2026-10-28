@@ -672,7 +672,7 @@ jobs:
             try{
               const h=await fetch(base+'/health?proof='+Date.now()); const hj=await h.json();
               let x=await rpc(1,'tools/list');
-              if(!h.ok||hj.version!=='0.2.0-estate-integration.1'||x.j?.result?.tools?.length!==5) throw new Error('health/tool boundary not ready');
+              if(!h.ok||hj.version!=='0.3.0-original-ui-contact-cp02'||x.j?.result?.tools?.length!==6) throw new Error('health/tool boundary not ready');
               x=await rpc(2,'tools/call',{name:'navigator_bridge_status',arguments:{}});
               const s=x.j?.result?.structuredContent;
               if(!x.r.ok||s?.estate_integration?.state!=='CONNECTED'||s?.estate_integration?.private_owner_write_published!==false) throw new Error('Estate registry not connected');
@@ -680,7 +680,7 @@ jobs:
               for(const forbidden of ['receipt_chain_head','registered_bodies','stringmarks','navigator-live-contact.jm-inline-contact-probe.pages.dev']) if(text.includes(forbidden)) throw new Error('owner detail leak: '+forbidden);
               x=await rpc(3,'tools/call',{name:'navigator_create_stringreceipt',arguments:{}});
               if(x.r.ok||!x.j?.error) throw new Error('public write tool exposed');
-              console.log('LIVE NAVIGATOR MCP PASS: five read-only tools, Estate registry CONNECTED, owner write rejected.');
+              console.log('LIVE NAVIGATOR MCP PASS: five inherited read-only tools plus one original UI renderer, Estate registry CONNECTED, owner write rejected.');
               passed=true; break;
             }catch(e){last=String(e?.message||e); console.log('WAIT MCP',attempt,last); await new Promise(r=>setTimeout(r,3000));}
           }

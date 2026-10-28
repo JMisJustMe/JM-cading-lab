@@ -339,6 +339,17 @@ async function deleteBody(bucket, id) {
   const target = bodies.find(item => item.id === id);
   if (!target) return { found: false };
 
+  // CP13: A revision is an immutable ancestor, not a disposable duplicate.
+  // Refuse deletion while any retained revision still points to this source.
+  // This protects exact previousVersionId traversal and cold recovery.
+  if (bodies.some(item => item.previousVersionId === id)) {
+    return { error: json({
+      schema: SCHEMA,
+      error: 'BODY_ANCESTOR_STILL_REFERENCED',
+      recovery: 'PRESERVE_ANCESTOR_OR_REMOVE_DEPENDENT_REVISIONS_FIRST'
+    }, 409) };
+  }
+
   // Never destroy the sole source object while the old index still points to it.
   // A failed index write must leave the recoverable source and old index intact.
   const objectKey = `${BODY_PREFIX}/${target.id}.html`;
@@ -469,6 +480,7 @@ async function handleOwnerRequest(context) {
     const bodyId = url.searchParams.get('body');
     if (!bodyId) return json({ schema: SCHEMA, error: 'BODY_ID_REQUIRED' }, 400);
     const result = await deleteBody(bucket, bodyId);
+    if (result.error) return result.error;
     return result.found
       ? json({ schema: SCHEMA, outcome: 'PRIVATE_COPY_REMOVED', body: result.body })
       : json({ schema: SCHEMA, error: 'BODY_NOT_FOUND' }, 404);

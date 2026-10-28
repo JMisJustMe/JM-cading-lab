@@ -36,8 +36,9 @@ assert.equal(content.text.match(/<base href="https:\/\/jmisjustme-estate.pages.d
 // Source identity is recovered by exact removal of only three declared carrier contacts.
 const html=content.text;
 const first=html.indexOf('<script data-jm-cp03="host-bridge">');
-const end=html.indexOf('</script>\\n',first);
-const bridge=first>=0&&end>=0?[html.slice(first,end+'</script>\\n'.length)]:null;
+const closing='</script>'+String.fromCharCode(10);
+const end=html.indexOf(closing,first);
+const bridge=first>=0&&end>=0?[html.slice(first,end+closing.length)]:null;
 assert.ok(bridge,'host bridge adapter absent');
 const saveOriginal="function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store))}catch(e){memoryPersist=JSON.parse(JSON.stringify(store))}}";
 const saveCarrier=saveOriginal.replace("function saveStore(){","function saveStore(){window.JM3232_CHATGPT_BRIDGE?.persist(store);");

@@ -51,6 +51,9 @@ class Handler(BaseHTTPRequestHandler):
         # Don't log URL query values or credentials.
         pass
     def cors_headers(self,status):
+        # Original Workshop/CP09 donor: private custody route and its refusals
+        # must never gain browser CORS privileges from the separate MCP route.
+        if urlsplit(self.path).path!='/mcp':return
         if self.command=='OPTIONS' and status!=204:return
         origin=self.headers.get('Origin','')
         if origin and origin in self.server.browser_origins:

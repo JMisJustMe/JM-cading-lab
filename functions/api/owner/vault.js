@@ -91,6 +91,26 @@ async function verifiedBody(bucket, key, expectedHash, expectedBytes) {
 class VaultCustodyHold extends Error {
   constructor() { super('PRIVATE_CUSTODY_HOLD'); }
 }
+// CP18: newest-first index ancestry must be independently traversable.
+// Purposeful source identities remain distinct even with identical HTML.
+function custodyAncestryValid(bodies) {
+  const positions = new Map(bodies.map((item, index) => [item.id, index]));
+  for (let i = 0; i < bodies.length; i += 1) {
+    const child = bodies[i];
+    if (!child.previousVersionId) continue; // A genuine founding version.
+    const ancestorIndex = positions.get(child.previousVersionId);
+    if (ancestorIndex === undefined || ancestorIndex <= i) return false;
+    const parent = bodies[ancestorIndex];
+    // Original legacy sources have no stable sourceInstanceId; their first
+    // explicit revision adopts the existing vault-{id} lineage convention.
+    const legacyLineage = parent.sourceInstanceId == null
+      && child.sourceInstanceId === `vault-${parent.id}`;
+    if (!legacyLineage && (!parent.sourceInstanceId
+      || parent.sourceInstanceId !== child.sourceInstanceId)) return false;
+  }
+  return true;
+}
+
 function custodyShapeValid(record, key) {
   if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
   if (key === INDEX_KEY) {
@@ -108,7 +128,10 @@ function custodyShapeValid(record, key) {
         && (item.previousVersionId == null || typeof item.previousVersionId === 'string'))
       // Duplicate IDs make lookup ambiguous and deletion can remove multiple
       // index entries while deleting only one object. Hold corrupt custody.
-      && new Set(record.bodies.map(item => item.id)).size === record.bodies.length;
+      && new Set(record.bodies.map(item => item.id)).size === record.bodies.length
+      // CP18: a valid revision cannot point to a missing, younger, itself,
+      // or a different sovereign source/use. Never silently repair ancestry.
+      && custodyAncestryValid(record.bodies);
   }
   if (key === STATE_KEY) {
     const state = record.state;

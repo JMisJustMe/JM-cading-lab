@@ -319,6 +319,8 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
   const SESSION_KEY = 'jm-owner-vault-key';
   let editing = null;
   let proofBusy = false;
+  // Last authenticated state head; never treat an unseen remote state as blank.
+  let observedStateRevision = null;
   const DOCUMENT_INSTANCE = crypto.randomUUID(); // changes on a genuine document reload
   const PROOF_PENDING = 'jm-owner-vault-cp08-pending';
   const PROOF_RECEIPT = 'jm-owner-vault-cp08-receipt';
@@ -507,8 +509,13 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     const button = el('jmVaultSync');
     button.disabled = true;
     try {
-      message('Saving owner state…');
-      await request('', { method: 'PUT', body: JSON.stringify({ state: localState() }) });
+      if (!observedStateRevision) throw new Error('OWNER_STATE_BASELINE_REQUIRED_REOPEN_VAULT');
+      message('Saving owner state against the last verified private revision…');
+      const savedState = await request('', { method: 'PUT', body: JSON.stringify({
+        state: localState(), expectedStateRevision: observedStateRevision
+      }) });
+      observedStateRevision = /^[a-f0-9]{64}$/.test(savedState.state_revision || '')
+        ? savedState.state_revision : null;
       const bodies = localBodies();
       let stored = 0;
       let alreadySynced = 0;
@@ -859,6 +866,8 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     if (!key()) return;
     try {
       const data = await request('');
+      observedStateRevision = /^[a-f0-9]{64}$/.test(data.state_revision || '')
+        ? data.state_revision : null;
       authLabel(true);
       const bodies = Array.isArray(data.bodies) ? data.bodies : [];
       el('jmVaultCount').textContent = `${bodies.length} REMOTE ${bodies.length === 1 ? 'BODY' : 'BODIES'}`;
@@ -911,7 +920,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     el('jmVaultSaveRevision')?.addEventListener('click', saveRevision);
     el('jmVaultCancelEdit')?.addEventListener('click', closeEditor);
     el('jmVaultLock')?.addEventListener('click', () => {
-      setKey(''); authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
+      setKey(''); observedStateRevision = null; authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
       message('Vault locked. The session key was removed from this browser tab/session.');
     });
   }

@@ -125,7 +125,8 @@ jobs:
               "names":["JM LLM #2","JM AGI Lab v1.4.4","SHIFT//FIELD"]
           })
           assert batch["count"] == 3
-          assert batch["results"][0]["navigator_contact"] == "SKIPPED_LOCAL_AUTHORITY_FOUND"
+          assert batch["results"][0]["navigator_contact"] == "SKIPPED_LOCAL_IDENTITY_AUTHORITY_FOUND"
+          assert batch["results"][0]["resolution_basis"] == "LOCAL_IDENTITY"
 
           donors = call(8, "find_capability_donors", {
               "target":"SHIFT//FIELD",

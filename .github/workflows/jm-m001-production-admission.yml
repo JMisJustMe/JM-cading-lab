@@ -33,3 +33,5 @@ jobs:
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_PROCESS_CAPTURE_FAMILY_CP24_TESTS.py
       - name: Prove CP25 exact delta reconstruction
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_EXACT_DELTA_RESTORE_CP25_TESTS.py
+      - name: Prove CP26 eight distinct edition exact restoration and fail-closed roles
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_EDITIONS_RESTORE_CP26_TESTS.py

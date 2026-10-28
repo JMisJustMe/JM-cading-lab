@@ -41,15 +41,35 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header('Vary','Origin')
         for name,value in (headers or {}).items():self.send_header(name,value)
         self.end_headers();self.wfile.write(body)
-    def reply_html(self,body):
+    def reply_html(self,body,status=200):
         raw=body.encode()
-        self.send_response(200)
+        self.send_response(status)
         self.send_header('Content-Type','text/html; charset=utf-8')
         self.send_header('Content-Length',str(len(raw)))
         self.send_header('Cache-Control','no-store')
         self.send_header('Content-Security-Policy',"default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
         self.send_header('Referrer-Policy','no-referrer')
         self.end_headers();self.wfile.write(raw)
+    def owner_approval_hold(self,reason):
+        """Public-safe actionable error; never echoes owner input or OAuth code."""
+        messages={
+            'CONSENT_EXPIRED': 'Approval session expired (10 minutes) or gateway restarted. Close this page and restart ChatGPT authorisation from the plugin.',
+            'OWNER_TOKEN_NOT_ACCEPTED': 'The ORIGINAL CP08 server rejected that owner token. Use the actual current JM_BODIES_TOKEN from the original CP08 Render service, not an old token file.',
+            'OWNER_TOKEN_FORMAT_HOLD': 'The supplied owner token is missing or too short. Copy the complete existing token, without quotes.',
+            'UPSTREAM_CONTACT_HOLD': 'The original CP08 service could not be verified. No access granted. Retry from a new ChatGPT OAuth session after the original service is healthy.',
+            'UPSTREAM_TOOL_CONTRACT_HOLD': 'Original CP08 tool discovery did not match the protected tool contract. No access granted.',
+            'RATE_LIMIT_HOLD': 'Too many failed approvals. Retry from a new authorisation session later.',
+            'CONSENT_ALREADY_USED': 'Approval was already consumed or expired. Restart authorisation.',
+        }
+        code=reason if reason in messages else 'OAUTH_ADMISSION_HOLD'
+        detail=messages.get(code,'Authorisation could not be verified. Start a fresh ChatGPT approval and check the original server token.')
+        body=('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width"><title>JM OAuth — Admission HOLD</title></head><body>'
+            '<h1>JM Unique Bodies — admission not completed</h1>'
+            '<p><strong>'+code+'</strong></p><p>'+detail+'</p>'
+            '<p>No MCP permission was granted. Do not paste secrets into chat.</p>'
+            '<p>OAUTH_ADMISSION_HOLD</p></body></html>')
+        return self.reply_html(body,status=400)
     def redirect(self,uri):
         self.send_response(302)
         self.send_header('Location',uri)
@@ -109,7 +129,9 @@ class Handler(BaseHTTPRequestHandler):
                         form.get('request_id',[''])[0],form.get('owner_access_token',[''])[0]))
                 if path.path=='/oauth/token':
                     return self.reply(200,self.server.admission.grant(form))
-            except (ValueError,TypeError,UnicodeDecodeError,json.JSONDecodeError):
+            except (ValueError,TypeError,UnicodeDecodeError,json.JSONDecodeError) as error:
+                if path.path=='/oauth/authorize':
+                    return self.owner_approval_hold(str(error) if isinstance(error,ValueError) else 'OAUTH_ADMISSION_HOLD')
                 return self.reply(400,{'error':'OAUTH_ADMISSION_HOLD'})
             return self.reply(404,{'error':'OAUTH_ROUTE_HOLD'})
         if path.path!='/mcp':return self.reply(404,{'error':'NOT_FOUND'})

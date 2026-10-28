@@ -1,0 +1,13 @@
+# JM ECOSTATE CP15 — five-organ real public functionality contact
+
+**State:** DRAFT / source-first. The actual live result must be read from the new exact-commit GitHub Action job; six local refusal tests do not prove live contact.
+
+**Sovereign source:** unchanged original hosted `JMisJustMe/jm-cloud-contact-server-first-cloud@0921217d95285bcb21cda7a995d02f7ec0725810`. CP14 public GET-only probe remains imported, not cloned. Prior CP14 exact public readiness, ECDSA-P256 signing-key consistency and pinned HTTPS origin are inherited as mandatory preconditions. No new Cloud Contact server is created.
+
+**Only the ten whitelisted non-account-bearing GET endpoints:** `/game/v1/meta`, `/game/v1/ready`, `/mesh/v1/meta`, `/mesh/v1/ready`, `/mesh/v2/meta`, `/market/v1/meta`, `/market/v1/ready`, `/market/v1/persistence`, `/zezu/v1/meta`, `/zezu/v1/ready`. Each is grounded in the original donor sources. The original `/ready`, `/meta`, `/receipt-key` are separately re-probed by CP14. No arbitrary paths, auth headers, redirects, POST, PUT or accounts; no market quote calls, refresh actions, consumer details or historical dumps. Content-type, response status, streamed-size limit and exact URL checked. Calls never blindly assume all organs are ready just because the root is ready.
+
+**Redaction:** the receipt contains only public route status, declared schema/bodies, aggregate counts and Market persistence booleans. The full Market, Zezu, Game or Mesh source response bodies, authusers, admissions, user data, keys and receipts are not logged to CI artifact. Source deployment commit is inferred from independent Render metadata, not the public response, and must not be crowned as HTTP-attested. A self-reported `durable` Market flag does **not** replace SQL inspection, real PostgreSQL source/destination restoration or continuity proof.
+
+**FLAZ criteria:** local 6/6 adverse tests, source hashes exact, GitHub independent-runner real GET successful, expected original schemas, all five public organ contracts verified and separate public-safe evidence. Report partial failure accurately. If Market says PostgreSQL is not ready, it is a source status observation only; do not bypass database allowlists.
+
+**HOLD:** owner `GroundZeroJM` offline at previous inspection, protected PostgreSQL 18 Render external IP allowlist empty (no SQL), independent owner-held encrypted offsite storage, actual PostgreSQL recovery, owner-host persistency, real phone/tablet clients, TURN and external WebRTC NAT. Nothing here changes production, paid resources, DNS, network policy or deploy flags; all ancestors remain unmerged draft.

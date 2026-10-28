@@ -1,0 +1,37 @@
+name: JM CP15 real public five-organ GET-only contact
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/public-organs-contact.mjs'
+      - 'agent-runtime/host-adapters/jm-operated-host/public-organs-contact.test.mjs'
+      - '.github/workflows/jm-cloud-contact-cp15-public-five-organs.yml'
+      - 'docs/JM_CLOUD_CONTACT_CP15_PUBLIC_ORGAN_CONTACT.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-five-organs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - name: Checkout draft code only; no deploy
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enforce original CP14 and CP15 guard tests
+        run: |
+          node --test agent-runtime/host-adapters/jm-operated-host/public-readiness-contact.test.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/public-organs-contact.test.mjs
+      - name: Probe real pinned HTTPS public functional organ endpoints; no auth, POST or private data
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/public-organs-contact.mjs | tee "$RUNNER_TEMP/JM_CP15_SAFE_RECEIPT.json"
+          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1]));if(!r.ok||r.pathsChecked!==10||Object.keys(r.organs).length!==5)process.exit(1)" "$RUNNER_TEMP/JM_CP15_SAFE_RECEIPT.json"
+      - name: Save only sanitized public response evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP15_PUBLIC_FIVE_ORGAN_CONTACT_RECEIPT
+          path: ${{ runner.temp }}/JM_CP15_SAFE_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 7

@@ -133,7 +133,7 @@ class TestRemoteBroker(unittest.TestCase):
    {'redirect_uris':['https://evil.example/hi']},{'Content-Type':'application/json'})
   self.assertEqual(s,400)
  def test_10_copy_paste_trailing_whitespace_is_normalized_without_leaking_owner_secret(self):
-  s,_,_,_=self.approve(owner=OWNER+'  \\n')
+  s,_,_,_=self.approve(owner=OWNER+'  '+chr(10))
   self.assertEqual(s,302)
  def test_11_wrong_valid_length_token_reports_safe_original_rejection(self):
   s,_,raw=self.call(self.cp09,'/oauth/register','POST',

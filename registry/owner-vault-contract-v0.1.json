@@ -38,8 +38,8 @@
   "publication_boundary": "R2 owner-vault objects remain private working custody. Deliberate promotion to a canonical public repository body continues through the governed permanent HTML body pipeline and separate deployment proof.",
   "ding": false,
   "current_source_policy": {
-    "checkpoint": "CP05 2026-10-28",
-    "state": "SOURCE_AND_SYNTHETIC_PRIVATE_EDITOR_TESTS_REQUIRED; LIVE_ROLLOUT_AND_OWNER_DEVICE_PROOF_OPEN",
+    "checkpoint": "CP07 2026-10-28",
+    "state": "CP05_CP06_BOUNDED_FLAZ_COMPLETE; CP07_DEVICE_RECOVERY_SOURCE_ADDED_TEST_PENDING",
     "source_instance_identity": "Existing local mounted-body id; preserves separate intended uses even with identical HTML bytes, name and filename",
     "replay_idempotence": "ONLY_SAME_SOURCE_INSTANCE_AND_BYTES",
     "edit_revision": "Same mounted-body id with changed bytes appends a new version; previousVersionId links the ancestor",
@@ -55,6 +55,42 @@
       "verification": "Server hash + independent authenticated GET/readback checked against submitted HTML; no public deployment implied",
       "conflict": "STALE_HEAD_OR_EXPECTED_HASH_REJECTED",
       "permanence_boundary": "Private server-backed owner storage, not automatic public code or deployed app editing"
+    },
+    "device_recovery": {
+      "boundary": "Existing Owner Room local shelf, no new front door",
+      "action": "Explicit RESTORE TO DEVICE of private HTML version",
+      "integrity": "Downloaded bytes SHA-256 verified against private metadata before local commit",
+      "no_reupload": "Restored local copy carries vaultBodyId, and ordinary Sync excludes those readback copies",
+      "no_loss": "Local quota exceptions cannot erase original in-memory or persisted shelf",
+      "full_shelf": "12-body cap refuses import without evicting existing bodies",
+      "provenance": "Local copy has independent local ID plus vaultBodyId, sourceInstanceId, SHA-256 and previousVersionId",
+      "live_proof": "To be established by existing production readback and browser QA; not a real owner device test"
     }
+  },
+  "flaz_cp05_cp06_2026_10_28": {
+    "state": "COMPLETE_AT_BOUNDED_SCOPE",
+    "source_commits": {
+      "cp05": "1d432648cc171285c649b4d29372855658683910",
+      "cp06": "18a57bb92b64d63f70d2be51bf23db84382a92f7"
+    },
+    "readback": {
+      "receipt": "registry/owner-vault-live-readiness-receipt-v0.1.json",
+      "verified_utc": "2026-10-28T16:09:35.733270+00:00",
+      "deployed_api_editor_policy": true,
+      "deployed_owner_room_editor_code": true,
+      "owner_authenticated_private_body_roundtrip": false
+    },
+    "gates": [
+      "source code committed independently in GitHub",
+      "private API contract and synthetic owner UI/browser checks passed",
+      "public-safe deployed API policy verified",
+      "deployed original Owner Room source verified"
+    ],
+    "holds": [
+      "authenticated real-owner private HTML write/save/reload",
+      "physical owner device recovery",
+      "independent editability of all Estate creations"
+    ],
+    "law": "PUBLIC CONTACT IS NOT PRIVATE OWNER PROOF; MESH IS NOT MERGE; NO DING NO CLAIM"
   }
 }

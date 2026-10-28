@@ -44,19 +44,63 @@ $snapshot = Join-Path $out "$base-source.zip"
 $bundle = Join-Path $out "$base-history.bundle"
 $manifestPath = Join-Path $out "$base-manifest.json"
 
-Remove-Item -LiteralPath $snapshot,$bundle,$manifestPath -Force -ErrorAction SilentlyContinue
+# M001: never discard an existing committed-HEAD recovery door just to rebuild
+# indistinguishable ZIP/bundle bytes and a fresh timestamped manifest.
+$existingPaths = @($snapshot, $bundle, $manifestPath)
+$existingCount = 0
+foreach ($candidatePath in $existingPaths) {
+    if (Test-Path -LiteralPath $candidatePath) { $existingCount++ }
+}
+if ($existingCount -ne 0) {
+    if ($existingCount -ne 3) {
+        throw 'M001_HOLD_PARTIAL_RECOVERY_EXPORT: original outputs preserved; inspect custody before repair.'
+    }
+    try {
+        $prior = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json -ErrorAction Stop
+        if ($prior.schema -ne 'JM.EstateRecoveryExport/1.0' -or
+            $prior.source_commit -ne $head -or
+            $prior.snapshot.file -ne [IO.Path]::GetFileName($snapshot) -or
+            $prior.history_bundle.file -ne [IO.Path]::GetFileName($bundle)) {
+            throw 'MANIFEST_IDENTITY_NOT_MATCHING_CURRENT_HEAD'
+        }
+        if ((Get-Item -LiteralPath $snapshot).Length -ne [long]$prior.snapshot.bytes -or
+            (Get-Item -LiteralPath $bundle).Length -ne [long]$prior.history_bundle.bytes -or
+            (Get-Sha256Lower -Path $snapshot) -ne $prior.snapshot.sha256 -or
+            (Get-Sha256Lower -Path $bundle) -ne $prior.history_bundle.sha256) {
+            throw 'ARCHIVE_BYTES_OR_SHA_MISMATCH'
+        }
+        & git -C $repo bundle verify $bundle | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw 'BUNDLE_VERIFICATION_FAILED' }
+    }
+    catch {
+        throw ('M001_HOLD_UNVERIFIED_EXISTING_EXPORT: ' + $_.Exception.Message)
+    }
+    Write-Host 'M001_REUSE_EXACT_COMMITTED_HEAD: verified existing ZIP, bundle and manifest; no new carriage.'
+    Write-Host ("Commit: {0}" -f $head)
+    Write-Host ("Snapshot: {0}" -f $snapshot)
+    Write-Host ("History bundle: {0}" -f $bundle)
+    Write-Host ("Manifest: {0}" -f $manifestPath)
+    return
+}
 
-& git -C $repo archive --format=zip --output=$snapshot HEAD
-if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $snapshot)) {
+# Construct in scratch first; never overwrite or delete a protected keeper.
+$stage = Join-Path $out ('.jm-recovery-pending-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $stage -ErrorAction Stop | Out-Null
+$snapshotBuild = Join-Path $stage ([IO.Path]::GetFileName($snapshot))
+$bundleBuild = Join-Path $stage ([IO.Path]::GetFileName($bundle))
+$manifestBuild = Join-Path $stage ([IO.Path]::GetFileName($manifestPath))
+try {
+& git -C $repo archive --format=zip --output=$snapshotBuild HEAD
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $snapshotBuild)) {
     throw 'Git snapshot archive creation failed.'
 }
 
-& git -C $repo bundle create $bundle --all
-if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $bundle)) {
+& git -C $repo bundle create $bundleBuild --all
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $bundleBuild)) {
     throw 'Git history bundle creation failed.'
 }
 
-& git -C $repo bundle verify $bundle | Out-Null
+& git -C $repo bundle verify $bundleBuild | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Git bundle verification failed.' }
 
 $tracked = @(& git -C $repo ls-tree -r --name-only HEAD)
@@ -86,14 +130,14 @@ $manifest = [ordered]@{
     tracked_file_count = $tracked.Count
     snapshot = [ordered]@{
         file = [IO.Path]::GetFileName($snapshot)
-        bytes = (Get-Item -LiteralPath $snapshot).Length
-        sha256 = Get-Sha256Lower -Path $snapshot
+        bytes = (Get-Item -LiteralPath $snapshotBuild).Length
+        sha256 = Get-Sha256Lower -Path $snapshotBuild
         purpose = 'Current committed Estate source snapshot.'
     }
     history_bundle = [ordered]@{
         file = [IO.Path]::GetFileName($bundle)
-        bytes = (Get-Item -LiteralPath $bundle).Length
-        sha256 = Get-Sha256Lower -Path $bundle
+        bytes = (Get-Item -LiteralPath $bundleBuild).Length
+        sha256 = Get-Sha256Lower -Path $bundleBuild
         verified = $true
         purpose = 'Portable Git history and refs; cloneable without the original working device.'
     }
@@ -119,7 +163,17 @@ $manifest = [ordered]@{
     ding = $false
 }
 
-$manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
+$manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $manifestBuild -Encoding UTF8
+
+foreach ($candidatePath in $existingPaths) {
+    if (Test-Path -LiteralPath $candidatePath) {
+        throw 'M001_HOLD_CONCURRENT_EXPORT_CONFLICT: existing exact outputs preserved.'
+    }
+}
+# Exact source, history and manifest are all in scratch; publish without -Force.
+Move-Item -LiteralPath $snapshotBuild -Destination $snapshot -ErrorAction Stop
+Move-Item -LiteralPath $bundleBuild -Destination $bundle -ErrorAction Stop
+Move-Item -LiteralPath $manifestBuild -Destination $manifestPath -ErrorAction Stop
 
 Write-Host 'JM Estate recovery export built.'
 Write-Host ("Commit: {0}" -f $head)
@@ -128,3 +182,8 @@ Write-Host ("Snapshot: {0}" -f $snapshot)
 Write-Host ("History bundle: {0}" -f $bundle)
 Write-Host ("Manifest: {0}" -f $manifestPath)
 Write-Host 'No owner secret value or private R2 object bytes were copied.'
+} finally {
+    if (Test-Path -LiteralPath $stage) {
+        Remove-Item -LiteralPath $stage -Recurse -Force
+    }
+}

@@ -223,6 +223,12 @@ jobs:
           assert.equal(x.result.result.structuredContent.host_render_state,'UNVERIFIED');
           x=await rpc(4,'tools/call',{name:'navigator_create_stringreceipt',arguments:{action:'BLOCKED'}});
           assert.notEqual(x.response.status,200,'write tool must stay refused');
+          x=await rpc(40,'tools/call',{name:'navigator_internet_search',arguments:{query:'OpenAI documentation',limit:5}});
+          assert.equal(x.response.status,200,JSON.stringify(x.result.error||{}));
+          const internet=x.result.result.structuredContent;
+          console.log('LIVE JM INTERNET RESULT',JSON.stringify({count:internet.results?.length,providers:internet.provider_status,links:internet.results?.map(r=>r.url).slice(0,4)}));
+          assert.ok(Array.isArray(internet.results)&&internet.results.length>0,'no genuine hosted Internet result returned');
+          assert.ok(internet.results.every(r=>r.source_status==='SOURCE_RETURNED'&&String(r.url).startsWith('https://')),'unsafe or unproven Internet result');
           x=await rpc(5,'resources/read',{uri:'ui://jm3232-navigator/airborne-chatgpt-cp03.html'});
           assert.equal(x.response.status,200,JSON.stringify(x.result.error||{}));
           const c=x.result.result.contents[0];

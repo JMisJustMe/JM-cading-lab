@@ -500,16 +500,16 @@ async function exportBodyLineage(bucket, id) {
   const byId = new Map(originalIndex.bodies.map(item => [item.id, item]));
   let selected = byId.get(id);
   if (!selected) return json({ schema: SCHEMA, error: 'BODY_NOT_FOUND' }, 404);
-  const versions = [];
+  const selectedEntries = [], versions = [];
   const MAX_VERSIONS = 16;
   const MAX_TOTAL_BYTES = 32 * 1024 * 1024;
   let totalBytes = 0;
+  // Preflight the complete chain before reading any potentially large HTML
+  // bodies. This is a bound on actual source capacity, not only JSON headers.
   while (selected) {
-    if (versions.length >= MAX_VERSIONS) {
+    if (selectedEntries.length >= MAX_VERSIONS) {
       return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_VERSION_LIMIT', max_versions: MAX_VERSIONS }, 409);
     }
-    // Historical sources without a verified digest can still be downloaded
-    // individually, but MUST NOT be described as an exact recovery packet.
     if (!/^[a-f0-9]{64}$/i.test(selected.sha256 || '')
       || !Number.isSafeInteger(selected.bytes) || selected.bytes < 0) {
       return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_UNVERIFIED_LEGACY_SOURCE' }, 409);
@@ -517,11 +517,14 @@ async function exportBodyLineage(bucket, id) {
     if (selected.bytes + totalBytes > MAX_TOTAL_BYTES) {
       return json({ schema: SCHEMA, error: 'LINEAGE_EXPORT_BYTE_LIMIT', max_bytes: MAX_TOTAL_BYTES }, 413);
     }
-    const source = await verifiedBody(bucket, `${BODY_PREFIX}/${selected.id}.html`,
-      selected.sha256, selected.bytes);
-    totalBytes += new TextEncoder().encode(source.content).byteLength;
-    versions.push({ metadata: selected, content: source.content });
+    selectedEntries.push(selected);
+    totalBytes += selected.bytes;
     selected = selected.previousVersionId ? byId.get(selected.previousVersionId) : null;
+  }
+  for (const entry of selectedEntries) {
+    const source = await verifiedBody(bucket, `${BODY_PREFIX}/${entry.id}.html`,
+      entry.sha256, entry.bytes);
+    versions.push({ metadata: entry, content: source.content });
   }
   // The index must not have changed while bytes were being assembled.
   // A race can invalidate custody even if each held body was immutable.

@@ -3,10 +3,10 @@
 
 The existing authoritative Cloudflare deployment already publishes estate-app.js and
 sw.js, so this tool deliberately leaves index.html and deployment workflows untouched.
-It makes only two bounded crown edits:
+It makes only two bounded crown edits, without downgrading later descendants:
 
-- estate-app.js: append the isolated Owner Vault bridge source behind explicit markers.
-- sw.js: bump the public shell cache and bypass all private /api/owner/ requests.
+- estate-app.js: install or update the existing marked bridge to match its authoritative source.
+- sw.js: ensure private /api/owner/ requests bypass caching; preserve the current cache version.
 
 The tool is idempotent and fails if its source body is missing. It does not create an R2
 bucket, secret, deployment, public claim or Ding.
@@ -33,17 +33,23 @@ def write(path: str, text: str) -> None:
 def patch_estate_app() -> bool:
     path = "estate-app.js"
     text = read(path)
-    if BEGIN in text and END in text:
-        return False
-    if BEGIN in text or END in text:
-        raise SystemExit("Owner Vault graft refused: partial Estate app marker found")
-
     bridge = read("estate-owner-vault.js").strip()
     if "JM Owner Vault" not in bridge or "Sync local shelf to vault" not in bridge:
-        raise SystemExit("Owner Vault graft refused: bridge source failed its identity gate")
+        raise SystemExit("Owner Vault graft refused: source identity gate failed")
 
-    graft = f"\n\n{BEGIN}\n{bridge}\n{END}\n"
-    write(path, text.rstrip() + graft)
+    if BEGIN in text and END in text:
+        if text.count(BEGIN) != 1 or text.count(END) != 1:
+            raise SystemExit("Owner Vault graft refused: repeated crown markers")
+        before, remaining = text.split(BEGIN, 1)
+        _, after = remaining.split(END, 1)
+        updated = before + BEGIN + "\n" + bridge + "\n" + END + after
+        if updated == text:
+            return False
+        write(path, updated)
+        return True
+    if BEGIN in text or END in text:
+        raise SystemExit("Owner Vault graft refused: partial Estate app marker found")
+    write(path, text.rstrip() + "\n\n" + BEGIN + "\n" + bridge + "\n" + END + "\n")
     return True
 
 
@@ -52,11 +58,8 @@ def patch_service_worker() -> bool:
     text = read(path)
     original = text
 
-    cache_match = re.search(r"const CACHE='([^']+)';", text)
-    if not cache_match:
-        raise SystemExit("Owner Vault graft refused: service-worker cache name not found")
-    if cache_match.group(1) != "jm-web-estate-v1.4.7-owner-vault-v0-1":
-        text = text[: cache_match.start()] + "const CACHE='jm-web-estate-v1.4.7-owner-vault-v0-1';" + text[cache_match.end() :]
+    # Never revert the live shell's newer cache/worker lineage. This tool
+    # maintains the private API bypass, not the current deploy cache version.
 
     old_fetch = """self.addEventListener('fetch', event => {\n  if(event.request.method !== 'GET') return;\n  event.respondWith(fresh(event.request));\n});"""
     new_fetch = """self.addEventListener('fetch', event => {\n  if(event.request.method !== 'GET') return;\n  const url = new URL(event.request.url);\n  if(url.pathname.startsWith('/api/owner/')) return;\n  event.respondWith(fresh(event.request));\n});"""

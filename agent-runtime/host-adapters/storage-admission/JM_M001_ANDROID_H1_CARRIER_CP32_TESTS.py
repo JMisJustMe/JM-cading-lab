@@ -53,6 +53,21 @@ class H1AdmissionTests(unittest.TestCase):
     def test_changed_sources_refused(self):
         p=self.p/"app/src/main/AndroidManifest.xml"
         p.write_bytes(p.read_bytes()+b"changed")
+        self.assertEqual(self.gate()["status"],"SOURCE_EDITION_HOLD")
+    def test_historic_eight_member_source_is_distinct_not_missing(self):
+        p=self.p/"release"/m.SOURCE_ARCHIVE
+        with zipfile.ZipFile(p,"w",compression=zipfile.ZIP_DEFLATED) as z:
+            for name in m.HISTORIC_MEMBERS:
+                z.write(self.p/name,name)
+        outcome=self.gate()
+        self.assertEqual(outcome["status"],"SOURCE_EDITION_HOLD")
+        self.assertEqual(outcome["archived_members"],8)
+        self.assertFalse(outcome["rebuild"])
+        self.assertFalse(outcome["release_authorised"])
+    def test_unknown_source_member_not_promoted(self):
+        p=self.p/"release"/m.SOURCE_ARCHIVE
+        with zipfile.ZipFile(p,"a") as z:
+            z.writestr("unexpected-executable.py",b"danger")
         self.assert_hold()
     def test_deleted_source_refused(self):
         (self.p/"app/build.gradle.kts").unlink()

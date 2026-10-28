@@ -30,6 +30,9 @@ const integrationRegistry = {
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (input, init={}) => {
   const url = typeof input === 'string' ? input : input.url;
+  if (url === 'https://jmisjustme-estate.pages.dev/navigator/') {
+    return new Response('<html><head></head><body>tampered fixture</body></html>',{status:200,headers:{'content-type':'text/html'}});
+  }
   if (url.includes('/navigator/estate-integration/public-registry.json')) {
     return new Response(JSON.stringify(integrationRegistry), {status:200, headers:{'content-type':'application/json'}});
   }

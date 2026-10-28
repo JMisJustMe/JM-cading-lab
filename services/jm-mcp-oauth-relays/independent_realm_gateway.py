@@ -120,6 +120,12 @@ class RealmAdmission(RemoteAdmission):
             return False
 
 class RealmHandler(CP09Handler):
+    def empty_response(self,status,headers=None):
+        self.send_response(status)
+        self.send_header('Content-Length','0')
+        self.send_header('Cache-Control','no-store')
+        for key,value in (headers or {}).items():self.send_header(key,value)
+        self.end_headers()
     def do_GET(self):
         route=urlsplit(self.path)
         if route.path=="/health" and not route.query:
@@ -129,6 +135,11 @@ class RealmHandler(CP09Handler):
                 "realm":self.server.admission.realm,"state":"OAUTH_OWNER_CONSENT_REQUIRED",
                 "mcp_endpoint":"/mcp","original_service_mutated":False
             })
+        if route.path=="/mcp":
+            header=self.headers.get("Authorization","")
+            if not header.startswith("Bearer ") or not self.server.admission.downstream(header[7:])[0]:
+                return self.reply(401,{"error":"OAUTH_REQUIRED"})
+            return self.empty_response(405,{"Allow":"POST,OPTIONS"})
         if route.path=="/oauth/authorize":
             try:
                 args=parse_qs(route.query,keep_blank_values=True,max_num_fields=30)
@@ -154,6 +165,9 @@ class RealmHandler(CP09Handler):
             if not isinstance(request,dict) or request.get("jsonrpc")!="2.0":
                 return self.reply(400,{"error":"INVALID_JSON_RPC"})
             method=request.get("method")
+            if method in ("notifications/initialized","notifications/cancelled"):
+                if "id" in request:return self.reply(400,{"error":"NOTIFICATION_ID_HOLD"})
+                return self.empty_response(202)
             if method not in ("initialize","ping","tools/list","tools/call"):
                 return self.reply(403,{"error":"RPC_SCOPE_HOLD"})
             tools=self.server.admission.config["tools"]
@@ -170,7 +184,7 @@ class RealmHandler(CP09Handler):
                 "Accept":"application/json, text/event-stream"
             })
             with urllib.request.urlopen(q,timeout=35) as response:
-                if response.status==202:return self.reply(202,{})
+                if response.status==202:return self.empty_response(202)
                 if response.status!=200:return self.reply(502,{"error":"ORIGINAL_MCP_HOLD"})
                 raw=response.read(500001)
                 if len(raw)>500000:return self.reply(502,{"error":"ORIGINAL_MCP_RESPONSE_SIZE_HOLD"})

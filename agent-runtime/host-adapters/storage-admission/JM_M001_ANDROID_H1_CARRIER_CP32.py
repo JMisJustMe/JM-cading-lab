@@ -140,6 +140,7 @@ def main():
             raise SystemExit("GITHUB_OUTPUT_MISSING")
         with out.open("a", encoding="utf-8") as stream:
             stream.write("rebuild=" + str(result["rebuild"]).lower() + "\n")
+            stream.write("release_authorised=false\n")
             stream.write("status=" + result["status"] + "\n")
     print(json.dumps(result, sort_keys=True, indent=2))
     return 0 if result["status"] in ("REUSE_FROZEN_H1", "CI_ONLY_MANUAL_BUILD") else 2

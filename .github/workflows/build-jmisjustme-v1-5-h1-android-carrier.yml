@@ -5,6 +5,11 @@ on:
     paths:
       - 'website/independent/v1.5-h1/android-carrier/**'
       - '.github/workflows/build-jmisjustme-v1-5-h1-android-carrier.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/build-jmisjustme-v1-5-h1-android-carrier.yml'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_ANDROID_H1_CARRIER_CP32.py'
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_ANDROID_H1_CARRIER_CP32_TESTS.py'
   workflow_dispatch:
 
 permissions:
@@ -27,21 +32,39 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: M001 CP32 preflight frozen H1 source, signed recipient and delivery
+        id: admission
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            extra+=(--manual-proof)
+          fi
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_ANDROID_H1_CARRIER_CP32.py \
+            --project website/independent/v1.5-h1/android-carrier \
+            --github-output "$GITHUB_OUTPUT" "${extra[@]}"
       - uses: actions/setup-java@v4
+        if: steps.admission.outputs.rebuild == 'true'
         with:
           distribution: temurin
           java-version: '17'
 
       - uses: android-actions/setup-android@v3
+        if: steps.admission.outputs.rebuild == 'true'
 
       - name: Install Android API 36
+        if: steps.admission.outputs.rebuild == 'true'
         run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
 
       - uses: gradle/actions/setup-gradle@v4
+        if: steps.admission.outputs.rebuild == 'true'
         with:
           gradle-version: '8.13'
 
       - name: Create temporary proof signing identity
+        if: steps.admission.outputs.rebuild == 'true'
         run: |
           keytool -genkeypair -noprompt -keystore proof-upload.jks \
             -storepass jm-proof-only -keypass jm-proof-only \
@@ -49,9 +72,11 @@ jobs:
             -dname 'CN=JM Living Estate v1.5 H1 Carrier Proof, O=JM, C=GB'
 
       - name: Lint, test, compile carrier APK and proof AAB
+        if: steps.admission.outputs.rebuild == 'true'
         run: gradle --no-daemon clean :app:lintDebug :app:testDebugUnitTest :app:assembleDebug :app:bundleRelease
 
       - name: Build universal APK and proof set
+        if: steps.admission.outputs.rebuild == 'true'
         run: |
           set -euo pipefail
           rm -rf release
@@ -71,6 +96,7 @@ jobs:
           rm release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER.apks
 
       - name: Write build receipt and source snapshot
+        if: steps.admission.outputs.rebuild == 'true'
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -144,6 +170,7 @@ jobs:
           sha256sum release/* > release/SHA256SUMS.txt
 
       - name: Upload GitHub Actions artifact
+        if: steps.admission.outputs.rebuild == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: JMISJUSTME_LIVING_ESTATE_v1.5_H1_ANDROID_CARRIER
@@ -151,6 +178,7 @@ jobs:
           path: website/independent/v1.5-h1/android-carrier/release/
 
       - name: Seat branch-local build proof
+        if: steps.admission.outputs.release_authorised == 'true'
         working-directory: .
         run: |
           set -euo pipefail

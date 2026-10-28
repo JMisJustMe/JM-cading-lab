@@ -53,5 +53,7 @@ jobs:
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_PURPOSE_CHAIN_RESTORE_CP28_TESTS.py
       - name: Prove CP30 SUIT guarded export with no repeated 10MB carriage
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_SUIT_EXPORT_CP30_TESTS.py
+      - name: Prove CP32 frozen Android carrier admission and signer-role nonregression
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_ANDROID_H1_CARRIER_CP32_TESTS.py
       - name: Prove CP29 seven original visual releases from protected cold anchors
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_VISUAL_LINEAGE_RESTORE_CP29_TESTS.py

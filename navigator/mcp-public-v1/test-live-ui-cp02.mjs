@@ -35,14 +35,18 @@ assert.equal(content._meta['jm/source_status'],'HASH_PINNED_ORIGINAL_PLUS_CP03_H
 assert.equal(content.text.match(/<base href="https:\/\/jmisjustme-estate.pages.dev\/navigator\/"/g)?.length,1);
 // Source identity is recovered by exact removal of only three declared carrier contacts.
 const html=content.text;
-const bridge=html.match(/<script data-jm-cp03="host-bridge">([\\s\\S]*?)<\\/script>\\n/);
+const first=html.indexOf('<script data-jm-cp03="host-bridge">');
+const end=html.indexOf('</script>\\n',first);
+const bridge=first>=0&&end>=0?[html.slice(first,end+'</script>\\n'.length)]:null;
 assert.ok(bridge,'host bridge adapter absent');
 const saveOriginal="function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store))}catch(e){memoryPersist=JSON.parse(JSON.stringify(store))}}";
 const saveCarrier=saveOriginal.replace("function saveStore(){","function saveStore(){window.JM3232_CHATGPT_BRIDGE?.persist(store);");
 assert.ok(html.includes(saveCarrier),'source state adapter not found');
 const anchor="source:'Public web handoff'}];const jobs=[];";
 assert.ok(html.includes(anchor),'original search anchor missing');
-const searchContact=html.match(/;if\\(store\\.settings\\.remote&&window\\.JM3232_CHATGPT_BRIDGE\\?\\.internet\\)\\{jobs\\.push\\(window\\.JM3232_CHATGPT_BRIDGE\\.internet\\(q\\).*?\\}\\}\\)/);
+const contactStart=html.indexOf(';if(store.settings.remote&&window.JM3232_CHATGPT_BRIDGE?.internet){');
+const contactEnd=html.indexOf('if(store.settings.remote&&store.settings.wikipedia)',contactStart);
+const searchContact=contactStart>=0&&contactEnd>contactStart?[html.slice(contactStart,contactEnd)]:null;
 assert.ok(searchContact,'search contact not found');
 const reverted=html.replace(bridge[0],'')
   .replace(searchContact[0],'')

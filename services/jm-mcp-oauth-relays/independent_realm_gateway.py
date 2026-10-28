@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "jm-unique-bodies-c
 from cp09_oauth import one, opaque, valid_pkce, digest, parse_form
 from cp09_remote_admission import RemoteAdmission
 from cp09_oauth_broker import Handler as CP09Handler, TRUSTED
+from cp10_dual_era import CP10ProtocolError, prepare, discover, adapt_response
 
 REALMS = {
  "commons": {
@@ -168,6 +169,13 @@ class RealmHandler(CP09Handler):
             if method in ("notifications/initialized","notifications/cancelled"):
                 if "id" in request:return self.reply(400,{"error":"NOTIFICATION_ID_HOLD"})
                 return self.empty_response(202)
+            try:
+                modern,forwarded=prepare(request,self.headers)
+            except CP10ProtocolError as error:
+                return self.reply(error.status,error.rpc(request.get("id")))
+            if modern and method=="server/discover":
+                config=self.server.admission.config
+                return self.reply(200,discover(request["id"],config["name"],"0.10.0-cp10"))
             if method not in ("initialize","ping","tools/list","tools/call"):
                 return self.reply(403,{"error":"RPC_SCOPE_HOLD"})
             tools=self.server.admission.config["tools"]
@@ -178,7 +186,7 @@ class RealmHandler(CP09Handler):
                 required=tools.get(params.get("name"))
                 if not required:return self.reply(403,{"error":"UNKNOWN_NATIVE_TOOL"})
                 if required not in scopes:return self.reply(403,{"error":"OAUTH_SCOPE_HOLD"})
-            wire=json.dumps(request,separators=(",",":")).encode()
+            wire=json.dumps(forwarded,separators=(",",":")).encode()
             q=urllib.request.Request(self.server.admission.upstream,data=wire,method="POST",headers={
                 "Authorization":"Bearer "+original,"Content-Type":"application/json",
                 "Accept":"application/json, text/event-stream"
@@ -194,7 +202,7 @@ class RealmHandler(CP09Handler):
             if method=="tools/list" and "result" in result:
                 result["result"]["tools"]=[x for x in result["result"].get("tools",[])
                     if x.get("name") in tools and tools[x["name"]] in scopes]
-            return self.reply(200,result)
+            return self.reply(200,adapt_response(result,modern))
         except (ValueError,TypeError,UnicodeDecodeError,json.JSONDecodeError):
             return self.reply(400,{"error":"INVALID_BOUNDED_RPC"})
         except (OSError,urllib.error.URLError):

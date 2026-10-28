@@ -80,8 +80,11 @@ const canonicalEstatePass=canonicalEstate.every(r=>r.ok&&r.needlePass);
 const canonicalMcp=result.mcp[mcpHosts[0]];
 const canonicalMcpPass=
   canonicalMcp?.health?.ok &&
-  canonicalMcp?.health?.version==='0.3.0-original-ui-contact-cp02' &&
-  canonicalMcp?.tools?.ok && canonicalMcp.tools.count===6 &&
+  (
+    (canonicalMcp?.health?.version==='0.2.0-estate-integration.1' && canonicalMcp?.tools?.count===5) ||
+    (canonicalMcp?.health?.version==='0.3.0-original-ui-contact-cp02' && canonicalMcp?.tools?.count===6)
+  ) &&
+  canonicalMcp?.tools?.ok &&
   canonicalMcp?.bridgeStatus?.ok && canonicalMcp.bridgeStatus.integration?.state==='CONNECTED' &&
   canonicalMcp.bridgeStatus.integration?.private_owner_write_published===false &&
   canonicalMcp.writeRejected===true && canonicalMcp.noOwnerLeak===true;

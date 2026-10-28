@@ -172,9 +172,11 @@ jobs:
           assert search2["navigator"].get("cache") == "HIT", search2["navigator"]
 
           opportunity = call(15, "resolve_current_head", {"name":"JM Opportunity Front Door"})
-          assert opportunity["state"] == "CURRENT_CANDIDATE", opportunity
+          assert opportunity["state"] == "CURRENT_DECLARED", opportunity
           assert "v0.8" in (opportunity.get("current_head") or ""), opportunity
-          assert "v0.5.1" in opportunity["primary_evidence"]["boundary"], opportunity
+          assert opportunity["primary_evidence"]["source"] == "current_project_registry", opportunity
+          assert opportunity["resolution_basis"] == "LOCAL_IDENTITY", opportunity
+          assert "v0.8" in opportunity["primary_evidence"]["title"], opportunity
 
           sync = call(16, "build_sync_contract", {"name":"JM Opportunity Front Door"})
           assert sync["hosted_snapshot"]["current_registry_schema"] == status["current_registry_schema"], sync

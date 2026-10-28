@@ -27,3 +27,19 @@
 **Single integrated regression:** this existing CP15 workflow now runs every available inherited `*.test.mjs` in one suite and exercises the exact unchanged donor, disposable real PostgreSQL v16 cold recovery, coordinated file+PG recovery, and signer-locked loopback launch/restart. It retains independent read-only live HTTPS organ contact as a separate CI job. Existing prior-workflow history remains for provenance, but is not a requirement to multiply run outputs or source copies. CI may prove fixture restoration and donor continuity only; owner-host deployment, offsite custody, production SQL readback, actual original historical signer and mobile-client behavior remain explicit holds.
 
 **FLAZ rule:** no completion or deprecation claim until exact GitHub head, all integrated tests and readback pass. The technical legacy is retained, while the intended release path is **one integrated source lineage**, not indefinitely added descendants. The current draft must not be merged or auto-deployed; production workflows have separate controls.
+
+---
+
+## Consolidated BIAT / bounded FLAZ proof receipt
+
+**Proof baseline:** source commit `2a2af294f2ec66a7bf34a20d49aa8e465b740060`, exact original donor `0921217d95285bcb21cda7a995d02f7ec0725810`. One existing PR #599 remains draft/unmerged.
+
+**Independent GitHub proof:** `https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40751031127/job/123037435926`. On the exact source baseline, **13/13** total GitHub check-runs passed; combined inherited local unit/refusal suite **68/68**; real PostgreSQL 16 isolated cold recovery **10/10**; genuine original v0.5.1 stopped-file+PG coordinated recovery **11/11**; original v0.5.1 separately-held secrets/loopback recovered-host test **10/10**. The last test started the real server, stopped it and started it again, and verified **identical public signing-key IDs** using the same independently pinned recovered private PEM. The new CP12 guard refuses a missing/mismatched, non-P256, unsafe or substituted signer. All **6/6** updated files independently match their Git blobs.
+
+**What has been retired:** new numbered descendants, new rival server builds, redundant temp Library source transfers and claims that an individually self-consistent live signer demonstrates *historical* continuity. No previously proved sovereign origin or functional ancestor deleted. The existing empty failed-branch attempt remains a tiny Git ref only, not a stored duplicate file body; this tool connection does not expose deletion of that ref.
+
+**Release body:** authenticate CP10 stopped file+PG combined checkpoint; optionally custody encrypted ciphertext through CP11; admit recovered original source/state with CP12 **independent signer pin** and separate secrets; verify via CP14/CP15 external read-only diagnostics. CP06/08 file-only and CP09 exact DB carrier remain donor modules, not competing release targets.
+
+**Still HOLD:** GroundZeroJM owner machine offline; no independent owner-controlled persistent restore, approved secret/key custody, production PostgreSQL 18 SQL inspection/backup, enforced production writer freeze, stable *historical Render* signer identity, real owner external edit/writeback, public TLS restored-host cutover, device/mobile proof, live database migration, release authorization or production merge. A passing **synthetic** restart does not cure Render's previously observed signing-key rotation. **No live production change was made.**
+
+**FLAZ:** complete for consolidated source inheritance, deterministic refusal tests, actual disposable DB+original-server recovery, recovery-host signer pinning and synthetic original-server restart. **Overall independent live recovery/owner custody: HOLD. NO DING NO CLAIM.**

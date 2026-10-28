@@ -26,7 +26,12 @@ def safe_redirect(s):
     if not isinstance(s,str) or len(s)>1024:return False
     try:r=urlsplit(s)
     except ValueError:return False
-    return r.scheme=='https' and r.hostname in CLIENT_HOSTS and not r.username and not r.password and not r.fragment and r.port in (None,443)
+    if not (r.scheme=='https' and r.hostname in CLIENT_HOSTS and not r.username and not r.password and not r.fragment and r.port in (None,443)):
+        return False
+    if r.hostname in ('chatgpt.com','chat.openai.com'):
+        return (r.path=='/connector_platform_oauth_redirect' or
+            bool(re.fullmatch(r'/connector/oauth/[A-Za-z0-9_-]{1,180}',r.path)))
+    return True
 def valid_pkce(c):return isinstance(c,str) and bool(re.fullmatch(r'[A-Za-z0-9_-]{43}',c))
 def one(p,name,default=None):
     seq=p.get(name,[])
@@ -95,7 +100,7 @@ class Admission:
             if not valid_pkce(ch) or not isinstance(state,str) or len(state)>1024:
                 raise ValueError('PKCE_OR_STATE_HOLD')
             resource=one(params,'resource')
-            if resource not in (None,self.resource):
+            if resource not in (None,self.origin,self.resource):
                 raise ValueError('RESOURCE_AUDIENCE_HOLD')
             key=opaque()
             self.pending[digest(key)]={'client_id':client_id,'redirect_uri':redirect,'challenge':ch,

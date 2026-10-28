@@ -45,7 +45,12 @@ export class JMNodeSupervisor{
  }
  async start(){
   insist(!this.started&&!this.stopping,'ALREADY_STARTED');this.started=true;
-  await new Promise((resolve,reject)=>{const socket=net.createServer();socket.once('error',()=>reject(Error('SERVICE_PORT_OCCUPIED')));socket.listen({host:'127.0.0.1',port:this.port,exclusive:true},()=>socket.close(resolve))});
+  // An occupied port is a pre-spawn failure, not a consumed supervisor instance.
+  // Preserve the concurrent-start guard while checking; allow retry only after
+  // the failed preflight has fully settled and no child was started.
+  try{
+   await new Promise((resolve,reject)=>{const socket=net.createServer();socket.once('error',()=>reject(Error('SERVICE_PORT_OCCUPIED')));socket.listen({host:'127.0.0.1',port:this.port,exclusive:true},()=>socket.close(resolve))});
+  }catch(error){if(!this.stopping)this.started=false;throw error}
   insist(!this.stopping,'SUPERVISOR_STOPPED');this._spawn();
   const until=Date.now()+this.timeoutMs;
   while(Date.now()<until){if(await this.probe()&&this.child)return {ok:true,pid:this.child.pid,restarts:this.restartCount};

@@ -20,7 +20,15 @@ class FakeR2 {
       this.dropNextIndexWrite = false;
       return;
     }
+    if (this.dropNextStateWrite && key.endsWith('/state.json')) {
+      this.dropNextStateWrite = false;
+      return;
+    }
     let stored = String(body);
+    if (this.tamperNextStateWrite && key.endsWith('/state.json')) {
+      this.tamperNextStateWrite = false;
+      stored = stored.replace('saved note', 'tampered note');
+    }
     if (this.tamperNextBodyWrite && key.endsWith('.html')) {
       this.tamperNextBodyWrite = false;
       stored += '<!-- injected R2 corruption -->';
@@ -439,7 +447,46 @@ console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor pr
   assert.equal(isolated.map.get(indexKey).body, revisionIndex);
   assert.equal((await read(descendant.id)).status, 200);
   assert.equal((await read(ancestor.id)).status, 200);
+  // CP11: exact-byte retry and unchanged-revision must not falsely confirm
+  // custody when the already-indexed current source has been corrupted.
+  const descendantKey = `jm-owner-vault/v0.1/bodies/${descendant.id}.html`;
+  const intactDescendant = isolated.map.get(descendantKey);
+  isolated.map.set(descendantKey, { ...intactDescendant, body: revisedHtml.replace('Source F', 'Source Z') });
+  const badRetry = await upload('cp09-source-0001', revisedHtml);
+  assert.equal(badRetry.status, 409);
+  assert.equal((await badRetry.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  const badUnchanged = await revise(descendant.id, descendant.sha256, revisedHtml);
+  assert.equal(badUnchanged.status, 409);
+  assert.equal((await badUnchanged.json()).error, 'BODY_INTEGRITY_MISMATCH');
+  assert.equal(isolated.map.get(indexKey).body, revisionIndex);
+  isolated.map.set(descendantKey, intactDescendant);
+  assert.equal((await upload('cp09-source-0001', revisedHtml)).status, 200);
+  assert.equal((await revise(descendant.id, descendant.sha256, revisedHtml)).status, 200);
   assert.equal((await call({ env: isolatedEnv, key: 'wrong', query: `?body=${ancestor.id}` })).status, 401);
 }
 
+// CP11: owner state acknowledgements require an independent persisted readback.
+{
+  const stateStore = new FakeR2();
+  const stateEnv = { ...env, JM_OWNER_VAULT: stateStore };
+  const save = notes => call({method:'PUT',env:stateEnv,key:stateEnv.JM_OWNER_VAULT_KEY,body:{state:{notes}}});
+  const first = await save('saved note');
+  assert.equal(first.status, 200);
+  const stateKey = 'jm-owner-vault/v0.1/state.json';
+  const saved = stateStore.map.get(stateKey).body;
+  stateStore.dropNextStateWrite = true;
+  const dropped = await save('second note');
+  assert.equal(dropped.status, 409);
+  assert.equal((await dropped.json()).error, 'OWNER_STATE_READBACK_MISMATCH');
+  assert.equal(stateStore.map.get(stateKey).body, saved);
+  stateStore.tamperNextStateWrite = true;
+  const tampered = await save('saved note');
+  assert.equal(tampered.status, 409);
+  assert.equal((await tampered.json()).error, 'OWNER_STATE_READBACK_MISMATCH');
+  assert.match(stateStore.map.get(stateKey).body, /tampered note/);
+  const restored = await save('restored note');
+  assert.equal(restored.status, 200);
+  assert.equal((await (await call({env:stateEnv,key:stateEnv.JM_OWNER_VAULT_KEY})).json()).state.notes, 'restored note');
+}
+console.log('PASS: JM Owner Vault CP11 persisted-state, dedupe and unchanged-revision integrity gates.');
 console.log('PASS: JM Owner Vault current-main private editor, immutable ancestry, capacity gate, exact R2 body/index integrity on uploads/revisions/downloads.');

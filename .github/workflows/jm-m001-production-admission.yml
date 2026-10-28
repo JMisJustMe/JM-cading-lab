@@ -31,3 +31,5 @@ jobs:
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_REAL_EVIDENCE_BRIDGE_CP23_TESTS.py
       - name: Prove CP24 operational trace retirement review versus protected originals
         run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_PROCESS_CAPTURE_FAMILY_CP24_TESTS.py
+      - name: Prove CP25 exact delta reconstruction
+        run: python3 agent-runtime/host-adapters/storage-admission/JM_M001_EXACT_DELTA_RESTORE_CP25_TESTS.py

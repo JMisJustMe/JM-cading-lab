@@ -612,6 +612,51 @@ console.log('PASS: CP13 referenced original retained, both revisions downloadabl
   assert.equal([...storage.map.keys()].filter(k => k.includes('/snapshots/')).length, 3,
     'Tampered snapshot retained for investigation, never acknowledged as intact');
 }
+// CP14: An index with duplicate body IDs is corrupt even when JSON parses.
+// Never allow ambiguous GET, upload, snapshot or DELETE to mutate custody.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const html = '<!doctype html><html><body>CP14 unique custody</body></html>';
+  const created = await call({ method: 'POST', env: isolatedEnv, key, body: {
+    action: 'upload-body', body: { name: 'CP14 source', sourceInstanceId: 'cp14-source-0001', content: html }
+  } });
+  assert.equal(created.status, 201);
+  const original = (await created.json()).body;
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const bodyKey = `jm-owner-vault/v0.1/bodies/${original.id}.html`;
+  const indexObject = storage.map.get(indexKey);
+  const validIndex = indexObject.body;
+  const parsed = JSON.parse(validIndex);
+  parsed.bodies.push({ ...parsed.bodies[0], name: 'Ambiguous duplicate identity' });
+  const corruptIndex = JSON.stringify(parsed, null, 2);
+  storage.map.set(indexKey, { ...indexObject, body: corruptIndex });
+  const attempts = [
+    () => call({ env: isolatedEnv, key }),
+    () => call({ env: isolatedEnv, key, query: `?body=${original.id}` }),
+    () => call({ method: 'POST', env: isolatedEnv, key, body: {
+      action: 'upload-body', body: { name: 'new', sourceInstanceId: 'cp14-source-0002', content: html }
+    } }),
+    () => call({ method: 'POST', env: isolatedEnv, key, body: { action: 'snapshot' } }),
+    () => call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${original.id}` })
+  ];
+  for (const attempt of attempts) {
+    const response = await attempt();
+    assert.equal(response.status, 503, 'Ambiguous custody must fail closed');
+    assert.equal((await response.json()).error, 'PRIVATE_CUSTODY_HOLD');
+    assert.equal(storage.map.get(indexKey).body, corruptIndex, 'Corrupt index must remain intact');
+    assert.equal(storage.map.get(bodyKey).body, html, 'Original source must remain intact');
+  }
+  assert.equal([...storage.map.keys()].filter(k => k.includes('/snapshots/')).length, 0);
+  storage.map.set(indexKey, { ...indexObject, body: validIndex });
+  assert.equal((await call({ env: isolatedEnv, key, query: `?body=${original.id}` })).status, 200,
+    'Owner-controlled exact index recovery must restore source access');
+  assert.equal((await call({ method: 'DELETE', env: isolatedEnv, key, query: `?body=${original.id}` })).status, 200,
+    'Normal explicit deletion must remain possible after recovery');
+}
+console.log('PASS: CP14 duplicate-ID custody corruption holds every index route without data loss.');
+
 console.log('PASS: JM Owner Vault CP12 index-before-delete, orphan HOLD, unique exact snapshot readback.');
 console.log('PASS: JM Owner Vault CP11 persisted-state, dedupe and unchanged-revision integrity gates.');
 console.log('PASS: JM Owner Vault current-main private editor, immutable ancestry, capacity gate, exact R2 body/index integrity on uploads/revisions/downloads.');

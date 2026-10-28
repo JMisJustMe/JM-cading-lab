@@ -339,20 +339,34 @@ async function deleteBody(bucket, id) {
   const target = bodies.find(item => item.id === id);
   if (!target) return { found: false };
 
-  await bucket.delete(`${BODY_PREFIX}/${target.id}.html`);
+  // Never destroy the sole source object while the old index still points to it.
+  // A failed index write must leave the recoverable source and old index intact.
+  const objectKey = `${BODY_PREFIX}/${target.id}.html`;
+  await verifiedBody(bucket, objectKey, target.sha256, target.bytes);
   const now = new Date().toISOString();
-  await writeJson(bucket, INDEX_KEY, {
+  const nextIndex = {
     schema: `${SCHEMA}.BodyIndex`,
     updated_at: now,
     bodies: bodies.filter(item => item.id !== id)
-  });
+  };
+  await writeJson(bucket, INDEX_KEY, nextIndex);
+  await verifyIndexWrite(bucket, nextIndex);
+  // If deletion is interrupted after index commit, the orphaned bytes are kept
+  // for manual recovery. Never roll back the index by overwriting other writers.
+  try { await bucket.delete(objectKey); }
+  catch { throw new VaultBodyIntegrityError('BODY_DELETE_READBACK_MISMATCH'); }
+  let stillHeld;
+  try { stillHeld = await bucket.get(objectKey); }
+  catch { throw new VaultBodyIntegrityError('BODY_DELETE_READBACK_MISMATCH'); }
+  if (stillHeld) throw new VaultBodyIntegrityError('BODY_DELETE_READBACK_MISMATCH');
   return { found: true, body: target };
 }
 
 async function createSnapshot(bucket) {
   const current = await manifest(bucket);
   const now = new Date().toISOString();
-  const key = `${SNAPSHOT_PREFIX}/${now.replace(/[:.]/g, '-')}.json`;
+  // A timestamp alone can collide during rapid repeated snapshots.
+  const key = `${SNAPSHOT_PREFIX}/${now.replace(/[:.]/g, '-')}-${crypto.randomUUID()}.json`;
   const snapshot = {
     schema: `${SCHEMA}.Snapshot`,
     created_at: now,
@@ -361,6 +375,18 @@ async function createSnapshot(bucket) {
     note: 'Snapshot contains owner state and body metadata. HTML bytes remain single R2 body objects and are not duplicated by this snapshot.'
   };
   await writeJson(bucket, key, snapshot);
+  // A storage PUT acknowledgement is not a durable snapshot receipt.
+  // Verify the exact stored JSON bytes, not only the returned metadata.
+  let held;
+  try { held = await bucket.get(key); }
+  catch { throw new VaultBodyIntegrityError('SNAPSHOT_READBACK_MISMATCH'); }
+  if (!held) throw new VaultBodyIntegrityError('SNAPSHOT_READBACK_MISMATCH');
+  let actual;
+  try { actual = await held.text(); }
+  catch { throw new VaultBodyIntegrityError('SNAPSHOT_READBACK_MISMATCH'); }
+  if (actual !== JSON.stringify(snapshot, null, 2)) {
+    throw new VaultBodyIntegrityError('SNAPSHOT_READBACK_MISMATCH');
+  }
   return { key, created_at: now, body_count: current.bodies.length };
 }
 

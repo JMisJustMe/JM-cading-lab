@@ -179,6 +179,72 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   assert.equal((await (await call({env,key:env.JM_OWNER_VAULT_KEY})).json()).bodies.length, 0);
 }
 
+// CP05: authenticated revision edit, immutable ancestry, stale-edit rejection,
+// exact readback and same-identity return-to-ancestor semantics.
+{
+  const key = env.JM_OWNER_VAULT_KEY;
+  const first = '<!doctype html><html><body><h1>Owned private A</h1></body></html>';
+  const changed = first.replace('private A','private B');
+  const create = body => call({ method:'POST', env, key, body:{action:'upload-body',body} });
+  const a = await (await create({name:'Private A',fileName:'private.html',sourceInstanceId:'local-private-owner-use-A',content:first})).json();
+  const b = await (await create({name:'Private B',fileName:'private.html',sourceInstanceId:'local-private-owner-use-B',content:first})).json();
+  assert.notEqual(a.body.id,b.body.id);
+  const revisionRequest={action:'revise-body',baseId:a.body.id,expectedSha256:a.body.sha256,content:changed};
+
+  assert.equal((await call({method:'POST',env,body:revisionRequest})).status,401);
+  const invalidHash = await call({method:'POST',env,key,body:{...revisionRequest,expectedSha256:'a'.repeat(64)}});
+  assert.equal(invalidHash.status,409);
+  assert.equal((await invalidHash.json()).error,'BODY_EXPECTED_HASH_MISMATCH');
+  const invalidHTML = await call({method:'POST',env,key,body:{...revisionRequest,content:'just text'}});
+  assert.equal(invalidHTML.status,400);
+  const changedResponse=await call({method:'POST',env,key,body:revisionRequest});
+  assert.equal(changedResponse.status,201);
+  const revision=await changedResponse.json();
+  assert.equal(revision.outcome,'BODY_REVISION_STORED');
+  assert.equal(revision.body.previousVersionId,a.body.id);
+  assert.equal(revision.body.sourceInstanceId,'local-private-owner-use-A');
+  assert.notEqual(revision.body.id,a.body.id);
+
+  const originalBack=await call({env,key,query:`?body=${a.body.id}`});
+  assert.equal(await originalBack.text(),first);
+  const revisionBack=await call({env,key,query:`?body=${revision.body.id}`});
+  assert.equal(await revisionBack.text(),changed);
+  const separateBack=await call({env,key,query:`?body=${b.body.id}`});
+  assert.equal(await separateBack.text(),first);
+
+  const stale=await call({method:'POST',env,key,body:revisionRequest});
+  assert.equal(stale.status,409);
+  assert.equal((await stale.json()).error,'REVISION_HEAD_CHANGED');
+  const retry=await call({method:'POST',env,key,body:{...revisionRequest,baseId:revision.body.id,expectedSha256:revision.body.sha256}});
+  assert.equal(retry.status,200);
+  assert.equal((await retry.json()).outcome,'REVISION_UNCHANGED');
+
+  // Returning to an ancestor's bytes remains a NEW version, not a stale body.
+  const rollback=await call({method:'POST',env,key,body:{...revisionRequest,baseId:revision.body.id,expectedSha256:revision.body.sha256,content:first}});
+  assert.equal(rollback.status,201);
+  const reverted=(await rollback.json()).body;
+  assert.equal(reverted.previousVersionId,revision.body.id);
+  assert.notEqual(reverted.id,a.body.id);
+  const exactHeadRetry=await create({name:'Private A',fileName:'private.html',sourceInstanceId:'local-private-owner-use-A',content:first});
+  assert.equal((await exactHeadRetry.json()).body.id,reverted.id);
+
+  // A legacy body with no mount ID can be edited independently of another use.
+  const legacy=(await (await create({name:'Legacy',fileName:'legacy.html',content:first})).json()).body;
+  const legacyRev=await call({method:'POST',env,key,body:{action:'revise-body',baseId:legacy.id,expectedSha256:legacy.sha256,content:changed}});
+  assert.equal(legacyRev.status,201);
+  const legacyNew=(await legacyRev.json()).body;
+  assert.equal(legacyNew.sourceInstanceId,'vault-'+legacy.id);
+  assert.equal(legacyNew.previousVersionId,legacy.id);
+
+  const manifest=(await (await call({env,key})).json()).bodies;
+  assert.equal(manifest.length,6);
+  assert.equal(new Set(manifest.map(x=>x.id)).size,6);
+  for(const id of [a.body.id,b.body.id,revision.body.id,reverted.id,legacy.id,legacyNew.id]) {
+    assert.equal((await call({method:'DELETE',env,key,query:`?body=${id}`})).status,200);
+  }
+  assert.equal((await (await call({env,key})).json()).bodies.length,0);
+}
+
 // Full index is a HOLD, never a reason to evict an older purposeful use.
 {
   const protectedBodies=Array.from({length:2000},(_,i)=>({id:'protected-'+i,sourceInstanceId:'preserved-'+i,sha256:'old-'+i}));
@@ -195,4 +261,4 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   assert.equal(JSON.parse(bucket.map.get(indexKey).body).bodies.length,2000);
 }
 
-console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion · no silent 2000-body eviction.');
+console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor preservation, stale rejection, purpose isolation, exact-instance retries, legacy continuity and capacity fail-closed.');

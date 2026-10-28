@@ -829,3 +829,76 @@ console.log('PASS: CP16 last-observed state revision rejects stale owner-device 
   assert.equal(restored.headers.get('x-jm-body-integrity'), 'sha256-verified');
 }
 console.log('PASS: CP17 malformed integrity/index metadata cannot downgrade source verification or destroy originals; exact recovery works.');
+
+
+// CP18: a present but broken ancestor link must not be mistaken for a healthy
+// version history. Preserve the original metadata and every purposeful source.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const create = (sourceInstanceId, content) => call({
+    method: 'POST', env: isolatedEnv, key, body: { action: 'upload-body',
+      body: { name: 'CP18 source', sourceInstanceId, content } }
+  });
+  const originalHTML = '<!doctype html><html><body>CP18 first source</body></html>';
+  const revisionHTML = '<!doctype html><html><body>CP18 retained revision</body></html>';
+  const original = (await (await create('cp18-lineage-source-a', originalHTML)).json()).body;
+  const revised = (await (await create('cp18-lineage-source-a', revisionHTML)).json()).body;
+  const other = (await (await create('cp18-purpose-source-b', originalHTML)).json()).body;
+  assert.equal(revised.previousVersionId, original.id);
+  assert.notEqual(other.id, original.id, 'Separate purpose must retain its own identity');
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const originalKey = `jm-owner-vault/v0.1/bodies/${original.id}.html`;
+  const revisionKey = `jm-owner-vault/v0.1/bodies/${revised.id}.html`;
+  const otherKey = `jm-owner-vault/v0.1/bodies/${other.id}.html`;
+  const held = storage.map.get(indexKey);
+  const healthy = held.body;
+  const damagedCases = [
+    ['dangling-parent', body => { body.previousVersionId = '00000000-0000-4000-8000-000000000999'; }],
+    ['self-reference', body => { body.previousVersionId = revised.id; }],
+    ['cross-purpose-ancestor', body => { body.previousVersionId = other.id; }],
+    ['broken-newest-first-order', (body, index) => {
+      index.bodies = [index.bodies.find(x => x.id === original.id),
+        ...index.bodies.filter(x => x.id !== original.id)];
+    }]
+  ];
+  for (const [label, change] of damagedCases) {
+    const data = JSON.parse(healthy);
+    change(data.bodies.find(x => x.id === revised.id), data);
+    const corrupt = JSON.stringify(data, null, 2);
+    storage.map.set(indexKey, { ...held, body: corrupt });
+    const attempts = [
+      () => call({ env: isolatedEnv, key }),
+      () => call({ env: isolatedEnv, key, query: `?body=${revised.id}` }),
+      () => call({ method: 'POST', env: isolatedEnv, key, body: { action: 'snapshot' } }),
+      () => create('cp18-new-independent-purpose', originalHTML),
+      () => call({ method: 'DELETE', env: isolatedEnv, key,
+        query: `?body=${revised.id}` })
+    ];
+    for (const attempt of attempts) {
+      const response = await attempt();
+      assert.equal(response.status, 503, label + ': cannot trust ancestry');
+      assert.equal((await response.json()).error, 'PRIVATE_CUSTODY_HOLD');
+      assert.equal(storage.map.get(indexKey).body, corrupt);
+      assert.equal(storage.map.get(originalKey).body, originalHTML);
+      assert.equal(storage.map.get(revisionKey).body, revisionHTML);
+      assert.equal(storage.map.get(otherKey).body, originalHTML);
+    }
+  }
+  // Explicit original-index recovery must reinstate every original without
+  // removing a legitimate revision or collapsing same-byte distinct uses.
+  storage.map.set(indexKey, held);
+  assert.equal((await call({ env: isolatedEnv, key })).status, 200);
+  const restored = await call({ env: isolatedEnv, key, query: `?body=${revised.id}` });
+  assert.equal(restored.status, 200);
+  assert.equal(await restored.text(), revisionHTML);
+  assert.equal(restored.headers.get('x-jm-body-integrity'), 'sha256-verified');
+  const third = (await (await create('cp18-lineage-source-a',
+    '<!doctype html><html><body>CP18 next valid revision</body></html>')).json()).body;
+  assert.equal(third.previousVersionId, revised.id);
+  const finalIndex = (await (await call({ env: isolatedEnv, key })).json()).bodies;
+  assert.equal(finalIndex.length, 4);
+  assert.equal(new Set(finalIndex.map(x => x.id)).size, 4);
+}
+console.log('PASS: CP18 dangling/self/cross-purpose/reordered ancestry holds all custody routes, restores exact originals and preserves revision inheritance.');

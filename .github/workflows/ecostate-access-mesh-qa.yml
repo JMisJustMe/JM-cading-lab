@@ -6,6 +6,10 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'games-beyond/app.js'
+      - 'games-beyond/registry.json'
+      - 'games-beyond/payload-manifest.json'
+      - 'games-beyond/bodies/**'
       - 'books/**'
       - 'visual-story/**'
       - 'market-lab/**'
@@ -23,6 +27,10 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'games-beyond/app.js'
+      - 'games-beyond/registry.json'
+      - 'games-beyond/payload-manifest.json'
+      - 'games-beyond/bodies/**'
       - 'books/**'
       - 'visual-story/**'
       - 'market-lab/**'
@@ -56,6 +64,12 @@ jobs:
           grep -Fq 'jm-estate-body-projection-v1' navigator/estate-integration/index.html
           grep -Fq "'Owner custody','JM Owner Vault" navigator/estate-integration/index.html
           grep -Fq 'Edit registered source (GitHub)' navigator/estate-integration/index.html
+          grep -Fq 'Edit this game in existing Games & Beyond' navigator/estate-integration/index.html
+          grep -Fq 'openRequestedSourceEditor()' games-beyond/app.js
+          node --check games-beyond/app.js
+          node --check games-beyond/catalogue-v0-6-core-loader.js
+          grep -Fq "if(new URLSearchParams(location.search).has('jm-edit'))return;" games-beyond/catalogue-v0-6-core-loader.js
+          python3 -m json.tool games-beyond/payload-manifest.json >/dev/null
           test -s books/index.html
           test -s visual-story/index.html
           test -s market-lab/index.html
@@ -119,12 +133,21 @@ jobs:
                     const edited=items.filter(x=>x.sourceFile);
                     const direct=items.find(x=>x.id==='Public routes:theory/cause-must-pass/00_open_first.html');
                     const owner=items.find(x=>x.id==='Owner custody:owner-vault-private-editor');
+                    const gameEditors=items.filter(x=>x.group==='Games'&&x.editorRoute);
+                    const exactGames=items.filter(x=>x.group==='Games'&&x.sourceFile);
+                    const unmounted=items.filter(x=>x.group==='Games'&&x.id.startsWith('Games:jmstudios-'));
+                    const playform=items.find(x=>x.id==='Games:playform');
                     return {count:items.length,unique:keys.length===new Set(keys).size,
                       appsBranches:app?.versions?.length||0,holds:api?.getHolds()||[],
                       sourceEdits:edited.length,sourceLinksRendered:document.querySelectorAll('#bodyList a.owner-edit').length,
                       sourceSafe:edited.every(x=>x.ownerEdit==='https://github.com/JMisJustMe/JM-cading-lab/edit/main/'+x.sourceFile.split('/').map(encodeURIComponent).join('/')&&!x.sourceFile.includes('..')),
                       directEditable:!!direct?.ownerEdit,
                       ownerRouteProtected:!!owner?.route?.endsWith('/index.html#owner')&&!owner?.ownerEdit&&!owner?.sourceFile,
+                      gameEditors:gameEditors.length,exactGames:exactGames.length,
+                      gameEditorsSafe:gameEditors.every(x=>x.editorRoute==='http://127.0.0.1:4178/games-beyond/?jm-edit='+encodeURIComponent(x.id.slice(6))&&!x.editorRoute.includes('..')),
+                      exactGameFilesSafe:exactGames.every(x=>/^games-beyond\/bodies\/[a-z0-9-]+\.html$/.test(x.sourceFile)),
+                      unmountedProtected:unmounted.length===2&&unmounted.every(x=>!x.editorRoute&&!x.ownerEdit),
+                      playformBoundary:playform?.sourceNote?.includes('frozen original source protected'),
                       appNotMisrepresented:!items.some(x=>x.group==='Apps & tools'&&x.ownerEdit),
                       member:items.some(x=>x.group==='Games'),coder:items.some(x=>x.group==='Coding & runtimes'),
                       song:items.some(x=>x.group==='Music & lyrics'),theory:items.some(x=>x.group==='Theory')};
@@ -132,6 +155,8 @@ jobs:
                   if(audit.count<90||!audit.unique||audit.appsBranches!==2||audit.holds.length||
                       audit.sourceEdits<10||audit.sourceLinksRendered!==audit.sourceEdits||!audit.sourceSafe||
                       !audit.directEditable||!audit.ownerRouteProtected||!audit.appNotMisrepresented||
+                      audit.gameEditors!==21||audit.exactGames!==6||!audit.gameEditorsSafe||!audit.exactGameFilesSafe||
+                      !audit.unmountedProtected||!audit.playformBoundary||
                       !audit.member||!audit.coder||!audit.song||!audit.theory){
                     throw new Error(vp.name+' sovereign body projection gate failed: '+JSON.stringify(audit));
                   }
@@ -345,4 +370,68 @@ jobs:
               console.log('DING CP08 2/2 synthetic browser journeys · owner click → private temp write → actual reload → SHA readback → exact cleanup → independent receipt · existing body intact');
             } finally {await browser.close();}
           })().catch(e=>{console.error('CP08_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport});
+                page.setDefaultTimeout(30000);
+                const errors=[];
+                page.on('pageerror',e=>errors.push(e.stack||String(e)));
+                const origin='http://127.0.0.1:4178/games-beyond/';
+                await page.goto(origin+'?jm-edit=fight-clash',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>window.GamesBeyond?.activeEditorBodyId==='fight-clash'&&
+                  document.querySelector('#bodyName')?.value==='Fight Clash Chameleon'&&
+                  document.querySelector('#source')?.value.includes('<html'),{timeout:60000});
+                const original=await page.locator('#source').inputValue();
+                if(!original.includes('html'))throw Error('Game source missing');
+                const extra='<!-- CP09 VERIFIED LOCAL EDIT -- >'.replace(' -- >',' -->');
+                const changed=original+extra;
+                await page.locator('#source').fill(changed);
+                await page.locator('#saveSource').click();
+                await page.waitForFunction(expected=>window.GamesBeyond?.pack?.bodies?.some(b=>b.id==='fight-clash'&&b.html===expected&&b.edited===true),changed,{timeout:30000});
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(expected=>window.GamesBeyond?.activeEditorBodyId==='fight-clash'&&
+                  document.querySelector('#source')?.value===expected,changed,{timeout:60000});
+                const exported=page.waitForEvent('download',{timeout:20000});
+                await page.locator('#exportBody').click();
+                const file=await exported;
+                if(!file.suggestedFilename().endsWith('.html'))throw Error('Exact body HTML export missing');
+                await page.locator('#restoreBody').click();
+                await page.waitForFunction(expected=>window.GamesBeyond?.pack?.bodies?.some(b=>b.id==='fight-clash'&&b.html===expected&&!b.edited),original,{timeout:30000});
+                await page.reload({waitUntil:'domcontentloaded'});
+                try {
+                  await page.waitForFunction(expected=>window.GamesBeyond?.activeEditorBodyId==='fight-clash'&&
+                    document.querySelector('#source')?.value===expected,original,{timeout:20000});
+                } catch(error) {
+                  const debug=await page.evaluate(()=>({
+                    url:location.href,status:document.querySelector('#status')?.textContent||null,
+                    selected:window.GamesBeyond?.activeEditorBodyId||null,
+                    rows:window.GamesBeyond?.pack?.bodies?.length||0,
+                    hasBody:window.GamesBeyond?.pack?.bodies?.some(x=>x.id==='fight-clash')||false,
+                    sourceSize:document.querySelector('#source')?.value?.length||0,
+                    sourceHead:document.querySelector('#source')?.value?.slice(0,95),
+                    bodyEdited:window.GamesBeyond?.pack?.bodies?.find(x=>x.id==='fight-clash')?.edited||false,
+                    workspace:document.querySelector('#workspace')?.hidden,
+                    dbNames:indexedDB.databases?undefined:'unsupported'
+                  }));
+                  throw Error('CP09 protected source after reload HOLD '+JSON.stringify(debug)+' pageErrors '+errors.slice(0,5).join('|'));
+                }
+                await page.goto(origin+'?jm-edit=jmstudios-source-rebegin',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('EDIT HOLD: game not mounted'),{timeout:60000});
+                if(await page.locator('#workspace').isVisible())throw Error('Unmounted JMStudios was offered a live editor');
+                if(errors.length)throw Error('Game editor page errors: '+errors.join('|'));
+                await page.close();passed++;
+              }
+              if(passed!==2)throw Error('Expected 2/2 exact game editor journeys');
+              console.log('CP09 2/2 phone/desktop PASS: existing game editor deep link, IndexedDB revision survives reload, exact HTML export, protected source restore, unmounted JMStudios HOLD');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP09_GAME_EDITOR_HOLD',e);process.exitCode=1});
           NODE

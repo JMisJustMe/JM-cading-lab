@@ -304,6 +304,15 @@ jobs:
           test -s cloudflare-estate/navigator/stringline.json
           test -s cloudflare-estate/navigator/estate-integration/index.html
           grep -Fq 'Edit registered source (GitHub)' cloudflare-estate/navigator/estate-integration/index.html
+          grep -Fq 'Edit this game in existing Games & Beyond' cloudflare-estate/navigator/estate-integration/index.html
+          test -s cloudflare-estate/games-beyond/app.js
+          grep -Fq 'openRequestedSourceEditor()' cloudflare-estate/games-beyond/app.js
+          grep -Fq 'jm-edit' cloudflare-estate/games-beyond/app.js
+          grep -Fq "if(new URLSearchParams(location.search).has('jm-edit'))return;" cloudflare-estate/games-beyond/catalogue-v0-6-core-loader.js
+          test -s cloudflare-estate/games-beyond/payload-manifest.json
+          for file in futarized-v1-2.html fight-clash-v0-4.html aiming-run-v0-1a.html drag-aim-loop-kernel-v0-9-9.html loopit-glyphplay-gameforge-boundary-rejoin-node.html playform-v0-1.html; do
+            test -s "cloudflare-estate/games-beyond/bodies/$file"
+          done
           grep -Fq "'Owner custody','JM Owner Vault" cloudflare-estate/navigator/estate-integration/index.html
           test -s cloudflare-estate/navigator/estate-integration/public-registry.json
           test -s cloudflare-estate/navigator/estate-integration/bridge.js
@@ -484,6 +493,8 @@ jobs:
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],
             ['/navigator/estate-integration/', 'Edit registered source (GitHub)'],
+            ['/navigator/estate-integration/', 'Edit this game in existing Games & Beyond'],
+            ['/games-beyond/app.js', 'openRequestedSourceEditor'],
             ['/navigator/estate-integration/', 'Owner custody'],
             ['/navigator/estate-integration/public-registry.json', 'JM.Estate.PublicNervousSystem/1'],
             ['/access/', 'One door.'],

@@ -155,6 +155,8 @@ async function uploadBody(bucket, payload) {
   }
   // A changed body with the same local identity is a new preserved revision.
   const previous = sourceInstanceId ? bodies.find(item => item.sourceInstanceId === sourceInstanceId) : null;
+  // Never silently evict an older purposeful body merely to meet the index limit.
+  if (bodies.length >= 2000) return { error: json({ schema: SCHEMA, error: 'BODY_INDEX_CAPACITY_REACHED', max_bodies: 2000 }, 409) };
 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
@@ -186,7 +188,7 @@ async function uploadBody(bucket, payload) {
   const next = {
     schema: `${SCHEMA}.BodyIndex`,
     updated_at: now,
-    bodies: [metadata, ...bodies].slice(0, 2000)
+    bodies: [metadata, ...bodies]
   };
   await writeJson(bucket, INDEX_KEY, next);
   return { duplicate: false, body: metadata };

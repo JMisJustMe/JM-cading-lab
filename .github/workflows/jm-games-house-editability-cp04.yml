@@ -1,0 +1,35 @@
+name: JM Games House External Editability CP04
+on:
+  pull_request:
+    paths:
+      - 'games-beyond/**'
+      - '.github/workflows/jm-games-house-editability-cp04.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-edit-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install existing Games House dependencies
+        run: npm install --no-audit --no-fund
+        working-directory: games-beyond
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: games-beyond
+      - name: Prove persistent edit and cross-profile portable recovery
+        run: npx playwright test tests/external-persistence-cp04.spec.mjs --project=mobile-chromium --project=desktop-chromium
+        working-directory: games-beyond
+      - name: Retain failure trace
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-games-house-cp04-traces
+          path: games-beyond/test-results
+          if-no-files-found: warn
+          retention-days: 14

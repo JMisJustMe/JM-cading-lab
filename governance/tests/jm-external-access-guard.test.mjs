@@ -138,5 +138,3 @@ test('CP06 audit separates available public route, byte parity and owner writeba
   assert.equal(registered.in_app_writeback,'NOT_TESTED');
   assert.equal(report.whole_estate_externally_editable,'NOT_PROVEN');
 });
-
-// CP06_REMOTE_WRITE_AND_RESTORE_PROBE

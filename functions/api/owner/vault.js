@@ -216,7 +216,6 @@ async function uploadBody(bucket, payload) {
     },
     customMetadata: { sha256: hash, bodyName: name.slice(0, 900) }
   });
-
   // Preserve any anomalous object for private owner inspection; never auto-delete.
   await verifiedBody(bucket, objectKey, hash, byteCount);
 

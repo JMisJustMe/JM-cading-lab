@@ -97,7 +97,15 @@ function custodyShapeValid(record, key) {
     return record.schema === `${SCHEMA}.BodyIndex`
       && Array.isArray(record.bodies)
       && record.bodies.every(item => item && typeof item === 'object'
-        && !Array.isArray(item) && typeof item.id === 'string' && item.id.length > 0)
+        && !Array.isArray(item) && typeof item.id === 'string' && item.id.length > 0
+        // CP17: a present-but-invalid digest must never downgrade a
+        // supposedly verified source to the legacy unverified download path.
+        && (item.sha256 == null || (typeof item.sha256 === 'string'
+          && /^[a-f0-9]{64}$/i.test(item.sha256)))
+        && (item.bytes == null || (Number.isSafeInteger(item.bytes)
+          && item.bytes >= 0 && item.bytes <= MAX_BODY_BYTES))
+        && (item.sourceInstanceId == null || typeof item.sourceInstanceId === 'string')
+        && (item.previousVersionId == null || typeof item.previousVersionId === 'string'))
       // Duplicate IDs make lookup ambiguous and deletion can remove multiple
       // index entries while deleting only one object. Hold corrupt custody.
       && new Set(record.bodies.map(item => item.id)).size === record.bodies.length;

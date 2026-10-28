@@ -13,7 +13,7 @@
 - `/meta`: `version:"0.5.1-hosted"`, `schema:"jm.cloud-contact.server/0.5"`, API roots `/v5`, `/v4`, `/v3`.
 - `/receipt-key`: public ECDSA-P256 key self-consistency PASS, public `keyId:"8b3898cbd8b0a4527bedf60c"`. A self-consistent key ID does NOT prove a separately pinned historic signer or recovered signing identity.
 - Independent Render deployment metadata previously confirmed the source commit `0921217d95285bcb21cda7a995d02f7ec0725810` as active on the original hosted v0.5.1 service; the public API does NOT itself attest commit identity.
-- Observed limits: only **one profile** reported; **TURN not configured**, STUN-only WebRTC may fail in restrictive environments. Neither is erased by a green `/ready`.
+- Original donor manifest `profiles/JM_CLOUD_PROFILE_MANIFEST_HOSTED_v0_5_1.json` (Git blob `6dfd2cccd6d6880cff3cd9ca3689690b437040ab`) declares exactly **one** `phone-laptop` profile; the live `profileCount:1` therefore matches the pinned source and is **not evidence of regression**. **TURN remains unconfigured**, so STUN-only WebRTC may fail in restrictive environments; green `/ready` does not resolve that limitation.
 - GroundZeroJM remains OFFLINE at CP14 inspection; no device commands sent.
 - Render PostgreSQL 18 `jm-market-survivor-state` reports available but has empty external IP allowlist and blocks read-only SQL via hosted MCP. No real table, row, witness, dump, or recovery proof and NO permission change.
 - No real encrypted archive transferred to owner media; no persistent independent host deployed; no private data or secrets accessed; no live production, DNS, deployment or billing change.

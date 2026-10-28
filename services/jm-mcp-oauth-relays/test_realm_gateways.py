@@ -202,4 +202,27 @@ class RealHttp(unittest.TestCase):
       'scope':'cp08:execute','state':'BAD','resource':url+'/mcp'})
    s,_,_=self.hit(realm,'/oauth/authorize?'+query)
    self.assertEqual(s,400)
+ def test_16_native_mcp_initialized_notification_202_empty_for_both_realms(self):
+  for realm in CONFIGS:
+   s,t,_,_=self.approve(realm)
+   self.assertEqual(s,200)
+   headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream',
+            'Authorization':'Bearer '+t['access_token']}
+   s,h,b=self.hit(realm,'/mcp','POST',{'jsonrpc':'2.0','method':'notifications/initialized'},headers)
+   self.assertEqual(s,202)
+   self.assertEqual(b,b'')
+   self.assertEqual(h.get('Content-Length'),'0')
+ def test_17_notification_cannot_bypass_oauth(self):
+  for realm in CONFIGS:
+   s,_,_=self.hit(realm,'/mcp','POST',{'jsonrpc':'2.0','method':'notifications/initialized'},
+      {'Content-Type':'application/json'})
+   self.assertEqual(s,401)
+ def test_18_authenticated_get_has_spec_405_not_false_401(self):
+  for realm in CONFIGS:
+   s,t,_,_=self.approve(realm)
+   self.assertEqual(s,200)
+   s,h,b=self.hit(realm,'/mcp','GET',headers={'Authorization':'Bearer '+t['access_token'],'Accept':'text/event-stream'})
+   self.assertEqual(s,405)
+   self.assertEqual(b,b'')
+
 if __name__=='__main__':unittest.main(verbosity=2)

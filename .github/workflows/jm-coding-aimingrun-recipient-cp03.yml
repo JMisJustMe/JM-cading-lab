@@ -1,0 +1,48 @@
+name: JM CP03 Aiming Run Native Coding Recipient
+on:
+  pull_request:
+    paths:
+      - 'games-beyond/bodies/aiming-run-cp03*'
+      - 'games-beyond/bodies/aiming-run-v0-1a.html'
+      - 'tests/jm-coding-aimingrun-cp03.browser.mjs'
+      - 'coding-estate/everybody/specialist-execution-cp02*.mjs'
+      - 'coding-estate/everybody/current-64-identity-rail*.mjs'
+      - 'coding-estate/everybody/canonical-native-v2.mjs'
+      - 'coding-estate/everybody/body-registry*.json'
+      - '.github/workflows/jm-coding-aimingrun-recipient-cp03.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'games-beyond/bodies/aiming-run-cp03*'
+      - 'tests/jm-coding-aimingrun-cp03.browser.mjs'
+      - '.github/workflows/jm-coding-aimingrun-recipient-cp03.yml'
+permissions:
+  contents: read
+jobs:
+  game-recipient:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original game contact and hostile-source checks
+        run: node --test games-beyond/bodies/aiming-run-cp03-recipient.test.mjs
+      - name: Inherit CP02 producer runtime
+        run: node --test coding-estate/everybody/specialist-execution-cp02.test.mjs
+      - name: Inherit CP01 identity rail
+        run: node --test coding-estate/everybody/current-64-identity-rail.test.mjs
+      - name: Reuse pinned JM browser-test pattern
+        run: |
+          npm install --no-save --no-package-lock --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Real Chromium iframe original-game effect and restore proof
+        run: node tests/jm-coding-aimingrun-cp03.browser.mjs
+      - name: Preserve emulated viewport evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-coding-aimingrun-cp03-browser
+          path: qa/jm-coding-aimingrun-cp03/
+          if-no-files-found: ignore

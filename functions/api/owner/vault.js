@@ -62,14 +62,31 @@ async function sameSecret(provided, expected) {
   return mismatch === 0;
 }
 
+// A damaged durable record is not an empty new vault. Silently falling back
+// would let a later write replace the only index of independently owned bodies.
+class VaultRecordUnreadable extends Error {
+  constructor(record) {
+    super('VAULT_RECORD_UNREADABLE');
+    this.record = record;
+  }
+}
+
 async function readJson(bucket, key, fallback) {
   const object = await bucket.get(key);
   if (!object) return fallback;
+  const record = key === INDEX_KEY ? 'body-index' : 'owner-state';
+  let parsed;
   try {
-    return JSON.parse(await object.text());
+    parsed = JSON.parse(await object.text());
   } catch {
-    return fallback;
+    throw new VaultRecordUnreadable(record);
   }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) ||
+      (key === INDEX_KEY && !Array.isArray(parsed.bodies)) ||
+      (key === STATE_KEY && (!parsed.state || typeof parsed.state !== 'object' || Array.isArray(parsed.state)))) {
+    throw new VaultRecordUnreadable(record);
+  }
+  return parsed;
 }
 
 async function writeJson(bucket, key, value) {
@@ -112,6 +129,9 @@ async function manifest(bucket) {
 }
 
 async function saveState(bucket, payload) {
+  // Preserve an unreadable existing state for deliberate owner recovery.
+  // An ordinary PUT must never silently overwrite evidence of corruption.
+  await readJson(bucket, STATE_KEY, { schema: `${SCHEMA}.State`, state: safeState({}) });
   const now = new Date().toISOString();
   const record = {
     schema: `${SCHEMA}.State`,
@@ -241,7 +261,7 @@ async function downloadBody(bucket, id) {
   return new Response(object.body, { headers });
 }
 
-export async function onRequest(context) {
+async function handleOwnerRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const mode = url.searchParams.get('mode');
@@ -304,4 +324,20 @@ export async function onRequest(context) {
   }
 
   return json({ schema: SCHEMA, error: 'METHOD_NOT_ALLOWED' }, 405, { allow: 'GET, PUT, POST, DELETE' });
+}
+
+export async function onRequest(context) {
+  try {
+    return await handleOwnerRequest(context);
+  } catch (error) {
+    if (error instanceof VaultRecordUnreadable) {
+      return json({
+        schema: SCHEMA,
+        error: 'VAULT_RECORD_UNREADABLE',
+        record: error.record,
+        recovery: 'HOLD_EXISTING_RECORD_AND_RESTORE_FROM_VERIFIED_PRIVATE_CUSTODY'
+      }, 409);
+    }
+    throw error;
+  }
 }

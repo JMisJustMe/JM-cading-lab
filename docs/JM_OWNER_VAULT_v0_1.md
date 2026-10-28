@@ -109,3 +109,13 @@ The original policy collapsed differently intended copies when their HTML bytes 
 - The marked Owner Room graft now updates from its existing source safely without resetting newer service-worker versions or creating another public shell.
 
 **Proof status:** Source code and synthetic private-storage contract QA are required. The historical Owner Vault authenticated state-roundtrip receipt remains separate; it does not prove this CP04 policy on the current production backend. A live public-safe API policy marker and authenticated owner write/reload readback are distinct rollout gates. No secret or owner file is included in this document.
+
+## CP05 damaged-record recovery guard — 28 October 2026
+
+The CP04 API had a genuine fail-open recovery defect: `readJson` treated an existing malformed R2 body index or owner-state record as if it were an empty new record. A subsequent owner sync could silently overwrite the sole body index, disconnecting distinct intended uses from their stored HTML. Owner-state restore could similarly display an empty state, and a PUT could replace unreadable original bytes.
+
+CP05 keeps the **same** Owner Vault API and Owner Room. Existing but malformed JSON, or valid JSON with a non-array `bodies` / invalid `state` shape, now yields HTTP 409 `VAULT_RECORD_UNREADABLE` with a non-sensitive `body-index` or `owner-state` label. Upload, snapshot, read and owner-state PUT refuse the unsafe operation. The original unreadable R2 object remains untouched for deliberate owner-controlled recovery. A missing record on a genuinely new bucket still uses the previous empty default; valid records and the status endpoint retain their contracts.
+
+The existing test runner now asserts corrupted-index upload HOLD without new R2 objects, snapshot HOLD, structurally invalid index HOLD, corrupted-state GET/PUT HOLD with byte preservation, and healthy-index compatibility. No private object, key or user data is included in the tests.
+
+**Proof boundary:** Fake-R2 Node contract QA and exact Git source readback do not prove a live Cloudflare R2 deployment. R2 multi-writer index concurrency, partial index-write failure, missing-index provenance and true offsite owner recovery remain OPEN. Do not auto-merge, deploy or label live persistence PASS.

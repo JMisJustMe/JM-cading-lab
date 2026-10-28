@@ -86,7 +86,9 @@ class RealmAdmission(RemoteAdmission):
             redirect=one(params,"redirect_uri")
             requested=one(params,"scope",self.config["default_scope"])
             scopes=set(requested.split())
-            if not rec or redirect not in rec["redirect_uris"] or not scopes or not scopes<=self.config["scopes"]:
+            if rec is None:
+                raise ValueError("CLIENT_REGISTRATION_MISSING")
+            if redirect not in rec["redirect_uris"] or not scopes or not scopes<=self.config["scopes"]:
                 raise ValueError("CLIENT_REDIRECT_SCOPE_HOLD")
             if one(params,"response_type")!="code" or one(params,"code_challenge_method")!="S256":
                 raise ValueError("PKCE_S256_REQUIRED")
@@ -146,8 +148,22 @@ class RealmHandler(CP09Handler):
                 args=parse_qs(route.query,keep_blank_values=True,max_num_fields=30)
                 id_,name,scope=self.server.admission.start(args)
                 return self.reply_html(consent_page(id_,name,scope,self.server.admission.realm))
-            except (ValueError, TypeError):
-                return self.reply(400,{"error":"OAUTH_AUTHORIZATION_HOLD"})
+            except (ValueError, TypeError) as failure:
+                # Public, bounded diagnostics: NEVER expose client IDs, URLs,
+                # authorization parameters, request content or owner credentials.
+                public_causes={
+                    "CLIENT_REGISTRATION_MISSING":"CLIENT_REGISTRATION_NOT_FOUND",
+                    "CLIENT_REDIRECT_SCOPE_HOLD":"CALLBACK_OR_SCOPE_MISMATCH",
+                    "PKCE_S256_REQUIRED":"PKCE_S256_REQUIRED",
+                    "PKCE_STATE_HOLD":"PKCE_OR_STATE_INVALID",
+                    "RESOURCE_AUDIENCE_HOLD":"RESOURCE_AUDIENCE_MISMATCH"
+                }
+                cause=public_causes.get(str(failure),"INVALID_AUTHORIZATION_REQUEST")
+                return self.reply(400,{
+                    "error":"OAUTH_AUTHORIZATION_HOLD",
+                    "cause":cause,
+                    "recovery":"Restart the JM connection from ChatGPT; do not reload or reuse the old approval link."
+                })
         return super().do_GET()
     def do_POST(self):
         route=urlsplit(self.path)

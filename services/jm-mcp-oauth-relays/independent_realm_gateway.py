@@ -167,6 +167,32 @@ class RealmHandler(CP09Handler):
         return super().do_GET()
     def do_POST(self):
         route=urlsplit(self.path)
+        if route.path=="/oauth/authorize" and self.server.admission.realm=="receipt":
+            # CP03-specific bounded owner approval diagnostics. Never echo
+            # bearer, request id, client identity, PKCE, state or redirect.
+            try:
+                if route.query:raise ValueError("QUERY_DISABLED")
+                content=self.headers.get("Content-Type","").split(";")[0].strip().lower()
+                if content!="application/x-www-form-urlencoded":
+                    raise ValueError("FORM_REQUIRED")
+                form=parse_form(self.read())
+                uri=self.server.admission.accept(
+                    form.get("request_id",[""])[0],
+                    form.get("owner_access_token",[""])[0])
+                return self.redirect(uri)
+            except (ValueError, TypeError, UnicodeDecodeError) as failure:
+                cause={
+                    "CONSENT_EXPIRED":"APPROVAL_EXPIRED",
+                    "CONSENT_ALREADY_USED":"APPROVAL_ALREADY_USED",
+                    "REMOTE_OWNER_BEARER_NOT_VERIFIED":"ORIGINAL_BEARER_NOT_VERIFIED",
+                    "RATE_LIMIT_HOLD":"RATE_LIMITED",
+                    "FORM_REQUIRED":"FORM_ENCODING_INVALID",
+                    "BOUNDED_BODY_REQUIRED":"FORM_BODY_INVALID",
+                    "QUERY_DISABLED":"FORM_QUERY_INVALID"
+                }.get(str(failure),"APPROVAL_REQUEST_INVALID")
+                return self.reply(400,{"error":"OAUTH_ADMISSION_HOLD",
+                    "cause":cause,
+                    "recovery":"Start a fresh ChatGPT connect flow; do not reuse old approval pages."})
         if route.path!="/mcp":return super().do_POST()
         if route.query:return self.reply(400,{"error":"QUERY_DISABLED"})
         origin=self.headers.get("Origin")

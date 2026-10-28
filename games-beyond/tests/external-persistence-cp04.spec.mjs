@@ -53,7 +53,7 @@ test('CP04 edit -> cold reload -> export -> isolated-profile import -> protected
     await expect(fresh.locator('#status')).toContainText('MOUNTED',{timeout:60000});
     await expect(await editor(fresh)).toHaveValue(/JM_CP04_REENTRY_CONTACT/);
     await fresh.locator('#restoreBody').click();
-    expect(await fresh.locator('#source').inputValue()).toBe(original);
+    await expect(fresh.locator('#source')).toHaveValue(original);
     await fresh.reload();
     await expect(fresh.locator('#status')).toContainText('MOUNTED',{timeout:60000});
     expect(await (await editor(fresh)).inputValue()).toBe(original);

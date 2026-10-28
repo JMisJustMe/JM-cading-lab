@@ -2,6 +2,7 @@
 // JM ECOSTATE public delivery/source-contact guard. NOT an owner-write or device proof.
 // Inherits the existing Estate map, source bodies and canonical doors: no new front door.
 import { readFile, stat, realpath, mkdir, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { resolve, dirname, join, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -95,7 +96,56 @@ export async function liveCheck(url, fetcher = fetch, expected = 'html') {
   } catch (e) { return { state: 'ERROR', reason: e.name === 'TimeoutError' ? 'TIMEOUT' : String(e.message || e) }; }
 }
 
-export async function audit({ root, map, online = false, fetcher = fetch, concurrency = 5 }) {
+/**
+ * CP06: Exact static-source / GitHub Pages byte comparison.
+ * Advisory evidence only. Branch PRs may differ from deployed main; Cloudflare
+ * transformations and private carriers are never asserted equal to GitHub bytes.
+ * This does NOT prove authenticated editing, server writeback or owner-device use.
+ */
+export async function verifyPublishedBytes(root, target, fetcher = fetch, maxBytes = 2_000_000) {
+  if (target.tier !== 'registered' || !target.url.startsWith(BASE) ||
+      !/\.(?:html|json)$/i.test(target.path)) {
+    return { state: 'NOT_TESTED', reason: 'NON_EXACT_PUBLIC_SOURCE_CARRIER' };
+  }
+  try {
+    const source = await sourceCheck(root, target.path);
+    if (source.state !== 'PASS') return { state: 'NOT_TESTED', reason: 'SOURCE_UNPROVEN' };
+    if (source.bytes > maxBytes) return { state: 'HOLD', reason: 'SOURCE_TOO_LARGE', bytes: source.bytes };
+    const bytes = await readFile(resolve(root, target.path));
+    const source_sha256 = createHash('sha256').update(bytes).digest('hex');
+    const res = await fetcher(target.url, {method: 'GET', redirect: 'follow',
+      signal: AbortSignal.timeout(16000), headers: {'Accept': '*/*', 'Cache-Control': 'no-cache'}});
+    if (!res.ok) { await res.body?.cancel(); return { state: 'FAIL', reason: 'HTTP_NOT_OK', http_status: res.status }; }
+    if (new URL(res.url || target.url).origin !== new URL(target.url).origin) {
+      await res.body?.cancel();
+      return { state: 'FAIL', reason: 'CROSS_ORIGIN_REDIRECT' };
+    }
+    const size = Number(res.headers.get('content-length'));
+    if (Number.isFinite(size) && size > maxBytes) {
+      await res.body?.cancel();
+      return { state: 'HOLD', reason: 'REMOTE_TOO_LARGE' };
+    }
+    const reader = res.body?.getReader();
+    if (!reader) return { state: 'FAIL', reason: 'NO_RESPONSE_BODY' };
+    let total = 0;
+    const digest = createHash('sha256');
+    try {
+      for (;;) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        total += value.byteLength;
+        if (total > maxBytes) return { state: 'HOLD', reason: 'REMOTE_TOO_LARGE' };
+        digest.update(value);
+      }
+    } finally { await reader.cancel().catch(() => {}); }
+    const live_sha256 = digest.digest('hex');
+    return { state: total === bytes.length && source_sha256 === live_sha256 ? 'PASS' : 'FAIL',
+      reason: source_sha256 === live_sha256 && total === bytes.length ? 'EXACT_STATIC_PARITY' : 'SOURCE_DELIVERY_MISMATCH',
+      bytes_source: bytes.length, bytes_live: total, source_sha256, live_sha256 };
+  } catch (e) { return { state: 'ERROR', reason: String(e.message || e) }; }
+}
+
+export async function audit({ root, map, online = false, fetcher = fetch, concurrency = 5, parity = false }) {
   const targets = targetsFromEstateMap(map);
   const results = new Array(targets.length);
   let pointer = 0;
@@ -106,12 +156,13 @@ export async function audit({ root, map, online = false, fetcher = fetch, concur
       const source = await sourceCheck(root, t.path);
       const media = t.path.endsWith('.json') ? 'json' : t.path.endsWith('.html') ? 'html' : 'unsupported';
       const live = online ? await liveCheck(t.url, fetcher, media) : { state: 'NOT_TESTED', reason: 'OFFLINE_MODE' };
+      const delivered_bytes = online && parity ? await verifyPublishedBytes(root, t, fetcher) : {state:'NOT_TESTED',reason:online?'PARITY_OPT_IN_REQUIRED':'OFFLINE_MODE'};
       results[i] = {
-        ...t, source, live,
+        ...t, source, live, delivered_bytes,
         // GitHub permission belongs to the signed-in owner; link presence cannot assert auth.
         editor_url: `https://github.com/${REPOSITORY}/edit/main/${t.path.split('/').map(encodeURIComponent).join('/')}`,
         owner_editor_auth: 'NOT_TESTED',
-        deployed_source_parity: 'NOT_TESTED',
+        deployed_source_parity: delivered_bytes.state === 'PASS' ? 'EXACT_STATIC_BYTES' : 'NOT_PROVEN',
         in_app_writeback: 'NOT_TESTED',
         persistent_reentry: 'NOT_TESTED',
         owner_device_contact: 'NOT_TESTED'
@@ -128,6 +179,9 @@ export async function audit({ root, map, online = false, fetcher = fetch, concur
     estate_registry: 'registry/estate-map.json',
     registry_route_entries: map.live_github_routes.length,
     checked_targets: results.length,
+    parity_checked: parity,
+    exact_source_parity_pass: results.filter(x => x.delivered_bytes.state === 'PASS').length,
+    source_delivery_mismatches: results.filter(x => x.delivered_bytes.state === 'FAIL').map(x => x.path),
     online,
     canonical_ready: canonical.every(x => x.source.state === 'PASS' && x.live.state === 'PASS'),
     registered_ready: registered.every(x => x.source.state === 'PASS' && x.live.state === 'PASS'),
@@ -145,11 +199,11 @@ async function main() {
   const root = resolve(rootArg >= 0 ? args[rootArg + 1] : process.cwd());
   const output = resolve(outputArg >= 0 ? args[outputArg + 1] : join(root, 'external-access-result.json'));
   const map = JSON.parse(await readFile(join(root, 'registry/estate-map.json'), 'utf8'));
-  const report = await audit({ root, map, online: args.includes('--online') });
+  const report = await audit({ root, map, online: args.includes('--online'), parity: args.includes('--parity') });
   await mkdir(dirname(output), { recursive: true });
   await writeFile(output, JSON.stringify(report, null, 2) + '\n');
   for (const r of report.results) console.log(`${r.tier === 'canonical' ? 'C' : 'R'} ${r.source.state.padEnd(5)} ${r.live.state.padEnd(11)} ${r.path} ${r.url}`);
-  console.log(`Scope ${report.checked_targets} routes; 6 priority canonical doors; WHOLE_ESTATE_EDITABILITY=${report.whole_estate_externally_editable}; results=${output}`);
+  console.log(`Scope ${report.checked_targets} routes; exact static-byte parity ${report.exact_source_parity_pass}; mismatches ${report.source_delivery_mismatches.length}; WHOLE_ESTATE_EDITABILITY=${report.whole_estate_externally_editable}; results=${output}`);
   if (process.env.GITHUB_STEP_SUMMARY) {
     const canonical = report.results.filter(x => x.tier === 'canonical');
     const lines = ['## JM External Contact Guard', '', 'Source presence / remote HTML reachability only. No write or device claim.', '', '| Door | Source | HTTP |', '|---|---|---|', ...canonical.map(x => `| ${x.name.replace(/\|/g,'/')} | ${x.source.state} | ${x.live.state} |`), '', `Registered routes inspected: ${report.registry_route_entries}; targets checked: ${report.checked_targets}.`, '', 'Writeback, owner authentication, deployment parity, device contact: **NOT TESTED**.'];

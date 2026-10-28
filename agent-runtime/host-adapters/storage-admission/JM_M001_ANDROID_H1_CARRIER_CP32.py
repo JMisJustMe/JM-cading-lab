@@ -126,17 +126,23 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", required=True)
     parser.add_argument("--github-output")
+    parser.add_argument("--manual-proof", action="store_true",
+                        help="Rebuild CI-only proof artifact; never replace frozen delivery")
     args = parser.parse_args()
     result = admission(args.project)
+    if result["status"] == "REUSE_FROZEN_H1" and args.manual_proof:
+        result.update(status="CI_ONLY_MANUAL_BUILD", rebuild=True,
+                      release_authorised=False,
+                      boundary="Manual proof may build an ephemeral artifact; frozen release remains untouched.")
     if args.github_output:
         out = Path(args.github_output)
         if not out.is_file():
             raise SystemExit("GITHUB_OUTPUT_MISSING")
         with out.open("a", encoding="utf-8") as stream:
-            stream.write("rebuild=false\n")
+            stream.write("rebuild=" + str(result["rebuild"]).lower() + "\n")
             stream.write("status=" + result["status"] + "\n")
     print(json.dumps(result, sort_keys=True, indent=2))
-    return 0 if result["status"] == "REUSE_FROZEN_H1" else 2
+    return 0 if result["status"] in ("REUSE_FROZEN_H1", "CI_ONLY_MANUAL_BUILD") else 2
 
 
 if __name__ == "__main__":

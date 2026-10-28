@@ -210,12 +210,17 @@ function renderCommand(){
   $('#gateGrid').innerHTML=gates.map(g=>`<div class="gate"><i>✓</i><b>${g}</b><span>v1 FOUNDATION</span></div>`).join('');
   $('#estateLaws').innerHTML=state.data.estate.laws.map(l=>`<li>${escapeHTML(l)}</li>`).join('');
 }
-function saveMounted(){localStorage.setItem('jm-estate-mounted',JSON.stringify(state.mounted));renderOwner()}
+// Commit local mounting atomically: never replace in-memory source before durable storage accepts it.
+function saveMounted(next=state.mounted){
+  localStorage.setItem('jm-estate-mounted',JSON.stringify(next));
+  state.mounted=next;
+  renderOwner();
+}
 function renderOwner(){
   $('#mountedCount').textContent=`${state.mounted.length} ${state.mounted.length===1?'BODY':'BODIES'}`;
   $('#mountedShelf').innerHTML=state.mounted.length?state.mounted.map(item=>`<article class="mounted-card"><div><b>${escapeHTML(item.name)}</b><small>${Math.round(item.bytes/1024)} KB · mounted ${new Date(item.at).toLocaleDateString()}</small></div><div class="mounted-actions"><button data-preview-local="${item.id}">PREVIEW</button><button class="danger" data-delete-local="${item.id}">REMOVE</button></div></article>`).join(''):`<div class="empty-state">No local HTML body mounted on this device.</div>`;
   $$('#mountedShelf [data-preview-local]').forEach(btn=>btn.addEventListener('click',()=>previewMounted(btn.dataset.previewLocal)));
-  $$('#mountedShelf [data-delete-local]').forEach(btn=>btn.addEventListener('click',()=>{state.mounted=state.mounted.filter(x=>x.id!==btn.dataset.deleteLocal);saveMounted();toast('Local mounted copy removed.')}));
+  $$('#mountedShelf [data-delete-local]').forEach(btn=>btn.addEventListener('click',()=>{try{saveMounted(state.mounted.filter(x=>x.id!==btn.dataset.deleteLocal));toast('Local mounted copy removed.')}catch{toast('Local removal could not be saved. Original mounted copies remain intact.',true)}}));
   const favs=getAllItems().filter(i=>state.favourites.has(i.id));
   $('#favouriteCount').textContent=favs.length;
   $('#favouriteShelf').innerHTML=favs.length?favs.slice(0,8).map(i=>miniItem(i)).join(''):`<div class="empty-state">Favourite rooms appear here.</div>`;
@@ -229,13 +234,24 @@ function previewMounted(id){
   $('#previewTitle').textContent=item.name;$('#previewFrame').src=previewUrl;$('#previewDialog').showModal();
 }
 async function mountFiles(files){
+  let mounted=0;
   for(const file of files){
     const content=await file.text();
     if(!/<html|<!doctype/i.test(content)){toast(`${file.name} does not look like standalone HTML.`,true);continue}
-    const item={id:`local-${Date.now()}-${Math.random().toString(16).slice(2)}`,name:file.name.replace(/\.html?$/i,''),fileName:file.name,content,bytes:file.size,at:new Date().toISOString()};
-    state.mounted=[item,...state.mounted].slice(0,12);
+    if(state.mounted.length>=12){
+      toast('Local shelf is full (12 bodies). No existing body was removed. Use the private Vault or download originals before making room.',true);
+      break;
+    }
+    const item={id:`local-${Date.now()}-${Math.random().toString(16).slice(2)}`,name:file.name.replace(/\.html?$/i,''),fileName:file.name,content,bytes:new TextEncoder().encode(content).byteLength,at:new Date().toISOString()};
+    try {
+      saveMounted([item,...state.mounted]);
+      mounted++;
+    } catch(error) {
+      toast('Local storage could not accept this HTML. Previous mounted bodies remain unchanged. Try a smaller file or Games & Beyond IndexedDB.',true);
+      break;
+    }
   }
-  try{saveMounted();toast('Local HTML body mounted on this device.')}catch(error){state.mounted=[];localStorage.removeItem('jm-estate-mounted');renderOwner();toast('This body is too large for localStorage. Use Games & Beyond IndexedDB mounting for larger bodies.',true)}
+  if(mounted)toast(`${mounted} local HTML ${mounted===1?'body':'bodies'} mounted safely. Existing copies preserved.`);
 }
 function buildReceipt(){
   return {schema:'JM.WebEstateReceipt/1.3',generatedAt:new Date().toISOString(),publicRoute:location.href.split('#')[0],network:navigator.onLine?'ONLINE':'OFFLINE',viewport:{width:innerWidth,height:innerHeight,pixelRatio:devicePixelRatio},userAgent:navigator.userAgent,estate:{version:'1.3',publicAuthority:state.data.estate.publicAuthority||null,liveRoutes:state.data.estate.routes.length,registeredGames:state.data.games.length,theoryDistricts:state.data.theory.length,laws:state.data.estate.laws},localOwnerState:{favourites:[...state.favourites],recent:state.recent.map(({id,name,at})=>({id,name,at})),mountedBodies:state.mounted.map(({id,name,fileName,bytes,at})=>({id,name,fileName,bytes,at})),notesPresent:Boolean($('#ownerNotes').value.trim())},truthBoundary:'This receipt describes the public web shell and this browser’s local state. It does not claim every protected Estate source has been uploaded.'};
@@ -466,7 +482,9 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
   }
 
   function localBodies() {
-    return parse(LOCAL.mounted, []).filter(body => body && typeof body.content === 'string');
+    // A restored private revision is already stored at its original Vault ID.
+    // Re-syncing that download would create an unintended new purpose/revision.
+    return parse(LOCAL.mounted, []).filter(body => body && typeof body.content === 'string' && !body.vaultBodyId);
   }
 
   async function sync() {
@@ -644,6 +662,51 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     }
   }
 
+  async function restoreRemoteBody(body) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      const already = parse(LOCAL.mounted, []);
+      if (!Array.isArray(already)) throw new Error('LOCAL_MOUNT_FORMAT_HOLD');
+      if (already.some(x => x.vaultBodyId === body.id)) {
+        message('This exact Vault revision is already mounted locally. No duplicate created.');
+        return;
+      }
+      if (already.length >= 12) {
+        message('Local shelf is full (12 bodies). No previous body was evicted. Download this revision or choose an existing copy to remove deliberately.');
+        return;
+      }
+      const response = await request(`?body=${encodeURIComponent(body.id)}`);
+      const content = await response.text();
+      if (!/<html|<!doctype/i.test(content)) throw new Error('NOT_STANDALONE_HTML');
+      const hash = await hashText(content);
+      if (hash !== body.sha256) throw new Error('VAULT_RESTORE_HASH_MISMATCH');
+      if (already.some(x=>x.sourceInstanceId === body.sourceInstanceId && typeof x.content === 'string' && x.content === content)) {
+        message('Matching source identity and exact bytes already on this device. No duplicate created.');
+        return;
+      }
+      // The device-local identity is unique, and source identity remains
+      // attached for evidence. This is a local copy, not a new R2 purpose.
+      const localCopy = {
+        id: `local-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name: body.name || body.fileName || 'Recovered JM body',
+        fileName: body.fileName || 'recovered-jm-body.html',
+        bytes: new TextEncoder().encode(content).byteLength,
+        content, at: new Date().toISOString(),
+        vaultBodyId: body.id, vaultSha256: hash,
+        sourceInstanceId: body.sourceInstanceId || `vault-${body.id}`,
+        previousVersionId: body.previousVersionId || null
+      };
+      // LocalStorage setItem is atomic. On quota/blocked storage we change
+      // neither the saved shelf nor the original in-memory Estate shelf.
+      localStorage.setItem(LOCAL.mounted, JSON.stringify([localCopy,...already]));
+      message('Private HTML recovered to the local shelf with exact SHA-256. Reloading the original Owner Room; remote and older local bodies were not modified.');
+      location.reload();
+    } catch (error) {
+      if (error.status === 401) { setKey(''); authLabel(false); closeEditor(); }
+      message(`Restore to device HOLD: ${error.message}. Existing local and private Vault bodies remain unchanged.`);
+    }
+  }
+
   async function removeRemote(id, name) {
     if (!window.confirm(`Remove the private durable copy of “${name}”? This does not delete any public repository body or local device copy.`)) return;
     try {
@@ -670,6 +733,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
             <button type="button" data-vault-preview="${escapeHTML(body.id)}">PREVIEW</button>
             <button type="button" data-vault-edit="${escapeHTML(body.id)}">EDIT SOURCE</button>
             <button type="button" data-vault-download="${escapeHTML(body.id)}">DOWNLOAD</button>
+            <button type="button" data-vault-restore="${escapeHTML(body.id)}">RESTORE TO DEVICE</button>
             <button type="button" class="danger" data-vault-delete="${escapeHTML(body.id)}">REMOVE</button>
           </div>
         </article>`).join('') : '<div class="empty-state">No private durable HTML body stored yet.</div>';
@@ -685,6 +749,10 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       shelf.querySelectorAll('[data-vault-download]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultDownload);
         if (body) downloadRemote(body.id, body.fileName);
+      }));
+      shelf.querySelectorAll('[data-vault-restore]').forEach(button => button.addEventListener('click', () => {
+        const body = bodies.find(item => item.id === button.dataset.vaultRestore);
+        if (body) restoreRemoteBody(body);
       }));
       shelf.querySelectorAll('[data-vault-delete]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultDelete);

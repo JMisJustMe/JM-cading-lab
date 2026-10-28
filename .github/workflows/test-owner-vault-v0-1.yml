@@ -67,6 +67,10 @@ jobs:
           grep -Fq 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY' functions/api/owner/vault.js
           grep -Fq 'Edit SOURCE' estate-owner-vault.js || grep -Fq 'EDIT SOURCE' estate-owner-vault.js
           grep -Fq 'REVISION_READBACK_MISMATCH' estate-app.js
+          grep -Fq 'RESTORE TO DEVICE' estate-app.js
+          grep -Fq 'No existing body was removed.' estate-app.js
+          grep -Fq 'Previous mounted bodies remain unchanged.' estate-app.js
+          ! grep -Fq "state.mounted=[];localStorage.removeItem('jm-estate-mounted')" estate-app.js
           grep -Fq "url.pathname.startsWith('/api/owner/')" sw.js
           python3 - <<'PY'
           from pathlib import Path

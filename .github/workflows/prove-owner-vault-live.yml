@@ -38,6 +38,7 @@ jobs:
           # The PR proves current public readiness without anticipating deployment.
           # After merging, REQUIRE_CP05 waits for the actual live editor policy.
           export REQUIRE_CP05='${{ github.event_name == 'pull_request' && '0' || '1' }}'
+          export REQUIRE_CP07='${{ github.event_name == 'pull_request' && '0' || '1' }}'
           http='000'
           status='{}'
           sw=''
@@ -77,6 +78,14 @@ jobs:
                      && grep -Fq 'Save private revision &amp; verify readback' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
                      && grep -Fq 'No duplicate save issued.' "$RUNNER_TEMP/jm-owner-room-live-client.js"; then
                     client_ok=1
+                  fi
+                fi
+                if [ "$client_ok" = '1' ] && [ "$REQUIRE_CP07" = '1' ]; then
+                  client_ok=0
+                  if grep -Fq 'RESTORE TO DEVICE' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
+                     && grep -Fq 'Previous mounted bodies remain unchanged.' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
+                     && grep -Fq 'No existing body was removed.' "$RUNNER_TEMP/jm-owner-room-live-client.js"; then
+                     client_ok=1
                   fi
                 fi
                 if [ "$client_ok" = '1' ]; then
@@ -128,12 +137,13 @@ jobs:
               'public_editor_policy': status.get('editor_policy'),
               'cp05_public_editor_policy_verified': passed and status.get('editor_policy') == 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY',
               'cp06_deployed_owner_editor_source_verified': passed and os.environ.get('CLIENT_EDITOR') == '1',
+              'cp07_deployed_local_recovery_source_verified': passed and os.environ.get('CLIENT_EDITOR') == '1',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'authenticated_write_read_delete_proof': False,
               'owner_secret_value_recorded': False,
               'ding': False,
-              'claim_boundary': 'On mainline this receipt proves the deployed public-safe Owner Vault API policy AND deployed Owner Room JavaScript source markers for editing/recovery. It does NOT prove owner-key authentication, a real private save, physical owner-device reload, cross-device persistence, or a fully published JM creation.'
+              'claim_boundary': 'Mainline receipt: public-safe Vault API policy and deployed browser-code markers for private editing, CP07 local recovery, no eviction and quota preservation. It does NOT prove actual owner-key write, owner-device local restore, cross-device recovery or public creation propagation; those require separate authenticated owner contact.'
           }
           Path('registry/owner-vault-live-readiness-receipt-v0.1.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY

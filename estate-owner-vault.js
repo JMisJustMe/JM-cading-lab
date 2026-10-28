@@ -168,7 +168,9 @@
   }
 
   function localBodies() {
-    return parse(LOCAL.mounted, []).filter(body => body && typeof body.content === 'string');
+    // A restored private revision is already stored at its original Vault ID.
+    // Re-syncing that download would create an unintended new purpose/revision.
+    return parse(LOCAL.mounted, []).filter(body => body && typeof body.content === 'string' && !body.vaultBodyId);
   }
 
   async function sync() {
@@ -346,6 +348,51 @@
     }
   }
 
+  async function restoreRemoteBody(body) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      const already = parse(LOCAL.mounted, []);
+      if (!Array.isArray(already)) throw new Error('LOCAL_MOUNT_FORMAT_HOLD');
+      if (already.some(x => x.vaultBodyId === body.id)) {
+        message('This exact Vault revision is already mounted locally. No duplicate created.');
+        return;
+      }
+      if (already.length >= 12) {
+        message('Local shelf is full (12 bodies). No previous body was evicted. Download this revision or choose an existing copy to remove deliberately.');
+        return;
+      }
+      const response = await request(`?body=${encodeURIComponent(body.id)}`);
+      const content = await response.text();
+      if (!/<html|<!doctype/i.test(content)) throw new Error('NOT_STANDALONE_HTML');
+      const hash = await hashText(content);
+      if (hash !== body.sha256) throw new Error('VAULT_RESTORE_HASH_MISMATCH');
+      if (already.some(x=>x.sourceInstanceId === body.sourceInstanceId && typeof x.content === 'string' && x.content === content)) {
+        message('Matching source identity and exact bytes already on this device. No duplicate created.');
+        return;
+      }
+      // The device-local identity is unique, and source identity remains
+      // attached for evidence. This is a local copy, not a new R2 purpose.
+      const localCopy = {
+        id: `local-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name: body.name || body.fileName || 'Recovered JM body',
+        fileName: body.fileName || 'recovered-jm-body.html',
+        bytes: new TextEncoder().encode(content).byteLength,
+        content, at: new Date().toISOString(),
+        vaultBodyId: body.id, vaultSha256: hash,
+        sourceInstanceId: body.sourceInstanceId || `vault-${body.id}`,
+        previousVersionId: body.previousVersionId || null
+      };
+      // LocalStorage setItem is atomic. On quota/blocked storage we change
+      // neither the saved shelf nor the original in-memory Estate shelf.
+      localStorage.setItem(LOCAL.mounted, JSON.stringify([localCopy,...already]));
+      message('Private HTML recovered to the local shelf with exact SHA-256. Reloading the original Owner Room; remote and older local bodies were not modified.');
+      location.reload();
+    } catch (error) {
+      if (error.status === 401) { setKey(''); authLabel(false); closeEditor(); }
+      message(`Restore to device HOLD: ${error.message}. Existing local and private Vault bodies remain unchanged.`);
+    }
+  }
+
   async function removeRemote(id, name) {
     if (!window.confirm(`Remove the private durable copy of “${name}”? This does not delete any public repository body or local device copy.`)) return;
     try {
@@ -372,6 +419,7 @@
             <button type="button" data-vault-preview="${escapeHTML(body.id)}">PREVIEW</button>
             <button type="button" data-vault-edit="${escapeHTML(body.id)}">EDIT SOURCE</button>
             <button type="button" data-vault-download="${escapeHTML(body.id)}">DOWNLOAD</button>
+            <button type="button" data-vault-restore="${escapeHTML(body.id)}">RESTORE TO DEVICE</button>
             <button type="button" class="danger" data-vault-delete="${escapeHTML(body.id)}">REMOVE</button>
           </div>
         </article>`).join('') : '<div class="empty-state">No private durable HTML body stored yet.</div>';
@@ -387,6 +435,10 @@
       shelf.querySelectorAll('[data-vault-download]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultDownload);
         if (body) downloadRemote(body.id, body.fileName);
+      }));
+      shelf.querySelectorAll('[data-vault-restore]').forEach(button => button.addEventListener('click', () => {
+        const body = bodies.find(item => item.id === button.dataset.vaultRestore);
+        if (body) restoreRemoteBody(body);
       }));
       shelf.querySelectorAll('[data-vault-delete]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultDelete);

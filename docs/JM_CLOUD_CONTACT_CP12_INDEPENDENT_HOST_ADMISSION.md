@@ -68,3 +68,35 @@ Operating laws: SOURCE → SIGNAL → CONTACT FIELD → ROUTE PRESSURE → STATE
 6. Separate approval to lift blocked merge/deployment controls; no production merge, credential replacement, billing or DNS action was taken.
 
 This ledger is editable Markdown, and the software source is independently owner-editable through GitHub's draft branches. It certifies bounded CI mechanisms, not the above external operational gates.
+
+---
+
+# JM Cloud Contact — CP13 live infrastructure contact audit
+
+Date: 28 October 2026. Scope: read-only connected Render workspace and Desktop Commander device check. Source lineage preserved; no deploy, write, credentials, network allowlist, billing or account setting changed.
+
+## Confirmed connected resources
+
+- Render workspace: My Workspace, id `tea-dacm3ivqj5pc73dcs4sg`.
+- Hosted v0.5 Cloud Contact: `srv-dag55iek1f9s73e7fmng`, service `jm-cloud-contact-server-v05`, public URL `https://jm-cloud-contact-server-v05.onrender.com`, GitHub `JMisJustMe/jm-cloud-contact-server-first-cloud`, branch `hosted-v0.5-descendant`, auto-deploy disabled, free Docker service, Render `/ready` health route configured. Latest Render deployment `dep-db90qsdg1s2s738uenog` recorded `live`, original donor commit `0921217d95285bcb21cda7a995d02f7ec0725810`, originally deployed 2026-10-16.
+- Earlier Cloud Contact: `srv-dacm542fngtc73dvjk2g`, `https://jm-cloud-contact-server.onrender.com`, `main`, auto-deploy disabled, latest deployment `dep-dacqjolg1s2s73bfq33g` recorded `live` at commit `ce3cec8ca13d2565af04c1e682d282711fa14cb6`, deployed 2026-09-03.
+- Render PostgreSQL: `dpg-daro60h7lnhs73e6frg0-a`, named `jm-market-survivor-state`, database `jm_market_survivor_state`, reported `available`, version 18, single primary; external IP allowlist empty. Read-only Render SQL call refused due to the empty allowlist. **No table names, row counts, dump eligibility, or real continuity witness verified.** PostgreSQL 18 is not the same as CP09/10 synthetic PostgreSQL 16 test version.
+- Owner device `GroundZeroJM`, device id `397d444c-e212-4670-878b-c8937ca2f05a`: Offline, last seen approx 12 hours at inspection. No owner-machine command sent.
+
+## Evidence boundaries
+
+- Render `live` is deployment metadata, not independently witnessed successful public `/ready` output, sustained availability, TLS/browser flow or correctness of live data.
+- Attempts to inspect `/ready` through the available public web reader were inaccessible, so no network success claim.
+- Connected Render SQL cannot query the listed database while its external allowlist is empty. Do not add a broad/temporary allowlist merely for a green test.
+- No confirmed direct path from the CP10 joint checkpoint on an authorized owner-controlled separate host; CP11 proved a distinct temporary filesystem, not durable offsite custody; CP12 proved loopback runtime with synthetic key files.
+
+## Remaining gates, not waived
+
+1. Owner-approved independent storage and private-key custody without publishing secrets.
+2. Real PostgreSQL read-only inventory using an authorized network path. Test against actual version, data shapes and custom extension/role dependencies.
+3. Enforced all-writer quiescence across original service and database before any actual backup.
+4. Fully pinned encrypted checkpoint transferred to independently retained offsite storage, loss/restart and physical readback.
+5. Genuine second host with original donor/source, separate secrets, restored file and database state, TLS, DNS, rollback, monitoring, phone/laptop client verification.
+6. Explicit owner authorization and safety review before merging/deploying any affected draft; retain no-regression.
+
+CP13 result: **read-only infrastructure discovery complete; live-state recovery NOT proved.** NO DING NO CLAIM.

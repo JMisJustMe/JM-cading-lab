@@ -49,3 +49,18 @@
 **FLAZ (bounded):** F = exact original CP08 and separate CP09 seat recovered; L = live deployed source and 42/42 CI contact; A = adversarial notification, auth refusal, method/scope tests; Z = this GitHub-attached, source-versioned trace. **CP09 transport repair FLAZ: CLOSED at bounded transport/deployment scope. Cross-client authorised working connection: HOLD.** Persisted OAuth client/session registration across Render restarts: HOLD. Durable CP08 free-tier SQLite Atlas and physical Fold device DING: independently HOLD. Current 2026-07-28 MCP stateless discovery (`server/discover`) has not been certified by these 2025-era handshake tests and must not be inferred.
 
 **Rules:** No DING No Claim; SOURCE ≠ CONNECTION; TEST ≠ LIVE AUTHENTICATION; MESH ≠ MERGE; recover before rebuild; owner credentials never disclosed.
+
+
+## CP10 live dual-era gateway: production transport FLAZ (28 October 2026)
+
+**BIAT / preserved:** This original CP09 OAuth gateway branch was merged with audited CP10 changes, preserving both the preceding BIAT record at live-branch head `016431465931357e2f0feb793075b0b28b6ca1e1` and the full CP10 candidate lineage (draft PR [#557](https://github.com/JMisJustMe/JM-cading-lab/pull/557)). Original sovereign CP08 source, Atlas, Fold, bearer jurisdiction, service identity and owner secret were **not** replaced or copied.
+
+**Production deployment DING — bounded to gateway runtime:** Render existing service `srv-dbglq86gekts7389sl8g`, upgraded deployment `dep-dbgnffgn74is73cv44u0`, exact running source commit `b7bec2fe7c2d7cfc049e277013c78dec654a79f6`, verified **LIVE**. Existing owner-facing URL remains `https://jm-unique-bodies-cp09-oauth.onrender.com/mcp`. No additional front door.
+
+**Actual delta:** OAuth-gated 2026-07-28 MCP `server/discover`, strict modern header/body matching, native original tool forwarding, 2025 compatibility, `resultType=complete`, private zero-TTL list hints and server identity in result `_meta`. Optional `clientInfo` now correctly optional; maliciously malformed supplied info is denied. Standard `Mcp-Method` and `Mcp-Name` browser preflight headers are explicitly allowed only from the existing trusted origins.
+
+**Evidence:** [post-deploy GitHub Actions run 40631688088](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40631688088), SUCCESS: 8/8 OAuth, 26/26 broker, 10/10 original CP08 regressions, 7/7 externally hosted HTTPS checks = **51/51 PASS**, including a live post-upgrade browser preflight and original-service sovereignty checks. The final CI revision added **test-only** checks after the deployed runtime SHA; no unstated runtime change is being claimed.
+
+**FLAZ status:** Tested production **transport + public HTTPS admission/discovery surface: BOUNDED COMPLETE.** Genuine owner-authorised ChatGPT/Gemini client login followed by native `tools/list` and `tools/call`: **HOLD**. In-memory OAuth grant persistence after Render restart: **HOLD**. Full 2026 MCP extended features (MRTR, subscriptions, tasks): **NOT CLAIMED**. Client consent uses the existing original CP08 bearer only in same-origin private HTTPS gateway; no bearer goes into chat, logs, GitHub, or test fixtures.
+
+**No DING No Claim · TEST != OWNER AUTH · BODY != ROUTE != SEAT · MESH != MERGE.**

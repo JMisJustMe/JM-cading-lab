@@ -22,23 +22,25 @@
   "proof": {
     "local_fixture": "30/30 PASS, GitHub Actions run 40771978217, commit befc52ad987cceb8c19d7f754befe3652bccfda3 (off-device only)",
     "source_repo_contact": "PASS: GitHub connector read existing parent and confirmed private mailbox repository",
-    "phone_runtime": "OPEN",
-    "remote_issue_roundtrip": "OPEN",
+    "phone_runtime": "PASS (bounded): physical Samsung Android/Termux executed JM Phone Commander status; Python 3.13.13; termux_detected=true; workspace_present=true; 2026-10-28 21:31 UTC; private GitHub issue #1 returned receipt",
+    "remote_issue_roundtrip": "PASS (status only): normal ChatGPT issued private GitHub mailbox request #1, phone executed status, private reply recorded and issue closed; independently read back 2026-10-28",
     "physical_owner_edit": "OPEN",
     "boot_recovery": "OPEN",
     "codex_contact": "OPEN",
-    "proof_level": "FUNCTION_LOCAL_FIXTURE_ONLY",
+    "proof_level": "HOST_CONTACT_STATUS_ONLY; OTHER_COMMANDS_AND_RECOVERY_OPEN",
     "off_device_ci": "PASS: exact 30 tests including core/git failure refusal, run 40771978217; no physical host proof",
-    "mailbox_issue": "OPEN: existing private owner status-only issue #1; phone receipt not observed",
-    "known_boundaries": "Normal ChatGPT GitHub and JM Build Mesh connector contact observed; Work and Codex require independent acceptance; deployment unproven"
+    "mailbox_issue": "PASS (status only): https://github.com/JMisJustMe/JM-ai-studio-surface/issues/1#issuecomment-6481177550 ; state CLOSED",
+    "known_boundaries": "Normal ChatGPT GitHub and JM Build Mesh connector contact observed; Work and Codex require independent acceptance; deployment unproven",
+    "remaining": "Independent remote route/git-status/read-file/edit-file verification, owner-granted edit/readback, phone reboot/resume, background availability and Codex-host contact still OPEN"
   },
   "do_not_claim": [
     "laptop remote access",
     "constant phone wakefulness",
-    "phone remote command completion",
     "blanket external permissions",
-    "Android host contact",
-    "Codex host contact"
+    "Codex host contact",
+    "unrestricted phone command execution",
+    "live phone source editing",
+    "always-on unattended service"
   ],
   "keeper": "CHANGE THE PLUG, NOT THE BODY; NO DING NO CLAIM"
 }

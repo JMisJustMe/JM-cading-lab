@@ -36,7 +36,8 @@ def prepare(request, headers):
     header_version = headers.get("MCP-Protocol-Version")
     modern_intent = (
         header_version == MODERN or meta_version == MODERN or
-        (header_version not in (None, "", *LEGACY) and meta_version == header_version)
+        (header_version not in (None, "", *LEGACY)) or
+        (meta_version not in (None, "", *LEGACY))
     )
     if not modern_intent:
         return False, request
@@ -49,8 +50,15 @@ def prepare(request, headers):
     method = request.get("method")
     if not isinstance(method, str) or headers.get("Mcp-Method") != method:
         raise CP10ProtocolError(400, -32020, "Header mismatch: Mcp-Method")
-    if not isinstance(meta.get(INFO_KEY), dict) or not isinstance(meta.get(CAPS_KEY), dict):
-        raise CP10ProtocolError(400, -32602, "Modern MCP client metadata required")
+    if not isinstance(meta.get(CAPS_KEY), dict):
+        raise CP10ProtocolError(400, -32602, "Modern MCP clientCapabilities required")
+    client_info = meta.get(INFO_KEY)
+    if client_info is not None and (
+        not isinstance(client_info, dict) or
+        not isinstance(client_info.get("name"), str) or
+        not isinstance(client_info.get("version"), str)
+    ):
+        raise CP10ProtocolError(400, -32602, "Malformed optional MCP clientInfo")
     if "id" not in request or request["id"] is None:
         raise CP10ProtocolError(400, -32600, "Modern MCP request id required")
     if method == "tools/call":
@@ -72,12 +80,24 @@ def discover(request_id, name, version):
     return {"jsonrpc": "2.0", "id": request_id,
         "result": {"resultType": "complete",
                    "supportedVersions": [MODERN, LEGACY[0]],
+                   "ttlMs": 0, "cacheScope": "private",
                    "capabilities": {"tools": {}},
                    "_meta": {"io.modelcontextprotocol/serverInfo":
                              {"name": name, "version": version}},
                    "instructions": "Owner-authorised JM OAuth relay to a protected independent original tool engine; no new engine."}}
 
-def adapt_response(response, modern):
+def adapt_response(response, modern, method, server_name, server_version):
+    """Upgrade only successful modern responses, with private zero-TTL lists."""
     if modern and isinstance(response.get("result"), dict):
-        response["result"] = {"resultType": "complete", **response["result"]}
+        original = response["result"]
+        result = {"resultType": "complete", **original}
+        meta = result.get("_meta")
+        if not isinstance(meta, dict):
+            meta = {}
+        result["_meta"] = {**meta,
+            "io.modelcontextprotocol/serverInfo":
+                {"name": server_name, "version": server_version}}
+        if method == "tools/list":
+            result.update(ttlMs=0, cacheScope="private")
+        response["result"] = result
     return response

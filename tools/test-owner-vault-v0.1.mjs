@@ -262,3 +262,47 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
 }
 
 console.log('PASS: JM Owner Vault CP05 private edit/revise/readback, ancestor preservation, stale rejection, purpose isolation, exact-instance retries, legacy continuity and capacity fail-closed.');
+
+// CP10 custody negative probe, using the ORIGINAL handler and disposable FakeR2.
+// An existing unreadable record must not be mistaken for an absent first-run object.
+// The strict flag deliberately exits RED on the current defect; no live Vault is touched.
+{
+  const indexKey='jm-owner-vault/v0.1/bodies/index.json';
+  const stateKey='jm-owner-vault/v0.1/state.json';
+  const fakeKey='CP10_SYNTHETIC_NONPRODUCTION';
+  const exercise=async (fake,method='GET',body)=>{
+    const response=await call({env:{JM_OWNER_VAULT:fake,JM_OWNER_VAULT_KEY:fakeKey},key:fakeKey,method,body});
+    return {status:response.status,payload:await response.json()};
+  };
+  const indexFake=new FakeR2();
+  const oldIndex='{"schema":"SYNTHETIC","bodies":[{"id":"old-evidence"';
+  indexFake.map.set(indexKey,{body:oldIndex});
+  const readIndex=await exercise(indexFake);
+  const writeIndex=await exercise(indexFake,'POST',{action:'upload-body',body:{
+    name:'Synthetic Probe',sourceInstanceId:'cp10-unique-source',fileName:'probe.html',
+    content:'<!doctype html><html><body>synthetic only</body></html>'
+  }});
+  const indexPreserved=indexFake.map.get(indexKey)?.body===oldIndex;
+  const stateFake=new FakeR2();
+  const oldState='{"schema":"SYNTHETIC","state":';
+  stateFake.map.set(stateKey,{body:oldState});
+  const readState=await exercise(stateFake);
+  const writeState=await exercise(stateFake,'PUT',{state:{notes:'synthetic only'}});
+  const statePreserved=stateFake.map.get(stateKey)?.body===oldState;
+  const newFake=new FakeR2();
+  const newRead=await exercise(newFake);
+  assert.equal(newRead.status,200,'A genuinely missing first-run private record must work');
+  assert.deepEqual(newRead.payload.bodies,[],'A first-run empty shelf is valid');
+
+  const custodySafe=indexPreserved&&statePreserved&&readIndex.status===503&&readState.status===503
+    &&writeIndex.status===503&&writeState.status===503;
+  const diagnosis={scope:'DISPOSABLE_IN_MEMORY_R2_ONLY',custody: custodySafe?'PASS_FAIL_CLOSED':'HOLD_UNREADABLE_EXISTING_RECORD',
+    index:{read_http:readIndex.status,upload_http:writeIndex.status,preserved:indexPreserved},
+    state:{read_http:readState.status,put_http:writeState.status,preserved:statePreserved},
+    valid_first_run:true,owner_private_storage:'NOT_ACCESSED'};
+  console.log('JM_CP10_CUSTODY_DIAGNOSTIC '+JSON.stringify(diagnosis));
+  if(!custodySafe){
+    console.log('::warning::CP10 custody HOLD — existing corrupted index/state was not fail-closed. See issue #591.');
+    if(process.argv.includes('--require-custody-safe'))process.exitCode=1;
+  }
+}

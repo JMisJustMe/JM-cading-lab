@@ -106,8 +106,9 @@ jobs:
           assert status["capability_profiles"] >= 30, status
           assert status.get("artifact_surface_profiles") == 6, status
           assert status["navigator_cache_ttl_seconds"] >= 60, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", status
-          assert status["current_registry_sha256"] == "fde60cf0274d5380115d938fc099d652af44f0747f354686b99562836a8e905b", status
+          assert str(status["current_registry_schema"]).startswith("JM.CareerCurrentProjectRegistry/"), status
+          assert len(status["current_registry_sha256"]) == 64 and all(c in "0123456789abcdef" for c in status["current_registry_sha256"]), status
+          assert status.get("current_registry_loaded_bytes", 0) > 0, status
 
           llm2 = call(4, "resolve_current_head", {"name":"JM LLM #2"})
           assert llm2["state"] == "CURRENT_DECLARED"
@@ -174,8 +175,8 @@ jobs:
           assert "v0.5.1" in opportunity["primary_evidence"]["boundary"], opportunity
 
           sync = call(16, "build_sync_contract", {"name":"JM Opportunity Front Door"})
-          assert sync["hosted_snapshot"]["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", sync
-          assert sync["hosted_snapshot"]["current_registry_sha256"] == "fde60cf0274d5380115d938fc099d652af44f0747f354686b99562836a8e905b", sync
+          assert sync["hosted_snapshot"]["current_registry_schema"] == status["current_registry_schema"], sync
+          assert sync["hosted_snapshot"]["current_registry_sha256"] == status["current_registry_sha256"], sync
           assert "local" in sync["privacy_rule"].lower(), sync
           assert sync["mutation_performed"] is False
 

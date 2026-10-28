@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b14">
+<title>JM3232 AIRBORNE — original browser contact (CP01)</title>
+<style>
+:root{color-scheme:dark;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:#060a14;color:#eff5ff}
+*{box-sizing:border-box}body{margin:0}main{display:grid;grid-template-rows:auto minmax(240px,1fr) auto;min-height:min(82dvh,900px);height:100dvh;max-height:100dvh}
+header{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px;background:#10192a;border-bottom:1px solid #34435f}
+mark{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#72e4ff,#ad8cff);color:#050b13;font-weight:900}
+.title{flex:1;min-width:160px}.title strong{display:block;font-size:15px}.title small{color:#a9bbd3}
+button,a.action{font:inherit;display:inline-block;padding:9px 12px;border:1px solid #577393;border-radius:10px;background:#192a40;color:#edf7ff;text-decoration:none;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #72e4ff;outline-offset:2px}
+.viewer{min-height:0;background:#050a12;position:relative}
+iframe{display:block;width:100%;height:100%;border:0;background:#07111c}
+footer{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;background:#10192a;border-top:1px solid #34435f;color:#a9bbd3;font-size:12px}
+#state{color:#72e4ff}code{color:#d3b9ff}
+@media(max-width:540px){main{min-height:65dvh}header{padding:9px}.title{min-width:130px}button,a.action{padding:8px 9px}footer{padding:9px;font-size:11px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<mark aria-hidden="true">JM</mark>
+<div class="title"><strong>JM3232 · original AIRBORNE</strong><small><code>jm://navigator</code> · in-chat carrier experiment</small></div>
+<button type="button" id="reopen">Open original</button>
+</header>
+<div class="viewer">
+<iframe id="jm-original" title="Actual JM3232 AIRBORNE public browser" src="https://jmisjustme-estate.pages.dev/navigator/" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</div>
+<footer>
+<span id="state" role="status" aria-live="polite">Embedding request pending; no host acceptance claimed.</span>
+<span>This shows the existing public body, not a reconstructed imitation. If blocked by host/site framing policy, use Open original.</span>
+</footer>
+</main>
+<script>
+(function(){
+"use strict";
+const CANONICAL="https://jmisjustme-estate.pages.dev/navigator/";
+const state=document.getElementById("state");
+const frame=document.getElementById("jm-original");
+document.getElementById("reopen").addEventListener("click",function(){
+  if(window.openai&&typeof window.openai.openExternal==="function"){
+    window.openai.openExternal({href:CANONICAL,redirectUrl:false});
+  }else{
+    const a=document.createElement("a");
+    a.href=CANONICAL;a.target="_blank";a.rel="noopener noreferrer";
+    document.body.appendChild(a);a.click();a.remove();
+  }
+});
+frame.addEventListener("load",function(){
+  state.textContent="Frame load event observed; visible content, interaction and source identity still require host inspection.";
+});
+frame.addEventListener("error",function(){
+  state.textContent="Frame reported a load error; embedding is not proved. Original external route remains available.";
+});
+})();
+</script>
+</body>
+</html>

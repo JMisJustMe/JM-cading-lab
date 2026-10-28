@@ -22,7 +22,7 @@
 .bodyitem h3{margin:6px 0;font-size:1.04rem;line-height:1.24;overflow-wrap:anywhere}
 .bodyitem p{font-size:.87rem;color:#b5c6d7;line-height:1.45;overflow-wrap:anywhere}
 .bodyitem small{display:block;color:#98b7d0;margin-top:8px;overflow-wrap:anywhere}
-.bodyitem a{color:#98efff;font-weight:800}.bodyitem a.owner-edit{display:inline-block;margin-top:10px;padding:6px 9px;border:1px solid #456e69;border-radius:9px;color:#a5f4c5;text-decoration:none;font-size:.8rem}.bodyitem a.owner-edit:hover{border-color:#a5f4c5}
+.bodyitem a{color:#98efff;font-weight:800}.bodyitem a.owner-edit{display:inline-block;margin-top:10px;padding:6px 9px;border:1px solid #456e69;border-radius:9px;color:#a5f4c5;text-decoration:none;font-size:.8rem}.bodyitem a.owner-edit:hover{border-color:#a5f4c5}.bodyitem a.local-edit{display:block;margin-top:10px;padding:8px 9px;border:1px solid #6277a5;border-radius:9px;color:#bad4ff;text-decoration:none;font-size:.8rem}.bodyitem a.local-edit:hover{border-color:#bad4ff}
 .bodyitem .category{font-size:.73rem;color:#83eeb4;letter-spacing:.055em;text-transform:uppercase}
 .bodyitem .branch{color:#f4d28c;font-size:.76rem;line-height:1.35}
 #bodySummary{margin-top:10px;color:#b9cadd;font-size:.9rem}
@@ -44,7 +44,7 @@
 <section class="hero" id="bodyContact" aria-labelledby="bodyContactTitle">
   <div class="k">Sovereign body contact · original registries · no new copies</div>
   <h2 id="bodyContactTitle">All relevant bodies, one existing Estate route.</h2>
-  <p class="muted">Search the public-safe source references already held by JM. One card per logical body, with independently purposeful versions retained as branches. A House link is an entry route, not proof of a standalone live deployment. Where the original public source file is explicitly registered, its owner-edit route now opens the existing authenticated GitHub editor. Private originals are never published by this page.</p>
+  <p class="muted">Search the public-safe source references already held by JM. One card per logical body, with independently purposeful versions retained as branches. A House link is an entry route, not proof of a standalone live deployment. Games already mounted in Games &amp; Beyond now open directly in its existing creator editor, where edits save to this browser's IndexedDB and can be exported. Independently verified public HTML files also have their existing GitHub editing route. Private originals are never published by this page.</p>
   <div class="bodytools">
     <label for="bodyFind" class="k">Find a body <input id="bodyFind" type="search" placeholder="Game, coding body, app, theory, tool…" autocomplete="off"></label>
     <label for="bodyType" class="k">Working field <select id="bodyType"><option value="all">All bodies</option></select></label>
@@ -52,7 +52,7 @@
   <div id="bodySummary" role="status" aria-live="polite">Loading original Estate sources…</div>
   <div id="bodyFailures" role="status"></div>
   <div id="bodyList" class="bodylist" aria-label="Unique JM body contact routes"></div>
-  <p class="notice">Owner-edit links change an existing GitHub source file only after GitHub sign-in, write permission and an actual commit. They do not create a competing JM editor. An edit is not a live deployment until the existing production rail completes and is checked. No edit link is invented for private, aggregate or unlocated bodies. House links and public projections do not prove owner writeback, cross-device persistence or a completed release test.</p>
+  <p class="notice">Two different editing contacts are intentionally NOT merged: Games &amp; Beyond's existing browser editor keeps local IndexedDB revisions until the owner exports them; it does not automatically update GitHub or another device. GitHub edit links require sign-in, write permission and a commit, and production deployment is a further proof gate. Import-only/unmounted games never get a functioning-editor claim. Public PLAYFORM is an implementation wrapper, not its protected original source. No private source or owner key is published by this index.</p>
 </section>
 <section class="card"><div class="k">Bridge trace</div><pre id="trace">Waiting for shared bridge…</pre></section>
 </main>
@@ -78,9 +78,10 @@ window.addEventListener('jm-estate-integration-hold',e=>{
 'use strict';
 const root=new URL('../../',location.href);
 const rows=new Map();
-const inputs=['registry/estate-map.json','registry/estate-head-public-current.json','games-beyond/registry.json','apps/index.html','coding-estate/everybody/body-registry.json','coding-estate/everybody/body-registry-extension-01.json','coding-estate/everybody/body-registry-extension-02.json','registry/theory-wing.json','registry/lyrics-house.json','estate-publication/apps-tools-convergence/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY_v0_1.json'];
+const inputs=['registry/estate-map.json','registry/estate-head-public-current.json','games-beyond/registry.json','games-beyond/payload-manifest.json','apps/index.html','coding-estate/everybody/body-registry.json','coding-estate/everybody/body-registry-extension-01.json','coding-estate/everybody/body-registry-extension-02.json','registry/theory-wing.json','registry/lyrics-house.json','estate-publication/apps-tools-convergence/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY_v0_1.json'];
 const failures=[];
 const counts={};
+let publicGameExactFiles=[];
 const core=new Set(['index.html','navigator/','apps/','theory/','lyrics/','recovery/','career/']);
 const byId=id=>document.getElementById(id);
 function localRoute(value){
@@ -97,14 +98,16 @@ function sourceFile(value){
   return /^[A-Za-z0-9_./-]+\.(?:html|js|mjs|css|json|md)$/i.test(path)?path:null;
 }
 function ownerEditor(path){return 'https://github.com/JMisJustMe/JM-cading-lab/edit/main/'+path.split('/').map(encodeURIComponent).join('/');}
-function remember(key,group,name,where,status,detail,origin,version,editFile){
+function remember(key,group,name,where,status,detail,origin,version,editFile,workingEditor){
   if(!name||!group)return;
   const href=localRoute(cleanPath(where));
   const id=group+':'+String(key).toLowerCase();
-  const item=rows.get(id)||{id,group,name:String(name),href,sourceFile:null,states:[],details:[],sources:[],versions:[]};
+  const item=rows.get(id)||{id,group,name:String(name),href,sourceFile:null,sourceNote:null,editorRoute:null,states:[],details:[],sources:[],versions:[]};
   if(href&&!item.href)item.href=href;
   const ownSource=sourceFile(editFile);
   if(ownSource&&!item.sourceFile)item.sourceFile=ownSource;
+  const working=workingEditor?localRoute(workingEditor):null;
+  if(working&&group==='Games'&&!item.editorRoute)item.editorRoute=working;
   if(status&&!item.states.includes(String(status)))item.states.push(String(status));
   if(detail&&!item.details.includes(String(detail)))item.details.push(String(detail));
   if(origin&&!item.sources.includes(origin))item.sources.push(origin);
@@ -151,7 +154,8 @@ async function consume(path){
     const data=await retrieve(path);
     if(path==='registry/estate-map.json')data.live_github_routes.forEach(x=>door(x,path));
     else if(path==='registry/estate-head-public-current.json')data.public_house_routes.forEach(x=>door(x,path));
-    else if(path==='games-beyond/registry.json')(data.registered_bodies||[]).forEach(x=>remember(x.id,'Games',x.name,'games-beyond/',x.stage,x.role,path,x.version));
+    else if(path==='games-beyond/registry.json')(data.registered_bodies||[]).forEach(x=>remember(x.id,'Games',x.name,'games-beyond/',x.stage,x.role,path,x.version,null,x.mounted===true&&/^[a-z0-9-]{1,80}$/.test(x.id)?'games-beyond/?jm-edit='+encodeURIComponent(x.id):null));
+    else if(path==='games-beyond/payload-manifest.json')publicGameExactFiles=(data.extraBodies||[]).filter(x=>/^[a-z0-9-]{1,80}$/.test(x.id)&&/^bodies\/[a-z0-9-]+\.html$/.test(x.path)).map(x=>({id:x.id,path:'games-beyond/'+x.path,sourceStatus:x.sourceStatus||null}));
     else if(path==='apps/index.html'){counts[path]=registerApps(data);return;}
     else if(path.includes('coding-estate/everybody/'))(data.bodies||[]).forEach(x=>remember(x.id,'Coding & runtimes',x.name,'coding-estate/everybody/',x.status,x.kind,path));
     else if(path==='registry/theory-wing.json')(data.current_best_mounts||[]).forEach(x=>remember(x.id,'Theory',x.name,x.route,x.main_release,x.public_boundary,path,x.current_best,x.route));
@@ -186,17 +190,27 @@ function render(){
     if(x.versions.length){const ver=document.createElement('p');ver.className='branch';ver.textContent=(x.versions.length>1?'Preserved branches ('+x.versions.length+'): ':'Registered version: ')+x.versions.join(' · ');item.appendChild(ver);}
     const state=document.createElement('small');state.textContent='Recorded: '+(x.states.join(' · ')||'source reference')+' | source '+x.sources.join(' + ');item.appendChild(state);
     if(x.href){const link=document.createElement('a');link.href=x.href;link.textContent=x.group==='Owner custody'?'Open original Owner Room':x.group==='Games'||x.group==='Apps & tools'||x.group==='Coding & runtimes'||x.group==='Music & lyrics'?'Enter authoritative House':'Open existing route';item.appendChild(link);}
-    if(x.sourceFile){const edit=document.createElement('a');edit.className='owner-edit';edit.href=ownerEditor(x.sourceFile);edit.target='_blank';edit.rel='noopener noreferrer';edit.textContent='Edit registered source (GitHub)';edit.setAttribute('aria-label','Edit original GitHub source for '+x.name);item.appendChild(edit);}
+    if(x.editorRoute){const edit=document.createElement('a');edit.className='local-edit';edit.href=x.editorRoute;edit.textContent='Edit this game in existing Games & Beyond (device-local)';edit.setAttribute('aria-label','Edit local browser copy of '+x.name);item.appendChild(edit);}
+    if(x.sourceFile){const edit=document.createElement('a');edit.className='owner-edit';edit.href=ownerEditor(x.sourceFile);edit.target='_blank';edit.rel='noopener noreferrer';edit.textContent=x.sourceNote?'Edit public implementation (GitHub)':'Edit registered source (GitHub)';edit.setAttribute('aria-label','Edit public GitHub carrier for '+x.name);item.appendChild(edit);}
+    if(x.sourceNote){const note=document.createElement('small');note.textContent=x.sourceNote;item.appendChild(note);}
     fragment.appendChild(item);
   }
   list.appendChild(fragment);
   const originN=Object.keys(counts).length;
   const sourceN=Object.values(counts).reduce((a,b)=>a+b,0);
-  byId('bodySummary').textContent=selected.length+' shown · '+rows.size+' unique routed body identities · '+[...rows.values()].filter(x=>x.sourceFile).length+' explicit public source-file edit routes · '+sourceN+' source records contacted from '+originN+'/'+inputs.length+' registries · '+failures.length+' source holds. No inferred owner editors for private or House-only bodies.';
+  byId('bodySummary').textContent=selected.length+' shown · '+rows.size+' unique routed body identities · '+[...rows.values()].filter(x=>x.editorRoute).length+' game browser editors · '+[...rows.values()].filter(x=>x.sourceFile).length+' public GitHub source-file edit routes · '+sourceN+' source records contacted from '+originN+'/'+inputs.length+' registries · '+failures.length+' source holds. Local editor is not automatic GitHub writeback.';
 }
 byId('bodyFind').addEventListener('input',render);
 byId('bodyType').addEventListener('change',render);
 Promise.all(inputs.map(consume)).then(()=>{
+  for(const exact of publicGameExactFiles){
+    const row=rows.get('Games:'+exact.id);
+    if(row&&row.editorRoute&&sourceFile(exact.path)){
+      row.sourceFile=exact.path;
+      row.sourceNote=exact.sourceStatus?.includes('browser implementation')?'PUBLIC IMPLEMENTATION only · frozen original source protected':null;
+      if(!row.sources.includes('games-beyond/payload-manifest.json'))row.sources.push('games-beyond/payload-manifest.json');
+    }
+  }
   extraDoor('access','JM Current Access Mesh','access/','Existing cross-House access.');
   extraDoor('books','JM Books & Written Bodies','books/','Existing written-body projections; original manuscripts retain custody.');
   extraDoor('visual-story','JM Comics & Visual Story','visual-story/','Existing visual-story and comic access routes.');
@@ -207,7 +221,7 @@ Promise.all(inputs.map(consume)).then(()=>{
   byId('bodyFailures').textContent=failures.length?'Source holds — no inferred substitute:\n'+failures.join('\n'):'';
   render();
 }).catch(error=>{byId('bodyFailures').textContent='Body contact HOLD: '+String(error.message||error);});
-window.JM_ESTATE_BODY_PROJECTION={schema:'JM.Estate.BodyContactProjection/1',getRows:()=>[...rows.values()].map(x=>({id:x.id,group:x.group,name:x.name,route:x.href,sourceFile:x.sourceFile,ownerEdit:x.sourceFile?ownerEditor(x.sourceFile):null,versions:[...x.versions],sources:[...x.sources]})),getHolds:()=>[...failures]};
+window.JM_ESTATE_BODY_PROJECTION={schema:'JM.Estate.BodyContactProjection/1',getRows:()=>[...rows.values()].map(x=>({id:x.id,group:x.group,name:x.name,route:x.href,editorRoute:x.editorRoute,sourceFile:x.sourceFile,sourceNote:x.sourceNote,ownerEdit:x.sourceFile?ownerEditor(x.sourceFile):null,versions:[...x.versions],sources:[...x.sources]})),getHolds:()=>[...failures]};
 })();
 </script>
 

@@ -40,6 +40,7 @@ jobs:
           set -euo pipefail
           node --check navigator/mcp-public-v1/worker.mjs
           node navigator/mcp-public-v1/test.mjs
+          node navigator/mcp-public-v1/test-live-ui-cp02.mjs
           python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
 
   deploy-live:
@@ -90,7 +91,7 @@ jobs:
             registry="$(curl --fail --silent --show-error "$ESTATE/navigator/estate-integration/public-registry.json?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
             health="$(curl --fail --silent --show-error "$MCP/health?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
             if printf '%s' "$registry" | grep -q 'JM.Estate.PublicNervousSystem/1' \
-              && printf '%s' "$health" | grep -q '0.2.0-estate-integration.1' \
+              && printf '%s' "$health" | grep -q '0.3.0-original-ui-contact-cp02' \
               && printf '%s' "$health" | grep -q '"state":"CONNECTED"'; then
               ready=1
               printf '%s' "$registry" > "$RUNNER_TEMP/public-registry.json"
@@ -118,8 +119,12 @@ jobs:
           let x=await rpc(1,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'JM Estate integration live proof',version:'1'}});
           if(!x.r.ok||x.j.error) throw new Error('initialize failed');
           x=await rpc(2,'tools/list');
-          if(!x.r.ok||x.j.result.tools.length!==5) throw new Error('five-tool boundary failed');
-          if(x.j.result.tools.some(t=>t.annotations?.readOnlyHint!==true||t.annotations?.openWorldHint!==false||t.annotations?.destructiveHint!==false)) throw new Error('read-only annotations failed');
+          if(!x.r.ok||x.j.result.tools.length!==6) throw new Error('five inherited + one render-tool boundary failed');
+          const names=x.j.result.tools.map(t=>t.name);
+          for(const n of ['search','fetch','navigator_resolve_rootword','navigator_return_lineage','navigator_bridge_status'])if(!names.includes(n))throw new Error('inherited tool lost: '+n);
+          if(!names.includes('navigator_render_original_browser'))throw new Error('original render tool absent');
+          if(x.j.result.tools.some(t=>t.annotations?.readOnlyHint!==true||t.annotations?.destructiveHint!==false)) throw new Error('read-only annotations failed');
+          if(x.j.result.tools.filter(t=>t.name!=='navigator_render_original_browser').some(t=>t.annotations?.openWorldHint!==false))throw new Error('inherited private-openWorld boundary failed');
           x=await rpc(3,'tools/call',{name:'navigator_bridge_status',arguments:{}});
           if(!x.r.ok||x.j.error) throw new Error('bridge status failed');
           const s=x.j.result.structuredContent;
@@ -135,8 +140,8 @@ jobs:
             canonicalEstate:process.env.ESTATE+'/',
             integrationRegistry:process.env.ESTATE+'/navigator/estate-integration/public-registry.json',
             navigatorPublicMcp:base+'/mcp',
-            version:'0.2.0-estate-integration.1',
-            toolCount:5,
+            version:'0.3.0-original-ui-contact-cp02',
+            toolCount:6,
             readOnly:true,
             estateIntegration:s.estate_integration,
             ownerWriteExposed:false,

@@ -1,0 +1,18 @@
+name: JM Federation Receipt CP02 authenticated hosted MCP
+on:
+  push:
+    branches:
+      - deploy/jm-federation-receipt-cp02-20261028
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify_auth_and_inherited_native_runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile deployment carrier, verify source composition
+        run: python3 -m py_compile services/jm-federation-receipt-cp01/host_cp02.py
+      - name: Actually run authenticated HTTP MCP using exact CP01 Workshop package
+        run: python3 -m unittest -v services/jm-federation-receipt-cp01/test_host_cp02.py

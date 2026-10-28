@@ -97,3 +97,33 @@ const server=http.createServer(async(req,res)=>{
   });
 });
 server.listen(PORT,HOST,()=>console.log('JM_APP_COMMONS_CP06_HTTP_MCP_READY '+PORT));
+
+
+/* Additional host-local verification only. Does not grant new tools or public routes.
+   No bearer is printed, persisted or passed to any other service. */
+if (process.env.JM_COMMONS_HOST_SELFTEST === '1') {
+  server.on('listening', () => {
+    setTimeout(async () => {
+      try {
+        const endpoint='http://127.0.0.1:'+PORT+'/mcp';
+        async function realMcp(method,params) {
+          const response=await fetch(endpoint,{method:'POST',headers:{
+            'Content-Type':'application/json','Authorization':'Bearer '+TOKEN,
+            'Accept':'application/json, text/event-stream'
+          },body:JSON.stringify({jsonrpc:'2.0',id:32,method,params:params||{}})});
+          if(response.status!==200)throw new Error('HTTP_'+response.status);
+          const payload=await response.json();
+          if(payload.error||!payload.result)throw new Error('BAD_RPC');
+          return payload.result;
+        }
+        const listed=await realMcp('tools/list',{});
+        if(listed.tools?.length!==6)throw new Error('SIX_TOOL_LINEAGE_MISMATCH');
+        const output=await realMcp('tools/call',{name:'jm_original_inspect',arguments:{source:'# JM HOST SELF TEST'}});
+        if(output.isError!==false||output.structuredContent?.headings!==1)throw new Error('NATIVE_CONSEQUENCE_MISMATCH');
+        console.log('JM_CP06_HOSTED_AUTH_SELFTEST PASS 6 original tools plus real native inspect');
+      }catch(error) {
+        console.log('JM_CP06_HOSTED_AUTH_SELFTEST HOLD '+String(error.message).slice(0,65));
+      }
+    },500);
+  });
+}

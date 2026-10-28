@@ -1,0 +1,30 @@
+name: JM Platform Capability Return CP01
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/**'
+      - 'money-menu/commerce-core/**'
+      - 'docs/JM_PLATFORM_CAPABILITY_RETURN_CP01.md'
+      - '.github/workflows/jm-platform-capability-return.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/**'
+      - 'money-menu/commerce-core/**'
+      - '.github/workflows/jm-platform-capability-return.yml'
+permissions:
+  contents: read
+jobs:
+  independent-node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check agent-runtime/host-adapters/jm-operated-host/host.mjs
+      - run: node --check agent-runtime/host-adapters/jm-operated-host/supervisor.mjs
+      - run: node --check money-menu/commerce-core/ledger.mjs
+      - run: node --check money-menu/commerce-core/stripe-test-verifier.mjs
+      - run: node --test agent-runtime/host-adapters/jm-operated-host/*.test.mjs money-menu/commerce-core/*.test.mjs

@@ -366,4 +366,36 @@ class RealHttp(unittest.TestCase):
    self.assertNotIn(secret,raw.decode())
    self.assertNotIn(CALLBACK,raw.decode())
 
+
+ def test_27_receipt_private_consent_failure_classifies_expiry_and_bad_bearer(self):
+  s,_,raw=self.hit('receipt','/oauth/authorize','POST',
+     {'request_id':'SYNTHETIC_MISSING_APPROVAL','owner_access_token':'BAD_TEST_SECRET_NEVER_ECHO'},
+     {'Content-Type':'application/x-www-form-urlencoded'})
+  self.assertEqual(s,400,raw)
+  obj=json.loads(raw)
+  self.assertEqual(obj['error'],'OAUTH_ADMISSION_HOLD')
+  self.assertEqual(obj['cause'],'APPROVAL_EXPIRED')
+  self.assertNotIn(b'BAD_TEST_SECRET_NEVER_ECHO',raw)
+  url=self.gate['receipt']
+  s,_,raw=self.hit('receipt','/oauth/register','POST',
+    {'redirect_uris':[CALLBACK],'client_name':'JM receipt POST fault fixture'},
+    {'Content-Type':'application/json'})
+  self.assertEqual(s,201,raw)
+  client=json.loads(raw)['client_id']
+  q=urlencode({'client_id':client,'redirect_uri':CALLBACK,'response_type':'code',
+    'code_challenge_method':'S256','code_challenge':pkce('B'*64),
+    'state':'STATE_SENSITIVE_NEVER_ECHO','scope':'receipt:issue','resource':url+'/mcp'})
+  s,_,body=self.hit('receipt','/oauth/authorize?'+q)
+  self.assertEqual(s,200,body)
+  m=re.search(rb'name="request_id" value="([^"]+)"',body)
+  self.assertIsNotNone(m)
+  s,_,raw=self.hit('receipt','/oauth/authorize','POST',
+     {'request_id':m.group(1).decode(),'owner_access_token':'BAD_TEST_SECRET_NEVER_ECHO'},
+     {'Content-Type':'application/x-www-form-urlencoded'})
+  self.assertEqual(s,400,raw)
+  obj=json.loads(raw)
+  self.assertEqual(obj['cause'],'ORIGINAL_BEARER_NOT_VERIFIED')
+  self.assertNotIn(b'BAD_TEST_SECRET_NEVER_ECHO',raw)
+  self.assertNotIn(b'STATE_SENSITIVE_NEVER_ECHO',raw)
+
 if __name__=='__main__':unittest.main(verbosity=2)

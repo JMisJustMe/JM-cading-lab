@@ -120,3 +120,19 @@ python3 agent-runtime/host-adapters/storage-admission/JM_M001_EXACT_DELTA_RESTOR
 Requires `zstd` CLI. The public CI test uses synthetic ZIPs only; the genuine owner source and compact delta are retained in the owner's private custody.
 
 **Current bounded real proof (28 Oct):** source and target were 27,788,316 B and 27,830,608 B, both independently materialized native originals; patch 498,489 B; theoretical reduced carriage 27,332,119 B. Whole target ZIP independently restored byte-exact; 33 ZIP member CRCs passed. An independently fetched PRIVATE Google Drive base + cold pack also reconstructed target exactly, with fresh SHA-256 matching the original. All original native Library source/current delivery routes remain untouched. Actual quota saved **0 B verified**. No original Library carrier retirement or direct-link release is authorized.
+
+
+## CP26 — exact eight-edition music lineage via existing CP25
+
+The existing JM M001 CP25 restorer now has a **read-only eight-edition orchestrator**: `JM_M001_EDITIONS_RESTORE_CP26.py`. CP01 and CP04 remain full independent archive anchors; exact edition-specific zstd deltas restore CP02, CP03, CP05, CP06, CP07 and CP08. Every restored full ZIP must match its original whole-file SHA-256 and ZIP member CRCs before a newly created output directory is promoted. **This does not merge version identities or release any direct native download role.**
+
+Run against privately owned exact source bytes (Python 3 + `zstd` CLI):
+
+```sh
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_EDITIONS_RESTORE_CP26.py --pack /private/JM_M001_CP26_EIGHT_EDITION_PRIVATE_COLD_DELTA.zip --base-cp01 /private/JM_LYRICS_MUSIC_SIX_BODY_CP01_FLAZ_2026-10-27.zip --base-cp04 /private/JM_LYRICS_MUSIC_MIX_FORGE_CP04_FLAZ_2026-10-27.zip --output-dir /new/RECOVERED_EIGHT_EDITION_SOURCES
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_EDITIONS_RESTORE_CP26_TESTS.py
+```
+
+**Bounded genuine contact, 28 October 2026:** eight original distinct Music CP01–CP08 ZIPs totalling 221,184,666 B; two full anchor ZIPs 55,219,071 B; six patch bytes 20,640,733 B; single private 10-member delta pack 20,659,338 B; combined cold representation 75,878,409 B. Exact reconstruction 8/8 from native sources, and separately 8/8 from **independently downloaded owner-private Google Drive cold files** (two exact anchors plus delta pack), including whole-file SHA-256 and ZIP CRC. Conditional cold-carriage difference 145,306,257 B; **actual native Library quota savings 0 B measured**. Original native hot carriers and separate purposes all remain KEEP/HOLD.
+
+Private CP26 pack and original source archives live in the owner's existing JM Estate Cold Recovery house, **not the public repo**. Small source, regression and detailed FLAZ receipts live separately in the existing private JM Estate Storage Steward Library house. This public GitHub lane contains only reusable executable code, synthetic tests and bounded accounting. For offline recovery, the private pack also includes the original CP25 and CP26 source plus a README. The CI workflow inherits the earlier M001 gate/CP22–CP25 tests; CP26 adds a 20-check adversarial synthetic run without publishing original content.

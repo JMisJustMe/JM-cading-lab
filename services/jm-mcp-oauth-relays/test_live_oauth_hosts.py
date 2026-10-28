@@ -92,7 +92,10 @@ class Live(unittest.TestCase):
 
 
  def test_06_live_authorization_failure_returns_safe_restart_instructions(self):
-  for realm,(gateway,original,scope) in HOSTS.items():
+  # Only the receipt runtime is being redeployed for this owner-reported fault.
+  # The Commons live session and sovereign service must not be disturbed.
+  for realm in ('receipt',):
+   gateway,original,scope=HOSTS[realm]
    params=urllib.parse.urlencode({
     'client_id':'UNREGISTERED_CLIENT_PROBE_ONLY_1234',
     'redirect_uri':'https://chatgpt.com/connector_platform_oauth_redirect',

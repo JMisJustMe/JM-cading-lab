@@ -344,4 +344,26 @@ class RealHttp(unittest.TestCase):
      'Origin':'https://gemini.google.com.attacker.invalid'})
    self.assertEqual(s,403)
 
+
+ def test_26_authorization_recovery_is_specific_and_never_leaks_sensitive_values(self):
+  for realm in CONFIGS:
+   secret="SENSITIVE_NEVER_ECHO_TEST_TOKEN"
+   query=urlencode({
+    'client_id':'client_not_registered_after_restart_'+secret,
+    'redirect_uri':CALLBACK,
+    'scope':CONFIGS[realm]['scope'],
+    'response_type':'code',
+    'code_challenge_method':'S256',
+    'code_challenge':pkce('A'*64),
+    'state':'STATE_NEVER_ECHO_'+secret
+   })
+   s,_,raw=self.hit(realm,'/oauth/authorize?'+query)
+   self.assertEqual(s,400,raw)
+   result=json.loads(raw)
+   self.assertEqual(result['error'],'OAUTH_AUTHORIZATION_HOLD')
+   self.assertEqual(result['cause'],'CLIENT_REGISTRATION_NOT_FOUND')
+   self.assertIn('Restart',result['recovery'])
+   self.assertNotIn(secret,raw.decode())
+   self.assertNotIn(CALLBACK,raw.decode())
+
 if __name__=='__main__':unittest.main(verbosity=2)

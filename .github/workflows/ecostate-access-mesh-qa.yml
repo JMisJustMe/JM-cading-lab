@@ -188,6 +188,7 @@ jobs:
                   if(data.content!==edited)return send(400,{error:'UNEXPECTED_SOURCE'});
                   const saved={...old,id:next,sha256:hex(data.content),bytes:Buffer.byteLength(data.content),previousVersionId:id,status:'PRIVATE_DURABLE_REVISION_NOT_PUBLICATION'};
                   records.set(next,data.content);bodies=[saved,...bodies];writes++;
+                  if(viewport.width===390)return send(502,{error:'SIMULATED_LOST_ACK_AFTER_COMMIT'});
                   return send(201,{schema:'JM.OwnerVault/0.1',outcome:'BODY_REVISION_STORED',body:saved});
                 }
                 return send(405,{error:'METHOD_NOT_ALLOWED'});
@@ -199,7 +200,7 @@ jobs:
               if(await page.locator('#jmVaultEditorText').inputValue()!==original)throw Error('Original private HTML was not loaded exactly');
               await page.locator('#jmVaultEditorText').fill(edited);
               await page.locator('#jmVaultSaveRevision').click();
-              await page.waitForFunction(()=>document.querySelector('#jmVaultMessage')?.textContent?.includes('SHA-256 readback verified'),{timeout:15000});
+              await page.waitForFunction(()=>{const t=document.querySelector('#jmVaultMessage')?.textContent||'';return t.includes('SHA-256 readback verified')||t.includes('recovered by exact SHA-256 readback')},{timeout:15000});
               if(writes!==1||records.size!==2||records.get(id)!==original||records.get(next)!==edited)throw Error('Original/revision identity was not preserved');
               const buttons=await page.locator('[data-vault-edit]').count();
               if(buttons!==2)throw Error('Revision and ancestor not both editable: '+buttons);
@@ -208,7 +209,7 @@ jobs:
               total++;
             }
             if(total!==2)throw Error('Expected two synthetic owner-editor viewport tests');
-            console.log('CP05 private editor browser proof: 2/2 viewport journeys PASS · real UI · synthetic private Vault; not a live R2 credential test');
+            console.log('CP05 private editor browser proof: 2/2 viewport journeys PASS (1 normal acknowledgement, 1 lost-response recovered without duplicate mutation) · real UI · synthetic private Vault; not live R2 proof');
             } finally { await browser.close(); }
           })().catch(e=>{console.error('EDITOR_BROWSER_QA_FAILED',e);process.exitCode=1});
           NODE

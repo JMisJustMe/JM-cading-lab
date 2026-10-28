@@ -1,6 +1,9 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 
 const fixtureEtag = value => createHash('sha256').update(String(value)).digest('hex');
 
@@ -998,3 +1001,118 @@ console.log('PASS: CP18 dangling/self/cross-purpose/reordered ancestry holds all
   assert.equal(changed, true);
 }
 console.log('PASS: CP19 portable exact-byte lineage includes all protected ancestors, preserves distinct uses, rejects tamper/stale/unhashed/oversized exports and creates no new R2 records.');
+
+
+// CP20 independently cold-recover the exact bytes from an owner-exportable
+// CP19 packet. The child process receives ONLY a copied offline utility
+// and saved packet: no R2, owner key, repo service, browser or Internet.
+{
+  const storage = new FakeR2();
+  const isolatedEnv = { ...env, JM_OWNER_VAULT: storage };
+  const key = isolatedEnv.JM_OWNER_VAULT_KEY;
+  const content = [
+    '<!doctype html><html><body>CP20 sovereign beginning — 🥶</body></html>',
+    '<!doctype html><html><body>CP20 edited descendant — ☀️</body></html>',
+    '<!doctype html><html><body>CP20 final version — ✅</body></html>'
+  ];
+  const ids = [];
+  for (const html of content) {
+    const response = await call({ method: 'POST', env: isolatedEnv, key,
+      body: { action:'upload-body', body: { name:'CP20', sourceInstanceId:'cp20-same-purpose', content:html } } });
+    assert.equal(response.status, 201);
+    ids.push((await response.json()).body.id);
+  }
+  const distinct = await call({ method:'POST', env:isolatedEnv, key,
+    body: { action:'upload-body', body: {
+      name:'Different purpose — same bytes', sourceInstanceId:'cp20-distinct-purpose',
+      content:content[0] } } });
+  assert.equal(distinct.status, 201);
+  const otherId = (await distinct.json()).body.id;
+  const delivered = await call({ env:isolatedEnv, key,
+    query:`?mode=export-lineage&body=${ids[2]}` });
+  assert.equal(delivered.status, 200);
+  const packet = await delivered.json();
+  const isolated = await fs.mkdtemp(path.join(tmpdir(),'jm-vault-cp20-'));
+  const tool = new URL('./owner-vault-lineage-recover.mjs', import.meta.url);
+  const copiedTool = path.join(isolated, 'owner-vault-lineage-recover.mjs');
+  const packetFile = path.join(isolated, 'saved-lineage.json');
+  const restoredDir = path.join(isolated, 'new-independent-restore');
+  const run = (...arguments_) => spawnSync(process.execPath,
+    [copiedTool, '--input', packetFile, ...arguments_],
+    { cwd:isolated, encoding:'utf8', timeout:15000 });
+  const assertHeld = (bad, expected, label) => {
+    assert.notEqual(bad.status, 0, label);
+    assert.match(bad.stderr, new RegExp(expected));
+  };
+  try {
+    await fs.copyFile(tool, copiedTool);
+    await fs.writeFile(packetFile, JSON.stringify(packet, null, 2));
+    const verify = run('--verify-only');
+    assert.equal(verify.status, 0, verify.stderr);
+    assert.equal(JSON.parse(verify.stdout).version_count, 3);
+    assert.equal(JSON.parse(verify.stdout).remote_vault_modified, false);
+    const cold = run('--output-dir', restoredDir);
+    assert.equal(cold.status, 0, cold.stderr);
+    const receipt = JSON.parse(cold.stdout);
+    assert.equal(receipt.outcome, 'OFFLINE_SOURCE_RECOVERED');
+    assert.equal(receipt.version_count, 3);
+    assert.equal(receipt.owner_offsite_custody_claimed, false);
+    const local = JSON.parse(await fs.readFile(path.join(restoredDir,'recovery-manifest.json'),'utf8'));
+    assert.equal(local.selected_id, ids[2]);
+    assert.equal(local.original_versions.length, 3);
+    assert.equal(local.original_versions.some(x=>x.id===otherId), false);
+    for (let i=0;i<ids.length;i++) {
+      const onDisk = await fs.readFile(path.join(restoredDir,ids[i]+'.html'),'utf8');
+      assert.equal(onDisk,content[i]);
+      assert.equal(fixtureEtag(onDisk),local.original_versions.find(x=>x.id===ids[i]).sha256);
+    }
+    const snapshots = [...storage.map.entries()].map(([k,v])=>[k,v.body]);
+    const again = run('--output-dir',restoredDir);
+    assertHeld(again,'EEXIST','Cannot replace owner-existing recovery directory');
+    assert.equal(await fs.readFile(path.join(restoredDir,ids[0]+'.html'),'utf8'),content[0]);
+    const corruption = [
+      ['damaged-original-source', p=>{p.versions[2].content+='<!-- adversarial -->';},
+        'LINEAGE_EXACT_SOURCE_INTEGRITY_FAILED'],
+      ['unverified-source', p=>{p.versions[1].metadata.sha256=null;},
+        'LINEAGE_IDENTITY_OR_METADATA_INVALID'],
+      ['incomplete-ancestry', p=>{p.versions.pop();p.version_count--;},
+        'LINEAGE_CHAIN_OR_TOTAL_INCOMPLETE'],
+      ['cross-purpose-ancestry', p=>{p.versions[1].metadata.sourceInstanceId='another-purpose';},
+        'LINEAGE_CROSS_PURPOSE_ANCESTOR_REFUSED'],
+      ['malicious-native-id', p=>{p.versions[0].metadata.id='../../outside';p.selected_id='../../outside';},
+        'LINEAGE_PACKET_SCHEMA_OR_SIZE_INVALID'],
+      ['overbroad-versions', p=>{p.versions=Array.from({length:17},()=>p.versions[0]);p.version_count=17;},
+        'LINEAGE_PACKET_SCHEMA_OR_SIZE_INVALID'],
+      ['wrong-source-byte-count', p=>{p.versions[0].metadata.bytes+=1;},
+        'LINEAGE_EXACT_SOURCE_INTEGRITY_FAILED'],
+      ['wrong-total', p=>{p.source_bytes+=1;},
+        'LINEAGE_CHAIN_OR_TOTAL_INCOMPLETE'],
+      ['wrong-original-order', p=>{p.versions.reverse();},
+        'LINEAGE_IDENTITY_OR_METADATA_INVALID']
+    ];
+    for (const [label,alter,reason] of corruption) {
+      const candidate=structuredClone(packet);
+      alter(candidate);
+      await fs.writeFile(packetFile, JSON.stringify(candidate));
+      const dest=path.join(isolated, 'no-output-'+label);
+      const denied=run('--output-dir',dest);
+      assertHeld(denied,reason,label);
+      await assert.rejects(fs.lstat(dest),/ENOENT/,
+        label+': rejected packet must not create an output directory');
+    }
+    await fs.writeFile(packetFile, JSON.stringify(packet));
+    await fs.symlink(packetFile,path.join(isolated,'symlinked-input.json'));
+    const deniedLink = spawnSync(process.execPath,
+      [copiedTool,'--input',path.join(isolated,'symlinked-input.json'),'--verify-only'],
+      {cwd:isolated,encoding:'utf8',timeout:15000});
+    assertHeld(deniedLink,'LINEAGE_INPUT_NOT_REGULAR_OR_OVERBOUNDED',
+      'Symlinked incoming source cannot be accepted as a direct owner packet');
+    assert.deepEqual([...storage.map.entries()].map(([k,v])=>[k,v.body]),snapshots,
+      'Offline recovery must not contact or change original Vault R2');
+    assert.equal((await fs.readdir(restoredDir)).length,4,
+      'Three original source files plus one metadata receipt, no duplicated works');
+  } finally {
+    await fs.rm(isolated,{recursive:true,force:true});
+  }
+}
+console.log('PASS: CP20 independently cold-recover three exact HTML ancestors using a copied no-network CLI, refuse nine hostile packets and pre-existing destination, preserve distinct source uses.');

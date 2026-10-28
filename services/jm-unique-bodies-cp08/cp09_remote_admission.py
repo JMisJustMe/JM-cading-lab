@@ -32,21 +32,31 @@ class RemoteAdmission(Admission):
         req=urllib.request.Request(self.upstream,data=payload,method='POST',headers={
            'Authorization':'Bearer '+secret,
            'Content-Type':'application/json','Accept':'application/json'})
-        try:
-            with urllib.request.urlopen(req,timeout=12) as response:
-                if response.status!=200:return False,'UPSTREAM_CONTACT_HOLD'
-                body=json.loads(response.read(100000))
-                names={x['name'] for x in body['result']['tools']}
-                if not {'atomic_contact_execute','atomic_contact_history'}<=names:
-                    return False,'UPSTREAM_TOOL_CONTRACT_HOLD'
-                return True,'VERIFIED'
-        except urllib.error.HTTPError as error:
-            if error.code in (401,403):return False,'OWNER_TOKEN_NOT_ACCEPTED'
-            return False,'UPSTREAM_CONTACT_HOLD'
-        except (urllib.error.URLError,TimeoutError,OSError):
-            return False,'UPSTREAM_CONTACT_HOLD'
-        except (ValueError,KeyError,TypeError,OverflowError):
-            return False,'UPSTREAM_TOOL_CONTRACT_HOLD'
+        # A sleeping free-tier CP08 instance may need a cold start. Retry only
+        # transport failures; never retry a rejected/invalid bearer as if valid.
+        for attempt in range(2):
+            try:
+                with urllib.request.urlopen(req,timeout=20) as response:
+                    if response.status!=200:return False,'UPSTREAM_CONTACT_HOLD'
+                    body=json.loads(response.read(100000))
+                    names={x['name'] for x in body['result']['tools']}
+                    if not {'atomic_contact_execute','atomic_contact_history'}<=names:
+                        return False,'UPSTREAM_TOOL_CONTRACT_HOLD'
+                    return True,'VERIFIED'
+            except urllib.error.HTTPError as error:
+                if error.code in (401,403):return False,'OWNER_TOKEN_NOT_ACCEPTED'
+                if error.code in (429,500,502,503,504) and attempt==0:
+                    time.sleep(1)
+                    continue
+                return False,'UPSTREAM_CONTACT_HOLD'
+            except (urllib.error.URLError,TimeoutError,OSError):
+                if attempt==0:
+                    time.sleep(1)
+                    continue
+                return False,'UPSTREAM_CONTACT_HOLD'
+            except (ValueError,KeyError,TypeError,OverflowError):
+                return False,'UPSTREAM_TOOL_CONTRACT_HOLD'
+        return False,'UPSTREAM_CONTACT_HOLD'
     def accept(self,request_id,owner_token):
         now=time.time()
         with self.lock:

@@ -51,13 +51,15 @@ def inspect_paths(repo, changed, cp21, donor):
     repo = repo.resolve(strict=True)
     reviews = []
     for rel in changed:
-        if not rel or Path(rel).is_absolute():
+        if not rel or Path(rel).is_absolute() or ".." in Path(rel).parts:
             raise ValueError("INVALID_CHANGED_PATH")
         candidate = repo / rel
         # lstat the ORIGINAL path, before resolve: resolving a symlink first
         # accidentally bypasses .is_symlink() checks.
         if candidate.is_symlink():
             raise ValueError("CHANGED_SYMLINK_REFUSED:" + rel)
+        if not candidate.exists():
+            raise ValueError("CHANGED_FILE_NOT_FOUND:" + rel)
         resolved = candidate.resolve(strict=True)
         if not resolved.is_relative_to(repo):
             raise ValueError("OUTSIDE_REPOSITORY:" + rel)

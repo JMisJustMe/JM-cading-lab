@@ -39,7 +39,7 @@
   "ding": false,
   "current_source_policy": {
     "checkpoint": "CP08 2026-10-28",
-    "state": "CP05_CP07_BOUNDED_FLAZ_COMPLETE; CP08_OWNER_INITIATED_ROUNDTRIP_SOURCE_TESTING; LIVE_OWNER_AUTHENTICATED_CONTACT_HOLD",
+    "state": "CP08_SOURCE_BROWSER_AND_LIVE_INTERFACE_FLAZ_COMPLETE; ACTUAL_OWNER_SESSION_CONTACT_HOLD",
     "source_instance_identity": "Existing local mounted-body id; preserves separate intended uses even with identical HTML bytes, name and filename",
     "replay_idempotence": "ONLY_SAME_SOURCE_INSTANCE_AND_BYTES",
     "edit_revision": "Same mounted-body id with changed bytes appends a new version; previousVersionId links the ancestor",
@@ -78,8 +78,9 @@
       "mutation_boundary": "Only random CP08 temporary body after owner press; no original JM creations read or modified",
       "no_duplicate": "A pending checkpoint must never replay a possibly committed upload; use exact private index readback",
       "receipt": "Browser-local verified receipt can be exported; no owner secret is stored or placed in GitHub",
-      "real_owner_proof_status": "HOLD until owner clicks test on production under their own private authenticated session",
-      "different_device_proof_status": "HOLD"
+      "real_owner_proof_status": "HOLD: interface deployed and synthetic browser-proven, but owner must explicitly initiate production authenticated session test",
+      "different_device_proof_status": "HOLD",
+      "deployed_proof_interface": true
     }
   },
   "flaz_cp05_cp06_2026_10_28": {
@@ -126,5 +127,24 @@
       "Estate-wide independent editing and deployment propagation"
     ],
     "law": "SOURCE IS NOT OWNER STORAGE PROOF; PUBLIC DEPLOYMENT IS NOT PRIVATE DATA MUTATION; NO DING NO CLAIM"
+  },
+  "flaz_cp08_2026_10_28": {
+    "status": "FLAZ_COMPLETE_BOUNDED_SOURCE_AND_DEPLOYED_INTERFACE",
+    "merged_pr": 583,
+    "source_commit": "d9efadb0315032569e9f69a5341645586c4b356b",
+    "proof_test": "2/2 synthetic phone/desktop browser journeys including interrupted write acknowledgement, fresh-document readback, exact scoped temp-body deletion and prior-body preservation",
+    "deployed_receipt": {
+      "file": "registry/owner-vault-live-readiness-receipt-v0.1.json",
+      "verified_at": "2026-10-28T17:20:55.188320+00:00",
+      "source_commit": "d9efadb0315032569e9f69a5341645586c4b356b",
+      "cp08_owner_initiated_proof_interface_deployed": true
+    },
+    "unpassed": [
+      "actual owner-authenticated production write/read/reload/delete click on owner's browser",
+      "cross-device recovery",
+      "Estate-wide owner-editable source/deploy propagation"
+    ],
+    "privacy": "No owner secret or private JM creation content in public code/CI/proof receipt",
+    "law": "SYNTHETIC PROOF IS NOT OWNER CONTACT; NO DING NO CLAIM"
   }
 }

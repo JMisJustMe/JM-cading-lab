@@ -105,3 +105,18 @@ python3 agent-runtime/host-adapters/storage-admission/JM_M001_REAL_EVIDENCE_BRID
 CP23 stdout contains counts only. The optional output file is created with exclusive new-file semantics and contains the owner-private detailed records; do not publish it. Pin verification proves **historical manifest exactness**, NOT fresh authenticated private provider state, exhaustive purpose release, live link recovery, a new-media pixel inspection, or storage quota savings. CP22 cannot infer a safe media deletion from an already compacted index.
 
 Synthetic CI tests exercise identity preservation, source-pinning, role spoof refusal and the zero-mutation/zero-savings boundary. CP04/CP05 source remains the sovereign inspection/provenance authority; this is only an additive M001 retention recipient.
+
+
+## CP25 — exact byte cold-edition reconstruction
+
+CP25 is another additive M001 Storage Steward extension. It restores a *distinct* ZIP edition from a retained exact base ZIP, an independently pinned zstd patch and a role-preserving receipt. It validates source sizes/SHA-256, restored whole-ZIP SHA-256, ZIP member CRCs, and refuses existing output paths. It never modifies source or authorizes native retirement.
+
+Use:
+
+```sh
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_EXACT_DELTA_RESTORE_CP25.py --manifest private-receipt.json --base retained-base.zip --patch edition.zstpatch --output new-restored-edition.zip
+```
+
+Requires `zstd` CLI. The public CI test uses synthetic ZIPs only; the genuine owner source and compact delta are retained in the owner's private custody.
+
+**Current bounded real proof (28 Oct):** source and target were 27,788,316 B and 27,830,608 B, both independently materialized native originals; patch 498,489 B; theoretical reduced carriage 27,332,119 B. Whole target ZIP independently restored byte-exact; 33 ZIP member CRCs passed. An independently fetched PRIVATE Google Drive base + cold pack also reconstructed target exactly, with fresh SHA-256 matching the original. All original native Library source/current delivery routes remain untouched. Actual quota saved **0 B verified**. No original Library carrier retirement or direct-link release is authorized.

@@ -319,4 +319,16 @@ class TestRemoteBroker(unittest.TestCase):
   self.assertEqual(data["_meta"]["io.modelcontextprotocol/serverInfo"]["name"],
     "JM Unique Bodies CP09 OAuth Transport")
 
+
+ def test_26_modern_mcp_browser_preflight_allows_required_headers_only_for_trusted_origins(self):
+  s,h,b=self.call(self.cp09,'/mcp','OPTIONS',headers={
+    'Origin':'https://chatgpt.com','Access-Control-Request-Method':'POST',
+    'Access-Control-Request-Headers':'MCP-Protocol-Version,Mcp-Method,Mcp-Name,Authorization'})
+  self.assertEqual(s,204,b)
+  for name in ('MCP-Protocol-Version','Mcp-Method','Mcp-Name'):
+   self.assertIn(name,h.get('Access-Control-Allow-Headers',''))
+  s,_,_=self.call(self.cp09,'/mcp','OPTIONS',headers={
+    'Origin':'https://chatgpt.com.attacker.invalid'})
+  self.assertEqual(s,403)
+
 if __name__=='__main__':unittest.main(verbosity=2)

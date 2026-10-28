@@ -27,10 +27,13 @@ jobs:
           Path('/tmp/jm3232-cp01-script.js').write_text(scripts[0],encoding='utf-8')
           PY
           node --check /tmp/jm3232-cp01-script.js
-      - name: Observe canonical carrier bytes and framing headers (not host proof)
+      - name: Reconstruct exact inherited canonical carrier locally
+        run: python3 tools/jm_carrier_registry.py --registry carrier-control/registry.json
+      - name: Observe canonical carrier bytes, drift and framing headers (not host proof)
         run: |
           python3 - <<'PY'
           import hashlib, urllib.request
+          from pathlib import Path
           url='https://jmisjustme-estate.pages.dev/navigator/'
           req=urllib.request.Request(url,headers={'User-Agent':'JM3232-CP01-source-contact/1.0'})
           with urllib.request.urlopen(req,timeout=35) as response:
@@ -44,6 +47,16 @@ jobs:
           print('X-Frame-Options:',headers.get('X-Frame-Options','UNSET'))
           print('CSP:',headers.get('Content-Security-Policy','UNSET')[:500])
           expected='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
+          canonical=Path('navigator/index.html').read_bytes()
+          assert hashlib.sha256(canonical).hexdigest()==expected, 'local reconstruction is not the approved carrier'
+          p=0
+          while p<min(len(body),len(canonical)) and body[p]==canonical[p]: p+=1
+          t=0
+          while t<min(len(body),len(canonical))-p and body[-1-t]==canonical[-1-t]:t+=1
+          print('Exact-prefix bytes:',p,'Exact-suffix bytes:',t)
+          if p<len(body) or p<len(canonical):
+              print('Live delta segment (repr, <=320 bytes):',repr(body[p:len(body)-t][:320]))
+              print('Canonical delta segment (repr, <=320 bytes):',repr(canonical[p:len(canonical)-t][:320]))
           assert len(body)>1_000_000, 'public browser response is unexpectedly small'
           assert sha==expected, 'live canonical browser differs from recorded v1.5.2 carrier; do not claim exact source contact'
           # Header absence is not host iframe acceptance.

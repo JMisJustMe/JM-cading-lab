@@ -1,6 +1,6 @@
 {
   "schema": "JM.OwnerVaultLiveReadinessReceipt/0.1",
-  "verified_utc": "2026-09-27T15:23:41.480182+00:00",
+  "verified_utc": "2026-10-28T16:06:13.862700+00:00",
   "state": "LIVE_READINESS_PASS",
   "host": "https://jmisjustme-estate.pages.dev",
   "http_status": "200",
@@ -11,13 +11,18 @@
     "owner_key_configured": true,
     "ready": true,
     "auth": "X-JM-Owner-Key (session-entered; never embedded in public source)",
+    "identity_policy": "SAME_SOURCE_INSTANCE_AND_BYTES_ONLY",
+    "editor_policy": "PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY",
+    "overflow_policy": "FAIL_CLOSED_NO_IDENTITY_EVICTION",
     "public_claim": false
   },
-  "cache_marker": "jm-web-estate-v1.4.9-current-access-mesh",
-  "source_commit": "cb88c7d38e958721da005e00cb7aabac4dd15778",
-  "workflow_run": "36329375747",
+  "cache_marker": "jm-web-estate-v1.4.13-ailatheo-entitlement-boundary",
+  "public_editor_policy": "PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY",
+  "cp05_public_editor_policy_verified": true,
+  "source_commit": "1d432648cc171285c649b4d29372855658683910",
+  "workflow_run": "40722529152",
   "authenticated_write_read_delete_proof": false,
   "owner_secret_value_recorded": false,
   "ding": false,
-  "claim_boundary": "This receipt proves only public status visibility of the bound R2 resource and configured owner secret plus the current cache deployment. Authenticated owner storage mutation remains a separate owner-session proof."
+  "claim_boundary": "This receipt proves public-safe function readiness and CP05 editor policy only when that marker is returned by the deployed API. It does NOT prove owner authentication, private body editing, owner-device reload or cross-device persistence; those require a separate owner-session proof."
 }

@@ -44,7 +44,7 @@ try{
   await page.setContent(html,{waitUntil:'domcontentloaded',timeout:120000});
   await page.waitForSelector('#searchForm',{timeout:30000});
   await page.locator('#searchInput').fill('OpenAI documentation');
-  await page.locator('#scopeSelect').selectOption('web');
+  await page.locator('#scopeSelect').evaluate(el=>{el.value='web';el.dispatchEvent(new Event('change',{bubbles:true}));});
   await page.locator('#searchForm').evaluate(form=>form.requestSubmit());
   await page.waitForFunction(()=>document.body.innerText.includes('JM CP03 Search Probe'),null,{timeout:30000});
   const state=await page.evaluate(()=>({

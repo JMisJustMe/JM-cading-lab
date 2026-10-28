@@ -202,7 +202,7 @@ class RealmHandler(CP09Handler):
             if method=="tools/list" and "result" in result:
                 result["result"]["tools"]=[x for x in result["result"].get("tools",[])
                     if x.get("name") in tools and tools[x["name"]] in scopes]
-            return self.reply(200,adapt_response(result,modern))
+            return self.reply(200,adapt_response(result,modern,method,self.server.admission.config["name"],"0.10.1-cp10"))
         except (ValueError,TypeError,UnicodeDecodeError,json.JSONDecodeError):
             return self.reply(400,{"error":"INVALID_BOUNDED_RPC"})
         except (OSError,urllib.error.URLError):

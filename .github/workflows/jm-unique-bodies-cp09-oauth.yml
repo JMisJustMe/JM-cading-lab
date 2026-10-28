@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feat/jm-unique-bodies-cp09-oauth-20261028
+      - feat/jm-unique-bodies-cp10-dual-era-20261028
   workflow_dispatch:
 
 permissions:
@@ -20,6 +21,7 @@ jobs:
       - name: Python compilation of separate OAuth organ and gateway
         run: |
           python3 -m py_compile services/jm-unique-bodies-cp08/cp09_oauth.py
+          python3 -m py_compile services/jm-unique-bodies-cp08/cp10_dual_era.py
           python3 -m py_compile services/jm-unique-bodies-cp08/cp09_oauth_gateway.py
       - name: Real local client registration, consent, PKCE and atomic donor execution
         run: |

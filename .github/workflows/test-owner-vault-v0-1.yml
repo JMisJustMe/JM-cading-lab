@@ -68,6 +68,9 @@ jobs:
           grep -Fq 'Edit SOURCE' estate-owner-vault.js || grep -Fq 'EDIT SOURCE' estate-owner-vault.js
           grep -Fq 'REVISION_READBACK_MISMATCH' estate-app.js
           grep -Fq 'RESTORE TO DEVICE' estate-app.js
+          grep -Fq 'Prove private save → reload → recovery' estate-app.js
+          grep -Fq 'CP08_CLEANUP_NOT_AUTHORISED' estate-app.js
+          grep -Fq 'temporary_body_exact_cleanup' estate-app.js
           grep -Fq 'No existing body was removed.' estate-app.js
           grep -Fq 'Previous mounted bodies remain unchanged.' estate-app.js
           ! grep -Fq "state.mounted=[];localStorage.removeItem('jm-estate-mounted')" estate-app.js

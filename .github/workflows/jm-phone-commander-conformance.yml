@@ -23,15 +23,30 @@ jobs:
         run: |
           python -m py_compile agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py
           python -m unittest discover -s agent-runtime/host-adapters/android/phone-commander -p 'test_phone_commander.py' -v
-      - name: Proof separation
+      - name: Verify opt-in re-entry launcher with actual portable core
+        run: |
+          sh -n agent-runtime/host-adapters/android/phone-commander/jmphone-reenter.sh
+          JM_WORKSPACE="$GITHUB_WORKSPACE" sh agent-runtime/host-adapters/android/phone-commander/jmphone-reenter.sh status > /tmp/jm-phone-offdevice-status.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/jm-phone-offdevice-status.json'))
+          assert d['state']=='PASS'
+          assert d['consequence']['workspace_present'] is True
+          assert d['consequence']['platform']!='Android', 'CI runner is not physical owner phone'
+          print('PASS: portable process re-entry (off-device); NOT Android boot proof')
+          PY
+      - name: Proof separation — historical phone receipts are references not CI simulations
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           d=json.loads(Path('agent-runtime/host-adapters/android/phone-commander/JM_PHONE_COMMANDER_ADAPTER_v0_1.json').read_text())
           assert d['authority_class']=='HOST_ADAPTER_NOT_SOURCE_AUTHORITY'
-          assert d['proof']['phone_runtime']=='OPEN'
-          assert d['proof']['remote_issue_roundtrip']=='OPEN'
-          assert d['proof']['physical_owner_edit']=='OPEN'
-          print('PASS: FUNCTION fixture only; physical phone and external host gates OPEN')
+          proof=d['proof']
+          assert 'github.com/JMisJustMe/JM-ai-studio-surface/issues/1' in proof['mailbox_issue']
+          assert 'github.com/JMisJustMe/JM-ai-studio-surface/issues/7' in proof['physical_owner_edit']
+          assert 'HOST_CONTACT' in proof['proof_level']
+          assert proof['boot_recovery']=='OPEN'
+          assert proof['codex_contact']=='OPEN'
+          print('PASS: off-device test and evidence record only; Android reboot/Work/Codex remain separate gates')
           PY

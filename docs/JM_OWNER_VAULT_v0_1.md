@@ -166,3 +166,11 @@ This is an additive hardening of the **existing** Owner Vault, not a replacement
 - The existing Fake-R2 regression suite injects failed index writes, corrupted source bytes, silent deletion failures, duplicate-timestamp snapshots, dropped snapshot writes and altered snapshot bytes. The tests use synthetic source only.
 
 **Boundaries:** Snapshots contain owner-state and body-index metadata, **not the HTML body bytes**; they are not complete offsite backups. An interrupted delete after a verified index commit can leave an unindexed R2 object. Concurrent writers remain unprotected by a transaction/lock, and physical-device, authenticated live-R2, independently recovered cold restore and production propagation remain **HOLD**. The branch is draft/unmerged. No private source, key or owner payload is included in this public repository.
+
+## CP13 — Referenced ancestor preservation (28 October 2026)
+
+The existing private DELETE route now refuses to remove an indexed HTML source when any retained revision's `previousVersionId` still points to it. The API returns HTTP 409 `BODY_ANCESTOR_STILL_REFERENCED` **before changing the index or deleting source bytes**. The owner can explicitly remove a leaf revision first, then an unreferenced ancestor, retaining the previous permitted deletion route. This is not a new body, registry, vault or source migration.
+
+The existing Fake-R2 suite includes a source → revision chain: attempted ancestor deletion must preserve exact index and both stored HTML objects, both remain independently downloadable, then deliberate leaf-first deletion succeeds. This is **synthetic regression only** until CI and real authenticated storage tests independently confirm the result.
+
+**Boundary:** This is direct-child referential integrity, not full offsite backup, cryptographic authorship, cross-provider cold restoration or multiwriter atomicity. Private owner data, credentials, production deployment and native originals are untouched; the PR remains draft and unmerged.

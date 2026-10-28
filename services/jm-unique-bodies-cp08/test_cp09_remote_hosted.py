@@ -73,6 +73,33 @@ class TestHosted(unittest.TestCase):
   s,_,_=self.req(ORIGINAL+'/mcp','POST',{'jsonrpc':'2.0','id':1,'method':'tools/list'})
   self.assertEqual(s,401)
   print('PASS original and OAuth bridge protected, redirect spoof denied',flush=True)
+ def test_05_live_expired_approval_returns_safe_actionable_reason(self):
+  s,_,body=self.req(BASE+'/oauth/authorize','POST',
+     {'request_id':'INVALID_NONEXISTENT_CP09_REQUEST','owner_access_token':'INVALID_TEST_ONLY'},
+     form=True)
+  self.assertEqual(s,400)
+  self.assertIn(b'CONSENT_EXPIRED',body)
+  self.assertIn(b'restart ChatGPT authorisation',body)
+  self.assertNotIn(b'INVALID_TEST_ONLY',body)
+ def test_06_live_short_owner_token_returns_format_hold_without_original_probing(self):
+  s,_,raw=self.req(BASE+'/oauth/register','POST',
+     {'redirect_uris':['https://chatgpt.com/connector_platform_oauth_redirect'],'client_name':'JM diagnostic form fixture'})
+  self.assertEqual(s,201)
+  client=json.loads(raw)['client_id']
+  verifier='D'*50
+  pkce=base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b'=').decode()
+  params=urllib.parse.urlencode({'client_id':client,'redirect_uri':'https://chatgpt.com/connector_platform_oauth_redirect',
+    'response_type':'code','code_challenge_method':'S256','code_challenge':pkce,
+    'state':'JM_DIAGNOSTIC','scope':'cp08:read','resource':BASE+'/mcp'})
+  s,_,html=self.req(BASE+'/oauth/authorize?'+params)
+  self.assertEqual(s,200)
+  import re
+  match=re.search(rb'name="request_id" value="([^"]+)"',html)
+  self.assertIsNotNone(match)
+  s,_,out=self.req(BASE+'/oauth/authorize','POST',{'request_id':match.group(1).decode(),'owner_access_token':'too-short'},form=True)
+  self.assertEqual(s,400)
+  self.assertIn(b'OWNER_TOKEN_FORMAT_HOLD',out)
+  self.assertNotIn(b'too-short',out)
 class StopRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args):return None
 if __name__=='__main__':unittest.main(verbosity=2)

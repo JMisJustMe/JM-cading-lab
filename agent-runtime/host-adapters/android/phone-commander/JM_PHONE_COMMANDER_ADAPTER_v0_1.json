@@ -23,15 +23,17 @@
     "local_fixture": "30/30 PASS, GitHub Actions run 40771978217, commit befc52ad987cceb8c19d7f754befe3652bccfda3 (off-device only)",
     "source_repo_contact": "PASS: GitHub connector read existing parent and confirmed private mailbox repository",
     "phone_runtime": "PASS (bounded): physical Samsung Android/Termux executed JM Phone Commander status; Python 3.13.13; termux_detected=true; workspace_present=true; 2026-10-28 21:31 UTC; private GitHub issue #1 returned receipt",
-    "remote_issue_roundtrip": "PASS (status only): normal ChatGPT issued private GitHub mailbox request #1, phone executed status, private reply recorded and issue closed; independently read back 2026-10-28",
+    "remote_issue_roundtrip": "PASS (three allowlisted operations): status #1, JM core route #2, git-status #3; physical phone private receipts posted and issues CLOSED, independently verified 2026-10-28 21:35 UTC.",
     "physical_owner_edit": "OPEN",
     "boot_recovery": "OPEN",
     "codex_contact": "OPEN",
-    "proof_level": "HOST_CONTACT_STATUS_ONLY; OTHER_COMMANDS_AND_RECOVERY_OPEN",
+    "proof_level": "HOST_CONTACT: status + existing sovereign-core routing + git-status; exact scope only. Other operations and recovery OPEN.",
     "off_device_ci": "PASS: exact 30 tests including core/git failure refusal, run 40771978217; no physical host proof",
     "mailbox_issue": "PASS (status only): https://github.com/JMisJustMe/JM-ai-studio-surface/issues/1#issuecomment-6481177550 ; state CLOSED",
     "known_boundaries": "Normal ChatGPT GitHub and JM Build Mesh connector contact observed; Work and Codex require independent acceptance; deployment unproven",
-    "remaining": "Independent remote route/git-status/read-file/edit-file verification, owner-granted edit/readback, phone reboot/resume, background availability and Codex-host contact still OPEN"
+    "remaining": "Remote file-read, owner-authorised edit with exact readback/backup, reboot recovery, background reachability, and Codex contact OPEN.",
+    "remote_route": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/2#issuecomment-6481244467 ; phone JM core exit 0; 12 of 64 logically ACTIVE_ROUTE, 52 AVAILABLE_NOT_SELECTED; stdout truncated at 12,000 characters but route accounting present.",
+    "remote_git_status": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/3#issuecomment-6481243667 ; git status exit 0, tracked files clean, branch feat/jm-phone-commander-v0-1-20261028; untracked files not checked."
   },
   "do_not_claim": [
     "laptop remote access",

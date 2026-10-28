@@ -210,12 +210,17 @@ function renderCommand(){
   $('#gateGrid').innerHTML=gates.map(g=>`<div class="gate"><i>✓</i><b>${g}</b><span>v1 FOUNDATION</span></div>`).join('');
   $('#estateLaws').innerHTML=state.data.estate.laws.map(l=>`<li>${escapeHTML(l)}</li>`).join('');
 }
-function saveMounted(){localStorage.setItem('jm-estate-mounted',JSON.stringify(state.mounted));renderOwner()}
+// Commit local mounting atomically: never replace in-memory source before durable storage accepts it.
+function saveMounted(next=state.mounted){
+  localStorage.setItem('jm-estate-mounted',JSON.stringify(next));
+  state.mounted=next;
+  renderOwner();
+}
 function renderOwner(){
   $('#mountedCount').textContent=`${state.mounted.length} ${state.mounted.length===1?'BODY':'BODIES'}`;
   $('#mountedShelf').innerHTML=state.mounted.length?state.mounted.map(item=>`<article class="mounted-card"><div><b>${escapeHTML(item.name)}</b><small>${Math.round(item.bytes/1024)} KB · mounted ${new Date(item.at).toLocaleDateString()}</small></div><div class="mounted-actions"><button data-preview-local="${item.id}">PREVIEW</button><button class="danger" data-delete-local="${item.id}">REMOVE</button></div></article>`).join(''):`<div class="empty-state">No local HTML body mounted on this device.</div>`;
   $$('#mountedShelf [data-preview-local]').forEach(btn=>btn.addEventListener('click',()=>previewMounted(btn.dataset.previewLocal)));
-  $$('#mountedShelf [data-delete-local]').forEach(btn=>btn.addEventListener('click',()=>{state.mounted=state.mounted.filter(x=>x.id!==btn.dataset.deleteLocal);saveMounted();toast('Local mounted copy removed.')}));
+  $$('#mountedShelf [data-delete-local]').forEach(btn=>btn.addEventListener('click',()=>{try{saveMounted(state.mounted.filter(x=>x.id!==btn.dataset.deleteLocal));toast('Local mounted copy removed.')}catch{toast('Local removal could not be saved. Original mounted copies remain intact.',true)}}));
   const favs=getAllItems().filter(i=>state.favourites.has(i.id));
   $('#favouriteCount').textContent=favs.length;
   $('#favouriteShelf').innerHTML=favs.length?favs.slice(0,8).map(i=>miniItem(i)).join(''):`<div class="empty-state">Favourite rooms appear here.</div>`;
@@ -229,13 +234,24 @@ function previewMounted(id){
   $('#previewTitle').textContent=item.name;$('#previewFrame').src=previewUrl;$('#previewDialog').showModal();
 }
 async function mountFiles(files){
+  let mounted=0;
   for(const file of files){
     const content=await file.text();
     if(!/<html|<!doctype/i.test(content)){toast(`${file.name} does not look like standalone HTML.`,true);continue}
-    const item={id:`local-${Date.now()}-${Math.random().toString(16).slice(2)}`,name:file.name.replace(/\.html?$/i,''),fileName:file.name,content,bytes:file.size,at:new Date().toISOString()};
-    state.mounted=[item,...state.mounted].slice(0,12);
+    if(state.mounted.length>=12){
+      toast('Local shelf is full (12 bodies). No existing body was removed. Use the private Vault or download originals before making room.',true);
+      break;
+    }
+    const item={id:`local-${Date.now()}-${Math.random().toString(16).slice(2)}`,name:file.name.replace(/\.html?$/i,''),fileName:file.name,content,bytes:new TextEncoder().encode(content).byteLength,at:new Date().toISOString()};
+    try {
+      saveMounted([item,...state.mounted]);
+      mounted++;
+    } catch(error) {
+      toast('Local storage could not accept this HTML. Previous mounted bodies remain unchanged. Try a smaller file or Games & Beyond IndexedDB.',true);
+      break;
+    }
   }
-  try{saveMounted();toast('Local HTML body mounted on this device.')}catch(error){state.mounted=[];localStorage.removeItem('jm-estate-mounted');renderOwner();toast('This body is too large for localStorage. Use Games & Beyond IndexedDB mounting for larger bodies.',true)}
+  if(mounted)toast(`${mounted} local HTML ${mounted===1?'body':'bodies'} mounted safely. Existing copies preserved.`);
 }
 function buildReceipt(){
   return {schema:'JM.WebEstateReceipt/1.3',generatedAt:new Date().toISOString(),publicRoute:location.href.split('#')[0],network:navigator.onLine?'ONLINE':'OFFLINE',viewport:{width:innerWidth,height:innerHeight,pixelRatio:devicePixelRatio},userAgent:navigator.userAgent,estate:{version:'1.3',publicAuthority:state.data.estate.publicAuthority||null,liveRoutes:state.data.estate.routes.length,registeredGames:state.data.games.length,theoryDistricts:state.data.theory.length,laws:state.data.estate.laws},localOwnerState:{favourites:[...state.favourites],recent:state.recent.map(({id,name,at})=>({id,name,at})),mountedBodies:state.mounted.map(({id,name,fileName,bytes,at})=>({id,name,fileName,bytes,at})),notesPresent:Boolean($('#ownerNotes').value.trim())},truthBoundary:'This receipt describes the public web shell and this browser’s local state. It does not claim every protected Estate source has been uploaded.'};

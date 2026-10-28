@@ -13,7 +13,7 @@ const envelope=await response.json();
 assert.ok(!envelope.error,'MCP resource must not be error');
 const html=envelope.result.contents[0].text;
 assert.ok(html.length>6_000_000,'large original JM browser source missing');
-const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.JM_CHROME_EXECUTABLE?{executablePath:process.env.JM_CHROME_EXECUTABLE}:{})});
 try{
  for(const viewport of [{width:390,height:844},{width:1365,height:900}]){
   const context=await browser.newContext({viewport,serviceWorkers:'block'});

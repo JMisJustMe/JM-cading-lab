@@ -398,4 +398,55 @@ class RealHttp(unittest.TestCase):
   self.assertNotIn(b'BAD_TEST_SECRET_NEVER_ECHO',raw)
   self.assertNotIn(b'STATE_SENSITIVE_NEVER_ECHO',raw)
 
+
+ def test_28_receipt_exact_public_chatgpt_callback_recovers_dcr_without_tool_authority(self):
+  realm='receipt'
+  url=self.gate[realm]
+  callback='https://chatgpt.com/connector/oauth/JMTESTRECOVERY'
+  client='R'*54
+  verifier='Z'*64
+  args={'client_id':client,'redirect_uri':callback,'response_type':'code',
+    'code_challenge_method':'S256','code_challenge':pkce(verifier),
+    'scope':'receipt:issue','resource':url+'/mcp','state':'SYNTHETIC_CALLBACK'}
+  query=urlencode(args)
+  s,_,html=self.hit(realm,'/oauth/authorize?'+query)
+  self.assertEqual(s,200,html)
+  self.assertIn(b'ChatGPT (recovered public callback)',html)
+  self.assertEqual(self.rpc(realm,'tools/list',token=client)[0],401)
+  req=re.search(rb'name="request_id" value="([^"]+)"',html)
+  self.assertIsNotNone(req)
+  s,h,raw=self.hit(realm,'/oauth/authorize','POST',
+     {'request_id':req.group(1).decode(),'owner_access_token':CONFIGS[realm]['token']},
+     {'Content-Type':'application/x-www-form-urlencoded'})
+  self.assertEqual(s,302,raw)
+  code=parse_qs(urlsplit(h['Location']).query)['code'][0]
+  form={'grant_type':'authorization_code','client_id':client,'code':code,
+    'code_verifier':verifier,'redirect_uri':callback}
+  s,_,raw=self.hit(realm,'/oauth/token','POST',form,
+      {'Content-Type':'application/x-www-form-urlencoded'})
+  self.assertEqual(s,200,raw)
+  access=json.loads(raw)['access_token']
+  s,_,raw=self.rpc(realm,'tools/list',token=access)
+  self.assertEqual(s,200,raw)
+  self.assertEqual([x['name'] for x in json.loads(raw)['result']['tools']],
+     ['jm_federation_receipt_cp01'])
+  s,_,raw=self.rpc(realm,'tools/call',
+     {'name':'jm_federation_receipt_cp01','arguments':{'gate':'RECOVERED_TEST'}},access)
+  self.assertEqual(s,200,raw)
+  self.assertEqual(json.loads(raw)['result']['structuredContent']['executed'],True)
+  for bad in [
+    {**args,'client_id':'TOO_SHORT'},
+    {**args,'client_id':'S'*54,'redirect_uri':'https://chatgpt.com.evil.invalid/connector/oauth/JMTESTRECOVERY'},
+    {**args,'client_id':'T'*54,'redirect_uri':'https://chatgpt.com/redirect'},
+    {**args,'client_id':'U'*54,'code_challenge':'bad'},
+    {**args,'client_id':'V'*54,'scope':'commons:capsule'},
+    {**args,'client_id':'W'*54,'resource':'https://evil.invalid/mcp'}
+  ]:
+   s,_,raw=self.hit(realm,'/oauth/authorize?'+urlencode(bad))
+   self.assertEqual(s,400,(bad['client_id'][:5],raw))
+   self.assertEqual(json.loads(raw)['cause'],'CLIENT_REGISTRATION_NOT_FOUND')
+  s,_,raw=self.hit('commons','/oauth/authorize?'+query)
+  self.assertEqual(s,400,raw)
+  self.assertEqual(json.loads(raw)['cause'],'CLIENT_REGISTRATION_NOT_FOUND')
+
 if __name__=='__main__':unittest.main(verbosity=2)

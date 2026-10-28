@@ -1,0 +1,72 @@
+name: JM3232 CP01 Original Browser UI Contract
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/server.py'
+      - 'estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/public/jm3232-airborne-original-cp01.html'
+      - 'estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/tests/test_inchat_original_cp01.py'
+      - '.github/workflows/jm3232-original-chatgpt-cp01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check CP01 Python and HTML contract
+        run: python3 -m unittest discover -s estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/tests -p 'test_inchat_original_cp01.py' -v
+      - name: Check inline JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/public/jm3232-airborne-original-cp01.html')
+          scripts=re.findall(r'<script[^>]*>(.*?)</script>',path.read_text(encoding='utf-8'),flags=re.DOTALL)
+          assert len(scripts)==1, 'expected one self-contained inline script'
+          Path('/tmp/jm3232-cp01-script.js').write_text(scripts[0],encoding='utf-8')
+          PY
+          node --check /tmp/jm3232-cp01-script.js
+      - name: Reconstruct exact inherited canonical carrier locally
+        run: python3 tools/jm_carrier_registry.py --registry carrier-control/registry.json
+      - name: Observe canonical carrier bytes, drift and framing headers (not host proof)
+        run: |
+          python3 - <<'PY'
+          import hashlib, urllib.request
+          from pathlib import Path
+          url='https://jmisjustme-estate.pages.dev/navigator/'
+          req=urllib.request.Request(url,headers={'User-Agent':'JM3232-CP01-source-contact/1.0'})
+          with urllib.request.urlopen(req,timeout=35) as response:
+              body=response.read()
+              headers=response.headers
+              final_url=response.url
+          sha=hashlib.sha256(body).hexdigest()
+          print('Final URL:',final_url)
+          print('Carrier bytes:',len(body))
+          print('Carrier SHA-256:',sha)
+          print('X-Frame-Options:',headers.get('X-Frame-Options','UNSET'))
+          print('CSP:',headers.get('Content-Security-Policy','UNSET')[:500])
+          expected='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
+          canonical=Path('navigator/index.html').read_bytes()
+          assert hashlib.sha256(canonical).hexdigest()==expected, 'local reconstruction is not the approved carrier'
+          p=0
+          while p<min(len(body),len(canonical)) and body[p]==canonical[p]: p+=1
+          t=0
+          while t<min(len(body),len(canonical))-p and body[-1-t]==canonical[-1-t]:t+=1
+          print('Exact-prefix bytes:',p,'Exact-suffix bytes:',t)
+          if p<len(body) or p<len(canonical):
+              print('Live delta segment (repr, <=320 bytes):',repr(body[p:len(body)-t][:320]))
+              print('Canonical delta segment (repr, <=320 bytes):',repr(canonical[p:len(canonical)-t][:320]))
+          # Public carrier's separately governed contextual return organ was added
+          # after original v1.5.2 promotion (PR #268). Do not erase it or inflate
+          # byte-difference into a new sovereign source body.
+          injected=b'<script defer src="/estate-return-route.js" data-jm-context-return-route="v0.1"></script>\\n'.replace(b'\\n',b'\n')
+          assert len(injected)==90, 'expected bounded 90-byte carrier overlay'
+          live_expected=canonical.replace(b'</body>',injected+b'</body>',1)
+          assert len(live_expected)==6183409
+          assert len(body)>1_000_000, 'public browser response is unexpectedly small'
+          assert body==live_expected, 'live browser is not exact original plus proved return-route overlay'
+          assert b'JM.EstateReturnRoute/0.1' in Path('estate-return-route.js').read_bytes(), 'overlay source missing'
+          print('LIVE_RECONCILIATION=PASS SOURCE_EXACT_PLUS_90_BYTE_CARRIER_ORGAN; NOT same carrier hash')
+          # Header absence is not host iframe acceptance.
+          PY

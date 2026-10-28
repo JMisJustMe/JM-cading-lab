@@ -17,6 +17,8 @@ APP_VERSION = "0.1.0"
 SUPPORTED_PROTOCOLS = {"2025-06-18", "2025-03-26"}
 DEFAULT_PROTOCOL = "2025-06-18"
 PUBLIC = ROOT / "public"
+BROWSER_URI = "ui://jm3232-navigator/airborne-original-cp01.html"
+BROWSER_CANONICAL = "https://jmisjustme-estate.pages.dev/navigator/"
 
 app = FastAPI(title="JM3232 Navigator Browser Bridge", version=APP_VERSION)
 app.mount("/assets", StaticFiles(directory=str(PUBLIC)), name="assets")
@@ -62,6 +64,20 @@ def tool_meta(widget: bool = False) -> dict[str, Any]:
 
 
 TOOLS: list[dict[str, Any]] = [
+    {
+        "name": "navigator_render_original_browser",
+        "title": "Show the original JM3232 browser in ChatGPT",
+        "description": "Render the existing, public JM3232 AIRBORNE browser inside ChatGPT when the user requests the original interface. This is an iframe compatibility experiment, not a replacement UI, and host framing may be refused.",
+        "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
+        "annotations": {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": True},
+        "_meta": {
+            **tool_meta(False),
+            "ui": {"resourceUri": BROWSER_URI},
+            "ui.resourceUri": BROWSER_URI,
+            "openai/outputTemplate": BROWSER_URI,
+        },
+    },
+
     {
         "name": "search",
         "title": "Search the JM Estate",
@@ -208,6 +224,9 @@ TOOLS: list[dict[str, Any]] = [
 
 
 async def invoke_tool(name: str, args: dict[str, Any]) -> dict[str, Any]:
+    if name == "navigator_render_original_browser":
+        value = {"identity": "jm://navigator", "public_carrier": BROWSER_CANONICAL, "source": "preserved JM3232 AIRBORNE v1.5.2", "host_frame_contact": "OPEN_UNVERIFIED", "external_internet_handoff": "STILL_OPEN"}
+        return as_tool_result(value, "Requested real JM3232 public browser frame; host rendering and interactive acceptance are not yet proved.")
     if name == "search":
         value = BRIDGE.search(args["query"], args.get("limit", 8), args.get("sources"))
         return as_tool_result(value, f"Found {value['count']} Stringdoor candidates for “{value['query']}”.")
@@ -254,6 +273,11 @@ async def root() -> str:
 @app.get("/widget", response_class=HTMLResponse)
 async def widget() -> Response:
     return HTMLResponse((PUBLIC / "navigator-stringdoor-v0.1.html").read_text(encoding="utf-8"), media_type="text/html;profile=mcp-app")
+
+
+@app.get("/browser-original-cp01", response_class=HTMLResponse)
+async def original_browser_widget() -> Response:
+    return HTMLResponse((PUBLIC / "jm3232-airborne-original-cp01.html").read_text(encoding="utf-8"), media_type="text/html;profile=mcp-app")
 
 
 @app.get("/bridge/search")
@@ -332,9 +356,40 @@ async def mcp(request: Request) -> Response:
                     "openai/widgetDescription": "A compact interactive JM3232 Stringdoor field that searches Estate bodies, resolves RootWords, preserves marks, and returns traceable routes.",
                 },
             }]
+            resources.append({
+                "uri": BROWSER_URI,
+                "name": "JM3232 AIRBORNE original in-chat contact CP01",
+                "title": "JM3232 original browser",
+                "description": "A framed request for the live authentic JM3232 v1.5.2 browser, not a rebuilt interface; host iframe acceptance remains open.",
+                "mimeType": "text/html;profile=mcp-app",
+                "_meta": {
+                    "ui": {
+                        "prefersBorder": False,
+                        "csp": {"connectDomains": [], "resourceDomains": [], "frameDomains": ["https://jmisjustme-estate.pages.dev"]},
+                    },
+                    "openai/ui": {"availableDisplayModes": ["inline", "fullscreen"]},
+                    "openai/widgetCSP": {"connect_domains": [], "resource_domains": [], "frame_domains": ["https://jmisjustme-estate.pages.dev"], "redirect_domains": ["https://jmisjustme-estate.pages.dev"]},
+                    "openai/widgetDescription": "Original JM3232 AIRBORNE at its protected canonical public door; a frame probe, not a newly coded imitation.",
+                },
+            })
             return JSONResponse(rpc_result(request_id, {"resources": resources}))
         if method == "resources/read":
             uri = params.get("uri")
+            if uri == BROWSER_URI:
+                html = (PUBLIC / "jm3232-airborne-original-cp01.html").read_text(encoding="utf-8")
+                return JSONResponse(rpc_result(request_id, {"contents": [{
+                    "uri": BROWSER_URI,
+                    "mimeType": "text/html;profile=mcp-app",
+                    "text": html,
+                    "_meta": {
+                        "ui": {
+                            "prefersBorder": False,
+                            "csp": {"connectDomains": [], "resourceDomains": [], "frameDomains": ["https://jmisjustme-estate.pages.dev"]},
+                        },
+                        "openai/ui": {"availableDisplayModes": ["inline", "fullscreen"]},
+                        "openai/widgetCSP": {"connect_domains": [], "resource_domains": [], "frame_domains": ["https://jmisjustme-estate.pages.dev"], "redirect_domains": ["https://jmisjustme-estate.pages.dev"]},
+                    },
+                }]}))
             if uri != WIDGET_URI:
                 return JSONResponse(rpc_error(request_id, -32004, f"Unknown resource: {uri}"), status_code=404)
             html = (PUBLIC / "navigator-stringdoor-v0.1.html").read_text(encoding="utf-8")

@@ -30,6 +30,9 @@ const integrationRegistry = {
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (input, init={}) => {
   const url = typeof input === 'string' ? input : input.url;
+  if (url === 'https://jmisjustme-estate.pages.dev/navigator/') {
+    return new Response('<html><head></head><body>tampered fixture</body></html>',{status:200,headers:{'content-type':'text/html'}});
+  }
   if (url.includes('/navigator/estate-integration/public-registry.json')) {
     return new Response(JSON.stringify(integrationRegistry), {status:200, headers:{'content-type':'application/json'}});
   }
@@ -56,11 +59,19 @@ async function rpc(id, method, params={}) {
 
 let x = await rpc(1,'initialize',{protocolVersion:'2025-06-18',capabilities:{}});
 if (!x.res.ok || x.json.error) throw new Error('initialize failed');
-if (!String(x.json.result.serverInfo.version).startsWith('0.2.0-estate-integration')) throw new Error('wrong integrated version');
+if (!String(x.json.result.serverInfo.version).startsWith('0.4.0-chatgpt-internet-cp03')) throw new Error('wrong integrated version');
 
 x = await rpc(2,'tools/list');
-if (!x.res.ok || x.json.result.tools.length !== 5) throw new Error('public tool count changed');
-if (x.json.result.tools.some(t => t.annotations?.readOnlyHint !== true || t.annotations?.openWorldHint !== false || t.annotations?.destructiveHint !== false)) throw new Error('public annotations changed');
+if (!x.res.ok || x.json.result.tools.length !== 7) throw new Error('inherited+render tool count changed');
+const expected = ['search','fetch','navigator_resolve_rootword','navigator_return_lineage','navigator_bridge_status'];
+for(const name of expected){
+  const t=x.json.result.tools.find(t=>t.name===name);
+  if(!t || t.annotations?.readOnlyHint!==true || t.annotations?.openWorldHint!==false || t.annotations?.destructiveHint!==false) throw new Error('original read-only permission changed: '+name);
+}
+const internet=x.json.result.tools.find(t=>t.name==='navigator_internet_search');
+if(!internet||internet.annotations?.readOnlyHint!==true||internet.annotations?.destructiveHint!==false||internet.annotations?.openWorldHint!==true||internet._meta?.ui?.resourceUri)throw new Error('internet results tool must be independent and read-only');
+const render=x.json.result.tools.find(t=>t.name==='navigator_render_original_browser');
+if(!render||render.annotations?.readOnlyHint!==true||render.annotations?.openWorldHint!==true||render.annotations?.destructiveHint!==false||render._meta?.ui?.resourceUri!=='ui://jm3232-navigator/airborne-chatgpt-cp03.html')throw new Error('render tool contract changed');
 
 x = await rpc(3,'tools/call',{name:'navigator_create_stringreceipt',arguments:{}});
 if (x.res.ok || !x.json.error) throw new Error('write tool exposed');
@@ -90,4 +101,21 @@ const lineage = x.json.result.structuredContent;
 if (lineage.id !== 'JM-BUILD-MESH-001' || lineage.authority?.primary !== 'JM.CareerCurrentProjectRegistry/0.4') throw new Error('Build Mesh lineage authority mismatch');
 if (JSON.stringify(lineage).includes('receipt_chain_head')) throw new Error('private lineage state leaked');
 
-console.log('Navigator public MCP v0.2 Estate integration + Build Mesh lineage unit proof PASS');
+x = await rpc(7,'resources/list');
+if(!x.res.ok || x.json.result.resources.length!==1 || x.json.result.resources[0].uri!=='ui://jm3232-navigator/airborne-chatgpt-cp03.html')throw new Error('original body UI missing');
+const resource=x.json.result.resources[0];
+if(resource._meta?.ui?.csp?.frameDomains?.length!==0 || resource._meta?.ui?.csp?.connectDomains?.[0]!=='https://jmisjustme-estate.pages.dev')throw new Error('resource origin or nested frame policy changed');
+x = await rpc(8,'tools/call',{name:'navigator_render_original_browser',arguments:{}});
+if(!x.res.ok || x.json.error || x.json.result.structuredContent?.host_render_state!=='UNVERIFIED')throw new Error('original render tool did not preserve host proof boundary');
+x = await rpc(9,'tools/call',{name:'navigator_render_original_browser',arguments:{url:'https://example.com'}});
+if(x.res.ok || !x.json.error)throw new Error('render accepted arbitrary URL');
+x = await rpc(10,'resources/read',{uri:'ui://unknown/original.html'});
+if(x.res.ok || !x.json.error)throw new Error('unknown UI resource accepted');
+x = await rpc(11,'resources/read',{uri:'ui://jm3232-navigator/airborne-chatgpt-cp03.html'});
+if(x.res.ok || !x.json.error || !String(x.json.error.message).includes('source'))throw new Error('invalid/unavailable original source not rejected');
+if(health.resource_count!==1 || health.tool_count!==7)throw new Error('health new surface not accounted for');
+x=await rpc(12,'tools/call',{name:'navigator_internet_search',arguments:{query:'A'}});
+if(x.res.ok||!x.json.error)throw new Error('short search accepted');
+x=await rpc(13,'tools/call',{name:'navigator_internet_search',arguments:{query:'okay',url:'https://bad.invalid'}});
+if(x.res.ok||!x.json.error)throw new Error('arbitrary search URL accepted');
+console.log('JM3232 CP03: five inherited tools + render + separate internet tool, negative-source refusal, write protection PASS');

@@ -1,0 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# EXAMPLE only. Install under ~/.termux/boot/ deliberately, after owner approval.
+# Termux:Boot must be launched once; do not use wake lock by default.
+cd "$HOME/JM_WORKSPACE/JM-cading-lab" || exit 2
+python agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py mailbox --loop >> "$HOME/.jm-phone-mailbox.log" 2>&1

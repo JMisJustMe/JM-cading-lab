@@ -1,10 +1,14 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+
+const fixtureEtag = value => createHash('sha256').update(String(value)).digest('hex');
 
 class FakeR2Object {
   constructor(record) {
     this.record = record;
     this.body = record.body;
+    this.etag = record.etag || fixtureEtag(record.body);
   }
   async text() { return String(this.record.body); }
   writeHttpMetadata(headers) {
@@ -13,9 +17,15 @@ class FakeR2Object {
 }
 
 class FakeR2 {
-  constructor() { this.map = new Map(); }
+  constructor() { this.map = new Map(); this.version = 0; }
   async get(key) { const item = this.map.get(key); return item ? new FakeR2Object(item) : null; }
   async put(key, body, options = {}) {
+    const existing = this.map.get(key);
+    if (options.onlyIf instanceof Headers) {
+      if (options.onlyIf.get('if-none-match') === '*' && existing) return null;
+    } else if (options.onlyIf?.etagMatches !== undefined) {
+      if (!existing || new FakeR2Object(existing).etag !== options.onlyIf.etagMatches) return null;
+    }
     if (this.dropNextIndexWrite && key.endsWith('/bodies/index.json')) {
       this.dropNextIndexWrite = false;
       return;
@@ -45,7 +55,9 @@ class FakeR2 {
       this.tamperNextSnapshotWrite = false;
       stored += '\n';
     }
-    this.map.set(key, { body: stored, options });
+    const record = { body: stored, options, etag: String(++this.version) + '-' + fixtureEtag(stored) };
+    this.map.set(key, record);
+    return new FakeR2Object(record);
   }
   async delete(key) {
     if (this.dropNextBodyDelete && key.endsWith('.html')) {

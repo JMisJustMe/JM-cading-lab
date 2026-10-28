@@ -120,6 +120,10 @@ const readVersions = new WeakMap();
 class VaultWriteConflict extends Error {
   constructor() { super('PRIVATE_CONCURRENT_WRITE_CONFLICT'); }
 }
+// CP16: an owner editor must not silently replace state changed since its last read.
+class VaultStateStaleError extends Error {
+  constructor() { super('OWNER_STATE_HEAD_CHANGED'); }
+}
 async function readJson(bucket, key, fallback) {
   let object;
   try { object = await bucket.get(key); }
@@ -199,6 +203,7 @@ async function manifest(bucket) {
     schema: SCHEMA,
     state: safeState(stateRecord.state),
     state_updated_at: stateRecord.updated_at || null,
+    state_revision: await sha256Text(JSON.stringify(stateRecord)),
     bodies: Array.isArray(bodyIndex.bodies) ? bodyIndex.bodies : [],
     bodies_updated_at: bodyIndex.updated_at || null,
     boundary: 'Private owner storage. Nothing in this response is a public-publication claim.'
@@ -208,7 +213,16 @@ async function manifest(bucket) {
 async function saveState(bucket, payload) {
   // A PUT may update a healthy state or create a genuinely absent state;
   // it may never overwrite an existing unreadable state.
-  const priorState = await readJson(bucket, STATE_KEY, { schema: `${SCHEMA}.State`, state: safeState({}) });
+  const priorState = await readJson(bucket, STATE_KEY, { schema: `${SCHEMA}.State`, updated_at: null, state: safeState({}) });
+  // Opt-in editor precondition. Existing API clients remain compatible, but
+  // the JM Owner Room now supplies the exact last-observed state revision.
+  if (payload && Object.prototype.hasOwnProperty.call(payload, 'expectedStateRevision')) {
+    const expected = payload.expectedStateRevision;
+    if (typeof expected !== 'string' || !/^[a-f0-9]{64}$/.test(expected)
+      || await sha256Text(JSON.stringify(priorState)) !== expected) {
+      throw new VaultStateStaleError();
+    }
+  }
   const now = new Date().toISOString();
   const record = {
     schema: `${SCHEMA}.State`,
@@ -479,7 +493,8 @@ async function handleOwnerRequest(context) {
     try { payload = await request.json(); }
     catch { return json({ schema: SCHEMA, error: 'INVALID_JSON' }, 400); }
     const record = await saveState(bucket, payload);
-    return json({ schema: SCHEMA, outcome: 'STATE_SAVED', updated_at: record.updated_at, state: record.state });
+    return json({ schema: SCHEMA, outcome: 'STATE_SAVED', updated_at: record.updated_at,
+      state_revision: await sha256Text(JSON.stringify(record)), state: record.state });
   }
 
   if (request.method === 'POST') {
@@ -520,6 +535,10 @@ export async function onRequest(context) {
   try {
     return await handleOwnerRequest(context);
   } catch (error) {
+    if (error instanceof VaultStateStaleError) {
+      return json({ schema: SCHEMA, error: 'OWNER_STATE_HEAD_CHANGED',
+        recovery: 'RELOAD_PRIVATE_OWNER_STATE_BEFORE_SYNC_NO_AUTOMATIC_OVERWRITE' }, 409);
+    }
     if (error instanceof VaultWriteConflict) {
       return json({
         schema: SCHEMA,

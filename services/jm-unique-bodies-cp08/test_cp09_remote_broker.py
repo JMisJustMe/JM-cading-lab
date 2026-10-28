@@ -192,4 +192,33 @@ class TestRemoteBroker(unittest.TestCase):
   self.assertFalse(good);self.assertEqual(reason,'OWNER_TOKEN_NOT_ACCEPTED')
   self.assertEqual(fake.call_count,1)
 
+ def test_15_authenticated_mcp_initialized_notification_gets_empty_202(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream',
+           'Authorization':'Bearer '+t['access_token']}
+  s,head,body=self.call(self.cp09,'/mcp','POST',
+     {'jsonrpc':'2.0','method':'notifications/initialized'},headers)
+  self.assertEqual(s,202)
+  self.assertEqual(body,b'')
+  self.assertEqual(head.get('Content-Length'),'0')
+ def test_16_notification_is_not_an_anonymous_bypass(self):
+  s,_,_=self.call(self.cp09,'/mcp','POST',
+    {'jsonrpc':'2.0','method':'notifications/initialized'},
+    {'Content-Type':'application/json'})
+  self.assertEqual(s,401)
+ def test_17_authenticated_get_without_sse_returns_405(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  s,h,b=self.call(self.cp09,'/mcp','GET',headers={'Authorization':'Bearer '+t['access_token'],'Accept':'text/event-stream'})
+  self.assertEqual(s,405)
+  self.assertEqual(b,b'')
+ def test_18_fake_notification_with_id_must_not_get_202(self):
+  s,t,_,_=self.approve()
+  self.assertEqual(s,200)
+  s,_,_=self.call(self.cp09,'/mcp','POST',
+    {'jsonrpc':'2.0','id':9,'method':'notifications/initialized'},
+    {'Content-Type':'application/json','Authorization':'Bearer '+t['access_token']})
+  self.assertEqual(s,400)
+
 if __name__=='__main__':unittest.main(verbosity=2)

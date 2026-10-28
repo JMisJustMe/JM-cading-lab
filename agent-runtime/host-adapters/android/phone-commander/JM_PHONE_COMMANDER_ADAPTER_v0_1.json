@@ -10,19 +10,35 @@
   "source_repository": "JMisJustMe/JM-cading-lab",
   "mailbox_repository": "JMisJustMe/JM-ai-studio-surface",
   "mailbox_private_required": true,
-  "commands": ["status", "git-status", "route", "read-file", "edit-file"],
+  "commands": [
+    "status",
+    "git-status",
+    "route",
+    "read-file",
+    "edit-file"
+  ],
   "no_arbitrary_shell": true,
   "edit_policy": "private owner mailbox + short owner-device grant + explicit confirmation + expected source SHA256 + backup + exact readback",
   "proof": {
-    "local_fixture": "28/28 PASS, 2026-10-28",
+    "local_fixture": "30/30 PASS, GitHub Actions run 40771978217, commit befc52ad987cceb8c19d7f754befe3652bccfda3 (off-device only)",
     "source_repo_contact": "PASS: GitHub connector read existing parent and confirmed private mailbox repository",
     "phone_runtime": "OPEN",
     "remote_issue_roundtrip": "OPEN",
     "physical_owner_edit": "OPEN",
     "boot_recovery": "OPEN",
     "codex_contact": "OPEN",
-    "proof_level": "FUNCTION_LOCAL_FIXTURE_ONLY"
+    "proof_level": "FUNCTION_LOCAL_FIXTURE_ONLY",
+    "off_device_ci": "PASS: exact 30 tests including core/git failure refusal, run 40771978217; no physical host proof",
+    "mailbox_issue": "OPEN: existing private owner status-only issue #1; phone receipt not observed",
+    "known_boundaries": "Normal ChatGPT GitHub and JM Build Mesh connector contact observed; Work and Codex require independent acceptance; deployment unproven"
   },
-  "do_not_claim": ["laptop remote access", "constant phone wakefulness", "phone remote command completion", "blanket external permissions", "Android host contact", "Codex host contact"],
+  "do_not_claim": [
+    "laptop remote access",
+    "constant phone wakefulness",
+    "phone remote command completion",
+    "blanket external permissions",
+    "Android host contact",
+    "Codex host contact"
+  ],
   "keeper": "CHANGE THE PLUG, NOT THE BODY; NO DING NO CLAIM"
 }

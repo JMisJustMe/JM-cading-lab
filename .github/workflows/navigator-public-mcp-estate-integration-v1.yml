@@ -229,13 +229,23 @@ jobs:
           const html=c.text;
           assert.ok(html.includes('v1.5.2 · AIRBORNE'));
           assert.ok(html.includes('<base href="https://jmisjustme-estate.pages.dev/navigator/">'));
-          const rest=html.replace('<base href="https://jmisjustme-estate.pages.dev/navigator/">','');
+          const bridgeStart=html.indexOf('<script data-jm-cp03="host-bridge">');
+          const bridgeEnd=html.indexOf('</script>\\n',bridgeStart);
+          assert.ok(bridgeStart>=0&&bridgeEnd>bridgeStart,'original bridge absent');
+          const sourceSave="function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store))}catch(e){memoryPersist=JSON.parse(JSON.stringify(store))}}";
+          const bridgedSave=sourceSave.replace('function saveStore(){','function saveStore(){window.JM3232_CHATGPT_BRIDGE?.persist(store);');
+          const contactStart=html.indexOf(';if(store.settings.remote&&window.JM3232_CHATGPT_BRIDGE?.internet){');
+          const contactEnd=html.indexOf('if(store.settings.remote&&store.settings.wikipedia)',contactStart);
+          assert.ok(contactStart>=0&&contactEnd>contactStart&&html.includes(bridgedSave),'original contact graft absent');
+          const source=html.slice(0,bridgeStart)+html.slice(bridgeEnd+'</script>\\n'.length);
+          const rest=source.replace(html.slice(contactStart,contactEnd),'').replace(bridgedSave,sourceSave)
+            .replace('<base href="https://jmisjustme-estate.pages.dev/navigator/">','');
           assert.equal(sha(Buffer.from(rest,'utf8')),c._meta['jm/source_sha256']);
           assert.equal(c._meta['jm/source_status'],'HASH_PINNED_ORIGINAL_PLUS_CP03_HOST_BRIDGE_HOST_UNVERIFIED');
-          const receipt={schema:'JM.JM3232.CP02.PreviewReceipt/1.0',test:'LIVE_PREVIEW_MCP_RESOURCE',result:'PASS',host_ding:false,
+          const receipt={schema:'JM.JM3232.CP03.PreviewReceipt/1.0',test:'LIVE_PREVIEW_MCP_RESOURCE',result:'PASS',host_ding:false,
             preview:base,canonical:'https://jmisjustme-estate.pages.dev/navigator/',
             source_sha256:c._meta['jm/source_sha256'],source_bytes:c._meta['jm/source_bytes'],
-            source_roundtrip:true,tools:7,existing_tools_preserved:true,mutable_tools_exposed:false,
+            source_roundtrip:true,original_ui:true,in_app_search_tool:true,tools:7,existing_tools_preserved:true,mutable_tools_exposed:false,
             note:'Actual ChatGPT client display/touch and Internet result stay OPEN.'};
           fs.writeFileSync('JM3232_CP03_PREVIEW_RECEIPT.json',JSON.stringify(receipt,null,2)+'\n');
           console.log(JSON.stringify(receipt,null,2));

@@ -35,6 +35,9 @@ jobs:
           set -u
           BASE='https://jmisjustme-estate.pages.dev'
           ok=0
+          # The PR proves current public readiness without anticipating deployment.
+          # After merging, REQUIRE_CP05 waits for the actual live editor policy.
+          export REQUIRE_CP05='${{ github.event_name == 'pull_request' && '0' || '1' }}'
           http='000'
           status='{}'
           sw=''
@@ -59,7 +62,9 @@ jobs:
               data=json.loads(os.environ['STATUS_JSON'])
           except Exception:
               sys.exit(1)
-          sys.exit(0 if data.get('ready') is True and data.get('storage_bound') is True and data.get('owner_key_configured') is True else 1)
+          baseline = data.get('ready') is True and data.get('storage_bound') is True and data.get('owner_key_configured') is True
+          editor = data.get('editor_policy') == 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY'
+          sys.exit(0 if baseline and (os.environ.get('REQUIRE_CP05') != '1' or editor) else 1)
           PY
             then
               if printf '%s' "$sw" | grep -Fq "$expected_cache"; then
@@ -105,12 +110,14 @@ jobs:
               'http_status': os.environ.get('HTTP'),
               'status_response': status,
               'cache_marker': os.environ.get('CACHE_MARKER'),
+              'public_editor_policy': status.get('editor_policy'),
+              'cp05_public_editor_policy_verified': passed and status.get('editor_policy') == 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'authenticated_write_read_delete_proof': False,
               'owner_secret_value_recorded': False,
               'ding': False,
-              'claim_boundary': 'This receipt proves only public status visibility of the bound R2 resource and configured owner secret plus the current cache deployment. Authenticated owner storage mutation remains a separate owner-session proof.'
+              'claim_boundary': 'This receipt proves public-safe function readiness and CP05 editor policy only when that marker is returned by the deployed API. It does NOT prove owner authentication, private body editing, owner-device reload or cross-device persistence; those require a separate owner-session proof.'
           }
           Path('registry/owner-vault-live-readiness-receipt-v0.1.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY

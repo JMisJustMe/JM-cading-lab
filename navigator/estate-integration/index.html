@@ -114,6 +114,13 @@ async function retrieve(path){
   // The existing public GitHub source is the authoritative workroom record;
   // do not clone its source tree into the canonical Cloudflare deployment.
   if(path.startsWith('estate-publication/apps-tools-convergence/')){
+    // Read the original file when the source host serves it; never accept an SPA
+    // HTML fallback as JSON, and never copy the workroom subtree to the public site.
+    try{
+      const original=await fetch(new URL(path,root),{cache:'no-store'});
+      if(original.ok && /application\/json/i.test(original.headers.get('content-type')||''))
+        return original.json();
+    }catch{}
     const raw='https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/main/'+path;
     const source=await fetch(raw,{cache:'no-store'});
     if(!source.ok)throw Error('original GitHub source HTTP '+source.status);

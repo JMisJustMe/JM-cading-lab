@@ -1,0 +1,33 @@
+name: JM Owner Vault — Corrupt Custody Diagnostic CP10
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'functions/api/owner/vault.js'
+      - 'tools/probe-owner-vault-corruption-cp10.mjs'
+      - '.github/workflows/jm-owner-vault-custody-probe-cp10.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'functions/api/owner/vault.js'
+      - 'tools/probe-owner-vault-corruption-cp10.mjs'
+      - '.github/workflows/jm-owner-vault-custody-probe-cp10.yml'
+permissions:
+  contents: read
+jobs:
+  custody-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe actual handler against in-memory malformed private metadata
+        run: node tools/probe-owner-vault-corruption-cp10.mjs
+      - name: Mark unresolved issue explicitly, without changing owner storage
+        run: |
+          echo "::notice::CP10 is diagnostic-only. Check the job summary: HOLD is not a pass of data safety."
+          echo "REAL_OWNER_PRIVATE_STORAGE=NOT_ACCESSED"
+          echo "PRODUCTION_API_SOURCE=UNCHANGED_BY_THIS_WORKFLOW"

@@ -27,13 +27,15 @@
     "physical_owner_edit": "OPEN",
     "boot_recovery": "OPEN",
     "codex_contact": "OPEN",
-    "proof_level": "HOST_CONTACT: status + existing sovereign-core routing + git-status; exact scope only. Other operations and recovery OPEN.",
+    "proof_level": "HOST_CONTACT: four allowlisted operations status, route, git-status, read-file proven on physical Samsung; explicit protected-path refusal proven. edit-file and recovery OPEN.",
     "off_device_ci": "PASS: exact 30 tests including core/git failure refusal, run 40771978217; no physical host proof",
     "mailbox_issue": "PASS (status only): https://github.com/JMisJustMe/JM-ai-studio-surface/issues/1#issuecomment-6481177550 ; state CLOSED",
     "known_boundaries": "Normal ChatGPT GitHub and JM Build Mesh connector contact observed; Work and Codex require independent acceptance; deployment unproven",
-    "remaining": "Remote file-read, owner-authorised edit with exact readback/backup, reboot recovery, background reachability, and Codex contact OPEN.",
+    "remaining": "Owner-authorised edit-file (expected SHA, backup, readback), reboot/restart recovery, secure GitHub credential storage, background reachability, independent Codex contact OPEN.",
     "remote_route": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/2#issuecomment-6481244467 ; phone JM core exit 0; 12 of 64 logically ACTIVE_ROUTE, 52 AVAILABLE_NOT_SELECTED; stdout truncated at 12,000 characters but route accounting present.",
-    "remote_git_status": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/3#issuecomment-6481243667 ; git status exit 0, tracked files clean, branch feat/jm-phone-commander-v0-1-20261028; untracked files not checked."
+    "remote_git_status": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/3#issuecomment-6481243667 ; git status exit 0, tracked files clean, branch feat/jm-phone-commander-v0-1-20261028; untracked files not checked.",
+    "remote_read_file": "PASS: Samsung Termux exact full UTF-8 read of agent-runtime/README.md; returned SHA256 2629bab7d09182c86bea9adc1a346a4685003a259a4d5917718db261639ef9bd and untruncated text independently matched GitHub source; https://github.com/JMisJustMe/JM-ai-studio-surface/issues/4#issuecomment-6481313111",
+    "protected_path_refusal": "PASS: denied .git/config with HOLD reason PROTECTED_PATH; private issue #5 closed with receipt; https://github.com/JMisJustMe/JM-ai-studio-surface/issues/5#issuecomment-6481312513"
   },
   "do_not_claim": [
     "laptop remote access",

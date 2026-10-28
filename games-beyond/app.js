@@ -59,9 +59,71 @@ function openRequestedSourceEditor(){
   $('bodyState').textContent+=' · Browser IndexedDB revision (not GitHub writeback or public release)';
 }
 function editBody(id){const b=findBody(id);if(!b)return;selected=id;$('editEmpty').hidden=true;$('workspace').hidden=false;$('bodyName').value=b.name||'';$('bodyVersion').value=b.version||'';$('bodyRole').value=b.role||'';$('bodyCategory').value=b.category||'';$('bodyStage').value=b.stage||'';$('source').value=b.html||'';$('bodyState').textContent=`${b.edited?'Creator revision':'Protected delivery body'} · ${b.hash||'hash pending'}`;view('edit',false);renderRooms()}
-async function saveEdit(sourceOnly=false){const b=findBody(selected);if(!b)return;await put('revisions',{key:Date.now()+Math.random(),bodyId:b.id,time:NOW(),body:structuredClone(b)});if(!sourceOnly)Object.assign(b,{name:$('bodyName').value.trim()||b.name,version:$('bodyVersion').value.trim(),role:$('bodyRole').value.trim(),category:$('bodyCategory').value.trim(),stage:$('bodyStage').value.trim()});b.html=$('source').value;b.hash=await hash(b.html);b.edited=true;b.updatedAt=NOW();await put('edits',structuredClone(b));await receipt('CREATOR_REVISION_SAVED',b.name,{id:b.id,hash:b.hash});renderAll();toast('Creator revision saved')}
-async function undo(){const b=findBody(selected);if(!b)return;const revs=(await all('revisions')).filter(x=>x.bodyId===b.id).sort((a,b)=>b.key-a.key);if(!revs.length)return toast('No revision to undo',true);Object.assign(b,revs[0].body,{edited:true});await put('edits',structuredClone(b));await remove('revisions',revs[0].key);await receipt('SOURCE_UNDO',b.name,{from:revs[0].time});renderAll();editBody(b.id);toast('Previous revision restored')}
-async function restore(){const base=protectedBodies.get(selected),at=pack.bodies.findIndex(x=>x.id===selected);if(!base||at<0)return;pack.bodies[at]=structuredClone(base);await remove('edits',selected);await receipt('PROTECTED_SOURCE_RESTORED',base.name,{id:selected});renderAll();editBody(selected);toast('Protected source restored')}
+// CP09: treat IndexedDB transaction completion (not an in-memory change or
+// individual request success) as proof of local source persistence.
+// Both original revision custody and the new edit share one transaction.
+function commitCreatorEdit(next,prior=null,discardRevisionKey=null){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(['edits','revisions'],'readwrite');
+    tx.oncomplete=()=>resolve();
+    tx.onabort=()=>reject(tx.error||Error('SOURCE_EDIT_TRANSACTION_ABORTED'));
+    tx.onerror=()=>reject(tx.error||Error('SOURCE_EDIT_TRANSACTION_FAILED'));
+    tx.objectStore('edits').put(structuredClone(next));
+    if(prior)tx.objectStore('revisions').put({
+      key:Date.now()+Math.random(),bodyId:prior.id,time:NOW(),body:structuredClone(prior)
+    });
+    if(discardRevisionKey!==null)tx.objectStore('revisions').delete(discardRevisionKey);
+  });
+}
+function commitCreatorRestore(id){
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction('edits','readwrite');
+    tx.oncomplete=()=>resolve();
+    tx.onabort=()=>reject(tx.error||Error('SOURCE_RESTORE_TRANSACTION_ABORTED'));
+    tx.onerror=()=>reject(tx.error||Error('SOURCE_RESTORE_TRANSACTION_FAILED'));
+    tx.objectStore('edits').delete(id);
+  });
+}
+async function saveEdit(sourceOnly=false){
+  const body=findBody(selected);if(!body)return;
+  const next=structuredClone(body);
+  if(!sourceOnly)Object.assign(next,{
+    name:$('bodyName').value.trim()||body.name,version:$('bodyVersion').value.trim(),
+    role:$('bodyRole').value.trim(),category:$('bodyCategory').value.trim(),stage:$('bodyStage').value.trim()
+  });
+  next.html=$('source').value;
+  next.hash=await hash(next.html);
+  next.edited=true;next.updatedAt=NOW();
+  try{
+    await commitCreatorEdit(next,body);
+    Object.assign(body,next);
+    await receipt('CREATOR_REVISION_SAVED',body.name,{id:body.id,hash:body.hash}).catch(()=>{});
+    renderAll();toast('Creator revision saved to local IndexedDB');
+  }catch(e){toast('Creator revision HOLD: '+e.message,true)}
+}
+async function undo(){
+  const body=findBody(selected);if(!body)return;
+  const revs=(await all('revisions')).filter(x=>x.bodyId===body.id).sort((a,b)=>b.key-a.key);
+  if(!revs.length)return toast('No revision to undo',true);
+  const previous=revs[0],next={...structuredClone(previous.body),edited:true};
+  try{
+    await commitCreatorEdit(next,null,previous.key);
+    Object.assign(body,next);
+    await receipt('SOURCE_UNDO',body.name,{from:previous.time}).catch(()=>{});
+    renderAll();editBody(body.id);toast('Previous revision restored from IndexedDB');
+  }catch(e){toast('Undo HOLD: '+e.message,true)}
+}
+async function restore(){
+  const base=protectedBodies.get(selected),at=pack.bodies.findIndex(x=>x.id===selected);
+  if(!base||at<0)return;
+  const copy=structuredClone(base);
+  try{
+    await commitCreatorRestore(selected);
+    pack.bodies[at]=copy;
+    await receipt('PROTECTED_SOURCE_RESTORED',base.name,{id:selected}).catch(()=>{});
+    renderAll();editBody(selected);toast('Protected source restored in IndexedDB');
+  }catch(e){toast('Protected source restore HOLD: '+e.message,true)}
+}
 async function exportBody(id){const b=findBody(id);if(!b)return;download((b.sourceName||`${b.id}.html`).split('/').pop(),b.html,'text/html');await receipt('BODY_EXPORTED',b.name,{id,hash:b.hash,bytes:new Blob([b.html]).size})}
 function audit(b){const html=b.html||'',issues=[],add=(code,severity,message,count=1)=>issues.push({code,severity,message,count});if(!/<html\b[^>]*\blang\s*=/i.test(html))add('HTML_LANG','moderate','Language not declared');if(!/<title\b[^>]*>\s*[^<]+/i.test(html))add('DOCUMENT_TITLE','serious','Title missing');if(!/<main\b|role\s*=\s*["']main["']/i.test(html))add('MAIN_LANDMARK','moderate','Main landmark not detected');if(!/<h1\b/i.test(html))add('H1','moderate','H1 not detected');const alt=(html.match(/<img\b[^>]*>/gi)||[]).filter(x=>! /\balt\s*=/i.test(x)).length;if(alt)add('IMAGE_ALT','serious','Images missing alt',alt);const frames=(html.match(/<iframe\b[^>]*>/gi)||[]).filter(x=>! /\btitle\s*=/i.test(x)).length;if(frames)add('IFRAME_TITLE','serious','Frames missing titles',frames);const canvas=(html.match(/<canvas\b[^>]*>/gi)||[]).filter(x=>! /(aria-label|aria-labelledby|role)\s*=/i.test(x)).length;if(canvas)add('CANVAS_NAME','serious','Canvases missing names',canvas);if(/@keyframes|animation\s*:|transition\s*:/i.test(html)&&! /prefers-reduced-motion/i.test(html))add('REDUCED_MOTION','moderate','Motion without reduced-motion rule');if(/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(html))add('ZOOM_RESTRICTION','serious','Viewport restricts zoom');const serious=issues.filter(x=>x.severity==='serious').reduce((n,x)=>n+x.count,0),moderate=issues.filter(x=>x.severity==='moderate').reduce((n,x)=>n+x.count,0);return{id:b.id,name:b.name,version:b.version,grade:serious===0&&moderate<=1?'A':serious<=2&&moderate<=4?'B':'C',issueCount:issues.reduce((n,x)=>n+x.count,0),issues,bytes:new Blob([html]).size}}
 async function runAudit(open=true){if(!pack)return;const results=pack.bodies.map(b=>{const a=audit(b);b.accessibilityAudit=a;return a});lastAudit={schema:'JM.AccessibilitySweep/0.5-runtime',checkedAt:NOW(),bodyCount:results.length,claimBoundary:'Automated static preflight and runtime assistance; not a WCAG certification.',results};await receipt('ACCESSIBILITY_SWEEP','Games&Beyond',{bodyCount:results.length,grades:results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{})});renderAudit();renderRooms();if(open)view('access');toast(`${results.length}-body accessibility sweep complete`)}

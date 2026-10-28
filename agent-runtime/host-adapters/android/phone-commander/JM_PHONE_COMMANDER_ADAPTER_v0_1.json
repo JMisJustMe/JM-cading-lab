@@ -27,16 +27,18 @@
     "physical_owner_edit": "PASS (bounded temporary phone-local README edit): owner-granted hash-checked edit succeeded; old fdd88244694ae0c5f7fedb1dbc33519350d296036adc1c955fc502d40976f31c → new 14d8ac60599a1a82667f42c6f84469407173038673310b647b8e4810abc469e5, exact readback hash matched; private issue #7 receipt https://github.com/JMisJustMe/JM-ai-studio-surface/issues/7#issuecomment-6481404605; backup path reported, independent backup file inspection not yet completed.",
     "boot_recovery": "OPEN",
     "codex_contact": "OPEN",
-    "proof_level": "HOST_CONTACT: all five allowlisted operations exercised physically; edit-file bounded to owner grant and hash-checked README. Recovery and restore pending.",
+    "proof_level": "HOST_CONTACT: all five bounded commands and reversible README edit/restore physically passed, source/receipts independently read back; Android boot and automatic polling remain OPEN.",
     "off_device_ci": "PASS: exact 30 tests including core/git failure refusal, run 40771978217; no physical host proof",
     "mailbox_issue": "PASS (status only): https://github.com/JMisJustMe/JM-ai-studio-surface/issues/1#issuecomment-6481177550 ; state CLOSED",
     "known_boundaries": "Normal ChatGPT GitHub and JM Build Mesh connector contact observed; Work and Codex require independent acceptance; deployment unproven",
-    "remaining": "Reverse edit #8 and independent readback; backup inspection; phone restart/boot recovery; credential hardening; background reachability; independent Codex contact remain OPEN.",
+    "remaining": "Dedicated post-restore file-read receipt; backup contents; opt-in re-entry launcher physical fresh-session test; Android reboot/boot process; GitHub credential-at-rest hardening; background reliability; Codex exact-host contact OPEN.",
     "remote_route": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/2#issuecomment-6481244467 ; phone JM core exit 0; 12 of 64 logically ACTIVE_ROUTE, 52 AVAILABLE_NOT_SELECTED; stdout truncated at 12,000 characters but route accounting present.",
     "remote_git_status": "PASS: https://github.com/JMisJustMe/JM-ai-studio-surface/issues/3#issuecomment-6481243667 ; git status exit 0, tracked files clean, branch feat/jm-phone-commander-v0-1-20261028; untracked files not checked.",
     "remote_read_file": "PASS: Samsung Termux exact full UTF-8 read of agent-runtime/README.md; returned SHA256 2629bab7d09182c86bea9adc1a346a4685003a259a4d5917718db261639ef9bd and untruncated text independently matched GitHub source; https://github.com/JMisJustMe/JM-ai-studio-surface/issues/4#issuecomment-6481313111",
     "protected_path_refusal": "PASS: denied .git/config with HOLD reason PROTECTED_PATH; private issue #5 closed with receipt; https://github.com/JMisJustMe/JM-ai-studio-surface/issues/5#issuecomment-6481312513",
-    "restore": "PENDING physical phone roundtrip: issue #8 staged exact reverse edit with expected current SHA256 and original bytes; do not claim restored until returned receipt and readback."
+    "restore": "PASS (bounded): independent private GitHub issue #8 returned Samsung owner-granted reverse edit, old SHA256 14d8ac60599a1a82667f42c6f84469407173038673310b647b8e4810abc469e5, new/readback SHA256 fdd88244694ae0c5f7fedb1dbc33519350d296036adc1c955fc502d40976f31c, original exact source hash re-established; https://github.com/JMisJustMe/JM-ai-studio-surface/issues/8#issuecomment-6481440348; separate post-restoration file-read and backup-content inspection not yet claimed.",
+    "process_reentry": "PASS (bounded): one-shot Termux CLI and mailbox commands were independently re-invoked across issues #1-8, with persisted local replay ledger and private returned receipts. Separate fresh-session launcher or Android reboot proof OPEN.",
+    "opt_in_reentry_launcher": "SOURCE CREATED: shell re-entry launcher under JM phone host adapter; CI and actual new Termux session acceptance are separate gates."
   },
   "do_not_claim": [
     "laptop remote access",
@@ -46,7 +48,10 @@
     "unrestricted phone command execution",
     "always-on unattended service",
     "general unrestricted filesystem editing",
-    "verified restoration or persisted backup contents without separate readback"
+    "independent backup bytes verified",
+    "fresh Termux session re-entry verified",
+    "Android reboot recovery verified"
   ],
-  "keeper": "CHANGE THE PLUG, NOT THE BODY; NO DING NO CLAIM"
+  "keeper": "CHANGE THE PLUG, NOT THE BODY; NO DING NO CLAIM",
+  "reentry_launcher": "agent-runtime/host-adapters/android/phone-commander/jmphone-reenter.sh"
 }

@@ -1,0 +1,29 @@
+name: JM3232 CP01 Original Browser UI Contract
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/server.py'
+      - 'estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/public/jm3232-airborne-original-cp01.html'
+      - 'estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/tests/test_inchat_original_cp01.py'
+      - '.github/workflows/jm3232-original-chatgpt-cp01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check CP01 Python and HTML contract
+        run: python3 -m unittest discover -s estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/tests -p 'test_inchat_original_cp01.py' -v
+      - name: Check inline JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('estate-publication/apps-tools-games/apps-tools/jm3232-navigator-browser-bridge-v0.1/public/jm3232-airborne-original-cp01.html')
+          scripts=re.findall(r'<script[^>]*>(.*?)</script>',path.read_text(encoding='utf-8'),flags=re.DOTALL)
+          assert len(scripts)==1, 'expected one self-contained inline script'
+          Path('/tmp/jm3232-cp01-script.js').write_text(scripts[0],encoding='utf-8')
+          PY
+          node --check /tmp/jm3232-cp01-script.js

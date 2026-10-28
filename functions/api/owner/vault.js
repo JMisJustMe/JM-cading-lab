@@ -97,7 +97,10 @@ function custodyShapeValid(record, key) {
     return record.schema === `${SCHEMA}.BodyIndex`
       && Array.isArray(record.bodies)
       && record.bodies.every(item => item && typeof item === 'object'
-        && !Array.isArray(item) && typeof item.id === 'string' && item.id.length > 0);
+        && !Array.isArray(item) && typeof item.id === 'string' && item.id.length > 0)
+      // Duplicate IDs make lookup ambiguous and deletion can remove multiple
+      // index entries while deleting only one object. Hold corrupt custody.
+      && new Set(record.bodies.map(item => item.id)).size === record.bodies.length;
   }
   if (key === STATE_KEY) {
     const state = record.state;

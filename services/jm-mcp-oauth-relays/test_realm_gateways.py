@@ -225,4 +225,78 @@ class RealHttp(unittest.TestCase):
    self.assertEqual(s,405)
    self.assertEqual(b,b'')
 
+
+ def modern(self,realm,method,token=None,name=None,arguments=None,version='2026-07-28',extra=None):
+  params={'_meta':{
+    'io.modelcontextprotocol/protocolVersion':version,
+    'io.modelcontextprotocol/clientInfo':{'name':'jm-cp10-test','version':'1.0'},
+    'io.modelcontextprotocol/clientCapabilities':{}}}
+  h={'Content-Type':'application/json','Accept':'application/json, text/event-stream',
+     'MCP-Protocol-Version':version,'Mcp-Method':method}
+  if token:h['Authorization']='Bearer '+token
+  if name:
+   params.update({'name':name,'arguments':arguments or {}})
+   h['Mcp-Name']=name
+  h.update(extra or {})
+  return self.hit(realm,'/mcp','POST',{'jsonrpc':'2.0','id':1028,'method':method,'params':params},h)
+
+ def test_19_dual_realm_modern_authenticated_discovery(self):
+  for realm in CONFIGS:
+   self.assertEqual(self.modern(realm,'server/discover')[0],401)
+   status,t,_,_=self.approve(realm)
+   self.assertEqual(status,200)
+   status,_,raw=self.modern(realm,'server/discover',t['access_token'])
+   self.assertEqual(status,200,raw)
+   data=json.loads(raw)['result']
+   self.assertEqual(data['resultType'],'complete')
+   self.assertIn('2026-07-28',data['supportedVersions'])
+   self.assertEqual(data['capabilities'],{'tools':{}})
+   self.assertNotIn(CONFIGS[realm]['token'],raw.decode())
+
+ def test_20_dual_realm_modern_filtered_list_and_original_read_call(self):
+  for realm in CONFIGS:
+   status,t,_,_=self.approve(realm)
+   self.assertEqual(status,200)
+   token=t['access_token']
+   status,_,raw=self.modern(realm,'tools/list',token)
+   self.assertEqual(status,200,raw)
+   data=json.loads(raw)['result']
+   self.assertEqual(data['resultType'],'complete')
+   expected=CONFIGS[realm]['tools']
+   if realm=='commons':expected=[x for x in expected if x!='jm_capsule_create']
+   self.assertEqual([x['name'] for x in data['tools']],expected)
+   name=expected[0]
+   status,_,raw=self.modern(realm,'tools/call',token,name,{'source':'CP10 synthetic'})
+   self.assertEqual(status,200,raw)
+   result=json.loads(raw)['result']
+   self.assertEqual(result['resultType'],'complete')
+   self.assertEqual(result['structuredContent']['realm'],realm)
+
+ def test_21_modern_scope_and_header_security_boundaries(self):
+  s,t,_,_=self.approve('commons')
+  self.assertEqual(s,200)
+  token=t['access_token']
+  self.assertEqual(self.modern('commons','tools/call',token,
+     'jm_capsule_create',{})[0],403)
+  self.assertEqual(self.modern('receipt','tools/list',token)[0],401)
+  s,_,raw=self.modern('commons','tools/list',token,extra={'Mcp-Method':'tools/call'})
+  self.assertEqual(s,400,raw)
+  self.assertEqual(json.loads(raw)['error']['code'],-32020)
+  s,_,raw=self.modern('commons','tools/call',token,'jm_original_inspect',{},
+      extra={'Mcp-Name':'jm_capsule_create'})
+  self.assertEqual(s,400,raw)
+  self.assertEqual(json.loads(raw)['error']['code'],-32020)
+
+ def test_22_modern_unsupported_or_unknown_fails_closed(self):
+  for realm in CONFIGS:
+   s,t,_,_=self.approve(realm)
+   self.assertEqual(s,200)
+   token=t['access_token']
+   s,_,raw=self.modern(realm,'resources/list',token)
+   self.assertEqual(s,404,raw)
+   self.assertEqual(json.loads(raw)['error']['code'],-32601)
+   s,_,raw=self.modern(realm,'server/discover',token,version='2099-01-01')
+   self.assertEqual(s,400,raw)
+   self.assertEqual(json.loads(raw)['error']['code'],-32022)
+
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -1,0 +1,16 @@
+name: JM MCP Federation Six Hosted HTTPS Contact
+on:
+  push:
+    branches:
+      - verify/jm-mcp-six-hosts-20261028
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hosted_federation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Contact six actual JM MCP HTTPS hosts and verify bearer HOlDs
+        run: python3 -u services/jm-federation-receipt-cp01/test_six_hosts_live.py

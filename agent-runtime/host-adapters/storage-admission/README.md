@@ -67,3 +67,21 @@ The opt-in GitHub pre-delivery route builds the **existing** JM KICSHIFT portabl
 The failed dirty-run receipt remains in GitHub job history; the correction is cleaning only generated outputs before repeatability comparison, not weakening the test. Repeated-source ancestry never substitutes for actual output identity.
 
 **Execution boundary:** GitHub tests real publicly stored JM source/mount files, not private ChatGPT Library storage. Existing age/role/retirement requirements remain with Work and owner.
+
+
+## CP22 post-processing retention (read-only, 28 Oct 2026)
+
+**Extension of M001, not a new registrar.** CP22 compacts declared structured capture/receipt/version events while preserving the body, version, event, individual carrier, SHA-256 and each actual or intended use.
+
+Decisions: `KEEP_SEPARATE_USE_OR_SOURCE` for creative originals, executable sources, required assets, recovery anchors and any independent use; `HOLD_INCOMPLETE_PURPOSE_OR_PROOF` for unknown or incomplete cases; `REVIEW_ONLY_POSSIBLE_LEAN` for historical receipts or process captures only when extracted facts, proof and recovery references are all supplied and the purpose review is declared cleared. None authorises deletion, source substitution, quota credit or independent provider authentication.
+
+Run locally against an already prepared observations manifest (does not itself analyse raw screenshots/videos):
+
+```bash
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_POSTPROCESS_RETENTION_CP22.py --manifest /path/to/observations.json --output /path/to/NEW-compact-receipt.json
+python3 agent-runtime/host-adapters/storage-admission/JM_M001_POSTPROCESS_RETENTION_CP22_TESTS.py
+```
+
+Input schema: `JM.M001.PostprocessInput/1` with a `records` array. Each record requires `carrier_id`, `body_id`, `version`, `event_id`, `event_summary`, `kind` (`image`, `video`, `receipt`, `version`, `other`), `purpose`, `bytes`, `sha256`, `separate_uses`, `extracted_facts`, `proof_refs`, `recovery_refs`. Optional declared review fields are `extraction_complete`, `structured_custody_verified`, and `use_review` (`affirmatively_cleared` only for a review candidate). Output is a compact JSON index/receipt, **not a verified substitute for missing source bytes**.
+
+CP22 never touches original media, never overwrites an existing receipt, never deletes or updates the native Library and claims zero realised storage savings. The owner-purpose and recovery proof gates remain independent. An identical event/hash is only a comparison signal: individual roles/identities are not merged. Current production admission and original CP21 remain unchanged; an authorised host must supply its own real evidence before applying postprocessing.

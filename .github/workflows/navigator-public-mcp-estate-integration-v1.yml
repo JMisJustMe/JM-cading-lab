@@ -230,14 +230,15 @@ jobs:
           assert.ok(html.includes('v1.5.2 · AIRBORNE'));
           assert.ok(html.includes('<base href="https://jmisjustme-estate.pages.dev/navigator/">'));
           const bridgeStart=html.indexOf('<script data-jm-cp03="host-bridge">');
-          const bridgeEnd=html.indexOf('</script>\\n',bridgeStart);
+          const closing='</script>'+String.fromCharCode(10);
+          const bridgeEnd=html.indexOf(closing,bridgeStart);
           assert.ok(bridgeStart>=0&&bridgeEnd>bridgeStart,'original bridge absent');
           const sourceSave="function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store))}catch(e){memoryPersist=JSON.parse(JSON.stringify(store))}}";
           const bridgedSave=sourceSave.replace('function saveStore(){','function saveStore(){window.JM3232_CHATGPT_BRIDGE?.persist(store);');
           const contactStart=html.indexOf(';if(store.settings.remote&&window.JM3232_CHATGPT_BRIDGE?.internet){');
           const contactEnd=html.indexOf('if(store.settings.remote&&store.settings.wikipedia)',contactStart);
           assert.ok(contactStart>=0&&contactEnd>contactStart&&html.includes(bridgedSave),'original contact graft absent');
-          const source=html.slice(0,bridgeStart)+html.slice(bridgeEnd+'</script>\\n'.length);
+          const source=html.slice(0,bridgeStart)+html.slice(bridgeEnd+closing.length);
           const rest=source.replace(html.slice(contactStart,contactEnd),'').replace(bridgedSave,sourceSave)
             .replace('<base href="https://jmisjustme-estate.pages.dev/navigator/">','');
           assert.equal(sha(Buffer.from(rest,'utf8')),c._meta['jm/source_sha256']);

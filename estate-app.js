@@ -466,7 +466,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       await request('', { method: 'PUT', body: JSON.stringify({ state: localState() }) });
       const bodies = localBodies();
       let stored = 0;
-      let duplicates = 0;
+      let alreadySynced = 0;
       for (let i = 0; i < bodies.length; i += 1) {
         const body = bodies[i];
         message(`Syncing HTML body ${i + 1} of ${bodies.length}: ${body.name || body.fileName || 'Untitled'}…`);
@@ -475,12 +475,13 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
           body: JSON.stringify({ action: 'upload-body', body: {
             name: body.name,
             fileName: body.fileName,
+            sourceInstanceId: body.id || null,
             content: body.content
           } })
         });
-        if (result.duplicate) duplicates += 1; else stored += 1;
+        if (result.same_instance) alreadySynced += 1; else stored += 1;
       }
-      message(`Sync complete: owner state saved; ${stored} new HTML ${stored === 1 ? 'body' : 'bodies'} stored; ${duplicates} duplicate ${duplicates === 1 ? 'body' : 'bodies'} already held.`);
+      message(`Sync complete: owner state saved; ${stored} distinct HTML ${stored === 1 ? 'use' : 'uses'} stored; ${alreadySynced} same-instance ${alreadySynced === 1 ? 'retry' : 'retries'} already held. Matching bytes never erase a separate intended use.`);
       await refreshRemote();
     } catch (error) {
       if (error.status === 401) { setKey(''); authLabel(false); }

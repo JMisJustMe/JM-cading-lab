@@ -263,3 +263,20 @@ jobs:
           path: JM3232_CP03_PREVIEW_RECEIPT.json
           if-no-files-found: error
           retention-days: 30
+
+  browser-emulation-cp03:
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: unit-proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser harness (test-only, no browser engine claim)
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.0
+          npx playwright install --with-deps chromium
+      - name: Exercise original JM3232 UI on touch-width and laptop-width Chromium
+        run: node navigator/mcp-public-v1/test-chatgpt-browser-emulation-cp03.mjs

@@ -124,6 +124,14 @@ jobs:
       - name: Self-test entry classifier
         run: python3 scripts/jm_build_entry_gate.py --self-test
 
+      - name: M001 CP21 output admission for newly added high-byte and cold-only sources
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/jm_build_storage_preflight.py
+          python3 scripts/jm_build_storage_preflight.py --base "$BASE_SHA" --head HEAD
+
       - name: Evaluate live PR entry route
         id: gate
         continue-on-error: true

@@ -45,6 +45,50 @@ jobs:
           "bundle=$($bundle.FullName)" >> $env:GITHUB_OUTPUT
           "out=$out" >> $env:GITHUB_OUTPUT
 
+      - name: Prove M001 duplicate reuse, immutable keepers and partial/corrupt HOLD
+        shell: pwsh
+        env:
+          JM_RECOVERY_OUT: ${{ steps.build.outputs.out }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = $env:JM_RECOVERY_OUT
+          $files = @(Get-ChildItem -LiteralPath $root -File)
+          if ($files.Count -ne 3) { throw 'Expected exactly three complete recovery outputs.' }
+          $before = @{}
+          foreach ($f in $files) { $before[$f.Name] = (Get-FileHash -LiteralPath $f.FullName -Algorithm SHA256).Hash }
+          $reuseLog = (& ./tools/Build-JMEstateRecoveryExport.ps1 -RepoRoot $env:GITHUB_WORKSPACE -OutputDirectory $root 6>&1 | Out-String)
+          if ($reuseLog -notmatch 'M001_REUSE_EXACT_COMMITTED_HEAD') { throw 'Repeat build did not return keeper reuse.' }
+          $after = @(Get-ChildItem -LiteralPath $root -File)
+          if ($after.Count -ne 3) { throw 'Repeat build created another recovery file.' }
+          foreach ($f in $after) {
+            if ($before[$f.Name] -ne (Get-FileHash -LiteralPath $f.FullName -Algorithm SHA256).Hash) {
+              throw "Existing recovery content mutated: $($f.Name)"
+            }
+          }
+          $corrupt = Join-Path $env:RUNNER_TEMP 'jm-estate-export-corrupt'
+          New-Item -ItemType Directory -Path $corrupt -Force | Out-Null
+          foreach ($f in $after) { Copy-Item -LiteralPath $f.FullName -Destination $corrupt }
+          $manifest = @(Get-ChildItem -LiteralPath $corrupt -Filter '*-manifest.json' -File)[0]
+          $parsed = Get-Content -LiteralPath $manifest.FullName -Raw | ConvertFrom-Json
+          $parsed.snapshot.sha256 = '0' * 64
+          $parsed | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $manifest.FullName -Encoding UTF8
+          $badBefore = (Get-FileHash -LiteralPath $manifest.FullName -Algorithm SHA256).Hash
+          $refused = $false
+          try { & ./tools/Build-JMEstateRecoveryExport.ps1 -RepoRoot $env:GITHUB_WORKSPACE -OutputDirectory $corrupt }
+          catch { $refused = $_.Exception.Message -match 'M001_HOLD_UNVERIFIED_EXISTING_EXPORT' }
+          if (-not $refused) { throw 'Corrupted existing recovery was not held.' }
+          if ((Get-FileHash -LiteralPath $manifest.FullName -Algorithm SHA256).Hash -ne $badBefore) {
+            throw 'Bad recovery keeper was overwritten despite HOLD.'
+          }
+          $partial = Join-Path $env:RUNNER_TEMP 'jm-estate-export-partial'
+          New-Item -ItemType Directory -Path $partial -Force | Out-Null
+          Copy-Item -LiteralPath $manifest.FullName -Destination $partial
+          $partialRefused = $false
+          try { & ./tools/Build-JMEstateRecoveryExport.ps1 -RepoRoot $env:GITHUB_WORKSPACE -OutputDirectory $partial }
+          catch { $partialRefused = $_.Exception.Message -match 'M001_HOLD_PARTIAL_RECOVERY_EXPORT' }
+          if (-not $partialRefused) { throw 'Partial recovery keeper was not held.' }
+          Write-Host 'M001 PASS: exact repeat reuses, corrupted/partial originals preserved, no duplicate recovery created.'
+
       - name: Prove source snapshot reconstructs required Estate paths
         shell: pwsh
         env:

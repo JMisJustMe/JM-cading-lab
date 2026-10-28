@@ -138,6 +138,13 @@ async function verifyIndexWrite(bucket, expected) {
   }
 }
 
+async function verifyStateWrite(bucket, expected) {
+  const actual = await readJson(bucket, STATE_KEY, null);
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new VaultBodyIntegrityError('OWNER_STATE_READBACK_MISMATCH');
+  }
+}
+
 async function requireOwner(request, env) {
   if (!env.JM_OWNER_VAULT || !env.JM_OWNER_VAULT_KEY) {
     return { ok: false, response: json({
@@ -182,6 +189,7 @@ async function saveState(bucket, payload) {
     state: safeState(payload?.state)
   };
   await writeJson(bucket, STATE_KEY, record);
+  await verifyStateWrite(bucket, record);
   return record;
 }
 
@@ -216,6 +224,8 @@ async function uploadBody(bucket, payload) {
   // ancestor's bytes is a deliberate new revision, not an old-record lookup.
   const previous = sourceInstanceId ? bodies.find(item => item.sourceInstanceId === sourceInstanceId) : null;
   if (previous && previous.sha256 === hash) {
+    // A matching index entry is not proof that its source bytes still exist.
+    await verifiedBody(bucket, `${BODY_PREFIX}/${previous.id}.html`, previous.sha256, previous.bytes);
     return { duplicate: true, same_instance: true, body: previous };
   }
   // Never silently evict an older purposeful body merely to meet the index limit.
@@ -288,7 +298,11 @@ async function reviseBody(bucket, payload) {
     return { error: json({ schema: SCHEMA, error: 'REVISION_HEAD_CHANGED', current_id: current?.id || null }, 409) };
   }
   const hash = await sha256Text(content);
-  if (hash === base.sha256) return { unchanged: true, body: base };
+  if (hash === base.sha256) {
+    // Do not acknowledge an unchanged edit when the held ancestor is damaged.
+    await verifiedBody(bucket, `${BODY_PREFIX}/${base.id}.html`, base.sha256, base.bytes);
+    return { unchanged: true, body: base };
+  }
   if (bodies.length >= 2000) {
     return { error: json({ schema: SCHEMA, error: 'BODY_INDEX_CAPACITY_REACHED', max_bodies: 2000 }, 409) };
   }

@@ -40,7 +40,12 @@
     "environmentRuntime": "JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js",
     "statePattern": "jm.apps.tools.env.<environment>.v1",
     "donorStateConventionObserved": "jm_complete_<organ>_v1",
-    "portableContinuity": ["export whole environment state + packet bus","import same environment with environment-ID gate","reject wrong-environment portable packet","preserve local state without requiring identical host"]
+    "portableContinuity": [
+      "export whole environment state + packet bus",
+      "import same environment with environment-ID gate",
+      "reject wrong-environment portable packet",
+      "preserve local state without requiring identical host"
+    ]
   },
   "frontDoor": "estate-publication/apps-tools-convergence/index.html",
   "environments": [
@@ -48,34 +53,120 @@
       "id": "evidence-governance",
       "path": "estate-publication/apps-tools-convergence/evidence-governance/index.html",
       "route": "SOURCE -> EXTRACT -> CLASSIFY -> HANDLE -> RECEIPT -> KEEPER",
-      "primaryDonors": ["JM Gem Extraction App v0.1","JM FlowTalk Claim Checker v0.1","JM Truth Handling Toolkit v0.1","JM Receipt Generator v0.1","JM Active Keeper Dashboard v0.1"],
-      "crossGrafts": ["JM Collector Protocol App v0.1","JM Loose Notes Triage Tool v0.1"]
+      "primaryDonors": [
+        "JM Gem Extraction App v0.1",
+        "JM FlowTalk Claim Checker v0.1",
+        "JM Truth Handling Toolkit v0.1",
+        "JM Receipt Generator v0.1",
+        "JM Active Keeper Dashboard v0.1"
+      ],
+      "crossGrafts": [
+        "JM Collector Protocol App v0.1",
+        "JM Loose Notes Triage Tool v0.1"
+      ]
     },
     {
       "id": "creation-publication",
       "path": "estate-publication/apps-tools-convergence/creation-publication/index.html",
       "route": "RE-ENTER -> COLLECT -> TRIAGE -> BUILD -> STAGE -> OUTPUT",
-      "primaryDonors": ["JM Action-First Re-Entry App v0.1","JM Collector Protocol App v0.1","JM Public Output Tool v0.1","JM Books / Manuscripts Builder v0.1","JM Loose Notes Triage Tool v0.1","JM The B Stage v0.1"]
+      "primaryDonors": [
+        "JM Action-First Re-Entry App v0.1",
+        "JM Collector Protocol App v0.1",
+        "JM Public Output Tool v0.1",
+        "JM Books / Manuscripts Builder v0.1",
+        "JM Loose Notes Triage Tool v0.1",
+        "JM The B Stage v0.1"
+      ]
     },
     {
       "id": "contact-practice",
       "path": "estate-publication/apps-tools-convergence/contact-practice/index.html",
       "route": "CONTACT -> COMPARE -> PRACTISE -> RECOGNISE -> TEACH -> DEEPEN",
-      "primaryDonors": ["JM JumpMotion v0.1","JM Expectation Reality Gap Engine v0.1","JM Contact-Reactivation App v0.1","JM Environment-First Logic App v0.1","JM Thought-Route Teaching Tool v0.1"]
+      "primaryDonors": [
+        "JM JumpMotion v0.1",
+        "JM Expectation Reality Gap Engine v0.1",
+        "JM Contact-Reactivation App v0.1",
+        "JM Environment-First Logic App v0.1",
+        "JM Thought-Route Teaching Tool v0.1"
+      ]
     },
     {
       "id": "route-ftr",
       "path": "estate-publication/apps-tools-convergence/route-ftr/index.html",
       "route": "SENSE -> MAP -> TEST -> REMEMBER -> REINTERPRET INPUT",
-      "primaryDonors": ["JM RouteDeck v0.1","JM RouteSense v0.1","JM RouteVault v0.1","JM RouteWrite v0.1","JM Input Layer Editor v0.1"]
+      "primaryDonors": [
+        "JM RouteDeck v0.1",
+        "JM RouteSense v0.1",
+        "JM RouteVault v0.1",
+        "JM RouteWrite v0.1",
+        "JM Input Layer Editor v0.1"
+      ]
     }
   ],
   "donorBoundary": "The 21 strengthened standalone descendants remain valid donor/export/recovery forms. Integrated environments are forward convergence bodies, not retroactive replacements or evidence that every donor-specific deep function has been physically owner-tested inside the new environment.",
   "recoveryHolds": "The historical 20 Recovery Holds remain source-recovery conditions, not a mandatory 20-app build backlog.",
   "laptopBoundary": {
-    "open": ["owner laptop interaction acceptance","phone-laptop live consequence","laptop browser/file lifecycle acceptance"],
-    "notRequiredForThisAssistantSideMaterialization": ["shared packet spine","portable state carriage","four integrated environments","source/static QA","lineage registry"]
+    "open": [
+      "owner laptop interaction acceptance",
+      "phone-laptop live consequence",
+      "laptop browser/file lifecycle acceptance"
+    ],
+    "notRequiredForThisAssistantSideMaterialization": [
+      "shared packet spine",
+      "portable state carriage",
+      "four integrated environments",
+      "source/static QA",
+      "lineage registry"
+    ]
   },
   "nextAfterAssistantSideQA": "Owner contact should target the integrated/current environments actually chosen for use. Cloud/cross-device reach follows body readiness rather than preceding it.",
-  "claimBoundary": "This registry records source-side convergence implementation. It is not an owner-device Ding, cross-device crown, deployment crown, or claim that every donor-specific capability has been physically accepted in the converged surfaces."
+  "claimBoundary": "This registry records source-side convergence implementation. It is not an owner-device Ding, cross-device crown, deployment crown, or claim that every donor-specific capability has been physically accepted in the converged surfaces.",
+  "cp11_2026_10_28": {
+    "stage": "SOURCE_BROWSER_AND_DEPLOYMENT_GATE_FLAZ_COMPLETE; LIVE_CARRIER_SHA_READBACK_PENDING",
+    "original_environments": [
+      "evidence-governance",
+      "creation-publication",
+      "contact-practice",
+      "route-ftr"
+    ],
+    "original_state_keys_preserved": true,
+    "source_merge": {
+      "pr": 596,
+      "sha": "228fc745e49a94fb5b24561b328652f81be8b9be"
+    },
+    "source_proof": {
+      "ci_head": "b28393c5c532a8c440c3e90f981e610ec1fde151",
+      "checks_passed": 24,
+      "checks_total": 24,
+      "node_vm_adversarial_checks": 11,
+      "browser_environment_roundtrips": 4
+    },
+    "controlled_live_carriage": {
+      "host": "https://jmisjustme-estate.pages.dev",
+      "route_base": "/estate-publication/apps-tools-convergence/",
+      "allowlisted_static_file_count": 8,
+      "apps_house_entry": "/apps/",
+      "live_receipt": "registry/apps-tools-cp11-live-carriage-receipt.json",
+      "live_sha256_verified": false
+    },
+    "source_corrections": [
+      "fresh empty packet bus is an array, not string",
+      "malformed saved source fails closed",
+      "no packet eviction past 250",
+      "local state commit and readback before SAVED",
+      "portable environment import validates source and rolls back modified keys on failure",
+      "other environment packets survive import",
+      "four sovereign rooms retain original code and donor distinctions",
+      "private workroom source records excluded from public deployment"
+    ],
+    "hard_holds": [
+      "real owner device and private authenticated session proof",
+      "live public 8/8 exact SHA receipt until proven",
+      "no true cross-tab transaction guarantee",
+      "no automatic GitHub commit of local edits",
+      "all remaining private apps externally editable",
+      "automatic cross-device synchronization"
+    ],
+    "law": "NO DING NO CLAIM; SOURCE NOT LIVE; MESH NOT MERGE; STORAGE COST MUST EARN RETRIEVAL"
+  }
 }

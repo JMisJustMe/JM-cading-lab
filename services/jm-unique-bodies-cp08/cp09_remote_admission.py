@@ -21,19 +21,32 @@ class RemoteAdmission(Admission):
         self.upstream=upstream
         self.owner_by_code={};self.owner_by_access={};self.owner_by_refresh={}
     def probe_owner(self,secret):
-        if not isinstance(secret,str) or len(secret)<24:return False
+        """Compatibility: boolean public-safe validation, no token disclosure."""
+        valid,_=self.check_owner(secret)
+        return valid
+    def check_owner(self,secret):
+        """Return only bounded reason code; never expose token or request bytes."""
+        if not isinstance(secret,str) or len(secret)<24:
+            return False,'OWNER_TOKEN_FORMAT_HOLD'
         payload=json.dumps({'jsonrpc':'2.0','id':401,'method':'tools/list','params':{}}).encode()
         req=urllib.request.Request(self.upstream,data=payload,method='POST',headers={
            'Authorization':'Bearer '+secret,
            'Content-Type':'application/json','Accept':'application/json'})
         try:
             with urllib.request.urlopen(req,timeout=12) as response:
-                if response.status!=200:return False
+                if response.status!=200:return False,'UPSTREAM_CONTACT_HOLD'
                 body=json.loads(response.read(100000))
                 names={x['name'] for x in body['result']['tools']}
-                return {'atomic_contact_execute','atomic_contact_history'}<=names
-        except (urllib.error.URLError,ValueError,KeyError,TypeError,OverflowError):
-            return False
+                if not {'atomic_contact_execute','atomic_contact_history'}<=names:
+                    return False,'UPSTREAM_TOOL_CONTRACT_HOLD'
+                return True,'VERIFIED'
+        except urllib.error.HTTPError as error:
+            if error.code in (401,403):return False,'OWNER_TOKEN_NOT_ACCEPTED'
+            return False,'UPSTREAM_CONTACT_HOLD'
+        except (urllib.error.URLError,TimeoutError,OSError):
+            return False,'UPSTREAM_CONTACT_HOLD'
+        except (ValueError,KeyError,TypeError,OverflowError):
+            return False,'UPSTREAM_TOOL_CONTRACT_HOLD'
     def accept(self,request_id,owner_token):
         now=time.time()
         with self.lock:
@@ -41,15 +54,19 @@ class RemoteAdmission(Admission):
             if len(self.failed_login_at)>=12:raise ValueError('RATE_LIMIT_HOLD')
             req=self.pending.get(digest(request_id))
             if req is None or req['until']<=now:raise ValueError('CONSENT_EXPIRED')
-        if not self.probe_owner(owner_token):
+        # Copy/pasting a file often includes a trailing newline or space.
+        # Trim edge whitespace only; retain the original bearer byte pattern.
+        token=owner_token.strip(' \\t\\r\\n') if isinstance(owner_token,str) else owner_token
+        valid,reason=self.check_owner(token)
+        if not valid:
             with self.lock:self.failed_login_at.append(time.time())
-            raise ValueError('REMOTE_OWNER_BEARER_NOT_VERIFIED')
+            raise ValueError(reason)
         with self.lock:
             req=self.pending.pop(digest(request_id),None)
-            if req is None or req['until']<=time.time():raise ValueError('CONSENT_ALREADY_USED')
+            if req is None or req['until']<=time.time():raise ValueError('CONSENT_EXPIRED')
             code=opaque()
             self.codes[digest(code)]={**req,'until':time.time()+120}
-            self.owner_by_code[digest(code)]=owner_token
+            self.owner_by_code[digest(code)]=token
             return authorize_url(req['redirect_uri'],code,req['state'])
     def grant(self,form):
         grant_type=form.get('grant_type',[''])[0]

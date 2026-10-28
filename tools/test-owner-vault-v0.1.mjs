@@ -195,4 +195,70 @@ let firstBodyId, secondUseId, changedRevisionId, legacyId;
   assert.equal(JSON.parse(bucket.map.get(indexKey).body).bodies.length,2000);
 }
 
-console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion · no silent 2000-body eviction.');
+
+/* CP05: damaged persistent records must never masquerade as empty vaults. */
+{
+  const indexKey = 'jm-owner-vault/v0.1/bodies/index.json';
+  const stateKey = 'jm-owner-vault/v0.1/state.json';
+  const originalIndex = bucket.map.get(indexKey);
+  const originalState = bucket.map.get(stateKey);
+  const badIndex = '{"schema":"JM.OwnerVault/0.1.BodyIndex","bodies":[';
+  bucket.map.set(indexKey, { body: badIndex });
+  const beforeKeys = [...bucket.map.keys()].sort();
+  const upload = await call({
+    method: 'POST', env, key: env.JM_OWNER_VAULT_KEY,
+    body: { action: 'upload-body', body: {
+      sourceInstanceId: 'local-cp05-corruption-guard',
+      content: '<!doctype html><html><body>keep older uses</body></html>'
+    } }
+  });
+  assert.equal(upload.status, 409);
+  const uploadError = await upload.json();
+  assert.equal(uploadError.error, 'VAULT_RECORD_UNREADABLE');
+  assert.equal(uploadError.record, 'body-index');
+  assert.equal(bucket.map.get(indexKey).body, badIndex);
+  assert.deepEqual([...bucket.map.keys()].sort(), beforeKeys);
+  const manifest = await call({ env, key: env.JM_OWNER_VAULT_KEY });
+  assert.equal(manifest.status, 409);
+  assert.equal((await manifest.json()).record, 'body-index');
+  const snapshot = await call({
+    method: 'POST', env, key: env.JM_OWNER_VAULT_KEY, body: { action: 'snapshot' }
+  });
+  assert.equal(snapshot.status, 409);
+  assert.deepEqual([...bucket.map.keys()].sort(), beforeKeys);
+
+  // Syntactically valid JSON with an unusable index is also a HOLD.
+  const badShape = '{"schema":"JM.OwnerVault/0.1.BodyIndex","bodies":{}}';
+  bucket.map.set(indexKey, { body: badShape });
+  const shapeResponse = await call({ env, key: env.JM_OWNER_VAULT_KEY });
+  assert.equal(shapeResponse.status, 409);
+  assert.equal((await shapeResponse.json()).record, 'body-index');
+  assert.equal(bucket.map.get(indexKey).body, badShape);
+  bucket.map.set(indexKey, originalIndex);
+
+  // Damaged owner state must not be served as empty or overwritten by PUT.
+  const badState = '{"schema":"JM.OwnerVault/0.1.State","state":';
+  bucket.map.set(stateKey, { body: badState });
+  const stateGet = await call({ env, key: env.JM_OWNER_VAULT_KEY });
+  assert.equal(stateGet.status, 409);
+  assert.equal((await stateGet.json()).record, 'owner-state');
+  const statePut = await call({
+    method: 'PUT', env, key: env.JM_OWNER_VAULT_KEY,
+    body: { state: { notes: 'would overwrite unreadable original' } }
+  });
+  assert.equal(statePut.status, 409);
+  assert.equal((await statePut.json()).record, 'owner-state');
+  assert.equal(bucket.map.get(stateKey).body, badState);
+  const invalidShape = '{"schema":"JM.OwnerVault/0.1.State","state":[]}';
+  bucket.map.set(stateKey, { body: invalidShape });
+  assert.equal((await call({ env, key: env.JM_OWNER_VAULT_KEY })).status, 409);
+  bucket.map.set(stateKey, originalState);
+
+  // A healthy existing vault remains readable; no changed behaviour on clean data.
+  const clean = await call({ env, key: env.JM_OWNER_VAULT_KEY });
+  assert.equal(clean.status, 200);
+  assert.equal((await clean.json()).bodies.length, 2000);
+  assert.equal((await call({ query: '?mode=status', env: {} })).status, 200);
+}
+
+console.log('PASS: JM Owner Vault owner-state/body/snapshot contract · exact-instance idempotence · distinct purpose same bytes · version ancestry · legacy safety · targeted deletion · no silent 2000-body eviction · CP05 corrupt-record fail-closed read/write/snapshot.');

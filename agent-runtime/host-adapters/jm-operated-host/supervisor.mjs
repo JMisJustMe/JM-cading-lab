@@ -1,5 +1,6 @@
 // JM operated-host CP02: supervised existing Node bodies, no shell or public control API.
 import {spawn} from 'node:child_process';
+import {randomBytes} from 'node:crypto';
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
@@ -7,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 const insist=(yes,msg)=>{if(!yes)throw Error(msg)};
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 export class JMNodeSupervisor{
- constructor({entry,cwd=path.dirname(path.resolve(entry)),port,healthPath='/ready',maxRestarts=2,intervalMs=120,timeoutMs=4500,env={}}){
+ constructor({entry,cwd=path.dirname(path.resolve(entry)),port,healthPath='/ready',maxRestarts=2,intervalMs=120,timeoutMs=4500,env={},readinessProof=false}){
   this.entry=path.resolve(entry);this.cwd=path.resolve(cwd);this.port=port;
   insist(Number.isInteger(port)&&port>0&&port<65536,'INVALID_SERVICE_PORT');
   insist(this.entry.startsWith(this.cwd+path.sep),'ENTRY_OUTSIDE_CWD');
@@ -16,18 +17,24 @@ export class JMNodeSupervisor{
   insist(Number.isInteger(maxRestarts)&&maxRestarts>=0&&maxRestarts<=10,'INVALID_RESTART_LIMIT');
   insist(Number.isInteger(intervalMs)&&intervalMs>=25&&intervalMs<=10000,'INVALID_PROBE_INTERVAL');
   insist(Number.isInteger(timeoutMs)&&timeoutMs>=100&&timeoutMs<=120000,'INVALID_PROBE_TIMEOUT');
+  insist(typeof readinessProof==='boolean','INVALID_READINESS_PROOF_MODE');
   insist(fs.realpathSync(this.entry)===this.entry&&fs.realpathSync(this.cwd)===this.cwd,'UNSAFE_ENTRY_PATH');
+  this.readinessProof=readinessProof;this._proofToken=null;
   this.started=false;this.healthPath=healthPath;this.maxRestarts=maxRestarts;this.intervalMs=intervalMs;this.timeoutMs=timeoutMs;this.env={...env};
   this.child=null;this.stopping=false;this.restartCount=0;this.lastExit=null;this.lastError=null;this.restartTimer=null;
  }
  _spawn(){
   if(this.stopping)return;
-  const child=spawn(process.execPath,[this.entry],{cwd:this.cwd,env:{...process.env,...this.env,HOST:'127.0.0.1',PORT:String(this.port)},shell:false,stdio:'ignore',windowsHide:true});
+  // Optional cooperative challenge: rotate per spawn, including crash restarts.
+  this._proofToken=this.readinessProof?randomBytes(24).toString('hex'):null;
+  const childEnv={...process.env,...this.env,HOST:'127.0.0.1',PORT:String(this.port)};
+  if(this.readinessProof)childEnv.JM_SUPERVISOR_PROOF=this._proofToken;
+  const child=spawn(process.execPath,[this.entry],{cwd:this.cwd,env:childEnv,shell:false,stdio:'ignore',windowsHide:true});
   this.child=child;
   child.once('error',err=>{this.lastError=err.code||'SPAWN_ERROR'});
   child.once('close',(code,signal)=>{
    if(this.child!==child)return;
-   this.child=null;this.lastExit={code,signal};
+   this.child=null;this._proofToken=null;this.lastExit={code,signal};
    if(this.stopping||this.restartCount>=this.maxRestarts)return;
    this.restartCount++;
    this.restartTimer=setTimeout(()=>{this.restartTimer=null;this._spawn()},Math.max(60,this.intervalMs));
@@ -40,7 +47,9 @@ export class JMNodeSupervisor{
    if(response.status!==200||!response.headers.get('content-type')?.includes('json'))return false;
    const reader=response.body?.getReader();if(!reader)return false;
    let size=0;const chunks=[];try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>16384){await reader.cancel();return false}chunks.push(Buffer.from(value))}}finally{reader.releaseLock()}
-   const info=JSON.parse(Buffer.concat(chunks).toString('utf8'));return this.child===child&&!this.stopping&&info?.ok===true&&(info.ready===true||info.scope==='JM_NODE_TEST');
+   const info=JSON.parse(Buffer.concat(chunks).toString('utf8'));
+   const proven=!this.readinessProof||(typeof info?.supervisorProof==='string'&&info.supervisorProof===this._proofToken&&this._proofToken!==null);
+   return this.child===child&&!this.stopping&&proven&&info?.ok===true&&(info.ready===true||info.scope==='JM_NODE_TEST');
   }catch{return false}
  }
  async start(){
@@ -62,7 +71,7 @@ export class JMNodeSupervisor{
  status(){return {running:!!this.child&&!this.stopping,pid:this.child?.pid||null,restarts:this.restartCount,lastExit:this.lastExit,lastError:this.lastError}}
  async stop(){
   this.stopping=true;if(this.restartTimer)clearTimeout(this.restartTimer);this.restartTimer=null;
-  const child=this.child;if(!child)return;
+  const child=this.child;if(!child){this._proofToken=null;return;}
   await new Promise(resolve=>{
    const timer=setTimeout(()=>{try{child.kill('SIGKILL')}catch{}},1000);
    child.once('close',()=>{clearTimeout(timer);resolve()});

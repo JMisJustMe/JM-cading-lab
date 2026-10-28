@@ -325,10 +325,7 @@ jobs:
                   if(writes!==1||deletes!==0)throw Error('Lost acknowledgement unexpectedly repeated test');
                   await page.locator('#jmVaultProveRoundtrip').click();
                 }
-                await page.waitForFunction(()=>{
-                  const t=document.querySelector('#jmVaultProofStatus')?.textContent||'';
-                  return t.includes('CP08 PASS')||t.includes('CP08 HOLD:');
-                },{timeout:20000});
+                await page.waitForFunction(()=>document.querySelector('#jmVaultProofStatus')?.textContent?.includes('CP08 PASS'),{timeout:20000});
                 const final=await page.locator('#jmVaultProofStatus').textContent();
                 if(!final.includes('CP08 PASS'))throw Error('CP08 did not pass: '+final);
                 const receipt=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-owner-vault-cp08-receipt')||'null'));

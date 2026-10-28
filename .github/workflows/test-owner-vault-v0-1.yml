@@ -9,6 +9,7 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'tools/owner-vault-lineage-recover.mjs'
       - 'docs/JM_OWNER_VAULT_v0_1.md'
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
@@ -21,6 +22,7 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'tools/owner-vault-lineage-recover.mjs'
       - 'docs/JM_OWNER_VAULT_v0_1.md'
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
@@ -50,6 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check estate-owner-vault.js
+          node --check tools/owner-vault-lineage-recover.mjs
           node --input-type=module --check < functions/api/owner/vault.js
           node tools/test-owner-vault-v0.1.mjs
           python3 -m json.tool registry/owner-vault-contract-v0.1.json >/dev/null

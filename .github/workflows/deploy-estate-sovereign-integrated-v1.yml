@@ -28,6 +28,7 @@ on:
       - "ailatheo/**"
       - "ailatheo-lineage/**"
       - "functions/api/ailatheo.js"
+      - "functions/api/owner/vault.js"
       - "functions/api/estate-contact.js"
       - "tests/ailatheo-customer-entitlement.mjs"
       - "ai-federation/**"
@@ -108,6 +109,8 @@ jobs:
           node --check unified-browser/jm-ailatheo-consequence-return-v1.js
           node --check unified-browser/jm-games-beyond-return-v1.js
           node --check functions/api/estate-contact.js
+          node --input-type=module --check < functions/api/owner/vault.js
+          node tools/test-owner-vault-v0.1.mjs
           node --check unified-browser/jm-cloud-workspace-client.mjs
           node --check unified-browser/jm-ailatheo-cloud-contact.mjs
           node navigator/mcp-public-v1/test.mjs
@@ -462,6 +465,7 @@ jobs:
             ['/unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html', 'data-jm-relay="workbench"'],
             ['/ailatheo/', 'Build it.'],
             ['/api/ailatheo?action=status', 'JM.AILatheoCustomer/0.1'],
+            ['/api/owner/vault?mode=status', 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY'],
             ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],

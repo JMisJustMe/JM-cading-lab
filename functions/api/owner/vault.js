@@ -139,13 +139,24 @@ async function uploadBody(bucket, payload) {
     }, 413) };
   }
 
+  // Identity is a mounted use, not the bytes. Two separately mounted uses of
+  // the same HTML must never collapse merely because their hashes match.
+  // Legacy clients without a stable source instance are kept as separate uses.
+  const sourceInstanceId = body.sourceInstanceId == null ? null : String(body.sourceInstanceId);
+  if (sourceInstanceId && !/^[A-Za-z0-9_-]{12,180}$/.test(sourceInstanceId)) {
+    return { error: json({ schema: SCHEMA, error: 'INVALID_SOURCE_INSTANCE_ID' }, 400) };
+  }
   const hash = await sha256Text(content);
   const index = await readJson(bucket, INDEX_KEY, { schema: `${SCHEMA}.BodyIndex`, updated_at: null, bodies: [] });
   const bodies = Array.isArray(index.bodies) ? index.bodies : [];
-  const duplicate = bodies.find(item => item.sha256 === hash);
-  if (duplicate) {
-    return { duplicate: true, body: duplicate };
+  const sameInstance = sourceInstanceId && bodies.find(item => item.sourceInstanceId === sourceInstanceId && item.sha256 === hash);
+  if (sameInstance) {
+    return { duplicate: true, same_instance: true, body: sameInstance };
   }
+  // A changed body with the same local identity is a new preserved revision.
+  const previous = sourceInstanceId ? bodies.find(item => item.sourceInstanceId === sourceInstanceId) : null;
+  // Never silently evict an older purposeful body merely to meet the index limit.
+  if (bodies.length >= 2000) return { error: json({ schema: SCHEMA, error: 'BODY_INDEX_CAPACITY_REACHED', max_bodies: 2000 }, 409) };
 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
@@ -167,6 +178,8 @@ async function uploadBody(bucket, payload) {
     fileName,
     bytes: byteCount,
     sha256: hash,
+    sourceInstanceId,
+    previousVersionId: previous?.id || null,
     uploaded_at: now,
     source: 'explicit-owner-sync',
     status: 'PRIVATE_DURABLE_COPY_NOT_PUBLICATION'
@@ -175,7 +188,7 @@ async function uploadBody(bucket, payload) {
   const next = {
     schema: `${SCHEMA}.BodyIndex`,
     updated_at: now,
-    bodies: [metadata, ...bodies].slice(0, 2000)
+    bodies: [metadata, ...bodies]
   };
   await writeJson(bucket, INDEX_KEY, next);
   return { duplicate: false, body: metadata };
@@ -241,6 +254,8 @@ export async function onRequest(context) {
       owner_key_configured: Boolean(env.JM_OWNER_VAULT_KEY),
       ready: Boolean(env.JM_OWNER_VAULT && env.JM_OWNER_VAULT_KEY),
       auth: 'X-JM-Owner-Key (session-entered; never embedded in public source)',
+      identity_policy: 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY',
+      overflow_policy: 'FAIL_CLOSED_NO_IDENTITY_EVICTION',
       public_claim: false
     });
   }
@@ -271,7 +286,7 @@ export async function onRequest(context) {
     if (payload?.action === 'upload-body') {
       const outcome = await uploadBody(bucket, payload);
       if (outcome.error) return outcome.error;
-      return json({ schema: SCHEMA, outcome: outcome.duplicate ? 'DUPLICATE_ALREADY_HELD' : 'BODY_STORED', ...outcome }, outcome.duplicate ? 200 : 201);
+      return json({ schema: SCHEMA, outcome: outcome.duplicate ? 'DUPLICATE_ALREADY_HELD' : 'BODY_STORED', dedupe_scope: 'SAME_SOURCE_INSTANCE_AND_BYTES_ONLY', ...outcome }, outcome.duplicate ? 200 : 201);
     }
     if (payload?.action === 'snapshot') {
       return json({ schema: SCHEMA, outcome: 'SNAPSHOT_STORED', snapshot: await createSnapshot(bucket) }, 201);

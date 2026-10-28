@@ -28,7 +28,7 @@ The client bridge adds an explicit **Sync local shelf to vault** control. Until 
 - A private body index containing name, file name, byte count, SHA-256 and upload time.
 - Optional metadata/state snapshots that reference the body index without duplicating HTML bytes.
 
-Byte-identical HTML is deduplicated by SHA-256.
+**Founding v0.1 historical policy:** Byte-identical HTML was deduplicated by SHA-256. This proved insufficient to preserve separately intended uses and is superseded by the CP04 protected-use correction below.
 
 ## Security model
 
@@ -97,3 +97,15 @@ Until an authenticated live write/read/delete proof succeeds against the bound p
 **CODED / TESTED / GRAFTED / STORAGE NOT YET PROVED LIVE.**
 
 No Ding, no claim.
+
+## CP04 protected-use correction — 28 October 2026
+
+The original policy collapsed differently intended copies when their HTML bytes matched. The current source correction preserves the difference between **content identity** and **use/body identity**.
+
+- The existing local mounted-body ID is forwarded as `sourceInstanceId` on explicit owner sync. A repeat upload of that **same ID and SHA-256** returns the already-held record without creating another.
+- Different mounted IDs remain distinct private records even when bytes, filename and title are identical. Exact-byte sameness alone is never retirement authority.
+- If the same mounted ID is edited, the changed bytes create a new private version with a `previousVersionId` link. The earlier version remains available until explicitly targeted for deletion.
+- A legacy client without a stable ID is preserved as a new use rather than guessed to be redundant. On reaching the 2,000-record index limit, new writes are refused without dropping an older record.
+- The marked Owner Room graft now updates from its existing source safely without resetting newer service-worker versions or creating another public shell.
+
+**Proof status:** Source code and synthetic private-storage contract QA are required. The historical Owner Vault authenticated state-roundtrip receipt remains separate; it does not prove this CP04 policy on the current production backend. A live public-safe API policy marker and authenticated owner write/reload readback are distinct rollout gates. No secret or owner file is included in this document.

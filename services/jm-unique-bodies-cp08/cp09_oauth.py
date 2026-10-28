@@ -171,7 +171,7 @@ def consent_form(request_id,client_name,scope):
 <p>Grant only when you recognise this connection. Enter your existing CP08 owner access token.
 Do not copy it into ChatGPT or Gemini chat.</p>
 <form method="post" action="/oauth/authorize">
-<input type="hidden" name="request_id" value='"""+'"'+key+'"'+""">
+<input type="hidden" name="request_id" value=""""+key+"""">
 <label>JM CP08 owner token <input type="password" name="owner_access_token" required autocomplete="off"></label>
 <button type="submit">Approve this MCP connection</button>
 </form></body></html>""")

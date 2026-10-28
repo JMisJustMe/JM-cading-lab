@@ -100,6 +100,20 @@ class TestHosted(unittest.TestCase):
   self.assertEqual(s,400)
   self.assertIn(b'OWNER_TOKEN_FORMAT_HOLD',out)
   self.assertNotIn(b'too-short',out)
+
+ def test_07_live_modern_browser_preflight_without_owner_secret(self):
+  h={'Origin':'https://chatgpt.com',
+     'Access-Control-Request-Method':'POST',
+     'Access-Control-Request-Headers':'Authorization,MCP-Protocol-Version,Mcp-Method,Mcp-Name'}
+  q=urllib.request.Request(BASE+'/mcp',method='OPTIONS',headers=h)
+  with urllib.request.urlopen(q,timeout=25) as response:
+   self.assertEqual(response.status,204)
+   allowed=response.headers.get('Access-Control-Allow-Headers','')
+   for field in ('MCP-Protocol-Version','Mcp-Method','Mcp-Name'):
+    self.assertIn(field,allowed)
+  print('LIVE_CP10_PREFLIGHT_ALLOWED_WITHOUT_OWNER_TOKEN',flush=True)
+
+
 class StopRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args):return None
 if __name__=='__main__':unittest.main(verbosity=2)

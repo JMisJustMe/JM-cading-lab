@@ -185,7 +185,7 @@ function render(){
     const info=document.createElement('p');info.textContent=x.details[0]||x.states[0]||'Source-registered';item.appendChild(info);
     if(x.versions.length){const ver=document.createElement('p');ver.className='branch';ver.textContent=(x.versions.length>1?'Preserved branches ('+x.versions.length+'): ':'Registered version: ')+x.versions.join(' · ');item.appendChild(ver);}
     const state=document.createElement('small');state.textContent='Recorded: '+(x.states.join(' · ')||'source reference')+' | source '+x.sources.join(' + ');item.appendChild(state);
-    if(x.href){const link=document.createElement('a');link.href=x.href;link.textContent=x.group==='Games'||x.group==='Apps & tools'||x.group==='Coding & runtimes'||x.group==='Music & lyrics'?'Enter authoritative House':'Open existing route';item.appendChild(link);}
+    if(x.href){const link=document.createElement('a');link.href=x.href;link.textContent=x.group==='Owner custody'?'Open original Owner Room':x.group==='Games'||x.group==='Apps & tools'||x.group==='Coding & runtimes'||x.group==='Music & lyrics'?'Enter authoritative House':'Open existing route';item.appendChild(link);}
     if(x.sourceFile){const edit=document.createElement('a');edit.className='owner-edit';edit.href=ownerEditor(x.sourceFile);edit.target='_blank';edit.rel='noopener noreferrer';edit.textContent='Edit registered source (GitHub)';edit.setAttribute('aria-label','Edit original GitHub source for '+x.name);item.appendChild(edit);}
     fragment.appendChild(item);
   }
@@ -200,6 +200,8 @@ Promise.all(inputs.map(consume)).then(()=>{
   extraDoor('access','JM Current Access Mesh','access/','Existing cross-House access.');
   extraDoor('books','JM Books & Written Bodies','books/','Existing written-body projections; original manuscripts retain custody.');
   extraDoor('visual-story','JM Comics & Visual Story','visual-story/','Existing visual-story and comic access routes.');
+  // Same original owner-authenticated room; this is navigation, never an exposed writer.
+  remember('owner-vault-private-editor','Owner custody','JM Owner Vault — private body editor','index.html#owner','OWNER SESSION REQUIRED','Original Estate Owner Room. Owner-key access; private HTML edits create protected revisions with readback.','existing JM Owner Vault');
   const select=byId('bodyType');
   [...new Set([...rows.values()].map(x=>x.group))].sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;select.appendChild(o);});
   byId('bodyFailures').textContent=failures.length?'Source holds — no inferred substitute:\n'+failures.join('\n'):'';

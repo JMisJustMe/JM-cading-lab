@@ -41,6 +41,7 @@ jobs:
           http='000'
           status='{}'
           sw=''
+          client_ok=0
           expected_cache="$(python3 - <<'PY'
           import re, sys
           from pathlib import Path
@@ -68,8 +69,20 @@ jobs:
           PY
             then
               if printf '%s' "$sw" | grep -Fq "$expected_cache"; then
-                ok=1
-                break
+                client_ok=1
+                if [ "$REQUIRE_CP05" = '1' ]; then
+                  client_ok=0
+                  client_http="$(curl --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' -o "$RUNNER_TEMP/jm-owner-room-live-client.js" -w '%{http_code}' "$BASE/estate-app.js?jm-owner-editor-proof=${GITHUB_RUN_ID}-${attempt}" || true)"
+                  if [ "$client_http" = '200' ] \
+                     && grep -Fq 'Save private revision &amp; verify readback' "$RUNNER_TEMP/jm-owner-room-live-client.js" \
+                     && grep -Fq 'No duplicate save issued.' "$RUNNER_TEMP/jm-owner-room-live-client.js"; then
+                    client_ok=1
+                  fi
+                fi
+                if [ "$client_ok" = '1' ]; then
+                  ok=1
+                  break
+                fi
               fi
             fi
             sleep 5
@@ -78,6 +91,7 @@ jobs:
           echo "ok=$ok" >> "$GITHUB_OUTPUT"
           echo "http=$http" >> "$GITHUB_OUTPUT"
           echo "cache=$expected_cache" >> "$GITHUB_OUTPUT"
+          echo "client=$client_ok" >> "$GITHUB_OUTPUT"
           echo "Expected cache marker: $expected_cache"
           echo "Final live status: $status"
 
@@ -88,6 +102,7 @@ jobs:
           OK: ${{ steps.probe.outputs.ok }}
           HTTP: ${{ steps.probe.outputs.http }}
           CACHE_MARKER: ${{ steps.probe.outputs.cache }}
+          CLIENT_EDITOR: ${{ steps.probe.outputs.client }}
         run: |
           set -euo pipefail
           mkdir -p registry
@@ -112,12 +127,13 @@ jobs:
               'cache_marker': os.environ.get('CACHE_MARKER'),
               'public_editor_policy': status.get('editor_policy'),
               'cp05_public_editor_policy_verified': passed and status.get('editor_policy') == 'PRIVATE_VERSIONED_SOURCE_READBACK_WITH_ANCESTOR_CUSTODY',
+              'cp06_deployed_owner_editor_source_verified': passed and os.environ.get('CLIENT_EDITOR') == '1',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'authenticated_write_read_delete_proof': False,
               'owner_secret_value_recorded': False,
               'ding': False,
-              'claim_boundary': 'This receipt proves public-safe function readiness and CP05 editor policy only when that marker is returned by the deployed API. It does NOT prove owner authentication, private body editing, owner-device reload or cross-device persistence; those require a separate owner-session proof.'
+              'claim_boundary': 'On mainline this receipt proves the deployed public-safe Owner Vault API policy AND deployed Owner Room JavaScript source markers for editing/recovery. It does NOT prove owner-key authentication, a real private save, physical owner-device reload, cross-device persistence, or a fully published JM creation.'
           }
           Path('registry/owner-vault-live-readiness-receipt-v0.1.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
           PY

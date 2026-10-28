@@ -405,8 +405,23 @@ jobs:
                 await page.locator('#restoreBody').click();
                 await page.waitForFunction(expected=>window.GamesBeyond?.pack?.bodies?.some(b=>b.id==='fight-clash'&&b.html===expected&&!b.edited),original,{timeout:30000});
                 await page.reload({waitUntil:'domcontentloaded'});
-                await page.waitForFunction(expected=>window.GamesBeyond?.activeEditorBodyId==='fight-clash'&&
-                  document.querySelector('#source')?.value===expected,original,{timeout:60000});
+                try {
+                  await page.waitForFunction(expected=>window.GamesBeyond?.activeEditorBodyId==='fight-clash'&&
+                    document.querySelector('#source')?.value===expected,original,{timeout:20000});
+                } catch(error) {
+                  const debug=await page.evaluate(()=>({
+                    url:location.href,status:document.querySelector('#status')?.textContent||null,
+                    selected:window.GamesBeyond?.activeEditorBodyId||null,
+                    rows:window.GamesBeyond?.pack?.bodies?.length||0,
+                    hasBody:window.GamesBeyond?.pack?.bodies?.some(x=>x.id==='fight-clash')||false,
+                    sourceSize:document.querySelector('#source')?.value?.length||0,
+                    sourceHead:document.querySelector('#source')?.value?.slice(0,95),
+                    bodyEdited:window.GamesBeyond?.pack?.bodies?.find(x=>x.id==='fight-clash')?.edited||false,
+                    workspace:document.querySelector('#workspace')?.hidden,
+                    dbNames:indexedDB.databases?undefined:'unsupported'
+                  }));
+                  throw Error('CP09 protected source after reload HOLD '+JSON.stringify(debug)+' pageErrors '+errors.slice(0,5).join('|'));
+                }
                 await page.goto(origin+'?jm-edit=jmstudios-source-rebegin',{waitUntil:'domcontentloaded'});
                 await page.waitForFunction(()=>document.querySelector('#status')?.textContent?.includes('EDIT HOLD: game not mounted'),{timeout:60000});
                 if(await page.locator('#workspace').isVisible())throw Error('Unmounted JMStudios was offered a live editor');

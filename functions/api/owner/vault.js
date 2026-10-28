@@ -71,6 +71,31 @@ class VaultRecordUnreadable extends Error {
   }
 }
 
+// Do not call an R2 write recoverable until the actual stored bytes are read back.
+class VaultBodyIntegrityError extends Error {
+  constructor(code) {
+    super(code);
+    this.code = code;
+  }
+}
+
+async function verifiedBody(bucket, key, expectedHash, expectedBytes) {
+  const object = await bucket.get(key);
+  if (!object) throw new VaultBodyIntegrityError('BODY_BYTES_MISSING');
+  let content;
+  try { content = await object.text(); }
+  catch { throw new VaultBodyIntegrityError('BODY_BYTES_UNREADABLE'); }
+  const actualBytes = new TextEncoder().encode(content).byteLength;
+  if (expectedBytes != null && actualBytes !== expectedBytes) {
+    throw new VaultBodyIntegrityError('BODY_INTEGRITY_MISMATCH');
+  }
+  const hasRecordedHash = typeof expectedHash === 'string' && /^[a-f0-9]{64}$/i.test(expectedHash);
+  if (hasRecordedHash && (await sha256Text(content)) !== expectedHash.toLowerCase()) {
+    throw new VaultBodyIntegrityError('BODY_INTEGRITY_MISMATCH');
+  }
+  return { object, content, hashVerified: hasRecordedHash };
+}
+
 async function readJson(bucket, key, fallback) {
   const object = await bucket.get(key);
   if (!object) return fallback;
@@ -192,6 +217,9 @@ async function uploadBody(bucket, payload) {
     customMetadata: { sha256: hash, bodyName: name.slice(0, 900) }
   });
 
+  // Preserve any anomalous object for private owner inspection; never auto-delete.
+  await verifiedBody(bucket, objectKey, hash, byteCount);
+
   const metadata = {
     id,
     name,
@@ -211,6 +239,10 @@ async function uploadBody(bucket, payload) {
     bodies: [metadata, ...bodies]
   };
   await writeJson(bucket, INDEX_KEY, next);
+  const confirmedIndex = await readJson(bucket, INDEX_KEY, { bodies: [] });
+  if (!confirmedIndex.bodies.some(item => item.id === id && item.sha256 === hash)) {
+    throw new VaultBodyIntegrityError('BODY_INDEX_READBACK_MISMATCH');
+  }
   return { duplicate: false, body: metadata };
 }
 
@@ -249,16 +281,16 @@ async function downloadBody(bucket, id) {
   const index = await readJson(bucket, INDEX_KEY, { bodies: [] });
   const target = (index.bodies || []).find(item => item.id === id);
   if (!target) return json({ schema: SCHEMA, error: 'BODY_NOT_FOUND' }, 404);
-  const object = await bucket.get(`${BODY_PREFIX}/${id}.html`);
-  if (!object) return json({ schema: SCHEMA, error: 'BODY_BYTES_MISSING' }, 404);
+  const stored = await verifiedBody(bucket, `${BODY_PREFIX}/${id}.html`, target.sha256, target.bytes);
 
   const headers = new Headers();
-  object.writeHttpMetadata?.(headers);
+  stored.object.writeHttpMetadata?.(headers);
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('cache-control', 'no-store, max-age=0');
   headers.set('x-content-type-options', 'nosniff');
+  headers.set('x-jm-body-integrity', stored.hashVerified ? 'sha256-verified' : 'unverified-legacy');
   headers.set('content-disposition', `attachment; filename="${safeFileName(target.fileName)}"`);
-  return new Response(object.body, { headers });
+  return new Response(stored.content, { headers });
 }
 
 async function handleOwnerRequest(context) {
@@ -337,6 +369,13 @@ export async function onRequest(context) {
         record: error.record,
         recovery: 'HOLD_EXISTING_RECORD_AND_RESTORE_FROM_VERIFIED_PRIVATE_CUSTODY'
       }, 409);
+    }
+    if (error instanceof VaultBodyIntegrityError) {
+      return json({
+        schema: SCHEMA,
+        error: error.code,
+        recovery: 'HOLD_SOURCE_BYTES_FOR_OWNER_INSPECTION_NO_AUTOMATIC_DELETION'
+      }, error.code === 'BODY_BYTES_MISSING' ? 404 : 409);
     }
     throw error;
   }

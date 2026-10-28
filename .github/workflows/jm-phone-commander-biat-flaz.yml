@@ -1,0 +1,45 @@
+name: JM Phone Commander — BIAT Source Custody FLAZ
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/android/phone-commander/**'
+      - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - '.github/workflows/jm-phone-commander-biat-flaz.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'agent-runtime/host-adapters/android/phone-commander/**'
+      - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - '.github/workflows/jm-phone-commander-biat-flaz.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  biat-flaz-cold-archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Re-run executable phone adapter regressions
+        run: |
+          python -m py_compile agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py
+          python -m py_compile agent-runtime/host-adapters/android/phone-commander/jm_phone_biat_archive.py
+          python -m unittest discover -s agent-runtime/host-adapters/android/phone-commander -p 'test_phone_commander.py' -v
+      - name: Native universal conformance and sovereign authority mirror
+        run: |
+          python agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+          python services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
+      - name: Build independent current-source archive and adversarial proof
+        run: |
+          python agent-runtime/host-adapters/android/phone-commander/jm_phone_biat_archive.py --output-dir out/jm-phone-commander-biat
+      - name: Upload current-source custody and verified manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_PHONE_COMMANDER_CP10_BIAT_FLAZ_SOURCE_CUSTODY
+          path: out/jm-phone-commander-biat/*
+          retention-days: 90
+          if-no-files-found: error

@@ -156,3 +156,13 @@ Recovered the original Owner Vault and two prior unmerged strengthening candidat
 The same candidate inherits CP06's independent re-read of HTML body bytes, SHA-256 and full intended body index. These checks detect missing/altered write acknowledgements; they do **not** prove transactional multi-writer atomicity, durable rollback after partial failures, or physically independent offsite restore. Concurrent writes remain a separate architecture HOLD.
 
 The in-memory Fake-R2 regression court uses synthetic data only. CI success is **not** authenticated real-owner private-source editing, Cloudflare production propagation, physical device acceptance or independent owner recovery. Keep all these gates open until separately proved. See issue #591 and draft PR for branch audit evidence.
+
+## CP12 — Source-safe deletion and exact snapshot custody (28 October 2026)
+
+This is an additive hardening of the **existing** Owner Vault, not a replacement backend or an automatic production release.
+
+- Deletion first checks that the targeted private HTML matches its recorded byte count and SHA-256, then updates **and independently verifies** the full body index, **then** deletes the source object and independently checks that deletion took effect. If index persistence fails, the source object is not deleted. If deletion fails after index commit, an **orphaned private object remains for manual recovery**, and the API refuses a success claim; it does not overwrite a possibly concurrently updated index to roll back.
+- Snapshots now use a UUID alongside their timestamp so rapid repeated snapshots cannot overwrite each other. A snapshot acknowledgement requires an independent **exact-byte** JSON readback. Missing, dropped, unreadable or altered snapshot writes return `SNAPSHOT_READBACK_MISMATCH`.
+- The existing Fake-R2 regression suite injects failed index writes, corrupted source bytes, silent deletion failures, duplicate-timestamp snapshots, dropped snapshot writes and altered snapshot bytes. The tests use synthetic source only.
+
+**Boundaries:** Snapshots contain owner-state and body-index metadata, **not the HTML body bytes**; they are not complete offsite backups. An interrupted delete after a verified index commit can leave an unindexed R2 object. Concurrent writers remain unprotected by a transaction/lock, and physical-device, authenticated live-R2, independently recovered cold restore and production propagation remain **HOLD**. The branch is draft/unmerged. No private source, key or owner payload is included in this public repository.

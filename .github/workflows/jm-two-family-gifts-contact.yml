@@ -28,6 +28,7 @@ jobs:
       - name: Source syntax check and real browser installation
         run: |
           node --check family-gifts/tests/jm-two-gifts-contact.spec.cjs
+          node --check family-gifts/third-court-preview/tests/cp11-deep-realism.spec.cjs
           npm install --no-save playwright@1.54.1
           npx playwright install --with-deps chromium
       - name: Serve both independent JM family gifts
@@ -41,4 +42,6 @@ jobs:
           cat /tmp/jm-both-gifts.log
           exit 1
       - name: Real Chromium contact — Mum's Scripture and brother's original birthday game
-        run: node family-gifts/tests/jm-two-gifts-contact.spec.cjs
+        run: |
+          node family-gifts/tests/jm-two-gifts-contact.spec.cjs
+          node family-gifts/third-court-preview/tests/cp11-deep-realism.spec.cjs

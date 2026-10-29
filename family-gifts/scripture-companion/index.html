@@ -1,4 +1,4 @@
-<!-- JM Scripture Companion v1.6 Reading Room: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
+<!-- JM Scripture Companion v1.6.2 Safe Transfer: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
 <!doctype html><html lang="en"><head><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#183932"><meta name="description" content="A personal scripture-reading companion with official Bible links and private local notes."><title>JM Scripture Companion · Reading Room</title>
 <style>
 :root{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#24352f;background:#e9eee9;font-size:17px;--ink:#24352f;--muted:#506760;--surface:#fffefa;--accent:#245c4d;--line:#c5d6cb;--shadow:0 10px 35px #24473716}*{box-sizing:border-box}body{margin:0;font-size:1rem;line-height:1.55}body[data-dark="1"]{--ink:#eef5ee;--muted:#c4d1c9;--surface:#1b2f29;--accent:#a4e3c4;--line:#425e51;background:#112019;color:var(--ink)}button,input,select,textarea{font:inherit}button,a{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #e7a747;outline-offset:2px}.wrap{max-width:750px;padding:0 17px 112px;margin:auto}.mast{background:linear-gradient(155deg,#183a32,#2d6955);color:#f9fff5;padding:23px 18px 27px;border-radius:0 0 28px 28px;box-shadow:var(--shadow);margin:0 -17px 22px}.eyebrow{letter-spacing:.13em;text-transform:uppercase;font-size:.69rem;font-weight:800;color:#d3eac5}h1{font-family:Georgia,serif;font-size:clamp(1.9rem,8vw,2.7rem);font-weight:500;margin:4px 0}h2{font-family:Georgia,serif;font-weight:500;font-size:1.55rem;margin:0 0 13px}h3{font-size:1.05rem;margin:.1em 0 .65em}p{margin:.4em 0 .9em}.hero-sub{color:#e0efdf;max-width:530px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin:13px 0;box-shadow:var(--shadow);color:var(--ink)}.tag{font-size:.72rem;letter-spacing:.08em;font-weight:800;text-transform:uppercase;color:var(--muted)}.soft{color:var(--muted)}.fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(94px,120px);gap:12px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}.field label{font-size:.85rem;font-weight:700}.field input,.field select,.field textarea{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);min-height:48px}.field textarea{min-height:115px;resize:vertical}.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{background:var(--accent);color:#fffefa;text-decoration:none;border:none;padding:12px 16px;min-height:48px;border-radius:12px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-align:center}body[data-dark="1"] .btn{color:#12291e}.btn.secondary{border:1px solid var(--line);color:var(--ink);background:transparent}.btn.small{padding:8px 12px;min-height:42px;font-size:.83rem}.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.quick button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:14px 10px;text-align:left;cursor:pointer;min-height:68px}.quick b{display:block;color:var(--accent)}.quick small{display:block;color:var(--muted)}.list{display:grid;gap:9px}.entry{padding:12px;border-radius:13px;background:color-mix(in srgb,var(--surface),var(--accent) 6%);border:1px solid var(--line)}.entry-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.entry-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.entry p{white-space:pre-wrap;overflow-wrap:anywhere}.tabbar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;background:var(--surface);border-top:1px solid var(--line);padding:7px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom));z-index:5}.tabbar button{color:var(--ink);background:none;border:0;flex:1;max-width:160px;padding:9px 4px;border-radius:12px;cursor:pointer;font-size:.78rem;min-height:49px}.tabbar button[aria-current="page"]{background:color-mix(in srgb,var(--surface),var(--accent) 17%);font-weight:800}.tabbar b{display:block;font-size:1.25rem}.page[hidden]{display:none}.alert{background:#eaf5e8;border-left:4px solid #4b8069;padding:10px 13px;border-radius:9px;font-size:.86rem;color:#244333}body[data-dark="1"] .alert{background:#214439;color:#e1f1e4}.count{color:var(--muted);font-size:.83rem}.empty{padding:14px;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}.only-print{display:none}@media(min-width:600px){.wrap{padding-inline:28px}.mast{margin-inline:-28px;padding:30px}}@media print{.tabbar,.actions,.btn,.not-print{display:none!important}.only-print{display:block}.wrap{padding:0}.panel{box-shadow:none}}
@@ -35,7 +35,7 @@
   <p id="planProgress" class="count"></p><p id="planStatus" class="count" role="status" aria-live="polite"></p>
 </div><div class="panel"><div class="tag">Personal discovery</div><h2>Explore references</h2><p class="soft">Find a starting point by topic, or search for a Bible book. These are navigation suggestions, not reproduced Bible content or an official study programme.</p><div class="field"><label for="topicSearch">Find a topic or book</label><input id="topicSearch" type="search" placeholder="Hope, family, Psalms…" autocomplete="off"></div><div id="topicResults" class="list" aria-live="polite"></div></div><div class="panel"><div class="topbar"><h2>My reading list</h2><small id="queueCount" class="count"></small></div><p class="soft">Choose what to read; mark it complete when you're ready. No daily pressure or scores.</p><div class="list" id="readingList"></div></div></section><section class="page" id="page-saved" hidden><div class="panel"><h2>Saved passages</h2><p class="soft">Your bookmarks stay on this device, and are included in your backups.</p><div id="savedList" class="list"></div></div></section>
 <section class="page" id="page-notes" hidden><div class="panel"><h2>Personal notes</h2><div class="field"><label for="noteRef">Related scripture</label><input id="noteRef" placeholder="e.g. Psalms 23:1" maxlength="100"></div><div class="field"><label for="noteText">Your thought</label><textarea id="noteText" maxlength="8000" placeholder="Write privately here…"></textarea></div><div class="actions"><button class="btn" id="saveNote">Save note</button><button class="btn secondary" id="clearNote">Clear draft</button></div><p id="noteDraftStatus" class="count" role="status" aria-live="polite"></p></div><div class="panel"><h3>Note collection</h3><div id="notesList" class="list"></div></div></section>
-<section class="page" id="page-settings" hidden><div class="panel"><h2>Make it comfortable</h2><div class="field"><label for="textSize">Reading controls size</label><input id="textSize" type="range" min="15" max="24" step="1" value="17"><output id="sizeOutput">17 px</output></div><div class="actions"><button class="btn secondary" id="theme">Switch light / dark</button></div><p class="soft">These settings adjust this companion. The Bible website has its own reading settings.</p></div><div class="panel"><h3>Private backup</h3><p class="soft">Save your bookmarks and notes as a JSON file, or restore one on another device. Nothing is uploaded by this app.</p><div class="actions"><button class="btn" id="export">Export my data</button><label class="btn secondary" for="import">Import backup</label><input id="import" type="file" accept=".json,application/json" hidden></div><p id="importStatus" class="count" role="status"></p></div><div class="panel"><h3>About this companion</h3><p>Independently made by JM. Not affiliated with or endorsed by Jehovah's Witnesses or Watchtower. Bible text and official publications remain with their publisher and are not stored in this application.</p><p class="soft">Local data is saved in this browser on this device. Clearing browser storage can remove it: export a backup to keep your notes.</p></div></section>
+<section class="page" id="page-settings" hidden><div class="panel"><h2>Make it comfortable</h2><div class="field"><label for="textSize">Reading controls size</label><input id="textSize" type="range" min="15" max="24" step="1" value="17"><output id="sizeOutput">17 px</output></div><div class="actions"><button class="btn secondary" id="theme">Switch light / dark</button></div><p class="soft">These settings adjust this companion. The Bible website has its own reading settings.</p></div><div class="panel"><h3>Private backup &amp; device transfer</h3><p class="soft">Move notes, saved passages and reading progress between your devices using your own backup file. Nothing is uploaded by this app; changes do not sync automatically.</p><div class="actions"><button class="btn" id="export">Download backup</button></div><div class="field"><label for="importMode">How to import a backup</label><select id="importMode"><option value="merge">Safely add to this device (recommended)</option><option value="replace">Replace everything on this device (advanced)</option></select></div><p class="soft">Add keeps this device's notes, merges reading progress, skips duplicates and protects different versions of a note. Imported unfinished drafts are kept as recovered notes. Replace overwrites the current device after explicit confirmation: download its backup first.</p><div class="actions"><label class="btn secondary" for="import">Choose backup file</label><input id="import" type="file" accept=".json,application/json" hidden></div><p id="importStatus" class="count" role="status"></p></div><div class="panel"><h3>About this companion</h3><p>Independently made by JM. Not affiliated with or endorsed by Jehovah's Witnesses or Watchtower. Bible text and official publications remain with their publisher and are not stored in this application.</p><p class="soft">Local data is saved in this browser on this device. Clearing browser storage can remove it: export a backup to keep your notes.</p></div></section>
 </main><nav class="tabbar" aria-label="Companion sections"><button data-tab="read" aria-current="page"><b>⌂</b>Read</button><button data-tab="explore"><b>⌕</b>Explore</button><button data-tab="saved"><b>☆</b>Saved</button><button data-tab="notes"><b>✎</b>Notes</button><button data-tab="settings"><b>⚙</b>Settings</button></nav><script>
 'use strict';
 // JM Scripture Companion. Independent navigation / local notes; no copyrighted scripture payload.
@@ -148,12 +148,126 @@ $('#clearNote').addEventListener('click',()=>{
 });
 $('#textSize').addEventListener('input',e=>{data.size=Number(e.target.value);sizeAndTheme();save()});$('#theme').addEventListener('click',()=>{data.dark=!data.dark;sizeAndTheme();save()});
 $('#export').addEventListener('click',()=>{const backup=JSON.stringify({schema:'jm-scripture-companion/1',exportedAt:new Date().toISOString(),data,draft:(()=>{try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||'null')}catch{return null}})()},null,2);if(window.JMAndroidBridge){window.JMAndroidBridge.exportJson('JM-Scripture-Companion-Backup.json',backup);return;}const blob=new Blob([backup],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='JM-Scripture-Companion-Backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)});
-$('#import').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2000000)throw Error('File is too large.');const contents=JSON.parse(await file.text());if(contents.schema!=='jm-scripture-companion/1'||!contents.data||!Array.isArray(contents.data.bookmarks)||!Array.isArray(contents.data.notes))throw Error('Not a recognised companion backup.');if(!confirm('Replace current notes and bookmarks with this backup?'))return;data={...defaults,...contents.data};if(!BOOKS.some(b=>b[0]===data.book))data.book='Psalms';data.bookmarks=data.bookmarks.filter(x=>BOOKS.some(b=>b[0]===x.book)&&Number.isInteger(x.chapter)&&x.chapter>=1&&typeof x.id==='string').slice(-1000);data.notes=data.notes.filter(x=>typeof x.text==='string'&&x.text.length<=8000&&typeof x.id==='string'&&typeof x.ref==='string'&&x.ref.length<=100).slice(-1000);data.queue=(Array.isArray(data.queue)?data.queue:[]).filter(x=>BOOKS.some(b=>b[0]===x.book&&Number.isInteger(x.chapter)&&x.chapter>=1&&x.chapter<=b[1])&&typeof x.id==='string'&&typeof x.done==='boolean').slice(-500);
-if(!save())throw Error('Unable to save the restored backup on this device.');
-if(contents.draft&&typeof contents.draft.ref==='string'&&typeof contents.draft.text==='string'&&contents.draft.ref.length<=100&&contents.draft.text.length<=8000){
- try{localStorage.setItem(DRAFT_KEY,JSON.stringify(contents.draft))}catch(e){$('#importStatus').textContent='Backup restored, but unfinished draft could not be stored.';}
-}else{clearStoredDraft()}
-$('#noteRef').value='';$('#noteText').value='';editingNoteId=null;restoreDraft();sizeAndTheme();jump(data.book,data.chapter,data.verse);if(window.JMExplore)window.JMExplore.render();$('#importStatus').textContent='Backup restored.';}catch(err){$('#importStatus').textContent=err.message}finally{e.target.value=''}});
+// JM v1.6.2: safe, local-only transfer of original v1 backup files.
+// Incoming content is validated before any live storage is modified.
+function validBackupReference(x){
+ return x&&typeof x.book==='string'&&BOOKS.some(([name,n])=>name===x.book&&Number.isInteger(x.chapter)&&x.chapter>=1&&x.chapter<=n);
+}
+function incomingBackup(raw){
+ if(!raw||raw.schema!=='jm-scripture-companion/1'||!raw.data||typeof raw.data!=='object')throw Error('Not a recognised Scripture Companion backup.');
+ const d=raw.data;
+ if(!Array.isArray(d.notes)||!Array.isArray(d.bookmarks)||(d.queue!==undefined&&!Array.isArray(d.queue)))throw Error('Backup is missing notes, bookmarks or reading-list structure.');
+ if(d.notes.length>1000||d.bookmarks.length>1000||(d.queue||[]).length>500)throw Error('Backup is beyond safe collection limits; nothing was imported.');
+ for(const n of d.notes){
+  if(!n||typeof n.id!=='string'||!n.id||typeof n.ref!=='string'||n.ref.length>100||typeof n.text!=='string'||n.text.length>8000)throw Error('Backup contains an invalid note; nothing was imported.');
+ }
+ for(const b of d.bookmarks){
+  if(!validBackupReference(b)||typeof b.id!=='string'||!b.id||(b.verse!==undefined&&typeof b.verse!=='string'))throw Error('Backup contains an invalid saved reference; nothing was imported.');
+ }
+ for(const row of d.queue||[]){
+  if(!validBackupReference(row)||typeof row.id!=='string'||!row.id||typeof row.done!=='boolean')throw Error('Backup contains an invalid reading-list entry; nothing was imported.');
+ }
+ const draft=raw.draft;
+ if(draft!=null&&(typeof draft!=='object'||typeof draft.ref!=='string'||draft.ref.length>100||typeof draft.text!=='string'||draft.text.length>8000))throw Error('Backup contains an invalid unfinished draft; nothing was imported.');
+ return {data:d,draft:draft||null};
+}
+function idForTransfer(used){
+ let id;do{id=Date.now().toString(36)+Math.random().toString(36).slice(2,12)}while(used.has(id));
+ used.add(id);return id;
+}
+function withRecoveredDraft(next,draft,stats,used){
+ if(!draft||!draft.text.trim())return;
+ if(next.notes.some(n=>n.ref===draft.ref&&n.text===draft.text))return;
+ if(next.notes.length>=1000)throw Error('Too many notes to preserve the imported unfinished draft; nothing was imported.');
+ next.notes.push({id:idForTransfer(used),ref:draft.ref,text:draft.text,date:new Date().toISOString()});
+ stats.drafts++;stats.notes++;
+}
+function mergeBackup(backup){
+ const next={...data,notes:data.notes.map(n=>({...n})),bookmarks:data.bookmarks.map(b=>({...b})),queue:data.queue.map(r=>({...r}))};
+ const stats={notes:0,bookmarks:0,queue:0,progress:0,drafts:0};
+ const used=new Set([...next.notes,...next.bookmarks,...next.queue].map(x=>x.id));
+ for(const n of backup.data.notes){
+  if(next.notes.some(x=>x.ref===n.ref&&x.text===n.text))continue;
+  if(next.notes.length>=1000)throw Error('Too many notes to merge safely; nothing was imported.');
+  const id=used.has(n.id)?idForTransfer(used):n.id;used.add(id);
+  next.notes.push({...n,id});stats.notes++;
+ }
+ for(const b of backup.data.bookmarks){
+  if(next.bookmarks.some(x=>x.book===b.book&&x.chapter===b.chapter&&String(x.verse||'')===String(b.verse||'')))continue;
+  if(next.bookmarks.length>=1000)throw Error('Too many saved references to merge; nothing was imported.');
+  const id=used.has(b.id)?idForTransfer(used):b.id;used.add(id);
+  next.bookmarks.push({...b,id});stats.bookmarks++;
+ }
+ for(const r of backup.data.queue||[]){
+  const here=next.queue.find(x=>x.book===r.book&&x.chapter===r.chapter);
+  if(here){
+   if(r.done&&!here.done){here.done=true;stats.progress++}
+   continue;
+  }
+  if(next.queue.length>=500)throw Error('Too many reading-list chapters to merge; nothing was imported.');
+  const id=used.has(r.id)?idForTransfer(used):r.id;used.add(id);
+  next.queue.push({...r,id});stats.queue++;
+ }
+ // A foreign unsaved draft becomes an ordinary recovered note; the current
+ // device's open editor/draft remains completely untouched in merge mode.
+ withRecoveredDraft(next,backup.draft,stats,used);
+ return {next,stats};
+}
+function replaceBackup(backup){
+ const d=backup.data;
+ const next={...defaults,...d};
+ if(!BOOKS.some(b=>b[0]===next.book))next.book=defaults.book;
+ next.notes=d.notes.map(n=>({...n}));
+ next.bookmarks=d.bookmarks.map(b=>({...b}));
+ next.queue=(d.queue||[]).map(r=>({...r}));
+ // Draft is restored into the original v1.6.1 draft slot, not silently discarded.
+ return next;
+}
+function commitBackup(next,mode,draft){
+ const oldMain=localStorage.getItem(KEY),oldDraft=localStorage.getItem(DRAFT_KEY);
+ const bytes=JSON.stringify(next);
+ try{
+  localStorage.setItem(KEY,bytes);
+  if(mode==='replace'){
+   if(draft)localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+   else localStorage.removeItem(DRAFT_KEY);
+  }
+  if(localStorage.getItem(KEY)!==bytes)throw Error('Storage read-back failed');
+ }catch(e){
+  try{
+   if(oldMain===null)localStorage.removeItem(KEY);else localStorage.setItem(KEY,oldMain);
+   if(mode==='replace'){if(oldDraft===null)localStorage.removeItem(DRAFT_KEY);else localStorage.setItem(DRAFT_KEY,oldDraft)}
+  }catch(rollbackError){console.warn('Backup rollback failed',rollbackError)}
+  throw Error('Could not safely store the backup. Existing data was not intentionally replaced; check storage and export before retrying.');
+ }
+ data=next;
+}
+$('#import').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ const status=$('#importStatus');
+ try{
+  if(file.size>2000000)throw Error('File is too large (2 MB limit).');
+  const backup=incomingBackup(JSON.parse(await file.text()));
+  const mode=$('#importMode').value;
+  if(mode==='replace'){
+   if(!confirm('REPLACE all current notes, bookmarks, reading progress and unfinished draft on this device? Download a backup of this device first.')){status.textContent='Import cancelled. No changes made.';return}
+   const next=replaceBackup(backup);
+   commitBackup(next,'replace',backup.draft);
+   $('#noteRef').value='';$('#noteText').value='';editingNoteId=null;$('#saveNote').textContent='Save note';
+   $('#noteDraftStatus').textContent='';restoreDraft();
+   sizeAndTheme();jump(data.book,data.chapter,data.verse);
+   status.textContent='Full backup restored on this device.';
+  }else{
+   const {next,stats}=mergeBackup(backup);
+   const summary='Add '+stats.notes+' note(s), '+stats.bookmarks+' saved passage(s), '+stats.queue+' reading-list chapter(s) and '+stats.progress+' progress update(s).'+(stats.drafts?' Imported unfinished draft kept as recovered note.':'');
+   if(!confirm(summary+' Your current data and unfinished draft will stay. Continue?')){status.textContent='Import cancelled. No changes made.';return}
+   commitBackup(next,'merge',null);
+   status.textContent='Safe merge complete. '+summary+' No existing notes replaced.';
+  }
+  renderSaved();renderNotes();if(window.JMExplore)window.JMExplore.render();if(window.JMReadingRoom)window.JMReadingRoom.render();
+ }catch(err){status.textContent=err.message||'Backup import failed. No changes intentionally made.'}
+ finally{e.target.value=''}
+});
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));
 sizeAndTheme();update();restoreDraft();if(!window.JMAndroidBridge && 'serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 

@@ -1,4 +1,4 @@
-name: JM Scripture Companion v1.6.1 Real Browser Regression
+name: JM Scripture Companion 1.6.x Real Browser Regression
 on:
   pull_request:
     paths:
@@ -20,6 +20,7 @@ jobs:
         run: |
           node --check family-gifts/scripture-companion/sw.js
           node --check family-gifts/scripture-companion/tests/v161-browser.spec.cjs
+          node --check family-gifts/scripture-companion/tests/v162-safe-transfer.spec.cjs
           python3 -m json.tool family-gifts/scripture-companion/manifest.webmanifest >/dev/null
       - name: Install real Chromium
         run: |
@@ -35,4 +36,6 @@ jobs:
           cat /tmp/jm-scripture-qa-http.log
           exit 1
       - name: Exercise real browser drafts, chapter routing, backup, phone, desktop and offline reload
-        run: node family-gifts/scripture-companion/tests/v161-browser.spec.cjs
+        run: |
+          node family-gifts/scripture-companion/tests/v161-browser.spec.cjs
+          node family-gifts/scripture-companion/tests/v162-safe-transfer.spec.cjs

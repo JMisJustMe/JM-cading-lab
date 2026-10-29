@@ -374,3 +374,10 @@ symlink ancestors, not an atomic directory-handle guarantee against concurrent
 path replacement. Real owner-device recovery, independently authenticated
 packet custody, R2 writeback, production deployment and propagation remain
 HOLD. No private source or owner data is included in the synthetic tests.
+
+
+## CP24 — exact offline recovery receipt integrity (29 October 2026)
+
+The existing CP20/CP21 independent recovery CLI now uses **one deterministic manifest contract** for writing, immediate independent disk readback and later cold audit. Previously, restore acknowledged success after checking only packet SHA and ancestor count in its saved manifest; audit checked a few fields but could accept an altered custody boundary or an injected claim that offsite recovery/deployment had been verified. CP24 requires exact manifest bytes on initial readback and exact canonical receipt text on later audit. An altered boundary, extra field, changed formatting or forged status is **HOLD**, never a completion claim.
+
+The original source HTML, immutable ancestry, separately intended uses, owner-selected destination, and CP22 non-destructive partial-recovery protections remain unchanged. Two new adversarial cold-audit tests exercise a forged offsite/deployment boundary and an injected owner-device success flag; a restored authentic manifest must pass again. This is **local offline integrity**, not packet origin authentication, physical-device recovery, race-proof filesystem custody, real R2, external cloud writeback, or production deployment. The existing draft PR stays unmerged pending CI and owner contact.

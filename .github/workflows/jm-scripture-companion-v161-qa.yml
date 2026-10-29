@@ -21,6 +21,7 @@ jobs:
           node --check family-gifts/scripture-companion/sw.js
           node --check family-gifts/scripture-companion/tests/v161-browser.spec.cjs
           node --check family-gifts/scripture-companion/tests/v162-safe-transfer.spec.cjs
+          node --check family-gifts/scripture-companion/tests/v163-notes-contact.spec.cjs
           python3 -m json.tool family-gifts/scripture-companion/manifest.webmanifest >/dev/null
       - name: Install real Chromium
         run: |
@@ -39,3 +40,4 @@ jobs:
         run: |
           node family-gifts/scripture-companion/tests/v161-browser.spec.cjs
           node family-gifts/scripture-companion/tests/v162-safe-transfer.spec.cjs
+          node family-gifts/scripture-companion/tests/v163-notes-contact.spec.cjs

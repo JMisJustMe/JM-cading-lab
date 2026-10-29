@@ -1,4 +1,4 @@
-<!-- JM Scripture Companion v1.8.9 connected contextual Scripture study trail and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
+<!-- JM Scripture Companion v1.9.0 private seven-chapter study atelier and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
 <!doctype html><html lang="en"><head><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#183932"><meta name="description" content="A personal scripture-reading companion with official Bible links and private local notes."><title>JM Scripture Companion · Reading Room</title>
 <style>
 /* CP24: inherited calm reading-room; guided passage without a new front door */
@@ -8,6 +8,24 @@
 .jm-focus .actions{gap:8px}
 .jm-study-trail{padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:14px 0}
 .jm-study-trail p{margin:0 0 9px}
+
+
+/* CP27: a dignified, responsive personal study atelier; all content stays on-device. */
+.jm-atelier{margin:16px 0 10px;padding:14px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--surface) 92%,#c1d9bd)}
+.jm-atelier>summary{font-weight:800;cursor:pointer;min-height:38px;line-height:1.6;list-style-position:inside}
+.jm-atelier[open]>summary{margin-bottom:12px}
+.jm-atelier-progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 14px}
+.jm-atelier-progress progress{flex:1;min-width:100px;max-width:350px;height:10px;accent-color:var(--accent)}
+.jm-chapter-atlas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.jm-chapter-card{min-width:0;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:9px}
+.jm-chapter-card[aria-current="step"]{border:2px solid var(--accent);padding:11px}
+.jm-chapter-card .jm-index{font-size:.76rem;font-weight:800;letter-spacing:.05em;color:var(--muted)}
+.jm-chapter-card h4{font-size:1rem;line-height:1.35;margin:0;color:var(--ink)}
+.jm-chapter-card .jm-reflection-preview{font-size:.9rem;color:var(--ink);line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.jm-chapter-card .actions{margin-top:auto}
+.jm-chapter-card .btn{min-height:38px}
+.jm-atelier-note{font-size:.86rem;color:var(--muted);line-height:1.5;margin:12px 0 0}
+@media(max-width:530px){.jm-atelier{padding:11px}.jm-chapter-atlas{grid-template-columns:1fr}.jm-chapter-card{gap:8px}.jm-chapter-card .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* CP23 original reading room: quiet progress, not a competing dashboard */
 #planMeter{width:100%;height:12px;accent-color:var(--accent);display:block;margin:12px 0 5px}#planJourney{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}#planJourney summary{cursor:pointer;font-weight:750;color:var(--ink);padding:7px 1px}#planSteps{margin-top:10px}.plan-step-title{display:block;margin-bottom:6px}
@@ -42,6 +60,15 @@
    <strong id="jmFocusRef">Psalms 23</strong>
    <p id="jmFocusProgress" class="soft" role="status" aria-live="polite">Reading is always your choice.</p>
    <p id="jmFocusPath" class="soft" role="status" aria-live="polite"></p>
+   <details id="jmJourneyOverview" class="jm-atelier">
+    <summary id="jmJourneySummary">My seven-chapter study journey</summary>
+    <div class="jm-atelier-progress">
+     <progress id="jmJourneyMeter" max="7" value="0" aria-label="Personal reading path progress"></progress>
+     <strong id="jmJourneyCount">0 of 7 personally marked read</strong>
+    </div>
+    <div id="jmJourneyCards" class="jm-chapter-atlas" aria-label="Passages, private reflections and chapter progress"></div>
+    <p class="jm-atelier-note">This is your personal journey, not an official reading programme. Only you decide what to mark read. Your reflections remain on this device; Scripture opens on JW.org.</p>
+   </details>
    <div class="jm-study-trail" role="group" aria-label="Adjacent chapters on chosen reading path">
     <p id="jmTrailContext" class="soft" aria-live="polite">Choose a passage from your reading path to see its neighbours.</p>
     <div class="actions"><button type="button" class="btn secondary small" id="jmTrailPrevious">← Previous passage</button><button type="button" class="btn secondary small" id="jmTrailFollowing">Following passage →</button></div>
@@ -538,6 +565,32 @@ $('#jmTrailFollowing').addEventListener('click',()=>{
  const r=neighbouringPassages().next;
  if(r){jump(r.book,r.chapter);$('#jmFocusStatus').textContent='Selected following passage. Reading remains your choice.';}
 });
+// CP27 professional study atelier: a read-only projection of existing JM
+// source-owned chapter status and notes, never another database or backup schema.
+function renderJourneyAtelier(){
+ const plan=readingPaths[$('#planPicker').value]||readingPaths.quiet;
+ const chosen=selected(),root=$('#jmJourneyCards');root.replaceChildren();
+ const queue=Array.isArray(data.queue)?data.queue:[];
+ const count=plan.chapters.filter(([book,ch])=>queue.some(q=>q.book===book&&q.chapter===ch&&q.done)).length;
+ $('#jmJourneySummary').textContent=plan.title+' · Review my seven passages';
+ $('#jmJourneyCount').textContent=count+' of 7 personally marked read · '+(7-count)+' still yours to explore';
+ $('#jmJourneyMeter').value=count;
+ plan.chapters.forEach(([book,chapter],index)=>{
+  const ref={book,chapter,verse:''},done=queue.some(q=>q.book===book&&q.chapter===chapter&&q.done);
+  const notes=chapterReflections(book,chapter),card=make('article',undefined,'jm-chapter-card');
+  if(chosen.book===book&&chosen.chapter===chapter)card.setAttribute('aria-current','step');
+  const tag=make('span','CHAPTER '+String(index+1).padStart(2,'0')+' / 07','jm-index');
+  const title=make('h4',book+' '+chapter);
+  const status=make('p',(done?'✓ Marked read by you':'○ Not marked read')+' · '+notes.length+' private reflection'+(notes.length===1?'':'s'),'soft');
+  const preview=make('p',notes.length?notes[notes.length-1].text.slice(0,175)+(notes[notes.length-1].text.length>175?'…':''):'Your own thoughts can be added when you are ready.','jm-reflection-preview');
+  const actions=make('div',undefined,'actions');
+  actions.append(makeButton('Choose',()=>{jump(book,chapter);$('#jmFocusStatus').textContent='Selected '+book+' '+chapter+'. Your reading progress is unchanged.';}));
+  const official=make('a','Study Edition ↗','btn secondary small');official.href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(book)+'/'+chapter+'/';official.target='_blank';official.rel='noopener noreferrer';actions.append(official);
+  const reflect=makeButton('My reflections',()=>{jump(book,chapter);$('#notesScope').value='chapter';$('#notesSearch').value='';tab('notes');});
+  actions.append(reflect);
+  card.append(tag,title,status,preview,actions);root.append(card);
+ });
+}
 function renderStudyFocus(){
  const r=selected();
  const read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===r.book&&q.chapter===r.chapter&&q.done);
@@ -550,7 +603,7 @@ function renderStudyFocus(){
  $('#jmFocusPath').textContent=route.title+' · '+route.completed+' of '+route.total+' personally marked read · '+(upcoming?'Next: '+upcoming.book+' '+upcoming.chapter:'All seven marked read; revisiting is always welcome.');
  $('#jmFocusNext').disabled=!upcoming;
  $('#jmFocusNext').textContent=upcoming?'Choose next: '+upcoming.book+' '+upcoming.chapter:'All passages marked read';
- renderStudyTrail();
+ renderStudyTrail();renderJourneyAtelier();
 }
 $('#jmFocusMark').addEventListener('click',()=>{
  const ref=selected(),read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===ref.book&&q.chapter===ref.chapter&&q.done);

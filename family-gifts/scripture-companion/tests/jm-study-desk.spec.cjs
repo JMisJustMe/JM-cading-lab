@@ -213,6 +213,42 @@ const {chromium}=require('playwright');
    assert.deepEqual(afterTrail.notes,beforeTrail.notes,'CP26 trail does not alter personal reflections');
    assert.deepEqual(afterTrail.queue,beforeTrail.queue,'CP26 trail does not change reading completion');
    console.log('PASS CP26 CONNECTED STUDY TRAIL '+width+'px: real adjacent passages, route boundaries, private notes and progress protected');
+   // CP27: professional path overview reads the only original notes/queue storage.
+   await page.locator('[data-tab="read"]').click();
+   await page.click('#jmFocusChoosePath');
+   await page.selectOption('#planPicker','quiet');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview summary').click();
+   assert.equal(await page.locator('#jmJourneyCards .jm-chapter-card').count(),7);
+   assert.match(await page.locator('#jmJourneyCount').textContent(),/0 of 7/);
+   await page.locator('#jmJourneyCards .jm-chapter-card').first().getByRole('button',{name:'Choose'}).click();
+   assert.equal(await page.locator('#book').inputValue(),'Psalms');
+   assert.equal(await page.locator('#chapter').inputValue(),'23');
+   assert.equal(await page.locator('#jmJourneyCards [aria-current="step"]').count(),1);
+   assert.equal(await page.locator('#jmJourneyCards .jm-chapter-card a').count(),7);
+   const originalQueue=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')).queue);
+   await page.locator('#jmJourneyCards .jm-chapter-card').first().getByRole('button',{name:'My reflections'}).click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true);
+   await page.fill('#noteRef','Psalms 23');
+   await page.fill('#noteText','A private note that must remain only in the original JM notes');
+   await page.click('#saveNote');
+   await page.locator('[data-tab="read"]').click();
+   assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').first().textContent(),/1 private reflection/);
+   assert.match(await page.locator('#jmJourneyCards .jm-reflection-preview').first().textContent(),/A private note that must remain/);
+   assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')).queue),originalQueue,
+    'CP27 journal and chapter choice never silently complete a passage');
+   await page.click('#jmFocusMark');
+   assert.match(await page.locator('#jmJourneyCount').textContent(),/1 of 7/);
+   await page.reload({waitUntil:'load'});
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview summary').click();
+   assert.match(await page.locator('#jmJourneyCount').textContent(),/1 of 7/);
+   assert.match(await page.locator('#jmJourneyCards .jm-reflection-preview').first().textContent(),/A private note that must remain/);
+   await page.click('#jmFocusMark');
+   assert.match(await page.locator('#jmJourneyCount').textContent(),/0 of 7/);
+   assert.match(await page.locator('#jmJourneyCards .jm-reflection-preview').first().textContent(),/A private note that must remain/);
+   console.log('PASS CP27 PROFESSIONAL PRIVATE STUDY ATELIER '+width+'px: seven cards, saved local reflection, completion/reversal and reload');
+
 
 
    assert.deepEqual(errors,[]);

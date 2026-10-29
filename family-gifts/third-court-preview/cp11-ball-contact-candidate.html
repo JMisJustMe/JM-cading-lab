@@ -195,6 +195,8 @@ if(p.team===1&&p.aiWait>0){p.aiWait=Math.max(0,p.aiWait-dt);spd*=.32}}moveEntity
 for(let i=0;i<state.players.length;i++)for(let j=i+1;j<state.players.length;j++){
  const a=state.players[i],b=state.players[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),min=state.guardHeld&&((a.id===state.carrier&&b.team!==a.team)||(b.id===state.carrier&&a.team!==b.team))?46:37;
  if(d>=min)continue;const nx=d>0.01?dx/d:((i+j)%2?1:-1),ny=d>0.01?dy/d:0,overlap=(min-d)*.5;
+ const closing=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;
+ if(closing<0){const impulse=-closing*.30;a.vx-=impulse*nx;a.vy-=impulse*ny;b.vx+=impulse*nx;b.vy+=impulse*ny;state.bodyImpacts=(state.bodyImpacts||0)+1;}
  a.x=clamp(a.x-nx*overlap,LIMIT.left,LIMIT.right);a.y=clamp(a.y-ny*overlap,LIMIT.top,LIMIT.bottom);
  b.x=clamp(b.x+nx*overlap,LIMIT.left,LIMIT.right);b.y=clamp(b.y+ny*overlap,LIMIT.top,LIMIT.bottom);
 }

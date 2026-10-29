@@ -250,6 +250,41 @@ try{
    assert.equal(target.id,'B');
    assert(target.range>0);
  });
+ await check('CP10 real original-map route has contiguous traversable cells',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.command('START');
+     window.FTR.test.freezeEnemies();
+     window.FTR.test.setPlayer(12.3,15.4,0);
+     return window.JMFTRSpatial.route();
+   });
+   assert.equal(r.status,'ROUTE_FOUND');
+   assert.equal(r.target,'A');
+   assert.equal(r.steps,r.path.length-1);
+   assert(r.path.length>1);
+   for(let i=1;i<r.path.length;i++)
+      assert.equal(Math.abs(r.path[i].x-r.path[i-1].x)+Math.abs(r.path[i].y-r.path[i-1].y),1);
+ });
+ await check('CP10 route refuses original locked gate, then opens after genuine first-core consequence',async()=>{
+   const before=await page.evaluate(()=>{
+     window.FTR.test.activateCore(0);
+     return window.JMFTRSpatial.route();
+   });
+   assert.equal(before.target,'B');
+   assert.equal(before.status,'NO_TRAVERSABLE_ROUTE');
+   await page.waitForTimeout(1200);
+   const after=await page.evaluate(()=>window.JMFTRSpatial.route());
+   assert.equal(after.status,'ROUTE_FOUND');
+   assert.equal(after.target,'B');
+   assert(after.steps>0);
+ });
+ await check('CP10 two collected original cores terminate wayfinding rather than inventing targets',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.test.activateCore(1);
+     return window.JMFTRSpatial.route();
+   });
+   assert.equal(r.status,'ALL_CORES_MOUNTED');
+   assert.deepEqual(r.path,[]);
+ });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
    console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));

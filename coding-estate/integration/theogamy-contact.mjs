@@ -41,7 +41,7 @@ export function wakeMEETPOINTFromFTR({world,contact,playerIndex=0}){
   need(Number.isSafeInteger(playerIndex)&&playerIndex>=0,'PLAYER_INDEX');
   const actor=world?.players?.[playerIndex];
   need(!!actor,'PLAYER_MISSING');
-  const from={island:actor.island,x:actor.x,y:actor.y,goal:COPY(actor.goal)};
+  const from={island:actor.island,x:actor.x,y:actor.y,goal:actor.goal===undefined?null:COPY(actor.goal)};
   const before=JSON.stringify(world);
   const result=sharedReentry(world,playerIndex);
   need(before===JSON.stringify(world),'WORLD_SOURCE_MUTATED');

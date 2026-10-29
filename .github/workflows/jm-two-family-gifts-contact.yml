@@ -45,3 +45,11 @@ jobs:
         run: |
           node family-gifts/tests/jm-two-gifts-contact.spec.cjs
           node family-gifts/third-court-preview/tests/cp11-deep-realism.spec.cjs
+      - name: Preserve phone/laptop original-versus-advanced visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-third-court-cp06-vs-cp11-visual-proof
+          path: artifacts/jm-third-court-visual-proof/*.png
+          if-no-files-found: ignore
+          retention-days: 14

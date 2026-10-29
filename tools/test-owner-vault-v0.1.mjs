@@ -1102,6 +1102,7 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
     await fs.writeFile(manifestPath,manifestOriginal);
     assert.equal(run('--audit-dir',restoredDir).status,0,
       'CP24 exact manifest restored without altering any original source');
+    console.log('PASS: CP24 exact offline manifest rejects forged custody boundary and injected owner-device success claim; authentic original cold audit restored.');
     const unexpectedFile = path.join(restoredDir,'extra-unverified.html');
     await fs.writeFile(unexpectedFile,'unrelated');
     assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_INVENTORY_MISMATCH',

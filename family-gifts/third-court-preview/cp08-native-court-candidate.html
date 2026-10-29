@@ -414,10 +414,15 @@ function native3DInit(){
   line([-1.7,.09,sign*5.0],[1.7,.09,sign*5.0],.027,col.mark);
   arc(0,.09,sign*6.2,1.68,.025,col.mark);
   const pts=[];for(let i=0;i<=52;i++){let a=i*Math.PI/52;pts.push([4.25*Math.cos(a),.10,sign*(7.05-4.25*Math.sin(a))])}for(let i=0;i<52;i++)line(pts[i],pts[i+1],.032,col.mark);
-  box(0,1.45,backZ+sign*.85,.12,2.9,.12,col.steel);
-  line([0,2.85,backZ+sign*.85],[0,2.85,backZ],.055,col.steel);
-  box(0,2.78,backZ,1.8,1.05,.075,[.66,.85,.87]);box(0,2.78,backZ-sign*.045,.85,.5,.021,[.15,.28,.37]);
-  line([0,2.62,backZ-sign*.04],[0,2.62,basketZ],.06,col.steel);
+  // Broadcast camera rule: fade out near backboard/support mesh to prevent
+  // a foreground prop covering the playable ball-handler. Rim/net remain real 3D.
+  if(sign<0){
+   box(0,1.45,backZ+sign*.85,.12,2.9,.12,col.steel);
+   line([0,2.85,backZ+sign*.85],[0,2.85,backZ],.055,col.steel);
+   box(0,2.78,backZ,1.8,1.05,.075,[.66,.85,.87]);
+   box(0,2.78,backZ-sign*.045,.85,.5,.021,[.15,.28,.37]);
+   line([0,2.62,backZ-sign*.04],[0,2.62,basketZ],.06,col.steel);
+  }
   arc(0,2.57,basketZ,.43,.038,col.orange);
   for(let i=0;i<12;i++){const t=i*Math.PI/6;line([Math.cos(t)*.42,2.55,basketZ+Math.sin(t)*.42],[Math.cos(t+.15)*.26,2.10,basketZ+Math.sin(t+.15)*.26],.008,col.net)}
   arc(0,2.1,basketZ,.27,.008,col.net);
@@ -465,7 +470,7 @@ function native3DInit(){
  function redraw(){
   gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(.016,.038,.073,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   const mid=state.pos===0?Math.max(-.7,Math.min(2.7,(holder().y-460)/260)):0;
-  const eye=[0,15.5,19.8+mid],target=[0,.5,0+mid*.25],mat=mul(persp(.96,canvas.width/canvas.height,.1,95),lookAt(eye,target));
+  const eye=[6,20,21+mid],target=[0,.5,0+mid*.25],mat=mul(persp(.96,canvas.width/canvas.height,.1,95),lookAt(eye,target));
   gl.useProgram(program);gl.uniformMatrix4fv(vpU,false,new Float32Array(mat));
   geometry(fixedBuffer,fixed,fixedCount);
   const dyn=dynamicScene();upload(movingBuffer,dyn,gl.DYNAMIC_DRAW);geometry(movingBuffer,dyn,dyn.length/9);

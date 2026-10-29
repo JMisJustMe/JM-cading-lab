@@ -105,8 +105,8 @@ function build(){
  if(dispatch.executions.length!==1||!dispatch.executions[0].applied)throw Error('JM_COVER_NATIVE_NOT_AUTHORISED');
  const previous=barrier,ammo=player.ammo;
  barrier={x:pos.x,y:pos.y,kind,hp:mat.health,maxHp:mat.health,ttl:12,placedAt:time};
- const target=terminals.find(t=>!t.active);
- // Never convert an already open core route into an impossible one.
+ const target=terminals.find(t=>!t.active)||(player.cores>=2&&extraction.active?extraction:null);
+ // Never convert an already open core OR extraction route into an impossible one.
  if(target && !routeStillOpen(target)){
   barrier=previous;return denied('ORIGINAL_CORE_ROUTE_WOULD_BE_BLOCKED');
  }

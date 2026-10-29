@@ -428,7 +428,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         <strong>ORIGINAL FILES · ANY FORMAT</strong>
         <p class="jm-vault-note">Save a selected original file as exact private bytes (up to 12 MiB per file). Nothing is uploaded automatically. Download on another device, edit using the correct native application, and explicitly upload a revision. No public publication or automatic synchronisation is implied.</p>
         <input type="file" id="jmVaultFileInput" aria-label="Select original file">
-        <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
+        <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCheckPending" type="button">CHECK HELD SAVE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
         <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
         <div class="jm-vault-remote" id="jmVaultAssetCards"></div>
       </section>
@@ -802,56 +802,137 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     }
     return bytes;
   }
+
+  // CP23 — the same explicit upload is the same purposeful source use.
+  // A durable metadata-only checkpoint exists BEFORE its first network write.
+  // It intentionally contains no source bytes, owner key, or raw file content.
+  const ASSET_PENDING_KEY = 'jm-owner-vault-cp23-file-save-pending';
+  let assetSaveBusy = false;
+  function readAssetPending() {
+    const raw = localStorage.getItem(ASSET_PENDING_KEY);
+    if (raw === null) return null;
+    let p;
+    try { p = JSON.parse(raw); } catch { throw new Error('FILE_SAVE_CHECKPOINT_CORRUPT_HOLD'); }
+    if (!p || p.schema !== 'JM.OwnerVault.FileSavePending/0.1'
+      || !/^asset-[0-9a-f-]{36}$/i.test(p.sourceInstanceId || '')
+      || !/^[a-f0-9]{64}$/i.test(p.sha256 || '')
+      || !Number.isSafeInteger(p.bytes) || p.bytes < 0 || p.bytes > 12*1024*1024
+      || typeof p.fileName !== 'string' || p.fileName.length < 1
+      || (p.expectedBaseId !== null && !/^[0-9a-f-]{36}$/i.test(p.expectedBaseId || ''))
+      || (p.expectedBaseSha256 !== null && !/^[a-f0-9]{64}$/i.test(p.expectedBaseSha256 || ''))
+      || Boolean(p.expectedBaseId) !== Boolean(p.expectedBaseSha256)) {
+      throw new Error('FILE_SAVE_CHECKPOINT_INVALID_HOLD');
+    }
+    return p;
+  }
+  async function confirmPendingAsset() {
+    if (!(await ensureUnlocked())) return;
+    try {
+      const pending = readAssetPending();
+      if (!pending) { assetMessage('No held file upload checkpoint on this device.'); return; }
+      const index = await request('?mode=assets');
+      if (index.schema !== 'JM.OwnerVault/0.1.AssetIndex' || !Array.isArray(index.assets))
+        throw new Error('PRIVATE_ASSET_INDEX_UNAVAILABLE');
+      const sameUse = index.assets.filter(a => a.sourceInstanceId === pending.sourceInstanceId);
+      if (!sameUse.length) {
+        assetMessage('SAVE HOLD: this purposeful file identity is not yet indexed. Keep the original file selected and press SAVE to resume the SAME exact identity; no new identity will be created.');
+        return;
+      }
+      const head = sameUse[0];
+      if (head.sha256 !== pending.sha256 || head.bytes !== pending.bytes
+        || head.fileName !== pending.fileName) {
+        throw new Error('FILE_SAVE_REMOTE_HEAD_DIFFERENT_HOLD');
+      }
+      await checkedAssetDownload(head);
+      localStorage.removeItem(ASSET_PENDING_KEY);
+      await refreshAssets();
+      assetMessage('Previously interrupted save independently recovered with exact file hash. Checkpoint cleared; no new upload, no duplicate source.');
+    } catch (error) {
+      assetMessage('SAVE HOLD: ' + error.message + '. Protected checkpoint retained. No new upload attempted.');
+    }
+  }
   async function saveSelectedOriginal() {
+    if (assetSaveBusy) return;
     if (!(await ensureUnlocked())) return;
     const input = el('jmVaultFileInput'), selected = input?.files?.[0];
-    if (!selected) { assetMessage('Choose a real original file on this device first.'); return; }
+    if (!selected) { assetMessage('Choose the original file on this device first.'); return; }
     if (selected.size > 12 * 1024 * 1024) {
-      assetMessage('File exceeds the current 12 MiB per-file gate. Nothing uploaded or truncated.');
+      assetMessage('Original file exceeds the 12 MiB gate. Nothing truncated or uploaded.');
       return;
     }
     const btn = el('jmVaultSaveFile');
+    assetSaveBusy = true;
     btn.disabled = true;
-    const revision = assetRevision;
     let attempted = false;
     try {
       const bytes = new Uint8Array(await selected.arrayBuffer());
       if (bytes.length !== selected.size) throw new Error('LOCAL_FILE_CHANGED_DURING_READ');
       const hash = await assetDigest(bytes);
-      const sourceInstanceId = revision?.sourceInstanceId || 'asset-' + crypto.randomUUID();
-      const body = {
-        name: revision?.name || selected.name,
-        fileName: selected.name,
-        mediaType: selected.type || 'application/octet-stream',
-        sourceInstanceId,
-        sha256: hash,
-        base64: assetBase64(bytes)
-      };
-      if (revision) {
-        body.expectedBaseId = revision.id;
-        body.expectedBaseSha256 = revision.sha256;
+      let pending = readAssetPending();
+      const revision = assetRevision;
+      if (pending) {
+        // Never transform a held source identity into a new one. A retry must
+        // use the exact same file bytes, filename and revision precondition.
+        if (pending.sha256 !== hash || pending.bytes !== bytes.length
+          || pending.fileName !== selected.name
+          || (revision && (revision.sourceInstanceId !== pending.sourceInstanceId
+            || revision.id !== pending.expectedBaseId
+            || revision.sha256 !== pending.expectedBaseSha256))) {
+          throw new Error('DIFFERENT_FILE_WHILE_SOURCE_SAVE_PENDING');
+        }
+      } else {
+        pending = {
+          schema:'JM.OwnerVault.FileSavePending/0.1',
+          sourceInstanceId:revision?.sourceInstanceId || 'asset-' + crypto.randomUUID(),
+          sha256:hash, bytes:bytes.length, fileName:selected.name,
+          expectedBaseId:revision?.id || null,
+          expectedBaseSha256:revision?.sha256 || null,
+          createdAt:new Date().toISOString()
+        };
+        // No durable device checkpoint means NO remote write.
+        localStorage.setItem(ASSET_PENDING_KEY, JSON.stringify(pending));
+        if (readAssetPending()?.sourceInstanceId !== pending.sourceInstanceId)
+          throw new Error('LOCAL_CHECKPOINT_READBACK_FAILED');
       }
-      // Only the owner's explicit click sends these bytes. Do not retry a
-      // possibly committed POST after a lost response; refresh first.
+      const file = {
+        name:revision?.name || pending.fileName,
+        fileName:pending.fileName,
+        mediaType:selected.type || 'application/octet-stream',
+        sourceInstanceId:pending.sourceInstanceId,
+        sha256:pending.sha256,
+        base64:assetBase64(bytes)
+      };
+      if (pending.expectedBaseId) {
+        file.expectedBaseId = pending.expectedBaseId;
+        file.expectedBaseSha256 = pending.expectedBaseSha256;
+      }
       attempted = true;
-      const response = await request('', { method: 'POST',
-        body: JSON.stringify({ action: 'upload-asset', file: body }) });
-      if (!['ASSET_STORED', 'ASSET_UNCHANGED'].includes(response.outcome)
+      const response = await request('',{method:'POST',body:JSON.stringify({action:'upload-asset',file})});
+      if (!['ASSET_STORED','ASSET_UNCHANGED'].includes(response.outcome)
         || response.asset?.sha256 !== hash
-        || response.asset?.sourceInstanceId !== sourceInstanceId
-        || response.asset?.bytes !== bytes.length) throw new Error('ASSET_SAVE_RECEIPT_INVALID');
-      const returned = await checkedAssetDownload(response.asset);
-      if (returned.length !== bytes.length) throw new Error('ASSET_READBACK_LENGTH_MISMATCH');
+        || response.asset?.sourceInstanceId !== pending.sourceInstanceId
+        || response.asset?.bytes !== bytes.length
+        || response.asset?.fileName !== pending.fileName) throw new Error('ASSET_SAVE_RECEIPT_INVALID');
+      const remote = await checkedAssetDownload(response.asset);
+      if (remote.length !== bytes.length) throw new Error('ASSET_READBACK_LENGTH_MISMATCH');
+      const index = await request('?mode=assets');
+      const head = index.assets?.find(a => a.sourceInstanceId === pending.sourceInstanceId);
+      if (head?.id !== response.asset.id || head.sha256 !== hash)
+        throw new Error('ASSET_CURRENT_HEAD_INDEX_MISMATCH');
+      // Only proven exact remote original bytes justify releasing the
+      // local pending checkpoint, without retiring any owner creation.
+      localStorage.removeItem(ASSET_PENDING_KEY);
       assetRevision = null;
       input.value = '';
       await refreshAssets();
-      assetMessage('Exact original file privately saved and independently SHA-256 read back. Ancestors kept; no public deployment.');
+      assetMessage('Original file saved and exact source independently recovered. Previous versions retained; no duplicate identity.');
     } catch (error) {
       if (error.status === 401) { setKey(''); authLabel(false); }
-      assetMessage('Original-file HOLD: ' + error.message + (attempted
-        ? '. Refresh the private file list before retrying: the remote write may already exist.'
-        : '. No upload attempted.'));
-    } finally { btn.disabled = false; }
+      assetMessage('Original-file SAVE HOLD: ' + error.message
+        + (attempted
+            ? '. The same source identity is retained; CHECK HELD SAVE or reselect the SAME original file to resume without a duplicate.'
+            : '. No remote write was made.'));
+    } finally { assetSaveBusy = false; btn.disabled = false; }
   }
 
   // CP22 uses the ORIGINAL Owner Room download pattern and original CP20
@@ -1107,6 +1188,9 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       authLabel(true);
       const bodies = Array.isArray(data.bodies) ? data.bodies : [];
       await refreshAssets();
+      try {
+        if (readAssetPending()) assetMessage('An original-file SAVE checkpoint is held on this device. Choose CHECK HELD SAVE for read-only recovery; nothing is automatically reuploaded.');
+      } catch (error) { assetMessage(error.message + ': source data protected; no automatic reset.'); }
       el('jmVaultCount').textContent = `${bodies.length} REMOTE ${bodies.length === 1 ? 'BODY' : 'BODIES'}`;
       const shelf = el('jmVaultRemote');
       shelf.innerHTML = bodies.length ? bodies.map(body => `
@@ -1155,6 +1239,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
   function bind() {
     el('jmVaultUnlock')?.addEventListener('click', unlock);
     el('jmVaultSaveFile')?.addEventListener('click', saveSelectedOriginal);
+    el('jmVaultCheckPending')?.addEventListener('click', confirmPendingAsset);
     el('jmVaultCancelFileRevision')?.addEventListener('click', () => { assetRevision = null; el('jmVaultFileInput').value = ''; assetMessage('Revision cancelled; no file uploaded.'); });
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);

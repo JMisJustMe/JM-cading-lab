@@ -1962,3 +1962,132 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   assert.deepEqual(Buffer.from(await (await invoke({query:'?asset='+asset.id})).arrayBuffer()),bytes);
   console.log('PASS: CP26 13 MiB original native source in seven immutable 2 MiB pieces, exact R2 and offline cold recovery, concurrent-idempotent retries, corruption and incomplete transfer HOLD.');
 }
+
+
+// CP28: the existing private Owner Vault can export a COMPLETE original
+// revision history larger than the legacy 24 MiB packet, using bounded
+// read-only 8 MiB shards. The original offline CLI reassembles exact native
+// originals without network, Vault keys, login or repo root.
+{
+  const store=new FakeR2(), ownerKey='cp28-synthetic-owner-key';
+  const env={JM_OWNER_VAULT:store,JM_OWNER_VAULT_KEY:ownerKey};
+  const api=({method='GET',query='',body,key=ownerKey}={})=>call({method,query,body,key,env});
+  const hash=b=>createHash('sha256').update(b).digest('hex');
+  const sz=2*1024*1024, shardBytes=8*1024*1024;
+  const original=Buffer.alloc(13*1024*1024+3), changed=Buffer.alloc(13*1024*1024+17);
+  for(let i=0;i<original.length;i++)original[i]=i%251;
+  for(let i=0;i<changed.length;i++)changed[i]=(i+17)%251;
+  const source='asset-00000000-0000-4000-8000-000000000281';
+  const ids=[], buffers=[original,changed], metas=[];
+  const storageKeys=()=>[...store.map.entries()].map(([k,v])=>
+    [k,Buffer.isBuffer(v.body)?hash(v.body):hash(Buffer.from(v.body))]);
+  for(let version=0;version<2;version++){
+    const bytes=buffers[version];
+    const desc={uploadId:'00000000-0000-4000-8000-00000000028'+version,
+      sourceInstanceId:source,sha256:hash(bytes),bytes:bytes.length,
+      partCount:Math.ceil(bytes.length/sz),name:'JM Extended Original',
+      fileName:'original-lineage.jmproject',mediaType:'application/octet-stream',
+      ...(version?{expectedBaseId:ids[0],expectedBaseSha256:hash(original)}:{})};
+    for(let i=0;i<desc.partCount;i++){
+      const part=bytes.subarray(i*sz,Math.min((i+1)*sz,bytes.length));
+      const reply=await api({method:'POST',body:{action:'upload-asset-part',file:desc,
+        partIndex:i,partSha256:hash(part),base64:part.toString('base64')}});
+      assert.equal(reply.status,201,'piece must be stored in original R2');
+    }
+    const done=await api({method:'POST',body:{action:'finalize-chunked-asset',file:desc}});
+    assert.equal(done.status,201);
+    const m=(await done.json()).asset;
+    ids.push(m.id);metas.push(m);
+  }
+  assert.equal(metas[1].previousVersionId,metas[0].id);
+  assert.equal((await api({query:'?mode=export-asset-lineage&asset='+ids[1]})).status,413,
+    'CP22 legacy 24 MiB bound remains protected');
+  const planQuery='?mode=export-asset-extended-plan&asset='+ids[1];
+  assert.equal((await api({query:planQuery,key:'unauthorized'})).status,401);
+  const before=storageKeys();
+  const pResponse=await api({query:planQuery});
+  assert.equal(pResponse.status,200);
+  const plan=await pResponse.json();
+  assert.equal(plan.schema,'JM.OwnerVault/0.1.AssetExtendedPlan');
+  assert.deepEqual(plan.versions.map(m=>m.id),[ids[1],ids[0]]);
+  assert.equal(plan.source_bytes,original.length+changed.length);
+  assert.ok(plan.source_bytes>24*1024*1024);
+  assert.equal(plan.shard_bytes,shardBytes);
+  assert.match(plan.index_pin_sha256,/^[a-f0-9]{64}$/);
+  assert.deepEqual(storageKeys(),before,'plan cannot mutate private custody');
+  assert.equal((await api({query:'?mode=export-asset-extended-shard&asset='
+    +ids[1]+'&version='+ids[1]+'&part=0&pin='+'f'.repeat(64)})).status,409);
+  const versions=[];
+  for(const m of plan.versions){
+    const shards=[];
+    const raw=buffers[m.id===ids[1]?1:0];
+    for(let i=0;i<Math.ceil(m.bytes/shardBytes);i++){
+      const query='?mode=export-asset-extended-shard&asset='+ids[1]
+        +'&version='+m.id+'&part='+i+'&pin='+plan.index_pin_sha256;
+      const reply=await api({query});
+      assert.equal(reply.status,200);
+      const part=await reply.json();
+      assert.equal(part.schema,'JM.OwnerVault/0.1.AssetExtendedShard');
+      const expected=raw.subarray(i*shardBytes,Math.min((i+1)*shardBytes,raw.length));
+      assert.deepEqual(Buffer.from(part.base64,'base64'),expected);
+      assert.equal(part.sha256,hash(expected));
+      assert.equal(part.index_pin_sha256,plan.index_pin_sha256);
+      shards.push({shard_index:part.shard_index,offset:part.offset,
+        bytes:part.bytes,sha256:part.sha256,base64:part.base64});
+    }
+    versions.push({metadata:m,shards});
+  }
+  assert.deepEqual(storageKeys(),before,'complete shard reads may never mutate R2');
+  const packet={schema:'JM.OwnerVault/0.1.AssetExtendedExport',
+    selected_id:plan.selected_id,index_pin_sha256:plan.index_pin_sha256,
+    shard_bytes:plan.shard_bytes,version_count:plan.version_count,
+    source_bytes:plan.source_bytes,order:plan.order,versions};
+  const root=await fs.mkdtemp(path.join(tmpdir(),'jm-vault-cp28-'));
+  const tool=path.join(root,'owner-vault-lineage-recover.mjs'),
+    exported=path.join(root,'extended.json'), destination=path.join(root,'restored');
+  const cli=(...args)=>spawnSync(process.execPath,[tool,'--input',exported,...args],
+    {cwd:root,encoding:'utf8',timeout:120000,maxBuffer:1024*1024});
+  try {
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
+    await fs.writeFile(exported,JSON.stringify(packet));
+    let result=cli('--verify-only');
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).source_bytes,plan.source_bytes);
+    result=cli('--output-dir',destination);
+    assert.equal(result.status,0,result.stderr);
+    for(let i=0;i<2;i++)assert.deepEqual(
+      await fs.readFile(path.join(destination,ids[i]+'__original-lineage.jmproject')),
+      buffers[i]);
+    result=cli('--audit-dir',destination);
+    assert.equal(result.status,0,result.stderr);
+    assert.notEqual(cli('--output-dir',destination).status,0,'never overwrite recovered originals');
+    const corrupted=structuredClone(packet);
+    corrupted.versions[1].shards[0].base64='A'+corrupted.versions[1].shards[0].base64.slice(1);
+    await fs.writeFile(exported,JSON.stringify(corrupted));
+    result=cli('--verify-only');
+    assert.notEqual(result.status,0);
+    assert.match(result.stderr,/ASSET_EXTENDED_SHARD_INTEGRITY_FAILED/);
+    const refused=path.join(root,'refused');
+    assert.notEqual(cli('--output-dir',refused).status,0);
+    await assert.rejects(fs.lstat(refused),/ENOENT/);
+    const incomplete=structuredClone(packet);
+    incomplete.versions[0].shards.pop();
+    await fs.writeFile(exported,JSON.stringify(incomplete));
+    assert.match(cli('--verify-only').stderr,/ASSET_EXTENDED_IDENTITY_OR_SHARD_COUNT_INVALID/);
+    const alien=structuredClone(packet);
+    alien.versions[1].metadata.sourceInstanceId='asset-00000000-0000-4000-8000-000000009999';
+    await fs.writeFile(exported,JSON.stringify(alien));
+    assert.match(cli('--verify-only').stderr,/ASSET_EXTENDED_CROSS_PURPOSE_REFUSED/);
+    await fs.writeFile(exported,JSON.stringify(packet));
+    assert.equal(cli('--audit-dir',destination).status,0,'original manifest remains exact');
+    const nativeFile=path.join(destination,ids[1]+'__original-lineage.jmproject');
+    const originalByte=(await fs.readFile(nativeFile))[0];
+    const handle=await fs.open(nativeFile,'r+');
+    try{await handle.write(Buffer.from([originalByte^1]),0,1,0);}finally{await handle.close();}
+    assert.match(cli('--audit-dir',destination).stderr,/LINEAGE_AUDIT_SOURCE_MISMATCH/);
+  }finally{
+    await fs.rm(root,{recursive:true,force:true}); // synthetic test-created files only
+  }
+  assert.deepEqual(storageKeys(),before,'all offline work must leave original R2 unchanged');
+  console.log('PASS: CP28 >24 MiB complete two-version original lineage via bounded 8 MiB private shards, exact standalone native cold reconstruction, audit, corruption, cross-purpose and nonoverwriting HOLD.');
+}

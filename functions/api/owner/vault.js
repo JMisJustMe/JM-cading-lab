@@ -585,9 +585,22 @@ function emptyAssetIndex() {
 async function assetIndex(bucket) {
   return readJson(bucket, ASSET_INDEX_KEY, emptyAssetIndex());
 }
+// The old repeated-group base64 regex over multi-megabyte sources can
+// overflow a JS call stack. A bounded scan + strict canonical byte hash is
+// safe for both original small assets and 2 MiB CP26 source pieces.
+function validBoundedBase64(value) {
+  if (typeof value !== 'string' || value.length % 4 !== 0) return false;
+  const padding=value.endsWith('==')?2:value.endsWith('=')?1:0;
+  const end=value.length-padding;
+  for(let i=0;i<end;i+=32768) {
+    if (!/^[A-Za-z0-9+/]*$/.test(value.slice(i,Math.min(end,i+32768)))) return false;
+  }
+  return true;
+}
+
 function decodeAsset(value) {
   if (typeof value !== 'string' || value.length > Math.ceil(MAX_ASSET_BYTES / 3) * 4 + 4
-    || value.length % 4 !== 0 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) return null;
+    || !validBoundedBase64(value)) return null;
   try {
     const str = atob(value);
     if (str.length > MAX_ASSET_BYTES) return null;

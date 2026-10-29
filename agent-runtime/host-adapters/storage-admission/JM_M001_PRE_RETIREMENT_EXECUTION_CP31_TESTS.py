@@ -128,7 +128,29 @@ class CP31Tests(unittest.TestCase):
   except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
   dest=link/'untrusted-receipt.json'
   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
-  self.assertTrue((self.d/'untrusted-receipt.json').is_file(),'Retain anomalous bytes for owner investigation')
+  self.assertFalse((self.d/'untrusted-receipt.json').exists(),'Refuse a symlink parent BEFORE creating bytes')
+ def test_parent_retarget_cannot_redirect_fsync_or_readback(self):
+  # A parent pathname swap must not redirect the success proof to another directory.
+  stable=self.d/'stable';stable.mkdir()
+  moved=self.d/'moved'
+  dest=stable/'anchored-receipt.json'
+  original_sync=cp31._sync_report_parent
+  payload='{"decision":"HOLD_NO_MUTATION"}\\n'
+  def swap_parent(path,parent_fd):
+   os.rename(stable,moved)
+   stable.mkdir()
+   (stable/'anchored-receipt.json').write_bytes(b'FORGED_DIFFERENT_RECEIPT')
+   original_sync(path,parent_fd)
+  with mock.patch.object(cp31,'_sync_report_parent',side_effect=swap_parent):
+   cp31.write_once_verified(dest,payload)
+  self.assertEqual((moved/'anchored-receipt.json').read_bytes(),payload.encode('utf-8'))
+  self.assertEqual((stable/'anchored-receipt.json').read_bytes(),b'FORGED_DIFFERENT_RECEIPT')
+ def test_unsupported_directory_anchor_refuses_before_creation(self):
+  dest=self.d/'unwritten-receipt.json'
+  with mock.patch.object(cp31,'_open_report_parent',side_effect=ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')):
+   with self.assertRaisesRegex(ValueError,'REPORT_DIRECTORY_SYNC_UNSUPPORTED'):
+    cp31.write_once_verified(dest,'{"decision":"HOLD_NO_MUTATION"}')
+  self.assertFalse(dest.exists())
  def test_cli_readback_corruption_is_not_success(self):
   p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
   dest=self.d/'untrusted-receipt.json'

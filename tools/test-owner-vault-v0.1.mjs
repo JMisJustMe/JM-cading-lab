@@ -1128,6 +1128,23 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
     assertHeld(run('--audit-dir', path.join(linkedAncestor, path.basename(restoredDir))),
       'LINEAGE_PATH_COMPONENT_UNSAFE',
       'CP23 symlink ancestor must block false cold-audit success');
+    // CP27: CP26 O_NOFOLLOW protects only the final input component. A
+    // symlinked parent must never redirect packet reads in ANY CLI mode.
+    const redirectedPacket = path.join(linkedAncestor, 'saved-lineage.json');
+    const runWithInput = (source, ...arguments_) => spawnSync(process.execPath,
+      [copiedTool, '--input', source, ...arguments_],
+      { cwd:isolated, encoding:'utf8', timeout:15000 });
+    const rejectedOutput = path.join(isolated, 'cp27-must-not-create');
+    assertHeld(runWithInput(redirectedPacket, '--verify-only'),
+      'LINEAGE_PATH_COMPONENT_UNSAFE', 'CP27 verify-only redirected packet');
+    assertHeld(runWithInput(redirectedPacket, '--output-dir', rejectedOutput),
+      'LINEAGE_PATH_COMPONENT_UNSAFE', 'CP27 restore redirected packet');
+    assertHeld(runWithInput(redirectedPacket, '--audit-dir', restoredDir),
+      'LINEAGE_PATH_COMPONENT_UNSAFE', 'CP27 audit redirected packet');
+    await assert.rejects(fs.lstat(rejectedOutput), /ENOENT/,
+      'CP27 refused input must not create any recovered source');
+    assert.equal(run('--verify-only').status, 0,
+      'CP27 normal packet still verifies');
     assert.equal(run('--audit-dir',restoredDir).status,0);
     const snapshots = [...storage.map.entries()].map(([k,v])=>[k,v.body]);
     const again = run('--output-dir',restoredDir);

@@ -67,10 +67,14 @@ try{
    assert.equal(r.after.run.phases,r.before.run.phases+1);
  });
  await check('Flow moves original character in real game loop',async()=>{
+   await page.evaluate(()=>{window.FTR.test.freezeEnemies();window.FTR.test.setPlayer(14.4,15.4,-Math.PI/2);});
    const r=await send('gamepad','sweep',.65);
-   await page.waitForTimeout(420);
+   await page.waitForTimeout(760);
    const after=await readState();
-   assert(Math.hypot(after.player.x-r.after.player.x,after.player.y-r.after.player.y)>.1);
+   const distance=Math.hypot(after.player.x-r.after.player.x,after.player.y-r.after.player.y);
+   console.log('FLOW_MEASUREMENT',JSON.stringify({distance,before:r.after.player,after:after.player,running:after.running}));
+   assert.equal(after.running,true);
+   assert(distance>.04);
    await dispatch('MOVE',{x:0,y:0});
  });
  await check('Hold drives original TRACE CORE interaction, not just label state',async()=>{

@@ -529,6 +529,27 @@
         throw new Error('PRIVATE_ASSET_INDEX_UNAVAILABLE');
       const sameUse = index.assets.filter(a => a.sourceInstanceId === pending.sourceInstanceId);
       if (!sameUse.length) {
+        if (pending.bytes > 12 * 1024 * 1024) {
+          // Read-only server contact: discover held original bytes without
+          // resending them, overwriting them or inventing another source ID.
+          const file={uploadId:pending.uploadId,sourceInstanceId:pending.sourceInstanceId,
+            sha256:pending.sha256,bytes:pending.bytes,fileName:pending.fileName,
+            partCount:Math.ceil(pending.bytes / ASSET_PART_BYTES),
+            ...(pending.expectedBaseId ? {expectedBaseId:pending.expectedBaseId,
+              expectedBaseSha256:pending.expectedBaseSha256} : {})};
+          const inspection=await request('',{method:'POST',body:JSON.stringify({
+            action:'inspect-asset-parts',file
+          })});
+          if (inspection.outcome!=='ASSET_PART_INSPECTION'
+              || inspection.partCount!==file.partCount
+              || !Array.isArray(inspection.present) || !Array.isArray(inspection.missing)
+              || inspection.already_indexed) throw new Error('HELD_FILE_PART_INSPECTION_INVALID');
+          if (inspection.present.length+inspection.missing.length!==file.partCount)
+            throw new Error('HELD_FILE_PART_COUNT_MISMATCH');
+          assetMessage('SAVE HOLD: '+inspection.present.length+' / '+file.partCount
+            +' original pieces verified in private storage. Reselect the SAME source and press SAVE to send missing pieces only; no new identity or automatic deletion.');
+          return;
+        }
         assetMessage('SAVE HOLD: this purposeful file identity is not yet indexed. Keep the original file selected and press SAVE to resume the SAME exact identity; no new identity will be created.');
         return;
       }
@@ -614,15 +635,50 @@
           ...(pending.expectedBaseId?{expectedBaseId:pending.expectedBaseId,
             expectedBaseSha256:pending.expectedBaseSha256}:{})
         };
+        // CP27: inspect checkpoint-bound R2 parts BEFORE resending bytes.
+        // Never trust a remote 'present' result until its digest matches
+        // the actual selected local original; corrupt or alien pieces HOLD.
+        const inspection=await request('',{method:'POST',body:JSON.stringify({
+          action:'inspect-asset-parts',file:descriptor
+        })});
+        if (inspection.outcome!=='ASSET_PART_INSPECTION'
+          || inspection.partCount!==partCount
+          || typeof inspection.already_indexed!=='boolean'
+          || !Array.isArray(inspection.present) || !Array.isArray(inspection.missing))
+          throw new Error('ASSET_PART_INSPECTION_INVALID');
+        const present=new Map(), missing=new Set();
+        for(const p of inspection.present){
+          if (!Number.isSafeInteger(p.partIndex) || p.partIndex<0 || p.partIndex>=partCount
+            || present.has(p.partIndex) || !/^[a-f0-9]{64}$/.test(p.sha256||''))
+            throw new Error('ASSET_PART_INSPECTION_DUPLICATE_OR_INVALID');
+          present.set(p.partIndex,p.sha256);
+        }
+        for(const i of inspection.missing){
+          if (!Number.isSafeInteger(i) || i<0 || i>=partCount
+            || missing.has(i) || present.has(i)) throw new Error('ASSET_PART_INSPECTION_MISSING_INVALID');
+          missing.add(i);
+        }
+        if (inspection.already_indexed) {
+          if (present.size || missing.size || !/^[0-9a-f-]{36}$/i.test(inspection.asset_id||''))
+            throw new Error('ASSET_PART_INDEXED_INSPECTION_INVALID');
+        } else if (present.size+missing.size!==partCount)
+          throw new Error('ASSET_PART_INSPECTION_INCOMPLETE');
         for(let i=0;i<partCount;i++) {
+          if (inspection.already_indexed) break;
           const part=bytes.subarray(i*ASSET_PART_BYTES,Math.min((i+1)*ASSET_PART_BYTES,bytes.length));
-          assetMessage('Saving exact original file part '+(i+1)+' / '+partCount+' (same source identity)…');
+          const partSha=await assetDigest(part);
+          if (present.has(i)) {
+            if (present.get(i)!==partSha) throw new Error('ASSET_PART_REMOTE_SOURCE_DIFFERS_HOLD');
+            continue;
+          }
+          if (!missing.has(i)) throw new Error('ASSET_PART_INSPECTION_GAP');
+          assetMessage('Saving missing original part '+(i+1)+' / '+partCount+' (same source identity)…');
           const saved=await request('',{method:'POST',body:JSON.stringify({
             action:'upload-asset-part',file:descriptor,partIndex:i,
-            partSha256:await assetDigest(part),base64:assetBase64(part)
+            partSha256:partSha,base64:assetBase64(part)
           })});
           if (!['ASSET_PART_UNCHANGED','ASSET_PART_STORED'].includes(saved.outcome)
-            || saved.partIndex!==i || saved.sha256!==await assetDigest(part))
+            || saved.partIndex!==i || saved.sha256!==partSha)
             throw new Error('ASSET_PART_RECEIPT_INVALID');
         }
         assetMessage('All original parts verified. Finalizing ONE private file identity…');

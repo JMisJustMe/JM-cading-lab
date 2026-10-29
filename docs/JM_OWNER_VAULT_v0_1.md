@@ -407,3 +407,27 @@ hostile pathname replacement is not fully eliminated; packet authenticity,
 offsite custody, owner-device edit/reload, authenticated R2 persistence,
 private source migration and deployment propagation remain HOLD. This is
 an unmerged draft candidate, not a deployed release.
+
+## CP26 — opened-file identity gate for offline source reads (29 October 2026)
+
+The existing offline recipient previously used path-based `lstat`/`readdir`
+preflight followed by a separate `readFile(path)`. A final file component
+replaced with a symlink between those operations could redirect a source
+read outside the intended recovery packet/directory. CP26 strengthens that
+same recipient, **not a new Vault or registry**, by opening source and receipt
+files with `O_NOFOLLOW | O_NONBLOCK | O_RDONLY`, checking the **opened file
+handle** is a regular bounded file, reading from that handle and closing it
+on every path. This covers packet ingestion, immediate restore readback and
+subsequent independent cold audit; malformed/unavailable no-follow support
+fails closed. The existing CP20 ancestry, CP22 non-destructive partial
+recovery, CP23 directory preflight, CP24 exact receipt and CP25 fsync gates
+remain intact.
+
+The synthetic adversarial regression checks a genuine final-component
+symlink, directory and oversized source refusal, required no-follow/nonblock
+flags, normal regular-file success and handle close on refusal. This is
+**final-component protection**, not an atomic guarantee against hostile
+concurrent replacement of ancestor directories, nor authenticated packet
+provenance, real R2 restore, owner-device acceptance, offsite custody or
+deployment propagation. Keep draft/unmerged until the actual CI and owner
+contact gates are proven; preserve all original private sources and Library IDs.

@@ -104,7 +104,7 @@ function markIQ(p,carrier){
  const attackers=state.players.filter(q=>q.team!==p.team);
  const others=state.players.filter(q=>q.team===p.team);
  const presser=others.reduce((m,q)=>dist(q,carrier)<dist(m,carrier)?q:m,others[0]);
- if(p.id===presser.id)return {x:carrier.x,y:carrier.y+(p.team===1?-14:14)};
+ if(p.id===presser.id)return {x:clamp(carrier.x+carrier.vx*.095,70,570),y:clamp(carrier.y+carrier.vy*.095+(p.team===1?-14:14),190,770)};
  const assignment=attackers.filter(q=>q.id!==carrier.id)[p.id%2]||attackers.find(q=>q.id!==carrier.id)||carrier;
  const rim=goal(assignment.team);
  // Stay between the receiver and basket with an offset that shadows the entry pass.

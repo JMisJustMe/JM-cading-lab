@@ -36,7 +36,7 @@ function routeCore(){
  const start={x:Math.floor(player.x),y:Math.floor(player.y)};
  const goal={x:Math.floor(target.world.x),y:Math.floor(target.world.y)};
  const width=W,height=H;
- const valid=(x,y)=>x>=0&&y>=0&&x<width&&y<height&&tileAt(x+.5,y+.5)==='.';
+ const valid=(x,y)=>x>=0&&y>=0&&x<width&&y<height&&tileAt(x+.5,y+.5)==='.'&&!solid(x+.5,y+.5);
  if(!valid(start.x,start.y))return {status:'PLAYER_TILE_BLOCKED',steps:null,path:[]};
  if(!valid(goal.x,goal.y))return {status:'CORE_TILE_BLOCKED',steps:null,path:[]};
  const id=(x,y)=>y*width+x;

@@ -285,6 +285,110 @@ try{
    assert.equal(r.status,'ALL_CORES_MOUNTED');
    assert.deepEqual(r.path,[]);
  });
+ await check('CP11 actual original JM Cover Forge mounts without replacing FTR',async()=>{
+   await page.waitForFunction(()=>!!window.JMFTRCover);
+   const r=await page.evaluate(()=>({schema:window.JMFTRCover.schema,materials:window.JMFTRCover.materials,
+      donor:window.JMFTRCover.donor,original:window.FTR.version}));
+   assert.equal(r.schema,'jm.ftr.cover-forge/0.1');
+   assert.deepEqual(r.materials,['Timber','Stone','Metal']);
+   assert.equal(r.original,'0.5.1');
+   assert(r.donor.endsWith('/WSDestructibleCover.cs'));
+ });
+ await check('CP11 native Game-CODING refuses cover before earning a real Trace Core',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.command('START');window.FTR.test.freezeEnemies();
+     const before=window.FTR.state(),receipt=window.JMFTRCover.build(),after=window.FTR.state();
+     return {before,receipt,after};
+   });
+   assert.equal(r.receipt.status,'DENIED');
+   assert.equal(r.receipt.reason,'TRACE_CORE_REQUIRED');
+   assert.equal(r.after.player.ammo,r.before.player.ammo);
+   assert.equal(await page.evaluate(()=>window.JMFTRCover.state().active),null);
+ });
+ await check('CP11 earned original Trace Core creates collision-bearing defensive cover',async()=>{
+   await page.evaluate(()=>{
+     window.FTR.test.freezeEnemies();
+     window.FTR.test.activateCore(0);
+     window.FTR.test.setPlayer(12.3,15.4,0);
+   });
+   await page.waitForTimeout(1250);
+   const before=await page.evaluate(()=>window.FTR.state());
+   await page.locator('#jmCoverBuild').tap();
+   const r=await page.evaluate(()=>{
+     const receipt=window.JMFTRCover.last(),after=window.FTR.state(),cover=window.JMFTRCover.state();
+     return {receipt,after,cover,solid:cover.active?window.solid(cover.active.x,cover.active.y):false,
+        route:window.JMFTRSpatial.route()};
+   });
+   r.before=before;
+   console.log('JM_CP11_BUILD',JSON.stringify(r));
+   assert.equal(r.receipt.status,'BUILT');
+   assert.equal(r.receipt.nativeIdentity,'JM.FTR.CoverForge');
+   assert.equal(r.after.player.ammo,r.before.player.ammo-3);
+   assert.equal(r.solid,true);
+   assert.equal(r.cover.active.kind,'Timber');
+   assert.equal(r.route.status,'ROUTE_FOUND');
+   assert(r.after.run.events.some(e=>e.event==='JM_COVER_BUILT'));
+ });
+ await check('CP11 cover blocks authentic original line of sight, not just a painted square',async()=>{
+   const r=await page.evaluate(()=>{
+     const p=window.JMFTRCover.state().active;
+     return {blocked:window.FTR.test.los(p.x-1,p.y,p.x+1,p.y),
+       bypass:window.FTR.test.los(p.x-1,p.y-1.5,p.x+1,p.y-1.5),
+       collision:window.solid(p.x,p.y)};
+   });
+   assert.equal(r.blocked,false);
+   assert.equal(r.collision,true);
+ });
+ await check('CP11 original enemy projectile hits authentic barrier and reduces material health',async()=>{
+   const r=await page.evaluate(()=>{
+     const cover=window.JMFTRCover.state().active;
+     projectiles.push({x:cover.x-.53,y:cover.y,z:.5,vx:3.4,vy:0,life:3,owner:null});
+     return {before:cover.hp};
+   });
+   await page.waitForTimeout(160);
+   const after=await page.evaluate(()=>({state:window.JMFTRCover.state(),
+     events:window.FTR.state().run.events.filter(e=>e.event==='JM_COVER_HIT')}));
+   assert(after.state.active.hp<r.before);
+   assert(after.state.hits>0);
+   assert(after.events.length>0);
+ });
+ await check('CP11 refuses duplicate cover with no extra ammo expense',async()=>{
+   const r=await page.evaluate(()=>{
+     const before=window.FTR.state().player.ammo;
+     const result=window.JMFTRCover.build();
+     return {result,before,after:window.FTR.state().player.ammo};
+   });
+   assert.equal(r.result.reason,'COVER_ALREADY_ACTIVE');
+   assert.equal(r.after,r.before);
+ });
+ await check('CP11 material change alters real health/cost and destroyed cover stops blocking',async()=>{
+   const r=await page.evaluate(()=>{
+     const old=window.JMFTRCover.state().active;
+     window.JMFTRCover.hit(100);
+     const retired=!window.solid(old.x,old.y);
+     window.JMFTRCover.select('Stone');
+     const result=window.JMFTRCover.build();
+     return {retired,result,current:window.JMFTRCover.state()};
+   });
+   assert.equal(r.retired,true);
+   assert.equal(r.result.status,'BUILT');
+   assert.equal(r.current.active.kind,'Stone');
+   assert.equal(r.current.active.maxHp,54);
+   assert.equal(r.current.breaks,1);
+ });
+ await check('CP11 cover preserves original game state across source-owned reset',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.command('START');
+     const s=window.JMFTRCover.state();
+     const before=window.FTR.state();
+     return {s,before,solidBefore:window.solid(13.5,15.5)};
+   });
+   await page.waitForTimeout(90);
+   const current=await page.evaluate(()=>window.JMFTRCover.state());
+   assert.equal(current.active,null);
+   assert.equal(r.before.player.cores,0);
+   assert.equal(current.builds,0);
+ });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
    console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));

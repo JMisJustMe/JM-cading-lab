@@ -435,6 +435,89 @@ jobs:
             } finally {await browser.close();}
           })().catch(e=>{console.error('CP08_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP21 original-byte file custody in existing Owner Room (synthetic phone + laptop)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium} = require('playwright');
+          const {createHash} = require('node:crypto');
+          const fs = require('node:fs/promises');
+          const hash = b => createHash('sha256').update(b).digest('hex');
+          const original=Buffer.from([0,255,128,0,13,10,226,130,172]);
+          const changed=Buffer.from([0,255,128,0,13,10,226,130,173]);
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const vp of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport:vp,acceptDownloads:true});
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                page.setDefaultTimeout(12000);
+                const records=new Map(), all=[];
+                let writes=0;
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp21-owner-key';});
+                await page.route('**/api/owner/vault*',async route=>{
+                  const q=route.request(),u=new URL(q.url());
+                  const send=(status,obj)=>route.fulfill({status,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(obj)});
+                  if(u.searchParams.get('mode')==='status')return send(200,{ready:true,storage_bound:true,owner_key_configured:true});
+                  if(q.headers()['x-jm-owner-key']!=='synthetic-cp21-owner-key')return send(401,{error:'OWNER_AUTH_REQUIRED'});
+                  if(q.method()==='GET'&&u.searchParams.get('mode')==='assets')
+                    return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:all,max_asset_bytes:12*1024*1024});
+                  const aid=u.searchParams.get('asset');
+                  if(q.method()==='GET'&&aid){
+                    const r=records.get(aid);
+                    if(!r)return send(404,{error:'ASSET_NOT_FOUND'});
+                    return route.fulfill({status:200,headers:{'content-type':'application/octet-stream','cache-control':'no-store','x-jm-asset-sha256':hash(r.bytes),'content-disposition':'attachment; filename="'+r.meta.fileName+'"'},body:r.bytes});
+                  }
+                  if(q.method()==='GET')return send(200,{schema:'JM.OwnerVault/0.1',state:{notes:'',favourites:[],recent:[]},bodies:[]});
+                  if(q.method()==='POST'){
+                    const d=q.postDataJSON();
+                    if(d.action!=='upload-asset')return send(400,{error:'UNEXPECTED_MUTATION'});
+                    const f=d.file,b=Buffer.from(f.base64,'base64');
+                    if(hash(b)!==f.sha256)return send(409,{error:'HASH_MISMATCH'});
+                    const current=all.find(x=>x.sourceInstanceId===f.sourceInstanceId);
+                    if(current&&(current.id!==f.expectedBaseId||current.sha256!==f.expectedBaseSha256))
+                      return send(409,{error:'HEAD_CHANGED'});
+                    const id='550e8400-e29b-41d4-a716-'+String(446655440100+ ++writes);
+                    const meta={id,name:f.name,fileName:f.fileName,mediaType:f.mediaType,sourceInstanceId:f.sourceInstanceId,bytes:b.length,
+                      sha256:hash(b),previousVersionId:current?.id||null};
+                    all.unshift(meta);records.set(id,{meta,bytes:b});
+                    return send(201,{outcome:'ASSET_STORED',asset:meta});
+                  }
+                  return send(405,{error:'METHOD_NOT_ALLOWED'});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Audio.wav',mimeType:'audio/wav',buffer:original});
+                if(writes!==0)throw Error('File uploaded before explicit SAVE');
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('independently SHA-256 read back'));
+                if(writes!==1||!records.get(all[0].id)?.bytes.equals(original))throw Error('Original non-UTF8 bytes not saved and recovered exactly');
+                const firstId=all[0].id;
+                const offered=page.waitForEvent('download');
+                await page.locator('[data-asset-download="'+firstId+'"]').click();
+                const down=await offered;
+                if(down.suggestedFilename()!=='JM_Audio.wav'||!Buffer.from(await fs.readFile(await down.path())).equals(original))
+                  throw Error('Owner Room exact file download mismatch');
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelector('[data-asset-revise]')!==null);
+                if(writes!==1)throw Error('Reload must not reupload');
+                await page.locator('[data-asset-revise="'+firstId+'"]').click();
+                await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Audio.wav',mimeType:'audio/wav',buffer:changed});
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('independently SHA-256 read back'));
+                if(writes!==2||all[0].previousVersionId!==firstId
+                  ||!records.get(firstId)?.bytes.equals(original)
+                  ||!records.get(all[0].id)?.bytes.equals(changed))throw Error('Revision overwrote or lost ancestor bytes');
+                if(errors.length)throw Error('Browser runtime errors: '+errors.join('|'));
+                await page.close();passed++;
+              }
+              if(passed!==2)throw Error('Only '+passed+' cross-viewport file custody journeys');
+              console.log('PASS: CP21 2/2 synthetic phone/laptop original binary file SAVE, exact download, reload, guarded REVISION, and ancestor preservation.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP21_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
         shell: bash
         run: |

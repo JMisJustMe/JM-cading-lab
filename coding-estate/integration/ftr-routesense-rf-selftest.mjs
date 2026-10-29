@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {summariseSignalWindow,compareSignalWindows} from './ftr-routesense-rf.mjs';
+let passed=0;const test=(name,fn)=>{fn();passed++;console.log('PASS',name);};
+const bad=(fn,code)=>assert.throws(fn,e=>e.code===code);
+const base={route:'RouteSense',kind:'RSSI',origin:'synthetic',samples:[-60,-61,-59,-60,-60,-61,-59,-60]};
+test('Real numeric feature computation',()=>{const x=summariseSignalWindow(base);assert.equal(x.features.mean,-60);assert(x.features.variance>0);});
+test('No human presence inference from simulated values',()=>{const x=summariseSignalWindow(base);assert.equal(x.humanPresence,'NOT_INFERRED');assert.equal(x.observedFromPhysicalSensor,false);});
+test('CSI numeric samples are not magically a body pose',()=>{const x=summariseSignalWindow({...base,kind:'CSI-amplitude'});assert.equal(x.humanPose,'NOT_INFERRED');assert.equal(x.vitalSigns,'NOT_INFERRED');});
+test('Bad sample lengths held',()=>bad(()=>summariseSignalWindow({...base,samples:[1,2]}),'RF_SAMPLE_INVALID'));
+test('Nonnumeric values held',()=>bad(()=>summariseSignalWindow({...base,samples:[-1,-2,-3,-4,-5,-6,-7,NaN]}),'RF_SAMPLE_INVALID'));
+const baseline=summariseSignalWindow(base),current=summariseSignalWindow({...base,samples:[-55,-54,-56,-55,-55,-54,-56,-55]});
+test('Environmental comparison is a numeric delta',()=>{const x=compareSignalWindows(baseline,current,{ownedEnvironment:true,consent:true});assert.equal(x.meanDelta,5);assert.equal(x.autoGameplayTrigger,false);});
+test('Ambient sensing comparison requires consent',()=>bad(()=>compareSignalWindows(baseline,current,{ownedEnvironment:true,consent:false}),'RF_ENVIRONMENT_AUTH_REQUIRED'));
+test('CSI/RSSI semantic mismatch refused',()=>bad(()=>compareSignalWindows(baseline,summariseSignalWindow({...base,kind:'CSI-amplitude'}),{ownedEnvironment:true,consent:true}),'RF_KIND_MISMATCH'));
+console.log(JSON.stringify({schema:'jm.ftr.rf-feature-proof/1',passed,failed:0,scope:'deterministic fixture features only; no real WiFi sensor, pose, breathing or vital sign validation'}));

@@ -1,4 +1,5 @@
-import copy, hashlib, json, os, sys, tempfile, unittest, zipfile
+import copy, hashlib, json, os, stat, sys, tempfile, unittest, zipfile
+from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -88,6 +89,33 @@ class CP31Tests(unittest.TestCase):
  def test_cli_refuses_overwrite(self):
   p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
   rc=cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(p)]);self.assertEqual(rc,4)
+ def test_cli_write_once_verified_and_private(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'receipt.json'
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),3)
+  receipt=json.loads(dest.read_text())
+  self.assertEqual(receipt['native_mutations'],0)
+  self.assertEqual(receipt['retirement_authorised_count'],0)
+  self.assertEqual(receipt['records'][0]['decision'],'HOLD_NO_MUTATION')
+  self.assertEqual(stat.S_IMODE(dest.stat().st_mode),0o600)
+  before=dest.read_bytes()
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertEqual(dest.read_bytes(),before)
+ def test_cli_readback_corruption_is_not_success(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'untrusted-receipt.json'
+  with mock.patch.object(cp31,'_read_report_exact',return_value=b'corrupted'):
+   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertTrue(dest.is_file(),'Keep abnormal bytes for investigation, not silent deletion')
+  self.assertEqual(json.loads(dest.read_text())['native_mutations'],0)
+ def test_cli_refuses_symlink_receipt_without_mutation(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  original=self.d/'protected.json';original.write_text('DO NOT REPLACE')
+  link=self.d/'link.json'
+  try:os.symlink(original,link)
+  except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(link)]),4)
+  self.assertEqual(original.read_text(),'DO NOT REPLACE')
  def test_cli_refuses_bad_input(self):
   p=self.d/'invalid.json';p.write_text('"not an inventory"')
   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13)]),4)

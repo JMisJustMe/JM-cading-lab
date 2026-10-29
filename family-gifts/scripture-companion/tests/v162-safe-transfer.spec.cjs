@@ -9,9 +9,9 @@ function note(id,ref,text){return {id,ref,text,date:'2026-10-28T00:00:00Z'}}
 function ref(id,book,chapter,verse=''){return {id,book,chapter,verse}}
 function reading(id,book,chapter,done){return {id,book,chapter,done}}
 function backup(data,draft){return {schema:SCHEMA,exportedAt:'2026-10-28T00:00:00Z',data,...(draft?{draft}:{})}}
-async function importFile(page,content,{accept=true,mode='merge'}={}){
+async function importFile(page,content,{accept=true,mode='merge',expectDialog=true}={}){
  await page.selectOption('#importMode',mode);
- if(content!==null){
+ if(expectDialog){
   page.once('dialog',async dialog=>accept?dialog.accept():dialog.dismiss());
  }
  await page.locator('#import').setInputFiles({name:'JM-Scripture-Companion-Backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(content))});
@@ -61,7 +61,7 @@ async function state(page){return await page.evaluate(key=>JSON.parse(localStora
   assert.deepEqual(after,before,'cancel does not modify either original storage slot');
 
   // Rejected malformed input does not silently discard or modify data.
-  status=await importFile(a,backup({notes:[{id:'oops',text:42,ref:'John 1'}],bookmarks:[]}));
+  status=await importFile(a,backup({notes:[{id:'oops',text:42,ref:'John 1'}],bookmarks:[]}),{expectDialog:false});
   assert.match(status,/invalid note/);
   assert.deepEqual(await a.evaluate(({k,d})=>[localStorage.getItem(k),localStorage.getItem(d)],{k:KEY,d:DRAFT}),before);
 

@@ -118,6 +118,67 @@ try{
   assert.equal(st.unsupported,true);
   await page.evaluate(()=>{window.__JM_TEST_GAMEPAD.connected=false;window.__JM_TEST_GAMEPAD.mapping='standard';});
  });
+ await check('Authentic JM Game-CODING and JM GameCore are imported into actual R1 browser',async()=>{
+  await page.waitForFunction(()=>!!window.JMFTRNative,{timeout:10000});
+  const result=await page.evaluate(()=>({schema:window.JMFTRNative.schema,bodies:window.JMFTRNative.bodies,
+    gardles:window.JMFTRNative.nativeGardles}));
+  assert.equal(result.schema,'jm.ftr.native-live/0.1');
+  for(const body of ['GameCoding','GameCodingRuntime','JMGameCore','JMGameCoreRuntime'])assert(result.bodies.includes(body));
+  assert.equal(result.gardles,'HOLD_EXACT_SOURCE_NOT_MOUNTED');
+ });
+ await check('Native Game-CODING denies unearned combo without mutating original game',async()=>{
+  const result=await page.evaluate(()=>{
+   const before=window.FTR.state(),decision=window.JMFTRNative.corePulse(),after=window.FTR.state();
+   return {decision,before,after};
+  });
+  assert.equal(result.decision.status,'DENIED');
+  assert.equal(result.decision.reason,'TRACE_CORE_REQUIRED');
+  assert.equal(result.decision.nativeGate.applied,false);
+  assert.equal(result.after.run.shots,result.before.run.shots);
+  assert.equal(result.after.run.scans,result.before.run.scans);
+ });
+ await check('Native GameCore gates and performs earned dual action in real FTR game',async()=>{
+  await page.evaluate(()=>{window.FTR.command('START');window.FTR.test.freezeEnemies();window.FTR.test.activateCore(0);});
+  const result=await page.evaluate(()=>{
+   const before=window.FTR.state();
+   document.getElementById('jmNativePulse').click();
+   const receipt=window.JMFTRNative.last(),after=window.FTR.state();
+   return {before,receipt,after};
+  });
+  assert.equal(result.before.player.cores,1);
+  assert.equal(result.receipt.status,'APPLIED');
+  assert.equal(result.receipt.nativeIdentity,'JM.FTR.NativeCorePulse');
+  assert.equal(result.after.run.scans,result.before.run.scans+1);
+  assert.equal(result.after.run.shots,result.before.run.shots+1);
+  assert.equal(result.after.player.ammo,result.before.player.ammo-1);
+  assert(result.receipt.nativeReceipt.traceDigest.length>0);
+ });
+ await check('Native cooldown guard prevents duplicate ammunition and scan costs',async()=>{
+  const result=await page.evaluate(()=>{
+   const before=window.FTR.state(),receipt=window.JMFTRNative.corePulse(),after=window.FTR.state();
+   return {before,receipt,after};
+  });
+  assert.equal(result.receipt.status,'DENIED');
+  assert(['SCAN_COOLDOWN','FIRE_COOLDOWN'].includes(result.receipt.reason));
+  assert.equal(result.after.run.scans,result.before.run.scans);
+  assert.equal(result.after.run.shots,result.before.run.shots);
+ });
+ await check('Real JM KicPlay source contact drives original PHASE game behaviour',async()=>{
+  const result=await page.evaluate(()=>{
+   window.FTR.command('START');
+   const before=window.FTR.state(),receipt=window.JMFTRNative.kicPlay({source:'GripRoute',gesture:'flick',sequence:9}),after=window.FTR.state();
+   return {before,receipt,after};
+  });
+  assert.equal(result.receipt.status,'DELIVERED');
+  assert.equal(result.receipt.source,'GripRoute');
+  assert.equal(result.receipt.route,'Kic');
+  assert.equal(result.after.run.phases,result.before.run.phases+1);
+ });
+ await check('KicPlay Create refuses unsupported mapping without gameplay fabrication',async()=>{
+  const result=await page.evaluate(()=>window.JMFTRNative.kicPlay({source:'Ama-Pro',gesture:'draw',sequence:10}));
+  assert.equal(result.status,'HOLD_UNSUPPORTED_RECIPIENT_MECHANIC');
+  assert.equal(result.delivered,false);
+ });
  await check('R1 PWA worker installs independently of frozen original',async()=>{
   await page.evaluate(()=>Promise.race([navigator.serviceWorker.ready,new Promise((_,reject)=>setTimeout(()=>reject(new Error('PWA_WORKER_INSTALL_TIMEOUT')),12000))]));
   const scope=await page.evaluate(async()=>{
@@ -133,6 +194,11 @@ try{
    const response=await page.reload({waitUntil:'load',timeout:12000});
    assert(response?.status()===200);
    assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1');
+   await page.waitForFunction(()=>!!window.JMFTRNative);
+   await page.evaluate(()=>window.FTR.test.activateCore(0));
+   const nativeOffline=await page.evaluate(()=>window.JMFTRNative.corePulse());
+   assert.equal(nativeOffline.status,'APPLIED');
+   assert.equal(nativeOffline.nativeIdentity,'JM.FTR.NativeCorePulse');
    await page.locator('#startBtn').tap();
    await page.waitForTimeout(220);
    const state=await page.evaluate(()=>window.FTR.state());

@@ -58,7 +58,7 @@ function reset(){
  lastScan=false;phaseLast=false;uiAt=-100;
  status(); // original FTR starts a fresh clock; don't retain old HUD throttle
 }
-function directlyVisible(e,phase=player.phase>0){
+function directlyVisible(e,phase=player.phase>0&&run.phases>0){
  return !phase&&!e.dead&&Math.hypot(e.x-player.x,e.y-player.y)<9.5&&
    los(e.x,e.y,player.x,player.y);
 }
@@ -155,12 +155,12 @@ function status(){
   const seen=enemies.filter(e=>!e.dead&&read(e).sighted).length;
   const remembering=enemies.filter(e=>!e.dead&&read(e).last&&
     time-read(e).last.t<=memoryLifetime&&!read(e).sighted).length;
-  if(player.scan>0){
+  if(player.scan>0&&run.scans>0){
    const nearest=enemies.filter(e=>!e.dead).sort((a,b)=>
     Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
    const r=nearest?Math.hypot(nearest.x-player.x,nearest.y-player.y).toFixed(1):'—';
    label.textContent='SCAN · '+seen+' SIGHTED · '+remembering+' SEARCHING · '+r+'m';
-  }else if(player.phase>0){
+  }else if(player.phase>0&&run.phases>0){
    label.textContent='PHASE · ENEMY CONTACT DISRUPTED';
   }else{
    label.textContent='MEMORY · '+seen+' SIGHTED · '+remembering+' SEARCHING';
@@ -173,7 +173,7 @@ function toggle(value=!enabled){enabled=!!value;status();return enabled;}
 window.updateWorld=function(dt){
  reset();
  if(!enabled||!running||testFreeze)return originalWorld(dt);
- const phased=player.phase>0;
+ const phased=player.phase>0&&run.phases>0;
  const newSightings=[];
  for(const e of enemies){
   if(e.dead)continue;
@@ -203,9 +203,9 @@ window.updateWorld=function(dt){
  if(!phased){
   for(const e of newSightings)broadcast(e);
  }
- if(player.scan>0&&!lastScan)event('JM_PLAYER_SCAN_INTELLIGENCE',
+ if(player.scan>0&&run.scans>0&&!lastScan)event('JM_PLAYER_SCAN_INTELLIGENCE',
    {enemies:enemies.filter(e=>!e.dead).length});
- lastScan=player.scan>0;phaseLast=phased;
+ lastScan=player.scan>0&&run.scans>0;phaseLast=phased;
  const result=originalWorld(dt);
  if(running){
   for(let i=0;i<enemies.length;i++){

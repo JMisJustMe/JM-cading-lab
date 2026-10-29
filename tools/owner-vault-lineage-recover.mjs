@@ -9,6 +9,7 @@
  * Usage:
  *   node owner-vault-lineage-recover.mjs --input packet.json --verify-only
  *   node owner-vault-lineage-recover.mjs --input packet.json --output-dir ./restored-lineage
+ *   node owner-vault-lineage-recover.mjs --input packet.json --audit-dir ./restored-lineage
  */
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs/promises';
@@ -138,15 +139,61 @@ async function restorePacket(input, destination) {
     remote_vault_modified: false, owner_offsite_custody_claimed: false };
 }
 
+// CP21: a second, independently started process can verify the actual
+// persisted recovery files, not just the original export packet. This is
+// strictly read-only; changed sources are reported, never overwritten.
+async function auditRestoredPacket(input, destination) {
+  const verified = await readPacket(input);
+  const dest = path.resolve(destination);
+  const dirStat = await fs.lstat(dest);
+  if (!dirStat.isDirectory() || dirStat.isSymbolicLink()) {
+    fail('LINEAGE_AUDIT_DIRECTORY_UNSAFE');
+  }
+  const expectedNames = new Set(['recovery-manifest.json',
+    ...verified.ready.map(({ metadata }) => `${metadata.id}.html`)]);
+  const entries = await fs.readdir(dest, { withFileTypes: true });
+  if (entries.length !== expectedNames.size || entries.some(e =>
+    !expectedNames.has(e.name) || !e.isFile() || e.isSymbolicLink())) {
+    fail('LINEAGE_AUDIT_INVENTORY_MISMATCH');
+  }
+  let inventory;
+  try {
+    inventory = JSON.parse(await fs.readFile(path.join(dest, 'recovery-manifest.json'), 'utf8'));
+  } catch { fail('LINEAGE_AUDIT_MANIFEST_UNREADABLE'); }
+  if (!inventory || inventory.schema !== 'JM.OwnerVault/0.1.OfflineRecovered'
+    || inventory.selected_id !== verified.packet.selected_id
+    || inventory.packet_sha256 !== verified.packet_sha256
+    || inventory.original_schema !== SCHEMA
+    || inventory.original_source_bytes !== verified.total
+    || JSON.stringify(inventory.original_versions)
+      !== JSON.stringify(verified.ready.map(({ metadata }) => metadata))) {
+    fail('LINEAGE_AUDIT_MANIFEST_MISMATCH');
+  }
+  for (const { metadata, bytes } of verified.ready) {
+    const restored = await fs.readFile(path.join(dest, `${metadata.id}.html`));
+    if (!restored.equals(bytes) || digest(restored) !== metadata.sha256.toLowerCase()) {
+      fail('LINEAGE_AUDIT_SOURCE_MISMATCH');
+    }
+  }
+  return { outcome: 'OFFLINE_RESTORED_FILES_AUDITED',
+    selected_id: verified.packet.selected_id, version_count: verified.ready.length,
+    source_bytes: verified.total, packet_sha256: verified.packet_sha256,
+    destination: dest, remote_vault_modified: false,
+    owner_offsite_custody_claimed: false };
+}
+
 async function main(args) {
   const inputAt = args.indexOf('--input');
   const input = inputAt >= 0 ? args[inputAt + 1] : null;
   const verifyOnly = args.includes('--verify-only');
   const outputAt = args.indexOf('--output-dir');
   const output = outputAt >= 0 ? args[outputAt + 1] : null;
-  if (!input || (verifyOnly === Boolean(output))) {
-    fail('USAGE: --input <owner-saved-packet.json> (--verify-only | --output-dir <new-directory>)');
+  const auditAt = args.indexOf('--audit-dir');
+  const audit = auditAt >= 0 ? args[auditAt + 1] : null;
+  if (!input || Number(verifyOnly) + Number(Boolean(output)) + Number(Boolean(audit)) !== 1) {
+    fail('USAGE: --input <owner-saved-packet.json> (--verify-only | --output-dir <new-directory> | --audit-dir <existing-directory>)');
   }
+  if (audit) return auditRestoredPacket(input, audit);
   if (verifyOnly) {
     const v = await readPacket(input);
     return { outcome: 'OFFLINE_PACKET_VERIFIED', selected_id: v.packet.selected_id,
@@ -166,4 +213,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   }
 }
 
-export { validatePacket, readPacket, restorePacket };
+export { validatePacket, readPacket, restorePacket, auditRestoredPacket };

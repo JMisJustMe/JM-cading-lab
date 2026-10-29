@@ -9,6 +9,11 @@ const MAX_BODY_BYTES = 25 * 1024 * 1024;
 const ASSET_INDEX_KEY = `${PREFIX}/assets/index.json`;
 const ASSET_PREFIX = `${PREFIX}/assets`;
 const MAX_ASSET_BYTES = 12 * 1024 * 1024;
+// CP26 extension: large original files travel as immutable 2 MiB source parts,
+// but remain ONE indexed sovereign file identity after exact finalization.
+const ASSET_PART_BYTES = 2 * 1024 * 1024;
+const MAX_ASSET_PARTS = 32;
+const MAX_CHUNKED_ASSET_BYTES = ASSET_PART_BYTES * MAX_ASSET_PARTS;
 const MAX_NOTES_CHARS = 200000;
 
 const jsonHeaders = {
@@ -147,7 +152,13 @@ function custodyShapeValid(record, key) {
         && typeof item.name === 'string' && item.name.length <= 500
         && typeof item.mediaType === 'string' && item.mediaType.length <= 100
         && /^[a-f0-9]{64}$/i.test(item.sha256 || '')
-        && Number.isSafeInteger(item.bytes) && item.bytes >= 0 && item.bytes <= MAX_ASSET_BYTES
+        && Number.isSafeInteger(item.bytes) && item.bytes >= 0
+        && item.bytes <= (item.storageKind === 'chunked-v1' ? MAX_CHUNKED_ASSET_BYTES : MAX_ASSET_BYTES)
+        && (item.storageKind == null || (item.storageKind === 'chunked-v1'
+          && Number.isSafeInteger(item.partCount) && item.partCount >= 7 && item.partCount <= MAX_ASSET_PARTS
+          && item.partCount === Math.ceil(item.bytes / ASSET_PART_BYTES)
+          && Array.isArray(item.partHashes) && item.partHashes.length === item.partCount
+          && item.partHashes.every(h => typeof h === 'string' && /^[a-f0-9]{64}$/.test(h))))
         && (item.previousVersionId === null || /^[0-9a-f-]{36}$/i.test(item.previousVersionId || '')))
       && new Set(record.assets.map(item => item.id)).size === record.assets.length
       && custodyAncestryValid(record.assets);
@@ -586,6 +597,35 @@ function decodeAsset(value) {
   } catch { return null; }
 }
 async function assetBytes(bucket, metadata) {
+  if (metadata.storageKind === 'chunked-v1') {
+    const desc={
+      uploadId:metadata.id,sourceInstanceId:metadata.sourceInstanceId,
+      sha256:metadata.sha256,bytes:metadata.bytes,partCount:metadata.partCount,
+      fileName:metadata.fileName,expectedBaseId:'',expectedBaseSha256:''
+    };
+    // Metadata for finalized immutable part objects records original revision
+    // preconditions. Read them directly; don't mistake a new head for old bytes.
+    const combined=new Uint8Array(metadata.bytes);
+    for (let i=0;i<metadata.partCount;i++){
+      const key=assetPartKey(metadata.id,i);
+      let object;try{object=await bucket.get(key);}catch{throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE');}
+      if (!object) throw new VaultBodyIntegrityError('ASSET_PART_MISSING');
+      let part;try{part=new Uint8Array(await object.arrayBuffer());}catch{throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE');}
+      const size=i===metadata.partCount-1?metadata.bytes-ASSET_PART_BYTES*(metadata.partCount-1):ASSET_PART_BYTES;
+      if (part.length!==size || await assetHash(part)!==metadata.partHashes[i]
+        || object.customMetadata?.uploadId!==metadata.id
+        || object.customMetadata?.sourceInstanceId!==metadata.sourceInstanceId
+        || object.customMetadata?.fullSha256!==metadata.sha256
+        || object.customMetadata?.index!==String(i)
+        || object.customMetadata?.partCount!==String(metadata.partCount)) {
+        throw new VaultBodyIntegrityError('ASSET_PART_INTEGRITY_MISMATCH');
+      }
+      combined.set(part,i*ASSET_PART_BYTES);
+    }
+    if(await assetHash(combined)!==metadata.sha256)
+      throw new VaultBodyIntegrityError('ASSET_WHOLE_FILE_INTEGRITY_MISMATCH');
+    return combined;
+  }
   let object;
   try { object = await bucket.get(`${ASSET_PREFIX}/${metadata.id}.bin`); }
   catch { throw new VaultBodyIntegrityError('ASSET_BYTES_UNREADABLE'); }
@@ -599,6 +639,147 @@ async function assetBytes(bucket, metadata) {
   }
   return bytes;
 }
+
+// CP26 — one sovereign file; the R2 part objects ARE its original bytes.
+// Part identity is fixed by the locally persisted uploadId, never a new
+// purpose on retry. No dynamic source evaluation or automatic publication.
+function assetPartKey(id, partIndex) {
+  return `${ASSET_PREFIX}/parts/${id}/${partIndex}.bin`;
+}
+function chunkDescription(f) {
+  if (!f || typeof f !== 'object'
+    || !/^[0-9a-f-]{36}$/i.test(f.uploadId || '')
+    || !/^asset-[0-9a-f-]{36}$/i.test(f.sourceInstanceId || '')
+    || !/^[a-f0-9]{64}$/.test(f.sha256 || '')
+    || !Number.isSafeInteger(f.bytes) || f.bytes <= MAX_ASSET_BYTES || f.bytes > MAX_CHUNKED_ASSET_BYTES
+    || !Number.isSafeInteger(f.partCount) || f.partCount < 7 || f.partCount > MAX_ASSET_PARTS
+    || f.partCount !== Math.ceil(f.bytes / ASSET_PART_BYTES)
+    || typeof f.fileName !== 'string' || !f.fileName
+    || (f.expectedBaseId != null && !/^[0-9a-f-]{36}$/i.test(f.expectedBaseId))
+    || (f.expectedBaseSha256 != null && !/^[a-f0-9]{64}$/.test(f.expectedBaseSha256))
+    || Boolean(f.expectedBaseId) !== Boolean(f.expectedBaseSha256)) return null;
+  return {
+    uploadId:f.uploadId, sourceInstanceId:f.sourceInstanceId,
+    sha256:f.sha256, bytes:f.bytes, partCount:f.partCount,
+    fileName:safeFileName(f.fileName), name:boundedString(f.name || f.fileName,500),
+    mediaType:typeof f.mediaType === 'string'
+      && /^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i.test(f.mediaType)
+      && f.mediaType.length <= 100 ? f.mediaType.toLowerCase() : 'application/octet-stream',
+    expectedBaseId:f.expectedBaseId || '',
+    expectedBaseSha256:f.expectedBaseSha256 || ''
+  };
+}
+function chunkMetadata(desc, i, hash) {
+  return {
+    uploadId:desc.uploadId, sourceInstanceId:desc.sourceInstanceId,
+    fullSha256:desc.sha256, totalBytes:String(desc.bytes), partCount:String(desc.partCount),
+    index:String(i), sha256:hash, fileName:desc.fileName,
+    expectedBaseId:desc.expectedBaseId, expectedBaseSha256:desc.expectedBaseSha256
+  };
+}
+function sameChunkMetadata(actual, expected) {
+  return !!actual && Object.entries(expected).every(([k,v])=>actual[k]===v);
+}
+async function readAssetPart(bucket, desc, i, expectedHash=null) {
+  let object;
+  try { object=await bucket.get(assetPartKey(desc.uploadId,i)); }
+  catch { throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE'); }
+  if (!object) throw new VaultBodyIntegrityError('ASSET_PART_MISSING');
+  let bytes;
+  try { bytes=new Uint8Array(await object.arrayBuffer()); }
+  catch { throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE'); }
+  const expectedSize = i === desc.partCount-1
+    ? desc.bytes - ASSET_PART_BYTES*(desc.partCount-1) : ASSET_PART_BYTES;
+  if (bytes.length !== expectedSize
+    || (expectedHash && await assetHash(bytes) !== expectedHash)) {
+    throw new VaultBodyIntegrityError('ASSET_PART_INTEGRITY_MISMATCH');
+  }
+  const h=await assetHash(bytes);
+  if (!sameChunkMetadata(object.customMetadata,chunkMetadata(desc,i,h)))
+    throw new VaultBodyIntegrityError('ASSET_PART_SOURCE_IDENTITY_MISMATCH');
+  return {bytes,hash:h};
+}
+async function uploadAssetPart(bucket,payload) {
+  const desc=chunkDescription(payload?.file);
+  const i=payload?.partIndex;
+  if (!desc || !Number.isSafeInteger(i) || i<0 || i>=desc.partCount)
+    return {error:json({schema:SCHEMA,error:'ASSET_PART_DESCRIPTION_INVALID'},400)};
+  const bytes=decodeAsset(payload?.base64);
+  const expectedLen=i===desc.partCount-1
+    ? desc.bytes-ASSET_PART_BYTES*(desc.partCount-1):ASSET_PART_BYTES;
+  if (!bytes || bytes.length!==expectedLen || bytes.length>ASSET_PART_BYTES)
+    return {error:json({schema:SCHEMA,error:'ASSET_PART_SIZE_HOLD'},413)};
+  const hash=await assetHash(bytes);
+  if (hash!==payload.partSha256) return {error:json({schema:SCHEMA,error:'ASSET_PART_CLIENT_HASH_MISMATCH'},409)};
+  // Refuse a stale/differently intended revision BEFORE storing additional R2 bytes.
+  const index=await assetIndex(bucket),current=index.assets.find(a=>a.sourceInstanceId===desc.sourceInstanceId);
+  if (current && (current.sha256!==desc.sha256
+      && (current.id!==desc.expectedBaseId || current.sha256!==desc.expectedBaseSha256))) {
+    return {error:json({schema:SCHEMA,error:'ASSET_PART_REVISION_HEAD_CHANGED'},409)};
+  }
+  if (!current && desc.expectedBaseId) return {error:json({schema:SCHEMA,error:'ASSET_PART_REVISION_BASE_MISSING'},409)};
+  const meta=chunkMetadata(desc,i,hash), key=assetPartKey(desc.uploadId,i);
+  let prior;
+  try {prior=await bucket.get(key);} catch {throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE');}
+  if (prior) {
+    const original=await readAssetPart(bucket,desc,i,hash);
+    if (original.hash!==hash) throw new VaultBodyIntegrityError('ASSET_PART_ALREADY_DIFFERENT');
+    return {unchanged:true,partIndex:i,sha256:hash};
+  }
+  const committed=await bucket.put(key,bytes,{
+    onlyIf:new Headers({'If-None-Match':'*'}),
+    httpMetadata:{contentType:'application/octet-stream'},
+    customMetadata:meta
+  });
+  // Concurrent create can race. Only exact identity/bytes may be acknowledged.
+  if (committed===null) {
+    await readAssetPart(bucket,desc,i,hash);
+    return {unchanged:true,partIndex:i,sha256:hash};
+  }
+  await readAssetPart(bucket,desc,i,hash);
+  return {unchanged:false,partIndex:i,sha256:hash};
+}
+async function finishChunkedAsset(bucket,payload) {
+  const desc=chunkDescription(payload?.file);
+  if (!desc) return {error:json({schema:SCHEMA,error:'ASSET_FINISH_DESCRIPTION_INVALID'},400)};
+  const index=await assetIndex(bucket), all=index.assets;
+  const current=all.find(a=>a.sourceInstanceId===desc.sourceInstanceId)||null;
+  if (current && current.sha256===desc.sha256 && current.bytes===desc.bytes) {
+    await assetBytes(bucket,current);
+    return {unchanged:true,asset:current};
+  }
+  if (current && (current.id!==desc.expectedBaseId || current.sha256!==desc.expectedBaseSha256))
+    return {error:json({schema:SCHEMA,error:'ASSET_FINISH_HEAD_CHANGED'},409)};
+  if (!current && desc.expectedBaseId)
+    return {error:json({schema:SCHEMA,error:'ASSET_FINISH_BASE_MISSING'},409)};
+  if (all.length>=2000) return {error:json({schema:SCHEMA,error:'ASSET_INDEX_CAPACITY_HOLD'},409)};
+  // One full original buffer for end-to-end SHA; individual network requests
+  // and immutable R2 source pieces are strictly limited to 2 MiB.
+  const whole=new Uint8Array(desc.bytes), hashes=[];
+  for(let i=0;i<desc.partCount;i++) {
+    const part=await readAssetPart(bucket,desc,i);
+    whole.set(part.bytes,i*ASSET_PART_BYTES); hashes.push(part.hash);
+  }
+  if (await assetHash(whole)!==desc.sha256)
+    throw new VaultBodyIntegrityError('ASSET_WHOLE_FILE_INTEGRITY_MISMATCH');
+  const now=new Date().toISOString();
+  const asset={
+    id:desc.uploadId,sourceInstanceId:desc.sourceInstanceId,
+    name:desc.name,fileName:desc.fileName,mediaType:desc.mediaType,
+    sha256:desc.sha256,bytes:desc.bytes,storageKind:'chunked-v1',
+    partCount:desc.partCount,partHashes:hashes,
+    previousVersionId:current?.id||null,uploaded_at:now,
+    status:'PRIVATE_ORIGINAL_CHUNKED_SOURCE_NOT_PUBLICATION'
+  };
+  // All part objects constitute ONE original file, no second wrapped copy.
+  const next={schema:`${SCHEMA}.AssetIndex`,updated_at:now,assets:[asset,...all]};
+  await writeJson(bucket,ASSET_INDEX_KEY,next,index);
+  if(JSON.stringify(await assetIndex(bucket))!==JSON.stringify(next))
+    throw new VaultBodyIntegrityError('ASSET_INDEX_READBACK_MISMATCH');
+  await assetBytes(bucket,asset);
+  return {unchanged:false,asset};
+}
+
 async function uploadAsset(bucket, payload) {
   const file = payload?.file;
   if (!file || typeof file !== 'object' || Array.isArray(file)
@@ -673,8 +854,11 @@ async function removeAsset(bucket, id) {
     throw new VaultBodyIntegrityError('ASSET_INDEX_READBACK_MISMATCH');
   }
   // Intentional owner removal of a leaf only. Interruptions preserve orphan bytes.
-  try { await bucket.delete(`${ASSET_PREFIX}/${id}.bin`); }
-  catch { throw new VaultBodyIntegrityError('ASSET_DELETE_HOLD'); }
+  try {
+    if (asset.storageKind === 'chunked-v1') {
+      for(let i=0;i<asset.partCount;i++) await bucket.delete(assetPartKey(asset.id,i));
+    } else await bucket.delete(`${ASSET_PREFIX}/${id}.bin`);
+  } catch { throw new VaultBodyIntegrityError('ASSET_DELETE_HOLD'); }
   return json({ schema: SCHEMA, outcome: 'ASSET_REMOVED', asset });
 }
 
@@ -758,7 +942,7 @@ async function handleOwnerRequest(context) {
     if (mode === 'assets') {
       const index = await assetIndex(bucket);
       return json({ schema: `${SCHEMA}.AssetIndex`, assets: index.assets,
-        max_asset_bytes: MAX_ASSET_BYTES, boundary: 'PRIVATE_EXPLICIT_ORIGINAL_FILE_CUSTODY' });
+        max_asset_bytes: MAX_ASSET_BYTES, max_chunked_asset_bytes: MAX_CHUNKED_ASSET_BYTES, asset_part_bytes: ASSET_PART_BYTES, boundary: 'PRIVATE_EXPLICIT_ORIGINAL_FILE_CUSTODY' });
     }
     const assetId = url.searchParams.get('asset');
     if (assetId) return downloadAsset(bucket, assetId);
@@ -782,6 +966,16 @@ async function handleOwnerRequest(context) {
     try { payload = await request.json(); }
     catch { return json({ schema: SCHEMA, error: 'INVALID_JSON' }, 400); }
 
+    if (payload?.action === 'upload-asset-part') {
+      const result=await uploadAssetPart(bucket,payload);
+      if (result.error) return result.error;
+      return json({schema:SCHEMA,outcome:result.unchanged?'ASSET_PART_UNCHANGED':'ASSET_PART_STORED',...result},result.unchanged?200:201);
+    }
+    if (payload?.action === 'finalize-chunked-asset') {
+      const result=await finishChunkedAsset(bucket,payload);
+      if (result.error) return result.error;
+      return json({schema:SCHEMA,outcome:result.unchanged?'ASSET_UNCHANGED':'ASSET_STORED',...result},result.unchanged?200:201);
+    }
     if (payload?.action === 'upload-asset') {
       const outcome = await uploadAsset(bucket, payload);
       if (outcome.error) return outcome.error;

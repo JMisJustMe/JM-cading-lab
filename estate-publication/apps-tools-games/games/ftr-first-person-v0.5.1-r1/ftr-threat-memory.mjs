@@ -115,6 +115,7 @@ function memorySeek(e,m,dt){
   m.path=sourceRoute(e,target);m.cell=cell;
   m.nextReplan=time+.46;routeReplans++;
  }
+ if(!m.path.length)return; // blocked route HOLD: never step toward a target through walls
  let waypoint=m.path[1]||{x:target.x,y:target.y};
  if(Math.hypot(e.x-waypoint.x,e.y-waypoint.y)<.19&&m.path.length>2){
   m.path.shift();waypoint=m.path[1];
@@ -206,8 +207,11 @@ window.updateWorld=function(dt){
  lastScan=player.scan>0;phaseLast=phased;
  const result=originalWorld(dt);
  if(running){
-  for(const e of enemies){
-   if(e.dead)continue;
+  for(let i=0;i<enemies.length;i++){
+   const e=enemies[i];if(e.dead)continue;
+   // CP12 already has earned collision-safe, cover-specific flanking.
+   // The newer memory search must never fight or cancel that earlier body.
+   if(window.JMFTRTactics.enabled()&&window.JMFTRTactics.inspectLane(i))continue;
    const m=read(e);
    if(!m.sighted&&m.last&&e.stun<=0)memorySeek(e,m,dt);
   }

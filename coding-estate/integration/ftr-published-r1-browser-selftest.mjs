@@ -13,7 +13,7 @@ const root=resolve(fileURLToPath(new URL('../../',import.meta.url)));
 const base='estate-publication/apps-tools-games/games/';
 const r1=base+'ftr-first-person-v0.5.1-r1/';
 const old=base+'ftr-first-person-v0.5.1/';
-const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webmanifest':'application/manifest+json'};
+const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.webmanifest':'application/manifest+json'};
 const http=createServer(async(req,res)=>{
  try{
   const requested=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);

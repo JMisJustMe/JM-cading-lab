@@ -1837,7 +1837,7 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     return {action:'upload-asset-part',file,partIndex:i,partSha256:sha(chunk),base64:chunk.toString('base64')};
   };
   const preflight=await invoke({method:'POST',body:{action:'finalize-chunked-asset',file}});
-  assert.equal(preflight.status,404,'finalization must fail closed when any part is missing');
+  assert.equal(preflight.status,409,'finalization must hold when any source part is missing');
   assert.equal((await preflight.json()).error,'ASSET_PART_MISSING');
   assert.equal((await (await invoke({query:'?mode=assets'})).json()).assets.length,0);
   const bad=makePart(0);bad.partSha256='0'.repeat(64);

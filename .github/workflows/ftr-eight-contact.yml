@@ -70,6 +70,7 @@ jobs:
           sparse-checkout: |
             coding-estate/integration
             coding-estate/sovereign-ten/direct
+            coding-estate/sovereign-batch-six/direct
             estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1
             estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1
           sparse-checkout-cone-mode: true

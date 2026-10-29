@@ -470,3 +470,27 @@ CP24 exact manifest, CP25 fsync, CP26 no-follow and CP27 input-ancestor
 refusal remain enforced. This is a source/CI candidate, **not** an authenticated
 owner-device restore, private offsite custody, physical crash proof or
 deployment. PR stays DRAFT/UNMERGED; no private source or Library ID retired.
+
+
+## CP29 — identity-bound no-follow directory durability (29 October 2026)
+
+The existing CP25 offline recovery durability helper opened the recovery and
+parent directories with ordinary `'r'` handles after earlier pathname
+preflight. A substituted final directory symlink or replaced directory could
+therefore be synchronised instead of the original recovery location, even
+though subsequent identity checks might refuse final success. CP29 strengthens
+that SAME helper: directory fsync opens with `O_RDONLY | O_DIRECTORY |
+O_NOFOLLOW`, validates the **opened** directory's device/inode against the
+previously captured parent or newly created destination, and refuses before
+fsync on mismatch. Unsupported no-follow/directory-open support yields HOLD.
+
+The original CP20–CP28 source, ancestry, bounded source reads, private file
+permissions, nonrecursive partial recovery and exact manifests remain in place.
+New adversarial tests exercise symlinked directory refusal, rename-and-replace
+inode mismatch, unchanged original-directory success, explicit no-follow flags,
+and close-without-sync on mismatch. Existing recovery and audit regression
+still must pass. This is a draft source/CI safety gate, NOT an atomic guarantee
+against hostile concurrent ancestor replacement, a physical crash test,
+owner-device edit/reload, offsite restoration, authenticated R2, private-source
+GitHub migration or production propagation. No original Library IDs or
+purpose-specific carriers are retired.

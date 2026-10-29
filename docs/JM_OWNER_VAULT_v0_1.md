@@ -431,3 +431,22 @@ concurrent replacement of ancestor directories, nor authenticated packet
 provenance, real R2 restore, owner-device acceptance, offsite custody or
 deployment propagation. Keep draft/unmerged until the actual CI and owner
 contact gates are proven; preserve all original private sources and Library IDs.
+
+## CP27 — packet input ancestor redirection refusal (29 October 2026)
+
+The original CP20–CP26 offline recipient protected the packet's **final** file
+component with `O_NOFOLLOW`, but `--verify-only`, `--output-dir` and
+`--audit-dir` could still read a packet through a symlinked **ancestor**
+directory. CP27 reuses the existing CP23 component-by-component directory
+preflight on the packet input parent **before reading packet bytes** in all
+three modes. The original no-follow opened-file check remains in force.
+
+The existing CP20 independent-process test exercises a redirected packet in
+all three CLI modes, verifies explicit `LINEAGE_PATH_COMPONENT_UNSAFE` HOLD,
+checks that no recovery directory was created, and confirms the normal exact
+packet and cold audit still work. This is a bounded pre-existing symlink
+protection, **not** a race-proof directory-descriptor guarantee against
+concurrent ancestor replacement. The source stays draft/unmerged; real
+owner-device recovery, independent packet-origin authentication, private
+GitHub migration, authenticated R2 and deployed propagation remain HOLD.
+No original owner file or Library identity is deleted, migrated or replaced.

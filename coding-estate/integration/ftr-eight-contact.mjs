@@ -143,6 +143,22 @@ export function authoringBridge({learningGoal,nativeAction}){
    scratchProjectGenerated:false,nativeExportGenerated:false};
 }
 
+/** Scratch-inspired teaching transition, executed through original JM-native GameCore. */
+export function executeLearningContact({lesson,gesture}){
+ fail(typeof lesson==='string'&&/^[A-Za-z][A-Za-z0-9_]{0,40}$/.test(lesson),'LESSON_ID_INVALID');
+ fail(Object.hasOwn(ROUTES,gesture),'LESSON_GESTURE_INVALID');
+ const kicPlay=ROUTES[gesture];
+ const gameSource='entity Lesson {\\n progress = "waiting"\\n}\\nmechanic Learn {\\n requires lesson.progress == "waiting"\\n effect lesson.progress = "learned"\\n}';
+ const coreSource='organ LearningOrgan {\\n handles = [Lesson]\\n rules = [Learn]\\n invariants = {\\n lesson.progress == "learned"\\n }\\n}\\nsystem TeachingSystem {\\n organs = [LearningOrgan]\\n events = [LearnEvent]\\n identity = "JM.Learning.'+lesson+'"\\n}';
+ const game=new GameCodingRuntime(GameCoding.parse(gameSource),{},{});
+ const core=new JMGameCoreRuntime(JMGameCore.parse(coreSource),game);
+ const event=core.dispatch('TeachingSystem','LearnEvent');
+ fail(event.state.lesson.progress==='learned','LESSON_NATIVE_EXECUTION_FAILED');
+ return {lesson,kicPlay,source:'Scratch event-learning reference',
+  actualNativeJM:{gameCoding:true,gameCore:true,before:'waiting',after:event.state.lesson.progress,receipt:event.receipt.resultDigest},
+  externalScratchProject:false,scratchVMExecuting:false};
+}
+
 export function compareEngineRoutes(input){
  const event=contactEvent(input),native=executeNativeControl(event);
  return {native,

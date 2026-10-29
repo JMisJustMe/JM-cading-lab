@@ -18,3 +18,15 @@ jobs:
         with:
           node-version: '22'
       - run: node games-beyond/influence-contact/influence-contact-selftest.mjs
+      - run: node --check games-beyond/influence-contact/house-panel.mjs
+      - name: Existing House panel/source route check
+        run: |
+          node --input-type=module -e "
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const html=fs.readFileSync('games-beyond/index.html','utf8');
+          assert.equal(html.split('id=\\\"jmInfluencePanel\\\"').length-1,1);
+          assert.equal(html.split('src=\\\"influence-contact/house-panel.mjs\\\"').length-1,1);
+          assert(html.includes('id=\\\"view-proof\\\"'));
+          console.log('Existing Games House panel route: present exactly once');
+          "

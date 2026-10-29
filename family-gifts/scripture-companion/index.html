@@ -545,7 +545,7 @@ function drawStudy(){
    if(!save()){data.bookmarks=prev;el('jmStudyStatus').textContent='Not saved: storage unavailable.';return}
    el('jmStudyStatus').textContent='Bookmarked '+x.ref+'.';renderSaved();
   });
-  actions.append(open,choose,saveRef);card.append(h,p,actions);root.append(card);
+  const later=document.createElement('button');later.type='button';later.className='btn secondary small';later.textContent='＋ Reading list';later.onclick=()=>{if(window.JMExplore)window.JMExplore.add(x.book,x.chapter)};actions.append(open,choose,saveRef,later);card.append(h,p,actions);root.append(card);
  }
  if(!items.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='No matches; try another subject.';root.append(empty)}
 }

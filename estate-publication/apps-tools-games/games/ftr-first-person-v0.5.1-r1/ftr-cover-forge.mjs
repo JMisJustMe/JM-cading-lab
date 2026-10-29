@@ -85,9 +85,9 @@ function routeStillOpen(target){
 function refresh(){
  materialButton.textContent='MATERIAL '+selected.toUpperCase();
  const m=materials[selected],s=window.FTR.state();
- action.textContent='BUILD COVER · '+m.cost+' AMMO';
+ action.textContent=barrier?'COVER DEPLOYED':'BUILD COVER · '+m.cost+' AMMO';\n action.setAttribute('aria-disabled',barrier?'true':'false');
  output.textContent=barrier?
-  selected.toUpperCase()+' · COVER '+Math.ceil(barrier.hp)+'/'+barrier.maxHp+' · '+barrier.ttl.toFixed(1)+'s'
+  barrier.kind.toUpperCase()+' · COVER '+Math.ceil(barrier.hp)+'/'+barrier.maxHp+' · '+barrier.ttl.toFixed(1)+'s'
   :s.running?'COVER READY · '+(2-builds)+' BUILDS LEFT':'COVER STANDBY';
 }
 function build(){
@@ -168,7 +168,7 @@ function drawBarrier(){
  const p=projectSprite(barrier.x,barrier.y,.55);
  if(!p||!visibleAt(p)||p.dist>14)return;
  const w=Math.min(240,p.size*.65),h=Math.min(140,p.size*.44);
- const x=p.x,y=p.y+p.size*.42,mat=materials[barrier.kind];
+ // Ground the base of the shield on the original FTR projected floor,\n // not in the air over the world horizon.\n const x=p.x,y=p.y+p.size*.92,mat=materials[barrier.kind];
  ctx.save();ctx.translate(x,y);
  ctx.fillStyle='rgba(3,15,22,.91)';ctx.strokeStyle=mat.color;ctx.lineWidth=Math.max(1,w*.013);
  ctx.beginPath();ctx.roundRect(-w/2,-h,w,h,Math.max(2,w*.06));ctx.fill();ctx.stroke();

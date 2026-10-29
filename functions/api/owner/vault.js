@@ -1056,6 +1056,107 @@ async function exportAssetLineage(bucket, id) {
   }, 200, { 'content-disposition': `attachment; filename="JM_Vault_Asset_Lineage_${id}.json"` });
 }
 
+
+// CP28: segmented, owner-only, READ-ONLY cold export. This uses the original
+// R2 asset index and immutable source objects, not another cloud store.
+// The catalog is a map of immutable per-version pieces, not a claim that
+// the owner has downloaded them. The original CP22 JSON route remains intact.
+const COLD_CATALOG_SCHEMA = 'JM.OwnerVault/0.1.AssetPartsCatalog';
+function coldPartFilename(id,i) {
+  return 'JM_Vault_Part_' + id + '_' + String(i).padStart(2,'0') + '.bin';
+}
+function coldAncestors(index,id) {
+  const byId=new Map(index.assets.map(a=>[a.id,a]));
+  let m=byId.get(id);
+  if(!m) return null;
+  const ancestors=[],seen=new Set();let total=0,source=null;
+  while(m){
+    if(ancestors.length>=8) throw new VaultBodyIntegrityError('COLD_LINEAGE_TOO_MANY_VERSIONS');
+    if(seen.has(m.id)||source!==null&&m.sourceInstanceId!==source)
+      throw new VaultBodyIntegrityError('COLD_LINEAGE_IDENTITY_HOLD');
+    seen.add(m.id);source=m.sourceInstanceId;
+    if(m.bytes>MAX_CHUNKED_ASSET_BYTES || total+m.bytes>8*MAX_CHUNKED_ASSET_BYTES)
+      throw new VaultBodyIntegrityError('COLD_LINEAGE_SIZE_HOLD');
+    total+=m.bytes;ancestors.push(m);
+    if(m.previousVersionId && !byId.has(m.previousVersionId))
+      throw new VaultBodyIntegrityError('COLD_LINEAGE_MISSING_ANCESTOR');
+    m=m.previousVersionId?byId.get(m.previousVersionId):null;
+  }
+  return {ancestors,total};
+}
+async function catalogAssetParts(bucket,id) {
+  if(!/^[0-9a-f-]{36}$/i.test(id||''))return json({schema:SCHEMA,error:'COLD_ASSET_ID_REQUIRED'},400);
+  const original=await assetIndex(bucket);
+  const ancestry=coldAncestors(original,id);
+  if(!ancestry)return json({schema:SCHEMA,error:'ASSET_NOT_FOUND'},404);
+  const versions=[];
+  for(const metadata of ancestry.ancestors){
+    const count=Math.max(1,Math.ceil(metadata.bytes/ASSET_PART_BYTES));
+    let hashes;
+    if(metadata.storageKind==='chunked-v1'){
+      hashes=metadata.partHashes;
+    }else{
+      const bytes=await assetBytes(bucket,metadata); // <=12 MiB legacy original
+      hashes=[];
+      for(let i=0;i<count;i++)hashes.push(await assetHash(bytes.subarray(i*ASSET_PART_BYTES,(i+1)*ASSET_PART_BYTES)));
+    }
+    const parts=hashes.map((sha256,i)=>({
+      index:i,bytes:i===count-1?metadata.bytes-ASSET_PART_BYTES*(count-1):ASSET_PART_BYTES,
+      sha256,fileName:coldPartFilename(metadata.id,i)
+    }));
+    versions.push({metadata,parts});
+  }
+  const current=await assetIndex(bucket);
+  if(JSON.stringify(current)!==JSON.stringify(original)
+    ||readVersions.get(current)!==readVersions.get(original))
+    throw new VaultWriteConflict();
+  return json({schema:COLD_CATALOG_SCHEMA,selected_id:id,
+    version_count:versions.length,source_bytes:ancestry.total,
+    order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',part_bytes:ASSET_PART_BYTES,
+    versions,boundary:'OWNER_SAVED_PIECES_REQUIRED; NOT_OFFSITE_OR_COLD_PROVEN_UNTIL_OFFLINE_VERIFIED'
+  },200,{'content-disposition':'attachment; filename="JM_Vault_Cold_Catalog_'+id+'.json"'});
+}
+async function exportColdAssetPart(bucket,id,requested) {
+  if(!/^[0-9a-f-]{36}$/i.test(id||'')||!/^(0|[1-9][0-9]?)$/.test(requested||''))
+    return json({schema:SCHEMA,error:'COLD_PART_ID_INVALID'},400);
+  const index=await assetIndex(bucket),asset=index.assets.find(a=>a.id===id);
+  if(!asset)return json({schema:SCHEMA,error:'ASSET_NOT_FOUND'},404);
+  const i=Number(requested),count=Math.max(1,Math.ceil(asset.bytes/ASSET_PART_BYTES));
+  if(i>=count||count>MAX_ASSET_PARTS)
+    return json({schema:SCHEMA,error:'COLD_PART_INDEX_HOLD'},400);
+  let bytes;
+  if(asset.storageKind==='chunked-v1'){
+    const key=assetPartKey(asset.id,i);
+    let obj;
+    try{obj=await bucket.get(key);}catch{throw new VaultBodyIntegrityError('COLD_PART_UNREADABLE');}
+    if(!obj)throw new VaultBodyIntegrityError('COLD_PART_MISSING');
+    try{bytes=new Uint8Array(await obj.arrayBuffer());}catch{throw new VaultBodyIntegrityError('COLD_PART_UNREADABLE');}
+    const expectedLen=i===count-1?asset.bytes-ASSET_PART_BYTES*(count-1):ASSET_PART_BYTES;
+    const check=await assetHash(bytes);
+    if(bytes.length!==expectedLen||check!==asset.partHashes[i]
+      ||obj.customMetadata?.uploadId!==asset.id
+      ||obj.customMetadata?.sourceInstanceId!==asset.sourceInstanceId
+      ||obj.customMetadata?.fullSha256!==asset.sha256
+      ||obj.customMetadata?.index!==String(i)
+      ||obj.customMetadata?.partCount!==String(count)
+      ||obj.customMetadata?.sha256!==check)
+      throw new VaultBodyIntegrityError('COLD_PART_ORIGINAL_INTEGRITY_HOLD');
+  }else{
+    const whole=await assetBytes(bucket,asset);
+    bytes=whole.subarray(i*ASSET_PART_BYTES,(i+1)*ASSET_PART_BYTES);
+  }
+  const hash=await assetHash(bytes);
+  const fresh=await assetIndex(bucket);
+  if(JSON.stringify(fresh)!==JSON.stringify(index)
+    ||readVersions.get(fresh)!==readVersions.get(index))throw new VaultWriteConflict();
+  return new Response(bytes,{headers:{
+    'content-type':'application/octet-stream','cache-control':'no-store, max-age=0',
+    'x-content-type-options':'nosniff',
+    'x-jm-part-sha256':hash,'x-jm-asset-id':asset.id,'x-jm-part-index':String(i),
+    'content-disposition':'attachment; filename="'+coldPartFilename(id,i)+'"'
+  }});
+}
+
 async function handleOwnerRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -1086,6 +1187,8 @@ async function handleOwnerRequest(context) {
       url.searchParams.get('asset'),url.searchParams.get('version'),
       url.searchParams.get('part'),url.searchParams.get('pin'));
     if (mode === 'export-asset-lineage') return exportAssetLineage(bucket, url.searchParams.get('asset'));
+    if (mode === 'export-asset-catalog') return catalogAssetParts(bucket,url.searchParams.get('asset'));
+    if (mode === 'export-asset-part') return exportColdAssetPart(bucket,url.searchParams.get('asset'),url.searchParams.get('part'));
     if (mode === 'assets') {
       const index = await assetIndex(bucket);
       return json({ schema: `${SCHEMA}.AssetIndex`, assets: index.assets,

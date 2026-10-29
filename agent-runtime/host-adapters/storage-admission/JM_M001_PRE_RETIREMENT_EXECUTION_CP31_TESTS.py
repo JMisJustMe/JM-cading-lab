@@ -142,9 +142,45 @@ class CP31Tests(unittest.TestCase):
    (stable/'anchored-receipt.json').write_bytes(b'FORGED_DIFFERENT_RECEIPT')
    original_sync(path,parent_fd)
   with mock.patch.object(cp31,'_sync_report_parent',side_effect=swap_parent):
-   cp31.write_once_verified(dest,payload)
+   with self.assertRaisesRegex(ValueError,'REPORT_OUTPUT_PATH_PARENT_CHANGED'):
+    cp31.write_once_verified(dest,payload)
+  # The original durable bytes are retained for owner recovery; a forged
+  # replacement at the requested path must NEVER receive success.
   self.assertEqual((moved/'anchored-receipt.json').read_bytes(),payload.encode('utf-8'))
   self.assertEqual((stable/'anchored-receipt.json').read_bytes(),b'FORGED_DIFFERENT_RECEIPT')
+ def test_intermediate_symlink_directory_refused_before_creation(self):
+  real=self.d/'real';real.mkdir()
+  intermediate=self.d/'intermediate'
+  try:os.symlink(real,intermediate,target_is_directory=True)
+  except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
+  dest=intermediate/'new-receipt.json'
+  with self.assertRaises(OSError):
+   cp31.write_once_verified(dest,'{"decision":"HOLD_NO_MUTATION"}')
+  self.assertFalse((real/'new-receipt.json').exists())
+ def test_requested_filename_replaced_after_anchored_readback_is_hold(self):
+  dest=self.d/'replaced-receipt.json'
+  payload='{"decision":"HOLD_NO_MUTATION"}'
+  original_read=cp31._read_report_exact
+  def swap_entry(path,written_stat,parent_fd):
+   value=original_read(path,written_stat,parent_fd)
+   dest.unlink()
+   dest.write_bytes(b'FORGED_REPLACEMENT')
+   return value
+  with mock.patch.object(cp31,'_read_report_exact',side_effect=swap_entry):
+   with self.assertRaisesRegex(ValueError,'REPORT_OUTPUT_PATH_ENTRY_CHANGED'):
+    cp31.write_once_verified(dest,payload)
+  self.assertEqual(dest.read_bytes(),b'FORGED_REPLACEMENT')
+ def test_requested_filename_removed_after_anchored_readback_is_hold(self):
+  dest=self.d/'vanished-receipt.json'
+  original_read=cp31._read_report_exact
+  def unlink_entry(path,written_stat,parent_fd):
+   value=original_read(path,written_stat,parent_fd)
+   dest.unlink()
+   return value
+  with mock.patch.object(cp31,'_read_report_exact',side_effect=unlink_entry):
+   with self.assertRaises(FileNotFoundError):
+    cp31.write_once_verified(dest,'{"decision":"HOLD_NO_MUTATION"}')
+  self.assertFalse(dest.exists())
  def test_unsupported_directory_anchor_refuses_before_creation(self):
   dest=self.d/'unwritten-receipt.json'
   with mock.patch.object(cp31,'_open_report_parent',side_effect=ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')):

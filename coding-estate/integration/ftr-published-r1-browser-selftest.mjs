@@ -762,6 +762,138 @@ try{
    assert.equal(a.original.player.cores,0);
    assert.equal(a.original.run.events.some(e=>e.event==='JM_WORLD_ECHO_LAUNCHED'),false);
  });
+ await check('CP15 source-owned original TRACE recipient loads actual JM GameCore',async()=>{
+   await page.waitForFunction(()=>!!window.JMFTRQuietTrace);
+   const r=await page.evaluate(()=>({schema:window.JMFTRQuietTrace.schema,
+     source:window.JMFTRQuietTrace.source,bodies:window.JMFTRQuietTrace.nativeBodies,
+     version:window.FTR.version}));
+   assert.equal(r.schema,'jm.ftr.source-owned-earned-trace/0.1');
+   assert(r.source.includes('original doInteract'));
+   assert(r.bodies.includes('JMGameCoreRuntime'));
+   assert.equal(r.version,'0.5.1');
+ });
+ await check('CP15 unearned original TRACE progress remains exactly normal without distraction',async()=>{
+   await page.evaluate(()=>{
+     window.FTR.command('START');
+     window.FTR.test.freezeEnemies(true);
+     window.FTR.test.setPlayer(14.4,15.4,0);
+   });
+   await page.waitForTimeout(110);
+   const r=await page.evaluate(()=>{
+     const permitted=window.JMFTRQuietTrace.eligibility();
+     const before=terminals[0].progress;
+     doInteract(.2);
+     return {permitted,before,after:terminals[0].progress,
+       original:window.FTR.state()};
+   });
+   assert.equal(r.permitted.eligible,false);
+   assert.equal(r.permitted.reason,'EARNED_DISTRACTION_REQUIRED');
+   assert(Math.abs(r.after-r.before-.2)<.0001);
+   assert.equal(r.original.player.cores,0);
+   assert.equal(r.original.player.score,0);
+ });
+ await check('CP15 real CP14 audio diversion earns original-world native trace eligibility',async()=>{
+   await page.evaluate(()=>{
+     window.FTR.command('START');window.FTR.test.freezeEnemies(false);
+     window.FTR.test.setPlayer(1.5,11.5,0);
+     enemies.forEach(e=>{e.x=17.5;e.y=2.5;e.stun=100;e.cool=100;});
+     enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=100;
+     enemies[1].type='hunter';
+   });
+   await page.waitForTimeout(90);
+   await page.locator('#jmEchoLaunch').tap();
+   const echo=await page.evaluate(()=>window.JMFTREcho.state());
+   assert.equal(echo.heard,1);
+   await page.evaluate(()=>window.FTR.test.setPlayer(14.4,15.4,0));
+   await page.waitForTimeout(100);
+   const r=await page.evaluate(()=>({
+     originalCore:terminals[0].id,
+     eligibility:window.JMFTRQuietTrace.eligibility(),
+     actor:window.JMFTRMemory.inspectEnemy(1),
+     originalPlayer:window.FTR.state().player
+   }));
+   console.log('JM_CP15_EARNED_GATE',JSON.stringify(r));
+   assert.equal(r.eligibility.eligible,true);
+   assert.equal(r.eligibility.target,'A');
+   assert.equal(r.actor.last?.source,'echo');
+   assert.equal(r.originalPlayer.cores,0);
+ });
+ await check('CP15 original enemy direct sight denies accelerated capture, preserving ordinary TRACE',async()=>{
+   const r=await page.evaluate(()=>{
+     enemies[0].x=14.5;enemies[0].y=14.5;
+     const before=terminals[0].progress,eligibility=window.JMFTRQuietTrace.eligibility();
+     doInteract(.12);
+     return {eligibility,before,after:terminals[0].progress,
+       state:window.JMFTRQuietTrace.state(),original:window.FTR.state()};
+   });
+   assert.equal(r.eligibility.eligible,false);
+   assert.equal(r.eligibility.reason,'ORIGINAL_ENEMY_DIRECT_SIGHT');
+   assert(Math.abs(r.after-r.before-.12)<.0001);
+   assert.equal(r.state.completed,0);
+   assert.equal(r.original.player.cores,0);
+ });
+ await check('CP15 JM native original E/TRACE advances REAL terminal progress by earned 1.7x',async()=>{
+   const r=await page.evaluate(()=>{
+     enemies[0].x=17.5;enemies[0].y=2.5;
+     const gate=window.JMFTRQuietTrace.eligibility();
+     const before=terminals[0].progress,score=player.score;
+     doInteract(.25);
+     return {gate,before,after:terminals[0].progress,scoreAfter:player.score,score,
+       state:window.JMFTRQuietTrace.state(),
+       events:window.FTR.state().run.events};
+   });
+   assert.equal(r.gate.eligible,true);
+   assert(Math.abs(r.after-r.before-.425)<.0001);
+   assert.equal(r.score,r.scoreAfter);
+   assert(r.events.some(e=>e.event==='JM_QUIET_TRACE_CONTACT'));
+   assert.equal(r.state.last.nativeIdentity,'JM.FTR.EarnedQuietTrace');
+   assert(r.state.last.traceDigest);
+ });
+ await check('CP15 real original CORE_MOUNT and door unlock occur, with a single earned bonus',async()=>{
+   const r=await page.evaluate(()=>{
+     const before=player.score;
+     doInteract(.36);
+     const s=window.FTR.state(),stats=window.JMFTRQuietTrace.state();
+     return {before,original:s,stats,terminal:terminals[0].active,
+       events:s.run.events.filter(e=>['CORE_MOUNT','JM_QUIET_CORE_MOUNT'].includes(e.event))};
+   });
+   assert.equal(r.terminal,true);
+   assert.equal(r.original.player.cores,1);
+   assert.equal(r.original.doors[0].target,1);
+   assert.equal(r.original.player.score-r.before,750+180);
+   assert.equal(r.stats.completed,1);
+   assert.equal(r.events.filter(e=>e.event==='CORE_MOUNT').length,1);
+   assert.equal(r.events.filter(e=>e.event==='JM_QUIET_CORE_MOUNT').length,1);
+ });
+ await check('CP15 real keyboard TRACE uses inherited E control, not a fake second button',async()=>{
+   await page.evaluate(()=>{
+     window.FTR.command('START');
+     window.FTR.test.freezeEnemies(true);
+     window.FTR.test.setPlayer(14.4,15.4,0);
+   });
+   await page.waitForTimeout(80);
+   await page.keyboard.down('e');
+   await page.waitForTimeout(300);
+   await page.keyboard.up('e');
+   const r=await page.evaluate(()=>({
+     original:window.FTR.state(),progress:terminals[0].progress,
+     stats:window.JMFTRQuietTrace.state()}));
+   assert(r.progress>.08);
+   assert(r.progress<.9);
+   assert.equal(r.stats.completed,0);
+   assert.equal(r.original.player.cores,0);
+ });
+ await check('CP15 original restart discards quiet-trace reward and progress records',async()=>{
+   await page.evaluate(()=>window.FTR.command('START'));
+   await page.waitForTimeout(80);
+   const r=await page.evaluate(()=>({native:window.JMFTRQuietTrace.state(),
+     original:window.FTR.state()}));
+   assert.equal(r.native.completed,0);
+   assert.equal(r.native.eligibleContacts,0);
+   assert.equal(r.original.player.cores,0);
+   assert.equal(r.original.player.score,0);
+   assert.equal(r.original.run.events.filter(e=>e.event==='JM_QUIET_CORE_MOUNT').length,0);
+ });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
    console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));
@@ -790,6 +922,8 @@ try{
    assert.equal(await page.evaluate(()=>window.JMFTRMemory.schema),'jm.ftr.original-threat-memory/0.1');
    await page.waitForFunction(()=>!!window.JMFTREcho);
    assert.equal(await page.evaluate(()=>window.JMFTREcho.schema),'jm.ftr.sovereign-world-echo/0.1');
+   await page.waitForFunction(()=>!!window.JMFTRQuietTrace);
+   assert.equal(await page.evaluate(()=>window.JMFTRQuietTrace.schema),'jm.ftr.source-owned-earned-trace/0.1');
    assert.equal(await page.evaluate(()=>window.JMFTRTactics.schema),'jm.ftr.tactical-world-contact/0.1');
    await page.locator('#startBtn').tap();
    await page.evaluate(()=>window.FTR.test.activateCore(0));

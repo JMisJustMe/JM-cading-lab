@@ -128,6 +128,20 @@ async function assertNoSymlinkDirectoryComponents(directory) {
   }
 }
 
+// CP24: one deterministic recovery receipt contract for creation and cold audit.
+// A changed boundary or an injected success field is not an authentic receipt.
+function recoveryManifest(verified) {
+  return {
+    schema: 'JM.OwnerVault/0.1.OfflineRecovered',
+    selected_id: verified.packet.selected_id,
+    packet_sha256: verified.packet_sha256,
+    original_schema: SCHEMA,
+    original_source_bytes: verified.total,
+    original_versions: verified.ready.map(({ metadata }) => metadata),
+    boundary: 'OWNER_LOCAL_VERIFIED_FILES_ONLY; NO R2 RESTORE, OFFSITE CUSTODY, LIVE DEPLOYMENT OR NATIVE-ID REPLACEMENT'
+  };
+}
+
 async function restorePacket(input, destination) {
   const verified = await readPacket(input);
   const dest = path.resolve(destination);
@@ -147,15 +161,7 @@ async function restorePacket(input, destination) {
   await fs.mkdir(dest, { mode: 0o700 });
   const createdIdentity = await fs.lstat(dest);
   try {
-    const inventory = {
-      schema: 'JM.OwnerVault/0.1.OfflineRecovered',
-      selected_id: verified.packet.selected_id,
-      packet_sha256: verified.packet_sha256,
-      original_schema: SCHEMA,
-      original_source_bytes: verified.total,
-      original_versions: verified.ready.map(({ metadata }) => metadata),
-      boundary: 'OWNER_LOCAL_VERIFIED_FILES_ONLY; NO R2 RESTORE, OFFSITE CUSTODY, LIVE DEPLOYMENT OR NATIVE-ID REPLACEMENT'
-    };
+    const inventory = recoveryManifest(verified);
     for (const { metadata, bytes } of verified.ready) {
       const name = `${metadata.id}.html`; // IDs only; never owner-provided filenames.
       const filename = path.join(dest, name);
@@ -165,12 +171,12 @@ async function restorePacket(input, destination) {
         fail('LINEAGE_DISK_READBACK_FAILED');
       }
     }
-    await fs.writeFile(path.join(dest, 'recovery-manifest.json'),
-      JSON.stringify(inventory, null, 2) + '\n',
-      { flag: 'wx', mode: 0o600 });
-    const stored = JSON.parse(await fs.readFile(path.join(dest, 'recovery-manifest.json'), 'utf8'));
-    if (stored.packet_sha256 !== verified.packet_sha256
-      || stored.original_versions.length !== verified.ready.length) {
+    const manifestPath = path.join(dest, 'recovery-manifest.json');
+    const expectedManifest = Buffer.from(JSON.stringify(inventory, null, 2) + '\n', 'utf8');
+    await fs.writeFile(manifestPath, expectedManifest, { flag: 'wx', mode: 0o600 });
+    // Exact bytes, not merely two parsed fields, must survive before success.
+    const storedManifest = await fs.readFile(manifestPath);
+    if (!storedManifest.equals(expectedManifest)) {
       fail('LINEAGE_MANIFEST_READBACK_FAILED');
     }
   } catch (error) {
@@ -203,17 +209,13 @@ async function auditRestoredPacket(input, destination) {
     !expectedNames.has(e.name) || !e.isFile() || e.isSymbolicLink())) {
     fail('LINEAGE_AUDIT_INVENTORY_MISMATCH');
   }
-  let inventory;
+  let storedManifest;
   try {
-    inventory = JSON.parse(await fs.readFile(path.join(dest, 'recovery-manifest.json'), 'utf8'));
+    storedManifest = await fs.readFile(path.join(dest, 'recovery-manifest.json'), 'utf8');
   } catch { fail('LINEAGE_AUDIT_MANIFEST_UNREADABLE'); }
-  if (!inventory || inventory.schema !== 'JM.OwnerVault/0.1.OfflineRecovered'
-    || inventory.selected_id !== verified.packet.selected_id
-    || inventory.packet_sha256 !== verified.packet_sha256
-    || inventory.original_schema !== SCHEMA
-    || inventory.original_source_bytes !== verified.total
-    || JSON.stringify(inventory.original_versions)
-      !== JSON.stringify(verified.ready.map(({ metadata }) => metadata))) {
+  // Reject forged offsite/deployment claims, extra fields and changed receipt
+  // bytes, even when the original packet hash and ancestor list still match.
+  if (storedManifest !== JSON.stringify(recoveryManifest(verified), null, 2) + '\n') {
     fail('LINEAGE_AUDIT_MANIFEST_MISMATCH');
   }
   for (const { metadata, bytes } of verified.ready) {

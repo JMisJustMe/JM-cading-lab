@@ -464,6 +464,21 @@ jobs:
                   if(q.headers()['x-jm-owner-key']!=='synthetic-cp21-owner-key')return send(401,{error:'OWNER_AUTH_REQUIRED'});
                   if(q.method()==='GET'&&u.searchParams.get('mode')==='assets')
                     return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:all,max_asset_bytes:12*1024*1024});
+                  if(q.method()==='GET'&&u.searchParams.get('mode')==='export-asset-lineage'){
+                    const id=u.searchParams.get('asset');
+                    let selected=all.find(x=>x.id===id);
+                    if(!selected)return send(404,{error:'ASSET_NOT_FOUND'});
+                    const versions=[];let size=0;
+                    while(selected){
+                      const r=records.get(selected.id);
+                      versions.push({metadata:selected,base64:r.bytes.toString('base64')});
+                      size+=r.bytes.length;
+                      selected=all.find(x=>x.id===selected.previousVersionId);
+                    }
+                    return send(200,{schema:'JM.OwnerVault/0.1.AssetLineageExport',
+                      selected_id:id,version_count:versions.length,source_bytes:size,
+                      order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',versions});
+                  }
                   const aid=u.searchParams.get('asset');
                   if(q.method()==='GET'&&aid){
                     const r=records.get(aid);
@@ -510,11 +525,23 @@ jobs:
                 if(writes!==2||all[0].previousVersionId!==firstId
                   ||!records.get(firstId)?.bytes.equals(original)
                   ||!records.get(all[0].id)?.bytes.equals(changed))throw Error('Revision overwrote or lost ancestor bytes');
+                const lineageDownload=page.waitForEvent('download',{timeout:12000});
+                await page.locator('[data-asset-lineage="'+all[0].id+'"]').click();
+                const lineage=await lineageDownload;
+                if(!lineage.suggestedFilename().startsWith('JM_Vault_Asset_Lineage_'))
+                  throw Error('Original file lineage export offered wrong carrier');
+                const exported=JSON.parse(await fs.readFile(await lineage.path(),'utf8'));
+                if(exported.version_count!==2||exported.versions[0].metadata.id!==all[0].id
+                    ||exported.versions[1].metadata.id!==firstId
+                    ||!Buffer.from(exported.versions[0].base64,'base64').equals(changed)
+                    ||!Buffer.from(exported.versions[1].base64,'base64').equals(original))
+                  throw Error('Export did not preserve exact original and revision');
+                if(writes!==2)throw Error('Read-only export created an unintended write');
                 if(errors.length)throw Error('Browser runtime errors: '+errors.join('|'));
                 await page.close();passed++;
               }
               if(passed!==2)throw Error('Only '+passed+' cross-viewport file custody journeys');
-              console.log('PASS: CP21 2/2 synthetic phone/laptop original binary file SAVE, exact download, reload, guarded REVISION, and ancestor preservation.');
+              console.log('PASS: CP21/CP22 2/2 synthetic phone/laptop original byte SAVE, download, reload, revision, ancestor and full portable lineage export.');
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP21_BROWSER_HOLD',e);process.exitCode=1});
           NODE

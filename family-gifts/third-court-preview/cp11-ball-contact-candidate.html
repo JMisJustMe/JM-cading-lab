@@ -135,7 +135,8 @@ function updateLoose(dt){let b=state.loose;if(!b)return; b.t+=dt;b.lock=Math.max
 function livePassInterception(a,t,dt){
  if(a.kind!=='pass'||t<.12||t>.88||state.ball.z>51)return false;
  const opposition=state.players.filter(p=>p.team!==a.team);
- const close=opposition.filter(p=>dist(p,state.ball)<29).sort((x,y)=>dist(x,state.ball)-dist(y,state.ball))[0];
+ const from={x:lerp(a.from.x,a.to.x,clamp((a.t-dt)/a.dur,0,1)),y:lerp(a.from.y,a.to.y,clamp((a.t-dt)/a.dur,0,1))};
+ const close=opposition.filter(p=>laneDanger(from,state.ball,p)<29).sort((x,y)=>laneDanger(from,state.ball,x)-laneDanger(from,state.ball,y))[0];
  if(!close||Math.random()>=Math.min(.65,dt*12))return false;
  state.air=null;VIZ.trail=[];state.pos=close.team;state.carrier=close.id;
  state.ball={x:close.x,y:close.y,z:12};state.passCombo=0;state.crown=false;

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {AUTHORITY,DISCOVERIES,contactEvent,executeNativeControl,consequenceTurn,inspectOwnedExposure,assessSignal,securityLabProfile,authoringBridge,forgeDeviceGlove,compareEngineRoutes} from './ftr-eight-contact.mjs';
+import {AUTHORITY,DISCOVERIES,contactEvent,executeNativeControl,consequenceTurn,inspectOwnedExposure,assessSignal,securityLabProfile,authoringBridge,forgeDeviceGlove,executeLearningContact,compareEngineRoutes} from './ftr-eight-contact.mjs';
 let passed=0;
 const check=(name,run)=>{run();passed++; console.log('PASS',name);};
 const throws=(f,code)=>assert.throws(f,e=>e.code===code);
@@ -40,5 +40,8 @@ check('Device Glove respects owner choice',()=>{const g=forgeDeviceGlove({device
 check('Device Glove refuses unsupported controls',()=>throws(()=>forgeDeviceGlove({deviceLabel:'JM Test Host',observed:{touch:false},ownerEnabled:['touch']}),'GLOVE_UNSUPPORTED_SELECTION'));
 check('Device Glove never invents a physical wearable',()=>assert.equal(forgeDeviceGlove({deviceLabel:'JM Test Host',observed:{touch:true}}).physicalWearable,false));
 check('Scratch is a distinct authoring route',()=>assert.equal(authoringBridge({learningGoal:'recovery',nativeAction:'Kic'}).source,'Scratch-reference'));
+check('Scratch-inspired event executes in actual JM GameCore',()=>{const r=executeLearningContact({lesson:'FirstLesson',gesture:'press'});assert.equal(r.actualNativeJM.after,'learned');assert.equal(r.kicPlay,'Pulse');});
+check('Scratch route never claims actual Scratch VM execution',()=>assert.equal(executeLearningContact({lesson:'FirstLesson',gesture:'press'}).scratchVMExecuting,false));
+check('Bad lesson IDs refused before compilation',()=>throws(()=>executeLearningContact({lesson:'bad lesson!',gesture:'press'}),'LESSON_ID_INVALID'));
 check('Engine distinction does not claim third-party proof',()=>assert.equal(compareEngineRoutes(input).unreal.implemented,false));
 console.log(JSON.stringify({schema:'jm.ftr.eight-contact-selftest/0.1',passed,failed:0,scope:'Node host + actual JM-native Game-CODING/GameCore imports; no physical device/GPU/network truth'}));

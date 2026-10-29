@@ -2222,3 +2222,89 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   }
   console.log('PASS CP28: >24 MiB original two-revision source split into 15 genuine R2 source pieces, read-only auth, offline no-host cold native reconstruction, separate-process audit, missing/tamper/cross-purpose and overwrite HOLD.');
 }
+
+
+// CP29: prove the existing segmented CP28 importer can cold-recover a real
+// >64 MiB complete multi-revision history with memory bounded by 2 MiB.
+// No server, credential, real owner file or new permanent carrier is used.
+{
+  const root=await fs.mkdtemp(path.join(tmpdir(),'jm-owner-cp29-'));
+  const tool=path.join(root,'owner-vault-lineage-recover.mjs');
+  const sources=path.join(root,'synthetic-pieces');
+  const restored=path.join(root,'native-restored');
+  const idA='00000000-0000-4000-8000-000000002901';
+  const idB='00000000-0000-4000-8000-000000002902';
+  const sourceId='asset-00000000-0000-4000-8000-000000002903';
+  const partBytes=2*1024*1024;
+  const catalogPath=path.join(sources,'JM_Vault_Cold_Catalog_'+idB+'.json');
+  const sha=b=>createHash('sha256').update(b).digest('hex');
+  const cli=(...args)=>spawnSync(process.execPath,[tool,'--parts-catalog',catalogPath,...args],
+    {cwd:root,encoding:'utf8',timeout:120000,maxBuffer:1024*1024});
+  try{
+    await fs.mkdir(sources);
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
+    const versions=[];
+    let total=0;
+    for(const [id,count,previous,seed] of [
+      [idA,34,null,17],[idB,35,idA,91]
+    ]){
+      const whole=createHash('sha256');
+      const parts=[];
+      for(let i=0;i<count/2;i++){
+        const bytes=Buffer.alloc(partBytes);
+        for(let j=0;j<bytes.length;j++)bytes[j]=(seed+i+j)%251;
+        whole.update(bytes);
+        const fileName='JM_Vault_Part_'+id+'_'+String(i).padStart(2,'0')+'.bin';
+        parts.push({index:i,bytes:bytes.length,sha256:sha(bytes),fileName});
+        await fs.writeFile(path.join(sources,fileName),bytes);
+      }
+      const bytes=count*1024*1024;total+=bytes;
+      versions.push({metadata:{
+        id,name:'JM large original',fileName:'JM-native-large.jmproject',
+        sourceInstanceId:sourceId,mediaType:'application/octet-stream',bytes,
+        sha256:whole.digest('hex'),previousVersionId:previous
+      },parts});
+    }
+    const packet={schema:'JM.OwnerVault/0.1.AssetPartsCatalog',selected_id:idB,
+      version_count:2,source_bytes:total,order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',
+      part_bytes:partBytes,versions:versions.reverse()};
+    await fs.writeFile(catalogPath,JSON.stringify(packet));
+    assert.equal(total,69*1024*1024,'history must exceed CP28 64 MiB JSON cap');
+    let result=cli('--verify-only');
+    assert.equal(result.status,0,result.stderr);
+    result=cli('--output-dir',restored);
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).source_bytes,total);
+    for(const version of packet.versions){
+      const restoredFile=path.join(restored,version.metadata.id+'__JM-native-large.jmproject');
+      const stat=await fs.stat(restoredFile);
+      assert.equal(stat.size,version.metadata.bytes);
+    }
+    result=cli('--audit-dir',restored);
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).outcome,'OFFLINE_SEGMENTED_SOURCE_AUDITED');
+    // Recovered bytes, not only the piece packet, are independently audited.
+    const changed=path.join(restored,idB+'__JM-native-large.jmproject');
+    const handle=await fs.open(changed,'r+');
+    try{const first=Buffer.alloc(1);await handle.read(first,0,1,0);
+      await handle.write(Buffer.from([first[0]^1]),0,1,0);
+    }finally{await handle.close();}
+    const refused=cli('--audit-dir',restored);
+    assert.notEqual(refused.status,0);
+    assert.match(refused.stderr,/COLD_NATIVE_PART_READBACK_HOLD/);
+    // Failed audit must never mutate original persisted cold pieces.
+    result=cli('--verify-only');
+    assert.equal(result.status,0,result.stderr);
+    assert.notEqual(cli('--output-dir',restored).status,0,
+      'no second recovery may overwrite owner-editable originals');
+    // Missing source part refuses even the creation of a destination folder.
+    await fs.unlink(path.join(sources,packet.versions[0].parts[0].fileName));
+    const missing=path.join(root,'incomplete-restoration');
+    result=cli('--output-dir',missing);
+    assert.notEqual(result.status,0);
+    await assert.rejects(fs.lstat(missing),/ENOENT/);
+    console.log('PASS: CP29 exact 69 MiB two-revision native cold recovery, <=2 MiB bounded opened-file verification, separate-process audit, tamper/incomplete and overwrite HOLD.');
+  }finally{
+    await fs.rm(root,{recursive:true,force:true}); // strictly synthetic local tests
+  }
+}

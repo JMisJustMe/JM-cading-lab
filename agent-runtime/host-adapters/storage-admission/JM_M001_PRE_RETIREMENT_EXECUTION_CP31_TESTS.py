@@ -101,6 +101,34 @@ class CP31Tests(unittest.TestCase):
   before=dest.read_bytes()
   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
   self.assertEqual(dest.read_bytes(),before)
+ def test_cli_directory_entry_fsync_before_success(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'durable-receipt.json'
+  real_fsync=os.fsync
+  modes=[]
+  def inspect_fsync(fd):
+   modes.append(stat.S_IFMT(os.fstat(fd).st_mode))
+   return real_fsync(fd)
+  with mock.patch.object(cp31.os,'fsync',side_effect=inspect_fsync):
+   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),3)
+  self.assertIn(stat.S_IFREG,modes,'Receipt bytes must be fsynced')
+  self.assertIn(stat.S_IFDIR,modes,'New directory entry must be fsynced')
+  self.assertEqual(json.loads(dest.read_text())['native_mutations'],0)
+ def test_cli_directory_sync_failure_is_hold_and_retains_file(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'unsynced-receipt.json'
+  with mock.patch.object(cp31,'_sync_report_parent',side_effect=OSError('SYNTHETIC_DIRECTORY_SYNC_FAILED')):
+   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertTrue(dest.is_file(),'Retain suspect evidence for owner-led recovery')
+  self.assertEqual(json.loads(dest.read_text())['native_mutations'],0)
+ def test_cli_symlink_parent_directory_refused(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  link=self.d/'linked-dir'
+  try:os.symlink(self.d,link,target_is_directory=True)
+  except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
+  dest=link/'untrusted-receipt.json'
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertTrue((self.d/'untrusted-receipt.json').is_file(),'Retain anomalous bytes for owner investigation')
  def test_cli_readback_corruption_is_not_success(self):
   p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
   dest=self.d/'untrusted-receipt.json'

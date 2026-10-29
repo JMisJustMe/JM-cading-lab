@@ -14,8 +14,10 @@ on:
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
       - '.github/workflows/test-owner-vault-v0-1.yml'
+  # Protected JM work can be admitted through a draft child PR before its
+  # upstream custody PR is merged. Existing path filters remain restrictive.
   pull_request:
-    branches: [main]
+    branches: ['**']
     paths:
       - 'estate-app.js'
       - 'estate-owner-vault.js'

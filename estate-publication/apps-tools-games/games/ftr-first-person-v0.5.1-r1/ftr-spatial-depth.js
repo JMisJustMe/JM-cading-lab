@@ -28,6 +28,44 @@ function nearestCore(){
   id:target.id,range:+distance.toFixed(1),bearing:+(angle*180/Math.PI).toFixed(1),
   visible:Math.abs(angle)<Math.PI*.195,world:{x:target.x,y:target.y}};
 }
+function routeCore(){
+ // Real 4-neighbour route across the ORIGINAL live FTR collision map, with
+ // dynamically opening original doors. Never assume a route through locked cells.
+ const target=nearestCore();
+ if(!target.id)return {status:'ALL_CORES_MOUNTED',steps:0,path:[]};
+ const start={x:Math.floor(player.x),y:Math.floor(player.y)};
+ const goal={x:Math.floor(target.world.x),y:Math.floor(target.world.y)};
+ const width=W,height=H;
+ const valid=(x,y)=>x>=0&&y>=0&&x<width&&y<height&&tileAt(x+.5,y+.5)==='.';
+ if(!valid(start.x,start.y))return {status:'PLAYER_TILE_BLOCKED',steps:null,path:[]};
+ if(!valid(goal.x,goal.y))return {status:'CORE_TILE_BLOCKED',steps:null,path:[]};
+ const id=(x,y)=>y*width+x;
+ const visited=new Int32Array(width*height).fill(-1);
+ const queue=[start];visited[id(start.x,start.y)]=id(start.x,start.y);
+ let at=0,found=false;
+ while(at<queue.length){
+  const cur=queue[at++];
+  if(cur.x===goal.x&&cur.y===goal.y){found=true;break}
+  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+   const x=cur.x+dx,y=cur.y+dy;
+   if(!valid(x,y))continue;
+   const k=id(x,y);if(visited[k]!==-1)continue;
+   visited[k]=id(cur.x,cur.y);queue.push({x,y});
+  }
+ }
+ if(!found)return {status:'NO_TRAVERSABLE_ROUTE',steps:null,path:[],target:target.id};
+ const path=[];let k=id(goal.x,goal.y),limit=width*height;
+ while(limit-->0){
+  path.push({x:k%width,y:Math.floor(k/width)});
+  if(visited[k]===k)break;
+  k=visited[k];if(k<0)throw Error('JM_FTR_CP10_ROUTE_TRACE_BROKEN');
+ }
+ path.reverse();
+ const first=path[1]||path[0];
+ const bearing=wrapAngle(Math.atan2(first.y+.5-player.y,first.x+.5-player.x)-player.a);
+ return {status:'ROUTE_FOUND',target:target.id,steps:path.length-1,path,
+  next:{x:first.x+.5,y:first.y+.5},bearingDegrees:+(bearing*180/Math.PI).toFixed(1)};
+}
 function sampleFloor(){
  // CP10 refinement: preserve the original FTR floor as the *material*.
  // Only overlay sparse world-coordinate structural seams and scan responses;
@@ -68,10 +106,28 @@ function sampleFloor(){
  worldFloorDigest=hash;
 }
 
+function drawRouteMarks(){
+ const route=routeCore();
+ if(route.status!=='ROUTE_FOUND')return;
+ ctx.save();
+ for(let i=1;i<route.path.length;i+=Math.max(1,Math.floor(route.path.length/14))){
+  const node=route.path[i],p=projectSprite(node.x+.5,node.y+.5,.1);
+  if(!p||!visibleAt(p)||p.dist>12)continue;
+  const size=Math.max(2,Math.min(9,p.size*.018));
+  ctx.fillStyle='rgba(129,239,211,.45)';
+  ctx.beginPath();ctx.moveTo(p.x,p.y+p.size*.42-size);
+  ctx.lineTo(p.x+size,p.y+p.size*.42);
+  ctx.lineTo(p.x,p.y+p.size*.42+size);
+  ctx.lineTo(p.x-size,p.y+p.size*.42);
+  ctx.closePath();ctx.fill();
+ }
+ ctx.restore();
+}
 function markWorldSignals(){
  // Only when the original SCAN is active; terminal target selection,
  // visibility and blocked sight derive from original game-world state.
  if(player.scan<=0)return;
+ drawRouteMarks();
  const target=terminals.filter(t=>!t.active).sort((a,b)=>
   Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];
  if(!target)return;
@@ -106,13 +162,14 @@ if(!label||!button)throw Error('JM_FTR_CP10_HUD_MISSING');
 function refresh(){
  const s=window.FTR?.state?.();
  lastEcho=nearestCore();
+ const route=routeCore();
  if(!enabled){label.textContent='FIELD PAUSED · BASELINE VIEW';}
  else if(!s?.running){label.textContent='FIELD STANDBY · START TO SENSE';}
  else if(player.scan<=0){label.textContent='FIELD READY · SCAN TO TRACE';}
  else if(lastEcho.id===null){label.textContent='FIELD CLEAR · EXTRACTION';}
  else{
   const dir=lastEcho.bearing<-12?'LEFT':lastEcho.bearing>12?'RIGHT':'AHEAD';
-  label.textContent='CORE '+lastEcho.id+' · '+lastEcho.range+'m · '+dir+' · '+lastEcho.state;
+  label.textContent='CORE '+lastEcho.id+' · '+lastEcho.range+'m · '+dir+' · '+(route.status==='ROUTE_FOUND'?route.steps+' STEPS':route.status);
  }
  button.setAttribute('aria-pressed',enabled?'true':'false');
  button.textContent=enabled?'FIELD ON':'FIELD OFF';
@@ -131,7 +188,7 @@ setInterval(refresh,150);refresh();
 window.JMFTRSpatial=Object.freeze({
  schema:'jm.ftr.spatial-source-contact/0.1',
  sources:['FTR v0.5.1 raycast','FTR v0.5.1 projectSprite','FTR v0.5.1 tileAt','FTR v0.5.1 los'],
- enabled:()=>enabled,toggle,quality:()=>quality,setQuality:q=>{if(!['fast','balanced','detail'].includes(q))throw Error('JM_SPATIAL_QUALITY_UNKNOWN');quality=q;return q;},
+ enabled:()=>enabled,toggle,route:routeCore,quality:()=>quality,setQuality:q=>{if(!['fast','balanced','detail'].includes(q))throw Error('JM_SPATIAL_QUALITY_UNKNOWN');quality=q;return q;},
  echo:()=>lastEcho?{...lastEcho}:nearestCore(),reading:scanReading,
  metrics:()=>({...metrics,meanMs:metrics.renderSamples?metrics.renderMs/metrics.renderSamples:0,
   floorDigest:worldFloorDigest}),gardles:'HOLD_EXACT_SOURCE_NOT_MOUNTED',

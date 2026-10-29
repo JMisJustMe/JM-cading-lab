@@ -142,6 +142,30 @@ function recoveryManifest(verified) {
   };
 }
 
+// CP25: a successful readback alone is not crash-durable. Flush every
+// newly created exact-source file and the receipt before acknowledging it.
+// Keep the opener injectable only for deterministic failure-path tests.
+async function writeDurableNewFile(filename, bytes, openFile = fs.open) {
+  const handle = await openFile(filename, 'wx', 0o600);
+  try {
+    await handle.writeFile(bytes);
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+}
+
+async function syncRecoveryDirectory(directory, openFile = fs.open) {
+  const handle = await openFile(directory, 'r');
+  try {
+    const stat = await handle.stat();
+    if (!stat.isDirectory()) fail('LINEAGE_DIRECTORY_SYNC_UNSAFE');
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+}
+
 async function restorePacket(input, destination) {
   const verified = await readPacket(input);
   const dest = path.resolve(destination);
@@ -165,7 +189,7 @@ async function restorePacket(input, destination) {
     for (const { metadata, bytes } of verified.ready) {
       const name = `${metadata.id}.html`; // IDs only; never owner-provided filenames.
       const filename = path.join(dest, name);
-      await fs.writeFile(filename, bytes, { flag: 'wx', mode: 0o600 });
+      await writeDurableNewFile(filename, bytes);
       const check = await fs.readFile(filename);
       if (!check.equals(bytes) || digest(check) !== metadata.sha256.toLowerCase()) {
         fail('LINEAGE_DISK_READBACK_FAILED');
@@ -173,12 +197,24 @@ async function restorePacket(input, destination) {
     }
     const manifestPath = path.join(dest, 'recovery-manifest.json');
     const expectedManifest = Buffer.from(JSON.stringify(inventory, null, 2) + '\n', 'utf8');
-    await fs.writeFile(manifestPath, expectedManifest, { flag: 'wx', mode: 0o600 });
+    await writeDurableNewFile(manifestPath, expectedManifest);
     // Exact bytes, not merely two parsed fields, must survive before success.
     const storedManifest = await fs.readFile(manifestPath);
     if (!storedManifest.equals(expectedManifest)) {
       fail('LINEAGE_MANIFEST_READBACK_FAILED');
     }
+    // Persist directory entries (source filenames, receipt, new destination).
+    // Any unsupported/failed fsync is HOLD, never an acknowledged recovery.
+    await syncRecoveryDirectory(dest);
+    const currentParent = await fs.lstat(parent);
+    const currentDest = await fs.lstat(dest);
+    if (currentParent.dev !== parentStat.dev || currentParent.ino !== parentStat.ino
+        || currentParent.isSymbolicLink()
+        || currentDest.dev !== createdIdentity.dev || currentDest.ino !== createdIdentity.ino
+        || currentDest.isSymbolicLink()) {
+      fail('LINEAGE_DIRECTORY_IDENTITY_CHANGED');
+    }
+    await syncRecoveryDirectory(parent);
   } catch (error) {
     // A partial write may contain recovered source or an unrelated file added
     // after mkdir. Never recursively remove owner data on an error.
@@ -262,4 +298,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   }
 }
 
-export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery };
+export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery,
+  writeDurableNewFile, syncRecoveryDirectory };

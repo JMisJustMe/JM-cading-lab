@@ -29,6 +29,22 @@ assert(footwork.pivotPlants>=1,'CP22 actual direction reversal plants a foot in 
 assert(footwork.athletes[0].pivots>=1,'CP22 active athlete, not a decorative overlay, performed pivot');
 console.log('PASS CP22 FOOTWORK '+width+'px '+JSON.stringify({pivots:footwork.pivotPlants,forms:footwork.athletes.slice(0,3).map(p=>p.formWidth)}));
 
+// CP24 resets its own match only after CP22 reversal proof.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+assert.equal(await page.evaluate(()=>JM_THIRD_COURT.callCut()),true,'CP24 normal live-ball cut accepted');
+await page.waitForFunction(()=>JM_THIRD_COURT.status().cutDefensiveReads>=3,{},{timeout:6000});
+const cutA=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(cutA.lastCutDefense,'CP24 actual defender assigned to live cutter');
+assert(cutA.lastCutDefense.guardId>=3&&cutA.lastCutDefense.guardId<=5);
+assert.equal(cutA.lastCutDefense.cutterId,cutA.activeCut);
+const guardBefore=cutA.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
+await page.waitForTimeout(250);
+const cutB=await page.evaluate(()=>JM_THIRD_COURT.status());
+const guardAfter=cutB.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
+assert(Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y)>1,
+ 'CP24 defender physically moved while countering cut');
+console.log('PASS CP24 LIVE CUT DEFENCE '+width+'px '+JSON.stringify({reads:cutB.cutDefensiveReads,assigned:cutA.lastCutDefense,guardMoved:Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y).toFixed(1)}));
+
 await page.evaluate(()=>JM_THIRD_COURT.pass());await page.evaluate(()=>JM_THIRD_COURT.callCut());
 await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_THIRD_COURT.setGuard(true));
 await page.waitForTimeout(200);a=await page.evaluate(()=>JM_THIRD_COURT.status());

@@ -550,6 +550,31 @@ function renderJourney(){
  }
 }
 journeyTheme.addEventListener('change',()=>{el('jmJourneyStatus').textContent='';renderJourney()});
+el('jmJourneyQueue').addEventListener('click',()=>{
+ const before=data.queue,queue=(Array.isArray(before)?before:[]).map(q=>({...q})),items=journeyItems();
+ let added=0;
+ for(const item of items){
+  if(queue.some(q=>q.book===item.book&&q.chapter===item.chapter))continue;
+  if(queue.length>=500){el('jmJourneyStatus').textContent='Reading list is full; previous entries are preserved.';return}
+  queue.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,8),book:item.book,chapter:item.chapter,done:false});added++;
+ }
+ if(!added){el('jmJourneyStatus').textContent='Both chapters are already in your reading list.';return}
+ data.queue=queue;
+ if(!save()){data.queue=before;el('jmJourneyStatus').textContent='Could not save route; previous list restored.';return}
+ window.JMExplore?.render();window.JMReadingRoom?.render();renderJourney();
+ el('jmJourneyStatus').textContent=added+' chapter'+(added===1?'':'s')+' added to your private reading list.';
+});
+el('jmJourneyNext').addEventListener('click',()=>{
+ const next=journeyItems().find(x=>!journeyDone(x));
+ if(!next){el('jmJourneyStatus').textContent='All route chapters are marked read. Revisit either passage whenever you like.';return}
+ jump(next.book,next.chapter,String(next.verse));
+});
+el('jmJourneyCompare').addEventListener('click',()=>{
+ const items=journeyItems();
+ if(items.length<2){el('jmJourneyStatus').textContent='Choose a topic with two references.';return}
+ openStudyPair(items[0],items[1]);
+});
+document.addEventListener('click',e=>{if(e.target.closest('[data-tab="explore"]'))queueMicrotask(renderJourney)});
 function drawStudy(){
  const root=el('jmStudyResults'),term=el('jmStudySearch').value.toLowerCase().trim(),theme=el('jmStudyTheme').value;
  root.replaceChildren();
@@ -604,6 +629,6 @@ el('jmStudyPairReflect').addEventListener('click',()=>{
 });
 el('jmStudyPairClose').addEventListener('click',()=>{pair=null;el('jmStudyComparison').hidden=true;el('jmStudyComparison').style.display='none'});
 el('jmStudyTheme').addEventListener('change',drawStudy);el('jmStudySearch').addEventListener('input',drawStudy);
-drawStudy();
+drawStudy();renderJourney();
 })();
 </script></body></html>

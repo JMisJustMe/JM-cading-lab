@@ -643,6 +643,124 @@ try{
   assert.equal(r.state.forgetCount,0);
   assert.equal(r.original.player.cores,0);
  });
+ await check('CP14 original JM World Echo organ loads real GameCoding and GameCore',async()=>{
+   await page.waitForFunction(()=>!!window.JMFTREcho);
+   const a=await page.evaluate(()=>({
+    schema:window.JMFTREcho.schema,
+    bodies:window.JMFTREcho.nativeBodies,
+    recipient:window.JMFTREcho.originalRecipient,
+    sourceVersion:window.FTR.version
+   }));
+   assert.equal(a.schema,'jm.ftr.sovereign-world-echo/0.1');
+   assert(a.bodies.includes('JMGameCoreRuntime'));
+   assert(a.recipient.includes('CP13 threat memory'));
+   assert.equal(a.sourceVersion,'0.5.1');
+ });
+ await check('CP14 cannot create an original-world Echo outside a running FTR game',async()=>{
+   await page.evaluate(()=>window.FTR.command('START'));
+   // The original source is now running. Retest after explicit non-game
+   // state with a separate START gate below rather than fake injected state.
+   const a=await page.evaluate(()=>{
+     window.FTR.test.freezeEnemies(true);
+     const first=window.JMFTREcho.state();
+     return {first,ammo:window.FTR.state().player.ammo};
+   });
+   assert.equal(a.first.used,0);
+   assert.equal(a.first.active,null);
+   assert.equal(a.ammo,20);
+ });
+ await check('CP14 real touchscreen Echo casts into ORIGINAL world with native cost and world marker',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.test.freezeEnemies(false);
+     window.FTR.test.setPlayer(1.5,11.5,0);
+     enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.cool=100;e.stun=100;});
+     enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=0;enemies[1].cool=100;
+     enemies[1].type='hunter';enemies[1].state='patrol';
+     return {placement:window.JMFTREcho.placement(),
+      sight:los(enemies[1].x,enemies[1].y,player.x,player.y),
+      before:window.FTR.state().player.ammo};
+   });
+   assert(r.placement);
+   assert.equal(r.sight,false);
+   await page.locator('#jmEchoLaunch').tap();
+   const a=await page.evaluate(()=>({
+     receipt:window.JMFTREcho.last(),state:window.JMFTREcho.state(),
+     enemy:window.JMFTRMemory.inspectEnemy(1),
+     ammo:window.FTR.state().player.ammo,
+     collision:circleFree(window.JMFTREcho.state().active.x,window.JMFTREcho.state().active.y,.22),
+     events:window.FTR.state().run.events
+   }));
+   console.log('JM_CP14_WORLD_ECHO',JSON.stringify(a));
+   assert.equal(a.receipt.status,'LAUNCHED');
+   assert.equal(a.receipt.nativeIdentity,'JM.FTR.WorldEcho');
+   assert(a.receipt.traceDigest);
+   assert.equal(a.ammo,r.before-2);
+   assert(a.collision);
+   assert.equal(a.state.used,1);
+   assert(a.state.active);
+   assert(a.events.some(e=>e.event==='JM_WORLD_ECHO_LAUNCHED'));
+ });
+ await check('CP14 earned decoy sends real audible source contact into CP13 original actor memory',async()=>{
+   const a=await page.evaluate(()=>({
+     state:window.JMFTREcho.state(),
+     ally:window.JMFTRMemory.inspectEnemy(1),
+     events:window.FTR.state().run.events
+   }));
+   assert(a.state.heard>0);
+   assert.equal(a.ally.last?.source,'echo');
+   assert(a.events.some(e=>e.event==='JM_AI_HEARD_ECHO'));
+   assert(Math.hypot(a.ally.last.x-a.state.active.x,a.ally.last.y-a.state.active.y)<.01);
+ });
+ await check('CP14 original hunter changes world coordinates while investigating the audible lure',async()=>{
+   const before=await page.evaluate(()=>window.JMFTRMemory.inspectEnemy(1).position);
+   await page.waitForTimeout(490);
+   const a=await page.evaluate(()=>({
+     after:window.JMFTRMemory.inspectEnemy(1).position,
+     pursuit:window.JMFTRMemory.status().searchMoves,
+     collision:circleFree(enemies[1].x,enemies[1].y,.2),
+     original:window.FTR.state()
+   }));
+   assert(a.pursuit>0);
+   assert(Math.hypot(before.x-a.after.x,before.y-a.after.y)>.06);
+   assert.equal(a.collision,true);
+   assert.equal(a.original.player.cores,0);
+ });
+ await check('CP14 repeated Echo request refuses duplicate with no additional player ammo consumption',async()=>{
+   const r=await page.evaluate(()=>{
+     const before=window.FTR.state().player.ammo,
+       result=window.JMFTREcho.launch(),after=window.FTR.state().player.ammo;
+     return {before,after,result};
+   });
+   assert.equal(r.result.status,'DENIED');
+   assert.equal(r.result.reason,'WORLD_ECHO_ALREADY_ACTIVE');
+   assert.equal(r.before,r.after);
+ });
+ await check('CP14 disabling CP13 memory disables the audible AI redirect without deleting the original game',async()=>{
+   const r=await page.evaluate(()=>{
+     window.JMFTRMemory.toggle(false);
+     const before=window.FTR.state();
+     const denied=window.JMFTRMemory.hearEcho(2.5,11.5);
+     window.JMFTRMemory.toggle(true);
+     const after=window.FTR.state();
+     return {denied,before,after};
+   });
+   assert.equal(r.denied.heard,0);
+   assert.equal(r.denied.reason,'NOT_ADMITTED');
+   assert.equal(r.after.player.ammo,r.before.player.ammo);
+   assert.equal(r.after.player.cores,r.before.player.cores);
+ });
+ await check('CP14 authentic original session reset retires Echo and all its build capacity',async()=>{
+   await page.evaluate(()=>window.FTR.command('START'));
+   await page.waitForTimeout(100);
+   const a=await page.evaluate(()=>({echo:window.JMFTREcho.state(),
+     memory:window.JMFTRMemory.status(),original:window.FTR.state()}));
+   assert.equal(a.echo.used,0);
+   assert.equal(a.echo.active,null);
+   assert.equal(a.echo.heard,0);
+   assert.equal(a.original.player.ammo,20);
+   assert.equal(a.original.player.cores,0);
+   assert.equal(a.original.run.events.some(e=>e.event==='JM_WORLD_ECHO_LAUNCHED'),false);
+ });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
    console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));
@@ -669,6 +787,8 @@ try{
    await page.waitForFunction(()=>!!window.JMFTRTactics);
    await page.waitForFunction(()=>!!window.JMFTRMemory);
    assert.equal(await page.evaluate(()=>window.JMFTRMemory.schema),'jm.ftr.original-threat-memory/0.1');
+   await page.waitForFunction(()=>!!window.JMFTREcho);
+   assert.equal(await page.evaluate(()=>window.JMFTREcho.schema),'jm.ftr.sovereign-world-echo/0.1');
    assert.equal(await page.evaluate(()=>window.JMFTRTactics.schema),'jm.ftr.tactical-world-contact/0.1');
    await page.locator('#startBtn').tap();
    await page.evaluate(()=>window.FTR.test.activateCore(0));

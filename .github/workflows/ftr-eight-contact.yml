@@ -2,6 +2,8 @@ name: JM FTR Eight-Discovery Native Contact
 on:
   pull_request:
     paths:
+      - 'coding-estate/integration/theogamy-contact.mjs'
+      - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
       - 'coding-estate/integration/ftr-security-lab.mjs'
@@ -12,6 +14,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'coding-estate/integration/theogamy-contact.mjs'
+      - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
       - 'coding-estate/integration/ftr-security-lab.mjs'
@@ -37,6 +41,11 @@ jobs:
         run: |
           node --check coding-estate/integration/ftr-security-lab.mjs
           node coding-estate/integration/ftr-security-lab-selftest.mjs
+      - name: Prove FTR input changes original MEETPOINT world through retained Shared Reentry
+        run: |
+          node --check coding-estate/integration/theogamy-contact.mjs
+          node coding-estate/integration/theogamy-contact-selftest.mjs
+          node coding-estate/integration/ftr-existing-recipient-selftest.mjs
       - name: Verify RouteSense signal-processing boundaries and numerical contact
         run: |
           node --check coding-estate/integration/ftr-routesense-rf.mjs

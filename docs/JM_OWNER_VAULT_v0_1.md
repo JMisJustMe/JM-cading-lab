@@ -494,3 +494,31 @@ against hostile concurrent ancestor replacement, a physical crash test,
 owner-device edit/reload, offsite restoration, authenticated R2, private-source
 GitHub migration or production propagation. No original Library IDs or
 purpose-specific carriers are retired.
+
+## CP21 — Original-file continuity for non-HTML creative materials (29 October 2026)
+
+**Original authority:** the existing JM Owner Vault, Owner Room, R2 binding, owner-key protection, source/version identity, and GitHub source/recovery rails. CP21 is an additive capability of those originals; **not another file manager, another backend, another app or another public source publisher**. The next dependency is private custody repair draft PR #601; CP21 lives in its protected child PR #621.
+
+### Exact implemented behaviour
+
+- Private source-file assets have a separate fail-closed `JM.OwnerVault/0.1.AssetIndex` in the existing `JM_OWNER_VAULT` R2 bucket. The stored `.bin` objects contain the **actual original bytes**, not HTML or base64 wrappers. A format's filename/media type is descriptive; the Vault never executes or translates the file.
+- The owner explicitly chooses a device-local file in the existing Owner Room. The owner presses SAVE to upload. Nothing is automatically imported from Library, Drive, conversations, Dropbox, GitHub, games or music libraries.
+- The owner can read the private asset inventory, download one independently SHA-256 verified file on another authorised device, and intentionally upload a revised version using the exact current asset ID and hash. The original binary ancestor remains immutable.
+- Byte-identical material under separately purposeful sourceInstanceIds remains separate. A byte-identical repeat of the **same** identity is idempotent. The original HTML source editor/ledger remains untouched.
+- The owner can explicitly remove a leaf file/version; referenced ancestors are protected. Unknown, unreadable, structurally invalid or concurrently changed asset indexes hold rather than invent a blank store or lose current identities.
+- A private download always uses `application/octet-stream`, attachment, `no-store`, `nosniff`, and an exact digest. Downloading a file doesn't prove the selected device has an application capable of opening, editing, playing or compiling its native format.
+
+### Known and unproven boundaries
+
+- CP21 initial per-file cap: **12 MiB**. Larger audio, video, native archives, project directories and many games require an explicitly bounded larger/streaming or folder route. Never truncate, silently skip or split away file identity.
+- Browser-based editing for HTML remains in its original panel. A saved music file, Word document, DAW project or compiled package is downloaded as its original file, edited in a suitable owner-selected external application, then re-uploaded deliberately as a revision. Universal native editing is **not** claimed.
+- The original metadata-only Owner Vault snapshot does **not** include CP21 asset bytes. A successful download isn't an independent offsite backup unless those exact bytes are saved and recovered elsewhere. Full asset-lineage portable backup and cold restore remain separate tasks.
+- The original provider R2 binding and owner key must remain accessible. This is **not** automatic sync across all connected AI platforms or user accounts, and no private source is published in the GitHub PR.
+- Synthetic original-R2 contract tests and actual Playwright browser journeys at 390 px and 1366 px are distinct from authorised physical phone/laptop use and production R2 proofs. Branch source + CI evidence is not a live deployed owner-Ding.
+- Never merge PR #621 into production before the parent custody protections are admitted, the final CI is green, and actual owner-file storage and cross-device roundtrip are separately tested.
+
+### Existing-route use after an authorised deployment
+
+Open the original `https://jmisjustme-estate.pages.dev/#owner`, unlock the existing JM Owner Vault **inside your browser** (never provide the key in chat), choose an original non-HTML file, SAVE, and check the verified private source. On a second device, unlock the **same** original Owner Room, download the exact file and open it in its native tool. After editing, select REVISE FILE for the current head, choose its updated local original and explicitly save. Verify that the predecessor still downloads intact.
+
+**CP21 source DING is bounded to code, Node synthetic exact-byte custody and browser contact if the actual workflows pass.** Physical two-device cross-platform contact, full creative-estate coverage, offsite resilience and external independent native-edit propagation remain HOLD.

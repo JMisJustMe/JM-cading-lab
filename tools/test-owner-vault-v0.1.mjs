@@ -1333,12 +1333,18 @@ console.log('PASS: CP25 durable source/receipt writes and directory fsync are re
     await assert.rejects(readBoundedRegularFile(root, 100),
       /LINEAGE_OPENED_FILE_UNSAFE_OR_OVERBOUNDED/,
       'CP26 opened directory must not be mistaken for source');
-    let flagsSeen = 0, closed = false;
+    let flagsSeen = 0, closed = false, injectedReadDone = false;
     const injected = await readBoundedRegularFile('synthetic', 3, async (_name, flags) => {
       flagsSeen = flags;
       return {
         stat: async () => ({ isFile: () => true, size: 3 }),
-        readFile: async () => Buffer.from('abc'),
+        read: async (buffer, _offset, _length) => {
+          if (buffer[0] === 255) throw Error('UNEXPECTED');
+          if (injectedReadDone) return { bytesRead: 0 };
+          Buffer.from('abc').copy(buffer);
+          injectedReadDone = true;
+          return { bytesRead: 3 };
+        },
         close: async () => { closed = true; }
       };
     });
@@ -1360,3 +1366,52 @@ console.log('PASS: CP25 durable source/receipt writes and directory fsync are re
   }
 }
 console.log('PASS: CP26 bounded O_NOFOLLOW/O_NONBLOCK opened-file custody rejects final symlinks, directories, oversize and closes failed handles.');
+
+
+// CP28: a source may grow after opened-handle stat. Never use readFile()
+// (unbounded allocation) or request more than maxBytes + 1 in total.
+{
+  const { readBoundedRegularFile } = await import('./owner-vault-lineage-recover.mjs');
+  let calls = 0, closed = false;
+  const capped = await readBoundedRegularFile('synthetic', 3, async () => ({
+    stat: async () => ({ isFile: () => true, size: 3 }),
+    readFile: async () => { throw Error('CP28_UNBOUNDED_READ_FORBIDDEN'); },
+    read: async (buffer, offset, length) => {
+      assert.ok(length <= 4, 'CP28 cannot request more than maxBytes + 1');
+      if (calls++ === 0) {
+        Buffer.from('abc').copy(buffer, offset);
+        return { bytesRead: 3 };
+      }
+      return { bytesRead: 0 };
+    },
+    close: async () => { closed = true; }
+  }));
+  assert.equal(capped.toString(), 'abc');
+  assert.equal(closed, true, 'CP28 must close successful source handles');
+  let growingReads = 0, growingClosed = false;
+  await assert.rejects(readBoundedRegularFile('growing', 3, async () => ({
+    stat: async () => ({ isFile: () => true, size: 3 }),
+    readFile: async () => { throw Error('CP28_UNBOUNDED_READ_FORBIDDEN'); },
+    read: async (buffer, offset, length) => {
+      assert.ok(length <= 4, 'CP28 read request must be bounded');
+      const data = growingReads++ === 0 ? 'abc' : 'x';
+      Buffer.from(data).copy(buffer, offset);
+      return { bytesRead: data.length };
+    },
+    close: async () => { growingClosed = true; }
+  })), /LINEAGE_OPENED_FILE_OVERBOUNDED/);
+  assert.equal(growingClosed, true, 'CP28 must close growing-file handles');
+  let zeroReads = 0;
+  const empty = await readBoundedRegularFile('empty', 0, async () => ({
+    stat: async () => ({ isFile: () => true, size: 0 }),
+    read: async (_buffer, _offset, length) => {
+      assert.equal(length, 1);
+      zeroReads++;
+      return { bytesRead: 0 };
+    },
+    close: async () => {}
+  }));
+  assert.equal(empty.length, 0);
+  assert.equal(zeroReads, 1);
+}
+console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat growth without unbounded readFile allocation and closes handles.');

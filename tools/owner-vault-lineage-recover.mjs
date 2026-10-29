@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 const SCHEMA = 'JM.OwnerVault/0.1.LineageExport';
 const ASSET_SCHEMA = 'JM.OwnerVault/0.1.AssetLineageExport';
-const ASSET_VERSIONS = 8, ASSET_MAX_TOTAL = 24 * 1024 * 1024, ASSET_MAX_SINGLE = 12 * 1024 * 1024;
+const ASSET_VERSIONS = 8, ASSET_MAX_TOTAL = 24 * 1024 * 1024, ASSET_MAX_SINGLE = 64 * 1024 * 1024;
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA = /^[0-9a-f]{64}$/i;
 const MAX_VERSIONS = 16;

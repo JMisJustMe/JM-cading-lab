@@ -89,10 +89,19 @@ def assess(inp, donor_path, cp13_path, now=None):
             'boundary':'READ_ONLY; do not call Library delete until evidence is authenticated by an independent host and precise owner native-ID role release is earned. This tool NEVER authorises deletion.'}
 
 
-def _read_report_exact(path, written_stat):
-    """Independently reopen the created report; never trust write acknowledgement."""
-    flags=os.O_RDONLY | getattr(os,'O_NOFOLLOW',0)
-    fd=os.open(path,flags)
+def _open_report_parent(path):
+    """Anchor the exact parent directory BEFORE creation; never follow its final symlink."""
+    if not hasattr(os, 'O_DIRECTORY') or not hasattr(os, 'O_NOFOLLOW'):
+        raise ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')
+    return os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+
+
+def _read_report_exact(path, written_stat, parent_fd=None):
+    """Reopen through the SAME parent directory descriptor used for creation."""
+    if parent_fd is None:
+        raise ValueError('REPORT_PARENT_ANCHOR_REQUIRED')
+    flags=os.O_RDONLY | os.O_NOFOLLOW
+    fd=os.open(path.name,flags,dir_fd=parent_fd)
     with os.fdopen(fd,'rb') as f:
         checked=os.fstat(f.fileno())
         if (checked.st_dev,checked.st_ino)!=(written_stat.st_dev,written_stat.st_ino):
@@ -100,19 +109,11 @@ def _read_report_exact(path, written_stat):
         return f.read()
 
 
-def _sync_report_parent(path):
-    """Persist the new directory entry; file fsync alone cannot prove it survives a crash.
-
-    Refuse platforms or paths without safe directory sync rather than claiming
-    a durable receipt. A failed sync leaves the created report for inspection.
-    """
-    if not hasattr(os, 'O_DIRECTORY') or not hasattr(os, 'O_NOFOLLOW'):
-        raise ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')
-    fd=os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-    try:
-        os.fsync(fd)
-    finally:
-        os.close(fd)
+def _sync_report_parent(path, parent_fd=None):
+    """Sync the original directory entry, even if its pathname is retargeted."""
+    if parent_fd is None:
+        raise ValueError('REPORT_PARENT_ANCHOR_REQUIRED')
+    os.fsync(parent_fd)
 
 
 def write_once_verified(path, encoded):
@@ -124,15 +125,21 @@ def write_once_verified(path, encoded):
     path=Path(path)
     raw=encoded.encode('utf-8')
     flags=os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os,'O_NOFOLLOW',0)
-    fd=os.open(path,flags,0o600)
-    with os.fdopen(fd,'wb') as f:
-        f.write(raw)
-        f.flush()
-        os.fsync(f.fileno())
-        created=os.fstat(f.fileno())
-    _sync_report_parent(path)
-    if _read_report_exact(path,created)!=raw:
-        raise ValueError('REPORT_READBACK_MISMATCH')
+    parent_fd=_open_report_parent(path)
+    try:
+        # Relative operations against this descriptor cannot be redirected by
+        # swapping the parent pathname between creation, fsync and readback.
+        fd=os.open(path.name,flags,0o600,dir_fd=parent_fd)
+        with os.fdopen(fd,'wb') as f:
+            f.write(raw)
+            f.flush()
+            os.fsync(f.fileno())
+            created=os.fstat(f.fileno())
+        _sync_report_parent(path,parent_fd)
+        if _read_report_exact(path,created,parent_fd)!=raw:
+            raise ValueError('REPORT_READBACK_MISMATCH')
+    finally:
+        os.close(parent_fd)
 
 
 def main(argv=None):

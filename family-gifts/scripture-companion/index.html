@@ -521,7 +521,7 @@ renderRoom();
 (()=>{
 const el=id=>document.getElementById(id),studyBase='https://www.jw.org/en/library/bible/study-bible/books/';
 const studyUrl=(book,chapter)=>studyBase+book.toLowerCase().replace(/\s+/g,'-')+'/'+chapter+'/';
-const studyItems=[];
+const studyItems=[{theme:'Prayer',book:'Philippians',chapter:4,verse:6,ref:'Philippians 4:6',guide:'Consider how the Bible discusses prayer.'},{theme:'Hope',book:'Revelation',chapter:21,verse:4,ref:'Revelation 21:4',guide:'Reflect on future hope.'}];
 function drawStudy(){const root=el('jmStudyResults');root.replaceChildren();el('jmStudyStats').textContent='Official Bible study resources ready.'}
 el('jmStudyTheme').addEventListener('change',drawStudy);el('jmStudySearch').addEventListener('input',drawStudy);
 drawStudy();

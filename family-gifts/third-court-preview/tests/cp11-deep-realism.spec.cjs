@@ -121,6 +121,24 @@ console.log('PASS CP25 multi-pointer joystick and guard ownership '+width+'px');
  await page.mouse.up();
  console.log('PASS CP26 manual pause, paused keys and new-match input reset '+width+'px');
 
+ // CP27: keyboard and touch are independent guard owners; releasing one must not cancel the other.
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ await page.keyboard.down('g');
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'G key engages guard');
+ await page.locator('#guardBtn').hover();await page.mouse.down();
+ await page.keyboard.up('g');
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'G release must not cancel held touch guard');
+ await page.mouse.up();
+ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'last touch guard release clears guard');
+ await page.keyboard.down('g');
+ await page.locator('#guardBtn').hover();await page.mouse.down();
+ await page.mouse.up();
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'touch release must not cancel held G guard');
+ await page.keyboard.up('g');
+ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'last G release clears guard');
+ console.log('PASS CP27 independent keyboard and touch guard ownership '+width+'px');
+
+
 // Isolate the interrupted-touch test from inherited natural footwork and off-ball possession checks.
 await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');

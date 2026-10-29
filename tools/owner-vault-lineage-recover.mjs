@@ -87,6 +87,31 @@ async function readPacket(input) {
   return { packet, packet_sha256: digest(raw), ...validatePacket(packet) };
 }
 
+// CP22: an interrupted recovery may already contain useful owner bytes.
+// Only an empty directory with the same identity we created may be removed.
+// Never recursively delete a partially recovered or replaced destination.
+async function cleanupEmptyFailedRecovery(dest, createdIdentity) {
+  let current;
+  try { current = await fs.lstat(dest); }
+  catch (error) {
+    if (error.code === 'ENOENT') return 'DESTINATION_ALREADY_ABSENT';
+    throw error;
+  }
+  if (!current.isDirectory() || current.isSymbolicLink()
+    || current.dev !== createdIdentity.dev || current.ino !== createdIdentity.ino) {
+    return 'DESTINATION_IDENTITY_CHANGED_PRESERVED';
+  }
+  try {
+    await fs.rmdir(dest); // Nonrecursive: fails closed if ANY file exists.
+    return 'EMPTY_FAILED_RECOVERY_REMOVED';
+  } catch (error) {
+    if (error.code === 'ENOTEMPTY' || error.code === 'EEXIST') {
+      return 'PARTIAL_RECOVERY_PRESERVED_FOR_OWNER';
+    }
+    throw error;
+  }
+}
+
 async function restorePacket(input, destination) {
   const verified = await readPacket(input);
   const dest = path.resolve(destination);
@@ -101,6 +126,7 @@ async function restorePacket(input, destination) {
   }
   // mkdir without recursive is an atomic existing-directory refusal.
   await fs.mkdir(dest, { mode: 0o700 });
+  const createdIdentity = await fs.lstat(dest);
   try {
     const inventory = {
       schema: 'JM.OwnerVault/0.1.OfflineRecovered',
@@ -129,8 +155,9 @@ async function restorePacket(input, destination) {
       fail('LINEAGE_MANIFEST_READBACK_FAILED');
     }
   } catch (error) {
-    // Only delete the newly created directory, never a pre-existing user path.
-    await fs.rm(dest, { recursive: true, force: true });
+    // A partial write may contain recovered source or an unrelated file added
+    // after mkdir. Never recursively remove owner data on an error.
+    await cleanupEmptyFailedRecovery(dest, createdIdentity);
     throw error;
   }
   return { outcome: 'OFFLINE_SOURCE_RECOVERED', selected_id: verified.packet.selected_id,
@@ -213,4 +240,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   }
 }
 
-export { validatePacket, readPacket, restorePacket, auditRestoredPacket };
+export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery };

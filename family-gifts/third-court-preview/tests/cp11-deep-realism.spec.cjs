@@ -28,6 +28,23 @@ await page.click('#resumeBtn');await page.waitForTimeout(650);
 const resumedY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
 assert(Math.abs(resumedY-hiddenY)<6,'missing keyup must not leave the player walking after tab resume');
 console.log('PASS CP22 hidden-tab held-input release '+width+'px');
+// CP23: a lost pointerup must not leave the shoot control visually held or fire a shot after resuming.
+const beforeLostShot=(await page.evaluate(()=>JM_THIRD_COURT.status())).shotReport;
+await page.locator('#shoot').hover();
+await page.mouse.down();
+assert(await page.locator('#shoot').evaluate(el=>el.classList.contains('held')),'shoot control registers a real held pointer');
+await page.evaluate(()=>{
+ Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+ document.dispatchEvent(new Event('visibilitychange'));
+ delete document.hidden;
+});
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'lost pointer event pauses match');
+assert(!(await page.locator('#shoot').evaluate(el=>el.classList.contains('held'))),'hidden tab clears shoot held styling');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'hidden tab closes held shot meter');
+await page.mouse.up();
+await page.click('#resumeBtn');
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).shotReport,beforeLostShot,'late pointerup does not shoot after resuming');
+console.log('PASS CP23 lost-pointer shoot cancellation '+width+'px');
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');
 const roleRun=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(roleRun.athletes[0].energy<=100,'movement keeps player fatigue bounded');

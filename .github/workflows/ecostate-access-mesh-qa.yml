@@ -915,6 +915,118 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP28_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP30 checkpointed cold export resumes only locally verified pieces after reload on phone and laptop
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const fs=require('node:fs/promises');
+          const {createHash}=require('node:crypto');
+          const hash=b=>createHash('sha256').update(b).digest('hex');
+          const SIZE=2*1024*1024;
+          const raw=Buffer.alloc(4*1024*1024+117);
+          for(let i=0;i<raw.length;i++)raw[i]=(i+31)%251;
+          const id='00000000-0000-4000-8000-000000003001';
+          const purpose='asset-00000000-0000-4000-8000-000000003002';
+          const metadata={id,sourceInstanceId:purpose,sha256:hash(raw),bytes:raw.length,
+            fileName:'JM_Genuine_Source.jmproject',name:'JM original',
+            mediaType:'application/octet-stream',previousVersionId:null};
+          const parts=Array.from({length:3},(_,i)=>{
+            const bytes=raw.subarray(i*SIZE,Math.min((i+1)*SIZE,raw.length));
+            return {index:i,bytes:bytes.length,sha256:hash(bytes),
+              fileName:'JM_Vault_Part_'+id+'_'+String(i).padStart(2,'0')+'.bin'};
+          });
+          const catalog={schema:'JM.OwnerVault/0.1.AssetPartsCatalog',
+            selected_id:id,version_count:1,source_bytes:raw.length,
+            order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',part_bytes:SIZE,
+            versions:[{metadata,parts}]};
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport,acceptDownloads:true});
+                page.setDefaultTimeout(25000);
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp30-owner-key';});
+                let requests=0,writes=0,stale=false;
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                await page.route('**/api/owner/vault*',async route=>{
+                  const r=route.request(),url=new URL(r.url()),mode=url.searchParams.get('mode');
+                  const send=(status,data)=>route.fulfill({status,headers:{
+                    'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(data)});
+                  if(mode==='status')return send(200,{ready:true});
+                  if(r.headers()['x-jm-owner-key']!=='synthetic-cp30-owner-key')return send(401,{error:'AUTH'});
+                  if(r.method()!=='GET'){writes++;return send(405,{error:'READ_ONLY_TEST'});}
+                  if(mode==='assets')return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:[metadata]});
+                  if(mode==='export-asset-catalog')
+                    return send(200,stale?{...catalog,source_bytes:catalog.source_bytes+1}:catalog);
+                  if(mode==='export-asset-part'){
+                    const index=Number(url.searchParams.get('part'));
+                    if(url.searchParams.get('asset')!==id||index<0||index>2)return send(404,{error:'NOT_FOUND'});
+                    requests++;
+                    const bytes=raw.subarray(index*SIZE,Math.min((index+1)*SIZE,raw.length));
+                    return route.fulfill({status:200,body:bytes,headers:{
+                      'content-type':'application/octet-stream','x-jm-part-sha256':hash(bytes),
+                      'x-jm-asset-id':id,'x-jm-part-index':String(index)}});
+                  }
+                  return send(200,{schema:'JM.OwnerVault/0.1',
+                    state:{notes:'',favourites:[],recent:[]},bodies:[]});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                const offer=page.waitForEvent('download');
+                await page.locator('[data-asset-cold="'+id+'"]').click();
+                const cat=await offer;
+                if(cat.suggestedFilename()!=='JM_Vault_Cold_Catalog_'+id+'.json')
+                  throw Error('Initial owner catalog not offered');
+                const pending=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-owner-vault-cp30-cold-catalog-pending')));
+                if(pending?.selected_id!==id||!/^[a-f0-9]{64}$/.test(pending?.catalog_sha256||'')
+                  ||Object.keys(pending).length!==3)
+                  throw Error('CP30 checkpoint contains wrong fields or no exact catalog hash');
+                const firstEvent=page.waitForEvent('download');
+                await page.locator('#jmVaultPartNext').click();
+                const first=await firstEvent;
+                const firstBytes=await fs.readFile(await first.path());
+                if(!firstBytes.equals(raw.subarray(0,SIZE)))throw Error('First original part changed');
+                await page.reload({waitUntil:'domcontentloaded'});
+                const bad=Buffer.from(firstBytes);bad[0]^=1;
+                await page.locator('#jmVaultColdPieces').setInputFiles([
+                  {name:parts[0].fileName,mimeType:'application/octet-stream',buffer:bad}]);
+                await page.locator('#jmVaultResumeCold').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_RESUME_LOCAL_ORIGINAL_HASH_HOLD'));
+                if(requests!==1)throw Error('Corrupt saved piece was silently accepted');
+                await page.locator('#jmVaultColdPieces').setInputFiles([
+                  {name:parts[0].fileName,mimeType:'application/octet-stream',buffer:firstBytes}]);
+                stale=true;
+                await page.locator('#jmVaultResumeCold').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_PENDING_CATALOG_CHANGED_OR_MISSING_HOLD'));
+                if(requests!==1)throw Error('Stale catalog silently reused');
+                stale=false;
+                await page.locator('#jmVaultResumeCold').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('Cold export resumed: 1/3'));
+                for(let index=1;index<3;index++){
+                  const ev=page.waitForEvent('download');
+                  await page.locator('#jmVaultPartNext').click();
+                  const download=await ev;
+                  const bytes=await fs.readFile(await download.path());
+                  if(download.suggestedFilename()!==parts[index].fileName
+                    ||!bytes.equals(raw.subarray(index*SIZE,Math.min((index+1)*SIZE,raw.length))))
+                    throw Error('Resume source piece not exact');
+                }
+                if(requests!==3||writes!==0||!await page.locator('#jmVaultPartNext').isDisabled())
+                  throw Error('Resume re-downloaded verified original or mutated R2');
+                const state=await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp30-cold-catalog-pending'));
+                if(!state)throw Error('Offering pieces falsely cleared proof checkpoint');
+                await page.locator('#jmVaultCancelCold').click();
+                if(await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp30-cold-catalog-pending'))!==null)
+                  throw Error('Explicit cancel did not clear metadata checkpoint');
+                if(errors.length)throw Error('page errors: '+errors.join(';'));
+                await page.close();
+              }
+              console.log('PASS CP30: phone and laptop read-only cold export, reload, verified saved piece skip, corrupted local original and changed catalog HOLD, 3/3 exact binary downloads, no extra R2 write or backup claim.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP30_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP29 independently recovered native source re-entry with exact custody and explicit save
         shell: bash
         run: |

@@ -5,6 +5,8 @@ const ASSETS=['./','./index.html','./manifest.webmanifest','./ftr-hud-render-loo
   '../../../../coding-estate/sovereign-ten/direct/native-core.mjs',
   '../../../../coding-estate/sovereign-ten/direct/game-native.mjs',
   '../../../../coding-estate/integration/ftr-eight-contact.mjs',
+  '../../../../coding-estate/sovereign-batch-six/direct/game-input-native-a.mjs',
+  '../../../../coding-estate/sovereign-batch-six/direct/native-core.mjs',
   ...['styles.css','ftr-core.js','ftr-controls.js','ftr-world.js','ftr-raycast-sprites.js','ftr-input-bridge.js'].map(s=>ORIGINAL+s)];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));

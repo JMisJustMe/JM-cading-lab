@@ -100,7 +100,11 @@ async function readBoundedRegularFile(filename, maxBytes, openFile = fs.open) {
   }
 }
 
+// CP27: a final-file O_NOFOLLOW open still follows symlinked ancestor
+// directories. Refuse existing redirected input ancestors before reading any
+// packet bytes, including --verify-only. This is preflight, not race-proof.
 async function readPacket(input) {
+  await assertNoSymlinkDirectoryComponents(path.dirname(path.resolve(input)));
   const file = await fs.lstat(input);
   if (!file.isFile() || file.isSymbolicLink() || file.size > MAX_PACKET_BYTES) {
     fail('LINEAGE_INPUT_NOT_REGULAR_OR_OVERBOUNDED');

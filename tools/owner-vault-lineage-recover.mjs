@@ -200,11 +200,23 @@ async function writeDurableNewFile(filename, bytes, openFile = fs.open) {
   }
 }
 
-async function syncRecoveryDirectory(directory, openFile = fs.open) {
-  const handle = await openFile(directory, 'r');
+// CP29: sync the actual opened directory, not a symlink substituted after
+// preflight. Bind it to the previously observed destination/parent identity.
+// This is final-component protection, not an atomic ancestor-directory lock.
+async function syncRecoveryDirectory(directory, openFile = fs.open, expectedIdentity = null) {
+  if (typeof fsConstants.O_NOFOLLOW !== 'number'
+      || typeof fsConstants.O_DIRECTORY !== 'number') {
+    fail('LINEAGE_DIRECTORY_SYNC_UNSUPPORTED');
+  }
+  const flags = fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_DIRECTORY;
+  const handle = await openFile(directory, flags);
   try {
     const stat = await handle.stat();
-    if (!stat.isDirectory()) fail('LINEAGE_DIRECTORY_SYNC_UNSAFE');
+    if (!stat.isDirectory()
+        || (expectedIdentity && (stat.dev !== expectedIdentity.dev
+          || stat.ino !== expectedIdentity.ino))) {
+      fail('LINEAGE_DIRECTORY_SYNC_UNSAFE');
+    }
     await handle.sync();
   } finally {
     await handle.close();
@@ -250,7 +262,7 @@ async function restorePacket(input, destination) {
     }
     // Persist directory entries (source filenames, receipt, new destination).
     // Any unsupported/failed fsync is HOLD, never an acknowledged recovery.
-    await syncRecoveryDirectory(dest);
+    await syncRecoveryDirectory(dest, fs.open, createdIdentity);
     const currentParent = await fs.lstat(parent);
     const currentDest = await fs.lstat(dest);
     if (currentParent.dev !== parentStat.dev || currentParent.ino !== parentStat.ino
@@ -259,7 +271,7 @@ async function restorePacket(input, destination) {
         || currentDest.isSymbolicLink()) {
       fail('LINEAGE_DIRECTORY_IDENTITY_CHANGED');
     }
-    await syncRecoveryDirectory(parent);
+    await syncRecoveryDirectory(parent, fs.open, parentStat);
   } catch (error) {
     // A partial write may contain recovered source or an unrelated file added
     // after mkdir. Never recursively remove owner data on an error.

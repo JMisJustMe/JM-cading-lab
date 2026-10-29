@@ -729,7 +729,7 @@ jobs:
                 await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Large_Source.jmproject',mimeType:'application/octet-stream',buffer:original});
                 await page.locator('#jmVaultSaveFile').click();
                 await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'),{timeout:30000});
-                if(posts!==8||inspections<2)throw Error('CP27 skip-verified-parts resume did not avoid redundant resend');
+                if(posts!==7||inspections<2)throw Error('CP27 skip-verified-parts resume did not avoid redundant resend');
                 if(chunks.size!==7||finalizes!==1||all.length!==1||all[0].sourceInstanceId!==sourceId
                   ||all[0].id!==uploadId)throw Error('large file failed to finalize one intact original');
                 const data=await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp23-file-save-pending'));
@@ -743,7 +743,7 @@ jobs:
                   throw Error('downloaded original differs from independent native source');
                 await page.close();
               }
-              console.log('PASS: CP26–CP27 phone + laptop 13 MiB original, checkpoint-bound read-only part reconciliation, only 8 POSTed parts total after lost acknowledgement, same-ID recovery and exact native download.');
+              console.log('PASS: CP26–CP27 phone + laptop 13 MiB original, checkpoint-bound read-only part reconciliation, only 7 POSTed parts total after lost acknowledgement, same-ID recovery and exact native download.');
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP26_BROWSER_HOLD',e);process.exitCode=1});
           NODE

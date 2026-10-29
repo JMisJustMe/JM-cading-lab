@@ -20,7 +20,7 @@ const {chromium}=require('playwright');
      for(const option of book.options){
        book.value=option.value;book.dispatchEvent(new Event('change',{bubbles:true}));
        const max=Number(chapter.max),url=new URL(open.href);
-       checks.push({name:option.value,max,valid:Number.isInteger(max)&&max>0&&url.origin==='https://www.jw.org'&&url.pathname.endsWith('/'+option.value.toLowerCase().replace(/\\s+/g,'-')+'/1/')});
+       checks.push({name:option.value,max,valid:Number.isInteger(max)&&max>0&&url.origin==='https://www.jw.org'&&url.pathname.endsWith('/'+option.value.toLowerCase().replace(/\s+/g,'-')+'/1/')});
      }
      return checks;
    });

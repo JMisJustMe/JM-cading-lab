@@ -975,6 +975,16 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
 
   // CP22 uses the ORIGINAL Owner Room download pattern and original CP20
   // offline lineage recovery utility. This is not automatic offsite custody.
+  function validBoundedBase64(value) {
+    if (typeof value !== 'string' || value.length % 4 !== 0) return false;
+    const padding=value.endsWith('==')?2:value.endsWith('=')?1:0;
+    const end=value.length-padding;
+    for(let i=0;i<end;i+=32768) {
+      if (!/^[A-Za-z0-9+/]*$/.test(value.slice(i,Math.min(end,i+32768)))) return false;
+    }
+    return true;
+  }
+
   async function exportAssetLineageLocal(item) {
     if (!(await ensureUnlocked())) return;
     try {
@@ -995,8 +1005,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
           || !/^[a-f0-9]{64}$/i.test(m.sha256 || '')
           || typeof value !== 'string'
           || value.length > Math.ceil(12 * 1024 * 1024 / 3) * 4 + 4
-          || value.length % 4 !== 0
-          || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))
+          || !validBoundedBase64(value))
           throw new Error('ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID');
         if (firstSource !== null && firstSource !== m.sourceInstanceId)
           throw new Error('ASSET_LINEAGE_CROSS_PURPOSE_HOLD');

@@ -41,8 +41,14 @@ function nativeRecoveryName(metadata) {
   const original = typeof metadata.fileName === 'string' ? metadata.fileName : '';
   const safe = original.replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-')
     .replace(/\s+/g,' ').trim().replace(/^\.+$/, 'source')
-    .slice(0, 120).replace(/[. ]+$/g,'');
-  return metadata.id + '__' + (safe || 'original-file.bin');
+    .replace(/[. ]+$/g,'') || 'original-file.bin';
+  // Long original names must not lose their native type suffix; do not
+  // sacrifice a .wav/.psd/.docx/.blend extension to a naive prefix cut.
+  const dot = safe.lastIndexOf('.');
+  const extension = dot > 0 && safe.length - dot <= 16 ? safe.slice(dot) : '';
+  const stem = (extension ? safe.slice(0, -extension.length) : safe)
+    .slice(0, 120 - extension.length).replace(/[. ]+$/g,'');
+  return metadata.id + '__' + (stem || 'original-file') + extension;
 }
 function recoveryFilename(verified, metadata) {
   return verified.asset ? nativeRecoveryName(metadata) : metadata.id + '.html';

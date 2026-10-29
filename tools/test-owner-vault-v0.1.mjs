@@ -2062,7 +2062,7 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     assert.equal(result.status,0,result.stderr);
     assert.notEqual(cli('--output-dir',destination).status,0,'never overwrite recovered originals');
     const corrupted=structuredClone(packet);
-    corrupted.versions[1].shards[0].base64='A'+corrupted.versions[1].shards[0].base64.slice(1);
+    corrupted.versions[1].shards[0].base64=(corrupted.versions[1].shards[0].base64[0]==='A'?'B':'A')+corrupted.versions[1].shards[0].base64.slice(1);
     await fs.writeFile(exported,JSON.stringify(corrupted));
     result=cli('--verify-only');
     assert.notEqual(result.status,0);

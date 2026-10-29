@@ -5,6 +5,7 @@ on:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
+      - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
@@ -19,6 +20,7 @@ on:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
+      - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
@@ -110,8 +112,11 @@ jobs:
       - name: Real Parrot OS security tool runs in sealed container with no external network
         run: |
           docker pull parrotsec/nmap
-          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges parrotsec/nmap nmap --version
-          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges parrotsec/nmap nmap -sT -Pn -p 80,443 127.0.0.1
+          # Official image uses nmap ENTRYPOINT with file capabilities.
+          # Isolate with no external network and read-only filesystem;
+          # --cap-drop ALL prevents executable launch and is not a proof of tool failure.
+          docker run --rm --network none --read-only --pids-limit 64 parrotsec/nmap --version
+          docker run --rm --network none --read-only --pids-limit 64 parrotsec/nmap -sT -Pn -p 80,443 127.0.0.1
       - name: Real Kali Linux official userland boots with all network interfaces disabled
         run: |
           docker pull kalilinux/kali-rolling

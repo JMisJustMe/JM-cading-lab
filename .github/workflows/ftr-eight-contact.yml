@@ -6,6 +6,8 @@ on:
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
       - 'coding-estate/integration/ftr-security-lab.mjs'
       - 'coding-estate/integration/ftr-security-lab-selftest.mjs'
+      - 'coding-estate/integration/ftr-routesense-rf.mjs'
+      - 'coding-estate/integration/ftr-routesense-rf-selftest.mjs'
       - '.github/workflows/ftr-eight-contact.yml'
   push:
     branches: [main]
@@ -14,6 +16,8 @@ on:
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
       - 'coding-estate/integration/ftr-security-lab.mjs'
       - 'coding-estate/integration/ftr-security-lab-selftest.mjs'
+      - 'coding-estate/integration/ftr-routesense-rf.mjs'
+      - 'coding-estate/integration/ftr-routesense-rf-selftest.mjs'
       - '.github/workflows/ftr-eight-contact.yml'
 permissions:
   contents: read
@@ -33,3 +37,7 @@ jobs:
         run: |
           node --check coding-estate/integration/ftr-security-lab.mjs
           node coding-estate/integration/ftr-security-lab-selftest.mjs
+      - name: Verify RouteSense signal-processing boundaries and numerical contact
+        run: |
+          node --check coding-estate/integration/ftr-routesense-rf.mjs
+          node coding-estate/integration/ftr-routesense-rf-selftest.mjs

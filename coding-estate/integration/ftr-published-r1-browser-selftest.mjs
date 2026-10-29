@@ -507,6 +507,7 @@ try{
  await check('CP13 genuine original unobstructed sighting earns native sight decision',async()=>{
   const r=await page.evaluate(()=>{
     window.FTR.command('START');
+    window.FTR.test.freezeEnemies(false);
     window.FTR.test.setPlayer(12.3,15.4,0);
     enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.stun=100;e.cool=100;});
     enemies[0].x=11.5;enemies[0].y=15.5;enemies[0].stun=0;enemies[0].cool=100;
@@ -557,6 +558,7 @@ try{
  await check('CP13 ally receives bounded original-LOS shared last-known player contact',async()=>{
   await page.evaluate(()=>{
     window.FTR.command('START');
+    window.FTR.test.freezeEnemies(false);
     window.FTR.test.setPlayer(1.5,11.5,0);
     enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.stun=100;e.cool=100;});
     enemies[0].x=2.5;enemies[0].y=13.5;enemies[0].stun=0;enemies[0].cool=100;enemies[0].type='sentry';

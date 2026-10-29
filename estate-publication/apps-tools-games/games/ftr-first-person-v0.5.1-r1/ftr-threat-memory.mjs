@@ -146,6 +146,30 @@ function broadcast(donorEnemy){
   shared++;event('JM_AI_SHARED_CONTACT',{from:donorEnemy.type,to:ally.type});
  }
 }
+function hearEcho(x,y,radius=7.2){
+ // External JM-owned gameplay contact enters CP13's ACTUAL memory store,
+ // not a second invented enemy-memory mechanism. Sound only grants a
+ // LAST-KNOWN sound location, not live player location or instant sight.
+ reset();
+ if(!enabled||!running||testFreeze||!Number.isFinite(x)||!Number.isFinite(y)||
+    !Number.isFinite(radius)||radius<=0||radius>9)return {heard:0,reason:'NOT_ADMITTED'};
+ if(solid(x,y))return {heard:0,reason:'ORIGINAL_WORLD_BLOCKED'};
+ let heard=0;
+ for(const e of enemies){
+  if(e.dead||e.stun>0||directlyVisible(e))continue;
+  if(Math.hypot(e.x-x,e.y-y)>radius)continue;
+  const path=sourceRoute(e,{x,y});
+  if(!path.length||path.length>11)continue;
+  const m=read(e);
+  if(m.last&&m.last.source==='direct'&&time-m.last.t<.6)continue;
+  m.last={x,y,t:time,source:'echo'};
+  m.path=path;m.nextReplan=time+.3;m.cell='';
+  heard++;
+  event('JM_AI_HEARD_ECHO',{type:e.type,x:+x.toFixed(2),y:+y.toFixed(2),
+    routeSteps:path.length-1});
+ }
+ return {heard,reason:heard?'HEARD_BY_ORIGINAL_ACTORS':'NO_REACHABLE_UNSIGHTED_ACTOR'};
+}
 function status(){
  if(!enabled){
   label.textContent='MEMORY PAUSED · ORIGINAL AI';
@@ -229,7 +253,7 @@ addEventListener('keydown',e=>{
 window.JMFTRMemory=Object.freeze({
  schema:'jm.ftr.original-threat-memory/0.1',source:donor,
  nativeBodies:['JMGameCoreRuntime','GameCodingRuntime'],
- toggle,enabled:()=>enabled,
+ toggle,enabled:()=>enabled,hearEcho,
  inspectEnemy:index=>{
   const enemy=enemies[index];if(!enemy)return null;
   const m=read(enemy);

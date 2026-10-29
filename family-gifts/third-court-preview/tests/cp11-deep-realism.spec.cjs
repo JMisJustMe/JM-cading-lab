@@ -1,5 +1,6 @@
 'use strict';
-const assert=require('node:assert/strict');const{chromium}=require('playwright');
+const assert=require('node:assert/strict');const fs=require('node:fs');const{chromium}=require('playwright');
+fs.mkdirSync('artifacts/jm-third-court-visual-proof',{recursive:true});
 (async()=>{const browser=await chromium.launch();try{
 for(const width of [390,1280]){const context=await browser.newContext({viewport:{width,height:844}});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -27,6 +28,11 @@ assert(Number.isInteger(afterMotion.bodyImpacts),'actual body-contact ledger pre
 await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 assert.deepEqual(errors,[]);
+await page.screenshot({path:'artifacts/jm-third-court-visual-proof/cp11-'+width+'.png'});
+const baseline=await context.newPage();
+await baseline.goto('http://127.0.0.1:4198/family-gifts/third-court-preview/index.html');
+await baseline.click('#playQuick');await baseline.waitForTimeout(250);
+await baseline.screenshot({path:'artifacts/jm-third-court-visual-proof/cp06-'+width+'.png'});await baseline.close();
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

@@ -712,6 +712,38 @@ async function readAssetPart(bucket, desc, i, expectedHash=null) {
     throw new VaultBodyIntegrityError('ASSET_PART_SOURCE_IDENTITY_MISMATCH');
   return {bytes,hash:h};
 }
+// CP27: authenticated, read-only reconciliation of a SINGLE checkpoint-held
+// upload. Enumerates only the caller's immutable part keys, not an R2 bucket
+// listing. Every present byte/identity is reverified before being reported;
+// missing parts are not misreported as completed custody.
+async function inspectAssetParts(bucket, payload) {
+  const desc=chunkDescription(payload?.file);
+  if (!desc) return {error:json({schema:SCHEMA,error:'ASSET_PART_INSPECTION_DESCRIPTION_INVALID'},400)};
+  const index=await assetIndex(bucket);
+  const current=index.assets.find(a=>a.sourceInstanceId===desc.sourceInstanceId)||null;
+  if (current && current.sha256===desc.sha256 && current.bytes===desc.bytes) {
+    if (current.fileName!==desc.fileName)
+      return {error:json({schema:SCHEMA,error:'ASSET_PART_INSPECTION_HEAD_CHANGED'},409)};
+    await assetBytes(bucket,current);
+    return {already_indexed:true,asset_id:current.id,partCount:desc.partCount,
+      present:[],missing:[],boundary:'VERIFIED_INDEXED_ORIGINAL_NOT_AN_UNINDEXED_UPLOAD'};
+  }
+  if (current && (current.id!==desc.expectedBaseId || current.sha256!==desc.expectedBaseSha256))
+    return {error:json({schema:SCHEMA,error:'ASSET_PART_INSPECTION_HEAD_CHANGED'},409)};
+  if (!current && desc.expectedBaseId)
+    return {error:json({schema:SCHEMA,error:'ASSET_PART_INSPECTION_BASE_MISSING'},409)};
+  const present=[],missing=[];
+  for(let i=0;i<desc.partCount;i++) {
+    const key=assetPartKey(desc.uploadId,i);
+    let obj;try{obj=await bucket.get(key);}catch{throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE');}
+    if (!obj) {missing.push(i);continue;}
+    const checked=await readAssetPart(bucket,desc,i);
+    present.push({partIndex:i,sha256:checked.hash});
+  }
+  return {already_indexed:false,partCount:desc.partCount,present,missing,
+    boundary:'READ_ONLY_CHECKPOINT_BOUND_PART_INSPECTION_NO_GARBAGE_COLLECTION'};
+}
+
 async function uploadAssetPart(bucket,payload) {
   const desc=chunkDescription(payload?.file);
   const i=payload?.partIndex;
@@ -987,6 +1019,11 @@ async function handleOwnerRequest(context) {
     try { payload = await request.json(); }
     catch { return json({ schema: SCHEMA, error: 'INVALID_JSON' }, 400); }
 
+    if (payload?.action === 'inspect-asset-parts') {
+      const result=await inspectAssetParts(bucket,payload);
+      if (result.error) return result.error;
+      return json({schema:SCHEMA,outcome:'ASSET_PART_INSPECTION',...result});
+    }
     if (payload?.action === 'upload-asset-part') {
       const result=await uploadAssetPart(bucket,payload);
       if (result.error) return result.error;

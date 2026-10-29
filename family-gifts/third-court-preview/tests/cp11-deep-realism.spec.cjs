@@ -37,6 +37,11 @@ const cutA=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(cutA.lastCutDefense,'CP24 actual defender assigned to live cutter');
 assert(cutA.lastCutDefense.guardId>=3&&cutA.lastCutDefense.guardId<=5);
 assert.equal(cutA.lastCutDefense.cutterId,cutA.activeCut);
+assert.equal(cutA.athletes.find(p=>p.id===cutA.lastCutDefense.guardId).footwork,'shuffle',
+ 'CP25 real counter-defender adopts a lateral guarding stance');
+assert.equal(cutA.athletes.find(p=>p.id===cutA.activeCut).footwork,'cut',
+ 'CP25 actual cutter uses a distinct burst animation state');
+
 const guardBefore=cutA.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
 await page.waitForTimeout(250);
 const cutB=await page.evaluate(()=>JM_THIRD_COURT.status());
@@ -44,6 +49,7 @@ const guardAfter=cutB.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
 assert(Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y)>1,
  'CP24 defender physically moved while countering cut');
 console.log('PASS CP24 LIVE CUT DEFENCE '+width+'px '+JSON.stringify({reads:cutB.cutDefensiveReads,assigned:cutA.lastCutDefense,guardMoved:Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y).toFixed(1)}));
+console.log('PASS CP25 DISTINCT MOVEMENT '+width+'px '+JSON.stringify({guard:cutA.athletes.find(p=>p.id===cutA.lastCutDefense.guardId).footwork,cutter:cutA.athletes.find(p=>p.id===cutA.activeCut).footwork}));
 
 await page.evaluate(()=>JM_THIRD_COURT.pass());await page.evaluate(()=>JM_THIRD_COURT.callCut());
 await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_THIRD_COURT.setGuard(true));

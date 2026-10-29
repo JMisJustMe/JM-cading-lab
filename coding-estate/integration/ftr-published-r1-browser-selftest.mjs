@@ -565,8 +565,8 @@ try{
     window.FTR.test.freezeEnemies(false);
     window.FTR.test.setPlayer(1.5,11.5,0);
     enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.stun=100;e.cool=100;});
-    enemies[0].x=2.5;enemies[0].y=13.5;enemies[0].stun=0;enemies[0].cool=100;enemies[0].type='sentry';
-    enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=0;enemies[1].cool=100;enemies[1].type='hunter';
+    enemies[0].x=2.5;enemies[0].y=13.5;enemies[0].stun=100;enemies[0].cool=100;enemies[0].type='sentry';
+    enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=100;enemies[1].cool=100;enemies[1].type='hunter';
   });
   await page.waitForTimeout(145);
   const r=await page.evaluate(()=>({
@@ -587,6 +587,7 @@ try{
   }
  });
  await check('CP13 hunter travels toward actual remembered player position through original collision',async()=>{
+  await page.evaluate(()=>{enemies[1].stun=0;});
   const start=await page.evaluate(()=>window.JMFTRMemory.inspectEnemy(1));
   await page.waitForTimeout(480);
   const end=await page.evaluate(()=>({

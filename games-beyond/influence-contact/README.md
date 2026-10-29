@@ -35,4 +35,6 @@ Returns totals, linked candidate titles and *one* native PLAYFORM contact/receip
 - Source integration ≠ public deployment ≠ browser interaction ≠ native Gardles ≠ owner-device gameplay.
 - The original workbook, games, frozen ancestors, renderers and Gardles remain untouched.
 
-**Next receiver gate:** interactive entry through Games&Beyond existing House UI; explicitly owner-approved experiment on a chosen JM game loop with before/after gameplay + renderer + device evidence. No colour-only variant is an upgrade.
+**Branch-only House UI:** `games-beyond/index.html` now adds a private local JSON importer to the existing **PROOF** view. The owner may choose a recovered game, inspect an actual native PLAYFORM research trace, record played/enjoyed/notes and export an editable review JSON. Nothing is silently uploaded, and owner edits only persist when exported. This is not publicly deployed until review/merge and has not yet been contacted on a physical phone or laptop.
+
+**Next receiver gate:** independent browser checks on phone and laptop, then an owner-approved actual game loop experiment with before/after gameplay + renderer + device evidence. No colour-only variant is an upgrade.

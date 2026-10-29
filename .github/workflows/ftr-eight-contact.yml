@@ -117,6 +117,14 @@ jobs:
           # --cap-drop ALL prevents executable launch and is not a proof of tool failure.
           docker run --rm --network none --read-only --pids-limit 64 parrotsec/nmap --version
           docker run --rm --network none --read-only --pids-limit 64 parrotsec/nmap -sT -Pn -p 80,443 127.0.0.1
+          # Owned loopback contact: create a live isolated service, then discover it with authentic Parrot nmap.
+          docker run --rm --network none --read-only --pids-limit 64 --entrypoint /bin/bash parrotsec/nmap -lc '
+            ncat -l -p 18088 --keep-open >/dev/null 2>&1 &
+            sleep 1
+            OBSERVED=$(nmap -sT -Pn -p 18088 127.0.0.1)
+            echo "$OBSERVED"
+            echo "$OBSERVED" | grep -E "18088/tcp[[:space:]]+open"
+          '
       - name: Real Kali Linux official userland boots with all network interfaces disabled
         run: |
           docker pull kalilinux/kali-rolling

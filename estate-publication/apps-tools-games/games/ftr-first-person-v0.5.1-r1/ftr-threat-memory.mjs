@@ -55,7 +55,8 @@ function reset(){
  if(run.started===session)return;
  session=run.started;store=new WeakMap();latest=null;
  sighted=shared=searchMoves=forgetCount=phaseBreaks=routeReplans=contactId=0;
- lastScan=false;phaseLast=false;
+ lastScan=false;phaseLast=false;uiAt=-100;
+ status(); // original FTR starts a fresh clock; don't retain old HUD throttle
 }
 function directlyVisible(e,phase=player.phase>0){
  return !phase&&!e.dead&&Math.hypot(e.x-player.x,e.y-player.y)<9.5&&

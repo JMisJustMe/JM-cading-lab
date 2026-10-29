@@ -959,7 +959,7 @@ jobs:
                   if(r.method()!=='GET'){writes++;return send(405,{error:'READ_ONLY_TEST'});}
                   if(mode==='assets')return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:[metadata]});
                   if(mode==='export-asset-catalog')
-                    return send(200,stale?{...catalog,source_bytes:catalog.source_bytes+1}:catalog);
+                    return send(200,stale?{...catalog,versions:[{...catalog.versions[0],parts:[{...parts[0],sha256:'0'.repeat(64)},...parts.slice(1)]}]}:catalog);
                   if(mode==='export-asset-part'){
                     const index=Number(url.searchParams.get('part'));
                     if(url.searchParams.get('asset')!==id||index<0||index>2)return send(404,{error:'NOT_FOUND'});

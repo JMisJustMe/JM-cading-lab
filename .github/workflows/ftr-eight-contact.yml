@@ -58,6 +58,12 @@ jobs:
     steps:
       - name: Checkout authentic frozen First-Person recipient
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            coding-estate/integration
+            coding-estate/sovereign-ten/direct
+            estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1
+          sparse-checkout-cone-mode: true
       - name: Install isolated Chromium test runner
         run: |
           npm install --no-save --no-package-lock playwright

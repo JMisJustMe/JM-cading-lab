@@ -856,9 +856,17 @@ async function removeAsset(bucket, id) {
   // Intentional owner removal of a leaf only. Interruptions preserve orphan bytes.
   try {
     if (asset.storageKind === 'chunked-v1') {
-      for(let i=0;i<asset.partCount;i++) await bucket.delete(assetPartKey(asset.id,i));
-    } else await bucket.delete(`${ASSET_PREFIX}/${id}.bin`);
-  } catch { throw new VaultBodyIntegrityError('ASSET_DELETE_HOLD'); }
+      for(let i=0;i<asset.partCount;i++) {
+        const key=assetPartKey(asset.id,i);
+        await bucket.delete(key);
+        if (await bucket.get(key)) throw new VaultBodyIntegrityError('ASSET_DELETE_READBACK_HOLD');
+      }
+    } else {
+      const key=`${ASSET_PREFIX}/${id}.bin`;
+      await bucket.delete(key);
+      if (await bucket.get(key)) throw new VaultBodyIntegrityError('ASSET_DELETE_READBACK_HOLD');
+    }
+  } catch { throw new VaultBodyIntegrityError('ASSET_DELETE_READBACK_HOLD'); }
   return json({ schema: SCHEMA, outcome: 'ASSET_REMOVED', asset });
 }
 

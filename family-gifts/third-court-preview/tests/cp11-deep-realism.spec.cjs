@@ -59,6 +59,34 @@ const afterCancel=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert.equal(afterCancel.shots,beforeCancel.shots,'cancelled touch must not count as a shot');
 assert.equal(afterCancel.shotReport,beforeCancel.shotReport,'cancelled touch must not report a shot');
 console.log('PASS CP24 pointercancel and pointer identity '+width+'px');
+// CP25: a second finger or unrelated capture-loss event must not hijack live joystick/guard input.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+const joyBox=await page.locator('#joy').boundingBox();
+assert(joyBox,'joystick remains in the actual playable layout');
+await page.mouse.move(joyBox.x+joyBox.width*.72,joyBox.y+joyBox.height*.50);await page.mouse.down();
+const liveJoy=await page.locator('#joyKnob').evaluate(el=>el.style.transform);
+assert.notEqual(liveJoy,'translate(0px, 0px)','live joystick responds to the initiating pointer');
+await page.evaluate(()=>{
+ const joy=document.querySelector('#joy');
+ joy.dispatchEvent(new PointerEvent('pointerdown',{pointerId:999,bubbles:true,cancelable:true}));
+ joy.dispatchEvent(new PointerEvent('lostpointercapture',{pointerId:999,bubbles:true}));
+ joy.dispatchEvent(new PointerEvent('pointerup',{pointerId:999,bubbles:true}));
+});
+assert.equal(await page.locator('#joyKnob').evaluate(el=>el.style.transform),liveJoy,'unrelated joystick pointer cannot seize or release active movement');
+await page.mouse.up();
+assert.equal(await page.locator('#joyKnob').evaluate(el=>el.style.transform),'translate(0px, 0px)','own joystick pointer release returns neutral');
+await page.locator('#guardBtn').hover();await page.mouse.down();
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'guard holds for its initiating pointer');
+await page.evaluate(()=>{
+ const guard=document.querySelector('#guardBtn');
+ guard.dispatchEvent(new PointerEvent('pointerdown',{pointerId:999,bubbles:true,cancelable:true}));
+ guard.dispatchEvent(new PointerEvent('pointerup',{pointerId:999,bubbles:true}));
+ guard.dispatchEvent(new PointerEvent('lostpointercapture',{pointerId:999,bubbles:true}));
+});
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'unrelated pointer cannot release guard');
+await page.mouse.up();
+assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'own guard release clears guard');
+console.log('PASS CP25 multi-pointer joystick and guard ownership '+width+'px');
 // Isolate the interrupted-touch test from inherited natural footwork and off-ball possession checks.
 await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');

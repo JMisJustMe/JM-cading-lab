@@ -30,7 +30,7 @@ const check=async(name,fn)=>{await fn();passed++;console.log('PASS',name)};
 try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
  const page=await browser.newPage({viewport:{width:1280,height:720},deviceScaleFactor:1});
- page.on('pageerror',e=>logs.push('page:'+e.message));
+ page.on('pageerror',e=>{logs.push('page:'+e.message);console.log('BROWSER_PAGEERROR',e.stack??e.message)});
  const url='http://127.0.0.1:'+address.port+'/'+gameRoot+'index.html';
  const response=await page.goto(url,{waitUntil:'load'});
  await check('Original First-Person v0.5.1 opened over actual HTTP',async()=>{assert.equal(response.status(),200);assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1')});
@@ -72,7 +72,7 @@ try{
    await page.waitForTimeout(760);
    const after=await readState();
    const distance=Math.hypot(after.player.x-r.after.player.x,after.player.y-r.after.player.y);
-   console.log('FLOW_MEASUREMENT',JSON.stringify({distance,before:r.after.player,after:after.player,running:after.running}));
+   console.log('FLOW_MEASUREMENT',JSON.stringify({distance,before:r.after.player,after:after.player,running:after.running,errors:logs}));
    assert.equal(after.running,true);
    assert(distance>.04);
    await dispatch('MOVE',{x:0,y:0});

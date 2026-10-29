@@ -777,6 +777,86 @@
     }
   }
 
+  // CP28: one explicit owner-selected portable export. Remote reads are
+  // bounded 8 MiB; no 64 MiB single-response base64 or extra cloud copy.
+  async function exportExtendedAssetLineageLocal(item) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      assetMessage('Preparing bounded extended original-file lineage…');
+      const plan=await request('?mode=export-asset-extended-plan&asset='+encodeURIComponent(item.id));
+      if(plan.schema!=='JM.OwnerVault/0.1.AssetExtendedPlan'
+        || plan.selected_id!==item.id || !/^[a-f0-9]{64}$/.test(plan.index_pin_sha256||'')
+        || plan.shard_bytes!==8*1024*1024 || !Array.isArray(plan.versions)
+        || plan.versions.length<1 || plan.versions.length>8
+        || plan.version_count!==plan.versions.length
+        || plan.order!=='SELECTED_HEAD_TO_OLDEST_ANCESTOR'
+        || !Number.isSafeInteger(plan.source_bytes) || plan.source_bytes>64*1024*1024)
+        throw new Error('ASSET_EXTENDED_PLAN_INVALID');
+      let previous=item.id,total=0,source=null;
+      const versions=[];
+      for(const m of plan.versions){
+        if(!m || m.id!==previous || !/^[a-f0-9]{64}$/.test(m.sha256||'')
+          || !Number.isSafeInteger(m.bytes) || m.bytes<0 || m.bytes>64*1024*1024
+          || !/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId||'')
+          || typeof m.fileName!=='string' || !m.fileName)
+          throw new Error('ASSET_EXTENDED_ANCESTOR_INVALID');
+        if(source && source!==m.sourceInstanceId)
+          throw new Error('ASSET_EXTENDED_CROSS_SOURCE_HOLD');
+        source=m.sourceInstanceId;
+        const shards=[], decodedPieces=[];
+        const count=Math.ceil(m.bytes/plan.shard_bytes);
+        for(let i=0;i<count;i++){
+          assetMessage('Verifying protected original shard '+(i+1)+'/'+count+' for '+m.fileName+'…');
+          const shard=await request('?mode=export-asset-extended-shard&asset='+
+            encodeURIComponent(item.id)+'&version='+encodeURIComponent(m.id)+
+            '&part='+i+'&pin='+plan.index_pin_sha256);
+          const len=Math.min(plan.shard_bytes,m.bytes-i*plan.shard_bytes);
+          if(shard.schema!=='JM.OwnerVault/0.1.AssetExtendedShard'
+            || shard.selected_id!==item.id || shard.version_id!==m.id
+            || shard.index_pin_sha256!==plan.index_pin_sha256
+            || shard.shard_index!==i || shard.offset!==i*plan.shard_bytes
+            || shard.bytes!==len || !/^[a-f0-9]{64}$/.test(shard.sha256||'')
+            || typeof shard.base64!=='string'
+            || shard.base64.length>Math.ceil(plan.shard_bytes/3)*4+4
+            || !validBoundedBase64(shard.base64))
+            throw new Error('ASSET_EXTENDED_SHARD_RESPONSE_INVALID');
+          const binary=atob(shard.base64),bytes=new Uint8Array(binary.length);
+          for(let j=0;j<bytes.length;j++)bytes[j]=binary.charCodeAt(j);
+          if(bytes.length!==len || await assetDigest(bytes)!==shard.sha256
+            || assetBase64(bytes)!==shard.base64)
+            throw new Error('ASSET_EXTENDED_SHARD_BYTES_MISMATCH');
+          decodedPieces.push(bytes);
+          shards.push({shard_index:i,offset:shard.offset,bytes:shard.bytes,
+            sha256:shard.sha256,base64:shard.base64});
+        }
+        const whole=new Uint8Array(m.bytes);
+        let offset=0;
+        for(const bytes of decodedPieces){whole.set(bytes,offset);offset+=bytes.length;}
+        if(offset!==m.bytes || await assetDigest(whole)!==m.sha256)
+          throw new Error('ASSET_EXTENDED_WHOLE_FILE_MISMATCH');
+        total+=m.bytes;
+        if(total>64*1024*1024)throw new Error('ASSET_EXTENDED_TOTAL_HOLD');
+        versions.push({metadata:m,shards});
+        previous=m.previousVersionId||null;
+      }
+      if(previous!==null || total!==plan.source_bytes)
+        throw new Error('ASSET_EXTENDED_INCOMPLETE_OR_CHANGED');
+      const packet={schema:'JM.OwnerVault/0.1.AssetExtendedExport',
+        selected_id:item.id,index_pin_sha256:plan.index_pin_sha256,
+        shard_bytes:plan.shard_bytes,version_count:versions.length,
+        source_bytes:total,order:plan.order,versions,
+        boundary:'PRIVATE_OWNER_TRIGGERED; NOT_OFFSITE_UNTIL_SEPARATELY_VERIFIED'};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(packet)],{type:'application/json'}));
+      const link=document.createElement('a');
+      link.href=url;link.download='JM_Vault_Asset_Extended_'+item.id+'.json';
+      document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),30000);
+      assetMessage('Extended exact-source export offered. Save and cold-audit using the ORIGINAL offline recovery CLI; physical offsite custody remains unproven.');
+    } catch(error) {
+      assetMessage('Extended lineage HOLD: '+error.message+'. Original files and checkpoint unchanged.');
+    }
+  }
+
   async function refreshAssets() {
     if (!key()) return;
     try {
@@ -792,6 +872,7 @@
         <button type="button" data-asset-download="${escapeHTML(item.id)}">DOWNLOAD VERIFIED</button>
         <button type="button" data-asset-revise="${escapeHTML(item.id)}">REVISE FILE</button>
         <button type="button" data-asset-lineage="${escapeHTML(item.id)}">EXPORT FULL LINEAGE</button>
+        <button type="button" data-asset-extended="${escapeHTML(item.id)}">EXPORT EXTENDED (64 MiB)</button>
         <button type="button" class="danger" data-asset-remove="${escapeHTML(item.id)}">REMOVE LEAF</button>
         </div></article>`).join('') || '<div class="empty-state">No original non-HTML files deliberately saved yet.</div>';
       mount.querySelectorAll('[data-asset-download]').forEach(b => b.addEventListener('click', async () => {
@@ -812,6 +893,10 @@
       mount.querySelectorAll('[data-asset-lineage]').forEach(b => b.addEventListener('click', () => {
         const item = entries.find(x => x.id === b.dataset.assetLineage);
         if (item) void exportAssetLineageLocal(item);
+      }));
+      mount.querySelectorAll('[data-asset-extended]').forEach(b => b.addEventListener('click', () => {
+        const item = entries.find(x => x.id === b.dataset.assetExtended);
+        if (item) void exportExtendedAssetLineageLocal(item);
       }));
       mount.querySelectorAll('[data-asset-revise]').forEach(b => b.addEventListener('click', () => {
         const item = entries.find(x => x.id === b.dataset.assetRevise);

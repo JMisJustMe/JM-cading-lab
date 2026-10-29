@@ -1066,6 +1066,36 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
       assert.equal(onDisk,content[i]);
       assert.equal(fixtureEtag(onDisk),local.original_versions.find(x=>x.id===ids[i]).sha256);
     }
+    // CP21: audit the persisted recovery using a NEW CLI process.
+    // This is independent of the in-memory R2 fixture and is read-only.
+    const audited = run('--audit-dir',restoredDir);
+    assert.equal(audited.status,0,audited.stderr);
+    assert.equal(JSON.parse(audited.stdout).outcome,'OFFLINE_RESTORED_FILES_AUDITED');
+    assert.equal(JSON.parse(audited.stdout).version_count,3);
+    const recoveredFirst = path.join(restoredDir,ids[0]+'.html');
+    await fs.appendFile(recoveredFirst,'<!-- offline tamper -->');
+    const alteredSource = run('--audit-dir',restoredDir);
+    assertHeld(alteredSource,'LINEAGE_AUDIT_SOURCE_MISMATCH','CP21 altered recovered HTML');
+    await fs.writeFile(recoveredFirst,content[0]);
+    assert.equal(run('--audit-dir',restoredDir).status,0);
+    const manifestPath = path.join(restoredDir,'recovery-manifest.json');
+    const manifestOriginal = await fs.readFile(manifestPath,'utf8');
+    const wrongManifest = JSON.parse(manifestOriginal);
+    wrongManifest.packet_sha256='0'.repeat(64);
+    await fs.writeFile(manifestPath,JSON.stringify(wrongManifest));
+    assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_MANIFEST_MISMATCH',
+      'CP21 altered recovery manifest');
+    await fs.writeFile(manifestPath,manifestOriginal);
+    const unexpectedFile = path.join(restoredDir,'extra-unverified.html');
+    await fs.writeFile(unexpectedFile,'unrelated');
+    assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_INVENTORY_MISMATCH',
+      'CP21 extra unverified source');
+    await fs.rm(unexpectedFile);
+    const linkedDirectory = path.join(isolated,'linked-restored');
+    await fs.symlink(restoredDir,linkedDirectory,'dir');
+    assertHeld(run('--audit-dir',linkedDirectory),'LINEAGE_AUDIT_DIRECTORY_UNSAFE',
+      'CP21 symlinked recovery directory');
+    assert.equal(run('--audit-dir',restoredDir).status,0);
     const snapshots = [...storage.map.entries()].map(([k,v])=>[k,v.body]);
     const again = run('--output-dir',restoredDir);
     assertHeld(again,'EEXIST','Cannot replace owner-existing recovery directory');

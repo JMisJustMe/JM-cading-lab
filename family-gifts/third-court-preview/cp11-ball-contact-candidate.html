@@ -181,7 +181,7 @@ for(let p of state.players){let dx=0,dy=0,spd=(p.team===0?168:(state.difficulty=
 if(p.team===1&&p.aiWait>0){p.aiWait=Math.max(0,p.aiWait-dt);spd*=.32}}moveEntity(p,dx,dy,dt,spd);}
 // Keep bodies visibly separate without changing shot, pass or collision ownership.
 for(let i=0;i<state.players.length;i++)for(let j=i+1;j<state.players.length;j++){
- const a=state.players[i],b=state.players[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),min=state.guardHeld&&((a.id===state.carrier&&b.team!==a.team)||(b.id===state.carrier&&a.team!==b.team))?42:33;
+ const a=state.players[i],b=state.players[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),min=state.guardHeld&&((a.id===state.carrier&&b.team!==a.team)||(b.id===state.carrier&&a.team!==b.team))?46:37;
  if(d>=min)continue;const nx=d>0.01?dx/d:((i+j)%2?1:-1),ny=d>0.01?dy/d:0,overlap=(min-d)*.5;
  a.x=clamp(a.x-nx*overlap,LIMIT.left,LIMIT.right);a.y=clamp(a.y-ny*overlap,LIMIT.top,LIMIT.bottom);
  b.x=clamp(b.x+nx*overlap,LIMIT.left,LIMIT.right);b.y=clamp(b.y+ny*overlap,LIMIT.top,LIMIT.bottom);

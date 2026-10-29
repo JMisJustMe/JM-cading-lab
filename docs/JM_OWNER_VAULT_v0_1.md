@@ -351,3 +351,26 @@ hazard, not an absolute filesystem-race guarantee; a concurrent hostile
 actor controlling the parent directory can still race pathname operations.
 Actual owner-device editing, real saved packet recovery, authenticated R2,
 independent offsite custody and deployment propagation remain HOLD.
+
+
+## CP23 — reject redirected ancestors during offline recovery and audit (draft, 29 October 2026)
+
+The existing CP20–CP22 recovery utility checked only the immediate parent of a
+new output directory and the final audit directory. A normal directory reached
+through a **symlink in an earlier path component** could therefore be accepted:
+a recovery could write outside the owner's intended physical path, and a
+read-only cold audit could report success through that redirected path.
+
+CP23 adds a component-by-component `lstat` refusal to the **same** offline
+recipient before creating a recovery directory and before accepting a cold
+audit. The existing packet verification, exact-source ancestry, immutable
+originals, distinct intended uses, no-overwrite output and CP22 non-destructive
+cleanup remain intact. Adversarial CI tests use an intermediate symlink to
+attempt both recovery and audit, require explicit HOLD, verify that no output
+was created through the link, and preserve a positive normal-path audit.
+
+**Bounded proof:** This is a preflight protection against already-present
+symlink ancestors, not an atomic directory-handle guarantee against concurrent
+path replacement. Real owner-device recovery, independently authenticated
+packet custody, R2 writeback, production deployment and propagation remain
+HOLD. No private source or owner data is included in the synthetic tests.

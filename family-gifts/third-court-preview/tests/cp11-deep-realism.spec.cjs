@@ -14,6 +14,20 @@ assert(a.athletes[0].pace>a.athletes[2].pace,'Floor General outruns Paint Anchor
 assert(a.athletes[1].shotForm>a.athletes[2].shotForm,'Wing Shooter has higher live shooting form');
 assert(a.athletes[2].endurance>a.athletes[1].endurance,'Paint Anchor recovers differently');
 assert.match(await page.locator('#posLabel').textContent(),/FLOOR GENERAL/);
+// CP22: a hidden tab may lose keyup/pointer release without a window blur.
+// Pausing must clear held input before an independent resume.
+await page.evaluate(()=>{
+ window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true,cancelable:true}));
+ Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+ document.dispatchEvent(new Event('visibilitychange'));
+ delete document.hidden;
+});
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'hidden tab pauses the running match');
+const hiddenY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+await page.click('#resumeBtn');await page.waitForTimeout(650);
+const resumedY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+assert(Math.abs(resumedY-hiddenY)<6,'missing keyup must not leave the player walking after tab resume');
+console.log('PASS CP22 hidden-tab held-input release '+width+'px');
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');
 const roleRun=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(roleRun.athletes[0].energy<=100,'movement keeps player fatigue bounded');

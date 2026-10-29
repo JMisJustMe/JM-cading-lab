@@ -1095,6 +1095,18 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
     await fs.symlink(restoredDir,linkedDirectory,'dir');
     assertHeld(run('--audit-dir',linkedDirectory),'LINEAGE_AUDIT_DIRECTORY_UNSAFE',
       'CP21 symlinked recovery directory');
+    // CP23: a NORMAL final parent/directory can still sit behind a symlink
+    // ancestor. Neither a restore nor a read-only audit may follow it.
+    const linkedAncestor = path.join(isolated, 'linked-ancestor');
+    await fs.symlink(isolated, linkedAncestor, 'dir');
+    const redirectedNew = path.join(linkedAncestor, 'must-not-create');
+    assertHeld(run('--output-dir', redirectedNew), 'LINEAGE_PATH_COMPONENT_UNSAFE',
+      'CP23 symlink ancestor must block source materialization');
+    await assert.rejects(fs.lstat(path.join(isolated, 'must-not-create')), /ENOENT/,
+      'CP23 must not create bytes through a redirected ancestor');
+    assertHeld(run('--audit-dir', path.join(linkedAncestor, path.basename(restoredDir))),
+      'LINEAGE_PATH_COMPONENT_UNSAFE',
+      'CP23 symlink ancestor must block false cold-audit success');
     assert.equal(run('--audit-dir',restoredDir).status,0);
     const snapshots = [...storage.map.entries()].map(([k,v])=>[k,v.body]);
     const again = run('--output-dir',restoredDir);

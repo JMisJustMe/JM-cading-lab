@@ -116,6 +116,8 @@
         <input type="file" id="jmVaultFileInput" aria-label="Select original file">
         <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCheckPending" type="button">CHECK HELD SAVE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
         <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
+        <div class="jm-vault-actions"><button class="button secondary" id="jmVaultPartNext" disabled type="button">DOWNLOAD NEXT VERIFIED PIECE</button></div>
+        <p class="jm-vault-note">For large/offline lineage recovery: use EXPORT COLD PARTS on a chosen original, then download every piece individually into the same folder as its catalog. Phone browsers may ask permission for multiple downloads. No offsite backup is claimed until independent audit.</p>
         <div class="jm-vault-remote" id="jmVaultAssetCards"></div>
       </section>
       <section class="jm-vault-editor" id="jmVaultEditor" hidden aria-label="Private HTML source editor">
@@ -857,6 +859,98 @@
     }
   }
 
+
+  // CP28: manually initiated, one download per click. Browsers/phones can
+  // block multi-file auto-downloads; never call an unreceived part a backup.
+  let coldExport = null;
+  function offerColdFile(bytes, name, type='application/octet-stream') {
+    const url=URL.createObjectURL(new Blob([bytes],{type}));
+    const a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+  async function prepareColdExport(item) {
+    if (!(await ensureUnlocked()))return;
+    coldExport=null;
+    const next=el('jmVaultPartNext');if(next)next.disabled=true;
+    try{
+      assetMessage('Reading authenticated source catalog; no remote writes…');
+      const packet=await request('?mode=export-asset-catalog&asset='+encodeURIComponent(item.id));
+      if(packet.schema!=='JM.OwnerVault/0.1.AssetPartsCatalog'
+        ||packet.selected_id!==item.id||!Array.isArray(packet.versions)
+        ||packet.versions.length<1||packet.versions.length>8
+        ||packet.version_count!==packet.versions.length
+        ||packet.part_bytes!==2*1024*1024
+        ||packet.order!=='SELECTED_HEAD_TO_OLDEST_ANCESTOR')
+        throw new Error('COLD_CATALOG_SCHEMA_HOLD');
+      let expected=item.id,identity=null,total=0;
+      const parts=[],ids=new Set();
+      for(const v of packet.versions){
+        const m=v?.metadata;
+        if(!m||m.id!==expected||ids.has(m.id)
+          ||!/^[0-9a-f-]{36}$/i.test(m.id||'')
+          ||!/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId||'')
+          ||!/^[a-f0-9]{64}$/.test(m.sha256||'')
+          ||!Number.isSafeInteger(m.bytes)||m.bytes<0||m.bytes>64*1024*1024
+          ||(identity!==null&&identity!==m.sourceInstanceId)
+          ||!Array.isArray(v.parts)
+          ||v.parts.length!==Math.max(1,Math.ceil(m.bytes/(2*1024*1024))))
+          throw new Error('COLD_CATALOG_IDENTITY_OR_PART_COUNT_HOLD');
+        identity=m.sourceInstanceId;ids.add(m.id);
+        for(let i=0;i<v.parts.length;i++){
+          const p=v.parts[i];
+          const name='JM_Vault_Part_'+m.id+'_'+String(i).padStart(2,'0')+'.bin';
+          const count=i===v.parts.length-1?m.bytes-(2*1024*1024)*(v.parts.length-1):2*1024*1024;
+          if(!p||p.index!==i||p.fileName!==name||p.bytes!==count
+            ||!/^[a-f0-9]{64}$/.test(p.sha256||''))
+            throw new Error('COLD_CATALOG_PART_INTEGRITY_HOLD');
+          parts.push({m,p});
+        }
+        total+=m.bytes;expected=m.previousVersionId||null;
+      }
+      if(expected!==null||total!==packet.source_bytes||total>8*64*1024*1024)
+        throw new Error('COLD_CATALOG_CHAIN_OR_SIZE_HOLD');
+      const catalogName='JM_Vault_Cold_Catalog_'+item.id+'.json';
+      coldExport={packet,parts,cursor:0};
+      offerColdFile(JSON.stringify(packet,null,2)+'\n',catalogName,'application/json');
+      if(next)next.disabled=false;
+      assetMessage('Cold catalog offered. Save it together with ALL '+parts.length
+        +' original pieces. Press DOWNLOAD NEXT VERIFIED PIECE for each; only independent offline audit proves a cold backup.');
+    }catch(e){
+      coldExport=null;
+      assetMessage('Cold source export HOLD: '+e.message+'. No offsite backup claimed.');
+    }
+  }
+  async function nextColdPart(){
+    const session=coldExport,next=el('jmVaultPartNext');
+    if(!session||session.cursor>=session.parts.length)return;
+    if(!(await ensureUnlocked()))return;
+    if(next)next.disabled=true;
+    try{
+      const {m,p}=session.parts[session.cursor];
+      const response=await request('?mode=export-asset-part&asset='
+        +encodeURIComponent(m.id)+'&part='+p.index);
+      const bytes=new Uint8Array(await response.arrayBuffer());
+      if(bytes.length!==p.bytes||await assetDigest(bytes)!==p.sha256
+        ||response.headers.get('x-jm-part-sha256')!==p.sha256
+        ||response.headers.get('x-jm-asset-id')!==m.id
+        ||response.headers.get('x-jm-part-index')!==String(p.index))
+        throw new Error('COLD_SOURCE_PIECE_SHA256_HOLD');
+      offerColdFile(bytes,p.fileName);
+      session.cursor++;
+      assetMessage('Original piece '+session.cursor+' / '+session.parts.length
+        +' offered and hash verified. Keep every piece in the SAME folder as the catalog.'
+        +(session.cursor===session.parts.length
+          ? ' All downloads offered; independently verify with the original offline JM recovery CLI before claiming custody.'
+          : ' Press DOWNLOAD NEXT VERIFIED PIECE to continue.'));
+      if(next)next.disabled=session.cursor>=session.parts.length;
+    }catch(e){
+      assetMessage('Cold part HOLD at '+(session.cursor+1)+' / '+session.parts.length
+        +': '+e.message+'. No piece accepted; click again to retry the SAME identity.');
+      if(next)next.disabled=false;
+    }
+  }
+
   async function refreshAssets() {
     if (!key()) return;
     try {
@@ -872,6 +966,7 @@
         <button type="button" data-asset-download="${escapeHTML(item.id)}">DOWNLOAD VERIFIED</button>
         <button type="button" data-asset-revise="${escapeHTML(item.id)}">REVISE FILE</button>
         <button type="button" data-asset-lineage="${escapeHTML(item.id)}">EXPORT FULL LINEAGE</button>
+        <button type="button" data-asset-cold="${escapeHTML(item.id)}">EXPORT COLD PARTS</button>
         <button type="button" data-asset-extended="${escapeHTML(item.id)}">EXPORT EXTENDED (64 MiB)</button>
         <button type="button" class="danger" data-asset-remove="${escapeHTML(item.id)}">REMOVE LEAF</button>
         </div></article>`).join('') || '<div class="empty-state">No original non-HTML files deliberately saved yet.</div>';
@@ -897,6 +992,10 @@
       mount.querySelectorAll('[data-asset-extended]').forEach(b => b.addEventListener('click', () => {
         const item = entries.find(x => x.id === b.dataset.assetExtended);
         if (item) void exportExtendedAssetLineageLocal(item);
+      }));
+      mount.querySelectorAll('[data-asset-cold]').forEach(b => b.addEventListener('click',()=>{
+        const item=entries.find(x=>x.id===b.dataset.assetCold);
+        if(item)void prepareColdExport(item);
       }));
       mount.querySelectorAll('[data-asset-revise]').forEach(b => b.addEventListener('click', () => {
         const item = entries.find(x => x.id === b.dataset.assetRevise);
@@ -1114,6 +1213,7 @@
     el('jmVaultUnlock')?.addEventListener('click', unlock);
     el('jmVaultSaveFile')?.addEventListener('click', saveSelectedOriginal);
     el('jmVaultCheckPending')?.addEventListener('click', confirmPendingAsset);
+    el('jmVaultPartNext')?.addEventListener('click',nextColdPart);
     el('jmVaultCancelFileRevision')?.addEventListener('click', () => { assetRevision = null; el('jmVaultFileInput').value = ''; assetMessage('Revision cancelled; no file uploaded.'); });
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);
@@ -1123,7 +1223,9 @@
     el('jmVaultSaveRevision')?.addEventListener('click', saveRevision);
     el('jmVaultCancelEdit')?.addEventListener('click', closeEditor);
     el('jmVaultLock')?.addEventListener('click', () => {
-      assetRevision = null; if (el('jmVaultAssetCards')) el('jmVaultAssetCards').innerHTML = '';
+      assetRevision = null; coldExport=null;
+      if(el('jmVaultPartNext'))el('jmVaultPartNext').disabled=true;
+      if (el('jmVaultAssetCards')) el('jmVaultAssetCards').innerHTML = '';
       setKey(''); observedStateRevision = null; authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
       message('Vault locked. The session key was removed from this browser tab/session.');
     });

@@ -31,7 +31,9 @@ const origin='http://127.0.0.1:'+http.address().port+'/';
 let browser,context,done=0;const failures=[];
 const check=async(name,fn)=>{await fn();done++;console.log('PASS',name)};
 try{
- browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+ const launch={headless:true,args:['--no-sandbox','--disable-dev-shm-usage']};
+ if(process.env.JM_BROWSER_EXECUTABLE)launch.executablePath=process.env.JM_BROWSER_EXECUTABLE;
+ browser=await chromium.launch(launch);
  context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,serviceWorkers:'allow'});
  const page=await context.newPage();
  await page.addInitScript(()=>{
@@ -142,5 +144,7 @@ try{
  console.log(JSON.stringify({schema:'jm.ftr.existing-game-source-linked-carrier/0.1',passed:done,failed:0,
    proof:'real Chromium mobile emulation, source-linked renderer correction, offline PWA reload',
    sourceOriginalFrozen:true,sourceDuplicated:false,coreVersion:'0.5.1',carrier:'0.5.1-R1',
-   onlineDeployment:'NOT_CLAIMED',ownerPhysicalPhone:'NOT_TESTED'}));
+   onlineDeployment:'NOT_CLAIMED',ownerPhysicalPhone:'NOT_TESTED',
+   ownerLaptopBrowser:process.env.JM_OWNER_LAPTOP_CONTACT==='1'?'HEADLESS_OWNER_LAPTOP_CONTACT':'NOT_TESTED',
+   browserVersion:browser.version()}));
 }finally{if(context)await context.close();if(browser)await browser.close();await new Promise(ok=>http.close(ok));}

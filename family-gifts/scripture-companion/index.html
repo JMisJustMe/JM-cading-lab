@@ -522,7 +522,22 @@ renderRoom();
 const el=id=>document.getElementById(id),studyBase='https://www.jw.org/en/library/bible/study-bible/books/';
 const studyUrl=(book,chapter)=>studyBase+book.toLowerCase().replace(/\s+/g,'-')+'/'+chapter+'/';
 const studyItems=[{theme:'Prayer',book:'Philippians',chapter:4,verse:6,ref:'Philippians 4:6',guide:'Consider how the Bible discusses prayer.'},{theme:'Hope',book:'Revelation',chapter:21,verse:4,ref:'Revelation 21:4',guide:'Reflect on future hope.'}];
-function drawStudy(){const root=el('jmStudyResults');root.replaceChildren();el('jmStudyStats').textContent='Official Bible study resources ready.'}
+const studyThemes=[...new Set(studyItems.map(x=>x.theme))];
+for(const theme of studyThemes){const option=document.createElement('option');option.value=theme;option.textContent=theme;el('jmStudyTheme').append(option)}
+function drawStudy(){
+ const root=el('jmStudyResults'),term=el('jmStudySearch').value.toLowerCase().trim(),theme=el('jmStudyTheme').value;
+ root.replaceChildren();
+ const items=studyItems.filter(x=>(theme==='all'||x.theme===theme)&&(!term||(x.ref+' '+x.guide+' '+x.theme).toLowerCase().includes(term)));
+ el('jmStudyStats').textContent=items.length+' of '+studyItems.length+' reference studies';
+ for(const x of items){
+  const card=document.createElement('div');card.className='entry';
+  const h=document.createElement('strong');h.textContent=x.ref+' · '+x.theme;
+  const p=document.createElement('p');p.textContent=x.guide;
+  const actions=document.createElement('div');actions.className='entry-actions';
+  card.append(h,p,actions);root.append(card);
+ }
+ if(!items.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='No matches; try another subject.';root.append(empty)}
+}
 el('jmStudyTheme').addEventListener('change',drawStudy);el('jmStudySearch').addEventListener('input',drawStudy);
 drawStudy();
 })();

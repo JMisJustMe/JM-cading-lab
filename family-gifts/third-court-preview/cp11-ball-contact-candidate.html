@@ -592,7 +592,7 @@ function native3DInit(){
  if(state.air){const a=state.air,t=clamp(a.t/Math.max(.001,a.dur),0,1),count=9;
   // Geometry is a bounded 3D flight ribbon, not a fake screen-space overlay.
   for(let k=0;k<count;k++){const u=Math.max(0,t-k*.045);if(u===0)continue;
-   const x=lerp(a.from.x,a.to.x,u),y=lerp(a.from.y,a.to.y,u);
+   const contact=shotContact(a,u),x=contact.x,y=contact.y;
    const h=a.kind==='shot'?1.55+1.02*u+1.65*Math.sin(Math.PI*u):1.12+.65*Math.sin(Math.PI*u);
    const q=world({x,y});orb(q.x,h,q.z,.055*(1-k/count)+.016,a.kind==='shot'?[.98,.69,.25]:[.20,.80,.73]);}
  }else{arc(w.x,.045,w.z,.36,.018,[.15,.15,.13]);}

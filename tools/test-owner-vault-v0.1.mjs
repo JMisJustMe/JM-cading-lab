@@ -1231,3 +1231,65 @@ console.log('PASS: CP20 independently cold-recover three exact HTML ancestors us
   }
 }
 console.log('PASS: CP22 interrupted offline recovery preserves partial source, unrelated files and redirected destinations; only its own empty directory is retired.');
+// CP25 durability gate: exact readback does not prove that new source bytes,
+// manifest and directory entries survived a crash. Exercise the same file and
+// directory fsync helpers used by the real offline recovery path. Synthetic
+// opener is restricted to this test; no owner files or credentials involved.
+{
+  const { writeDurableNewFile, syncRecoveryDirectory } =
+    await import('./owner-vault-lineage-recover.mjs');
+  const calls = [];
+  const opener = async (name, flag, mode) => {
+    calls.push(['open', name, flag, mode]);
+    return {
+      writeFile: async data => calls.push(['write', Buffer.from(data).toString()]),
+      sync: async () => calls.push(['sync']),
+      close: async () => calls.push(['close'])
+    };
+  };
+  await writeDurableNewFile('synthetic-source.html', Buffer.from('original'), opener);
+  assert.deepEqual(calls, [
+    ['open', 'synthetic-source.html', 'wx', 0o600],
+    ['write', 'original'], ['sync'], ['close']
+  ], 'CP25 source creation must be exclusive/private, flushed and closed');
+  const failedCalls = [];
+  await assert.rejects(
+    writeDurableNewFile('synthetic-receipt.json', Buffer.from('{}'),
+      async () => ({
+        writeFile: async () => failedCalls.push('write'),
+        sync: async () => { failedCalls.push('sync'); throw Error('SYNTHETIC_FILE_FSYNC_FAILURE'); },
+        close: async () => failedCalls.push('close')
+      })),
+    /SYNTHETIC_FILE_FSYNC_FAILURE/,
+    'CP25 failed file fsync must never return a success acknowledgement');
+  assert.deepEqual(failedCalls, ['write', 'sync', 'close']);
+  const dirCalls = [];
+  const dirOpen = async (name, flag) => {
+    dirCalls.push(['open', name, flag]);
+    return {
+      stat: async () => ({ isDirectory: () => true }),
+      sync: async () => dirCalls.push(['sync']),
+      close: async () => dirCalls.push(['close'])
+    };
+  };
+  await syncRecoveryDirectory('synthetic-directory', dirOpen);
+  assert.deepEqual(dirCalls, [
+    ['open', 'synthetic-directory', 'r'], ['sync'], ['close']
+  ]);
+  const refused = [];
+  await assert.rejects(syncRecoveryDirectory('synthetic-directory',
+    async () => ({
+      stat: async () => ({ isDirectory: () => true }),
+      sync: async () => { throw Error('SYNTHETIC_DIRECTORY_FSYNC_FAILURE'); },
+      close: async () => refused.push('close')
+    })), /SYNTHETIC_DIRECTORY_FSYNC_FAILURE/);
+  assert.deepEqual(refused, ['close'], 'CP25 must close failed directory sync handle');
+  await assert.rejects(syncRecoveryDirectory('synthetic-not-a-directory',
+    async () => ({
+      stat: async () => ({ isDirectory: () => false }),
+      sync: async () => { throw Error('MUST_NOT_SYNC_NON_DIRECTORY'); },
+      close: async () => {}
+    })), /LINEAGE_DIRECTORY_SYNC_UNSAFE/);
+}
+console.log('PASS: CP25 durable source/receipt writes and directory fsync are required; failed flush refuses success and closes handles.');
+

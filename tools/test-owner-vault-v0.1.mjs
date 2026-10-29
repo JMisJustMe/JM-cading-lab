@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { constants as fsConstants } from 'node:fs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
@@ -1293,3 +1294,51 @@ console.log('PASS: CP22 interrupted offline recovery preserves partial source, u
 }
 console.log('PASS: CP25 durable source/receipt writes and directory fsync are required; failed flush refuses success and closes handles.');
 
+
+// CP26: opening by path AFTER lstat/readdir could follow a substituted final
+// symlink into unrelated owner data. The opened handle must be regular,
+// bounded and O_NOFOLLOW; all failures must close the handle.
+{
+  const { readBoundedRegularFile } = await import('./owner-vault-lineage-recover.mjs');
+  const root = await fs.mkdtemp(path.join(tmpdir(), 'jm-vault-cp26-'));
+  try {
+    const original = path.join(root, 'original.html');
+    const link = path.join(root, 'substituted.html');
+    await fs.writeFile(original, 'abc');
+    await fs.symlink(original, link);
+    assert.equal((await readBoundedRegularFile(original, 3)).toString(), 'abc');
+    await assert.rejects(readBoundedRegularFile(link, 3), /ELOOP|LINEAGE_OPENED_FILE_UNSAFE/,
+      'CP26 final-component symlink must not be followed to another source');
+    await assert.rejects(readBoundedRegularFile(original, 2),
+      /LINEAGE_OPENED_FILE_UNSAFE_OR_OVERBOUNDED/,
+      'CP26 oversized opened file cannot bypass packet/source limit');
+    await assert.rejects(readBoundedRegularFile(root, 100),
+      /LINEAGE_OPENED_FILE_UNSAFE_OR_OVERBOUNDED/,
+      'CP26 opened directory must not be mistaken for source');
+    let flagsSeen = 0, closed = false;
+    const injected = await readBoundedRegularFile('synthetic', 3, async (_name, flags) => {
+      flagsSeen = flags;
+      return {
+        stat: async () => ({ isFile: () => true, size: 3 }),
+        readFile: async () => Buffer.from('abc'),
+        close: async () => { closed = true; }
+      };
+    });
+    assert.equal(injected.toString(), 'abc');
+    assert.ok((flagsSeen & fsConstants.O_NOFOLLOW) !== 0,
+      'CP26 final symlink refusal must be enforced by the actual open');
+    assert.ok((flagsSeen & fsConstants.O_NONBLOCK) !== 0,
+      'CP26 changed-to-FIFO source must not hang the offline reader');
+    assert.equal(closed, true);
+    let closedOnFailure = false;
+    await assert.rejects(readBoundedRegularFile('synthetic', 3, async () => ({
+      stat: async () => ({ isFile: () => false, size: 0 }),
+      readFile: async () => { throw Error('MUST_NOT_READ_NONFILE'); },
+      close: async () => { closedOnFailure = true; }
+    })), /LINEAGE_OPENED_FILE_UNSAFE_OR_OVERBOUNDED/);
+    assert.equal(closedOnFailure, true, 'CP26 must close unsafe opened handles');
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+}
+console.log('PASS: CP26 bounded O_NOFOLLOW/O_NONBLOCK opened-file custody rejects final symlinks, directories, oversize and closes failed handles.');

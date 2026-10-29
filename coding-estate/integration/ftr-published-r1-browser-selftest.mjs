@@ -550,9 +550,13 @@ try{
   await page.waitForTimeout(230);
   const r=await page.evaluate(()=>({
     hud:document.getElementById('jmAwarenessStatus').textContent,
-    events:window.FTR.state().run.events
+    events:window.FTR.state().run.events,
+    player:window.FTR.state().player,
+    running:window.FTR.state().running,
+    native:window.JMFTRMemory.status()
   }));
-  assert(r.hud.startsWith('SCAN'));
+  console.log('JM_CP13_SCAN_DIAGNOSTIC',JSON.stringify(r));
+  assert(r.hud.startsWith('SCAN'),JSON.stringify({hud:r.hud,scan:r.player.scan,scanCd:r.player.scanCd,running:r.running,native:r.native}));
   assert(r.events.some(e=>e.event==='JM_PLAYER_SCAN_INTELLIGENCE'));
  });
  await check('CP13 ally receives bounded original-LOS shared last-known player contact',async()=>{

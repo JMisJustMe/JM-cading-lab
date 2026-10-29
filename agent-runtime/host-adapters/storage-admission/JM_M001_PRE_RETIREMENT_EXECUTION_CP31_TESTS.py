@@ -116,6 +116,33 @@ class CP31Tests(unittest.TestCase):
   except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(link)]),4)
   self.assertEqual(original.read_text(),'DO NOT REPLACE')
+ def test_cp13_shortened_evidence_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records']=[]
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_CARDINALITY_MISMATCH'):self.check()
+ def test_cp13_extra_evidence_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'].append(copy.deepcopy(gate['records'][0]))
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_CARDINALITY_MISMATCH'):self.check()
+ def test_cp13_native_identity_substitution_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'][0]['root_native_id']='libfile_'+'9'*32
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check()
+ def test_cp13_label_substitution_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'][0]['label']='DIFFERENT_ORIGINAL'
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check()
+ def test_cp13_reordered_evidence_fails_closed(self):
+  other=copy.deepcopy(self.row);other['root_native_id']='libfile_'+'4'*32
+  rows=[self.row,other]
+  gate=cp31.load_cp13(CP13).run({'records':rows},DONOR,now=self.now)
+  gate['records'].reverse()
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check(rows)
  def test_cli_refuses_bad_input(self):
   p=self.d/'invalid.json';p.write_text('"not an inventory"')
   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13)]),4)

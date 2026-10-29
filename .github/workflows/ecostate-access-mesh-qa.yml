@@ -915,6 +915,131 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP28_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP29 independently recovered native source re-entry with exact custody and explicit save
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash,randomUUID}=require('node:crypto');
+          const hash=b=>createHash('sha256').update(b).digest('hex');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport});
+                page.setDefaultTimeout(25000);
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp29-key';});
+                const rootId='00000000-0000-4000-8000-000000002901';
+                const headId='00000000-0000-4000-8000-000000002902';
+                const purpose='asset-00000000-0000-4000-8000-000000002903';
+                const filename='JM_Original_Audio.wav';
+                const ancestor=Buffer.from([0,2,4,6,8,10]);
+                const headBytes=Buffer.from([0,2,4,6,8,11]);
+                const editedBytes=Buffer.from([0,2,4,6,8,11,17,19,23]);
+                const original=[
+                  {id:headId,sourceInstanceId:purpose,name:'Original JM Sound',fileName:filename,
+                    mediaType:'audio/wav',sha256:hash(headBytes),bytes:headBytes.length,
+                    previousVersionId:rootId},
+                  {id:rootId,sourceInstanceId:purpose,name:'Original JM Sound',fileName:filename,
+                    mediaType:'audio/wav',sha256:hash(ancestor),bytes:ancestor.length,
+                    previousVersionId:null}
+                ];
+                const receipt={schema:'JM.OwnerVault/0.1.OfflineRecovered',
+                  original_schema:'JM.OwnerVault/0.1.AssetPartsCatalog',
+                  packet_sha256:'f'.repeat(64),selected_id:headId,
+                  original_source_bytes:ancestor.length+headBytes.length,
+                  original_versions:original,
+                  boundary:'OWNER_LOCAL_VERIFIED_FILES_ONLY'};
+                let entries=[...original],objects=new Map([[headId,headBytes],[rootId,ancestor]]);
+                let writes=0,lost=false,stale=false,externalMutation=false;
+                const respond=(route,status,body)=>route.fulfill({status,
+                  headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(body)});
+                await page.route('**/api/owner/vault*',async route=>{
+                  const r=route.request(),url=new URL(r.url()),mode=url.searchParams.get('mode');
+                  if(mode==='status')return respond(route,200,{ready:true});
+                  if(r.headers()['x-jm-owner-key']!=='synthetic-cp29-key')
+                    return respond(route,401,{error:'OWNER_AUTH_REQUIRED'});
+                  if(r.method()==='GET'&&mode==='assets')
+                    return respond(route,200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:entries});
+                  if(r.method()==='GET'&&url.searchParams.get('asset')){
+                    const m=entries.find(m=>m.id===url.searchParams.get('asset'));
+                    if(!m)return respond(route,404,{error:'ASSET_MISSING'});
+                    const bytes=objects.get(m.id);
+                    return route.fulfill({status:200,headers:{'content-type':'application/octet-stream',
+                      'x-jm-asset-sha256':m.sha256},body:bytes});
+                  }
+                  if(r.method()==='GET')
+                    return respond(route,200,{schema:'JM.OwnerVault/0.1',state:{notes:'',recent:[],favourites:[]},bodies:[]});
+                  if(r.method()==='POST'){
+                    writes++;
+                    const data=r.postDataJSON();
+                    if(data.action!=='upload-asset')return respond(route,400,{error:'NOT_EXPECTED'});
+                    const f=data.file,b=Buffer.from(f.base64,'base64');
+                    if(f.sourceInstanceId!==purpose||f.expectedBaseId!==(stale?'new-head':headId)
+                      ||f.expectedBaseSha256!==original[0].sha256
+                      ||f.fileName!==filename||hash(b)!==f.sha256)
+                      return respond(route,409,{error:'ASSET_REVISION_HEAD_CHANGED'});
+                    const found=entries.find(m=>m.sha256===f.sha256&&m.sourceInstanceId===purpose);
+                    if(found)return respond(route,200,{outcome:'ASSET_UNCHANGED',asset:found});
+                    const created={id:randomUUID(),sourceInstanceId:purpose,name:'Original JM Sound',
+                      fileName:filename,mediaType:'audio/wav',sha256:hash(b),bytes:b.length,
+                      previousVersionId:headId};
+                    entries.unshift(created);objects.set(created.id,b);
+                    if(!lost){lost=true;return respond(route,502,{error:'SIMULATED_LOST_ACK_AFTER_COMMIT'});}
+                    return respond(route,201,{outcome:'ASSET_STORED',asset:created});
+                  }
+                  return respond(route,405,{error:'METHOD_NOT_ALLOWED'});
+                });
+                const pickReceipt=async info=>page.locator('#jmVaultColdReceipt').setInputFiles({
+                  name:'recovery-manifest.json',mimeType:'application/json',
+                  buffer:Buffer.from(JSON.stringify(info))});
+                const pickEdited=async data=>page.locator('#jmVaultFileInput').setInputFiles({
+                  name:headId+'__'+filename,mimeType:'audio/wav',buffer:data});
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                await pickEdited(editedBytes);
+                await pickReceipt({...receipt,selected_id:rootId});
+                await page.locator('#jmVaultPrepareColdRevision').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD RE-ENTRY HOLD'));
+                if(writes!==0)throw Error('tampered selected root wrote private original');
+                await pickReceipt({...receipt,original_versions:[original[0],
+                  {...original[1],sourceInstanceId:'asset-alien'}]});
+                await page.locator('#jmVaultPrepareColdRevision').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD RE-ENTRY HOLD'));
+                if(writes!==0)throw Error('cross-purpose recovery receipt wrote private source');
+                await pickReceipt(receipt);
+                stale=true;
+                await page.locator('#jmVaultPrepareColdRevision').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD RE-ENTRY'));
+                // An unknown HEAD is not an eligible saved parent.
+                stale=false;
+                await page.locator('#jmVaultPrepareColdRevision').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD RE-ENTRY PREPARED'));
+                if(writes!==0)throw Error('preparation itself uploaded a native original');
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('SAVE HOLD'));
+                if(writes!==1||entries.length!==3)throw Error('lost acknowledgement created duplicate source');
+                const cp=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-owner-vault-cp23-file-save-pending')));
+                if(cp?.fileName!==filename||cp?.localFileName!==headId+'__'+filename
+                  ||cp?.expectedBaseId!==headId||cp?.sourceInstanceId!==purpose)
+                  throw Error('return-to-edit checkpoint lost original/native-local distinction');
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultFileInput').setInputFiles({
+                  name:headId+'__'+filename,mimeType:'audio/wav',buffer:editedBytes});
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'));
+                if(writes!==2||entries.length!==3||entries[0].previousVersionId!==headId
+                  ||entries[0].sourceInstanceId!==purpose||entries[0].fileName!==filename)
+                  throw Error('re-entry lost ancestry, created duplicate or stripped native original filename');
+                if(await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp23-file-save-pending'))!==null)
+                  throw Error('verified owner edit kept stale source checkpoint');
+                if(!objects.get(entries[0].id).equals(editedBytes))throw Error('private original edit bytes changed');
+                await page.close();
+              }
+              console.log('PASS CP29: 2 synthetic device surfaces, untrusted recovered manifest refusal, exact source/parent re-entry, zero-POST preparation, lost-ack reload with preserved native filename, one original private revision.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP29_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
         shell: bash
         run: |

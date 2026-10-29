@@ -31,14 +31,19 @@ function nearestCore(){
 function routeCore(){
  // Real 4-neighbour route across the ORIGINAL live FTR collision map, with
  // dynamically opening original doors. Never assume a route through locked cells.
- const target=nearestCore();
- if(!target.id)return {status:'ALL_CORES_MOUNTED',steps:0,path:[]};
+ const core=nearestCore();
+ // The original game does not end when both cores mount. It ends at the
+ // actual extraction field, behind its original dynamically opening gate.
+ // Retain the original source as target and collision authority.
+ if(!core.id&&!extraction.active)
+   return {status:'EXTRACTION_ARMING',target:'EXTRACTION',steps:null,path:[]};
+ const target=core.id?core:{id:'EXTRACTION',world:{x:extraction.x,y:extraction.y}};
  const start={x:Math.floor(player.x),y:Math.floor(player.y)};
  const goal={x:Math.floor(target.world.x),y:Math.floor(target.world.y)};
  const width=W,height=H;
  const valid=(x,y)=>x>=0&&y>=0&&x<width&&y<height&&tileAt(x+.5,y+.5)==='.'&&!solid(x+.5,y+.5);
  if(!valid(start.x,start.y))return {status:'PLAYER_TILE_BLOCKED',steps:null,path:[]};
- if(!valid(goal.x,goal.y))return {status:'CORE_TILE_BLOCKED',steps:null,path:[]};
+ if(!valid(goal.x,goal.y))return {status:target.id==='EXTRACTION'?'EXTRACTION_TILE_BLOCKED':'CORE_TILE_BLOCKED',steps:null,path:[],target:target.id};
  const id=(x,y)=>y*width+x;
  const visited=new Int32Array(width*height).fill(-1);
  const queue=[start];visited[id(start.x,start.y)]=id(start.x,start.y);
@@ -166,7 +171,12 @@ function refresh(){
  if(!enabled){label.textContent='FIELD PAUSED · BASELINE VIEW';}
  else if(!s?.running){label.textContent='FIELD STANDBY · START TO SENSE';}
  else if(player.scan<=0){label.textContent='FIELD READY · SCAN TO TRACE';}
- else if(lastEcho.id===null){label.textContent='FIELD CLEAR · EXTRACTION';}
+ else if(lastEcho.id===null){
+  const dir=route.bearingDegrees<-12?'LEFT':route.bearingDegrees>12?'RIGHT':'AHEAD';
+  label.textContent=route.status==='ROUTE_FOUND'?
+   'EXTRACTION · '+route.steps+' STEPS · '+dir:
+   'EXTRACTION · '+route.status.replaceAll('_',' ');
+ }
  else{
   const dir=lastEcho.bearing<-12?'LEFT':lastEcho.bearing>12?'RIGHT':'AHEAD';
   label.textContent='CORE '+lastEcho.id+' · '+lastEcho.range+'m · '+dir+' · '+(route.status==='ROUTE_FOUND'?route.steps+' STEPS':route.status);

@@ -100,6 +100,21 @@ def _read_report_exact(path, written_stat):
         return f.read()
 
 
+def _sync_report_parent(path):
+    """Persist the new directory entry; file fsync alone cannot prove it survives a crash.
+
+    Refuse platforms or paths without safe directory sync rather than claiming
+    a durable receipt. A failed sync leaves the created report for inspection.
+    """
+    if not hasattr(os, 'O_DIRECTORY') or not hasattr(os, 'O_NOFOLLOW'):
+        raise ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')
+    fd=os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def write_once_verified(path, encoded):
     """Private, exclusive report write; verify the exact bytes before claiming success.
 
@@ -115,6 +130,7 @@ def write_once_verified(path, encoded):
         f.flush()
         os.fsync(f.fileno())
         created=os.fstat(f.fileno())
+    _sync_report_parent(path)
     if _read_report_exact(path,created)!=raw:
         raise ValueError('REPORT_READBACK_MISMATCH')
 

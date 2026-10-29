@@ -636,8 +636,9 @@ try{
     sourceVersion:window.FTR.version
   }));
   assert.equal(r.sourceVersion,'0.5.1');
+  console.log('JM_CP13_RESET_DIAGNOSTIC',JSON.stringify(r));
   assert.equal(r.state.shared,0);
-  assert.equal(r.state.phaseBreaks,0);
+  assert.equal(r.state.phaseBreaks,0,JSON.stringify(r));
   assert.equal(r.state.forgetCount,0);
   assert.equal(r.original.player.cores,0);
  });

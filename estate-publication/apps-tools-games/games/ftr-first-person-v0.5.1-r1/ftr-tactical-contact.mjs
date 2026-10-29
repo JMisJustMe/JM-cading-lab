@@ -100,7 +100,7 @@ function flank(e,dt,cover){
 function status(){
  readout.textContent=!enabled?'TACTICS PAUSED · ORIGINAL AI':
  !running?'TACTICS STANDBY':window.JMFTRCover.state().active?
- 'COVER PRESSURE · '+shots+' SHOTS · '+flanks+' STEPS':'TACTICS READY · BUILD COVER';
+ 'COVER PRESSURE · '+shots+' '+(shots===1?'SHOT':'SHOTS')+' · '+flanks+' FLANKS':'TACTICS READY · BUILD COVER';
  toggleButton.textContent=enabled?'TACTICS ON':'TACTICS OFF';
  toggleButton.setAttribute('aria-pressed',String(enabled));
 }

@@ -389,6 +389,113 @@ try{
    assert.equal(r.before.player.cores,0);
    assert.equal(current.builds,0);
  });
+ await check('CP12 original JM tactical enemy-contact body mounts inside real R1 game',async()=>{
+  await page.waitForFunction(()=>!!window.JMFTRTactics);
+  const r=await page.evaluate(()=>({
+    schema:window.JMFTRTactics.schema,
+    source:window.JMFTRTactics.originalEnemySystem,
+    projectile:window.JMFTRTactics.originalProjectile,
+    nativeBodies:window.JMFTRTactics.nativeBodies
+  }));
+  assert.equal(r.schema,'jm.ftr.tactical-world-contact/0.1');
+  assert(r.source.endsWith('/ftr-world.js'));
+  assert(r.projectile.includes('enemyShoot'));
+  assert(r.nativeBodies.includes('JMGameCoreRuntime'));
+ });
+ await check('CP12 does not invent enemy pressure without original constructed cover',async()=>{
+  await page.evaluate(()=>{window.FTR.command('START');window.FTR.test.freezeEnemies(true);
+    window.JMFTRTactics.toggle(true);});
+  await page.waitForTimeout(110);
+  const r=await page.evaluate(()=>window.JMFTRTactics.state());
+  assert.equal(r.shots,0);
+  assert.equal(r.cover,false);
+ });
+ await check('CP12 original sentry actively attacks actual JM-created cover through native GameCore',async()=>{
+  await page.evaluate(()=>{
+    window.FTR.test.freezeEnemies(true);window.FTR.test.activateCore(0);
+    window.FTR.test.setPlayer(12.3,15.4,0);
+  });
+  await page.waitForTimeout(1250);
+  const setup=await page.evaluate(()=>{
+    const built=window.JMFTRCover.build();
+    window.FTR.test.setEnemy(0,14.8,15.5,34);
+    enemies.forEach((enemy,i)=>{enemy.stun=i===0?0:100;enemy.cool=i===0?0:100;});
+    enemies[0].type='sentry';enemies[0].state='seek';
+    return {built,lane:window.JMFTRTactics.inspectLane(0),
+      before:window.JMFTRCover.state().active?.hp,
+      mapTile:tileAt(14.8,15.5)};
+  });
+  console.log('JM_CP12_SETUP',JSON.stringify(setup));
+  assert.equal(setup.built.status,'BUILT');
+  assert.equal(setup.lane,true);
+  await page.evaluate(()=>window.FTR.test.freezeEnemies(false));
+  await page.waitForTimeout(1400);
+  const r=await page.evaluate(()=>({
+    tactic:window.JMFTRTactics.state(),cover:window.JMFTRCover.state(),
+    events:window.FTR.state().run.events,
+    state:window.FTR.state()
+  }));
+  console.log('JM_CP12_PRESSURE',JSON.stringify({tactic:r.tactic,cover:r.cover,events:r.events.slice(-9)}));
+  assert(r.tactic.shots>0);
+  assert.equal(r.tactic.latest.nativeIdentity,'JM.FTR.TacticalPressure');
+  assert(r.tactic.latest.traceDigest);
+  assert(r.events.some(e=>e.event==='JM_AI_COVER_PRESSURE'));
+  assert(r.events.some(e=>e.event==='INCOMING'));
+  assert(r.cover.hits>0);
+  assert(r.cover.active===null || r.cover.active.hp<setup.before);
+ });
+ await check('CP12 tactical pressure toggle stops new original sentry attacks when cover obstructs',async()=>{
+  const r=await page.evaluate(()=>{
+    window.JMFTRTactics.toggle(false);
+    enemies[0].cool=0;
+    return {before:window.JMFTRTactics.state().shots};
+  });
+  await page.waitForTimeout(260);
+  const after=await page.evaluate(()=>window.JMFTRTactics.state());
+  assert.equal(after.shots,r.before);
+  assert.equal(await page.evaluate(()=>window.JMFTRTactics.enabled()),false);
+  await page.evaluate(()=>window.JMFTRTactics.toggle(true));
+ });
+ await check('CP12 genuine FTR flanker moves laterally around original cover obstruction',async()=>{
+  await page.evaluate(()=>{
+   window.FTR.test.freezeEnemies(true);window.FTR.command('START');
+   window.FTR.test.activateCore(0);window.FTR.test.setPlayer(12.3,15.4,0);
+   window.JMFTRTactics.toggle(true);
+  });
+  await page.waitForTimeout(1250);
+  const setup=await page.evaluate(()=>{
+   const built=window.JMFTRCover.build();
+   window.FTR.test.setEnemy(1,14.8,15.5,26);
+   enemies.forEach((enemy,i)=>{enemy.stun=i===1?0:100;enemy.cool=100;});
+   enemies[1].type='flanker';enemies[1].state='seek';enemies[1].strafe=1;
+   return {built,lane:window.JMFTRTactics.inspectLane(1),
+     before:{x:enemies[1].x,y:enemies[1].y}};
+  });
+  assert.equal(setup.built.status,'BUILT');
+  assert.equal(setup.lane,true);
+  await page.evaluate(()=>window.FTR.test.freezeEnemies(false));
+  await page.waitForTimeout(370);
+  const after=await page.evaluate(()=>({
+    flanks:window.JMFTRTactics.state().flanks,
+    enemy:{x:enemies[1].x,y:enemies[1].y},
+    collision:circleFree(enemies[1].x,enemies[1].y,.2)
+  }));
+  assert(after.flanks>0);
+  assert(Math.hypot(after.enemy.x-setup.before.x,after.enemy.y-setup.before.y)>.08);
+  assert.equal(after.collision,true);
+ });
+ await check('CP12 native tactical receipts and cover retire on original restart',async()=>{
+  await page.evaluate(()=>{window.FTR.command('START');window.FTR.test.freezeEnemies(true)});
+  await page.waitForTimeout(130);
+  const r=await page.evaluate(()=>({
+   tactics:window.JMFTRTactics.state(),cover:window.JMFTRCover.state(),
+   cores:window.FTR.state().player.cores
+  }));
+  assert.equal(r.tactics.shots,0);
+  assert.equal(r.tactics.flanks,0);
+  assert.equal(r.cover.active,null);
+  assert.equal(r.cores,0);
+ });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
    console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));
@@ -412,6 +519,8 @@ try{
    assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1');
    await page.waitForFunction(()=>!!window.JMFTRNative);
    assert.equal(await page.evaluate(()=>window.JMFTRSpatial.schema),'jm.ftr.spatial-source-contact/0.1');
+   await page.waitForFunction(()=>!!window.JMFTRTactics);
+   assert.equal(await page.evaluate(()=>window.JMFTRTactics.schema),'jm.ftr.tactical-world-contact/0.1');
    await page.locator('#startBtn').tap();
    await page.evaluate(()=>window.FTR.test.activateCore(0));
    const nativeOffline=await page.evaluate(()=>window.JMFTRNative.corePulse());

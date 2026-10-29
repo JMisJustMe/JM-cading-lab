@@ -45,9 +45,19 @@ def assess(inp, donor_path, cp13_path, now=None):
     # position. Refuse incomplete, reordered or substituted host evidence.
     if not isinstance(gate,dict) or not isinstance(gate.get('records'),list) or len(gate['records'])!=len(inp['records']):
         raise ValueError('CP13_RECORD_CARDINALITY_MISMATCH')
+    # Bind the entire upstream custody summary to the expected read-only
+    # CP13 contract; a mismatched summary cannot be called a valid receipt.
+    if (gate.get('schema')!=cp13.SCHEMA or gate.get('record_count')!=len(inp['records'])
+            or gate.get('native_mutations')!=0 or gate.get('retirement_authorised_count')!=0
+            or gate.get('review_ready_count')!=sum(
+                r.get('decision')=='REVIEW_READY_NEEDS_HOST_AUTHORIZATION'
+                for r in gate['records'] if isinstance(r,dict))):
+        raise ValueError('CP13_SUMMARY_OR_READ_ONLY_CONTRACT_MISMATCH')
     for row,proof in zip(inp['records'],gate['records']):
         if (not isinstance(row,dict) or not isinstance(proof,dict)
+                or proof.get('schema')!=cp13.SCHEMA
                 or proof.get('root_native_id')!=row.get('root_native_id')
+                or proof.get('house_native_id')!=row.get('house_native_id')
                 or proof.get('label')!=str(row.get('label',''))):
             raise ValueError('CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH')
     out=[]

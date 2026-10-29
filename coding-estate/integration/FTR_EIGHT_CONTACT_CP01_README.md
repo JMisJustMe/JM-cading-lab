@@ -139,3 +139,34 @@ Workflow conclusion **SUCCESS** in all four jobs, with M001 Mandatory Production
 - **Gardles-native status: NOT MOUNTED.** Explicit full-source recovery hold documented in earlier MINI MAXPACK and THEOGAMY receipts. The code does not call generic native preconditions Gardles, even though they work.
 - No native Unity/Godot/Unreal engines execute *within* R1. Original FTR renderer still uses JavaScript raycasting on Canvas; the new visual coding bodies render original **consequence feedback**, not substitute an entire renderer.
 - Working branch and read-only main original source remain separate; PR #613 DRAFT/UNMERGED, no public deployment claim; original FTR v0.5.1 frozen/anchored untouched. CP07 small owner source seat retained and owner-editable, no dead generated descendant archive.
+
+## CP09 — OWNER-SUPPLIED SCREENSHOT FLAZ / CURRENT SEAT · 29 Oct 2026 17:45 UK
+
+**Status: FLAZ-SEATED — established scope frozen; future graphical/gameplay development requires an additive descendant and measurable regression comparison, not replacing the earned existing body.**
+
+### Source authority and lock
+- Branch source-of-truth: `JMisJustMe/JM-cading-lab` PR #613 `feat/ftr-eight-discovery-contact-20261029`, DRAFT, UNMERGED.
+- Exact **pre-FLAZ evidence-bearing source head** `7373d3d63fd853361a2e458124c7b5ceab13e965`; this CP09 ledger-only commit may advance the branch, but must **not** change the tested game implementation.
+- R1 native active code blob `ftr-native-core-contact.mjs` Git SHA-1 `1fabe48d1fced8b6371572756942269364d4e16f`. R1 `index.html` blob `21591af2e97296abe028520e3961211108a9ea40`. Frozen predecessor v0.5.1 retained and source-linked.
+- Owner Windows GroundZeroJM `JM-FTR-First-Person-R1` checkout HEAD at the above pre-FLAZ source SHA; working tree only has its preserved **untracked local** `PLAY_JM_FTR_R1.cmd` launcher; original separate `JM-cading-lab` Unity work untouched. Actual owner-local game URL returned HTTP **200** at checkpoint. Localhost availability is host/session dependent; never label this a public phone-compatible domain.
+
+### Owner's visible game observation (source: 29 Oct 2026 attached screen image)
+- User-provided screenshot `image(20261029-174549).png` **1920 × 1080**, **385,881 bytes**, SHA-256 `508998c7f112032fac0221dffd9a7a9d81fb9a25d6ab7431131a3c1f525001c8`. It exists in conversation custody, **not independently uploaded to the repo**; do not claim image bytes were stored off-chat.
+- It visually shows authentic R1 running in **Microsoft Edge on a Windows desktop/laptop**, with original JM first-person raycast arena, horizon and ground grid, central `CORE A` target, objective to find a Trace Core, bottom-left joystick/control surface, aim/fire and phase/scan/side controls on right, reticle, score **001380**, Cores **0/2**, Integrity **40**, and output **JM NATIVE CONTACT: DENIED**, plus **CORE PULSE · 1 CORE** gate hint.
+- Interpret this evidence **narrowly**: visible arena/HUD and a live-looking score/HP state on owner-device screenshot; `DENIED` alongside `0/2 cores` is **consistent with the earned-first-core gating design**. This frame **does not itself show `APPLIED`**, a first-core acquisition, physical controller, entire game completion, human acceptance of audio/controls, or proof of which code executed. Actual native code executions are established independently by traced tests below.
+- Owner qualitative acceptance: **“decent with bagga space for groundbreaking building”**. Treat as acceptance of current foundation and permission for future substantial improvement, **not** a quality/perfection crown or instruction to overwrite this appearance. Freeze recognizable game identity, control shapes, current world and player mechanics as a comparison baseline.
+
+### Executed proof, separate from screenshot
+- GitHub Actions run https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40920495686 completed **4/4 jobs SUCCESS** (native/contact, real FTR Chromium, Godot 4.7.2 headless, Parrot/Kali offline containers). **116/116 declared bounded suite checks PASS** (34+8+18+13+8+16+19). The 19 R1 Chromium checks demonstrate actual original JM Game-CODING/GameCore decision dispatch, real ammo and scan-cooldown consequence, original KicPlay → PHASE, original JMVisualGraft and JMVisualRuntime feedback, and offline re-entry; the original independent raycast rendering remains.
+- Owner's real Windows laptop using installed Edge 156 ran those same **19/19 R1 browser checks** successfully, process exit 0, after loading exact sovereign-ten and sovereign-batch-six directories. Distinct physical HOST, but still **headless and virtual input tests**; the screenshot is the separate visible-owner evidence.
+- JM M001 Mandatory Production Admission, JM Sovereign Estate Integration Conformance and Apps-Tools-Games publication validation were successful on tested code head `1a50296ee63c309e7d444813a288eb8402167575`. Subsequent additions to source consisted of README/ledger documentation only; do not fabricate a new post-doc CI pass.
+
+### No Ding / No Claim — continuing holds
+- Native Gardles original source **NOT MOUNTED**; generic native invariant/validation is not Gardles. Physical Ama-Pro, real gamepad/hand glove and Android owner-device untested.
+- Native Godot/Unity/Unreal do NOT power the live FTR browser renderer. Godot separately proved bounded Target Bridge semantics, no full-game parity.
+- R1 is owner-local and GitHub-branch source, **not merged, production deployed, or independently accessible from the public internet**. Localhost is not a remote URL.
+- Owner screenshot does NOT prove completion of an earned CORE PULSE or full game; preserve the denied/zero-core state and user observation accurately.
+- Current appearance judged “decent” with ample room for groundbreaking building. Future major graphical/simulation expansion should add under/or alongside proven JM renderer and controls, compare actual owner screenshot against new candidate, benchmark FPS and input compatibility; **regression = HOLD**. No generic replacement or colour-only re-skin.
+- **Storage:** CP09 adds a single text section to the existing canonical FLAZ ledger. No screenshot binary copy, no extra full game package, ZIP, duplicate front door, obsolete descendants or native source rewrite.
+
+**CP09 decision: FLAZ the verified original-plus-R1 source lineage and the exact visible owner baseline; only promote future earned improvements after independent runtime/visual/device gates.**

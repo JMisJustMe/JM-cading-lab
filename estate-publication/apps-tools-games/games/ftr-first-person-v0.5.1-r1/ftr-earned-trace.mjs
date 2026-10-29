@@ -65,7 +65,12 @@ function eligibility(){
   return m?.last?.source==='echo'&&!m.sighted;
  });
  if(!remembered)return {eligible:false,reason:'NO_ORIGINAL_ACTOR_INVESTIGATING_ECHO',target:t.id};
- const seen=enemies.some(enemy=>!enemy.dead&&
+ // CP13's source-authentic Phase breaks active visual contact, not
+ // geometric visibility. Preserve ordinary LOS denial outside the
+ // original active Phase window. Never grant a bonus on Phase alone:
+ // a genuine heard Echo + per-actor existing memory is still required.
+ const phaseConcealed=player.phase>0&&run.phases>0;
+ const seen=!phaseConcealed&&enemies.some(enemy=>!enemy.dead&&
   Math.hypot(enemy.x-player.x,enemy.y-player.y)<9.5&&
   los(enemy.x,enemy.y,player.x,player.y));
  if(seen)return {eligible:false,reason:'ORIGINAL_ENEMY_DIRECT_SIGHT',target:t.id};

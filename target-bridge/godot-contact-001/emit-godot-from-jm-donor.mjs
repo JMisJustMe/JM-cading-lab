@@ -12,17 +12,17 @@ const root=resolve(fileURLToPath(new URL('../../',import.meta.url)));
 const donor='target-bridge/unity-contact-001/Assets/JMTargetBridge/JMTargetBridgeUnityContact001.cs';
 const expectedBlob='3b73109dc8b476e0bb956686878ccd7ef2666966';
 const bytes=readFileSync(join(root,donor));
-const blob=createHash('sha1').update('blob '+bytes.length+'\\0').update(bytes).digest('hex');
+const blob=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 if(blob!==expectedBlob)throw new Error('JM_TARGET_BRIDGE_SOURCE_IDENTITY_MISMATCH');
 const text=bytes.toString('utf8');
 function read(pattern,label){const m=text.match(pattern);if(!m)throw new Error('DONOR_SEMANTIC_HOLD_'+label);return m;}
-const bodyId=read(/BodyId\\s*=\\s*"([^"]+)"/,'ID')[1];
+const bodyId=read(/BodyId\s*=\s*"([^"]+)"/,'ID')[1];
 const sourceAuthority=read(/Source authority remains JM/,'AUTHORITY');
-const playerX=Number(read(/player\\.transform\\.position = new Vector3\\((-?\\d+(?:\\.\\d+)?)f,\\s*0f,\\s*0f\\)/,'PLAYER_START')[1]);
-const coinX=Number(read(/coin\\.transform\\.position = new Vector3\\((-?\\d+(?:\\.\\d+)?)f,\\s*0f,\\s*0f\\)/,'COIN_START')[1]);
-const speed=Number(read(/Vector3\\.right \\* \\((\\d+(?:\\.\\d+)?)f \\* Time\\.deltaTime\\)/,'MOVEMENT_SPEED')[1]);
-const score=Number(read(/score = (\\d+);/,'SCORE')[1]);
-read(/Destroy\\(coin\\);/,'COIN_CONSUMPTION');
+const playerX=Number(read(/player\.transform\.position = new Vector3\((-?\d+(?:\.\d+)?)f,\s*0f,\s*0f\)/,'PLAYER_START')[1]);
+const coinX=Number(read(/coin\.transform\.position = new Vector3\((-?\d+(?:\.\d+)?)f,\s*0f,\s*0f\)/,'COIN_START')[1]);
+const speed=Number(read(/Vector3\.right \* \((\d+(?:\.\d+)?)f \* Time\.deltaTime\)/,'MOVEMENT_SPEED')[1]);
+const score=Number(read(/score = (\d+);/,'SCORE')[1]);
+read(/Destroy\(coin\);/,'COIN_CONSUMPTION');
 read(/scoreBefore == 0 && score == 1/,'SCORE_DELTA');
 for(const hold of ['hazard.consequence','goal.after_collecting','starting_player_hp']){
   if(!text.includes(hold))throw new Error('JM_DONOR_HOLD_LOST_'+hold);

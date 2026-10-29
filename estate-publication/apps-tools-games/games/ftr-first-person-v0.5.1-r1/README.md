@@ -49,6 +49,21 @@ This is a thin **working descendant of the existing game**, not another engine, 
 - Promote via existing JM publication governance and testable deployment route. **Do not claim live public deployment merely because the GitHub branch is readable.**
 - Keep source ownership and all original lineage. No extra generated ZIP or full duplicate game package is needed.
 
+
+## CP16 — full original input run and extraction guidance
+
+**Real source-owned completion, not a new game.** The original v0.5.1 FTR movement, E/touch TRACE, dynamic doors, seven enemy actors, projectiles, score and original extraction WIN remain unchanged. CP16 extends the existing CP10 original-world route: once both genuine Trace Cores are mounted, the original SCAN displays an actual route to the real extraction field behind the original dynamic gate. Until the gate opens, the source route returns NO_TRAVERSABLE_ROUTE. After opening it returns ROUTE_FOUND to the original extraction.x/y. CP11 cover also preserves the actual exit route. No teleport, substituted map, decorative target, new engine or duplicate game.
+
+**Independent complete-game acceptance:** The new source-owned test file coding-estate/integration/ftr-cp16-natural-run-selftest.mjs is invoked by existing GitHub Actions after 67 inherited R1 regressions. It uses ONLY ordinary original FTR.command MOVE, held INTERACT and conditional lawful PHASE, from authentic spawn through original Core A, Core B, dynamic original gates and real extraction. All enemies operate normally. There are NO FTR.test teleports, actor edits, enemy-freezing, health/score injection or fake WIN event. It admits success only if original FTR RUN_END contains win:true.
+
+**Actual results:** owner laptop Microsoft Edge 156 passed 67/67 R1 and a separate full win: game clock 19.39s, 2/2 cores, original game WIN, score 3050, 55 HP and 14 real Phase inputs. GitHub CI full win separately passed with 19.04s game time, score 3075, 55 HP, 17 real Phase inputs and traversable original extraction route length 19 tiles. Earliest owner probe additionally won without PHASE at 29.78s game time, 14 HP, with MOVE and held INTERACT only. These are headless automated ordinary player-input runs, not manual human-owner gameplay.
+
+**CI receipts:** GitHub run https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40960389080 four jobs SUCCESS. M001, Sovereign Estate Integration and Apps Tools Games validation SUCCESS on source-tested code commit 636243524e6ac68db306a0a0652c54887c2baf04. Existing bounded suite 164 assertions plus the new separate actual full-win test = 165 bounded checks.
+
+**Honest HOLD:** Both repeatable full-winning runs reported quietTraceEarned=0, so CP15 Quiet Trace has NOT been shown naturally earnable on these routes, even though its exact earlier deterministic native tests still pass. Manual owner play, advanced visuals, physical phone/gamepad/Ama-Pro, exact native Gardles and independently public deployment remain unverified.
+
+**Custody:** CP16 is a separate externally editable draft PR #637, stacked over protected CP15. Protected original CP09 and all source ancestors remain preserved. Only temporary comparison source and test dependencies may be retired when clean.
+
 ## CP15 — earned quiet original TRACE with CP14 Echo diversion
 
 **Original controls, new real choice:** Spend 2 genuine original FTR rounds to CAST ECHO (**J** / in-game touch). If that signal actually distracts an existing CP13 enemy actor and no original FTR enemy has direct line of sight to you, approach an original terminal and hold the **existing TRACE (E / touch)**. The original `doInteract` now advances that *same live original terminal* at **1.7× normal rate** as authorized by authentic `GameCodingRuntime` + `JMGameCoreRuntime` in the additional `ftr-earned-trace.mjs` module. No new TRACE button or substituted terminal. Genuine original `CORE_MOUNT`, opening original gate and +750 original score must occur before an extra earned +180 score is added once.

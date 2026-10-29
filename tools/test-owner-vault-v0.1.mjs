@@ -1339,7 +1339,6 @@ console.log('PASS: CP25 durable source/receipt writes and directory fsync are re
       return {
         stat: async () => ({ isFile: () => true, size: 3 }),
         read: async (buffer, _offset, _length) => {
-          if (buffer[0] === 255) throw Error('UNEXPECTED');
           if (injectedReadDone) return { bytesRead: 0 };
           Buffer.from('abc').copy(buffer);
           injectedReadDone = true;

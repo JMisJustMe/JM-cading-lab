@@ -7,6 +7,7 @@ on:
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
       - 'estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/**'
       - 'coding-estate/integration/ftr-published-r1-browser-selftest.mjs'
+      - 'coding-estate/integration/ftr-cp16-natural-run-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -24,6 +25,7 @@ on:
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
       - 'estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/**'
       - 'coding-estate/integration/ftr-published-r1-browser-selftest.mjs'
+      - 'coding-estate/integration/ftr-cp16-natural-run-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -82,6 +84,8 @@ jobs:
         run: node coding-estate/integration/ftr-first-person-browser-selftest.mjs
       - name: Execute published source-linked R1 carrier with actual offline PWA and touch cold reload
         run: node coding-estate/integration/ftr-published-r1-browser-selftest.mjs
+      - name: Drive actual original FTR full run from spawn to both cores and extraction with only real game inputs
+        run: node coding-estate/integration/ftr-cp16-natural-run-selftest.mjs
   godot-headless-target-bridge:
     runs-on: ubuntu-latest
     timeout-minutes: 12

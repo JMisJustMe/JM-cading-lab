@@ -312,12 +312,14 @@ try{
      window.FTR.test.setPlayer(12.3,15.4,0);
    });
    await page.waitForTimeout(1250);
+   const before=await page.evaluate(()=>window.FTR.state());
+   await page.locator('#jmCoverBuild').tap();
    const r=await page.evaluate(()=>{
-     const before=window.FTR.state(),receipt=window.JMFTRCover.build(),
-       after=window.FTR.state(),cover=window.JMFTRCover.state();
-     return {before,receipt,after,cover,solid:cover.active?window.solid(cover.active.x,cover.active.y):false,
+     const receipt=window.JMFTRCover.last(),after=window.FTR.state(),cover=window.JMFTRCover.state();
+     return {receipt,after,cover,solid:cover.active?window.solid(cover.active.x,cover.active.y):false,
         route:window.JMFTRSpatial.route()};
    });
+   r.before=before;
    console.log('JM_CP11_BUILD',JSON.stringify(r));
    assert.equal(r.receipt.status,'BUILT');
    assert.equal(r.receipt.nativeIdentity,'JM.FTR.CoverForge');

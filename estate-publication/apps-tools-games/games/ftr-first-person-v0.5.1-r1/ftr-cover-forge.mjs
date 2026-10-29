@@ -44,6 +44,7 @@ system FTRCoverForge {
 const gameAst=GameCoding.parse(source);
 const coreAst=JMGameCore.parse(org);
 let selected='Timber',barrier=null,builds=0,hits=0,breaks=0,last=null;
+let sessionIdentity=run.started;
 const output=document.getElementById('jmCoverStatus');
 const action=document.getElementById('jmCoverBuild');
 const materialButton=document.getElementById('jmCoverMaterial');
@@ -140,6 +141,13 @@ window.solid=function(x,y){
  return originalSolid(x,y);
 };
 window.updateWorld=function(dt){
+ // The original start() resets the global run receipt before the next frame.
+ // Detect it without modifying or wrapping original source, and retire all
+ // purpose-specific constructs/counters before fresh-session gameplay resumes.
+ if(run.started!==sessionIdentity){
+  barrier=null;builds=0;hits=0;breaks=0;last=null;
+  sessionIdentity=run.started;refresh();
+ }
  if(!running&&barrier){remove('SESSION_ENDED');}
  if(running&&barrier){
   barrier.ttl-=dt;

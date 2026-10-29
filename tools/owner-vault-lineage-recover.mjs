@@ -20,11 +20,13 @@ import { fileURLToPath } from 'node:url';
 const SCHEMA = 'JM.OwnerVault/0.1.LineageExport';
 const ASSET_SCHEMA = 'JM.OwnerVault/0.1.AssetLineageExport';
 const ASSET_VERSIONS = 8, ASSET_MAX_TOTAL = 24 * 1024 * 1024, ASSET_MAX_SINGLE = 64 * 1024 * 1024;
+const ASSET_EXTENDED_SCHEMA = 'JM.OwnerVault/0.1.AssetExtendedExport';
+const ASSET_EXTENDED_TOTAL = 64 * 1024 * 1024, ASSET_EXTENDED_SHARD = 8 * 1024 * 1024;
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA = /^[0-9a-f]{64}$/i;
 const MAX_VERSIONS = 16;
 const MAX_SOURCE_BYTES = 32 * 1024 * 1024;
-const MAX_PACKET_BYTES = 46 * 1024 * 1024;
+const MAX_PACKET_BYTES = 94 * 1024 * 1024;
 const MAX_SINGLE_SOURCE = 25 * 1024 * 1024;
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = code => { throw new Error(code); };
@@ -113,7 +115,66 @@ function validateAssetPacket(packet) {
   return { ready, total, asset: true };
 }
 
+// CP28: extended packet arrives as bounded 8 MiB independently verified
+// source shards. The whole original and every preserved ancestor are verified
+// BEFORE a new destination can be created. The packet remains owner-local.
+function validateExtendedPacket(packet) {
+  if(!packet || typeof packet!=='object' || Array.isArray(packet)
+    || packet.schema!==ASSET_EXTENDED_SCHEMA || !ID.test(packet.selected_id||'')
+    || !SHA.test(packet.index_pin_sha256||'')
+    || !Array.isArray(packet.versions) || packet.versions.length<1
+    || packet.versions.length>ASSET_VERSIONS
+    || packet.version_count!==packet.versions.length
+    || packet.shard_bytes!==ASSET_EXTENDED_SHARD
+    || packet.order!=='SELECTED_HEAD_TO_OLDEST_ANCESTOR')
+    fail('ASSET_EXTENDED_SCHEMA_INVALID');
+  const ready=[],seen=new Set();
+  let expected=packet.selected_id,total=0,source=null;
+  for(const item of packet.versions){
+    const m=item?.metadata, shards=item?.shards;
+    if(!m || typeof m!=='object' || Array.isArray(m)
+      || !ID.test(m.id||'') || m.id!==expected || seen.has(m.id)
+      || !SHA.test(m.sha256||'')
+      || !Number.isSafeInteger(m.bytes) || m.bytes<0 || m.bytes>ASSET_MAX_SINGLE
+      || !ID.test((m.sourceInstanceId||'').replace(/^asset-/,''))
+      || typeof m.fileName!=='string' || !m.fileName || m.fileName.length>180
+      || typeof m.name!=='string' || m.name.length>500
+      || typeof m.mediaType!=='string' || m.mediaType.length>100
+      || (m.previousVersionId!==null && !ID.test(m.previousVersionId||''))
+      || !Array.isArray(shards) || shards.length!==Math.ceil(m.bytes/ASSET_EXTENDED_SHARD))
+      fail('ASSET_EXTENDED_IDENTITY_OR_SHARD_COUNT_INVALID');
+    if(source!==null && source!==m.sourceInstanceId)
+      fail('ASSET_EXTENDED_CROSS_PURPOSE_REFUSED');
+    source=m.sourceInstanceId;
+    const buffers=[];
+    for(let i=0;i<shards.length;i++){
+      const part=shards[i], len=Math.min(ASSET_EXTENDED_SHARD,m.bytes-i*ASSET_EXTENDED_SHARD);
+      if(!part || part.shard_index!==i || part.offset!==i*ASSET_EXTENDED_SHARD
+        || part.bytes!==len || !SHA.test(part.sha256||'')
+        || typeof part.base64!=='string'
+        || part.base64.length>Math.ceil(ASSET_EXTENDED_SHARD/3)*4+4
+        || !validBoundedBase64(part.base64))fail('ASSET_EXTENDED_SHARD_IDENTITY_INVALID');
+      const decoded=Buffer.from(part.base64,'base64');
+      if(decoded.length!==len || decoded.toString('base64')!==part.base64
+        || digest(decoded)!==part.sha256.toLowerCase())
+        fail('ASSET_EXTENDED_SHARD_INTEGRITY_FAILED');
+      buffers.push(decoded);
+    }
+    const bytes=Buffer.concat(buffers,m.bytes);
+    if(digest(bytes)!==m.sha256.toLowerCase())
+      fail('ASSET_EXTENDED_WHOLE_ORIGINAL_INTEGRITY_FAILED');
+    total+=bytes.length;
+    if(total>ASSET_EXTENDED_TOTAL)fail('ASSET_EXTENDED_TOTAL_LIMIT');
+    ready.push({metadata:m,bytes});seen.add(m.id);
+    expected=m.previousVersionId||null;
+  }
+  if(expected!==null || total!==packet.source_bytes)
+    fail('ASSET_EXTENDED_INCOMPLETE_ANCESTRY');
+  return {ready,total,asset:true};
+}
+
 function validatePacket(packet) {
+  if (packet?.schema === ASSET_EXTENDED_SCHEMA) return validateExtendedPacket(packet);
   if (packet?.schema === ASSET_SCHEMA) return validateAssetPacket(packet);
   if (!packet || typeof packet !== 'object' || Array.isArray(packet)
       || packet.schema !== SCHEMA || !ID.test(packet.selected_id || '')
@@ -334,7 +395,7 @@ async function restorePacket(input, destination) {
       const name = recoveryFilename(verified, metadata); // identity-bound safe filename
       const filename = path.join(dest, name);
       await writeDurableNewFile(filename, bytes);
-      const check = await readBoundedRegularFile(filename, MAX_SINGLE_SOURCE);
+      const check = await readBoundedRegularFile(filename, verified.asset ? ASSET_MAX_SINGLE : MAX_SINGLE_SOURCE);
       if (!check.equals(bytes) || digest(check) !== metadata.sha256.toLowerCase()) {
         fail('LINEAGE_DISK_READBACK_FAILED');
       }

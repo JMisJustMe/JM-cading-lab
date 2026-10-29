@@ -49,6 +49,16 @@ This is a thin **working descendant of the existing game**, not another engine, 
 - Promote via existing JM publication governance and testable deployment route. **Do not claim live public deployment merely because the GitHub branch is readable.**
 - Keep source ownership and all original lineage. No extra generated ZIP or full duplicate game package is needed.
 
+## CP15 — earned quiet original TRACE with CP14 Echo diversion
+
+**Original controls, new real choice:** Spend 2 genuine original FTR rounds to CAST ECHO (**J** / in-game touch). If that signal actually distracts an existing CP13 enemy actor and no original FTR enemy has direct line of sight to you, approach an original terminal and hold the **existing TRACE (E / touch)**. The original `doInteract` now advances that *same live original terminal* at **1.7× normal rate** as authorized by authentic `GameCodingRuntime` + `JMGameCoreRuntime` in the additional `ftr-earned-trace.mjs` module. No new TRACE button or substituted terminal. Genuine original `CORE_MOUNT`, opening original gate and +750 original score must occur before an extra earned +180 score is added once.
+
+**Fail safe:** No real Echo, no actual actor with Echo memory, original enemy watching you, or original terminal out of range => **original unmodified normal TRACE rate**, no earned bonus. The authentic original game's map, economy, person controls and FTR raycaster remain in charge.
+
+**HUD:** A small source-owned `QUIET TRACE ... 1.7× ORIGINAL HOLD` output sits beside the *existing* interaction prompt. An initial overlay that obstructed original Core A was rejected and corrected. No extra control or full game copy.
+
+**Actual proof:** Microsoft Edge 156 owner-Windows game **67/67 source-linked browser checks PASS** on corrected code-tested commit `183acad37c3d38b4a4f0152d7660085582bdf909`. Checks include player E keyboard path, original mount/door/unmodified 750 plus bonus 180, actor LOS denial, unearned default rate, source-linked cold offline PWA. Original live-source game picture on Edge shows Core A clear and actual Quiet Trace HUD; owner screenshot hash recorded in canonical Estate FLAZ ledger. GH Actions run [40957610985](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40957610985) and its real CI conclusion remain separately checkable. This remains **draft PR #634**, unmerged, not public phone distribution or manual-owner gameplay acceptance.
+
 ## CP14 — native original-world Echo Lure (candidate)
 
 **Play, don't just read about it:** In the original FTR game, press **J** on the keyboard or tap **CAST ECHO · 2 AMMO** on touch. It spends two pieces of authentic original FTR ammunition to create a 4.5-second world-positioned amber Echo signal. Nearby original enemies without direct sight, but with a navigable source-world route, receive the sound through existing CP13 original enemy memory and can physically investigate that location. It is a tactical option to misdirect enemies, not an alternate renderer or a changed colour. A stunned enemy can hear and remember but moves only when it has recovered; real original walls and locked gates are still impassable. You may cast at most three Echoes per original run, and cannot cast again until recharge (5.5s); reset retires the signal and charges.

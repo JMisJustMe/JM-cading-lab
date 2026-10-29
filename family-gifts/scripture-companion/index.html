@@ -536,7 +536,16 @@ function drawStudy(){
   const actions=document.createElement('div');actions.className='entry-actions';
   const open=document.createElement('a');open.href=studyUrl(x.book,x.chapter);open.target='_blank';open.rel='noopener noreferrer';open.className='btn secondary small';open.textContent='Read official Study Bible ↗';
   const choose=document.createElement('button');choose.type='button';choose.className='btn secondary small';choose.textContent='Select in reader';choose.addEventListener('click',()=>jump(x.book,x.chapter,String(x.verse)));
-  actions.append(open,choose);card.append(h,p,actions);root.append(card);
+  const saveRef=document.createElement('button');saveRef.type='button';saveRef.className='btn secondary small';saveRef.textContent='☆ Save';
+  saveRef.addEventListener('click',()=>{
+   const verse=String(x.verse);
+   if(data.bookmarks.some(b=>b.book===x.book&&b.chapter===x.chapter&&String(b.verse||'')===verse)){el('jmStudyStatus').textContent='Already bookmarked: '+x.ref;return}
+   const prev=data.bookmarks;
+   data.bookmarks=[...prev,{id:Date.now().toString(36)+Math.random().toString(36).slice(2,8),book:x.book,chapter:x.chapter,verse}];
+   if(!save()){data.bookmarks=prev;el('jmStudyStatus').textContent='Not saved: storage unavailable.';return}
+   el('jmStudyStatus').textContent='Bookmarked '+x.ref+'.';renderSaved();
+  });
+  actions.append(open,choose,saveRef);card.append(h,p,actions);root.append(card);
  }
  if(!items.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='No matches; try another subject.';root.append(empty)}
 }

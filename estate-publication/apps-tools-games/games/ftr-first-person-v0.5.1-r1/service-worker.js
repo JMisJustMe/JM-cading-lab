@@ -1,7 +1,7 @@
 /* FTR v0.5.1-R1: separate offline scope. Do not purge caches of other JM apps. */
-const CACHE='jm-ftr-first-person-cp14-world-echo-r1-20261029';
+const CACHE='jm-ftr-first-person-cp15-earned-trace-20261029';
 const ORIGINAL='../ftr-first-person-v0.5.1/';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./ftr-hud-render-loop.js','./ftr-gamepad-contact.js','./ftr-spatial-depth.js','./ftr-cover-forge.mjs','./ftr-tactical-contact.mjs','./ftr-threat-memory.mjs','./ftr-echo-contact.mjs','./ftr-native-core-contact.mjs',
+const ASSETS=['./','./index.html','./manifest.webmanifest','./ftr-hud-render-loop.js','./ftr-gamepad-contact.js','./ftr-spatial-depth.js','./ftr-cover-forge.mjs','./ftr-tactical-contact.mjs','./ftr-threat-memory.mjs','./ftr-echo-contact.mjs','./ftr-earned-trace.mjs','./ftr-native-core-contact.mjs',
   '../../../../coding-estate/sovereign-ten/direct/native-core.mjs',
   '../../../../coding-estate/sovereign-ten/direct/game-native.mjs',
   '../../../../coding-estate/integration/ftr-eight-contact.mjs',
@@ -11,7 +11,7 @@ const ASSETS=['./','./index.html','./manifest.webmanifest','./ftr-hud-render-loo
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
  const names=await caches.keys();
- await Promise.all(names.filter(key=>key.startsWith('jm-ftr-first-person-cp14-')&&key!==CACHE).map(key=>caches.delete(key)));
+ await Promise.all(names.filter(key=>key.startsWith('jm-ftr-first-person-cp15-')&&key!==CACHE).map(key=>caches.delete(key)));
  await self.clients.claim();
 })()));
 self.addEventListener('fetch',event=>{

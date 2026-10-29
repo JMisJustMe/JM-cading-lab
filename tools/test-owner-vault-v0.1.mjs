@@ -1146,3 +1146,56 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
   }
 }
 console.log('PASS: CP20 independently cold-recover three exact HTML ancestors using a copied no-network CLI, refuse nine hostile packets and pre-existing destination, preserve distinct source uses.');
+
+
+// CP22 partial-recovery safety: failed writes must never recursively erase
+// exact original source bytes, unrelated files, or a replaced destination.
+// Test the same cleanup routine used by the offline recovery CLI.
+{
+  const { cleanupEmptyFailedRecovery } = await import('./owner-vault-lineage-recover.mjs');
+  const root = await fs.mkdtemp(path.join(tmpdir(), 'jm-vault-cp22-'));
+  try {
+    const partial = path.join(root, 'partial-recovery');
+    await fs.mkdir(partial);
+    const originalIdentity = await fs.lstat(partial);
+    const sentinel = path.join(partial, 'owner-original.html');
+    const sourceBytes = '<!doctype html><html><body>Protected original</body></html>';
+    await fs.writeFile(sentinel, sourceBytes);
+    assert.equal(await cleanupEmptyFailedRecovery(partial, originalIdentity),
+      'PARTIAL_RECOVERY_PRESERVED_FOR_OWNER');
+    assert.equal(await fs.readFile(sentinel, 'utf8'), sourceBytes);
+    assert.equal((await fs.lstat(partial)).ino, originalIdentity.ino);
+
+    const empty = path.join(root, 'empty-failed-recovery');
+    await fs.mkdir(empty);
+    const emptyIdentity = await fs.lstat(empty);
+    assert.equal(await cleanupEmptyFailedRecovery(empty, emptyIdentity),
+      'EMPTY_FAILED_RECOVERY_REMOVED');
+    await assert.rejects(fs.lstat(empty), /ENOENT/);
+
+    const replaced = path.join(root, 'replaced-destination');
+    await fs.mkdir(replaced);
+    const oldIdentity = await fs.lstat(replaced);
+    await fs.rename(replaced, path.join(root, 'original-destination-moved'));
+    const replacement = path.join(root, 'real-owner-directory');
+    await fs.mkdir(replacement);
+    const unrelated = path.join(replacement, 'unrelated-owner-data.txt');
+    await fs.writeFile(unrelated, 'never remove unrelated bytes');
+    await fs.symlink(replacement, replaced, 'dir');
+    assert.equal(await cleanupEmptyFailedRecovery(replaced, oldIdentity),
+      'DESTINATION_IDENTITY_CHANGED_PRESERVED');
+    assert.equal(await fs.readFile(unrelated, 'utf8'), 'never remove unrelated bytes');
+
+    const different = path.join(root, 'different-real-directory');
+    await fs.mkdir(different);
+    const firstIdentity = await fs.lstat(different);
+    await fs.rename(different, path.join(root, 'moved-original-directory'));
+    await fs.mkdir(different);
+    assert.equal(await cleanupEmptyFailedRecovery(different, firstIdentity),
+      'DESTINATION_IDENTITY_CHANGED_PRESERVED');
+    assert.equal((await fs.lstat(different)).isDirectory(), true);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true }); // Disposable synthetic test fixture ONLY.
+  }
+}
+console.log('PASS: CP22 interrupted offline recovery preserves partial source, unrelated files and redirected destinations; only its own empty directory is retired.');

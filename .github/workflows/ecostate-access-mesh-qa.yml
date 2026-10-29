@@ -1,8 +1,10 @@
 name: ECOSTATE Current Access Mesh QA
 
 on:
+  # Protected JM work can be admitted through a draft child PR before its
+  # upstream custody PR is merged. Existing path filters remain restrictive.
   pull_request:
-    branches: [main]
+    branches: ['**']
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'

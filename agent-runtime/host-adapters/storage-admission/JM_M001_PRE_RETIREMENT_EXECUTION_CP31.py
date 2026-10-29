@@ -41,6 +41,15 @@ def assess(inp, donor_path, cp13_path, now=None):
     if len(inp['records'])>100: raise ValueError('OVERBROAD_BATCH_REFUSED')
     cp13=load_cp13(cp13_path)
     gate=cp13.run(inp,donor_path,now=now or datetime.now(timezone.utc))
+    # A CP13 decision is bound to its exact original row, not merely its
+    # position. Refuse incomplete, reordered or substituted host evidence.
+    if not isinstance(gate,dict) or not isinstance(gate.get('records'),list) or len(gate['records'])!=len(inp['records']):
+        raise ValueError('CP13_RECORD_CARDINALITY_MISMATCH')
+    for row,proof in zip(inp['records'],gate['records']):
+        if (not isinstance(row,dict) or not isinstance(proof,dict)
+                or proof.get('root_native_id')!=row.get('root_native_id')
+                or proof.get('label')!=str(row.get('label',''))):
+            raise ValueError('CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH')
     out=[]
     seen=set()
     for row,proof in zip(inp['records'],gate['records']):

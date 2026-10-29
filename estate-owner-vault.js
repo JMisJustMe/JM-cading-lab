@@ -116,7 +116,9 @@
         <input type="file" id="jmVaultFileInput" aria-label="Select original file">
         <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCheckPending" type="button">CHECK HELD SAVE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
         <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
-        <div class="jm-vault-actions"><button class="button secondary" id="jmVaultPartNext" disabled type="button">DOWNLOAD NEXT VERIFIED PIECE</button></div>
+        <div class="jm-vault-actions"><button class="button secondary" id="jmVaultPartNext" disabled type="button">DOWNLOAD NEXT VERIFIED PIECE</button><button class="button secondary" id="jmVaultResumeCold" type="button">RESUME VERIFIED COLD EXPORT</button><button class="button secondary" id="jmVaultCancelCold" type="button">CANCEL HELD COLD EXPORT</button></div>
+        <input id="jmVaultColdPieces" type="file" multiple aria-label="Select already downloaded original cold pieces for SHA-256 verification">
+        <p class="jm-vault-note">After a reload, select the exact pieces already saved on this device, then RESUME. Only files independently hash-verified against the current authenticated catalog can be skipped. A browser offering a download is NOT proof that you saved it.</p>
         <p class="jm-vault-note">For large/offline lineage recovery: use EXPORT COLD PARTS on a chosen original, then download every piece individually into the same folder as its catalog. Phone browsers may ask permission for multiple downloads. No offsite backup is claimed until independent audit.</p>
         <section aria-label="Cold recovered native file re-entry" class="jm-vault-editor">
           <strong>RETURN A RECOVERED ORIGINAL TO EDITING · CP29</strong>
@@ -961,6 +963,28 @@
   }
 
 
+  // CP30: persist only source identity + authenticated catalog fingerprint.
+  // Never persist original bytes, filenames, owner key or pretend a browser's
+  // offer to download proves a piece is on the owner's device.
+  const COLD_PENDING_KEY='jm-owner-vault-cp30-cold-catalog-pending';
+  function readColdPending(){
+    const raw=localStorage.getItem(COLD_PENDING_KEY);
+    if(raw===null)return null;
+    let state;try{state=JSON.parse(raw);}catch{throw new Error('COLD_PENDING_CORRUPT_HOLD');}
+    if(!state||state.schema!=='JM.OwnerVault.ColdPending/0.1'
+      ||!/^[0-9a-f-]{36}$/i.test(state.selected_id||'')
+      ||!/^[a-f0-9]{64}$/.test(state.catalog_sha256||'')
+      ||Object.keys(state).sort().join(',')!=='catalog_sha256,schema,selected_id')
+      throw new Error('COLD_PENDING_IDENTITY_INVALID_HOLD');
+    return state;
+  }
+  function saveColdPending(state){
+    localStorage.setItem(COLD_PENDING_KEY,JSON.stringify(state));
+    const observed=readColdPending();
+    if(observed?.selected_id!==state.selected_id
+      ||observed.catalog_sha256!==state.catalog_sha256)
+      throw new Error('COLD_PENDING_CHECKPOINT_READBACK_HOLD');
+  }
   // CP28: manually initiated, one download per click. Browsers/phones can
   // block multi-file auto-downloads; never call an unreceived part a backup.
   let coldExport = null;
@@ -970,7 +994,7 @@
     a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
-  async function prepareColdExport(item) {
+  async function prepareColdExport(item,resume=false) {
     if (!(await ensureUnlocked()))return;
     coldExport=null;
     const next=el('jmVaultPartNext');if(next)next.disabled=true;
@@ -1011,12 +1035,46 @@
       }
       if(expected!==null||total!==packet.source_bytes||total>8*64*1024*1024)
         throw new Error('COLD_CATALOG_CHAIN_OR_SIZE_HOLD');
-      const catalogName='JM_Vault_Cold_Catalog_'+item.id+'.json';
-      coldExport={packet,parts,cursor:0};
-      offerColdFile(JSON.stringify(packet,null,2)+'\n',catalogName,'application/json');
-      if(next)next.disabled=false;
-      assetMessage('Cold catalog offered. Save it together with ALL '+parts.length
-        +' original pieces. Press DOWNLOAD NEXT VERIFIED PIECE for each; only independent offline audit proves a cold backup.');
+      const fingerprint=await assetDigest(new TextEncoder().encode(JSON.stringify(packet)));
+      const held=readColdPending();
+      if(resume){
+        if(!held||held.selected_id!==item.id||held.catalog_sha256!==fingerprint)
+          throw new Error('COLD_PENDING_CATALOG_CHANGED_OR_MISSING_HOLD');
+      }else{
+        if(held&&(held.selected_id!==item.id||held.catalog_sha256!==fingerprint))
+          throw new Error('COLD_PREVIOUS_EXPORT_HELD_CANCEL_EXPLICITLY');
+        if(!held)saveColdPending({schema:'JM.OwnerVault.ColdPending/0.1',
+          selected_id:item.id,catalog_sha256:fingerprint});
+      }
+      const verified=new Set();
+      if(resume){
+        const selected=Array.from(el('jmVaultColdPieces')?.files||[]);
+        if(!selected.length)throw new Error('COLD_RESUME_SELECT_SAVED_PIECES_FIRST');
+        const byName=new Map(parts.map((part,i)=>[part.p.fileName,{...part,i}]));
+        for(const file of selected){
+          const match=byName.get(file.name);
+          if(!match||verified.has(match.i)||file.size!==match.p.bytes
+            ||file.size>2*1024*1024)
+            throw new Error('COLD_RESUME_UNRECOGNISED_OR_DUPLICATE_PIECE_HOLD');
+          const bytes=new Uint8Array(await file.arrayBuffer());
+          if(bytes.length!==match.p.bytes||await assetDigest(bytes)!==match.p.sha256)
+            throw new Error('COLD_RESUME_LOCAL_ORIGINAL_HASH_HOLD');
+          verified.add(match.i);
+        }
+      }
+      const cursor=parts.findIndex((_,i)=>!verified.has(i));
+      coldExport={packet,parts,verified,cursor:cursor<0?parts.length:cursor};
+      if(!resume){
+        const catalogName='JM_Vault_Cold_Catalog_'+item.id+'.json';
+        offerColdFile(JSON.stringify(packet,null,2)+'\n',catalogName,'application/json');
+        assetMessage('Cold catalog offered. Save every source piece. Reload safety checkpoint contains ONLY IDs and catalog SHA-256. No backup claimed.');
+      }else{
+        assetMessage('Cold export resumed: '+verified.size+'/'+parts.length
+          +' actual owner-selected pieces hash-verified against the authenticated original. '
+          +(cursor<0?'All selected pieces verified; separately audit the saved folder using JM offline CLI.':
+            'DOWNLOAD NEXT VERIFIED PIECE will offer only pieces missing from your verified local selection.'));
+      }
+      if(next)next.disabled=cursor<0;
     }catch(e){
       coldExport=null;
       assetMessage('Cold source export HOLD: '+e.message+'. No offsite backup claimed.');
@@ -1025,6 +1083,11 @@
   async function nextColdPart(){
     const session=coldExport,next=el('jmVaultPartNext');
     if(!session||session.cursor>=session.parts.length)return;
+    while(session.cursor<session.parts.length && session.verified?.has(session.cursor))
+      session.cursor++;
+    if(session.cursor>=session.parts.length){
+      if(next)next.disabled=true;return;
+    }
     if(!(await ensureUnlocked()))return;
     if(next)next.disabled=true;
     try{
@@ -1039,6 +1102,8 @@
         throw new Error('COLD_SOURCE_PIECE_SHA256_HOLD');
       offerColdFile(bytes,p.fileName);
       session.cursor++;
+      while(session.cursor<session.parts.length && session.verified?.has(session.cursor))
+        session.cursor++;
       assetMessage('Original piece '+session.cursor+' / '+session.parts.length
         +' offered and hash verified. Keep every piece in the SAME folder as the catalog.'
         +(session.cursor===session.parts.length
@@ -1316,6 +1381,27 @@
     el('jmVaultCheckPending')?.addEventListener('click', confirmPendingAsset);
     el('jmVaultPrepareColdRevision')?.addEventListener('click',prepareColdNativeRevision);
     el('jmVaultPartNext')?.addEventListener('click',nextColdPart);
+    el('jmVaultResumeCold')?.addEventListener('click',async()=>{
+      try{
+        const held=readColdPending();
+        if(!held)throw new Error('NO_HELD_COLD_CATALOG');
+        if(!(await ensureUnlocked()))return;
+        const index=await request('?mode=assets');
+        if(index.schema!=='JM.OwnerVault/0.1.AssetIndex'||!Array.isArray(index.assets)
+          ||!index.assets.some(x=>x.id===held.selected_id))
+          throw new Error('COLD_HELD_HEAD_NOT_INDEXED');
+        await prepareColdExport({id:held.selected_id},true);
+      }catch(e){
+        assetMessage('COLD RESUME HOLD: '+e.message+'. Nothing uploaded, deleted or treated as backed up.');
+      }
+    });
+    el('jmVaultCancelCold')?.addEventListener('click',()=>{
+      try{
+        readColdPending();localStorage.removeItem(COLD_PENDING_KEY);
+        coldExport=null;if(el('jmVaultPartNext'))el('jmVaultPartNext').disabled=true;
+        assetMessage('Held cold export checkpoint cancelled. No locally downloaded original or remote source deleted.');
+      }catch(e){assetMessage('COLD CANCEL HOLD: '+e.message+'. Original state preserved.');}
+    });
     el('jmVaultCancelFileRevision')?.addEventListener('click', () => { assetRevision = null; el('jmVaultFileInput').value = ''; assetMessage('Revision cancelled; no file uploaded.'); });
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);
@@ -1337,6 +1423,11 @@
     installStyle();
     if (!buildPanel()) return;
     bind();
+    try{
+      const held=readColdPending();
+      if(held)assetMessage('A held cold export is pinned to original '+held.selected_id
+        +'. Select saved pieces and use RESUME VERIFIED COLD EXPORT after unlocking. No downloads assumed saved.');
+    }catch(e){assetMessage('COLD CHECKPOINT HOLD: '+e.message+'. Do not start a different source export.');}
     proofState();
     void status().then(()=>{
       const p=getPending();

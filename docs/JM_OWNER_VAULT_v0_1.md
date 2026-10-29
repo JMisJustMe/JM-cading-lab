@@ -381,3 +381,29 @@ HOLD. No private source or owner data is included in the synthetic tests.
 The existing CP20/CP21 independent recovery CLI now uses **one deterministic manifest contract** for writing, immediate independent disk readback and later cold audit. Previously, restore acknowledged success after checking only packet SHA and ancestor count in its saved manifest; audit checked a few fields but could accept an altered custody boundary or an injected claim that offsite recovery/deployment had been verified. CP24 requires exact manifest bytes on initial readback and exact canonical receipt text on later audit. An altered boundary, extra field, changed formatting or forged status is **HOLD**, never a completion claim.
 
 The original source HTML, immutable ancestry, separately intended uses, owner-selected destination, and CP22 non-destructive partial-recovery protections remain unchanged. Two new adversarial cold-audit tests exercise a forged offsite/deployment boundary and an injected owner-device success flag; a restored authentic manifest must pass again. This is **local offline integrity**, not packet origin authentication, physical-device recovery, race-proof filesystem custody, real R2, external cloud writeback, or production deployment. The existing draft PR stays unmerged pending CI and owner contact.
+
+
+## CP25 — crash-durability acknowledgement gate (29 October 2026)
+
+The same existing offline lineage recovery utility previously acknowledged exact
+HTML and manifest readback without calling fsync. A power loss or OS crash
+could therefore lose newly written source bytes, the manifest, or directory
+entries despite a successful return. CP25 uses exclusive private-mode file
+handles and explicitly syncs **each original HTML file and the manifest**
+before closing. After exact readback, it synchronises the recovery directory
+and its parent (the new directory entry), checks directory identity, and
+acknowledges recovery only if all these operations succeed.
+
+A failed or unsupported file/directory sync yields **HOLD_NO_RECOVERY**,
+not a claim of durable custody. CP22's nonrecursive cleanup still preserves
+any partial original bytes for owner-guided investigation. The existing
+synthetic test court checks write/sync/close ordering, private exclusive
+creation, refused file and directory sync failures, and non-directory
+refusal. Actual offline recovery also exercises the new fsync path in CI.
+
+**Boundaries:** Filesystem fsync is an OS durability request, not proof of
+physical power-loss survival or a separate-device cold restore. Concurrent
+hostile pathname replacement is not fully eliminated; packet authenticity,
+offsite custody, owner-device edit/reload, authenticated R2 persistence,
+private source migration and deployment propagation remain HOLD. This is
+an unmerged draft candidate, not a deployed release.

@@ -55,6 +55,25 @@ for(let attempt=0;!contactProven&&attempt<3;attempt++){
 }
 assert(contactProven,'at least one real defending athlete reacted to a physical pass in natural play');
 
+// CP20 controlled miss: assert renderer-shared ball pose reaches a displaced rim contact
+// and the rebound inherits its genuine landing position, not a random invented court point.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.evaluate(()=>JM_THIRD_COURT.pressShot());
+await page.waitForTimeout(950);
+await page.evaluate(()=>{
+ const random=Math.random;Math.random=()=>.99;
+ try{JM_THIRD_COURT.releaseShot()}finally{Math.random=random}
+});
+const midShot=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert.equal(midShot.air,'shot','a playable shot actually launched');
+assert(midShot.flightMissSide>0,'test-forced miss has a physical lateral deviation');
+await page.waitForTimeout(1050);
+const rim=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(rim.rimContacts>=1,'miss contacted the scoring rim');
+assert(rim.lastRim&&rim.lastRim.side>0,'rim contact recorded actual miss-side');
+assert(rim.lastRim.x>320,'the ball landed on the measured side of the rim');
+assert(Math.abs(rim.lastRim.reboundX-rim.lastRim.x)<90,'rebound follows contact rather than random teleport');
+console.log('PASS CP20 BALL CONTACT '+width+'px '+JSON.stringify(rim.lastRim));
 await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 assert.deepEqual(errors,[]);

@@ -185,3 +185,45 @@ export function compareEngineRoutes(input){
    godot:{role:'third-party runtime target',implemented:false},
    verdict:'Native JM state transition proved; external engine execution and render parity NOT_TESTED'};
 }
+
+/**
+ * CP04: send a canonical FTR contact to the *existing* frozen FTR First-Person
+ * v0.5.1 window.FTR.command public recipient. Original game files remain untouched.
+ * This is a delivery plan, not new game or renderer. CREATE stays a visible HOLD.
+ */
+export function planExistingFirstPersonContact(contact){
+ fail(contact?.schema==='jm.ftr.contact-event/1','FTR_RECIPIENT_SCHEMA');
+ let canonical;
+ try {
+   canonical=contactEvent({source:contact.source,gesture:contact.gesture,
+     pressure:contact.pressure,sequence:contact.sequence,capabilities:contact.capabilities});
+ } catch(error){throw Object.assign(new Error('FTR_RECIPIENT_INPUT_INVALID'),{cause:error});}
+ fail(JSON.stringify(canonical)===JSON.stringify(contact),'FTR_RECIPIENT_FORGED');
+ const p=canonical.pressure;
+ const commands={
+   Route:{name:'LOOK',payload:{x:0.12+p*0.18,y:0}},
+   Pulse:{name:'FIRE',payload:{}},
+   Hold:{name:'INTERACT',payload:{down:true}},
+   Flow:{name:'MOVE',payload:{x:0,y:0.2+p*0.6}},
+   Kic:{name:'PHASE',payload:{}},
+   Wake:{name:'START',payload:{}}
+ };
+ if(canonical.kicPlay==='Create')return {status:'HOLD_UNSUPPORTED_RECIPIENT_MECHANIC',
+  source:canonical.source,kicPlay:canonical.kicPlay,command:null,recipient:'FTR First-Person v0.5.1',originalPreserved:true};
+ const command=commands[canonical.kicPlay];
+ fail(!!command,'FTR_RECIPIENT_ROUTE_UNKNOWN');
+ return {status:'ROUTABLE',source:canonical.source,kicPlay:canonical.kicPlay,command,
+  recipient:'FTR First-Person v0.5.1',originalPreserved:true};
+}
+export async function deliverExistingFirstPersonContact({contact,dispatch,readState}){
+ fail(typeof dispatch==='function'&&typeof readState==='function','FTR_RECIPIENT_API_MISSING');
+ const planned=planExistingFirstPersonContact(contact);
+ if(planned.status!=='ROUTABLE')return {...planned,delivered:false};
+ const before=await readState();
+ fail(before&&typeof before==='object','FTR_RECIPIENT_BEFORE_MISSING');
+ await dispatch(planned.command.name,planned.command.payload);
+ const after=await readState();
+ fail(after&&typeof after==='object','FTR_RECIPIENT_AFTER_MISSING');
+ return {...planned,delivered:true,before,after,
+  proof:'EXISTING_GAME_COMMAND_APPLIED_NOT_AUTOMATIC_GAMEPLAY_SUCCESS'};
+}

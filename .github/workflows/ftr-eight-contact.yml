@@ -103,3 +103,21 @@ jobs:
           cat "$RUNNER_TEMP/godot.log"
           grep -F 'JM_TARGET_BRIDGE_GODOT_RUNTIME_PASS' "$RUNNER_TEMP/godot.log"
           ! grep -E 'GODOT_SOURCE_SEMANTICS_NOT_OBSERVED|SCRIPT ERROR|Parse Error' "$RUNNER_TEMP/godot.log"
+  parrot-kali-offline-userland:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Real Parrot OS security tool runs in sealed container with no external network
+        run: |
+          docker pull parrotsec/nmap
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges parrotsec/nmap nmap --version
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges parrotsec/nmap nmap -sT -Pn -p 80,443 127.0.0.1
+      - name: Real Kali Linux official userland boots with all network interfaces disabled
+        run: |
+          docker pull kalilinux/kali-rolling
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges kalilinux/kali-rolling \
+            bash -lc 'source /etc/os-release && echo JM_FTR_KALI_USERLAND_BOOT_ID:$ID && test "$ID" = kali && echo JM_FTR_KALI_USERLAND_PASS'
+      - name: Evidence boundary
+        run: |
+          echo 'Parrot Nmap and Kali userland executed in GitHub Actions isolated containers.'
+          echo 'This is NOT Android NetHunter or a full Parrot desktop or a real Shodan account.'

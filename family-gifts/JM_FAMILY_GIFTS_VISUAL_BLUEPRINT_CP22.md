@@ -65,3 +65,11 @@ Welcome back → resume reference → chapter navigation → opening official te
 - If a check fails, keep the proven preceding version; fix the test against real events, not timer guesses. No throwaway download packs or dead descendants.
 
 **Design advancement law**: Inherit working geometry, movement, access, identity and data. Prototype forward inside the sovereign body. Compare before promote. Integration is not replacement.
+
+## CP23 — playable movement and usable seven-passage journey (additive 29 October 2026)
+
+**THIRD COURT / real off-ball geometry:** continue original CP22 athlete frame/footwork and CP21 ball physics. Whenever a teammate is available on the ball-holding side and not acting as a called cutter or screen setter, score three actual reachable positions against defenders, passing-line clearance, teammate crowding, travel effort and distance to the ball. Use the strongest location as the real movement destination through existing acceleration and collision systems. Preserve the direct manual control, cut, pick, defensive interceptions, and all three camera modes. Evidence: `offBallReads`, `offBallSpaceGains`, `lastOffBall` exposed by original live status—these describe candidate geometry, not proof of match-winning basketball AI. Compare visually for jitter/oversteering on owner devices.
+
+**Companion / reading route:** an unobtrusive `progress` element, next-unread reference, expandable seven-step path and per-chapter official reading, mark/unmark and private note-entry route. The step completion derives exclusively from the original persisted reading queue; chapter notes count via the pre-existing exact reference parser. A separate local choice remembers the selected path on the same browser. Never reclassify a merely opened chapter as read. Existing saved note/draft/backup schema stays unmodified.
+
+**Proof gate:** Chrome/Chromium at phone (390px) and desktop (1280px), real off-ball telemetry during live possession, complete chapter journey reversible via stored data and reload; original notes and backup regressions unchanged. Deployed external source and owner-device judgement still separate proof stages.

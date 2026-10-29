@@ -1,5 +1,5 @@
 /* FTR v0.5.1-R1: separate offline scope. Do not purge caches of other JM apps. */
-const CACHE='jm-ftr-first-person-cp15-earned-trace-20261029';
+const CACHE='jm-ftr-first-person-cp15-earned-trace-r2-20261029';
 const ORIGINAL='../ftr-first-person-v0.5.1/';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./ftr-hud-render-loop.js','./ftr-gamepad-contact.js','./ftr-spatial-depth.js','./ftr-cover-forge.mjs','./ftr-tactical-contact.mjs','./ftr-threat-memory.mjs','./ftr-echo-contact.mjs','./ftr-earned-trace.mjs','./ftr-native-core-contact.mjs',
   '../../../../coding-estate/sovereign-ten/direct/native-core.mjs',

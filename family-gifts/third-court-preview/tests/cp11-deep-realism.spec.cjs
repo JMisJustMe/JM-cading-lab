@@ -18,6 +18,13 @@ await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.ke
 const roleRun=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(roleRun.athletes[0].energy<=100,'movement keeps player fatigue bounded');
 assert(roleRun.athletes[0].y<690,'role actually moves in court simulation');
+assert(roleRun.athletes[2].formWidth>roleRun.athletes[1].formWidth,'Paint Anchor has a genuinely wider body, not just a recolour');
+assert(roleRun.athletes[0].formWidth<roleRun.athletes[1].formWidth,'Floor General retains its own lighter silhouette');
+await page.keyboard.down('ArrowDown');await page.waitForTimeout(560);await page.keyboard.up('ArrowDown');
+const footwork=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(footwork.pivotPlants>=1,'CP22 actual direction reversal plants a foot in court motion');
+assert(footwork.athletes[0].pivots>=1,'CP22 active athlete, not a decorative overlay, performed pivot');
+console.log('PASS CP22 FOOTWORK '+width+'px '+JSON.stringify({pivots:footwork.pivotPlants,forms:footwork.athletes.slice(0,3).map(p=>p.formWidth)}));
 
 await page.evaluate(()=>JM_THIRD_COURT.pass());await page.evaluate(()=>JM_THIRD_COURT.callCut());
 await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_THIRD_COURT.setGuard(true));

@@ -808,6 +808,11 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
   // It intentionally contains no source bytes, owner key, or raw file content.
   const ASSET_PENDING_KEY = 'jm-owner-vault-cp23-file-save-pending';
   let assetSaveBusy = false;
+  function canonicalOriginalFileName(value) {
+    return String(value || 'jm-original-file').slice(0,180)
+      .replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-')
+      .replace(/\s+/g,' ').trim() || 'jm-original-file';
+  }
   function readAssetPending() {
     const raw = localStorage.getItem(ASSET_PENDING_KEY);
     if (raw === null) return null;
@@ -817,7 +822,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       || !/^asset-[0-9a-f-]{36}$/i.test(p.sourceInstanceId || '')
       || !/^[a-f0-9]{64}$/i.test(p.sha256 || '')
       || !Number.isSafeInteger(p.bytes) || p.bytes < 0 || p.bytes > 12*1024*1024
-      || typeof p.fileName !== 'string' || p.fileName.length < 1
+      || typeof p.fileName !== 'string' || p.fileName.length < 1 || p.fileName.length > 180
       || (p.expectedBaseId !== null && !/^[0-9a-f-]{36}$/i.test(p.expectedBaseId || ''))
       || (p.expectedBaseSha256 !== null && !/^[a-f0-9]{64}$/i.test(p.expectedBaseSha256 || ''))
       || Boolean(p.expectedBaseId) !== Boolean(p.expectedBaseSha256)) {
@@ -874,7 +879,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         // Never transform a held source identity into a new one. A retry must
         // use the exact same file bytes, filename and revision precondition.
         if (pending.sha256 !== hash || pending.bytes !== bytes.length
-          || pending.fileName !== selected.name
+          || pending.fileName !== canonicalOriginalFileName(selected.name)
           || (revision && (revision.sourceInstanceId !== pending.sourceInstanceId
             || revision.id !== pending.expectedBaseId
             || revision.sha256 !== pending.expectedBaseSha256))) {
@@ -884,7 +889,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         pending = {
           schema:'JM.OwnerVault.FileSavePending/0.1',
           sourceInstanceId:revision?.sourceInstanceId || 'asset-' + crypto.randomUUID(),
-          sha256:hash, bytes:bytes.length, fileName:selected.name,
+          sha256:hash, bytes:bytes.length, fileName:canonicalOriginalFileName(selected.name),
           expectedBaseId:revision?.id || null,
           expectedBaseSha256:revision?.sha256 || null,
           createdAt:new Date().toISOString()

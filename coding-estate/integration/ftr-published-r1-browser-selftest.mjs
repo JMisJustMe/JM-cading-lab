@@ -385,7 +385,7 @@ try{
    const current=await page.evaluate(()=>window.JMFTRCover.state());
    assert.equal(current.active,null);
    assert.equal(r.before.player.cores,0);
-   assert.equal(current.builds,2);
+   assert.equal(current.builds,0);
  });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());

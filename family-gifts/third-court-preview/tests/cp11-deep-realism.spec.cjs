@@ -87,6 +87,40 @@ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'unrelated p
 await page.mouse.up();
 assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'own guard release clears guard');
 console.log('PASS CP25 multi-pointer joystick and guard ownership '+width+'px');
+ // CP26: manual pause, new-match and paused-key transitions must not carry held input into play.
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ const cp26Shots=(await page.evaluate(()=>JM_THIRD_COURT.status())).shots;
+ await page.locator('#shoot').hover();await page.mouse.down();
+ assert(await page.locator('#shoot').evaluate(el=>el.classList.contains('held')),'manual pause test begins with real held SHOOT');
+ await page.evaluate(()=>document.querySelector('#pauseButton').click());
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'manual pause opens the existing pause state');
+ assert(!(await page.locator('#shoot').evaluate(el=>el.classList.contains('held'))),'manual pause cancels SHOOT held styling');
+ assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'manual pause closes shot meter');
+ await page.mouse.up();await page.click('#resumeBtn');
+ assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).shots,cp26Shots,'late release after manual pause cannot shoot');
+ await page.evaluate(()=>document.querySelector('#pauseButton').click());
+ await page.keyboard.down('ArrowUp');
+ const cp26PausedY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+ await page.click('#resumeBtn');await page.waitForTimeout(500);
+ assert(Math.abs((await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y-cp26PausedY)<6,'keyboard input received during pause must not move after resume');
+ await page.keyboard.up('ArrowUp');
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ const cp26JoyBox=await page.locator('#joy').boundingBox();
+ await page.mouse.move(cp26JoyBox.x+cp26JoyBox.width*.72,cp26JoyBox.y+cp26JoyBox.height*.5);await page.mouse.down();
+ assert.notEqual(await page.locator('#joyKnob').evaluate(el=>el.style.transform),'translate(0px, 0px)','restart test starts with live joystick');
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ assert.equal(await page.locator('#joyKnob').evaluate(el=>el.style.transform),'translate(0px, 0px)','new match clears joystick visual and pointer');
+ await page.mouse.up();
+ const cp26RestartY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+ await page.waitForTimeout(450);
+ assert(Math.abs((await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y-cp26RestartY)<6,'late joystick release cannot move the new match');
+ await page.locator('#guardBtn').hover();await page.mouse.down();
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'restart test starts with real held guard');
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'new match cancels previous guard');
+ await page.mouse.up();
+ console.log('PASS CP26 manual pause, paused keys and new-match input reset '+width+'px');
+
 // Isolate the interrupted-touch test from inherited natural footwork and off-ball possession checks.
 await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');

@@ -581,7 +581,164 @@ async function auditBatchPackets(inputs,destination) {
     remote_vault_modified:false,owner_offsite_custody_claimed:false};
 }
 
+
+// CP28: the same sovereign offline verifier accepts an owner-saved catalog
+// alongside independently downloaded 2 MiB source pieces. No second CLI,
+// network contact, repo root, remote credentials or embedded 512 MiB JSON.
+// The catalog is proof of inventory only after every piece is read and hashed.
+const PARTS_SCHEMA='JM.OwnerVault/0.1.AssetPartsCatalog';
+const PART_BYTES=2*1024*1024, PART_CATALOG_MAX=512*1024;
+const PART_CATALOG_VERSIONS=8, PART_CATALOG_SINGLE=64*1024*1024;
+function sourcePartFile(id,i){return 'JM_Vault_Part_'+id+'_'+String(i).padStart(2,'0')+'.bin';}
+async function readPartsCatalog(filename){
+  const origin=path.resolve(filename);
+  await assertNoSymlinkDirectoryComponents(path.dirname(origin));
+  const raw=await readBoundedRegularFile(origin,PART_CATALOG_MAX);
+  let packet;
+  try{packet=JSON.parse(raw.toString('utf8'));}catch{fail('COLD_CATALOG_NOT_JSON');}
+  if(!packet||packet.schema!==PARTS_SCHEMA||!ID.test(packet.selected_id||'')
+    ||!Array.isArray(packet.versions)||!packet.versions.length
+    ||packet.versions.length>PART_CATALOG_VERSIONS
+    ||packet.version_count!==packet.versions.length
+    ||packet.order!=='SELECTED_HEAD_TO_OLDEST_ANCESTOR'
+    ||packet.part_bytes!==PART_BYTES)fail('COLD_CATALOG_SCHEMA_HOLD');
+  let expected=packet.selected_id,identity=null,total=0;
+  const seen=new Set(),filenames=new Set();
+  for(const v of packet.versions){
+    const m=v?.metadata,parts=v?.parts;
+    if(!m||!ID.test(m.id||'')||m.id!==expected||seen.has(m.id)
+      ||!ID.test((m.sourceInstanceId||'').replace(/^asset-/,''))
+      ||!SHA.test(m.sha256||'')
+      ||!Number.isSafeInteger(m.bytes)||m.bytes<0||m.bytes>PART_CATALOG_SINGLE
+      ||typeof m.fileName!=='string'||!m.fileName||m.fileName.length>180
+      ||(m.previousVersionId!==null&&!ID.test(m.previousVersionId||''))
+      ||(identity!==null&&identity!==m.sourceInstanceId)
+      ||!Array.isArray(parts)
+      ||parts.length!==Math.max(1,Math.ceil(m.bytes/PART_BYTES))
+      ||parts.length>32)fail('COLD_CATALOG_IDENTITY_OR_SIZE_HOLD');
+    identity=m.sourceInstanceId;
+    seen.add(m.id);
+    for(let i=0;i<parts.length;i++){
+      const p=parts[i],name=sourcePartFile(m.id,i);
+      const size=i===parts.length-1?m.bytes-PART_BYTES*(parts.length-1):PART_BYTES;
+      if(!p||p.index!==i||p.fileName!==name||p.bytes!==size
+        ||!SHA.test(p.sha256||'')||filenames.has(name))
+        fail('COLD_CATALOG_PART_CONTRACT_HOLD');
+      filenames.add(name);
+    }
+    total+=m.bytes;
+    if(total>PART_CATALOG_SINGLE*PART_CATALOG_VERSIONS)
+      fail('COLD_CATALOG_TOTAL_HOLD');
+    expected=m.previousVersionId;
+  }
+  if(expected!==null||total!==packet.source_bytes)
+    fail('COLD_CATALOG_ANCESTRY_INCOMPLETE');
+  return {packet,sha256:digest(raw),total,folder:path.dirname(origin),filenames};
+}
+async function inspectColdParts(catalog){
+  // Validate all sources before creating any working output directory.
+  await assertNoSymlinkDirectoryComponents(catalog.folder);
+  for(const v of catalog.packet.versions){
+    const digestWhole=createHash('sha256');
+    let count=0;
+    for(const p of v.parts){
+      const bytes=await readBoundedRegularFile(path.join(catalog.folder,p.fileName),PART_BYTES);
+      if(bytes.length!==p.bytes||digest(bytes)!==p.sha256)
+        fail('COLD_PART_EXACT_HASH_HOLD');
+      digestWhole.update(bytes);count+=bytes.length;
+    }
+    if(count!==v.metadata.bytes||digestWhole.digest('hex')!==v.metadata.sha256)
+      fail('COLD_WHOLE_SOURCE_HASH_HOLD');
+  }
+  return catalog;
+}
+function coldRecoveryManifest(catalog){
+  return {schema:'JM.OwnerVault/0.1.OfflineRecovered',
+    selected_id:catalog.packet.selected_id,
+    packet_sha256:catalog.sha256,
+    original_schema:catalog.packet.schema,
+    original_source_bytes:catalog.total,
+    original_versions:catalog.packet.versions.map(v=>v.metadata),
+    boundary:'OWNER_LOCAL_VERIFIED_FILES_ONLY; NO R2 RESTORE, OFFSITE CUSTODY, LIVE DEPLOYMENT OR NATIVE-ID REPLACEMENT'};
+}
+async function restoreColdParts(input,destination){
+  const catalog=await inspectColdParts(await readPartsCatalog(input));
+  const dest=path.resolve(destination), parent=path.dirname(dest);
+  if(dest===parent||dest===path.parse(dest).root)fail('COLD_DESTINATION_UNSAFE');
+  const parentStat=await fs.lstat(parent);
+  if(!parentStat.isDirectory()||parentStat.isSymbolicLink())fail('COLD_PARENT_HOLD');
+  await assertNoSymlinkDirectoryComponents(parent);
+  await fs.mkdir(dest,{mode:0o700});
+  const made=await fs.lstat(dest);
+  try{
+    for(const v of catalog.packet.versions){
+      const name=nativeRecoveryName(v.metadata);
+      const fd=await fs.open(path.join(dest,name),'wx',0o600);
+      try{
+        let offset=0;
+        for(const p of v.parts){
+          const bytes=await readBoundedRegularFile(path.join(catalog.folder,p.fileName),PART_BYTES);
+          if(bytes.length!==p.bytes||digest(bytes)!==p.sha256)
+            fail('COLD_PART_CHANGED_DURING_RECOVERY');
+          let written=0;
+          while(written<bytes.length){
+            const w=await fd.write(bytes,written,bytes.length-written,offset+written);
+            if(w.bytesWritten<=0)fail('COLD_FILE_WRITE_SHORT');
+            written+=w.bytesWritten;
+          }
+          offset+=bytes.length;
+        }
+        if(offset!==v.metadata.bytes)fail('COLD_RECONSTRUCTED_BYTE_COUNT_HOLD');
+        await fd.sync();
+      }finally{await fd.close();}
+      const stored=await readBoundedRegularFile(path.join(dest,name),PART_CATALOG_SINGLE);
+      if(stored.length!==v.metadata.bytes||digest(stored)!==v.metadata.sha256)
+        fail('COLD_RECONSTRUCTED_SOURCE_READBACK_HOLD');
+    }
+    const receipt=Buffer.from(JSON.stringify(coldRecoveryManifest(catalog),null,2)+'\n');
+    await writeDurableNewFile(path.join(dest,'recovery-manifest.json'),receipt);
+    if(!(await readBoundedRegularFile(path.join(dest,'recovery-manifest.json'),PART_CATALOG_MAX)).equals(receipt))
+      fail('COLD_MANIFEST_READBACK_HOLD');
+    await syncRecoveryDirectory(dest,fs.open,made);
+    const actualDest=await fs.lstat(dest),actualParent=await fs.lstat(parent);
+    if(actualDest.ino!==made.ino||actualDest.dev!==made.dev||actualDest.isSymbolicLink()
+      ||actualParent.ino!==parentStat.ino||actualParent.dev!==parentStat.dev||actualParent.isSymbolicLink())
+      fail('COLD_DIRECTORY_IDENTITY_CHANGED');
+    await syncRecoveryDirectory(parent,fs.open,parentStat);
+  }catch(error){await cleanupEmptyFailedRecovery(dest,made);throw error;}
+  return {outcome:'OFFLINE_SEGMENTED_SOURCE_RECOVERED',
+    selected_id:catalog.packet.selected_id,version_count:catalog.packet.versions.length,
+    source_bytes:catalog.total,destination:dest,remote_vault_modified:false,
+    owner_offsite_custody_claimed:false};
+}
+async function auditColdParts(input,destination){
+  const catalog=await inspectColdParts(await readPartsCatalog(input));
+  const dest=path.resolve(destination);
+  const stat=await fs.lstat(dest);
+  if(!stat.isDirectory()||stat.isSymbolicLink())fail('COLD_AUDIT_DIRECTORY_UNSAFE');
+  await assertNoSymlinkDirectoryComponents(dest);
+  const expected=new Set(['recovery-manifest.json',...catalog.packet.versions.map(v=>nativeRecoveryName(v.metadata))]);
+  if(expected.size!==catalog.packet.versions.length+1)fail('COLD_FILENAME_COLLISION_HOLD');
+  const entries=await fs.readdir(dest,{withFileTypes:true});
+  if(entries.length!==expected.size||entries.some(e=>!expected.has(e.name)||!e.isFile()||e.isSymbolicLink()))
+    fail('COLD_AUDIT_INVENTORY_HOLD');
+  const expectedReceipt=Buffer.from(JSON.stringify(coldRecoveryManifest(catalog),null,2)+'\n');
+  const receipt=await readBoundedRegularFile(path.join(dest,'recovery-manifest.json'),PART_CATALOG_MAX);
+  if(!receipt.equals(expectedReceipt))fail('COLD_AUDIT_RECEIPT_HOLD');
+  for(const v of catalog.packet.versions){
+    const bytes=await readBoundedRegularFile(path.join(dest,nativeRecoveryName(v.metadata)),PART_CATALOG_SINGLE);
+    if(bytes.length!==v.metadata.bytes||digest(bytes)!==v.metadata.sha256)
+      fail('COLD_AUDIT_RESTORED_BYTES_HOLD');
+  }
+  return {outcome:'OFFLINE_SEGMENTED_SOURCE_AUDITED',
+    selected_id:catalog.packet.selected_id,version_count:catalog.packet.versions.length,
+    source_bytes:catalog.total,destination:dest,remote_vault_modified:false,
+    owner_offsite_custody_claimed:false};
+}
+
 async function main(args) {
+  const catalogAt=args.indexOf('--parts-catalog');
+  const catalogPath=catalogAt>=0?args[catalogAt+1]:null;
   const inputs = args.flatMap((arg,index) => arg === '--input' ? [args[index+1]] : []);
   const input = inputs[0] || null;
   const verifyOnly = args.includes('--verify-only');
@@ -589,6 +746,19 @@ async function main(args) {
   const output = outputAt >= 0 ? args[outputAt + 1] : null;
   const auditAt = args.indexOf('--audit-dir');
   const audit = auditAt >= 0 ? args[auditAt + 1] : null;
+  if(catalogAt>=0){
+    if(inputs.length||!catalogPath||catalogPath.startsWith('--')||
+      Number(verifyOnly)+Number(Boolean(output))+Number(Boolean(audit))!==1)
+      fail('USAGE: --parts-catalog saved-catalog.json (--verify-only | --output-dir NEW | --audit-dir EXISTING)');
+    if(verifyOnly){
+      const v=await inspectColdParts(await readPartsCatalog(catalogPath));
+      return {outcome:'OFFLINE_SEGMENTED_SOURCE_VERIFIED',
+        version_count:v.packet.versions.length,source_bytes:v.total,
+        packet_sha256:v.sha256,remote_vault_modified:false,owner_offsite_custody_claimed:false};
+    }
+    if(audit)return auditColdParts(catalogPath,audit);
+    return restoreColdParts(catalogPath,output);
+  }
   if (!input || inputs.some(v=>!v || v.startsWith('--'))
     || Number(verifyOnly) + Number(Boolean(output)) + Number(Boolean(audit)) !== 1) {
     fail('USAGE: --input <packet.json> [--input <another-packet.json> ...] (--verify-only | --output-dir <new-directory> | --audit-dir <existing-directory>)');
@@ -625,4 +795,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 
 export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery,
   writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile, nativeRecoveryName,
-  readBatchPackets, restoreBatchPackets, auditBatchPackets };
+  readBatchPackets, restoreBatchPackets, auditBatchPackets,
+  readPartsCatalog, inspectColdParts, restoreColdParts, auditColdParts };

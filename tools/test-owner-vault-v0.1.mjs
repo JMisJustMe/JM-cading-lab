@@ -2091,3 +2091,134 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   assert.deepEqual(storageKeys(),before,'all offline work must leave original R2 unchanged');
   console.log('PASS: CP28 >24 MiB complete two-version original lineage via bounded 8 MiB private shards, exact standalone native cold reconstruction, audit, corruption, cross-purpose and nonoverwriting HOLD.');
 }
+
+
+// CP28: previously blocked >24 MiB original binary history. Same original
+// R2/auth/CI, same offline executable. Two native JM revisions, no wrapped
+// duplicate, catalog-only is never considered independent cold custody.
+{
+  const bucket=new FakeR2(),env={
+    JM_OWNER_VAULT:bucket,JM_OWNER_VAULT_KEY:'cp28-synthetic-private'
+  };
+  const invoke=({method='GET',query='',body,key=env.JM_OWNER_VAULT_KEY}={})=>
+    call({method,query,body,key,env});
+  const hash=b=>createHash('sha256').update(b).digest('hex');
+  const size=2*1024*1024;
+  const purpose='asset-00000000-0000-4000-8000-000000002801';
+  const files=[
+    {id:'00000000-0000-4000-8000-000000002802',name:'JM_Original_Track.jmmusic',
+      bytes:Buffer.alloc(13*1024*1024+5)},
+    {id:'00000000-0000-4000-8000-000000002803',name:'JM_Original_Track.jmmusic',
+      bytes:Buffer.alloc(14*1024*1024+7)}
+  ];
+  files.forEach((f,n)=>{for(let i=0;i<f.bytes.length;i++)f.bytes[i]=(i+n*73)%251;});
+  let parent=null;
+  for(const f of files){
+    const desc={uploadId:f.id,sourceInstanceId:purpose,sha256:hash(f.bytes),
+      bytes:f.bytes.length,partCount:Math.ceil(f.bytes.length/size),
+      fileName:f.name,name:'JM original music',
+      ...(parent?{expectedBaseId:parent.id,expectedBaseSha256:parent.sha256}:{})};
+    f.desc=desc;
+    for(let i=0;i<desc.partCount;i++){
+      const bytes=f.bytes.subarray(i*size,Math.min((i+1)*size,f.bytes.length));
+      const r=await invoke({method:'POST',body:{action:'upload-asset-part',
+        file:desc,partIndex:i,partSha256:hash(bytes),base64:bytes.toString('base64')}});
+      assert.equal(r.status,201, 'each independent 2 MiB original source part must be stored');
+    }
+    const result=await invoke({method:'POST',body:{action:'finalize-chunked-asset',file:desc}});
+    assert.equal(result.status,201);
+    parent=(await result.json()).asset;
+    assert.equal(parent.sha256,hash(f.bytes));
+  }
+  const old=await invoke({query:'?mode=export-asset-lineage&asset='+parent.id});
+  assert.equal(old.status,413,'CP22 small packet must keep the historical safe total limit');
+  assert.equal((await old.json()).error,'ASSET_LINEAGE_BYTE_LIMIT');
+  const unauth=await invoke({query:'?mode=export-asset-catalog&asset='+parent.id,key:''});
+  assert.equal(unauth.status,401,'cold original catalog is owner-authenticated');
+  const before=Array.from(bucket.map,([k,v])=>[k,v.etag]);
+  const listed=await invoke({query:'?mode=export-asset-catalog&asset='+parent.id});
+  assert.equal(listed.status,200);
+  const catalog=await listed.json();
+  assert.equal(catalog.schema,'JM.OwnerVault/0.1.AssetPartsCatalog');
+  assert.equal(catalog.version_count,2);
+  assert.equal(catalog.versions[0].metadata.id,files[1].id);
+  assert.equal(catalog.versions[1].metadata.id,files[0].id);
+  assert.equal(catalog.source_bytes,files[0].bytes.length+files[1].bytes.length);
+  assert.ok(catalog.source_bytes>24*1024*1024);
+  assert.equal(catalog.versions.reduce((sum,v)=>sum+v.parts.length,0),15);
+  assert.deepEqual(Array.from(bucket.map,([k,v])=>[k,v.etag]),before,
+    'the owner catalog cannot write or copy R2 original source bytes');
+  const base=await fs.mkdtemp(path.join(tmpdir(),'jm-cp28-cold-'));
+  const tool=path.join(base,'owner-vault-lineage-recover.mjs');
+  const sources=path.join(base,'owner-saved-original-parts');
+  const restored=path.join(base,'native-recovery');
+  await fs.mkdir(sources);
+  const catalogPath=path.join(sources,'JM_Vault_Cold_Catalog_'+parent.id+'.json');
+  const run=(...argv)=>spawnSync(process.execPath,[tool,'--parts-catalog',catalogPath,...argv],
+    {cwd:base,encoding:'utf8',timeout:90000});
+  try{
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
+    await fs.writeFile(catalogPath,JSON.stringify(catalog,null,2));
+    // Deliberately incomplete collection must be refused before allocating
+    // any recovery directory or claiming cold backup possession.
+    const missing=run('--verify-only');
+    assert.notEqual(missing.status,0);
+    assert.notEqual(run('--output-dir',restored).status,0);
+    await assert.rejects(fs.lstat(restored),/ENOENT/);
+    for(const version of catalog.versions){
+      for(const p of version.parts){
+        const wrong=await invoke({query:'?mode=export-asset-part&asset='+version.metadata.id+'&part='+p.index,key:''});
+        assert.equal(wrong.status,401);
+        const piece=await invoke({query:'?mode=export-asset-part&asset='+version.metadata.id+'&part='+p.index});
+        assert.equal(piece.status,200);
+        assert.equal(piece.headers.get('x-jm-asset-id'),version.metadata.id);
+        assert.equal(piece.headers.get('x-jm-part-index'),String(p.index));
+        assert.equal(piece.headers.get('x-jm-part-sha256'),p.sha256);
+        const bytes=Buffer.from(await piece.arrayBuffer());
+        assert.equal(bytes.length,p.bytes);
+        assert.equal(hash(bytes),p.sha256);
+        await fs.writeFile(path.join(sources,p.fileName),bytes);
+      }
+    }
+    assert.deepEqual(Array.from(bucket.map,([k,v])=>[k,v.etag]),before,
+      'all owner reads must be read-only, no new remote copies');
+    const verified=run('--verify-only');
+    assert.equal(verified.status,0,verified.stderr);
+    assert.equal(JSON.parse(verified.stdout).source_bytes,catalog.source_bytes);
+    const result=run('--output-dir',restored);
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).outcome,'OFFLINE_SEGMENTED_SOURCE_RECOVERED');
+    for(const f of files){
+      const restoredBytes=await fs.readFile(path.join(restored,f.id+'__'+f.name));
+      assert.deepEqual(restoredBytes,f.bytes,'native original exact bytes recovered');
+    }
+    const audit=run('--audit-dir',restored);
+    assert.equal(audit.status,0,audit.stderr);
+    assert.equal(JSON.parse(audit.stdout).outcome,'OFFLINE_SEGMENTED_SOURCE_AUDITED');
+    assert.notEqual(run('--output-dir',restored).status,0,
+      'never overwrite an existing native working tree');
+    const p=catalog.versions[0].parts[0];
+    const piecePath=path.join(sources,p.fileName),unmodified=await fs.readFile(piecePath);
+    const tampered=Buffer.from(unmodified);tampered[0]^=1;
+    await fs.writeFile(piecePath,tampered);
+    const refused=run('--verify-only');
+    assert.notEqual(refused.status,0);
+    assert.match(refused.stderr,/COLD_PART_EXACT_HASH_HOLD/);
+    assert.notEqual(run('--audit-dir',restored).status,0);
+    assert.deepEqual(await fs.readFile(path.join(restored,files[1].id+'__'+files[1].name)),
+      files[1].bytes,'source read-only audit must not overwrite or delete working originals');
+    await fs.writeFile(piecePath,unmodified);
+    assert.equal(run('--audit-dir',restored).status,0);
+    // A valid-hash piece assigned to another creative source is not allowed
+    // to slip in as another sovereign ancestor.
+    const cross=structuredClone(catalog);
+    cross.versions[1].metadata.sourceInstanceId='asset-00000000-0000-4000-8000-000000009999';
+    await fs.writeFile(catalogPath,JSON.stringify(cross));
+    const denied=run('--verify-only');
+    assert.notEqual(denied.status,0);
+    assert.match(denied.stderr,/COLD_CATALOG_IDENTITY_OR_SIZE_HOLD/);
+  }finally{
+    await fs.rm(base,{recursive:true,force:true}); // disposable synthetic test files only
+  }
+  console.log('PASS CP28: >24 MiB original two-revision source split into 15 genuine R2 source pieces, read-only auth, offline no-host cold native reconstruction, separate-process audit, missing/tamper/cross-purpose and overwrite HOLD.');
+}

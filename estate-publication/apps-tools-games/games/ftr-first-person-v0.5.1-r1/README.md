@@ -49,6 +49,16 @@ This is a thin **working descendant of the existing game**, not another engine, 
 - Promote via existing JM publication governance and testable deployment route. **Do not claim live public deployment merely because the GitHub branch is readable.**
 - Keep source ownership and all original lineage. No extra generated ZIP or full duplicate game package is needed.
 
+## CP12 — original enemy tactical contact (draft candidate)
+
+**Source-owned recipient, not a separate AI game:** `ftr-tactical-contact.mjs` mounts directly into the original FTR world update and existing CP11 cover. It retains actual source `ftr-world.js` enemies, `ftr-controls.js` `enemyShoot()` projectile production, original `circleFree` collision, `tileAt` doors/map authority and CP11 damage/interception. Authentically imports the existing `GameCodingRuntime` / `JMGameCoreRuntime` from `coding-estate/sovereign-ten/direct/game-native.mjs` before the sentry decides to pressure a player-built barrier. Exact donor: **original FTR AI source**, not generic behavioural simulation.
+
+**Gameplay difference:** after earning a Trace Core and constructing cover, a **sentry** with a firing lane blocked specifically by the new barrier, but not by the original world map, can shoot at the barrier using the original projectile implementation. CP11 then intercepts that projectile and reduces genuine constructed material health. A **flanker** will physically attempt lateral movement using the original `circleFree` checks rather than merely swapping its graphics. The overlay reports real sentry pressure and flanking counts. Press **T** or tap **TACTICS ON/OFF** to compare against inherited source AI. Turning it OFF does not delete the original AI, player, shots, world or controls.
+
+**Proof gates:** the expanded CP12 suite includes 42 real R1 Chromium assertions (36 inherited + 6 new), covering original projectile generation and recorded cover damage, native GameCore identity and trace digest, actual flanker displacement within original collision, tactical switch-off, run restart and offline reload. Original FTR v0.5.1 remains byte-exact; CP09/10/11 stay in their own draft branches. All physical-controller, live phone, user-held visual acceptance, full world completion, native Gardles and public production remain unverified.
+
+**Development:** draft stacked PR #629, branch `feat/ftr-tactical-pressure-cp12-20261029` based on CP11 PR #628. Current code tested on GitHub Actions and the owner's actual Windows Edge host, without modifying their working `JM-cading-lab` Unity source. The local candidate lives in a **purpose-specific temporary sparse checkout** and serves only while its localhost server is active. No second full-game ZIP, public publication or permanent descendant is implied. 
+
 ## CP10 — spatial world candidate (NOT CP09 replacement)
 
 **Baseline:** CP09 frozen R1 source head `110c315d0a50e839ecfd8a60f82dd8fbb662b9b3`, retained on its own PR #613. This R1-folder source **candidate branch** is `feat/ftr-spatial-depth-cp10-20261029`; stacked DRAFT PR #624. No new game folder, engine copy, or original v0.5.1 changes.

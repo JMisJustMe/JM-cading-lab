@@ -5,20 +5,27 @@
  */
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
-import {readFile} from 'node:fs/promises';
+import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
 import {resolve,join,extname,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
+import {buildCorrectedFTRFirstPerson} from './ftr-first-person-repair.mjs';
 import {contactEvent,deliverExistingFirstPersonContact} from './ftr-eight-contact.mjs';
 
 const root=resolve(fileURLToPath(new URL('../../',import.meta.url)));
 const gameRoot='estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1/';
+const derivedRoot=await mkdtemp(join(tmpdir(),'jm-ftr-original-repair-'));
+const derived=buildCorrectedFTRFirstPerson(derivedRoot);
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.webmanifest':'application/manifest+json'};
 const server=createServer(async(req,res)=>{
   try{
     const target=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
-    const full=resolve(root,'.'+target);
-    if(!full.startsWith(root+sep))throw new Error('OUTSIDE_REPO');
+    const generated=target.startsWith('/__derived/');
+    const allowed=generated?derivedRoot:root;
+    const local=generated?target.slice('/__derived'.length):target;
+    const full=resolve(allowed,'.'+local);
+    if(!full.startsWith(allowed+sep))throw new Error('OUTSIDE_ALLOWED_ROOT');
     const body=await readFile(full);
     res.writeHead(200,{'content-type':mime[extname(full)]??'application/octet-stream','x-content-type-options':'nosniff'});
     res.end(body);
@@ -29,11 +36,22 @@ const address=server.address();let browser;let passed=0;const logs=[];
 const check=async(name,fn)=>{await fn();passed++;console.log('PASS',name)};
 try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+ const originalPage=await browser.newPage({viewport:{width:1280,height:720},deviceScaleFactor:1});
+ const originalErrors=[];
+ originalPage.on('pageerror',e=>originalErrors.push(e.message));
+ await originalPage.goto('http://127.0.0.1:'+address.port+'/'+gameRoot+'index.html',{waitUntil:'load'});
+ await originalPage.evaluate(()=>window.FTR.command('START'));
+ await originalPage.waitForTimeout(190);
+ await check('Before-fix original v0.5.1 weapon canvas scale BUGG reproduced',async()=>{
+   assert(originalErrors.some(s=>s.includes("scale")&&s.includes("2 arguments")),originalErrors.join(';'));
+   assert.equal(derived.originalFrozen,true);
+ });
+ await originalPage.close();
  const page=await browser.newPage({viewport:{width:1280,height:720},deviceScaleFactor:1});
  page.on('pageerror',e=>{logs.push('page:'+e.message);console.log('BROWSER_PAGEERROR',e.stack??e.message)});
- const url='http://127.0.0.1:'+address.port+'/'+gameRoot+'index.html';
+ const url='http://127.0.0.1:'+address.port+'/__derived/index.html';
  const response=await page.goto(url,{waitUntil:'load'});
- await check('Original First-Person v0.5.1 opened over actual HTTP',async()=>{assert.equal(response.status(),200);assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1')});
+ await check('Source-preserving corrected FTR First-Person opened over actual HTTP',async()=>{assert.equal(response.status(),200);assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1')});
  const dispatch=async(name,payload)=>page.evaluate(({name,payload})=>window.FTR.command(name,payload),{name,payload});
  const readState=async()=>page.evaluate(()=>window.FTR.state());
  const send=async(source,gesture,pressure=.5)=>deliverExistingFirstPersonContact({
@@ -104,4 +122,4 @@ try{
  console.log(JSON.stringify({schema:'jm.ftr.first-person-browser-contact/0.1',passed,failed:0,
   browser:'Playwright Chromium headless',actualGame:'FTR First-Person v0.5.1 untouched',
   surface:'real browser DOM, actual 2D canvas and game loop',ownerDevice:'NOT_TESTED',gardles:'NOT_INTEGRATED'}));
-}finally{if(browser)await browser.close();await new Promise(r=>server.close(r));}
+}finally{if(browser)await browser.close();await new Promise(r=>server.close(r));await rm(derivedRoot,{recursive:true,force:true});}

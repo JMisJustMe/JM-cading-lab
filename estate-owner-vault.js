@@ -118,6 +118,12 @@
         <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
         <div class="jm-vault-actions"><button class="button secondary" id="jmVaultPartNext" disabled type="button">DOWNLOAD NEXT VERIFIED PIECE</button></div>
         <p class="jm-vault-note">For large/offline lineage recovery: use EXPORT COLD PARTS on a chosen original, then download every piece individually into the same folder as its catalog. Phone browsers may ask permission for multiple downloads. No offsite backup is claimed until independent audit.</p>
+        <section aria-label="Cold recovered native file re-entry" class="jm-vault-editor">
+          <strong>RETURN A RECOVERED ORIGINAL TO EDITING · CP29</strong>
+          <p class="jm-vault-note">After independently recovering and editing a native file outside this website: choose its exact recovery-manifest.json below, then choose the edited file using the ORIGINAL FILE selector above. Prepare checks the complete ancestry against live private custody. Only SAVE uploads your explicit new version. Nothing overwrites or publishes your existing body.</p>
+          <input type="file" id="jmVaultColdReceipt" accept=".json,application/json" aria-label="Select independent offline recovery-manifest.json">
+          <div class="jm-vault-actions"><button type="button" class="button secondary" id="jmVaultPrepareColdRevision">VERIFY RECOVERY AND PREPARE REVISION</button></div>
+        </section>
         <div class="jm-vault-remote" id="jmVaultAssetCards"></div>
       </section>
       <section class="jm-vault-editor" id="jmVaultEditor" hidden aria-label="Private HTML source editor">
@@ -568,6 +574,99 @@
       assetMessage('SAVE HOLD: ' + error.message + '. Protected checkpoint retained. No new upload attempted.');
     }
   }
+
+  // CP29 — External recovered native edit -> SAME original Vault lineage.
+  // A local recovery receipt is untrusted until every ancestor matches the
+  // authenticated current R2 index AND current-head original bytes read back.
+  // This ONLY prepares the original REVISE control; SAVE remains explicit.
+  async function prepareColdNativeRevision() {
+    if (!(await ensureUnlocked())) return;
+    const receiptInput=el('jmVaultColdReceipt'), sourceInput=el('jmVaultFileInput');
+    const receiptFile=receiptInput?.files?.[0], editedFile=sourceInput?.files?.[0];
+    const button=el('jmVaultPrepareColdRevision');
+    if (!receiptFile || !editedFile) {
+      assetMessage('Select BOTH the independent recovery-manifest.json and your externally edited original file before preparing re-entry.');
+      return;
+    }
+    if (assetSaveBusy || readAssetPending()) {
+      assetMessage('COLD RE-ENTRY HOLD: an earlier original-file save is still pending. CHECK HELD SAVE first; no new identity or write.');
+      return;
+    }
+    button.disabled=true;
+    assetRevision=null;
+    try {
+      if (receiptFile.size<20 || receiptFile.size>512*1024)
+        throw new Error('COLD_RECEIPT_SIZE_HOLD');
+      if (editedFile.size>ASSET_LARGE_LIMIT)
+        throw new Error('EDITED_ORIGINAL_OVER_64_MIB_HOLD');
+      let receipt;
+      try { receipt=JSON.parse(await receiptFile.text()); }
+      catch { throw new Error('COLD_RECEIPT_JSON_INVALID'); }
+      const supported=new Set([
+        'JM.OwnerVault/0.1.AssetLineageExport',
+        'JM.OwnerVault/0.1.AssetExtendedExport',
+        'JM.OwnerVault/0.1.AssetPartsCatalog'
+      ]);
+      if (receipt?.schema!=='JM.OwnerVault/0.1.OfflineRecovered'
+        || !supported.has(receipt.original_schema)
+        || !/^[0-9a-f-]{36}$/i.test(receipt.selected_id||'')
+        || !Array.isArray(receipt.original_versions)
+        || receipt.original_versions.length<1 || receipt.original_versions.length>8
+        || !/^[a-f0-9]{64}$/i.test(receipt.packet_sha256||'')) {
+        throw new Error('COLD_RECOVERY_MANIFEST_NOT_NATIVE_ASSET');
+      }
+      const versions=receipt.original_versions, seen=new Set();
+      let expected=receipt.selected_id, family=null, sourceTotal=0;
+      for(const m of versions) {
+        if(!m || m.id!==expected || seen.has(m.id)
+          || !/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId||'')
+          || !/^[a-f0-9]{64}$/i.test(m.sha256||'')
+          || !Number.isSafeInteger(m.bytes) || m.bytes<0 || m.bytes>ASSET_LARGE_LIMIT
+          || typeof m.fileName!=='string' || !m.fileName || m.fileName.length>180
+          || (m.previousVersionId!==null && !/^[0-9a-f-]{36}$/i.test(m.previousVersionId||''))
+          || (family!==null && family!==m.sourceInstanceId))
+          throw new Error('COLD_RECOVERY_LINEAGE_INVALID');
+        seen.add(m.id);family=m.sourceInstanceId;
+        expected=m.previousVersionId;sourceTotal+=m.bytes;
+      }
+      if(expected!==null || sourceTotal!==receipt.original_source_bytes)
+        throw new Error('COLD_RECOVERY_ANCESTRY_INCOMPLETE');
+      const index=await request('?mode=assets');
+      if(index.schema!=='JM.OwnerVault/0.1.AssetIndex' || !Array.isArray(index.assets))
+        throw new Error('COLD_PRIVATE_INDEX_HOLD');
+      const current=index.assets.find(a=>a.sourceInstanceId===family);
+      if(!current || current.id!==receipt.selected_id)
+        throw new Error('COLD_RECOVERY_STALE_HEAD_OR_DIFFERENT_SOURCE_HOLD');
+      for(const m of versions) {
+        const remote=index.assets.find(a=>a.id===m.id);
+        if(!remote || remote.sourceInstanceId!==m.sourceInstanceId
+          || remote.sha256!==m.sha256 || remote.bytes!==m.bytes
+          || remote.previousVersionId!==m.previousVersionId
+          || remote.fileName!==m.fileName)
+          throw new Error('COLD_RECOVERY_ANCESTOR_MISMATCH');
+      }
+      // A forged/unverified local receipt cannot admit a new use by itself.
+      // Full source readback pins the parent to actual authenticated R2 bytes.
+      await checkedAssetDownload(current);
+      const editedBytes=new Uint8Array(await editedFile.arrayBuffer());
+      if(editedBytes.length!==editedFile.size)
+        throw new Error('COLD_EDITED_FILE_CHANGED_DURING_READ');
+      const hash=await assetDigest(editedBytes);
+      if(hash===current.sha256 && editedBytes.length===current.bytes)
+        throw new Error('COLD_EDIT_NOT_CHANGED_HOLD');
+      if (readAssetPending())
+        throw new Error('COLD_SAVE_CHECKPOINT_CHANGED_DURING_PREPARATION');
+      assetRevision={...current,coldLocalName:canonicalOriginalFileName(editedFile.name)};
+      assetMessage('COLD RE-ENTRY PREPARED: exact current original '+current.id
+        +' and '+versions.length+' saved ancestors matched private custody. Your edited file is different. Press SAVE SELECTED ORIGINAL FILE to CREATE ONE PROTECTED REVISION, or CANCEL; no bytes uploaded yet. Native filename stays '+current.fileName+'.');
+    }catch(e){
+      assetRevision=null;
+      assetMessage('COLD RE-ENTRY HOLD: '+e.message+'. No remote write, duplicate purpose or replacement.');
+    }finally{
+      button.disabled=false;
+    }
+  }
+
   async function saveSelectedOriginal() {
     if (assetSaveBusy) return;
     if (!(await ensureUnlocked())) return;
@@ -591,7 +690,7 @@
         // Never transform a held source identity into a new one. A retry must
         // use the exact same file bytes, filename and revision precondition.
         if (pending.sha256 !== hash || pending.bytes !== bytes.length
-          || pending.fileName !== canonicalOriginalFileName(selected.name)
+          || (pending.localFileName || pending.fileName) !== canonicalOriginalFileName(selected.name)
           || (revision && (revision.sourceInstanceId !== pending.sourceInstanceId
             || revision.id !== pending.expectedBaseId
             || revision.sha256 !== pending.expectedBaseSha256))) {
@@ -601,7 +700,9 @@
         pending = {
           schema:'JM.OwnerVault.FileSavePending/0.1',
           sourceInstanceId:revision?.sourceInstanceId || 'asset-' + crypto.randomUUID(),
-          sha256:hash, bytes:bytes.length, fileName:canonicalOriginalFileName(selected.name),
+          sha256:hash, bytes:bytes.length,
+          fileName:revision?.coldLocalName ? revision.fileName : canonicalOriginalFileName(selected.name),
+          localFileName:revision?.coldLocalName || null,
           uploadId:bytes.length > 12*1024*1024 ? crypto.randomUUID() : null,
           expectedBaseId:revision?.id || null,
           expectedBaseSha256:revision?.sha256 || null,
@@ -615,7 +716,7 @@
       const file = {
         name:revision?.name || pending.fileName,
         fileName:pending.fileName,
-        mediaType:selected.type || 'application/octet-stream',
+        mediaType:selected.type || revision?.mediaType || 'application/octet-stream',
         sourceInstanceId:pending.sourceInstanceId,
         sha256:pending.sha256,
         ...(bytes.length <= 12*1024*1024 ? {base64:assetBase64(bytes)} : {})
@@ -1213,6 +1314,7 @@
     el('jmVaultUnlock')?.addEventListener('click', unlock);
     el('jmVaultSaveFile')?.addEventListener('click', saveSelectedOriginal);
     el('jmVaultCheckPending')?.addEventListener('click', confirmPendingAsset);
+    el('jmVaultPrepareColdRevision')?.addEventListener('click',prepareColdNativeRevision);
     el('jmVaultPartNext')?.addEventListener('click',nextColdPart);
     el('jmVaultCancelFileRevision')?.addEventListener('click', () => { assetRevision = null; el('jmVaultFileInput').value = ''; assetMessage('Revision cancelled; no file uploaded.'); });
     el('jmVaultSync')?.addEventListener('click', sync);

@@ -1891,7 +1891,8 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   try {
     await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
     await fs.writeFile(saved,JSON.stringify(packet));
-    assert.equal(run('--verify-only').status,0);
+    const independentVerify=run('--verify-only');
+    assert.equal(independentVerify.status,0,independentVerify.stderr);
     const cold=run('--output-dir',restored);
     assert.equal(cold.status,0,cold.stderr);
     assert.equal(JSON.parse(cold.stdout).kind,'ORIGINAL_BINARY_ASSET');

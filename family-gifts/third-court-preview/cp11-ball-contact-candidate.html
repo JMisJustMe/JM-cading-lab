@@ -95,7 +95,19 @@ function syncHud(){$('scoreYou').textContent=String(state.score[0]).padStart(2,'
 function fx(x,y,col=colors.gold,n=12){for(let i=0;i<n;i++)state.fx.push({x,y,vx:rand(-140,140),vy:rand(-160,120),life:rand(.45,.9),t:0,col,r:rand(1.5,4)})}
 function resetPossessionClock(){state.shotClock=state.shotLimit;state.shotWarned=false;state.lastAssist=null}
 function tipTo(team,which=team*3){resetPossessionClock();state.pos=team;state.carrier=which;state.air=null;state.loose=null;state.driveBoost=0;state.guardHeld=false;state.guardPressure=0;state.rollPlay=null;state.rollWindow=0;state.passCombo=0;state.crown=false;state.shotHeld=false;state.shotCharge=0;state.passCooldown=.7;state.aiCooldown=1.1;state.driveCooldown=0;let a=state.players[which];a.x=320;a.y=team===0?692:257;a.vx=0;a.vy=0;for(let p of state.players){if(p.id===a.id)continue;p.x=clamp(p.x,LIMIT.left+30,LIMIT.right-30);p.y=team===0?clamp(p.y,315,705):clamp(p.y,200,600)}state.ball={x:a.x,y:a.y,z:9};$('shotMeter').style.display='none';syncHud()}
-function makeFlight(kind,from,to,duration,data={}){VIZ.trail=[];state.air={kind,from:{x:from.x,y:from.y,z:12},to:{x:to.x,y:to.y,z:to.z||10},dur:duration,t:0,...data};state.ball={x:from.x,y:from.y,z:12};state.shotHeld=false;$('shotMeter').style.display='none';}
+// CP20: misses own a physical landing side. Both renderer routes inherit the same ball pose.
+function shotContact(a,t){
+ const u=clamp(t,0,1),bend=u*u*u;
+ const side=a.kind==='shot'&&!a.made?(a.missSide||0):0,depth=a.kind==='shot'&&!a.made?(a.missDepth||0):0;
+ return {x:lerp(a.from.x,a.to.x,u)+side*bend,y:lerp(a.from.y,a.to.y,u)+depth*bend,
+ z:lerp(a.from.z,a.to.z,u)+(a.kind==='shot'?Math.sin(Math.PI*u)*160:Math.sin(Math.PI*u)*29)};
+}
+function makeFlight(kind,from,to,duration,data={}){VIZ.trail=[];
+ const miss=kind==='shot'&&!data.made;
+ state.air={kind,from:{x:from.x,y:from.y,z:12},to:{x:to.x,y:to.y,z:to.z||10},dur:duration,t:0,
+ missSide:miss?(Math.random()<.5?-1:1)*(24+Math.random()*39):0,
+ missDepth:miss?((Math.random()-.5)*32):0,...data};
+ state.ball={x:from.x,y:from.y,z:12};state.shotHeld=false;$('shotMeter').style.display='none';}
 function laneDanger(a,b,enemy){const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((enemy.x-a.x)*dx+(enemy.y-a.y)*dy)/(dx*dx+dy*dy||1),0,1);return Math.hypot(enemy.x-a.x-t*dx,enemy.y-a.y-t*dy)}
 // FLOOR IQ CP06: all defenders are considered along the *whole* pass route.
 function passIQ(from,to,defenders){
@@ -152,7 +164,7 @@ function livePassInterception(a,t,dt){
  notify(a.team===0?'PASS PICKED OFF!':'READ THE PASS · YOUR BALL!',1.1);
  syncHud();return true;
 }
-function updateAir(dt){if(!state.air)return;let a=state.air;a.t+=dt;let t=clamp(a.t/a.dur,0,1),height=a.kind==='shot'?Math.sin(Math.PI*t)*160:Math.sin(Math.PI*t)*29;state.ball.x=lerp(a.from.x,a.to.x,t);state.ball.y=lerp(a.from.y,a.to.y,t);state.ball.z=lerp(a.from.z,a.to.z,t)+height;if(livePassInterception(a,t,dt))return;if(t<1){if(VIZ.trail.length===0||Math.hypot(state.ball.x-VIZ.trail[VIZ.trail.length-1].x,state.ball.y-VIZ.trail[VIZ.trail.length-1].y)>5){VIZ.trail.push({...state.ball});if(VIZ.trail.length>16)VIZ.trail.shift()}return;}state.air=null;VIZ.trail=[];if(a.kind==='pass'){const p=state.players[a.toId],opposite=1-a.team;const defenders=state.players.filter(q=>q.team===opposite);const lane=Math.min(...defenders.map(q=>laneDanger(a.from,a.to,q)));const catcher=Math.min(...defenders.map(q=>dist(q,a.to)));const risk=lane<24?.36:catcher<42?.18:.03;
+function updateAir(dt){if(!state.air)return;let a=state.air;a.t+=dt;let t=clamp(a.t/a.dur,0,1),contact=shotContact(a,t);state.ball.x=contact.x;state.ball.y=contact.y;state.ball.z=contact.z;if(livePassInterception(a,t,dt))return;if(t<1){if(VIZ.trail.length===0||Math.hypot(state.ball.x-VIZ.trail[VIZ.trail.length-1].x,state.ball.y-VIZ.trail[VIZ.trail.length-1].y)>5){VIZ.trail.push({...state.ball});if(VIZ.trail.length>16)VIZ.trail.shift()}return;}state.air=null;VIZ.trail=[];if(a.kind==='pass'){const p=state.players[a.toId],opposite=1-a.team;const defenders=state.players.filter(q=>q.team===opposite);const lane=Math.min(...defenders.map(q=>laneDanger(a.from,a.to,q)));const catcher=Math.min(...defenders.map(q=>dist(q,a.to)));const risk=lane<24?.36:catcher<42?.18:.03;
 if(Math.random()<risk){const enemy=defenders.sort((q,r)=>dist(q,a.to)-dist(r,a.to))[0];resetPossessionClock();state.pos=opposite;state.carrier=enemy.id;state.turnovers+=a.team===0?1:0;state.passCombo=0;state.crown=false;notify(a.team===0?'INTERCEPTED!':'PICKED OFF! YOUR BALL',1.2);fx(a.to.x,a.to.y,opposite===0?colors.you:colors.enemy);state.aiCooldown=.7;state.ball={x:enemy.x,y:enemy.y,z:12}}else{state.carrier=p.id;if(a.team===0&&state.rollPlay?.id===p.id&&state.rollPlay.time>0){state.rollCatches++;state.rollWindow=3.8;state.rollPlay=null;notify('ROLL CAUGHT · ATTACK THE RIM!',1.3);}if(a.team===0){state.passCombo++;state.completedPasses++;state.lastAssist={fromId:a.fromId,toId:p.id,at:state.clock};if(state.passCombo>=3){state.crown=true;state.passCombo=3;notify('CROWN RUN UNLOCKED · MAKE IT COUNT!',2);sound(840,.12)}else notify('PASS CONNECTED · '+state.passCombo+'/3',.7);}else notify('RIVALS SWING THE BALL',.7);state.ball={x:p.x,y:p.y,z:10}}state.passCooldown=.14;syncHud();return}
 if(a.made){state.score[a.team]+=a.pts;if(a.team===0){state.makes++;if(a.rollFinish)state.rollMakes++;if(state.lastAssist&&state.lastAssist.toId===a.fromId&&state.lastAssist.fromId!==a.fromId&&state.clock-state.lastAssist.at<=7)state.assists++;if(a.special){state.crowns++;VIZ.confetti=1.5;}notify(a.special?'CROWN FOUR! +4':a.pts===3?'SPLASH! THREE POINTS!':'BUCKET! +2',1.8);fx(a.to.x,a.to.y,colors.gold,24);sound(890,.16)}else{notify('RIVALS SCORE · GET IT BACK',1.5);fx(a.to.x,a.to.y,colors.enemy,14);sound(240,.13)}tipTo(1-a.team);syncHud()}else{notify('RIM OUT · CHASE THE BOARD!',1.2);fx(a.to.x+rand(-18,18),a.to.y,colors.gold,8);rebound(a.team,a)} }
 function moveEntity(p,dx,dy,dt,spd=160){

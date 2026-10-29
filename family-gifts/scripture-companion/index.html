@@ -503,7 +503,7 @@ $('#jmFocusReflect').addEventListener('click',()=>{
   $('#jmFocusStatus').textContent='Your existing unfinished reflection is preserved. Continue it in Notes.';
  }else{
   $('#noteRef').value=readable(r);
-  $('#noteText').value='What stood out to me in this passage?\\n\\nWhat would I like to remember or apply?\\n\\n';
+  $('#noteText').value='What stood out to me in this passage?\n\nWhat would I like to remember or apply?\n\n';
   const saved=storeDraft();
   $('#jmFocusStatus').textContent=saved?'Your reflection draft is private and ready in Notes.':'Draft could not be saved on this device; copy your writing before leaving.';
  }

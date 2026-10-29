@@ -118,6 +118,29 @@ try{
    assert(Math.abs(m.cssWidth-390)<4);assert(Math.abs(m.cssHeight-844)<4);
    assert(m.coverageX>=.98&&m.coverageY>=.98);
  });
+ const phone=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+ const phoneErrors=[];
+ phone.on('pageerror',e=>phoneErrors.push(e.message));
+ await phone.goto(url,{waitUntil:'load'});
+ await check('Mobile touch START actually mounts playable original game',async()=>{
+   await phone.locator('#startBtn').tap();
+   assert.equal(await phone.evaluate(()=>window.FTR.state().running),true);
+ });
+ await check('Mobile touch FIRE deck actually shoots and consumes ammo',async()=>{
+   const before=await phone.evaluate(()=>window.FTR.state());
+   await phone.locator('#fire').tap();
+   const after=await phone.evaluate(()=>window.FTR.state());
+   assert.equal(after.run.shots,before.run.shots+1);
+   assert.equal(after.player.ammo,before.player.ammo-1);
+ });
+ await check('Mobile touch SCAN button executes original game mechanic',async()=>{
+   const before=await phone.evaluate(()=>window.FTR.state());
+   await phone.locator('#scan').tap();
+   const after=await phone.evaluate(()=>window.FTR.state());
+   assert.equal(after.run.scans,before.run.scans+1);
+ });
+ await check('Mobile emulation has no uncaught JS errors',async()=>assert.deepEqual(phoneErrors,[]));
+ await phone.close();
  await check('No uncaught browser errors during actual game contact',async()=>assert.deepEqual(logs,[]));
  console.log(JSON.stringify({schema:'jm.ftr.first-person-browser-contact/0.1',passed,failed:0,
   browser:'Playwright Chromium headless',actualGame:'FTR First-Person v0.5.1 untouched',

@@ -547,7 +547,7 @@ try{
  });
  await check('CP13 real Scan exposes existing enemy pressure state to original HUD',async()=>{
   await page.evaluate(()=>window.FTR.command('SCAN'));
-  await page.waitForTimeout(230);
+  await page.waitForFunction(()=>document.getElementById('jmAwarenessStatus').textContent.startsWith('SCAN'),undefined,{timeout:2500});
   const r=await page.evaluate(()=>({
     hud:document.getElementById('jmAwarenessStatus').textContent,
     events:window.FTR.state().run.events,

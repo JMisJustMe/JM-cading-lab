@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -69,6 +70,36 @@ def assess(inp, donor_path, cp13_path, now=None):
             'boundary':'READ_ONLY; do not call Library delete until evidence is authenticated by an independent host and precise owner native-ID role release is earned. This tool NEVER authorises deletion.'}
 
 
+def _read_report_exact(path, written_stat):
+    """Independently reopen the created report; never trust write acknowledgement."""
+    flags=os.O_RDONLY | getattr(os,'O_NOFOLLOW',0)
+    fd=os.open(path,flags)
+    with os.fdopen(fd,'rb') as f:
+        checked=os.fstat(f.fileno())
+        if (checked.st_dev,checked.st_ino)!=(written_stat.st_dev,written_stat.st_ino):
+            raise ValueError('REPORT_READBACK_IDENTITY_CHANGED')
+        return f.read()
+
+
+def write_once_verified(path, encoded):
+    """Private, exclusive report write; verify the exact bytes before claiming success.
+
+    On a failed readback, retain the anomalous file for owner-led investigation;
+    never overwrite a pre-existing receipt or the evidence input.
+    """
+    path=Path(path)
+    raw=encoded.encode('utf-8')
+    flags=os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os,'O_NOFOLLOW',0)
+    fd=os.open(path,flags,0o600)
+    with os.fdopen(fd,'wb') as f:
+        f.write(raw)
+        f.flush()
+        os.fsync(f.fileno())
+        created=os.fstat(f.fileno())
+    if _read_report_exact(path,created)!=raw:
+        raise ValueError('REPORT_READBACK_MISMATCH')
+
+
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--input',required=True)
@@ -83,7 +114,7 @@ def main(argv=None):
             source=Path(a.input);dst=Path(a.output)
             if dst.is_symlink() or source.resolve()==dst.resolve() or dst.exists():
                 raise ValueError('OUTPUT_OVERWRITE_OR_SYMLINK_REFUSED')
-            dst.write_text(encoded)
+            write_once_verified(dst,encoded)
         print(encoded)
         return 3 # A review result is NEVER a successful deletion-admission exit.
     except (ValueError,OSError,TypeError,KeyError,AssertionError) as exc:

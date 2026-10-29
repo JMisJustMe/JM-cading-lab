@@ -13,6 +13,7 @@ class FakeR2Object {
     this.record = record;
     this.body = record.body;
     this.etag = record.etag || fixtureEtag(record.body);
+    this.customMetadata = record.options?.customMetadata || null;
   }
   async text() { return String(this.record.body); }
   async arrayBuffer() {
@@ -1808,4 +1809,107 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   } finally {
     await fs.rm(sandbox,{recursive:true,force:true}); // synthetic test files only
   }
+}
+
+
+// CP26: bounded larger original 13 MiB (7 R2 source parts); exact original
+// custody, safe retry, refused premature index, corruption detection and
+// portable off-host source recovery through the EXISTING JM offline tool.
+{
+  const bucket = new FakeR2();
+  const privateEnv={JM_OWNER_VAULT:bucket,JM_OWNER_VAULT_KEY:'cp26-private-fixture'};
+  const invoke=({method='GET',query='',body}={})=>
+    call({method,query,body,key:privateEnv.JM_OWNER_VAULT_KEY,env:privateEnv});
+  const chunkSize=2*1024*1024;
+  const bytes=Buffer.alloc(13*1024*1024+5);
+  for(let i=0;i<bytes.length;i++)bytes[i]=i%251;
+  const sha=b=>createHash('sha256').update(b).digest('hex');
+  const file={
+    uploadId:'00000000-0000-4000-8000-000000000261',
+    sourceInstanceId:'asset-00000000-0000-4000-8000-000000000262',
+    bytes:bytes.length,sha256:sha(bytes),partCount:Math.ceil(bytes.length/chunkSize),
+    name:'JM Original Large Music Project',fileName:'large-original.jmmusic',
+    mediaType:'application/octet-stream'
+  };
+  assert.equal(file.partCount,7);
+  const makePart = i => {
+    const chunk=bytes.subarray(i*chunkSize,Math.min((i+1)*chunkSize,bytes.length));
+    return {action:'upload-asset-part',file,partIndex:i,partSha256:sha(chunk),base64:chunk.toString('base64')};
+  };
+  const preflight=await invoke({method:'POST',body:{action:'finalize-chunked-asset',file}});
+  assert.equal(preflight.status,404,'finalization must fail closed when any part is missing');
+  assert.equal((await preflight.json()).error,'ASSET_PART_MISSING');
+  assert.equal((await (await invoke({query:'?mode=assets'})).json()).assets.length,0);
+  const bad=makePart(0);bad.partSha256='0'.repeat(64);
+  const refused=await invoke({method:'POST',body:bad});
+  assert.equal(refused.status,409);
+  assert.equal((await refused.json()).error,'ASSET_PART_CLIENT_HASH_MISMATCH');
+  for(let i=0;i<file.partCount;i++) {
+    const result=await invoke({method:'POST',body:makePart(i)});
+    assert.equal(result.status,201);
+    assert.equal((await result.json()).outcome,'ASSET_PART_STORED');
+  }
+  const replay=await invoke({method:'POST',body:makePart(0)});
+  assert.equal(replay.status,200);
+  assert.equal((await replay.json()).outcome,'ASSET_PART_UNCHANGED');
+  const tamperedPart=makePart(0);tamperedPart.base64=Buffer.alloc(chunkSize,42).toString('base64');
+  tamperedPart.partSha256=sha(Buffer.alloc(chunkSize,42));
+  const different=await invoke({method:'POST',body:tamperedPart});
+  assert.equal(different.status,409,'one part key cannot mutate its already verified original purpose');
+  assert.equal((await different.json()).error,'ASSET_PART_INTEGRITY_MISMATCH');
+  const finished=await invoke({method:'POST',body:{action:'finalize-chunked-asset',file}});
+  assert.equal(finished.status,201);
+  const asset=(await finished.json()).asset;
+  assert.equal(asset.id,file.uploadId);
+  assert.equal(asset.storageKind,'chunked-v1');
+  assert.equal(asset.partCount,7);
+  assert.equal(asset.partHashes.length,7);
+  assert.equal(asset.previousVersionId,null);
+  const index=(await (await invoke({query:'?mode=assets'})).json()).assets;
+  assert.equal(index.length,1);
+  assert.equal(index[0].sourceInstanceId,file.sourceInstanceId);
+  const held=await invoke({query:'?asset='+asset.id});
+  assert.equal(held.status,200);
+  assert.deepEqual(Buffer.from(await held.arrayBuffer()),bytes);
+  const again=await invoke({method:'POST',body:{action:'finalize-chunked-asset',file}});
+  assert.equal(again.status,200);
+  assert.equal((await again.json()).asset.id,asset.id);
+  assert.equal((await (await invoke({query:'?mode=assets'})).json()).assets.length,1);
+
+  // This source fits the existing 24 MiB complete-lineage on-demand export.
+  const lineage=await invoke({query:'?mode=export-asset-lineage&asset='+asset.id});
+  assert.equal(lineage.status,200);
+  const packet=await lineage.json();
+  assert.equal(packet.version_count,1);
+  assert.equal(packet.source_bytes,bytes.length);
+  const dir=await fs.mkdtemp(path.join(tmpdir(),'jm-vault-cp26-'));
+  const tool=path.join(dir,'owner-vault-lineage-recover.mjs');
+  const saved=path.join(dir,'original-source-packet.json');
+  const restored=path.join(dir,'restored-native');
+  const run=(...args)=>spawnSync(process.execPath,[tool,'--input',saved,...args],
+    {cwd:dir,encoding:'utf8',timeout:25000});
+  try {
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
+    await fs.writeFile(saved,JSON.stringify(packet));
+    assert.equal(run('--verify-only').status,0);
+    const cold=run('--output-dir',restored);
+    assert.equal(cold.status,0,cold.stderr);
+    assert.equal(JSON.parse(cold.stdout).kind,'ORIGINAL_BINARY_ASSET');
+    assert.deepEqual(await fs.readFile(path.join(restored,asset.id+'__large-original.jmmusic')),bytes);
+    const audit=run('--audit-dir',restored);
+    assert.equal(audit.status,0,audit.stderr);
+  }finally{
+    await fs.rm(dir,{recursive:true,force:true});
+  }
+  const partKey='jm-owner-vault/v0.1/assets/parts/'+asset.id+'/0.bin';
+  const originalPart=bucket.map.get(partKey).body;
+  const altered=Buffer.from(originalPart);
+  altered[0]^=1;bucket.map.get(partKey).body=altered;
+  const corrupted=await invoke({query:'?asset='+asset.id});
+  assert.equal(corrupted.status,409);
+  assert.equal((await corrupted.json()).error,'ASSET_PART_INTEGRITY_MISMATCH');
+  assert.equal((await (await invoke({query:'?mode=assets'})).json()).assets.length,1);
+  bucket.map.get(partKey).body=originalPart;
+  assert.deepEqual(Buffer.from(await (await invoke({query:'?asset='+asset.id})).arrayBuffer()),bytes);
+  console.log('PASS: CP26 13 MiB original native source in seven immutable 2 MiB pieces, exact R2 and offline cold recovery, concurrent-idempotent retries, corruption and incomplete transfer HOLD.');
 }

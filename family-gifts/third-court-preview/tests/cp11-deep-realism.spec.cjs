@@ -21,6 +21,15 @@ assert(roleRun.athletes[0].y<690,'role actually moves in court simulation');
 assert(roleRun.offBallReads>0,'CP23 natural possession actively evaluates teammates passing lanes');
 assert(Number.isFinite(roleRun.offBallSpaceGains),'CP23 spacing gains are bounded numeric telemetry');
 console.log('PASS CP23 OFF-BALL READ '+width+'px '+JSON.stringify({reads:roleRun.offBallReads,gains:roleRun.offBallSpaceGains,last:roleRun.lastOffBall}));
+assert(roleRun.athletes[2].formWidth>roleRun.athletes[1].formWidth,'Paint Anchor has a genuinely wider body, not just a recolour');
+assert(roleRun.athletes[0].formWidth<roleRun.athletes[1].formWidth,'Floor General retains its own lighter silhouette');
+await page.keyboard.down('ArrowDown');await page.waitForTimeout(560);await page.keyboard.up('ArrowDown');
+const footwork=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(footwork.pivotPlants>=1,'CP22 actual direction reversal plants a foot in court motion');
+assert(footwork.athletes[0].pivots>=1,'CP22 active athlete, not a decorative overlay, performed pivot');
+console.log('PASS CP22 FOOTWORK '+width+'px '+JSON.stringify({pivots:footwork.pivotPlants,forms:footwork.athletes.slice(0,3).map(p=>p.formWidth)}));
+
+// CP24 resets its own match only after CP22 reversal proof.
 await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 assert.equal(await page.evaluate(()=>JM_THIRD_COURT.callCut()),true,'CP24 normal live-ball cut accepted');
 await page.waitForFunction(()=>JM_THIRD_COURT.status().cutDefensiveReads>=3,{},{timeout:6000});
@@ -35,14 +44,6 @@ const guardAfter=cutB.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
 assert(Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y)>1,
  'CP24 defender physically moved while countering cut');
 console.log('PASS CP24 LIVE CUT DEFENCE '+width+'px '+JSON.stringify({reads:cutB.cutDefensiveReads,assigned:cutA.lastCutDefense,guardMoved:Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y).toFixed(1)}));
-
-assert(roleRun.athletes[2].formWidth>roleRun.athletes[1].formWidth,'Paint Anchor has a genuinely wider body, not just a recolour');
-assert(roleRun.athletes[0].formWidth<roleRun.athletes[1].formWidth,'Floor General retains its own lighter silhouette');
-await page.keyboard.down('ArrowDown');await page.waitForTimeout(560);await page.keyboard.up('ArrowDown');
-const footwork=await page.evaluate(()=>JM_THIRD_COURT.status());
-assert(footwork.pivotPlants>=1,'CP22 actual direction reversal plants a foot in court motion');
-assert(footwork.athletes[0].pivots>=1,'CP22 active athlete, not a decorative overlay, performed pivot');
-console.log('PASS CP22 FOOTWORK '+width+'px '+JSON.stringify({pivots:footwork.pivotPlants,forms:footwork.athletes.slice(0,3).map(p=>p.formWidth)}));
 
 await page.evaluate(()=>JM_THIRD_COURT.pass());await page.evaluate(()=>JM_THIRD_COURT.callCut());
 await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_THIRD_COURT.setGuard(true));

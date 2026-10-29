@@ -1688,3 +1688,124 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   assert.ok(longNative.endsWith('.mp3'), 'CP24 a long filename may not silently lose the native extension');
   assert.ok(longNative.length <= id.length + 2 + 120);
 }
+
+
+// CP25: multiple independent real Owner Vault original sources can be
+// reconstructed by the unchanged original CP20 CLI in one new cold destination.
+// No duplicate purpose, no source bytes silently missing, no overwrite.
+{
+  const bucket=new FakeR2(), isolatedEnv={
+    JM_OWNER_VAULT:bucket, JM_OWNER_VAULT_KEY:'cp25-synthetic-private-only'
+  };
+  const invoke=({method='GET',query='',body}={})=>
+    call({method,query,body,env:isolatedEnv,key:isolatedEnv.JM_OWNER_VAULT_KEY});
+  const hash=b=>createHash('sha256').update(b).digest('hex');
+  const html=[
+    '<!doctype html><html><body>JM sovereign first source</body></html>',
+    '<!doctype html><html><body>JM sovereign revised source</body></html>'
+  ];
+  let htmlHead;
+  for (const content of html) {
+    const r=await invoke({method:'POST',body:{action:'upload-body',
+      body:{sourceInstanceId:'cp25-original-html-purpose',name:'JM CP25 game',fileName:'game.html',content}}});
+    assert.equal(r.status,201);
+    htmlHead=(await r.json()).body.id;
+  }
+  const sources=[
+    {bytes:[Buffer.from([0,255,128,4,3]),Buffer.from([0,255,128,4,2])],
+      name:'JM_Music.wav',id:'asset-00000000-0000-4000-8000-000000000251'},
+    {bytes:[Buffer.from([0,255,128,4,3])],
+      name:'JM_Art.psd',id:'asset-00000000-0000-4000-8000-000000000252'}
+  ];
+  for (const source of sources) {
+    let previous=null;
+    source.ids=[];
+    for (const bytes of source.bytes) {
+      const r=await invoke({method:'POST',body:{action:'upload-asset',file:{
+        name:source.name,fileName:source.name,mediaType:'application/octet-stream',
+        sha256:hash(bytes),base64:bytes.toString('base64'),sourceInstanceId:source.id,
+        ...(previous?{expectedBaseId:previous.id,expectedBaseSha256:previous.sha256}:{})
+      }}});
+      assert.equal(r.status,201);
+      previous=(await r.json()).asset;
+      source.ids.push(previous.id);
+    }
+  }
+  const responseHtml=await invoke({query:'?mode=export-lineage&body='+htmlHead});
+  assert.equal(responseHtml.status,200);
+  const packetHtml=await responseHtml.json();
+  const packets=[packetHtml];
+  for (const source of sources) {
+    const response=await invoke({query:'?mode=export-asset-lineage&asset='+source.ids.at(-1)});
+    assert.equal(response.status,200);
+    packets.push(await response.json());
+  }
+  const before=[...bucket.map.entries()].map(([k,v])=>[k,Buffer.isBuffer(v.body)?v.body.toString('hex'):v.body]);
+  const sandbox=await fs.mkdtemp(path.join(tmpdir(),'jm-vault-cp25-'));
+  const tool=path.join(sandbox,'owner-vault-lineage-recover.mjs');
+  const destination=path.join(sandbox,'all-originals');
+  const packetPaths=packets.map((_,i)=>path.join(sandbox,'source-'+i+'.json'));
+  const args=packetPaths.flatMap(f=>['--input',f]);
+  const run=(...tail)=>spawnSync(process.execPath,[tool,...args,...tail],
+    {cwd:sandbox,encoding:'utf8',timeout:20000});
+  try {
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
+    for(let i=0;i<packets.length;i++)
+      await fs.writeFile(packetPaths[i],JSON.stringify(packets[i],null,2));
+    const checked=run('--verify-only');
+    assert.equal(checked.status,0,checked.stderr);
+    assert.equal(JSON.parse(checked.stdout).outcome,'OFFLINE_MULTI_PACKET_VERIFIED');
+    assert.equal(JSON.parse(checked.stdout).packet_count,3);
+    assert.equal(JSON.parse(checked.stdout).version_count,5);
+    const recovered=run('--output-dir',destination);
+    assert.equal(recovered.status,0,recovered.stderr);
+    assert.equal(JSON.parse(recovered.stdout).outcome,'OFFLINE_MULTI_SOURCE_RECOVERED');
+    for(const v of packetHtml.versions)
+      assert.equal(await fs.readFile(path.join(destination,v.metadata.id+'.html'),'utf8'),v.content);
+    for(const source of sources) for(let i=0;i<source.ids.length;i++)
+      assert.deepEqual(
+        await fs.readFile(path.join(destination,source.ids[i]+'__'+source.name)),
+        source.bytes[i]);
+    const names=await fs.readdir(destination);
+    assert.equal(names.length,6);
+    assert.equal(new Set(names).size,6);
+    const receipt=JSON.parse(await fs.readFile(path.join(destination,'recovery-manifest.json'),'utf8'));
+    assert.equal(receipt.original_lineages.length,3);
+    assert.equal(receipt.schema,'JM.OwnerVault/0.1.OfflineBatchRecovered');
+    assert.equal(receipt.total_versions,5);
+    assert.equal(run('--audit-dir',destination).status,0);
+    assert.notEqual(run('--output-dir',destination).status,0,'a second run must refuse the existing original files');
+    const original=path.join(destination,sources[1].ids[0]+'__'+sources[1].name);
+    await fs.writeFile(original,Buffer.from([99,99,99]));
+    assert.notEqual(run('--audit-dir',destination).status,0,'cold audit must detect changed original');
+    await fs.writeFile(original,sources[1].bytes[0]);
+    assert.equal(run('--audit-dir',destination).status,0);
+    const extra=path.join(destination,'unverified-creature.js');
+    await fs.writeFile(extra,'not previously proven');
+    assert.notEqual(run('--audit-dir',destination).status,0,'unrelated extra sources cannot be crowned');
+    await fs.unlink(extra);
+    assert.equal(run('--audit-dir',destination).status,0);
+
+    // A different packet path pointing to the same original source identity
+    // must be refused rather than counted as another sovereign creation.
+    const repeated=spawnSync(process.execPath,[tool,'--input',packetPaths[1],
+      '--input',packetPaths[1],'--verify-only'],{cwd:sandbox,encoding:'utf8',timeout:20000});
+    assert.notEqual(repeated.status,0);
+    assert.match(repeated.stderr,/BATCH_OVERLAPPING_SOURCE_USE_HOLD/);
+    const corrupted=structuredClone(packets[1]);
+    corrupted.versions[0].base64=Buffer.from('wrong').toString('base64');
+    await fs.writeFile(packetPaths[1],JSON.stringify(corrupted));
+    const refused=run('--verify-only');
+    assert.notEqual(refused.status,0);
+    assert.match(refused.stderr,/ASSET_LINEAGE_EXACT_BINARY_INTEGRITY_FAILED/);
+    const noNew=path.join(sandbox,'do-not-create-on-corruption');
+    assert.notEqual(run('--output-dir',noNew).status,0);
+    await assert.rejects(fs.lstat(noNew),/ENOENT/);
+    assert.deepEqual([...bucket.map.entries()].map(([k,v])=>
+      [k,Buffer.isBuffer(v.body)?v.body.toString('hex'):v.body]),before,
+      'cold extraction must not mutate a byte of the original private R2 source');
+    console.log('PASS: CP25 original batch cold recovery — mixed HTML game, WAV/audio and PSD/art originals; exact 5 source versions, identity separation, fsync/audit, tamper and overwrite refusal.');
+  } finally {
+    await fs.rm(sandbox,{recursive:true,force:true}); // synthetic test files only
+  }
+}

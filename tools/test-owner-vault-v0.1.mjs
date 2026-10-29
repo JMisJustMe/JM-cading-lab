@@ -1282,6 +1282,7 @@ console.log('PASS: CP22 interrupted offline recovery preserves partial source, u
     /SYNTHETIC_FILE_FSYNC_FAILURE/,
     'CP25 failed file fsync must never return a success acknowledgement');
   assert.deepEqual(failedCalls, ['write', 'sync', 'close']);
+  const dirFlags = fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_DIRECTORY;
   const dirCalls = [];
   const dirOpen = async (name, flag) => {
     dirCalls.push(['open', name, flag]);
@@ -1293,7 +1294,7 @@ console.log('PASS: CP22 interrupted offline recovery preserves partial source, u
   };
   await syncRecoveryDirectory('synthetic-directory', dirOpen);
   assert.deepEqual(dirCalls, [
-    ['open', 'synthetic-directory', 'r'], ['sync'], ['close']
+    ['open', 'synthetic-directory', dirFlags], ['sync'], ['close']
   ]);
   const refused = [];
   await assert.rejects(syncRecoveryDirectory('synthetic-directory',
@@ -1309,8 +1310,42 @@ console.log('PASS: CP22 interrupted offline recovery preserves partial source, u
       sync: async () => { throw Error('MUST_NOT_SYNC_NON_DIRECTORY'); },
       close: async () => {}
     })), /LINEAGE_DIRECTORY_SYNC_UNSAFE/);
+  // CP29: refuse an actual symlinked directory, even when the earlier
+  // lstat preflight saw a genuine directory. No owner files are involved.
+  const root = await fs.mkdtemp(path.join(tmpdir(), 'jm-vault-cp29-'));
+  try {
+    const real = path.join(root, 'original-directory');
+    const moved = path.join(root, 'moved-original-directory');
+    const link = path.join(root, 'redirected-directory');
+    await fs.mkdir(real);
+    const original = await fs.lstat(real);
+    await fs.symlink(real, link, 'dir');
+    await assert.rejects(syncRecoveryDirectory(link, fs.open, original),
+      /ELOOP|ENOTDIR|LINEAGE_DIRECTORY_SYNC_UNSAFE/,
+      'CP29 cannot sync a substituted final-component directory symlink');
+    await fs.rename(real, moved);
+    await fs.mkdir(real);
+    await assert.rejects(syncRecoveryDirectory(real, fs.open, original),
+      /LINEAGE_DIRECTORY_SYNC_UNSAFE/,
+      'CP29 cannot accept a newly substituted directory inode');
+    await syncRecoveryDirectory(moved, fs.open, original);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true }); // Synthetic test only.
+  }
+  let wrongIdentitySynced = false, wrongIdentityClosed = false;
+  await assert.rejects(syncRecoveryDirectory('synthetic-directory',
+    async (_name, flags) => {
+      assert.equal(flags, dirFlags, 'CP29 requires no-follow opened directory flags');
+      return {
+        stat: async () => ({ isDirectory: () => true, dev: 9, ino: 9 }),
+        sync: async () => { wrongIdentitySynced = true; },
+        close: async () => { wrongIdentityClosed = true; }
+      };
+    }, { dev: 8, ino: 9 }), /LINEAGE_DIRECTORY_SYNC_UNSAFE/);
+  assert.equal(wrongIdentitySynced, false, 'CP29 must refuse before fsync');
+  assert.equal(wrongIdentityClosed, true, 'CP29 must close substituted handle');
 }
-console.log('PASS: CP25 durable source/receipt writes and directory fsync are required; failed flush refuses success and closes handles.');
+console.log('PASS: CP25/CP29 durable source/receipt writes, no-follow directory fsync and identity-bound refusal.');
 
 
 // CP26: opening by path AFTER lstat/readdir could follow a substituted final

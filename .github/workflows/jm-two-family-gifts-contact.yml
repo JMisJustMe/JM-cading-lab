@@ -1,0 +1,44 @@
+name: JM Two Family Gifts — Original Runtime Contact
+on:
+  pull_request:
+    paths:
+      - "family-gifts/scripture-companion/**"
+      - "family-gifts/third-court-preview/**"
+      - "family-gifts/tests/jm-two-gifts-contact.spec.cjs"
+      - ".github/workflows/jm-two-family-gifts-contact.yml"
+  push:
+    branches: [main]
+    paths:
+      - "family-gifts/scripture-companion/**"
+      - "family-gifts/third-court-preview/**"
+      - "family-gifts/tests/jm-two-gifts-contact.spec.cjs"
+      - ".github/workflows/jm-two-family-gifts-contact.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  both-native-gifts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Source syntax check and real browser installation
+        run: |
+          node --check family-gifts/tests/jm-two-gifts-contact.spec.cjs
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve both independent JM family gifts
+        run: |
+          python3 -m http.server 4198 --bind 127.0.0.1 >/tmp/jm-both-gifts.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4198/family-gifts/scripture-companion/index.html >/dev/null &&
+            curl -fsS http://127.0.0.1:4198/family-gifts/third-court-preview/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-both-gifts.log
+          exit 1
+      - name: Real Chromium contact — Mum's Scripture and brother's original birthday game
+        run: node family-gifts/tests/jm-two-gifts-contact.spec.cjs

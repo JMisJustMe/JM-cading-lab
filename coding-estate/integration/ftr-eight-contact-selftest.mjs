@@ -13,8 +13,15 @@ check('Input retains FTR source',()=>assert.equal(contactEvent(input).source,'Am
 check('PalmVerse remains distinct',()=>assert.notEqual(contactEvent({...input,source:'PalmVerse'}).deviceClass,contactEvent(input).deviceClass));
 check('Invalid pressure refused',()=>throws(()=>contactEvent({...input,pressure:4}),'INPUT_PRESSURE_INVALID'));
 check('Invalid gesture refused',()=>throws(()=>contactEvent({...input,gesture:'hack'}),'INPUT_GESTURE_UNRECOGNISED'));
-check('Native GameCore executes true state change',()=>{const r=executeNativeControl(contactEvent(input));assert.equal(r.after,'active');assert.equal(r.before,'idle');assert.equal(r.nativeBodies.length,4);});
-check('Native action unchanged across physical origins',()=>assert.equal(executeNativeControl(contactEvent({...input,source:'GripRoute'})).after,'active'));
+check('Native GameCore executes true state change',()=>{const r=executeNativeControl(contactEvent(input));assert.equal(r.after,'expended');assert.equal(r.before,'stored');assert.equal(r.nativeBodies.length,4);});
+check('Native action unchanged across physical origins',()=>assert.equal(executeNativeControl(contactEvent({...input,source:'GripRoute'})).after,'expended'));
+check('Seven native mechanics have distinct causal fields and changed values',()=>{
+ const gestures=['turn','press','squeeze','sweep','flick','wake','draw'];
+ const results=gestures.map(gesture=>executeNativeControl(contactEvent({...input,gesture})));
+ assert.equal(new Set(results.map(r=>r.mechanicalField)).size,7);
+ assert.equal(new Set(results.map(r=>r.after)).size,7);
+ results.forEach(r=>assert.notEqual(r.before,r.after));
+});
 check('Consequence actually costs capacity',()=>{const r=consequenceTurn({capacity:2,load:1},'act');assert.equal(r.available,0);});
 check('Capacity blocks action',()=>assert.equal(consequenceTurn({capacity:2,load:2},'act').applied,false));
 check('Recovery enables action',()=>assert.equal(consequenceTurn({capacity:2,load:2},'recover').available,1));

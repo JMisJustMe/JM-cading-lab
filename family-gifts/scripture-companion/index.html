@@ -224,6 +224,13 @@ function incomingBackup(raw){
  for(const row of d.queue||[]){
   if(!validBackupReference(row)||typeof row.id!=='string'||!row.id||typeof row.done!=='boolean')throw Error('Backup contains an invalid reading-list entry; nothing was imported.');
  }
+ if(d.recentVisits!==undefined){
+  if(!Array.isArray(d.recentVisits)||d.recentVisits.length>24)throw Error('Backup history exceeds the 24-chapter limit.');
+  for(const v of d.recentVisits){
+   if(!validBackupReference(v)||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||v.at.length>40)throw Error('Backup has invalid reading history; nothing imported.');
+  }
+ }
+ if(d.lastOpened!==undefined&&d.lastOpened!==null&&(!validBackupReference(d.lastOpened)||typeof d.lastOpened.at!=='string'||!Number.isFinite(Date.parse(d.lastOpened.at))))throw Error('Backup last-opened chapter is invalid.');
  const draft=raw.draft;
  if(draft!=null&&(typeof draft!=='object'||typeof draft.ref!=='string'||draft.ref.length>100||typeof draft.text!=='string'||draft.text.length>8000))throw Error('Backup contains an invalid unfinished draft; nothing was imported.');
  return {data:d,draft:draft||null};
@@ -241,7 +248,7 @@ function withRecoveredDraft(next,draft,stats,used){
 }
 function mergeBackup(backup){
  const next={...data,notes:data.notes.map(n=>({...n})),bookmarks:data.bookmarks.map(b=>({...b})),queue:data.queue.map(r=>({...r}))};
- const stats={notes:0,bookmarks:0,queue:0,progress:0,drafts:0};
+ const stats={notes:0,bookmarks:0,queue:0,progress:0,drafts:0,history:0};
  const used=new Set([...next.notes,...next.bookmarks,...next.queue].map(x=>x.id));
  for(const n of backup.data.notes){
   if(next.notes.some(x=>x.ref===n.ref&&x.text===n.text))continue;
@@ -265,6 +272,19 @@ function mergeBackup(backup){
   const id=used.has(r.id)?idForTransfer(used):r.id;used.add(id);
   next.queue.push({...r,id});stats.queue++;
  }
+ // Transfer real chapter opening history without confusing visits and read completion.
+ const localHistory=(Array.isArray(next.recentVisits)?next.recentVisits:[]).filter(v=>v&&validBackupReference(v)&&typeof v.at==='string'&&Number.isFinite(Date.parse(v.at)));
+ const importedHistory=(backup.data.recentVisits||[]).filter(v=>validBackupReference(v));
+ const byChapter=new Map();
+ for(const v of [...localHistory,...importedHistory]){
+  const key=v.book+'|'+v.chapter;
+  const prior=byChapter.get(key);
+  if(!prior||Date.parse(v.at)>Date.parse(prior.at))byChapter.set(key,{book:v.book,chapter:v.chapter,at:v.at});
+ }
+ next.recentVisits=[...byChapter.values()].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,24);
+ stats.history=next.recentVisits.filter(v=>!localHistory.some(p=>p.book===v.book&&p.chapter===v.chapter)).length;
+ // Keep the receiving device's own resume position; use incoming only when none exists.
+ if(!next.lastOpened&&backup.data.lastOpened&&validBackupReference(backup.data.lastOpened))next.lastOpened={...backup.data.lastOpened};
  // A foreign unsaved draft becomes an ordinary recovered note; the current
  // device's open editor/draft remains completely untouched in merge mode.
  withRecoveredDraft(next,backup.draft,stats,used);
@@ -277,6 +297,7 @@ function replaceBackup(backup){
  next.notes=d.notes.map(n=>({...n}));
  next.bookmarks=d.bookmarks.map(b=>({...b}));
  next.queue=(d.queue||[]).map(r=>({...r}));
+ next.recentVisits=(Array.isArray(d.recentVisits)?d.recentVisits:[]).map(v=>({...v}));
  // Draft is restored into the original v1.6.1 draft slot, not silently discarded.
  return next;
 }
@@ -316,7 +337,7 @@ $('#import').addEventListener('change',async e=>{
    status.textContent='Full backup restored on this device.';
   }else{
    const {next,stats}=mergeBackup(backup);
-   const summary='Add '+stats.notes+' note(s), '+stats.bookmarks+' saved passage(s), '+stats.queue+' reading-list chapter(s) and '+stats.progress+' progress update(s).'+(stats.drafts?' Imported unfinished draft kept as recovered note.':'');
+   const summary='Add '+stats.notes+' note(s), '+stats.bookmarks+' saved passage(s), '+stats.queue+' reading-list chapter(s) and '+stats.progress+' progress update(s), '+stats.history+' recent chapter(s).'+(stats.drafts?' Imported unfinished draft kept as recovered note.':'');
    if(!confirm(summary+' Your current data and unfinished draft will stay. Continue?')){status.textContent='Import cancelled. No changes made.';return}
    commitBackup(next,'merge',null);
    status.textContent='Safe merge complete. '+summary+' No existing notes replaced.';

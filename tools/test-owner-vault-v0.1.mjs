@@ -1840,6 +1840,25 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   assert.equal(preflight.status,409,'finalization must hold when any source part is missing');
   assert.equal((await preflight.json()).error,'ASSET_PART_MISSING');
   assert.equal((await (await invoke({query:'?mode=assets'})).json()).assets.length,0);
+  // CP27 read-only reconciliation must never invent a source, mutation,
+  // index entry or apparent completed custody, even with no parts present.
+  const inspect=()=>invoke({method:'POST',body:{action:'inspect-asset-parts',file}});
+  const anonymous=await call({method:'POST',body:{action:'inspect-asset-parts',file},env:privateEnv});
+  assert.equal(anonymous.status,401,'inspection is owner-authenticated');
+  const empty=await inspect();
+  assert.equal(empty.status,200);
+  const emptyResult=await empty.json();
+  assert.equal(emptyResult.outcome,'ASSET_PART_INSPECTION');
+  assert.equal(emptyResult.already_indexed,false);
+  assert.deepEqual(emptyResult.present,[]);
+  assert.deepEqual(emptyResult.missing,[0,1,2,3,4,5,6]);
+  assert.equal(bucket.map.size,0,'read-only empty inspection must not create R2 objects');
+  const wrongBase=await invoke({method:'POST',body:{action:'inspect-asset-parts',
+    file:{...file,expectedBaseId:'00000000-0000-4000-8000-000000000999',
+      expectedBaseSha256:'f'.repeat(64)}}});
+  assert.equal(wrongBase.status,409);
+  assert.equal((await wrongBase.json()).error,'ASSET_PART_INSPECTION_BASE_MISSING');
+  assert.equal(bucket.map.size,0);
   const bad=makePart(0);bad.partSha256='0'.repeat(64);
   const refused=await invoke({method:'POST',body:bad});
   assert.equal(refused.status,409);
@@ -1848,6 +1867,29 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     const result=await invoke({method:'POST',body:makePart(i)});
     assert.equal(result.status,201);
     assert.equal((await result.json()).outcome,'ASSET_PART_STORED');
+    if(i===2){
+      const snapshot=Array.from(bucket.map,([k,v])=>[k,v.etag]);
+      const held=(await (await inspect()).json());
+      assert.equal(held.already_indexed,false);
+      assert.equal(held.partCount,7);
+      assert.deepEqual(held.present.map(x=>x.partIndex),[0,1,2]);
+      assert.deepEqual(held.present.map(x=>x.sha256),
+        [0,1,2].map(j=>sha(bytes.subarray(j*chunkSize,(j+1)*chunkSize))));
+      assert.deepEqual(held.missing,[3,4,5,6]);
+      assert.deepEqual(Array.from(bucket.map,([k,v])=>[k,v.etag]),snapshot,
+        'part inspection must not write anything');
+      const badKey='jm-owner-vault/v0.1/assets/parts/'+file.uploadId+'/1.bin';
+      const originalRecord=bucket.map.get(badKey);
+      bucket.map.set(badKey,{...originalRecord,
+        options:{...originalRecord.options,
+          customMetadata:{...originalRecord.options.customMetadata,sourceInstanceId:'asset-alien'}}});
+      const fail=await inspect();
+      assert.equal(fail.status,409);
+      assert.equal((await fail.json()).error,'ASSET_PART_SOURCE_IDENTITY_MISMATCH');
+      bucket.map.set(badKey,originalRecord);
+      assert.equal((await (await inspect()).json()).present.length,3,
+        'correct original parts can be inspected again without changing bytes');
+    }
   }
   const replay=await invoke({method:'POST',body:makePart(0)});
   assert.equal(replay.status,200);
@@ -1871,6 +1913,12 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   const held=await invoke({query:'?asset='+asset.id});
   assert.equal(held.status,200);
   assert.deepEqual(Buffer.from(await held.arrayBuffer()),bytes);
+  const indexedInspection=await (await inspect()).json();
+  assert.equal(indexedInspection.already_indexed,true);
+  assert.equal(indexedInspection.asset_id,asset.id);
+  assert.deepEqual(indexedInspection.present,[]);
+  assert.deepEqual(indexedInspection.missing,[]);
+  assert.equal((await (await invoke({query:'?mode=assets'})).json()).assets.length,1);
   const again=await invoke({method:'POST',body:{action:'finalize-chunked-asset',file}});
   assert.equal(again.status,200);
   assert.equal((await again.json()).asset.id,asset.id);

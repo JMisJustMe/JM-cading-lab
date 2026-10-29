@@ -25,6 +25,14 @@ assert(Number.isFinite(afterMotion.ballHeight),'dribble ball height finite');
 assert(afterMotion.athletes[0].energy<=100,'individual fatigue is bounded');
 assert(Number.isInteger(afterMotion.flightInterceptions),'flight contact ledger present');
 assert(Number.isInteger(afterMotion.bodyImpacts),'actual body-contact ledger present');
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.keyboard.down('ArrowUp');await page.waitForTimeout(1100);await page.keyboard.up('ArrowUp');
+await page.evaluate(()=>JM_THIRD_COURT.pass());
+await page.waitForTimeout(400);
+const laneStatus=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(Number.isInteger(laneStatus.passLaneReads),'real pass-lane chase telemetry');
+assert(laneStatus.passLaneReads>0,'an actual defender reacted during a live pass in play');
+
 await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 assert.deepEqual(errors,[]);

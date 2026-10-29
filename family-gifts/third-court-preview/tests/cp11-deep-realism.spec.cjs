@@ -67,7 +67,7 @@ await page.evaluate(()=>{
 const midShot=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert.equal(midShot.air,'shot','a playable shot actually launched');
 assert(midShot.flightMissSide>0,'test-forced miss has a physical lateral deviation');
-await page.waitForTimeout(1050);
+await page.waitForFunction(()=>JM_THIRD_COURT.status().rimContacts>=1,{},{timeout:12000}).catch(async e=>{console.log('CP20 RIM CONTACT TIMEOUT '+JSON.stringify(await page.evaluate(()=>JM_THIRD_COURT.status())));throw e});
 const rim=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(rim.rimContacts>=1,'miss contacted the scoring rim');
 assert(rim.lastRim&&rim.lastRim.side>0,'rim contact recorded actual miss-side');

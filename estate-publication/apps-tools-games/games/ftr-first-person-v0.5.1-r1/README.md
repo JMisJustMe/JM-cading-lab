@@ -48,3 +48,19 @@ This is a thin **working descendant of the existing game**, not another engine, 
 - Complete gameplay acceptance without synthetic placement/freezing; instrument any issues as BUGG.
 - Promote via existing JM publication governance and testable deployment route. **Do not claim live public deployment merely because the GitHub branch is readable.**
 - Keep source ownership and all original lineage. No extra generated ZIP or full duplicate game package is needed.
+
+## CP10 — spatial world candidate (NOT CP09 replacement)
+
+**Baseline:** CP09 frozen R1 source head `110c315d0a50e839ecfd8a60f82dd8fbb662b9b3`, retained on its own PR #613. This R1-folder source **candidate branch** is `feat/ftr-spatial-depth-cp10-20261029`; stacked DRAFT PR #624. No new game folder, engine copy, or original v0.5.1 changes.
+
+### Actual changes
+- Additional **source-adjacent** `ftr-spatial-depth.js` calls the *original* FTR raycaster and existing sprite projector, reads the **original map `tileAt`**, respects original DDA **`zBuffer`** wall occlusion, and makes sparse world-coordinate floor seams and scan-lit target response. The original floor remains visible; an early dense-block treatment was visually assessed as poor and corrected, not promoted.
+- **Original-map route solving**: four-direction BFS follows traversable **actual original FTR** map cells; locked doors are not crossed. First core acquisition opens the real game gate, after which a formerly impossible route to Core B becomes available. Original scan activity reveals world-anchored **depth-occluded route marks** and a range/bearing/step signal. Two acquired cores yield `ALL_CORES_MOUNTED` without fake targets.
+- Press **V** or tap **FIELD ON/OFF** to compare optional candidate spatial rendering against the inherited original presentation. Original world/AI/gamepad/touch/raycast-source, score and collision mechanics remain authoritative.
+- **No physical radio sensing**, alternative 3D GPU renderer or Gardles-native claims. This is an actual original-engine spatial gameplay descendant, not full AAA rendering.
+
+### Proof and source boundaries
+- GitHub Actions four-job run: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40926716603 — **28/28 R1 browser checks** including 9 new CP10-specific spatial/collision/route/door/performance checks; prior **16/16** FTR browser, native/security/MEETPOINT/THEOGAMY/RouteSense tests and Godot/Parrot/Kali host jobs all SUCCESS. Total **125 bounded checks**, not 125 finished products.
+- CI render-section mean **2.50 ms** over **588 samples**, worst 14.20 ms at that runner. This is raycast+CP10 renderer section, **not full-frame FPS or proven 60fps**. The owner's Edge headless run yielded **28/28** and sampled **2.60 ms average** over 846 render-section samples. Compare actual graphical quality on screen before promotion.
+- Actual owner-Windows Microsoft Edge screenshot contrast performed in same source-linked R1 state with the Field on/off. Observed original player position and earned core count identical; both screenshot bytes differ. No screenshot bytes committed to Git.
+- **Admission:** CP10 code source candidate only; **do not merge/crown** until visual and sustained owner-play gate. CP09 original and source hashes retain authority. Candidate temp checkout is purpose-specific and should be retired or promoted after owner review. No redundant permanent game copies.

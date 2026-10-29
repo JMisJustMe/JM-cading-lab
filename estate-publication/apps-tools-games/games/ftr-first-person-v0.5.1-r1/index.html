@@ -16,17 +16,31 @@
  touch-action:manipulation}
 #jmNativePulse[aria-disabled="true"]{border-color:rgba(130,255,208,.28);color:#b4c6ca}
 @media (orientation:landscape){#jmNativePulse{bottom:135px;right:10px}}
-#jmNativeFeedback{position:absolute;right:10px;bottom:238px;min-width:118px;max-width:180px;min-height:16px;text-align:center;color:#aefbd9;font-size:9px;letter-spacing:.03em;pointer-events:none}\n@media (orientation:landscape){#jmNativeFeedback{bottom:178px}}\n</style>
+#jmNativeFeedback{position:absolute;right:10px;bottom:238px;min-width:118px;max-width:180px;min-height:16px;text-align:center;color:#aefbd9;font-size:9px;letter-spacing:.03em;pointer-events:none}
+@media (orientation:landscape){#jmNativeFeedback{bottom:178px}}
+#jmSpatialConsole{position:absolute;top:calc(env(safe-area-inset-top) + 87px);left:13px;display:flex;
+ flex-direction:column;align-items:flex-start;gap:5px;z-index:5;max-width:220px;pointer-events:none}
+#jmSpatialToggle{pointer-events:auto;border:1px solid rgba(126,234,213,.5);background:rgba(2,21,28,.87);
+ padding:7px 11px;border-radius:9px;color:#b6e8e4;font-size:10px;letter-spacing:.1em}
+#jmSpatialToggle[aria-pressed="false"]{opacity:.7}
+#jmSpatialEcho{font-size:10px;line-height:1.4;letter-spacing:.035em;color:#c6ecdf;
+ text-shadow:0 1px 4px rgba(0,0,0,.8);max-width:200px}
+@media (orientation:landscape) and (max-height:500px){#jmSpatialConsole{top:56px;left:12px}}
+</style>
 </head>
 <body>
 <div id="app">
 <canvas id="game"></canvas><div class="lookZone" id="lookZone"></div>
 <div class="hud"><div class="top"><div class="mark">FTR<b>BODY</b></div><div class="status"><div class="chip"><small>SCORE</small><strong id="score">000000</strong></div><div class="chip"><small>CORES</small><strong id="cores">0/2</strong></div><div class="chip integrity"><small>INTEGRITY <span id="hpText">100</span></small><div class="bar"><i id="hpBar"></i></div></div></div></div><div class="bottom"><div class="joy" data-label="MOVE" id="joy"><div id="stick"></div></div><div class="actions"><button class="mini" id="phase">PHASE</button><button class="mini" id="scan">SCAN</button><output id="jmNativeFeedback" aria-live="polite" aria-atomic="true"></output><button class="mini" id="jmNativePulse" title="Earn one Trace Core to combine Scan and Fire. Shortcut: G">CORE PULSE</button><button class="mini" id="flow">FLOW</button><button class="mini" id="side">SIDE</button><button class="mini" id="act">TRACE</button><button class="fire" id="fire">AIM / PULSE<small id="ammo">20</small></button></div></div></div>
+<section id="jmSpatialConsole" aria-label="JM source-owned spatial scan">
+  <button type="button" id="jmSpatialToggle" aria-pressed="true" title="Toggle CP10 spatial field (V)">FIELD ON</button>
+  <output id="jmSpatialEcho" aria-live="polite">FIELD STANDBY</output>
+</section>
 <div class="tracker"><canvas id="trackerMarks"></canvas></div><div class="objective" id="objective">FIND THE FIRST <b>TRACE CORE</b></div><div class="reticle" id="reticle"><i></i></div><div id="prompt"></div><div id="toast"></div><div class="footer">FTR FIRST-PERSON v0.5.1-R1 | JMLOGIC CORE | TRUE 360 AIM-DECK CARRIER</div>
 <div class="overlay" id="startOverlay"><div class="panel"><h1>ENTER <span>BODY</span></h1><p>A real first-person space. Find two Trace Cores, breach the gate, then reach extraction. Scan the environment, use cover, phase through pressure and choose which side carries your extension.</p><div class="verbs">FREE MOVE | AUTO FLOW | TRUE 360 AIM | TAP FIRE | HOLD PULSE | SCAN | PHASE</div><button class="primary" id="startBtn">MOUNT FIRST-PERSON BODY</button><div class="desktopHint">Desktop: WASD | full mouse look | click/space fire | R auto-flow | E trace | F scan | Shift phase | Q side</div></div></div>
 <div class="overlay hidden" id="endOverlay"><div class="panel"><h1 id="endTitle">BODY COMPLETE</h1><p id="endText"></p><button class="primary" id="restartBtn">REMOUNT</button><button class="secondary" id="receiptBtn">COPY RUN RECEIPT</button></div></div>
 </div>
-<script src="../ftr-first-person-v0.5.1/ftr-core.js"></script><script src="../ftr-first-person-v0.5.1/ftr-controls.js"></script><script src="../ftr-first-person-v0.5.1/ftr-world.js"></script><script src="../ftr-first-person-v0.5.1/ftr-raycast-sprites.js"></script><script src="ftr-hud-render-loop.js"></script><script src="../ftr-first-person-v0.5.1/ftr-input-bridge.js"></script>
+<script src="../ftr-first-person-v0.5.1/ftr-core.js"></script><script src="../ftr-first-person-v0.5.1/ftr-controls.js"></script><script src="../ftr-first-person-v0.5.1/ftr-world.js"></script><script src="../ftr-first-person-v0.5.1/ftr-raycast-sprites.js"></script><script src="ftr-spatial-depth.js"></script><script src="ftr-hud-render-loop.js"></script><script src="../ftr-first-person-v0.5.1/ftr-input-bridge.js"></script>
 <script src="ftr-gamepad-contact.js"></script>
 <script type="module" src="ftr-native-core-contact.mjs"></script>
 <script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});</script>

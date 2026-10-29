@@ -193,6 +193,104 @@ try{
   assert.equal(result.status,'HOLD_UNSUPPORTED_RECIPIENT_MECHANIC');
   assert.equal(result.delivered,false);
  });
+ await check('CP10 recovered JM original raycaster carries a distinct spatial-world organ',async()=>{
+   const r=await page.evaluate(()=>({schema:window.JMFTRSpatial?.schema,
+     sources:window.JMFTRSpatial?.sources,metrics:window.JMFTRSpatial?.metrics()}));
+   assert.equal(r.schema,'jm.ftr.spatial-source-contact/0.1');
+   assert(r.sources.includes('FTR v0.5.1 raycast'));
+   assert(r.metrics.visualFrameCount>0);
+   assert(r.metrics.floorSamples>0);
+ });
+ await check('CP10 perspective-world geometry changes pixels with an actual toggle',async()=>{
+   await page.evaluate(()=>{window.FTR.command('START');window.FTR.test.freezeEnemies();
+      window.FTR.test.setPlayer(12.3,15.4,-Math.PI/2);window.JMFTRSpatial.toggle(true);});
+   await page.waitForTimeout(180);
+   const active=await page.evaluate(()=>window.JMFTRSpatial.metrics());
+   await page.evaluate(()=>window.JMFTRSpatial.toggle(false));
+   await page.waitForTimeout(140);
+   const paused=await page.evaluate(()=>window.JMFTRSpatial.metrics());
+   assert(active.floorSamples>0);
+   assert.equal(await page.evaluate(()=>document.querySelector('#jmSpatialToggle').getAttribute('aria-pressed')),'false');
+   await page.evaluate(()=>window.JMFTRSpatial.toggle(true));
+   await page.waitForTimeout(150);
+   const res=await page.evaluate(()=>window.JMFTRSpatial.metrics());
+   assert(res.visualFrameCount>paused.visualFrameCount);
+   assert.notEqual(res.floorDigest,0);
+ });
+ await check('CP10 spatial field preserves native FTR collision and state authority',async()=>{
+   const result=await page.evaluate(()=>{
+     const before=window.FTR.state(),s=window.JMFTRSpatial;
+     s.toggle(false);s.toggle(true);
+     const after=window.FTR.state();
+     return {before,after,guardian:s.originalCollisionAuthority,gardles:s.gardles};
+   });
+   assert.equal(result.before.player.x,result.after.player.x);
+   assert.equal(result.before.player.y,result.after.player.y);
+   assert.equal(result.before.player.cores,result.after.player.cores);
+   assert.equal(result.guardian,'FTR v0.5.1 unchanged');
+   assert.equal(result.gardles,'HOLD_EXACT_SOURCE_NOT_MOUNTED');
+ });
+ await check('CP10 real scan reads unearned JM core bearing, range and original line-of-sight',async()=>{
+   const reading=await page.evaluate(()=>{
+     window.FTR.command('SCAN');return window.JMFTRSpatial.reading();
+   });
+   assert.equal(reading.schema,'jm.ftr.spatial-echo/0.1');
+   assert.equal(reading.scanActive,true);
+   assert.equal(reading.target.id,'A');
+   assert(reading.target.range>0);
+   assert(['CLEAR','OBSTRUCTED'].includes(reading.target.state));
+   await page.waitForTimeout(175);
+   const text=await page.locator('#jmSpatialEcho').textContent();
+   assert(text.includes('CORE A'));
+ });
+ await check('CP10 earned original core changes target rather than merely recolouring',async()=>{
+   await page.evaluate(()=>window.FTR.test.activateCore(0));
+   await page.waitForTimeout(175);
+   const target=await page.evaluate(()=>window.JMFTRSpatial.echo());
+   assert.equal(target.id,'B');
+   assert(target.range>0);
+ });
+ await check('CP10 real original-map route has contiguous traversable cells',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.command('START');
+     window.FTR.test.freezeEnemies();
+     window.FTR.test.setPlayer(12.3,15.4,0);
+     return window.JMFTRSpatial.route();
+   });
+   assert.equal(r.status,'ROUTE_FOUND');
+   assert.equal(r.target,'A');
+   assert.equal(r.steps,r.path.length-1);
+   assert(r.path.length>1);
+   for(let i=1;i<r.path.length;i++)
+      assert.equal(Math.abs(r.path[i].x-r.path[i-1].x)+Math.abs(r.path[i].y-r.path[i-1].y),1);
+ });
+ await check('CP10 route refuses original locked gate, then opens after genuine first-core consequence',async()=>{
+   const before=await page.evaluate(()=>{
+     window.FTR.test.activateCore(0);
+     return window.JMFTRSpatial.route();
+   });
+   assert.equal(before.target,'B');
+   assert.equal(before.status,'NO_TRAVERSABLE_ROUTE');
+   await page.waitForTimeout(1200);
+   const after=await page.evaluate(()=>window.JMFTRSpatial.route());
+   assert.equal(after.status,'ROUTE_FOUND');
+   assert.equal(after.target,'B');
+   assert(after.steps>0);
+ });
+ await check('CP10 two collected original cores terminate wayfinding rather than inventing targets',async()=>{
+   const r=await page.evaluate(()=>{
+     window.FTR.test.activateCore(1);
+     return window.JMFTRSpatial.route();
+   });
+   assert.equal(r.status,'ALL_CORES_MOUNTED');
+   assert.deepEqual(r.path,[]);
+ });
+ await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
+   const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
+   console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));
+   assert(m.meanMs>0&&m.meanMs<60);
+   assert(m.visualFrameCount>20);
+ });
  await check('R1 PWA worker installs independently of frozen original',async()=>{
   await page.evaluate(()=>Promise.race([navigator.serviceWorker.ready,new Promise((_,reject)=>setTimeout(()=>reject(new Error('PWA_WORKER_INSTALL_TIMEOUT')),12000))]));
   const scope=await page.evaluate(async()=>{
@@ -209,6 +307,7 @@ try{
    assert(response?.status()===200);
    assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1');
    await page.waitForFunction(()=>!!window.JMFTRNative);
+   assert.equal(await page.evaluate(()=>window.JMFTRSpatial.schema),'jm.ftr.spatial-source-contact/0.1');
    await page.locator('#startBtn').tap();
    await page.evaluate(()=>window.FTR.test.activateCore(0));
    const nativeOffline=await page.evaluate(()=>window.JMFTRNative.corePulse());

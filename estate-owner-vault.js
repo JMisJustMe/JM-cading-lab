@@ -110,6 +110,14 @@
         <p class="jm-vault-note" id="jmVaultProofStatus" role="status" aria-live="polite">Not run on this device; no private owner proof claimed.</p>
       </section>
       <div class="jm-vault-remote" id="jmVaultRemote" aria-live="polite"></div>
+      <section class="jm-vault-editor" id="jmVaultFiles" aria-label="Original files private custody">
+        <strong>ORIGINAL FILES · ANY FORMAT</strong>
+        <p class="jm-vault-note">Save a selected original file as exact private bytes (up to 12 MiB per file). Nothing is uploaded automatically. Download on another device, edit using the correct native application, and explicitly upload a revision. No public publication or automatic synchronisation is implied.</p>
+        <input type="file" id="jmVaultFileInput" aria-label="Select original file">
+        <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
+        <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
+        <div class="jm-vault-remote" id="jmVaultAssetCards"></div>
+      </section>
       <section class="jm-vault-editor" id="jmVaultEditor" hidden aria-label="Private HTML source editor">
         <strong id="jmVaultEditorTitle">Private body source</strong>
         <p class="jm-vault-note">Editing a private Vault copy creates an additional protected revision. The ancestor is retained; no public app or website is deployed by this action.</p>
@@ -454,6 +462,139 @@
     }catch(e){proofMessage('Proof export HOLD: '+e.message);}
   }
 
+
+  // CP21 file custody is a new capability INSIDE original Owner Room.
+  // Never change HTML body editor identity or silently sync all device files.
+  let assetRevision = null;
+  const assetMessage = text => { const node = el('jmVaultFileStatus'); if (node) node.textContent = text; };
+  async function assetDigest(bytes) {
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function assetBase64(bytes) {
+    const chunks = [];
+    for (let i = 0; i < bytes.length; i += 32768) {
+      chunks.push(String.fromCharCode(...bytes.subarray(i, i + 32768)));
+    }
+    return btoa(chunks.join(''));
+  }
+  async function checkedAssetDownload(asset) {
+    const response = await request('?asset=' + encodeURIComponent(asset.id));
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    const digest = await assetDigest(bytes);
+    if (bytes.length !== asset.bytes || digest !== asset.sha256
+      || response.headers.get('x-jm-asset-sha256') !== digest) {
+      throw new Error('ASSET_EXACT_SOURCE_READBACK_MISMATCH');
+    }
+    return bytes;
+  }
+  async function saveSelectedOriginal() {
+    if (!(await ensureUnlocked())) return;
+    const input = el('jmVaultFileInput'), selected = input?.files?.[0];
+    if (!selected) { assetMessage('Choose a real original file on this device first.'); return; }
+    if (selected.size > 12 * 1024 * 1024) {
+      assetMessage('File exceeds the current 12 MiB per-file gate. Nothing uploaded or truncated.');
+      return;
+    }
+    const btn = el('jmVaultSaveFile');
+    btn.disabled = true;
+    const revision = assetRevision;
+    let attempted = false;
+    try {
+      const bytes = new Uint8Array(await selected.arrayBuffer());
+      if (bytes.length !== selected.size) throw new Error('LOCAL_FILE_CHANGED_DURING_READ');
+      const hash = await assetDigest(bytes);
+      const sourceInstanceId = revision?.sourceInstanceId || 'asset-' + crypto.randomUUID();
+      const body = {
+        name: revision?.name || selected.name,
+        fileName: selected.name,
+        mediaType: selected.type || 'application/octet-stream',
+        sourceInstanceId,
+        sha256: hash,
+        base64: assetBase64(bytes)
+      };
+      if (revision) {
+        body.expectedBaseId = revision.id;
+        body.expectedBaseSha256 = revision.sha256;
+      }
+      // Only the owner's explicit click sends these bytes. Do not retry a
+      // possibly committed POST after a lost response; refresh first.
+      attempted = true;
+      const response = await request('', { method: 'POST',
+        body: JSON.stringify({ action: 'upload-asset', file: body }) });
+      if (!['ASSET_STORED', 'ASSET_UNCHANGED'].includes(response.outcome)
+        || response.asset?.sha256 !== hash
+        || response.asset?.sourceInstanceId !== sourceInstanceId
+        || response.asset?.bytes !== bytes.length) throw new Error('ASSET_SAVE_RECEIPT_INVALID');
+      const returned = await checkedAssetDownload(response.asset);
+      if (returned.length !== bytes.length) throw new Error('ASSET_READBACK_LENGTH_MISMATCH');
+      assetRevision = null;
+      input.value = '';
+      await refreshAssets();
+      assetMessage('Exact original file privately saved and independently SHA-256 read back. Ancestors kept; no public deployment.');
+    } catch (error) {
+      if (error.status === 401) { setKey(''); authLabel(false); }
+      assetMessage('Original-file HOLD: ' + error.message + (attempted
+        ? '. Refresh the private file list before retrying: the remote write may already exist.'
+        : '. No upload attempted.'));
+    } finally { btn.disabled = false; }
+  }
+  async function refreshAssets() {
+    if (!key()) return;
+    try {
+      const index = await request('?mode=assets');
+      if (index.schema !== 'JM.OwnerVault/0.1.AssetIndex' || !Array.isArray(index.assets))
+        throw new Error('ASSET_INDEX_NOT_VERIFIED');
+      const entries = index.assets, mount = el('jmVaultAssetCards');
+      if (!mount) return;
+      mount.innerHTML = entries.map(item => `
+        <article class="jm-vault-card"><div><b>${escapeHTML(item.name)}</b>
+        <small>${escapeHTML(item.fileName)} · ${Math.round(item.bytes / 1024)} KiB · ${escapeHTML(item.mediaType)} · ${escapeHTML(item.sha256.slice(0,12))}…</small>
+        </div><div class="jm-vault-card-actions">
+        <button type="button" data-asset-download="${escapeHTML(item.id)}">DOWNLOAD VERIFIED</button>
+        <button type="button" data-asset-revise="${escapeHTML(item.id)}">REVISE FILE</button>
+        <button type="button" class="danger" data-asset-remove="${escapeHTML(item.id)}">REMOVE LEAF</button>
+        </div></article>`).join('') || '<div class="empty-state">No original non-HTML files deliberately saved yet.</div>';
+      mount.querySelectorAll('[data-asset-download]').forEach(b => b.addEventListener('click', async () => {
+        const item = entries.find(x => x.id === b.dataset.assetDownload);
+        if (!item) return;
+        b.disabled = true;
+        try {
+          const bytes = await checkedAssetDownload(item);
+          const url = URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
+          const link = document.createElement('a');
+          link.href = url; link.download = item.fileName;
+          document.body.appendChild(link); link.click(); link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+          assetMessage('Verified source offered for device download; save and reopen it externally to prove independent possession.');
+        } catch (e) { assetMessage('Download HOLD: ' + e.message); }
+        finally { b.disabled = false; }
+      }));
+      mount.querySelectorAll('[data-asset-revise]').forEach(b => b.addEventListener('click', () => {
+        const item = entries.find(x => x.id === b.dataset.assetRevise);
+        if (!item || entries.some(x => x.previousVersionId === item.id)) {
+          assetMessage('That is an ancestor, not the latest editable version. Choose its current head.');
+          return;
+        }
+        assetRevision = item;
+        assetMessage('Revision selected: ' + item.fileName + '. Select the updated ORIGINAL file, then press SAVE. Its ancestor will be retained.');
+        el('jmVaultFileInput')?.click();
+      }));
+      mount.querySelectorAll('[data-asset-remove]').forEach(b => b.addEventListener('click', async () => {
+        const item = entries.find(x => x.id === b.dataset.assetRemove);
+        if (!item) return;
+        if (!window.confirm('Permanently remove only this private Vault file version? Protected ancestors cannot be removed while referenced.')) return;
+        try {
+          const result = await request('?asset=' + encodeURIComponent(item.id), { method: 'DELETE' });
+          if (result.outcome !== 'ASSET_REMOVED' || result.asset?.id !== item.id) throw new Error('ASSET_REMOVE_RECEIPT_INVALID');
+          await refreshAssets(); assetMessage('One explicitly selected private file version removed; other sources unchanged.');
+        } catch (e) { assetMessage('Removal HOLD: ' + e.message); }
+      }));
+    } catch (error) {
+      assetMessage('Original-file index HOLD: ' + error.message + '. Existing HTML custody and local creations are unchanged.');
+    }
+  }
+
   async function previewRemote(id, name) {
     try {
       const response = await request(`?body=${encodeURIComponent(id)}`);
@@ -592,6 +733,7 @@
         ? data.state_revision : null;
       authLabel(true);
       const bodies = Array.isArray(data.bodies) ? data.bodies : [];
+      await refreshAssets();
       el('jmVaultCount').textContent = `${bodies.length} REMOTE ${bodies.length === 1 ? 'BODY' : 'BODIES'}`;
       const shelf = el('jmVaultRemote');
       shelf.innerHTML = bodies.length ? bodies.map(body => `
@@ -639,6 +781,8 @@
 
   function bind() {
     el('jmVaultUnlock')?.addEventListener('click', unlock);
+    el('jmVaultSaveFile')?.addEventListener('click', saveSelectedOriginal);
+    el('jmVaultCancelFileRevision')?.addEventListener('click', () => { assetRevision = null; el('jmVaultFileInput').value = ''; assetMessage('Revision cancelled; no file uploaded.'); });
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);
     el('jmVaultSnapshot')?.addEventListener('click', snapshot);
@@ -647,6 +791,7 @@
     el('jmVaultSaveRevision')?.addEventListener('click', saveRevision);
     el('jmVaultCancelEdit')?.addEventListener('click', closeEditor);
     el('jmVaultLock')?.addEventListener('click', () => {
+      assetRevision = null; if (el('jmVaultAssetCards')) el('jmVaultAssetCards').innerHTML = '';
       setKey(''); observedStateRevision = null; authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
       message('Vault locked. The session key was removed from this browser tab/session.');
     });

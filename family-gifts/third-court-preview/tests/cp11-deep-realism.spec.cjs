@@ -45,6 +45,8 @@ await page.mouse.up();
 await page.click('#resumeBtn');
 assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).shotReport,beforeLostShot,'late pointerup does not shoot after resuming');
 console.log('PASS CP23 lost-pointer shoot cancellation '+width+'px');
+// Isolate the interrupted-touch test from inherited natural footwork and off-ball possession checks.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');
 const roleRun=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(roleRun.athletes[0].energy<=100,'movement keeps player fatigue bounded');

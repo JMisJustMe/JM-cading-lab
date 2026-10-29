@@ -661,6 +661,43 @@ function coldRecoveryManifest(catalog){
     original_versions:catalog.packet.versions.map(v=>v.metadata),
     boundary:'OWNER_LOCAL_VERIFIED_FILES_ONLY; NO R2 RESTORE, OFFSITE CUSTODY, LIVE DEPLOYMENT OR NATIVE-ID REPLACEMENT'};
 }
+// CP29: verify restored native originals through their exact 2 MiB
+// lineage pieces, with a single opened O_NOFOLLOW file handle. Never
+// allocate a whole 64 MiB native file merely to prove it was restored.
+// This is a read-only verification, not an editor or new custody copy.
+async function verifyColdNativeInPieces(filename, version, openFile=fs.open) {
+  if(typeof fsConstants.O_NOFOLLOW!=='number'
+    ||typeof fsConstants.O_NONBLOCK!=='number')fail('COLD_NATIVE_SAFE_OPEN_UNSUPPORTED');
+  const handle=await openFile(filename,
+    fsConstants.O_RDONLY|fsConstants.O_NOFOLLOW|fsConstants.O_NONBLOCK);
+  try{
+    const initial=await handle.stat();
+    if(!initial.isFile()||initial.size!==version.metadata.bytes
+      ||initial.size<0||initial.size>PART_CATALOG_SINGLE)
+      fail('COLD_NATIVE_OPENED_SIZE_HOLD');
+    const whole=createHash('sha256');
+    let offset=0;
+    for(const part of version.parts){
+      if(part.bytes<0||part.bytes>PART_BYTES)fail('COLD_NATIVE_PART_BOUND_HOLD');
+      const bytes=Buffer.alloc(part.bytes);
+      let read=0;
+      while(read<bytes.length){
+        const result=await handle.read(bytes,read,bytes.length-read,offset+read);
+        if(result.bytesRead<=0)fail('COLD_NATIVE_SHORT_READ_HOLD');
+        read+=result.bytesRead;
+      }
+      if(digest(bytes)!==part.sha256.toLowerCase())
+        fail('COLD_NATIVE_PART_READBACK_HOLD');
+      whole.update(bytes);offset+=bytes.length;
+    }
+    if(offset!==initial.size||whole.digest('hex')!==version.metadata.sha256.toLowerCase())
+      fail('COLD_NATIVE_WHOLE_READBACK_HOLD');
+    const final=await handle.stat();
+    if(!final.isFile()||final.size!==initial.size||final.ino!==initial.ino
+      ||final.dev!==initial.dev)fail('COLD_NATIVE_CHANGED_DURING_READ_HOLD');
+  }finally{await handle.close();}
+}
+
 async function restoreColdParts(input,destination){
   const catalog=await inspectColdParts(await readPartsCatalog(input));
   const dest=path.resolve(destination), parent=path.dirname(dest);
@@ -691,9 +728,7 @@ async function restoreColdParts(input,destination){
         if(offset!==v.metadata.bytes)fail('COLD_RECONSTRUCTED_BYTE_COUNT_HOLD');
         await fd.sync();
       }finally{await fd.close();}
-      const stored=await readBoundedRegularFile(path.join(dest,name),PART_CATALOG_SINGLE);
-      if(stored.length!==v.metadata.bytes||digest(stored)!==v.metadata.sha256)
-        fail('COLD_RECONSTRUCTED_SOURCE_READBACK_HOLD');
+      await verifyColdNativeInPieces(path.join(dest,name),v);
     }
     const receipt=Buffer.from(JSON.stringify(coldRecoveryManifest(catalog),null,2)+'\n');
     await writeDurableNewFile(path.join(dest,'recovery-manifest.json'),receipt);
@@ -726,9 +761,7 @@ async function auditColdParts(input,destination){
   const receipt=await readBoundedRegularFile(path.join(dest,'recovery-manifest.json'),PART_CATALOG_MAX);
   if(!receipt.equals(expectedReceipt))fail('COLD_AUDIT_RECEIPT_HOLD');
   for(const v of catalog.packet.versions){
-    const bytes=await readBoundedRegularFile(path.join(dest,nativeRecoveryName(v.metadata)),PART_CATALOG_SINGLE);
-    if(bytes.length!==v.metadata.bytes||digest(bytes)!==v.metadata.sha256)
-      fail('COLD_AUDIT_RESTORED_BYTES_HOLD');
+    await verifyColdNativeInPieces(path.join(dest,nativeRecoveryName(v.metadata)),v);
   }
   return {outcome:'OFFLINE_SEGMENTED_SOURCE_AUDITED',
     selected_id:catalog.packet.selected_id,version_count:catalog.packet.versions.length,
@@ -796,4 +829,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery,
   writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile, nativeRecoveryName,
   readBatchPackets, restoreBatchPackets, auditBatchPackets,
-  readPartsCatalog, inspectColdParts, restoreColdParts, auditColdParts };
+  readPartsCatalog, inspectColdParts, restoreColdParts, auditColdParts, verifyColdNativeInPieces };

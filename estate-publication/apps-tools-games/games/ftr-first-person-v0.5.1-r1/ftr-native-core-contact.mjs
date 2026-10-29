@@ -7,6 +7,7 @@
  */
 import {GameCoding, GameCodingRuntime, JMGameCore, JMGameCoreRuntime} from '../../../../coding-estate/sovereign-ten/direct/game-native.mjs';
 import {contactEvent,planExistingFirstPersonContact} from '../../../../coding-estate/integration/ftr-eight-contact.mjs';
+import {JMVisualGraft, JMVisualRuntime} from '../../../../coding-estate/sovereign-batch-six/direct/game-input-native-a.mjs';
 
 const ftr=window.FTR;
 if(!ftr || typeof ftr.command!=='function' || typeof ftr.state!=='function')throw Error('JM_NATIVE_RECIPIENT_NOT_PRESENT');
@@ -34,7 +35,32 @@ system FTRNativeLink {
 const gameAst=GameCoding.parse(gameSource), coreAst=JMGameCore.parse(coreSource);
 const history=[];
 let last=null;
-function record(receipt){
+const visualGraftSource=`visualgraft FTRNativeFeedback {
+ mechanic = CorePulse
+ state_path = link.verdict
+ expression = "JM NATIVE CONTACT: {state}"
+ asset = "FTR R1 existing HUD feedback"
+ contact = "earned gameplay"
+}`;
+const visualInputSource=`interaction FTRNativeFeedback {
+ field = CorePulseFeedback
+ inputs = [touch, keyboard, api, kicplay]
+ state_path = feedback.status
+ feedback = "Original JM native verdict visible on existing game HUD"
+ render = "FTR R1 native feedback output"
+}`;
+const feedbackOutput=document.getElementById('jmNativeFeedback');
+if(!feedbackOutput)throw Error('JM_ORIGINAL_HUD_FEEDBACK_RECIPIENT_MISSING');
+function record(receipt,inputType='api'){
+ const graft=JMVisualGraft.execute(visualGraftSource,{link:{verdict:receipt.status}});
+ const contact=JMVisualRuntime.execute(visualInputSource,
+   {type:inputType,value:receipt.status},{feedback:{status:'pending'}});
+ if(contact.state.feedback.status!==receipt.status)throw Error('JM_VISUAL_NATIVE_STATE_NOT_APPLIED');
+ feedbackOutput.textContent=graft.state.expression;
+ feedbackOutput.dataset.nativeStatus=receipt.status;
+ receipt.visual={graft:graft.state.graft,expression:graft.state.expression,
+   input:contact.result.input.type,consequenceReadable:contact.result.consequenceReadable,
+   graftTrace:graft.receipt.traceDigest,contactTrace:contact.receipt.traceDigest};
  last=receipt;
  history.push(receipt);
  if(history.length>24)history.shift();
@@ -56,7 +82,7 @@ function availability(state){
  * are observable. Original player HP, cores, world and enemy AI remain authoritative.
  * Game-CODING gates, GameCore dispatches and validates the approved rule.
  */
-function corePulse(){
+function corePulse(inputType='api'){
  const before=snapshot();
  const denied=availability(before);
  const game=new GameCodingRuntime(gameAst,{link:{ready:!denied,verdict:'pending'}});
@@ -66,7 +92,7 @@ function corePulse(){
   if(gate.applied)throw Error('JM_NATIVE_DENIAL_INCONSISTENT');
   return record({schema:'jm.ftr.native-pulse/0.1',status:'DENIED',reason:denied,
    nativeGate:gate,originalBefore:before,originalAfter:snapshot(),
-   gardles:'NATIVE_SOURCE_NOT_MOUNTED'});
+   gardles:'NATIVE_SOURCE_NOT_MOUNTED'},inputType);
  }
  const decision=core.dispatch('FTRNativeLink','CorePulse');
  if(decision.executions.length!==1||decision.executions[0].applied!==true||
@@ -82,7 +108,7 @@ function corePulse(){
    originalBefore:{cores:before.player.cores,ammo:before.player.ammo,scans:before.run.scans,shots:before.run.shots},
    originalAfter:{cores:after.player.cores,ammo:after.player.ammo,scans:after.run.scans,shots:after.run.shots},
    nativeIdentity:decision.identity,nativeReceipt:decision.receipt,
-   traceDigest:decision.receipt.traceDigest,gardles:'NATIVE_SOURCE_NOT_MOUNTED'});
+   traceDigest:decision.receipt.traceDigest,gardles:'NATIVE_SOURCE_NOT_MOUNTED'},inputType);
 }
 /**
  * KicPlay contact from original FTR contact code, delivered to original
@@ -93,7 +119,7 @@ function kicPlay({source,gesture,pressure=0,sequence=0,capabilities=[]}){
  const contact=contactEvent({source,gesture,pressure,sequence,capabilities});
  const plan=planExistingFirstPersonContact(contact);
  if(plan.status!=='ROUTABLE')return record({schema:'jm.ftr.native-kicplay/0.1',
-   status:plan.status,source,route:contact.kicPlay,delivered:false,gardles:'NATIVE_SOURCE_NOT_MOUNTED'});
+   status:plan.status,source,route:contact.kicPlay,delivered:false,gardles:'NATIVE_SOURCE_NOT_MOUNTED'},'kicplay');
  const before=snapshot();
  ftr.command(plan.command.name,plan.command.payload);
  const after=snapshot();
@@ -101,14 +127,14 @@ function kicPlay({source,gesture,pressure=0,sequence=0,capabilities=[]}){
    command:plan.command.name,delivered:true,
    before:{running:before.running,ammo:before.player.ammo,phases:before.run.phases,shots:before.run.shots},
    after:{running:after.running,ammo:after.player.ammo,phases:after.run.phases,shots:after.run.shots},
-   gardles:'NATIVE_SOURCE_NOT_MOUNTED',physicalController:'NOT_TESTED'});
+   gardles:'NATIVE_SOURCE_NOT_MOUNTED',physicalController:'NOT_TESTED'},'kicplay');
 }
 const button=document.getElementById('jmNativePulse');
 if(!button)throw Error('JM_NATIVE_CORE_PULSE_CONTROL_MISSING');
-button.addEventListener('click',()=>{const result=corePulse();button.title=result.status==='DENIED'?result.reason:'SCAN + FIRE performed';});
+button.addEventListener('click',()=>{const result=corePulse('touch');button.title=result.status==='DENIED'?result.reason:'SCAN + FIRE performed';});
 addEventListener('keydown',event=>{
  if(event.code==='KeyG'&&!event.repeat&&!event.ctrlKey&&!event.altKey&&!event.metaKey){
-  event.preventDefault();corePulse();
+  event.preventDefault();corePulse('keyboard');
  }
 });
 let lastStatus='';
@@ -126,7 +152,7 @@ let lastStatusUpdate=-1000;
 requestAnimationFrame(refreshButton);
 window.JMFTRNative=Object.freeze({
  schema:'jm.ftr.native-live/0.1',source:'original JM sovereign game-native.mjs',
- bodies:Object.freeze(['GameCoding','GameCodingRuntime','JMGameCore','JMGameCoreRuntime','FTR KicPlay contact']),
+ bodies:Object.freeze(['GameCoding','GameCodingRuntime','JMGameCore','JMGameCoreRuntime','FTR KicPlay contact','JMVisualGraft','JMVisualRuntime']),
  corePulse,kicPlay,eligibility:()=>availability(snapshot()),last:()=>last,
  recent:()=>history.slice(),nativeGardles:'HOLD_EXACT_SOURCE_NOT_MOUNTED',
  physicalControl:'NOT_TESTED'

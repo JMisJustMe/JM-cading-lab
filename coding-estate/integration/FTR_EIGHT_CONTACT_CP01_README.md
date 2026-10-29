@@ -93,3 +93,13 @@ Workflow conclusion **SUCCESS** in all four jobs, with M001 Mandatory Production
 - Corrected game carrier is **TEMP-BUILT TEST DESCENDANT**, not merged or deployed; owner-editable generator is retained in GitHub. No dead archive or duplicated generated output saved in repo.
 
 **Law:** OTHERNESS → EXACT ORIGINAL JM RECIPIENT → OBSERVED CHANGE → SOURCE PRESERVED → RETURNED TEST RECEIPT. HEADLESS HOST ≠ OWNER DEVICE. DRAFT ≠ PRODUCTION.
+
+## CP05 — FINAL VERIFIED FULL-HOST RUN (29 OCT 2026)
+- Scope update: CP04's 12 corrected Chromium tests were extended to **16/16**, including real browser-emulated **touch** Start, Fire and Scan control activation and zero JS exceptions. This is mobile browser **emulation**, not physical user-phone acceptance.
+- Stronger Parrot real tool proof: official `parrotsec/nmap` image ran `ncat` server inside `--network none` container; genuine `nmap -sT -Pn -p 18088 127.0.0.1` found `18088/tcp open`, proving live owned-service discovery as well as previous 80/443 closed-port detection.
+- Official `kalilinux/kali-rolling` isolated userland boot returned `ID=kali`. Android Kali NetHunter remains **HOLD**, not silently credited.
+- New full proof run: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40896883130 on commit `89e2bbf6199f325490ac2c4a1f1f86ff2fe63a4c`: **4/4 jobs SUCCESS**, includes real Godot 4.7.2 headless contact, real corrected FTR Chromium gameplay and touch emulation, Parrot open local service, Kali userland boot and original native/recipient/CSI test matrix.
+- M001 Mandatory Production Admission and Sovereign Estate Integration Conformance both **SUCCESS** on that same commit.
+- Final declared counts: **97 passed checks** = 34 original FTR native + 8 source/security + 18 existing THEOGAMY + 13 FTR→existing MEETPOINT + 8 RouteSense RF + 16 Chromium original-game/derived-carrier; additionally separately recorded Godot host runtime, Parrot Nmap live localhost and Kali userland. Not comparable to 97 completed products. No failed jobs at this checkpoint.
+- Source-preserving BUGG correction build validated: exact frozen v0.5.1 renderer SHA checked; only missing second Canvas scale axis changed, original frozen source **unchanged**; no generated descendant retained in the repository.
+- Promotion limit: PR #613 still DRAFT/UNMERGED. No main deploy, native Gardles, hardware, commercial release or independently runnable physical-device claim. **Full available CI runs are complete at bounded host scope, while external/device gates remain open.**

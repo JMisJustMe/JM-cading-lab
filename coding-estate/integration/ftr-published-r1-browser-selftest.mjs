@@ -277,13 +277,22 @@ try{
    assert.equal(after.target,'B');
    assert(after.steps>0);
  });
- await check('CP10 two collected original cores terminate wayfinding rather than inventing targets',async()=>{
-   const r=await page.evaluate(()=>{
+ await check('CP16 original two-core extraction goal inherits the real opening gate instead of inventing a destination',async()=>{
+   const before=await page.evaluate(()=>{
      window.FTR.test.activateCore(1);
-     return window.JMFTRSpatial.route();
+     return {route:window.JMFTRSpatial.route(),state:window.FTR.state()};
    });
-   assert.equal(r.status,'ALL_CORES_MOUNTED');
-   assert.deepEqual(r.path,[]);
+   assert.equal(before.route.target,'EXTRACTION');
+   assert.equal(before.route.status,'NO_TRAVERSABLE_ROUTE');
+   assert.equal(before.state.player.cores,2);
+   await page.waitForTimeout(1350);
+   const after=await page.evaluate(()=>({route:window.JMFTRSpatial.route(),
+     gate:window.FTR.state().doors[1]}));
+   assert.equal(after.route.status,'ROUTE_FOUND');
+   assert.equal(after.route.target,'EXTRACTION');
+   assert(after.gate.open>.82);
+   assert(after.route.steps>0);
+   assert.deepEqual(after.route.path.at(-1),{x:17,y:4});
  });
  await check('CP11 actual original JM Cover Forge mounts without replacing FTR',async()=>{
    await page.waitForFunction(()=>!!window.JMFTRCover);

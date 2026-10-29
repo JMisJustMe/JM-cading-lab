@@ -148,8 +148,25 @@ export function executeLearningContact({lesson,gesture}){
  fail(typeof lesson==='string'&&/^[A-Za-z][A-Za-z0-9_]{0,40}$/.test(lesson),'LESSON_ID_INVALID');
  fail(Object.hasOwn(ROUTES,gesture),'LESSON_GESTURE_INVALID');
  const kicPlay=ROUTES[gesture];
- const gameSource='entity Lesson {\\n progress = "waiting"\\n}\\nmechanic Learn {\\n requires lesson.progress == "waiting"\\n effect lesson.progress = "learned"\\n}';
- const coreSource='organ LearningOrgan {\\n handles = [Lesson]\\n rules = [Learn]\\n invariants = {\\n lesson.progress == "learned"\\n }\\n}\\nsystem TeachingSystem {\\n organs = [LearningOrgan]\\n events = [LearnEvent]\\n identity = "JM.Learning.'+lesson+'"\\n}';
+ const gameSource=`entity Lesson {
+ progress = "waiting"
+}
+mechanic Learn {
+ requires lesson.progress == "waiting"
+ effect lesson.progress = "learned"
+}`;
+ const coreSource=`organ LearningOrgan {
+ handles = [Lesson]
+ rules = [Learn]
+ invariants = {
+ lesson.progress == "learned"
+ }
+}
+system TeachingSystem {
+ organs = [LearningOrgan]
+ events = [LearnEvent]
+ identity = "JM.Learning.${lesson}"
+}`;
  const game=new GameCodingRuntime(GameCoding.parse(gameSource),{},{});
  const core=new JMGameCoreRuntime(JMGameCore.parse(coreSource),game);
  const event=core.dispatch('TeachingSystem','LearnEvent');

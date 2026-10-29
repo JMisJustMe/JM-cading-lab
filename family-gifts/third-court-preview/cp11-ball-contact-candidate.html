@@ -201,7 +201,7 @@ if(state.pos===1&&!state.air&&!state.loose){if(state.shotClock<=.12)return;if(st
 if((d<285&&state.aiCooldown<=0)||(state.aiCooldown<-1.5))cpuShot();else if(state.aiCooldown<.1&&defDistance<80){state.aiCooldown=.55}}
 if(state.pos===0&&!state.air&&!state.loose&&state.passCooldown<=0){let c=state.players.filter(x=>x.team===1).sort((a,b)=>dist(a,carrier)-dist(b,carrier))[0];if(c&&dist(c,carrier)<38&&Math.random()<dt*.36*(state.guardHeld? .18:1)){state.turnovers++;resetPossessionClock();state.pos=1;state.carrier=c.id;state.passCombo=0;state.crown=false;state.shotHeld=false;state.shotCharge=0;$('shotMeter').style.display='none';state.aiCooldown=.7;notify('STRIPPED! TRACK BACK!',1);state.passCooldown=.8;syncHud()}}
 contactBodies(dt);
-if(!state.air&&!state.loose){let p=holder(),beat=Math.sin(state.clock*13),speed=Math.hypot(p.vx,p.vy);state.ballHand=state.guardHeld&&state.pos===0?-1:Math.sin(p.travel*.025)>=0?1:-1;
+if(!state.air&&!state.loose){let p=holder(),speed=Math.hypot(p.vx,p.vy),beat=Math.sin(state.clock*(11+Math.min(7,speed*.025)));state.ballHand=state.guardHeld&&state.pos===0?-1:Math.sin(p.travel*.025)>=0?1:-1;
 state.ball={x:p.x+state.ballHand*(15+speed*.012),y:p.y-9,z:9+Math.abs(beat)*(11+Math.min(7,speed*.025))}}
 }
 function update(dt){if(!state.active||state.paused)return;state.clock+=dt;state.time=Math.max(0,state.time-dt);if(state.time<=0){closeMatch();return}

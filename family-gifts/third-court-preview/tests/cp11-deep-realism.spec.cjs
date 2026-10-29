@@ -9,6 +9,16 @@ const initial=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert.equal(initial.playerCount,6);assert(['CP11','CP12'].includes(await page.evaluate(()=>JM_THIRD_COURT.version)));
 await page.click('#playQuick');let a=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(a.active&&a.time>0);assert(a.shotClock>0);assert.equal(a.playerCount,6);
+assert.deepEqual(a.athletes.map(p=>p.role),['Floor General','Wing Shooter','Paint Anchor','Floor General','Wing Shooter','Paint Anchor']);
+assert(a.athletes[0].pace>a.athletes[2].pace,'Floor General outruns Paint Anchor');
+assert(a.athletes[1].shotForm>a.athletes[2].shotForm,'Wing Shooter has higher live shooting form');
+assert(a.athletes[2].endurance>a.athletes[1].endurance,'Paint Anchor recovers differently');
+assert.match(await page.locator('#posLabel').textContent(),/FLOOR GENERAL/);
+await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');
+const roleRun=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(roleRun.athletes[0].energy<=100,'movement keeps player fatigue bounded');
+assert(roleRun.athletes[0].y<690,'role actually moves in court simulation');
+
 await page.evaluate(()=>JM_THIRD_COURT.pass());await page.evaluate(()=>JM_THIRD_COURT.callCut());
 await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_THIRD_COURT.setGuard(true));
 await page.waitForTimeout(200);a=await page.evaluate(()=>JM_THIRD_COURT.status());

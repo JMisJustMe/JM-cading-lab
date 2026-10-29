@@ -162,7 +162,12 @@ function hearEcho(x,y,radius=7.2){
   const path=sourceRoute(e,{x,y});
   if(!path.length||path.length>11)continue;
   const m=read(e);
-  if(m.last&&m.last.source==='direct'&&time-m.last.t<.6)continue;
+  // An original, active PHASE genuinely severs sight (CP13 source-owned
+  // perception). A fresh old direct-memory receipt must not immunise
+  // enemies against a subsequently placed, reachable sound lure.
+  // Without authentic Phase, direct contact still outranks a lure.
+  const phased=player.phase>0&&run.phases>0;
+  if(m.last&&m.last.source==='direct'&&time-m.last.t<.6&&!phased)continue;
   m.last={x,y,t:time,source:'echo'};
   m.path=path;m.nextReplan=time+.3;m.cell='';
   heard++;

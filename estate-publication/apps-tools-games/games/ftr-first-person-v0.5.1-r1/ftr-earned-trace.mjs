@@ -45,11 +45,11 @@ const speedBoost=1.7,bonus=180;
 const text=document.getElementById('jmTraceSignal');
 if(!text)throw Error('JM_CP15_TRACE_FEEDBACK_ABSENT');
 let session=run.started,eligibleContacts=0,boostedSeconds=0,completed=0,blockedSight=0,last=null;
-let earned=new Set(),uiAt=-100;
+let earned=new Set(),rewarded=new Set(),quietCredit=new Map(),uiAt=-100;
 function reset(){
  if(session===run.started)return;
  session=run.started;eligibleContacts=0;boostedSeconds=0;completed=0;blockedSight=0;
- earned=new Set();last=null;uiAt=-100;refresh();
+ earned=new Set();rewarded=new Set();quietCredit=new Map();last=null;uiAt=-100;refresh();
 }
 function eligibility(){
  const t=promptTarget?.kind==='terminal'?promptTarget.ref:null;
@@ -65,7 +65,12 @@ function eligibility(){
   return m?.last?.source==='echo'&&!m.sighted;
  });
  if(!remembered)return {eligible:false,reason:'NO_ORIGINAL_ACTOR_INVESTIGATING_ECHO',target:t.id};
- const seen=enemies.some(enemy=>!enemy.dead&&
+ // CP13's source-authentic Phase breaks active visual contact, not
+ // geometric visibility. Preserve ordinary LOS denial outside the
+ // original active Phase window. Never grant a bonus on Phase alone:
+ // a genuine heard Echo + per-actor existing memory is still required.
+ const phaseConcealed=player.phase>0&&run.phases>0;
+ const seen=!phaseConcealed&&enemies.some(enemy=>!enemy.dead&&
   Math.hypot(enemy.x-player.x,enemy.y-player.y)<9.5&&
   los(enemy.x,enemy.y,player.x,player.y));
  if(seen)return {eligible:false,reason:'ORIGINAL_ENEMY_DIRECT_SIGHT',target:t.id};
@@ -79,12 +84,45 @@ function refresh(){
   'TRACE NORMAL · '+(eligible.reason==='ORIGINAL_ENEMY_DIRECT_SIGHT'?'THREAT WATCHING':
    eligible.reason==='EARNED_DISTRACTION_REQUIRED'?'CAST AN ECHO':'ORIGINAL HOLD');
 }
+function settleEarnedQuietCore(target,wasMounted){
+ if(!target||wasMounted||!target.active||rewarded.has(target.id))return false;
+ const credit=quietCredit.get(target.id);
+ const echo=window.JMFTREcho.state().active;
+ // CP17: an original Phase can finish a moment before the original
+ // mounting frame. Preserve significant earned QUIET contact momentum only
+ // while the SAME source-owned Echo is still live and no subsequent damage
+ // or long gap has broken the continuous actual TRACE attempt.
+ if(!credit||!echo||echo.signalId!==credit.echoId||
+    !window.JMFTRMemory.enabled()||credit.progress<.35||
+    credit.advantage<.16||time-credit.lastTime>.7||
+    run.damage!==credit.damageAtContact)return false;
+ rewarded.add(target.id);completed++;player.score+=bonus;updateHUD();
+ event('JM_QUIET_CORE_MOUNT',{id:target.id,bonus,originalCoreScore:750,
+  earnedAcceleratedProgress:+credit.progress.toFixed(3),
+  earnedExtraProgress:+credit.advantage.toFixed(3),
+  carriedAfterPhase:!(player.phase>0&&run.phases>0),
+  nativeIdentity:credit.nativeIdentity,traceDigest:credit.traceDigest,
+  from:'original doInteract CORE_MOUNT'});
+ last={schema:'jm.ftr.earned-quiet-trace/0.1',
+  status:'ORIGINAL_CORE_MOUNTED_QUIETLY',target:target.id,
+  originalCoreScore:750,earnedBonus:bonus,
+  earnedAcceleratedProgress:credit.progress,
+  earnedExtraProgress:credit.advantage,nativeIdentity:credit.nativeIdentity,
+  traceDigest:credit.traceDigest};
+ return true;
+}
 window.doInteract=function(dt){
  reset();
  if(!Number.isFinite(dt)||dt<=0)return originalInteract(dt);
  const target=promptTarget?.kind==='terminal'?promptTarget.ref:null;
  const check=eligibility();
- if(!check.eligible){if(check.reason==='ORIGINAL_ENEMY_DIRECT_SIGHT')blockedSight++;return originalInteract(dt);}
+ if(!check.eligible){
+  if(check.reason==='ORIGINAL_ENEMY_DIRECT_SIGHT')blockedSight++;
+  const wasMounted=!!target?.active;
+  const response=originalInteract(dt);
+  settleEarnedQuietCore(target,wasMounted);
+  return response;
+ }
  const engine=new GameCodingRuntime(AST,{quiettrace:{ready:true,result:'held'}});
  const core=new JMGameCoreRuntime(CORE,engine);
  const receipt=core.dispatch('JMFTRQuietTrace','OriginalCoreTrace');
@@ -98,6 +136,16 @@ window.doInteract=function(dt){
  const gain=Math.max(0,target.progress-before);
  if(gain>0){
   boostedSeconds+=gain;eligibleContacts++;
+  const echo=window.JMFTREcho.state().active;
+  const current=quietCredit.get(target.id);
+  const credit=current&&current.echoId===echo?.signalId?current:
+   {echoId:echo?.signalId,progress:0,advantage:0};
+  credit.progress+=gain;
+  credit.advantage+=gain*(1-1/speedBoost);
+  credit.lastTime=time;credit.damageAtContact=run.damage;
+  credit.nativeIdentity=receipt.identity;
+  credit.traceDigest=receipt.receipt.traceDigest;
+  quietCredit.set(target.id,credit);
   if(!earned.has(target.id)){
    earned.add(target.id);
    event('JM_QUIET_TRACE_CONTACT',{id:target.id,ratio:speedBoost,
@@ -108,14 +156,7 @@ window.doInteract=function(dt){
    nativeIdentity:receipt.identity,traceDigest:receipt.receipt.traceDigest,
    originalCoreAuthority:true,originalScore};
  }
- if(!wasMounted&&target.active){
-  // Reward only after original doInteract performs the actual real capture.
-  completed++;player.score+=bonus;updateHUD();
-  event('JM_QUIET_CORE_MOUNT',{id:target.id,bonus,originalCoreScore:750,
-   from:'original doInteract CORE_MOUNT'});
-  last={...last,status:'ORIGINAL_CORE_MOUNTED_QUIETLY',
-   target:target.id,originalCoreScore:750,earnedBonus:bonus};
- }
+ settleEarnedQuietCore(target,wasMounted);
  if(time-uiAt>.15){uiAt=time;refresh();}
  return response;
 };
@@ -125,7 +166,11 @@ window.JMFTRQuietTrace=Object.freeze({
  nativeBodies:['JMGameCoreRuntime','GameCodingRuntime'],
  eligibility:()=>{reset();return eligibility()},
  state:()=>({session,eligibleContacts,boostedSeconds,completed,
-   blockedSight,last,originalCoreProgress:terminals.map(t=>({id:t.id,progress:t.progress,active:t.active}))}),
+   blockedSight,last,originalCoreProgress:terminals.map(t=>({id:t.id,progress:t.progress,active:t.active})),
+  earnedCredits:terminals.map(t=>({id:t.id,
+   accelerated:quietCredit.get(t.id)?.progress||0,
+   additional:quietCredit.get(t.id)?.advantage||0,
+   awarded:rewarded.has(t.id)}))}),
  reward:bonus,rate:speedBoost,gardles:'HOLD_EXACT_SOURCE_NOT_MOUNTED'
 });
 setInterval(()=>{reset();if(time-uiAt>.45){uiAt=time;refresh();}},450);

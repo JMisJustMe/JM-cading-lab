@@ -170,7 +170,10 @@ const {chromium}=require('playwright');
    console.log('PASS CP24 READ REFLECT RETURN '+width+'px: official Study Edition, reversible progress, private draft and preserved notes');
 // CP25: selecting the next personally unread passage must never claim it was read.
    await page.locator('[data-tab="read"]').click();
+   await page.click('#jmFocusChoosePath');
+   assert.equal(await page.locator('#page-explore').isVisible(),true);
    await page.selectOption('#planPicker','courage');
+   await page.locator('[data-tab="read"]').click();
    assert.match(await page.locator('#jmFocusPath').textContent(),/Strength & hope · 0 of 7/);
    assert.match(await page.locator('#jmFocusNext').textContent(),/Joshua 1/);
    const beforeRoute=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));

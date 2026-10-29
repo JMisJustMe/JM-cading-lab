@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {AUTHORITY,DISCOVERIES,contactEvent,executeNativeControl,consequenceTurn,inspectOwnedExposure,assessSignal,securityLabProfile,authoringBridge,compareEngineRoutes} from './ftr-eight-contact.mjs';
+import {AUTHORITY,DISCOVERIES,contactEvent,executeNativeControl,consequenceTurn,inspectOwnedExposure,assessSignal,securityLabProfile,authoringBridge,forgeDeviceGlove,compareEngineRoutes} from './ftr-eight-contact.mjs';
 let passed=0;
 const check=(name,run)=>{run();passed++; console.log('PASS',name);};
 const throws=(f,code)=>assert.throws(f,e=>e.code===code);
@@ -29,6 +29,9 @@ check('Live CSI still needs ground truth',()=>{const r=assessSignal({source:'RuV
 check('Rootless Android profile does not require root',()=>assert.equal(securityLabProfile('NetHunter-Rootless').workspace,'unrooted Android userland'));
 check('Full NetHunter is hardware-gated',()=>throws(()=>securityLabProfile('NetHunter-Full'),'FULL_NETHUNTER_REQUIRES_DEVICE_SUPPORT_AND_ROOT'));
 check('Parrot only an isolated lab profile',()=>assert.equal(securityLabProfile('Parrot').readyToInstall,false));
+check('Device Glove respects owner choice',()=>{const g=forgeDeviceGlove({deviceLabel:'JM Test Host',observed:{touch:true,webgl:false},ownerEnabled:['touch']});assert.deepEqual(g.realLimits,['webgl']);assert.deepEqual(g.ownerPreferences,['touch']);});
+check('Device Glove refuses unsupported controls',()=>throws(()=>forgeDeviceGlove({deviceLabel:'JM Test Host',observed:{touch:false},ownerEnabled:['touch']}),'GLOVE_UNSUPPORTED_SELECTION'));
+check('Device Glove never invents a physical wearable',()=>assert.equal(forgeDeviceGlove({deviceLabel:'JM Test Host',observed:{touch:true}}).physicalWearable,false));
 check('Scratch is a distinct authoring route',()=>assert.equal(authoringBridge({learningGoal:'recovery',nativeAction:'Kic'}).source,'Scratch-reference'));
 check('Engine distinction does not claim third-party proof',()=>assert.equal(compareEngineRoutes(input).unreal.implemented,false));
 console.log(JSON.stringify({schema:'jm.ftr.eight-contact-selftest/0.1',passed,failed:0,scope:'Node host + actual JM-native Game-CODING/GameCore imports; no physical device/GPU/network truth'}));

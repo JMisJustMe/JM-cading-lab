@@ -450,3 +450,23 @@ concurrent ancestor replacement. The source stays draft/unmerged; real
 owner-device recovery, independent packet-origin authentication, private
 GitHub migration, authenticated R2 and deployed propagation remain HOLD.
 No original owner file or Library identity is deleted, migrated or replaced.
+
+
+## CP28 — post-stat source growth bounded-memory recovery (29 October 2026)
+
+The existing CP26 opened-file safety gate checked the initial file size but
+then called `FileHandle.readFile()`, which can allocate until EOF. A packet or
+recovered source appended after the initial `stat` could consume more memory
+than the declared cap before the post-read check. CP28 strengthens the same
+original offline recovery CLI: incremental opened-handle reads request at most
+64 KiB per call and never accept more than `maxBytes` in total. The first
+byte over the limit produces `LINEAGE_OPENED_FILE_OVERBOUNDED`; handles close
+on success and failure. No original source, identity or role is rewritten.
+
+The CP28 synthetic regression checks exact normal reads, a file growing
+after `stat`, zero-byte sources, bounded read requests, absence of
+unbounded `readFile` calls and handle closure. Existing CP20 cold recovery,
+CP24 exact manifest, CP25 fsync, CP26 no-follow and CP27 input-ancestor
+refusal remain enforced. This is a source/CI candidate, **not** an authenticated
+owner-device restore, private offsite custody, physical crash proof or
+deployment. PR stays DRAFT/UNMERGED; no private source or Library ID retired.

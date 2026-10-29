@@ -195,11 +195,11 @@ try{
    assert(response?.status()===200);
    assert.equal(await page.evaluate(()=>window.FTR?.version),'0.5.1');
    await page.waitForFunction(()=>!!window.JMFTRNative);
+   await page.locator('#startBtn').tap();
    await page.evaluate(()=>window.FTR.test.activateCore(0));
    const nativeOffline=await page.evaluate(()=>window.JMFTRNative.corePulse());
    assert.equal(nativeOffline.status,'APPLIED');
    assert.equal(nativeOffline.nativeIdentity,'JM.FTR.NativeCorePulse');
-   await page.locator('#startBtn').tap();
    await page.waitForTimeout(220);
    const state=await page.evaluate(()=>window.FTR.state());
    assert.equal(state.running,true);

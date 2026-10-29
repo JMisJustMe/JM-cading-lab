@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'coding-estate/integration/theogamy-contact.mjs'
+      - 'target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -16,6 +17,7 @@ on:
     branches: [main]
     paths:
       - 'coding-estate/integration/theogamy-contact.mjs'
+      - 'target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -70,3 +72,34 @@ jobs:
           npx playwright install chromium
       - name: Execute real original FTR first-person browser/viewport/consequence tests
         run: node coding-estate/integration/ftr-first-person-browser-selftest.mjs
+  godot-headless-target-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Recover exact original JM target-host donor and bridge generator
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            target-bridge/unity-contact-001/Assets/JMTargetBridge
+            target-bridge/godot-contact-001
+          sparse-checkout-cone-mode: true
+      - name: Generate Godot project from source-passported original JM host semantics
+        run: |
+          node --check target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs
+          node target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs "$RUNNER_TEMP/jm-godot"
+      - name: Fetch official Godot 4.7.2 Linux runtime to temporary test environment
+        run: |
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip' \
+            --output "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          find "$RUNNER_TEMP/godot-bin" -maxdepth 1 -type f -print
+      - name: Execute real Godot headless runtime and require JM consequence receipt
+        run: |
+          GODOT=$(find "$RUNNER_TEMP/godot-bin" -maxdepth 1 -type f -name 'Godot*linux.x86_64' | head -n 1)
+          test -n "$GODOT"
+          chmod +x "$GODOT"
+          "$GODOT" --headless --path "$RUNNER_TEMP/jm-godot" --quit-after 281 > "$RUNNER_TEMP/godot.log" 2>&1
+          cat "$RUNNER_TEMP/godot.log"
+          grep -F 'JM_TARGET_BRIDGE_GODOT_RUNTIME_PASS' "$RUNNER_TEMP/godot.log"
+          ! grep -E 'GODOT_SOURCE_SEMANTICS_NOT_OBSERVED|SCRIPT ERROR|Parse Error' "$RUNNER_TEMP/godot.log"

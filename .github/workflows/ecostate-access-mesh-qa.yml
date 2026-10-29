@@ -960,7 +960,10 @@ jobs:
                   if(r.headers()['x-jm-owner-key']!=='synthetic-cp29-key')
                     return respond(route,401,{error:'OWNER_AUTH_REQUIRED'});
                   if(r.method()==='GET'&&mode==='assets')
-                    return respond(route,200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:entries});
+                    return respond(route,200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:stale?[
+                      {id:'00000000-0000-4000-8000-000000002999',sourceInstanceId:purpose,
+                        sha256:'1'.repeat(64),bytes:14,fileName:filename,previousVersionId:headId},
+                      ...entries]:entries});
                   if(r.method()==='GET'&&url.searchParams.get('asset')){
                     const m=entries.find(m=>m.id===url.searchParams.get('asset'));
                     if(!m)return respond(route,404,{error:'ASSET_MISSING'});
@@ -1010,7 +1013,8 @@ jobs:
                 await pickReceipt(receipt);
                 stale=true;
                 await page.locator('#jmVaultPrepareColdRevision').click();
-                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD RE-ENTRY'));
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_RECOVERY_STALE_HEAD_OR_DIFFERENT_SOURCE_HOLD'));
+                if(writes!==0)throw Error('stale external original wrote remote family');
                 // An unknown HEAD is not an eligible saved parent.
                 stale=false;
                 await page.locator('#jmVaultPrepareColdRevision').click();

@@ -78,7 +78,13 @@ function sound(freq=440,dur=.06,type='triangle'){if(!audioOn)return;try{ac??=new
 let toastTime=0;function notify(t,d=1.45){$('toast').textContent=t;toastTime=d}
 const bestKey='jm.thirdcourt.birthday.cp01.record';let best={wins:0,bestScore:0,matches:0};try{const x=JSON.parse(localStorage.getItem(bestKey)||'null');if(x&&Number.isFinite(x.wins)&&Number.isFinite(x.matches))best={wins:x.wins,bestScore:x.bestScore||0,matches:x.matches}}catch(e){}
 function saveBest(){try{localStorage.setItem(bestKey,JSON.stringify(best))}catch(e){};$('bestText').textContent=`LOCAL RECORD · ${best.wins} WINS / ${best.matches} MATCHES · BEST ${best.bestScore}`}
-function roster(){let p=[];for(let team=0;team<2;team++)for(let i=0;i<3;i++){const launchX=[320,178,462][i],launchY=team===0?[690,581,573][i]:[270,350,340][i];p.push({id:team*3+i,team,x:launchX,y:launchY,vx:0,vy:0,dir:team===0?-1:1,energy:100,aiWait:rand(0,1),blink:0,travel:0,heading:team===0?-1:1,plant:0})}return p}
+// JM athlete identities: each inherited body changes actual pacing, shot quality, and stamina.
+const ATHLETE_ROLES=[
+ {name:'Floor General',pace:1.06,shot:1.01,endurance:1.08,burst:1.03},
+ {name:'Wing Shooter',pace:1.02,shot:1.14,endurance:.94,burst:.96},
+ {name:'Paint Anchor',pace:.89,shot:.95,endurance:1.16,burst:1.12}
+];
+function roster(){let p=[];for(let team=0;team<2;team++)for(let i=0;i<3;i++){const launchX=[320,178,462][i],launchY=team===0?[690,581,573][i]:[270,350,340][i],role=ATHLETE_ROLES[i];p.push({id:team*3+i,team,role:role.name,pace:role.pace,shotSkill:role.shot,endurance:role.endurance,burst:role.burst,x:launchX,y:launchY,vx:0,vy:0,dir:team===0?-1:1,energy:100,aiWait:rand(0,1),blink:0,travel:0,heading:team===0?-1:1,plant:0})}return p}
 function holder(){return state.players[state.carrier]||state.players[0]}
 function goal(team){return {x:CX,y:team===0?TOP:BOT}}
 function showScreen(name){for(let id of ['menuScreen','helpScreen','pauseScreen','endScreen'])$(id).classList.toggle('hidden',id!==name);state.screen=name}

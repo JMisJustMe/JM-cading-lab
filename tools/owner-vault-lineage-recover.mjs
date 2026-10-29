@@ -54,6 +54,19 @@ function recoveryFilename(verified, metadata) {
   return verified.asset ? nativeRecoveryName(metadata) : metadata.id + '.html';
 }
 
+// CP26: repeated capture-group regex over megabytes of original base64 can
+// exhaust V8's call stack before hash verification. Scan bounded noncapturing
+// chunks, then require byte-exact canonical base64 after decoding.
+function validBoundedBase64(value) {
+  if (typeof value !== 'string' || value.length % 4 !== 0) return false;
+  const padding=value.endsWith('==')?2:value.endsWith('=')?1:0;
+  const end=value.length-padding;
+  for(let i=0;i<end;i+=32768) {
+    if (!/^[A-Za-z0-9+/]*$/.test(value.slice(i,Math.min(end,i+32768)))) return false;
+  }
+  return true;
+}
+
 function validateAssetPacket(packet) {
   if (!packet || typeof packet !== 'object' || Array.isArray(packet)
     || packet.schema !== ASSET_SCHEMA || !ID.test(packet.selected_id || '')
@@ -77,8 +90,7 @@ function validateAssetPacket(packet) {
       || typeof m.mediaType !== 'string' || m.mediaType.length > 100
       || (m.previousVersionId !== null && !ID.test(m.previousVersionId || ''))
       || typeof value !== 'string' || value.length > Math.ceil(ASSET_MAX_SINGLE / 3) * 4 + 4
-      || value.length % 4 !== 0
-      || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) {
+      || !validBoundedBase64(value)) {
       fail('ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID');
     }
     if (originalIdentity !== null && m.sourceInstanceId !== originalIdentity) {

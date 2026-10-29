@@ -1,6 +1,12 @@
-<!-- JM Scripture Companion v1.8.6 seven-chapter return journey and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
+<!-- JM Scripture Companion v1.8.7 private passage reading and reflection focus and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
 <!doctype html><html lang="en"><head><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#183932"><meta name="description" content="A personal scripture-reading companion with official Bible links and private local notes."><title>JM Scripture Companion · Reading Room</title>
 <style>
+/* CP24: inherited calm reading-room; guided passage without a new front door */
+.jm-focus{border:1px solid var(--line);background:var(--surface);border-radius:17px;padding:15px;margin:14px 0}
+.jm-focus .jm-steps{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 13px;color:var(--muted);font-size:.8rem}
+.jm-focus .jm-steps span{padding:6px 10px;border:1px solid var(--line);border-radius:20px}
+.jm-focus .actions{gap:8px}
+
 /* CP23 original reading room: quiet progress, not a competing dashboard */
 #planMeter{width:100%;height:12px;accent-color:var(--accent);display:block;margin:12px 0 5px}#planJourney{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}#planJourney summary{cursor:pointer;font-weight:750;color:var(--ink);padding:7px 1px}#planSteps{margin-top:10px}.plan-step-title{display:block;margin-bottom:6px}
 
@@ -28,6 +34,19 @@
     <div><div class="tag">Continue from here</div><strong id="resumeReference">Psalms 23</strong><p id="readingRoomStatus" class="soft">Your next passage is ready.</p></div>
     <div class="actions"><a class="btn" id="resumeOfficial" target="_blank" rel="noopener noreferrer" href="https://www.jw.org/en/library/bible/nwt/books/psalms/23/">Read official chapter ↗</a><button id="resumeChoose" type="button" class="btn secondary">Choose passage</button></div>
   </div>
+  <section id="jmReadingFocus" class="jm-focus" aria-labelledby="jmFocusTitle">
+   <div class="tag">Your private passage focus</div><h3 id="jmFocusTitle">Read · Reflect · Revisit</h3>
+   <p class="jm-steps" aria-label="Personal study steps"><span>1 · Read officially</span><span>2 · Reflect privately</span><span>3 · Mark read when ready</span></p>
+   <strong id="jmFocusRef">Psalms 23</strong>
+   <p id="jmFocusProgress" class="soft" role="status" aria-live="polite">Reading is always your choice.</p>
+   <div class="actions">
+    <a id="jmFocusOfficial" class="btn secondary small" href="https://www.jw.org/en/library/bible/study-bible/books/psalms/23/" target="_blank" rel="noopener noreferrer">Official Study Edition ↗</a>
+    <button type="button" class="btn secondary small" id="jmFocusReflect">Write private reflection</button>
+    <button type="button" class="btn secondary small" id="jmFocusNotes">Revisit my notes</button>
+    <button type="button" class="btn secondary small" id="jmFocusMark">Mark read</button>
+   </div>
+   <p id="jmFocusStatus" class="count" role="status" aria-live="polite"></p>
+  </section>
   <div class="room-grid"><div class="room-stat"><strong id="roomProgress">0</strong><span>chapters marked read</span></div><div class="room-stat"><strong id="roomSaved">0</strong><span>saved references</span></div><div class="room-stat"><strong id="roomNotes">0</strong><span>personal notes</span></div></div>
   <div class="actions room-actions"><button class="btn secondary" id="markCurrentRead" type="button">✓ Mark selected chapter read</button><button class="btn secondary" id="markCurrentUnread" type="button">↶ Mark chapter unread</button><button class="btn secondary" id="focusNextUnread" type="button">Next unread chapter</button><button class="btn secondary" id="roomNote" type="button">✎ Reflect on this passage</button><button class="btn secondary" id="roomFindNotes" type="button">⌕ Find notes for this chapter</button></div>
   <p id="roomActionStatus" class="count" role="status" aria-live="polite"></p>
@@ -98,7 +117,7 @@ function stepChapter(direction){
 }
 function update(){const p=current();$('#chapter').max=getBook()[1];$('#chapter').value=p.chapter;$('#reference').textContent=p.book+' '+p.chapter+(p.verse?':'+p.verse:'')+' · opens official chapter';$('#open').href=p.url;Object.assign(data,{book:p.book,chapter:p.chapter,verse:p.verse});save();refreshChapterNavigation();}
 function jump(book,chapter,verse=''){if(!BOOKS.some(b=>b[0]===book))return;$('#book').value=book;$('#chapter').value=chapter;$('#verse').value=verse;update();tab('read')}
-function tab(name){document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${name}`);document.querySelectorAll('[data-tab]').forEach(el=>el.setAttribute('aria-current',el.dataset.tab===name?'page':'false'));if(name==='saved')renderSaved();if(name==='notes')renderNotes();if(name==='explore'&&window.JMExplore)window.JMExplore.render();window.scrollTo(0,0)}
+function tab(name){document.querySelectorAll('.page').forEach(el=>el.hidden=el.id!==`page-${name}`);document.querySelectorAll('[data-tab]').forEach(el=>el.setAttribute('aria-current',el.dataset.tab===name?'page':'false'));if(name==='saved')renderSaved();if(name==='notes')renderNotes();if(name==='read'&&window.JMReadingRoom)window.JMReadingRoom.render();if(name==='explore'&&window.JMExplore)window.JMExplore.render();window.scrollTo(0,0)}
 function make(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;}
 function makeButton(label,fn){const btn=make('button',label,'btn secondary small');btn.type='button';btn.addEventListener('click',fn);return btn}
 function renderSaved(){const holder=$('#savedList');holder.replaceChildren();if(!data.bookmarks.length){holder.append(make('p','No passages saved yet. Open Read to choose one.','empty'));return;}data.bookmarks.slice().reverse().forEach(ref=>{const box=make('div',undefined,'entry');box.append(make('strong',`${ref.book} ${ref.chapter}${ref.verse?':'+ref.verse:''}`));const buttons=make('div',undefined,'entry-actions');buttons.append(makeButton('Select',()=>jump(ref.book,ref.chapter,ref.verse)));const a=make('a','Open official chapter ↗','btn secondary small');a.href=BASE+slug(ref.book)+'/'+ref.chapter+'/';a.target='_blank';a.rel='noopener noreferrer';buttons.append(a);buttons.append(makeButton('Remove',()=>{data.bookmarks=data.bookmarks.filter(x=>x.id!==ref.id);save();renderSaved()}));box.append(buttons);holder.append(box);});}
@@ -463,6 +482,36 @@ function renderRecentChapters(){
 }
 
 function roomTarget(){const n=pending();if(n)return {book:n.book,chapter:n.chapter,verse:''};const last=data.lastOpened;if(last&&isValid(last.book,last.chapter))return {book:last.book,chapter:last.chapter,verse:typeof last.verse==='string'?last.verse:''};return selected();}
+function renderStudyFocus(){
+ const r=selected();
+ const read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===r.book&&q.chapter===r.chapter&&q.done);
+ const reflections=chapterReflections(r.book,r.chapter).length;
+ $('#jmFocusRef').textContent=readable(r);
+ $('#jmFocusOfficial').href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(r.book)+'/'+r.chapter+'/';
+ $('#jmFocusProgress').textContent=(read?'Marked read by you':'Not marked read')+' · '+reflections+' saved private reflection'+(reflections===1?'':'s')+' · Reading on JW.org never marks this as completed.';
+ $('#jmFocusMark').textContent=read?'↶ Mark unread':'✓ Mark read';
+}
+$('#jmFocusMark').addEventListener('click',()=>{
+ const ref=selected(),read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===ref.book&&q.chapter===ref.chapter&&q.done);
+ const changed=setChapterReadState(ref,!read);
+ $('#jmFocusStatus').textContent=changed?readable(ref)+(read?' marked unread.':' marked read by you.'):'Previous progress retained; check whether device storage is available.';
+ renderStudyFocus();
+});
+$('#jmFocusReflect').addEventListener('click',()=>{
+ const r=selected();
+ if(hasUnfinishedDraft()){
+  $('#jmFocusStatus').textContent='Your existing unfinished reflection is preserved. Continue it in Notes.';
+ }else{
+  $('#noteRef').value=readable(r);
+  $('#noteText').value='What stood out to me in this passage?\\n\\nWhat would I like to remember or apply?\\n\\n';
+  const saved=storeDraft();
+  $('#jmFocusStatus').textContent=saved?'Your reflection draft is private and ready in Notes.':'Draft could not be saved on this device; copy your writing before leaving.';
+ }
+ tab('notes');$('#noteText').focus();
+});
+$('#jmFocusNotes').addEventListener('click',()=>{
+ $('#notesSearch').value='';$('#notesScope').value='chapter';tab('notes');
+});
 function renderRoom(){
  const next=roomTarget();$('#resumeReference').textContent=readable(next);$('#resumeOfficial').href=chapterUrl(next.book,next.chapter);
  const todo=pending();$('#readingRoomStatus').textContent=todo?'Next on your reading list':data.lastOpened?'Last opened chapter':'Start with a passage that feels right for you';
@@ -470,7 +519,7 @@ function renderRoom(){
  $('#roomProgress').textContent=queue.filter(x=>x&&x.done&&isValid(x.book,x.chapter)).length;
  $('#roomSaved').textContent=Array.isArray(data.bookmarks)?data.bookmarks.length:0;
  $('#roomNotes').textContent=Array.isArray(data.notes)?data.notes.length:0;
- renderRecentChapters();renderChapterReflections();renderPlan();
+ renderRecentChapters();renderChapterReflections();renderPlan();renderStudyFocus();
 }
 function renderPlan(){
  const plan=readingPaths[$('#planPicker').value]||readingPaths.quiet,desc=$('#planDescription');

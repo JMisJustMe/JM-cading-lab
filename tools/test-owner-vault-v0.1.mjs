@@ -1086,6 +1086,22 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
     assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_MANIFEST_MISMATCH',
       'CP21 altered recovery manifest');
     await fs.writeFile(manifestPath,manifestOriginal);
+    // CP24: prior audit checked only selected fields and accepted forged
+    // offsite/deployment claims or extra unverified success fields.
+    const forgedBoundary = JSON.parse(manifestOriginal);
+    forgedBoundary.boundary = 'FALSE_CLAIM: OFFSITE_CUSTODY_AND_DEPLOYMENT_PROVED';
+    await fs.writeFile(manifestPath,JSON.stringify(forgedBoundary,null,2)+'\n');
+    assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_MANIFEST_MISMATCH',
+      'CP24 altered custody boundary must fail cold audit');
+    await fs.writeFile(manifestPath,manifestOriginal);
+    const injectedClaim = JSON.parse(manifestOriginal);
+    injectedClaim.owner_device_restore_verified = true;
+    await fs.writeFile(manifestPath,JSON.stringify(injectedClaim,null,2)+'\n');
+    assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_MANIFEST_MISMATCH',
+      'CP24 injected external-access success claim must fail cold audit');
+    await fs.writeFile(manifestPath,manifestOriginal);
+    assert.equal(run('--audit-dir',restoredDir).status,0,
+      'CP24 exact manifest restored without altering any original source');
     const unexpectedFile = path.join(restoredDir,'extra-unverified.html');
     await fs.writeFile(unexpectedFile,'unrelated');
     assertHeld(run('--audit-dir',restoredDir),'LINEAGE_AUDIT_INVENTORY_MISMATCH',

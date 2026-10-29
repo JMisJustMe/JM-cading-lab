@@ -496,6 +496,145 @@ try{
   assert.equal(r.cover.active,null);
   assert.equal(r.cores,0);
  });
+ await check('CP13 authentic JM GameCore sight-memory mounts in original FTR browser',async()=>{
+  await page.waitForFunction(()=>!!window.JMFTRMemory);
+  const r=await page.evaluate(()=>({schema:window.JMFTRMemory.schema,
+   native:window.JMFTRMemory.nativeBodies,source:window.JMFTRMemory.source}));
+  assert.equal(r.schema,'jm.ftr.original-threat-memory/0.1');
+  assert(r.source.endsWith('ftr-world.js'));
+  assert(r.native.includes('JMGameCoreRuntime'));
+ });
+ await check('CP13 genuine original unobstructed sighting earns native sight decision',async()=>{
+  const r=await page.evaluate(()=>{
+    window.FTR.command('START');
+    window.FTR.test.setPlayer(12.3,15.4,0);
+    enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.stun=100;e.cool=100;});
+    enemies[0].x=11.5;enemies[0].y=15.5;enemies[0].stun=0;enemies[0].cool=100;
+    enemies[0].type='sentry';
+    return {lineOfSight:los(enemies[0].x,enemies[0].y,player.x,player.y)};
+  });
+  assert.equal(r.lineOfSight,true);
+  await page.waitForTimeout(190);
+  const seen=await page.evaluate(()=>({
+    memory:window.JMFTRMemory.status(),enemy:window.JMFTRMemory.inspectEnemy(0),
+    events:window.FTR.state().run.events
+  }));
+  assert(seen.memory.sighted>0);
+  assert.equal(seen.enemy.sighted,true);
+  assert.equal(seen.memory.latest.nativeIdentity,'JM.FTR.SightMemory');
+  assert(seen.memory.latest.traceDigest);
+  assert(seen.events.some(e=>e.event==='JM_AI_SIGHTED'));
+ });
+ await check('CP13 original player Phase genuinely breaks sight and interrupts original attacks',async()=>{
+  const before=await page.evaluate(()=>{
+    enemies[0].cool=0;
+    const shots=window.FTR.state().run.events.filter(e=>e.event==='INCOMING').length;
+    window.FTR.command('PHASE');
+    return {shots,phase:window.FTR.state().player.phase};
+  });
+  assert(before.phase>0);
+  await page.waitForTimeout(160);
+  const after=await page.evaluate(()=>({
+    status:window.JMFTRMemory.status(),enemy:window.JMFTRMemory.inspectEnemy(0),
+    incoming:window.FTR.state().run.events.filter(e=>e.event==='INCOMING').length,
+    phases:window.FTR.state().run.events.filter(e=>e.event==='JM_AI_PHASE_BREAK').length
+  }));
+  assert(after.status.phaseBreaks>0);
+  assert.equal(after.enemy.sighted,false);
+  assert.equal(after.incoming,before.shots);
+  assert(after.phases>0);
+ });
+ await check('CP13 real Scan exposes existing enemy pressure state to original HUD',async()=>{
+  await page.evaluate(()=>window.FTR.command('SCAN'));
+  await page.waitForTimeout(230);
+  const r=await page.evaluate(()=>({
+    hud:document.getElementById('jmAwarenessStatus').textContent,
+    events:window.FTR.state().run.events
+  }));
+  assert(r.hud.startsWith('SCAN'));
+  assert(r.events.some(e=>e.event==='JM_PLAYER_SCAN_INTELLIGENCE'));
+ });
+ await check('CP13 ally receives bounded original-LOS shared last-known player contact',async()=>{
+  await page.evaluate(()=>{
+    window.FTR.command('START');
+    window.FTR.test.setPlayer(1.5,11.5,0);
+    enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.stun=100;e.cool=100;});
+    enemies[0].x=2.5;enemies[0].y=13.5;enemies[0].stun=0;enemies[0].cool=100;enemies[0].type='sentry';
+    enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=0;enemies[1].cool=100;enemies[1].type='hunter';
+  });
+  await page.waitForTimeout(145);
+  const r=await page.evaluate(()=>({
+    direct:los(enemies[0].x,enemies[0].y,player.x,player.y),
+    allySees:los(enemies[1].x,enemies[1].y,player.x,player.y),
+    contact:window.JMFTRMemory.inspectEnemy(1),metrics:window.JMFTRMemory.status(),
+    route:window.JMFTRMemory.routeFor(1,{x:1.5,y:11.5}),
+    events:window.FTR.state().run.events
+  }));
+  assert.equal(r.direct,true);
+  assert.equal(r.allySees,false);
+  assert.equal(r.contact.last?.source,'shared');
+  assert(r.metrics.shared>0);
+  assert(r.events.some(e=>e.event==='JM_AI_SHARED_CONTACT'));
+  assert(r.route.length>2);
+  for(let i=1;i<r.route.length;i++){
+    assert(Math.hypot(r.route[i].x-r.route[i-1].x,r.route[i].y-r.route[i-1].y)<=1.01);
+  }
+ });
+ await check('CP13 hunter travels toward actual remembered player position through original collision',async()=>{
+  const start=await page.evaluate(()=>window.JMFTRMemory.inspectEnemy(1));
+  await page.waitForTimeout(480);
+  const end=await page.evaluate(()=>({
+    memory:window.JMFTRMemory.inspectEnemy(1),
+    status:window.JMFTRMemory.status(),
+    collision:circleFree(enemies[1].x,enemies[1].y,.2)
+  }));
+  assert(end.status.searchMoves>0);
+  assert(end.status.routeReplans>0);
+  assert(Math.hypot(end.memory.position.x-start.position.x,end.memory.position.y-start.position.y)>.06);
+  assert.equal(end.collision,true);
+ });
+ await check('CP13 remembered contact expires instead of permanent omniscient enemy tracking',async()=>{
+  const r=await page.evaluate(()=>{
+    window.FTR.test.freezeEnemies(true);
+    time+=3.6;
+    window.FTR.test.setPlayer(18.5,18.5,0);
+    window.FTR.test.freezeEnemies(false);
+    return true;
+  });
+  await page.waitForTimeout(100);
+  const end=await page.evaluate(()=>({status:window.JMFTRMemory.status(),
+    enemy:window.JMFTRMemory.inspectEnemy(1),events:window.FTR.state().run.events}));
+  assert(end.status.forgetCount>0);
+  assert.equal(end.enemy.last,null);
+  assert(end.events.some(e=>e.event==='JM_AI_FORGOT'));
+ });
+ await check('CP13 memory toggle returns responsibility to inherited original FTR AI',async()=>{
+  await page.locator('#jmAwarenessToggle').tap();
+  const a=await page.evaluate(()=>({
+    enabled:window.JMFTRMemory.enabled(),
+    hud:document.getElementById('jmAwarenessStatus').textContent,
+    current:window.FTR.state()
+  }));
+  assert.equal(a.enabled,false);
+  assert(a.hud.includes('ORIGINAL AI'));
+  assert.equal(a.current.running,true);
+  await page.locator('#jmAwarenessToggle').tap();
+  assert.equal(await page.evaluate(()=>window.JMFTRMemory.enabled()),true);
+ });
+ await check('CP13 source session restart retires only ephemeral sight, alerts and routes',async()=>{
+  await page.evaluate(()=>window.FTR.command('START'));
+  await page.waitForTimeout(80);
+  const r=await page.evaluate(()=>({
+    state:window.JMFTRMemory.status(),
+    original:window.FTR.state(),
+    sourceVersion:window.FTR.version
+  }));
+  assert.equal(r.sourceVersion,'0.5.1');
+  assert.equal(r.state.shared,0);
+  assert.equal(r.state.phaseBreaks,0);
+  assert.equal(r.state.forgetCount,0);
+  assert.equal(r.original.player.cores,0);
+ });
  await check('CP10 real spatial floor retains bounded frame time on Chromium',async()=>{
    const m=await page.evaluate(()=>window.JMFTRSpatial.metrics());
    console.log('JM_CP10_RENDER_MEASUREMENT',JSON.stringify(m));
@@ -520,6 +659,8 @@ try{
    await page.waitForFunction(()=>!!window.JMFTRNative);
    assert.equal(await page.evaluate(()=>window.JMFTRSpatial.schema),'jm.ftr.spatial-source-contact/0.1');
    await page.waitForFunction(()=>!!window.JMFTRTactics);
+   await page.waitForFunction(()=>!!window.JMFTRMemory);
+   assert.equal(await page.evaluate(()=>window.JMFTRMemory.schema),'jm.ftr.original-threat-memory/0.1');
    assert.equal(await page.evaluate(()=>window.JMFTRTactics.schema),'jm.ftr.tactical-world-contact/0.1');
    await page.locator('#startBtn').tap();
    await page.evaluate(()=>window.FTR.test.activateCore(0));

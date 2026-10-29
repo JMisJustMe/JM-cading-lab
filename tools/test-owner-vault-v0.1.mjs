@@ -1683,5 +1683,8 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     id+'__-foo-bar-music.flac');
   assert.equal(nativeRecoveryName({id,fileName:'CON.wav'}),
     id+'__CON.wav', 'UUID-prefix avoids reserved Windows basename');
-  assert.ok(!nativeRecoveryName({id,fileName:'something'.repeat(100)+'.mp3'}).includes('/'));
+  const longNative = nativeRecoveryName({id,fileName:'something'.repeat(100)+'.mp3'});
+  assert.ok(!longNative.includes('/'));
+  assert.ok(longNative.endsWith('.mp3'), 'CP24 a long filename may not silently lose the native extension');
+  assert.ok(longNative.length <= id.length + 2 + 120);
 }

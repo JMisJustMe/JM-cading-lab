@@ -1,4 +1,4 @@
-<!-- JM Scripture Companion v1.8.7 private passage reading and reflection focus and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
+<!-- JM Scripture Companion v1.8.8 path-guided read and reflection continuity and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
 <!doctype html><html lang="en"><head><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#183932"><meta name="description" content="A personal scripture-reading companion with official Bible links and private local notes."><title>JM Scripture Companion · Reading Room</title>
 <style>
 /* CP24: inherited calm reading-room; guided passage without a new front door */
@@ -39,11 +39,13 @@
    <p class="jm-steps" aria-label="Personal study steps"><span>1 · Read officially</span><span>2 · Reflect privately</span><span>3 · Mark read when ready</span></p>
    <strong id="jmFocusRef">Psalms 23</strong>
    <p id="jmFocusProgress" class="soft" role="status" aria-live="polite">Reading is always your choice.</p>
+   <p id="jmFocusPath" class="soft" role="status" aria-live="polite"></p>
    <div class="actions">
     <a id="jmFocusOfficial" class="btn secondary small" href="https://www.jw.org/en/library/bible/study-bible/books/psalms/23/" target="_blank" rel="noopener noreferrer">Official Study Edition ↗</a>
     <button type="button" class="btn secondary small" id="jmFocusReflect">Write private reflection</button>
     <button type="button" class="btn secondary small" id="jmFocusNotes">Revisit my notes</button>
     <button type="button" class="btn secondary small" id="jmFocusMark">Mark read</button>
+    <button type="button" class="btn secondary small" id="jmFocusNext">Choose next on my path</button>
    </div>
    <p id="jmFocusStatus" class="count" role="status" aria-live="polite"></p>
   </section>
@@ -482,6 +484,21 @@ function renderRecentChapters(){
 }
 
 function roomTarget(){const n=pending();if(n)return {book:n.book,chapter:n.chapter,verse:''};const last=data.lastOpened;if(last&&isValid(last.book,last.chapter))return {book:last.book,chapter:last.chapter,verse:typeof last.verse==='string'?last.verse:''};return selected();}
+// CP25: one original reading queue is the sole source of truth for a personal path.
+// The next-passage action chooses a chapter; it never opens it or marks it read.
+function nextPersonalPassage(){
+ const path=readingPaths[$('#planPicker').value]||readingPaths.quiet;
+ const isRead=(book,chapter)=>(Array.isArray(data.queue)?data.queue:[]).some(q=>q.book===book&&q.chapter===chapter&&q.done);
+ const completed=path.chapters.filter(([book,chapter])=>isRead(book,chapter)).length;
+ const next=path.chapters.find(([book,chapter])=>!isRead(book,chapter));
+ return {title:path.title,completed,total:path.chapters.length,next:next?{book:next[0],chapter:next[1]}:null};
+}
+$('#jmFocusNext').addEventListener('click',()=>{
+ const route=nextPersonalPassage();
+ if(!route.next){$('#jmFocusStatus').textContent='All chapters on this path have been marked read. You can revisit any passage.';return}
+ jump(route.next.book,route.next.chapter);
+ $('#jmFocusStatus').textContent='Selected '+route.next.book+' '+route.next.chapter+'. Open the official chapter whenever you are ready.';
+});
 function renderStudyFocus(){
  const r=selected();
  const read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===r.book&&q.chapter===r.chapter&&q.done);
@@ -490,6 +507,10 @@ function renderStudyFocus(){
  $('#jmFocusOfficial').href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(r.book)+'/'+r.chapter+'/';
  $('#jmFocusProgress').textContent=(read?'Marked read by you':'Not marked read')+' · '+reflections+' saved private reflection'+(reflections===1?'':'s')+' · Reading on JW.org never marks this as completed.';
  $('#jmFocusMark').textContent=read?'↶ Mark unread':'✓ Mark read';
+ const route=nextPersonalPassage(),upcoming=route.next;
+ $('#jmFocusPath').textContent=route.title+' · '+route.completed+' of '+route.total+' personally marked read · '+(upcoming?'Next: '+upcoming.book+' '+upcoming.chapter:'All seven marked read; revisiting is always welcome.');
+ $('#jmFocusNext').disabled=!upcoming;
+ $('#jmFocusNext').textContent=upcoming?'Choose next: '+upcoming.book+' '+upcoming.chapter:'All passages marked read';
 }
 $('#jmFocusMark').addEventListener('click',()=>{
  const ref=selected(),read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===ref.book&&q.chapter===ref.chapter&&q.done);
@@ -602,7 +623,7 @@ $('#planPicker').addEventListener('change',()=>{
  $('#planStatus').textContent='';
  try{localStorage.setItem(PLAN_PREF_KEY,$('#planPicker').value)}
  catch(e){$('#planStatus').textContent='Path choice works this session; existing notes and backups are unchanged.'}
- renderPlan();
+ renderPlan();renderStudyFocus();
 });
 $('#startPlan').addEventListener('click',()=>{
  const plan=readingPaths[$('#planPicker').value];let added=0;for(const [book,ch] of plan.chapters){if(window.JMExplore.add(book,ch))added++}

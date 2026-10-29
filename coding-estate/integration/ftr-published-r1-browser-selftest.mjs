@@ -123,7 +123,7 @@ try{
   const result=await page.evaluate(()=>({schema:window.JMFTRNative.schema,bodies:window.JMFTRNative.bodies,
     gardles:window.JMFTRNative.nativeGardles}));
   assert.equal(result.schema,'jm.ftr.native-live/0.1');
-  for(const body of ['GameCoding','GameCodingRuntime','JMGameCore','JMGameCoreRuntime'])assert(result.bodies.includes(body));
+  for(const body of ['GameCoding','GameCodingRuntime','JMGameCore','JMGameCoreRuntime','JMVisualGraft','JMVisualRuntime'])assert(result.bodies.includes(body));
   assert.equal(result.gardles,'HOLD_EXACT_SOURCE_NOT_MOUNTED');
  });
  await check('Native Game-CODING denies unearned combo without mutating original game',async()=>{
@@ -141,7 +141,8 @@ try{
   await page.evaluate(()=>{window.FTR.command('START');window.FTR.test.freezeEnemies();window.FTR.test.activateCore(0);});
   const before=await page.evaluate(()=>window.FTR.state());
   await page.locator('#jmNativePulse').tap();
-  const result=await page.evaluate(()=>({receipt:window.JMFTRNative.last(),after:window.FTR.state()}));
+  const result=await page.evaluate(()=>({receipt:window.JMFTRNative.last(),after:window.FTR.state(),
+   feedback:document.getElementById('jmNativeFeedback').textContent}));
   result.before=before;
   assert.equal(result.before.player.cores,1);
   assert.equal(result.receipt.status,'APPLIED');
@@ -150,6 +151,21 @@ try{
   assert.equal(result.after.run.shots,result.before.run.shots+1);
   assert.equal(result.after.player.ammo,result.before.player.ammo-1);
   assert(result.receipt.nativeReceipt.traceDigest.length>0);
+  assert.equal(result.receipt.visual.consequenceReadable,true);
+  assert.equal(result.feedback,result.receipt.visual.expression);
+  assert.equal(result.receipt.visual.input,'touch');
+ });
+ await check('Original JM VisualGraft and Visual Runtime render native result visibly in FTR HUD',async()=>{
+  const rendered=await page.evaluate(()=>({
+   text:document.getElementById('jmNativeFeedback').textContent,
+   status:document.getElementById('jmNativeFeedback').dataset.nativeStatus,
+   receipt:window.JMFTRNative.last()
+  }));
+  assert.equal(rendered.status,'APPLIED');
+  assert.equal(rendered.text,'JM NATIVE CONTACT: APPLIED');
+  assert.equal(rendered.receipt.visual.graft,'FTRNativeFeedback');
+  assert(rendered.receipt.visual.graftTrace);
+  assert(rendered.receipt.visual.contactTrace);
  });
  await check('Native cooldown guard prevents duplicate ammunition and scan costs',async()=>{
   const result=await page.evaluate(()=>{
@@ -198,6 +214,8 @@ try{
    const nativeOffline=await page.evaluate(()=>window.JMFTRNative.corePulse());
    assert.equal(nativeOffline.status,'APPLIED');
    assert.equal(nativeOffline.nativeIdentity,'JM.FTR.NativeCorePulse');
+   assert.equal(nativeOffline.visual.consequenceReadable,true);
+   assert.equal(await page.locator('#jmNativeFeedback').textContent(),'JM NATIVE CONTACT: APPLIED');
    await page.waitForTimeout(220);
    const state=await page.evaluate(()=>window.FTR.state());
    assert.equal(state.running,true);

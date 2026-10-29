@@ -216,7 +216,7 @@ async function restorePacket(input, destination) {
       const name = `${metadata.id}.html`; // IDs only; never owner-provided filenames.
       const filename = path.join(dest, name);
       await writeDurableNewFile(filename, bytes);
-      const check = await readBoundedRegularFile(filename, metadata.bytes);
+      const check = await readBoundedRegularFile(filename, MAX_SINGLE_SOURCE);
       if (!check.equals(bytes) || digest(check) !== metadata.sha256.toLowerCase()) {
         fail('LINEAGE_DISK_READBACK_FAILED');
       }
@@ -225,7 +225,7 @@ async function restorePacket(input, destination) {
     const expectedManifest = Buffer.from(JSON.stringify(inventory, null, 2) + '\n', 'utf8');
     await writeDurableNewFile(manifestPath, expectedManifest);
     // Exact bytes, not merely two parsed fields, must survive before success.
-    const storedManifest = await readBoundedRegularFile(manifestPath, expectedManifest.length);
+    const storedManifest = await readBoundedRegularFile(manifestPath, MAX_PACKET_BYTES);
     if (!storedManifest.equals(expectedManifest)) {
       fail('LINEAGE_MANIFEST_READBACK_FAILED');
     }
@@ -281,7 +281,7 @@ async function auditRestoredPacket(input, destination) {
     fail('LINEAGE_AUDIT_MANIFEST_MISMATCH');
   }
   for (const { metadata, bytes } of verified.ready) {
-    const restored = await readBoundedRegularFile(path.join(dest, `${metadata.id}.html`), metadata.bytes);
+    const restored = await readBoundedRegularFile(path.join(dest, `${metadata.id}.html`), MAX_SINGLE_SOURCE);
     if (!restored.equals(bytes) || digest(restored) !== metadata.sha256.toLowerCase()) {
       fail('LINEAGE_AUDIT_SOURCE_MISMATCH');
     }

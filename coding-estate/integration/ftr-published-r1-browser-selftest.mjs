@@ -656,7 +656,7 @@ try{
    assert(a.recipient.includes('CP13 threat memory'));
    assert.equal(a.sourceVersion,'0.5.1');
  });
- await check('CP14 cannot create an original-world Echo outside a running FTR game',async()=>{
+ await check('CP14 new original-FTR run starts with no unearned world Echo or ammo cost',async()=>{
    await page.evaluate(()=>window.FTR.command('START'));
    // The original source is now running. Retest after explicit non-game
    // state with a separate START gate below rather than fake injected state.
@@ -674,7 +674,7 @@ try{
      window.FTR.test.freezeEnemies(false);
      window.FTR.test.setPlayer(1.5,11.5,0);
      enemies.forEach((e,i)=>{e.x=17.5;e.y=17.5;e.cool=100;e.stun=100;});
-     enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=0;enemies[1].cool=100;
+     enemies[1].x=5.5;enemies[1].y=16.5;enemies[1].stun=100;enemies[1].cool=100;
      enemies[1].type='hunter';enemies[1].state='patrol';
      return {placement:window.JMFTREcho.placement(),
       sight:los(enemies[1].x,enemies[1].y,player.x,player.y),
@@ -712,6 +712,7 @@ try{
    assert(Math.hypot(a.ally.last.x-a.state.active.x,a.ally.last.y-a.state.active.y)<.01);
  });
  await check('CP14 original hunter changes world coordinates while investigating the audible lure',async()=>{
+   await page.evaluate(()=>{enemies[1].stun=0;});
    const before=await page.evaluate(()=>window.JMFTRMemory.inspectEnemy(1).position);
    await page.waitForTimeout(490);
    const a=await page.evaluate(()=>({

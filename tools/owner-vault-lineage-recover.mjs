@@ -18,6 +18,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SCHEMA = 'JM.OwnerVault/0.1.LineageExport';
+const ASSET_SCHEMA = 'JM.OwnerVault/0.1.AssetLineageExport';
+const ASSET_VERSIONS = 8, ASSET_MAX_TOTAL = 24 * 1024 * 1024, ASSET_MAX_SINGLE = 12 * 1024 * 1024;
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA = /^[0-9a-f]{64}$/i;
 const MAX_VERSIONS = 16;
@@ -27,7 +29,59 @@ const MAX_SINGLE_SOURCE = 25 * 1024 * 1024;
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = code => { throw new Error(code); };
 
+
+// CP22: share the original CP20 offline verifier/reconstructor rather than
+// invent another CLI or alternative vault. Binary and HTML identities stay
+// distinct; the extension is fixed (.bin), never a supplied path or name.
+function validateAssetPacket(packet) {
+  if (!packet || typeof packet !== 'object' || Array.isArray(packet)
+    || packet.schema !== ASSET_SCHEMA || !ID.test(packet.selected_id || '')
+    || !Array.isArray(packet.versions) || packet.versions.length < 1
+    || packet.versions.length > ASSET_VERSIONS
+    || packet.version_count !== packet.versions.length
+    || packet.order !== 'SELECTED_HEAD_TO_OLDEST_ANCESTOR') {
+    fail('ASSET_PACKET_SCHEMA_OR_SIZE_INVALID');
+  }
+  const ready = [], seen = new Set();
+  let expected = packet.selected_id, total = 0, originalIdentity = null;
+  for (const item of packet.versions) {
+    const m = item?.metadata, value = item?.base64;
+    if (!m || typeof m !== 'object' || Array.isArray(m)
+      || !ID.test(m.id || '') || m.id !== expected || seen.has(m.id)
+      || !SHA.test(m.sha256 || '')
+      || !Number.isSafeInteger(m.bytes) || m.bytes < 0 || m.bytes > ASSET_MAX_SINGLE
+      || !ID.test((m.sourceInstanceId || '').replace(/^asset-/,''))
+      || typeof m.fileName !== 'string' || m.fileName.length < 1 || m.fileName.length > 180
+      || typeof m.name !== 'string' || m.name.length > 500
+      || typeof m.mediaType !== 'string' || m.mediaType.length > 100
+      || (m.previousVersionId !== null && !ID.test(m.previousVersionId || ''))
+      || typeof value !== 'string' || value.length > Math.ceil(ASSET_MAX_SINGLE / 3) * 4 + 4
+      || value.length % 4 !== 0
+      || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) {
+      fail('ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID');
+    }
+    if (originalIdentity !== null && m.sourceInstanceId !== originalIdentity) {
+      fail('ASSET_LINEAGE_CROSS_PURPOSE_REFUSED');
+    }
+    if (originalIdentity === null) originalIdentity = m.sourceInstanceId;
+    const bytes = Buffer.from(value, 'base64');
+    if (bytes.toString('base64') !== value || bytes.length !== m.bytes
+      || digest(bytes) !== m.sha256.toLowerCase()) {
+      fail('ASSET_LINEAGE_EXACT_BINARY_INTEGRITY_FAILED');
+    }
+    total += bytes.length;
+    if (total > ASSET_MAX_TOTAL) fail('ASSET_LINEAGE_TOTAL_LIMIT_EXCEEDED');
+    seen.add(m.id); ready.push({metadata:m, bytes});
+    expected = m.previousVersionId || null;
+  }
+  if (expected !== null || total !== packet.source_bytes) {
+    fail('ASSET_LINEAGE_INCOMPLETE_OR_TOTAL_WRONG');
+  }
+  return { ready, total, asset: true };
+}
+
 function validatePacket(packet) {
+  if (packet?.schema === ASSET_SCHEMA) return validateAssetPacket(packet);
   if (!packet || typeof packet !== 'object' || Array.isArray(packet)
       || packet.schema !== SCHEMA || !ID.test(packet.selected_id || '')
       || !Array.isArray(packet.versions) || packet.versions.length < 1
@@ -180,7 +234,7 @@ function recoveryManifest(verified) {
     schema: 'JM.OwnerVault/0.1.OfflineRecovered',
     selected_id: verified.packet.selected_id,
     packet_sha256: verified.packet_sha256,
-    original_schema: SCHEMA,
+    original_schema: verified.packet.schema,
     original_source_bytes: verified.total,
     original_versions: verified.ready.map(({ metadata }) => metadata),
     boundary: 'OWNER_LOCAL_VERIFIED_FILES_ONLY; NO R2 RESTORE, OFFSITE CUSTODY, LIVE DEPLOYMENT OR NATIVE-ID REPLACEMENT'
@@ -244,7 +298,7 @@ async function restorePacket(input, destination) {
   try {
     const inventory = recoveryManifest(verified);
     for (const { metadata, bytes } of verified.ready) {
-      const name = `${metadata.id}.html`; // IDs only; never owner-provided filenames.
+      const name = `${metadata.id}.${verified.asset ? 'bin' : 'html'}`; // IDs only, never owner-supplied paths.
       const filename = path.join(dest, name);
       await writeDurableNewFile(filename, bytes);
       const check = await readBoundedRegularFile(filename, MAX_SINGLE_SOURCE);
@@ -278,7 +332,7 @@ async function restorePacket(input, destination) {
     await cleanupEmptyFailedRecovery(dest, createdIdentity);
     throw error;
   }
-  return { outcome: 'OFFLINE_SOURCE_RECOVERED', selected_id: verified.packet.selected_id,
+  return { outcome: 'OFFLINE_SOURCE_RECOVERED', kind: verified.asset ? 'ORIGINAL_BINARY_ASSET' : 'ORIGINAL_HTML', selected_id: verified.packet.selected_id,
     version_count: verified.ready.length, source_bytes: verified.total,
     packet_sha256: verified.packet_sha256, destination: dest,
     remote_vault_modified: false, owner_offsite_custody_claimed: false };
@@ -296,7 +350,7 @@ async function auditRestoredPacket(input, destination) {
   }
   await assertNoSymlinkDirectoryComponents(dest);
   const expectedNames = new Set(['recovery-manifest.json',
-    ...verified.ready.map(({ metadata }) => `${metadata.id}.html`)]);
+    ...verified.ready.map(({ metadata }) => `${metadata.id}.${verified.asset ? 'bin' : 'html'}`)]);
   const entries = await fs.readdir(dest, { withFileTypes: true });
   if (entries.length !== expectedNames.size || entries.some(e =>
     !expectedNames.has(e.name) || !e.isFile() || e.isSymbolicLink())) {
@@ -312,12 +366,12 @@ async function auditRestoredPacket(input, destination) {
     fail('LINEAGE_AUDIT_MANIFEST_MISMATCH');
   }
   for (const { metadata, bytes } of verified.ready) {
-    const restored = await readBoundedRegularFile(path.join(dest, `${metadata.id}.html`), MAX_SINGLE_SOURCE);
+    const restored = await readBoundedRegularFile(path.join(dest, `${metadata.id}.${verified.asset ? 'bin' : 'html'}`), verified.asset ? ASSET_MAX_SINGLE : MAX_SINGLE_SOURCE);
     if (!restored.equals(bytes) || digest(restored) !== metadata.sha256.toLowerCase()) {
       fail('LINEAGE_AUDIT_SOURCE_MISMATCH');
     }
   }
-  return { outcome: 'OFFLINE_RESTORED_FILES_AUDITED',
+  return { outcome: 'OFFLINE_RESTORED_FILES_AUDITED', kind: verified.asset ? 'ORIGINAL_BINARY_ASSET' : 'ORIGINAL_HTML',
     selected_id: verified.packet.selected_id, version_count: verified.ready.length,
     source_bytes: verified.total, packet_sha256: verified.packet_sha256,
     destination: dest, remote_vault_modified: false,
@@ -338,7 +392,7 @@ async function main(args) {
   if (audit) return auditRestoredPacket(input, audit);
   if (verifyOnly) {
     const v = await readPacket(input);
-    return { outcome: 'OFFLINE_PACKET_VERIFIED', selected_id: v.packet.selected_id,
+    return { outcome: 'OFFLINE_PACKET_VERIFIED', kind: v.asset ? 'ORIGINAL_BINARY_ASSET' : 'ORIGINAL_HTML', selected_id: v.packet.selected_id,
       version_count: v.ready.length, source_bytes: v.total,
       packet_sha256: v.packet_sha256, remote_vault_modified: false,
       owner_offsite_custody_claimed: false };

@@ -1,6 +1,6 @@
-// JM family HTML link edition v1.5 · smallest complete offline shell; no external content cached.
+// JM family HTML link edition v1.6 · smallest complete offline shell; no external content cached.
 'use strict';
-const CACHE='jm-family-scripture-v1-5';
+const CACHE='jm-family-scripture-v1-6';
 const PREFIX='jm-family-scripture-';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));

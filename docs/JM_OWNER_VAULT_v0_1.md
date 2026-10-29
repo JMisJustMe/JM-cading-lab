@@ -554,3 +554,19 @@ The original phone/desktop browser court now tests a commit followed by HTTP 502
 **CP24 cold native re-entry:** the SAME existing tools/owner-vault-lineage-recover.mjs offline CLI now extracts an original asset version with the identity-bound filename UUID__safe-original-name.ext, rather than a generic UUID.bin. One original file is written per recovered revision. The extension is preserved for direct opening/editing in an actual native audio, document, graphics or code application, while the UUID prevents clashes. Unsafe packet-supplied path separators and control characters are removed; overlong names are bounded without losing a reasonable extension; any existing destination is refused. HTML recovery keeps the historical UUID.html path. All exact-byte checks, directory fsync/readback, offline audit, source preservation and no-overwrite protections are inherited.
 
 **Evidence discipline:** only the final CI success can establish bounded synthetic source and browser proof. Real owner-device R2 contact, independent off-site possession, larger files above 12 MiB, complete project-directory custody and universal external editability remain HOLD. Custody parent PR #601 and child PR #621 stay draft until safely admitted.
+
+## CP25 — Multiple sovereign JM originals in one offline recovery push (29 October 2026)
+
+This strengthens the **original** CP20 native offline recovery utility, not a second file manager, alternative Vault or temporary duplicate. CP25 accepts **2–8 separately exported original-lineage packets**, including a mix of HTML game/app sources and raw binary music, graphic, document or code sources. It preflights all packets and their exact cryptographic ancestry before creating a destination folder. It refuses more than **64 MiB in combined original source bytes**, duplicated revision UUIDs, overlapping purposeful source identities, unexpected filenames or unsupported packet families.
+
+**Usage (existing tool, independent of ChatGPT and the Estate host):**
+
+    node tools/owner-vault-lineage-recover.mjs --input original-game.json --input original-music.json --input original-art.json --verify-only
+    node tools/owner-vault-lineage-recover.mjs --input original-game.json --input original-music.json --input original-art.json --output-dir ./my-new-cold-recovery
+    node tools/owner-vault-lineage-recover.mjs --input original-game.json --input original-music.json --input original-art.json --audit-dir ./my-new-cold-recovery
+
+The original CLI reconstructs every exact version once into **one newly created, non-overwriting directory** with distinct source UUID identities and native extensions where appropriate. The single recovery manifest includes the independently hash-bound provenance of each selected lineage. The existing fsync, no-follow filesystem inspection, no-overwrite and readback gates remain active. The separate audit process refuses a tampered source, forged receipt, extra file, missing ancestor or changed original.
+
+**Synthetic test admission:** reconstruct three original source lineages together—a revised HTML game, a revised WAV audio original and a separate PSD art original with intentionally equal source bytes to another purposeful use—while preserving all five version identities; prove refusal of corrupted packet, overlapping purpose, extra source, changed file and existing output directory. Test-only fixtures are removed afterward; no real owner body or R2 object is deleted.
+
+**No unearned claims:** CI demonstrates an independently executable software route, not physical recovery from an owner's second device, offsite possession, fully deployed version propagation, universal media editors or storage-retirement authority. Original files above the CP21 12 MiB per-file ceiling, directory-shaped source material and automated all-family sync remain HOLD. CP25 reuses proven sources and does not broaden public access to private file contents.

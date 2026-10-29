@@ -678,6 +678,57 @@ async function removeAsset(bucket, id) {
   return json({ schema: SCHEMA, outcome: 'ASSET_REMOVED', asset });
 }
 
+
+// CP22: explicitly owner-triggered exact binary ancestry export, using only
+// the original authenticated Vault and immutable binary objects.
+function assetBase64(bytes) {
+  const chunks = [];
+  for (let i = 0; i < bytes.length; i += 32768) {
+    chunks.push(String.fromCharCode(...bytes.subarray(i, i + 32768)));
+  }
+  return btoa(chunks.join(''));
+}
+async function exportAssetLineage(bucket, id) {
+  if (!/^[0-9a-f-]{36}$/i.test(id || '')) {
+    return json({ schema: SCHEMA, error: 'ASSET_LINEAGE_ID_REQUIRED' }, 400);
+  }
+  const original = await assetIndex(bucket);
+  const byId = new Map(original.assets.map(a => [a.id, a]));
+  let selected = byId.get(id);
+  if (!selected) return json({ schema: SCHEMA, error: 'ASSET_NOT_FOUND' }, 404);
+  const entries = [];
+  let total = 0;
+  const MAX_VERSIONS = 8, MAX_TOTAL = 24 * 1024 * 1024;
+  // Bound the *complete* chain before reading any potentially large objects.
+  while (selected) {
+    if (entries.length >= MAX_VERSIONS) {
+      return json({ schema: SCHEMA, error: 'ASSET_LINEAGE_VERSION_LIMIT', max_versions: MAX_VERSIONS }, 409);
+    }
+    if (selected.bytes + total > MAX_TOTAL) {
+      return json({ schema: SCHEMA, error: 'ASSET_LINEAGE_BYTE_LIMIT', max_bytes: MAX_TOTAL }, 413);
+    }
+    entries.push(selected); total += selected.bytes;
+    selected = selected.previousVersionId ? byId.get(selected.previousVersionId) : null;
+  }
+  const versions = [];
+  for (const metadata of entries) {
+    const bytes = await assetBytes(bucket, metadata);
+    versions.push({ metadata, base64: assetBase64(bytes) });
+  }
+  const current = await assetIndex(bucket);
+  if (JSON.stringify(current) !== JSON.stringify(original)
+    || readVersions.get(current) !== readVersions.get(original)) {
+    throw new VaultWriteConflict();
+  }
+  return json({
+    schema: `${SCHEMA}.AssetLineageExport`,
+    selected_id: id, exported_at: new Date().toISOString(),
+    version_count: versions.length, source_bytes: total,
+    order: 'SELECTED_HEAD_TO_OLDEST_ANCESTOR', versions,
+    boundary: 'OWNER_TRIGGERED_EXACT_BINARY_LINEAGE_EXPORT; NOT_A_COLD_BACKUP_UNTIL_INDEPENDENTLY_AUDITED'
+  }, 200, { 'content-disposition': `attachment; filename="JM_Vault_Asset_Lineage_${id}.json"` });
+}
+
 async function handleOwnerRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -703,6 +754,7 @@ async function handleOwnerRequest(context) {
   const bucket = env.JM_OWNER_VAULT;
 
   if (request.method === 'GET') {
+    if (mode === 'export-asset-lineage') return exportAssetLineage(bucket, url.searchParams.get('asset'));
     if (mode === 'assets') {
       const index = await assetIndex(bucket);
       return json({ schema: `${SCHEMA}.AssetIndex`, assets: index.assets,

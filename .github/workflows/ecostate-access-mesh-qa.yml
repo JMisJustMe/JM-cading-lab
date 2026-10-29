@@ -634,6 +634,104 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP23_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP26 large original file 13 MiB chunked save, interrupted restart and exact recovery
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash}=require('node:crypto');
+          const hash=b=>createHash('sha256').update(b).digest('hex');
+          const partSize=2*1024*1024;
+          const original=Buffer.alloc(13*1024*1024+5);
+          for(let i=0;i<original.length;i++)original[i]=i%251;
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const vp of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport:vp});
+                page.setDefaultTimeout(25000);
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp26-private-key';});
+                const chunks=new Map();let all=[],posts=0,finalizes=0,once=false,sourceId=null,uploadId=null;
+                await page.route('**/api/owner/vault*',async route=>{
+                  const q=route.request(),url=new URL(q.url()),method=q.method(),mode=url.searchParams.get('mode');
+                  const send=(status,obj)=>route.fulfill({status,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(obj)});
+                  if(mode==='status')return send(200,{ready:true});
+                  if(q.headers()['x-jm-owner-key']!=='synthetic-cp26-private-key')return send(401,{error:'AUTH'});
+                  if(method==='GET'&&mode==='assets')
+                    return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:all});
+                  if(method==='GET'&&url.searchParams.get('asset')){
+                    const asset=all.find(x=>x.id===url.searchParams.get('asset'));
+                    if(!asset)return send(404,{error:'ASSET_NOT_FOUND'});
+                    const bytes=Buffer.concat(Array.from({length:asset.partCount},(_,i)=>chunks.get(i)));
+                    return route.fulfill({status:200,headers:{'content-type':'application/octet-stream','x-jm-asset-sha256':asset.sha256},body:bytes});
+                  }
+                  if(method==='GET')return send(200,{schema:'JM.OwnerVault/0.1',state:{notes:'',favourites:[],recent:[]},bodies:[]});
+                  if(method==='POST'){
+                    const p=q.postDataJSON();
+                    if(p.action==='upload-asset-part'){
+                      posts++;
+                      const f=p.file, b=Buffer.from(p.base64,'base64');
+                      if(hash(b)!==p.partSha256)return send(409,{error:'PART_HASH_MISMATCH'});
+                      if(f.bytes!==original.length||f.partCount!==7||f.sha256!==hash(original))
+                        return send(409,{error:'ORIGINAL_DESCRIPTOR_MISMATCH'});
+                      if(sourceId&&(sourceId!==f.sourceInstanceId||uploadId!==f.uploadId))
+                        return send(409,{error:'SOURCE_ID_MUTATED'});
+                      sourceId=f.sourceInstanceId;uploadId=f.uploadId;
+                      const existing=chunks.get(p.partIndex);
+                      if(existing&&!existing.equals(b))return send(409,{error:'PART_OVERWRITE_BLOCKED'});
+                      chunks.set(p.partIndex,b);
+                      if(p.partIndex===3&&!once){once=true;return send(502,{error:'SYNTHETIC_ACK_LOST_AFTER_STORING_PART'});}
+                      return send(existing?200:201,{outcome:existing?'ASSET_PART_UNCHANGED':'ASSET_PART_STORED',partIndex:p.partIndex,sha256:p.partSha256});
+                    }
+                    if(p.action==='finalize-chunked-asset'){
+                      finalizes++;
+                      const f=p.file;
+                      if(chunks.size!==7||Buffer.compare(Buffer.concat(Array.from({length:7},(_,i)=>chunks.get(i))),original)!==0)
+                        return send(409,{error:'INCOMPLETE_OR_INVALID_ORIGINAL'});
+                      const asset={id:f.uploadId,name:f.name,fileName:f.fileName,mediaType:f.mediaType,
+                        sourceInstanceId:f.sourceInstanceId,sha256:f.sha256,bytes:f.bytes,
+                        storageKind:'chunked-v1',partCount:7,
+                        partHashes:Array.from({length:7},(_,i)=>hash(chunks.get(i))),
+                        previousVersionId:null};
+                      if(!all.length)all=[asset];
+                      return send(201,{outcome:'ASSET_STORED',asset:all[0]});
+                    }
+                    return send(400,{error:'UNEXPECTED_MUTATION'});
+                  }
+                  return send(405,{error:'METHOD_NOT_ALLOWED'});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Large_Source.jmproject',mimeType:'application/octet-stream',buffer:original});
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('SAVE HOLD'));
+                if(chunks.size!==4||finalizes!==0||all.length!==0)throw Error('lost ack should not finalize incomplete original');
+                const pending=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-owner-vault-cp23-file-save-pending')));
+                if(!pending?.uploadId||pending.uploadId!==uploadId||pending.sourceInstanceId!==sourceId)
+                  throw Error('large source lost metadata checkpoint after interruption');
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelector('#jmVaultCheckPending')!==null);
+                if(chunks.size!==4||finalizes!==0)throw Error('reload automatically mutated private storage');
+                await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Large_Source.jmproject',mimeType:'application/octet-stream',buffer:original});
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'),{timeout:30000});
+                if(chunks.size!==7||finalizes!==1||all.length!==1||all[0].sourceInstanceId!==sourceId
+                  ||all[0].id!==uploadId)throw Error('large file failed to finalize one intact original');
+                const data=await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp23-file-save-pending'));
+                if(data!==null)throw Error('verified large original checkpoint not cleared');
+                const dl=page.waitForEvent('download',{timeout:30000});
+                await page.locator('[data-asset-download="'+uploadId+'"]').click();
+                const download=await dl;
+                const fs=require('node:fs/promises');
+                const held=await fs.readFile(await download.path());
+                if(download.suggestedFilename()!=='JM_Large_Source.jmproject'||!held.equals(original))
+                  throw Error('downloaded original differs from independent native source');
+                await page.close();
+              }
+              console.log('PASS: CP26 phone + laptop synthetic 13 MiB original; 2 MiB parts, lost ack at part 4, reload, same-ID retry, single final record, verified native download.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP26_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
         shell: bash
         run: |

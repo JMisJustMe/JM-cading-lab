@@ -37,6 +37,12 @@ const cutA=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(cutA.lastCutDefense,'CP24 actual defender assigned to live cutter');
 assert(cutA.lastCutDefense.guardId>=3&&cutA.lastCutDefense.guardId<=5);
 assert.equal(cutA.lastCutDefense.cutterId,cutA.activeCut);
+assert(cutA.cutCoverReads>0,'CP26 remaining defender physically covers an actual pass route');
+assert(cutA.lastCutCover,'CP26 distinct weak-side cover coordinates exist');
+assert.notEqual(cutA.lastCutCover.guardId,cutA.lastCutDefense.guardId,
+ 'CP26 cutter guard and weak-side cover must remain separate real bodies');
+const coverBefore=cutA.athletes.find(p=>p.id===cutA.lastCutCover.guardId);
+
 assert.equal(cutA.athletes.find(p=>p.id===cutA.lastCutDefense.guardId).footwork,'shuffle',
  'CP25 real counter-defender adopts a lateral guarding stance');
 assert.equal(cutA.athletes.find(p=>p.id===cutA.activeCut).footwork,'cut',
@@ -46,6 +52,13 @@ const guardBefore=cutA.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
 await page.waitForTimeout(250);
 const cutB=await page.evaluate(()=>JM_THIRD_COURT.status());
 const guardAfter=cutB.athletes.find(p=>p.id===cutA.lastCutDefense.guardId);
+const coverAfter=cutB.athletes.find(p=>p.id===cutA.lastCutCover.guardId);
+assert(Math.hypot(coverBefore.x-coverAfter.x,coverBefore.y-coverAfter.y)>1,
+ 'CP26 weak-side defender moved physically instead of appearing only in a status report');
+assert(cutB.cutCoverReads>cutA.cutCoverReads,'CP26 cover continues reacting during the cut');
+assert.equal(cutB.cutDefensiveHandoffs,0,'CP26 stable marker remains assigned while the cut persists');
+console.log('PASS CP26 THREE-WAY DEFENSIVE COVER '+width+'px '+JSON.stringify({cutter:cutA.activeCut,mark:cutA.lastCutDefense.guardId,cover:cutA.lastCutCover.guardId,coverMoved:Math.hypot(coverBefore.x-coverAfter.x,coverBefore.y-coverAfter.y).toFixed(1),handoffs:cutB.cutDefensiveHandoffs}));
+
 assert(Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y)>1,
  'CP24 defender physically moved while countering cut');
 console.log('PASS CP24 LIVE CUT DEFENCE '+width+'px '+JSON.stringify({reads:cutB.cutDefensiveReads,assigned:cutA.lastCutDefense,guardMoved:Math.hypot(guardBefore.x-guardAfter.x,guardBefore.y-guardAfter.y).toFixed(1)}));

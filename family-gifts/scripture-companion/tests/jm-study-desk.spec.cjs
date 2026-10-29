@@ -194,6 +194,26 @@ const {chromium}=require('playwright');
    assert.match(await page.locator('#jmFocusNext').textContent(),/Joshua 1/);
    assert.deepEqual((await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')).notes)),beforeRoute.notes);
    console.log('PASS CP25 PATH TO READING ROOM '+width+'px: next chapter, separate selection/completion, reload, reversible progress and private notes');
+   // CP26: actual adjacent chapter trail, with live private-note and read status.
+   assert.match(await page.locator('#jmTrailContext').textContent(),/Strength & hope · passage 1 of 7/);
+   assert.equal(await page.locator('#jmTrailPrevious').isDisabled(),true);
+   assert.match(await page.locator('#jmTrailFollowing').textContent(),/Isaiah 40/);
+   const beforeTrail=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   await page.click('#jmTrailFollowing');
+   assert.equal(await page.locator('#book').inputValue(),'Isaiah');
+   assert.equal(await page.locator('#chapter').inputValue(),'40');
+   assert.match(await page.locator('#jmTrailPrevious').textContent(),/Joshua 1/);
+   assert.match(await page.locator('#jmTrailContext').textContent(),/passage 2 of 7/);
+   await page.click('#jmTrailPrevious');
+   assert.equal(await page.locator('#book').inputValue(),'Joshua');
+   await page.selectOption('#book','Genesis');
+   assert.match(await page.locator('#jmTrailContext').textContent(),/outside Strength & hope/);
+   assert.equal(await page.locator('#jmTrailFollowing').isDisabled(),true);
+   const afterTrail=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(afterTrail.notes,beforeTrail.notes,'CP26 trail does not alter personal reflections');
+   assert.deepEqual(afterTrail.queue,beforeTrail.queue,'CP26 trail does not change reading completion');
+   console.log('PASS CP26 CONNECTED STUDY TRAIL '+width+'px: real adjacent passages, route boundaries, private notes and progress protected');
+
 
    assert.deepEqual(errors,[]);
    console.log('PASS Mum Study Desk '+width+'px: 18 refs, valid Study Bible route, exact passage, private notes, deduplicated bookmarks and reading-list');

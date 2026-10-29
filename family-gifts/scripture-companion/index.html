@@ -232,7 +232,7 @@ function markRead(ref){if(!isValid(ref.book,ref.chapter))return false;
 }
 $('#markCurrentRead').addEventListener('click',()=>{const ref=selected();$('#roomActionStatus').textContent=markRead(ref)?`${readable(ref)} marked read. You can change it in your reading list.`:`${readable(ref)} is already marked read.`});
 $('#resumeChoose').addEventListener('click',()=>{const r=roomTarget();jump(r.book,r.chapter,r.verse);document.querySelector('#referenceSearch').focus();renderRoom()});
-$('#roomNote').addEventListener('click',()=>{const r=selected();if(!$('#noteText').value.trim()){$('#noteRef').value=readable(r);$('#noteText').value='What stood out to me?\\n\\n';storeDraft()}else{$('#noteDraftStatus').textContent='Your unfinished draft is preserved. Save or clear it before starting another.'}tab('notes');$('#noteText').focus()});
+$('#roomNote').addEventListener('click',()=>{const r=selected();if(!$('#noteText').value.trim()){$('#noteRef').value=readable(r);$('#noteText').value='What stood out to me?\n\n';storeDraft()}else{$('#noteDraftStatus').textContent='Your unfinished draft is preserved. Save or clear it before starting another.'}tab('notes');$('#noteText').focus()});
 $('#planPicker').addEventListener('change',()=>{$('#planStatus').textContent='';renderPlan()});
 $('#startPlan').addEventListener('click',()=>{
  const plan=readingPaths[$('#planPicker').value];let added=0;for(const [book,ch] of plan.chapters){if(window.JMExplore.add(book,ch))added++}

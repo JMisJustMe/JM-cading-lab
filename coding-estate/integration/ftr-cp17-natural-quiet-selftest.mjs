@@ -60,10 +60,8 @@ try{
  // Retry permits natural spawn/random-timing variance between CI/browser hosts.
  let earned=false;
  for(let attempt=1;attempt<=4&&!earned;attempt++){
-  await page.locator(attempt===1?'#startBtn':'#restartBtn').click().catch(async()=>{
-    // Original public command is an ordinary game START, not a test mutation.
-    await page.evaluate(()=>window.FTR.command('START'));
-  });
+  if(attempt===1)await page.locator('#startBtn').click();
+  else await page.evaluate(()=>window.FTR.command('START'));
   let route=true;
   for(const target of [[12.4,17.2],[12.4,15.4],[14.4,15.4]]){
    if(!await playerInputMove(target)){route=false;break;}

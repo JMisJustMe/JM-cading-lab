@@ -18,6 +18,9 @@ await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.ke
 const roleRun=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(roleRun.athletes[0].energy<=100,'movement keeps player fatigue bounded');
 assert(roleRun.athletes[0].y<690,'role actually moves in court simulation');
+assert(roleRun.offBallReads>0,'CP23 natural possession actively evaluates teammates passing lanes');
+assert(Number.isFinite(roleRun.offBallSpaceGains),'CP23 spacing gains are bounded numeric telemetry');
+console.log('PASS CP23 OFF-BALL READ '+width+'px '+JSON.stringify({reads:roleRun.offBallReads,gains:roleRun.offBallSpaceGains,last:roleRun.lastOffBall}));
 assert(roleRun.athletes[2].formWidth>roleRun.athletes[1].formWidth,'Paint Anchor has a genuinely wider body, not just a recolour');
 assert(roleRun.athletes[0].formWidth<roleRun.athletes[1].formWidth,'Floor General retains its own lighter silhouette');
 await page.keyboard.down('ArrowDown');await page.waitForTimeout(560);await page.keyboard.up('ArrowDown');

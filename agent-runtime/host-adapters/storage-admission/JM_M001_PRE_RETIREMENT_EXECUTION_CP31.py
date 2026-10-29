@@ -90,10 +90,21 @@ def assess(inp, donor_path, cp13_path, now=None):
 
 
 def _open_report_parent(path):
-    """Anchor the exact parent directory BEFORE creation; never follow its final symlink."""
+    """Walk EVERY parent component without symlinks; anchor one directory inode."""
     if not hasattr(os, 'O_DIRECTORY') or not hasattr(os, 'O_NOFOLLOW'):
         raise ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')
-    return os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    flags=os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    absolute=Path(os.path.abspath(path.parent))
+    fd=os.open(absolute.anchor,flags)
+    try:
+        for component in absolute.parts[1:]:
+            next_fd=os.open(component,flags,dir_fd=fd)
+            os.close(fd)
+            fd=next_fd
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
 
 
 def _read_report_exact(path, written_stat, parent_fd=None):
@@ -114,6 +125,26 @@ def _sync_report_parent(path, parent_fd=None):
     if parent_fd is None:
         raise ValueError('REPORT_PARENT_ANCHOR_REQUIRED')
     os.fsync(parent_fd)
+
+
+def _verify_report_at_requested_path(path, parent_fd, written_stat):
+    """A successful receipt must still be reachable at the requested pathname.
+
+    The anchored file may be durable yet stranded if its parent was renamed
+    after creation. Refuse success rather than acknowledging a forged or
+    missing file at the owner-requested path.
+    """
+    check_fd=_open_report_parent(path)
+    try:
+        original=os.fstat(parent_fd)
+        current=os.fstat(check_fd)
+        if (original.st_dev,original.st_ino)!=(current.st_dev,current.st_ino):
+            raise ValueError('REPORT_OUTPUT_PATH_PARENT_CHANGED')
+        named=os.stat(path.name,dir_fd=check_fd,follow_symlinks=False)
+        if (named.st_dev,named.st_ino)!=(written_stat.st_dev,written_stat.st_ino):
+            raise ValueError('REPORT_OUTPUT_PATH_ENTRY_CHANGED')
+    finally:
+        os.close(check_fd)
 
 
 def write_once_verified(path, encoded):
@@ -138,6 +169,7 @@ def write_once_verified(path, encoded):
         _sync_report_parent(path,parent_fd)
         if _read_report_exact(path,created,parent_fd)!=raw:
             raise ValueError('REPORT_READBACK_MISMATCH')
+        _verify_report_at_requested_path(path,parent_fd,created)
     finally:
         os.close(parent_fd)
 

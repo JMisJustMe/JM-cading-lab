@@ -399,16 +399,136 @@ async function auditRestoredPacket(input, destination) {
     owner_offsite_custody_claimed: false };
 }
 
+
+// CP25: multiple independently authored original bodies, ONE bounded offline
+// operation. This is a capability of the existing recovery CLI, not a new
+// cloud vault, new storage layer, or identity merge.
+const BATCH_MAX_PACKETS = 8;
+const BATCH_MAX_SOURCE_BYTES = 64 * 1024 * 1024;
+async function readBatchPackets(inputs) {
+  if (!Array.isArray(inputs) || inputs.length < 2 || inputs.length > BATCH_MAX_PACKETS)
+    fail('BATCH_PACKET_COUNT_HOLD');
+  const packets = [], ids = new Set(), filenames = new Set(), sources = new Set();
+  let total = 0, versionCount = 0;
+  for (const input of inputs) {
+    const verified = await readPacket(input); // inherited bounded, no-follow reader
+    if (total + verified.total > BATCH_MAX_SOURCE_BYTES) fail('BATCH_TOTAL_BYTES_HOLD');
+    total += verified.total;
+    versionCount += verified.ready.length;
+    const identity = verified.ready[0]?.metadata?.sourceInstanceId;
+    if (identity != null) {
+      if (sources.has(identity)) fail('BATCH_OVERLAPPING_SOURCE_USE_HOLD');
+      sources.add(identity);
+    }
+    for (const {metadata} of verified.ready) {
+      if (ids.has(metadata.id)) fail('BATCH_DUPLICATE_VERSION_ID_HOLD');
+      ids.add(metadata.id);
+      const fileName = recoveryFilename(verified, metadata);
+      if (filenames.has(fileName)) fail('BATCH_SOURCE_FILENAME_COLLISION_HOLD');
+      filenames.add(fileName);
+    }
+    packets.push(verified);
+  }
+  return {packets, total, versionCount, filenames};
+}
+function batchRecoveryManifest(batch) {
+  return {
+    schema:'JM.OwnerVault/0.1.OfflineBatchRecovered',
+    packet_count:batch.packets.length, total_source_bytes:batch.total,
+    total_versions:batch.versionCount,
+    original_lineages:batch.packets.map(recoveryManifest),
+    boundary:'MULTI_ORIGINAL_LOCAL_SOURCE_ONLY; NO_CLOUD_WRITE_OFFSITE_CUSTODY_OR_PUBLIC_DEPLOYMENT'
+  };
+}
+async function restoreBatchPackets(inputs, destination) {
+  const batch = await readBatchPackets(inputs); // validate EVERY source before mkdir
+  const dest = path.resolve(destination), parent = path.dirname(dest);
+  if (dest === parent || dest === path.parse(dest).root) fail('BATCH_DESTINATION_UNSAFE');
+  const parentStat = await fs.lstat(parent);
+  if (!parentStat.isDirectory() || parentStat.isSymbolicLink()) fail('BATCH_PARENT_UNSAFE');
+  await assertNoSymlinkDirectoryComponents(parent);
+  await fs.mkdir(dest, {mode:0o700}); // no overwrite or recursive accidental ancestry
+  const createdIdentity = await fs.lstat(dest);
+  try {
+    for (const verified of batch.packets) {
+      for (const {metadata,bytes} of verified.ready) {
+        const filename = path.join(dest, recoveryFilename(verified, metadata));
+        await writeDurableNewFile(filename, bytes);
+        const readback = await readBoundedRegularFile(filename,
+          verified.asset ? ASSET_MAX_SINGLE : MAX_SINGLE_SOURCE);
+        if (!readback.equals(bytes) || digest(readback) !== metadata.sha256.toLowerCase())
+          fail('BATCH_DISK_READBACK_HOLD');
+      }
+    }
+    const receipt = Buffer.from(JSON.stringify(batchRecoveryManifest(batch),null,2)+'\n');
+    const receiptPath = path.join(dest,'recovery-manifest.json');
+    await writeDurableNewFile(receiptPath,receipt);
+    const held = await readBoundedRegularFile(receiptPath,MAX_PACKET_BYTES);
+    if (!held.equals(receipt)) fail('BATCH_RECEIPT_READBACK_HOLD');
+    await syncRecoveryDirectory(dest,fs.open,createdIdentity);
+    const actualParent=await fs.lstat(parent), actualDest=await fs.lstat(dest);
+    if (actualParent.dev!==parentStat.dev || actualParent.ino!==parentStat.ino
+      || actualParent.isSymbolicLink()
+      || actualDest.dev!==createdIdentity.dev || actualDest.ino!==createdIdentity.ino
+      || actualDest.isSymbolicLink()) fail('BATCH_DIRECTORY_IDENTITY_CHANGED');
+    await syncRecoveryDirectory(parent,fs.open,parentStat);
+  } catch(error) {
+    await cleanupEmptyFailedRecovery(dest,createdIdentity);
+    throw error; // owner bytes remain on partial failure, never recursively deleted
+  }
+  return {outcome:'OFFLINE_MULTI_SOURCE_RECOVERED',
+    packet_count:batch.packets.length,version_count:batch.versionCount,
+    source_bytes:batch.total,destination:dest,
+    remote_vault_modified:false,owner_offsite_custody_claimed:false};
+}
+async function auditBatchPackets(inputs,destination) {
+  const batch=await readBatchPackets(inputs), dest=path.resolve(destination);
+  const stat=await fs.lstat(dest);
+  if (!stat.isDirectory() || stat.isSymbolicLink()) fail('BATCH_AUDIT_DIRECTORY_UNSAFE');
+  await assertNoSymlinkDirectoryComponents(dest);
+  const expected=new Set(['recovery-manifest.json',...batch.filenames]);
+  const entries=await fs.readdir(dest,{withFileTypes:true});
+  if (entries.length!==expected.size || entries.some(e=>
+      !expected.has(e.name) || !e.isFile() || e.isSymbolicLink()))
+    fail('BATCH_AUDIT_INVENTORY_HOLD');
+  const receipt=Buffer.from(JSON.stringify(batchRecoveryManifest(batch),null,2)+'\n');
+  const actualReceipt=await readBoundedRegularFile(path.join(dest,'recovery-manifest.json'),MAX_PACKET_BYTES);
+  if (!actualReceipt.equals(receipt)) fail('BATCH_AUDIT_RECEIPT_MISMATCH');
+  for (const verified of batch.packets) {
+    for (const {metadata,bytes} of verified.ready) {
+      const restored=await readBoundedRegularFile(path.join(dest,recoveryFilename(verified,metadata)),
+        verified.asset?ASSET_MAX_SINGLE:MAX_SINGLE_SOURCE);
+      if (!restored.equals(bytes) || digest(restored)!==metadata.sha256.toLowerCase())
+        fail('BATCH_AUDIT_SOURCE_MISMATCH');
+    }
+  }
+  return {outcome:'OFFLINE_MULTI_SOURCE_AUDITED',
+    packet_count:batch.packets.length,version_count:batch.versionCount,
+    source_bytes:batch.total,destination:dest,
+    remote_vault_modified:false,owner_offsite_custody_claimed:false};
+}
+
 async function main(args) {
-  const inputAt = args.indexOf('--input');
-  const input = inputAt >= 0 ? args[inputAt + 1] : null;
+  const inputs = args.flatMap((arg,index) => arg === '--input' ? [args[index+1]] : []);
+  const input = inputs[0] || null;
   const verifyOnly = args.includes('--verify-only');
   const outputAt = args.indexOf('--output-dir');
   const output = outputAt >= 0 ? args[outputAt + 1] : null;
   const auditAt = args.indexOf('--audit-dir');
   const audit = auditAt >= 0 ? args[auditAt + 1] : null;
-  if (!input || Number(verifyOnly) + Number(Boolean(output)) + Number(Boolean(audit)) !== 1) {
-    fail('USAGE: --input <owner-saved-packet.json> (--verify-only | --output-dir <new-directory> | --audit-dir <existing-directory>)');
+  if (!input || inputs.some(v=>!v || v.startsWith('--'))
+    || Number(verifyOnly) + Number(Boolean(output)) + Number(Boolean(audit)) !== 1) {
+    fail('USAGE: --input <packet.json> [--input <another-packet.json> ...] (--verify-only | --output-dir <new-directory> | --audit-dir <existing-directory>)');
+  }
+  if (inputs.length > 1) {
+    if (audit) return auditBatchPackets(inputs,audit);
+    if (verifyOnly) {
+      const batch = await readBatchPackets(inputs);
+      return {outcome:'OFFLINE_MULTI_PACKET_VERIFIED',packet_count:batch.packets.length,
+        version_count:batch.versionCount,source_bytes:batch.total,
+        remote_vault_modified:false,owner_offsite_custody_claimed:false};
+    }
+    return restoreBatchPackets(inputs,output);
   }
   if (audit) return auditRestoredPacket(input, audit);
   if (verifyOnly) {
@@ -431,4 +551,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 }
 
 export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery,
-  writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile, nativeRecoveryName };
+  writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile, nativeRecoveryName,
+  readBatchPackets, restoreBatchPackets, auditBatchPackets };

@@ -2250,8 +2250,8 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     ]){
       const whole=createHash('sha256');
       const parts=[];
-      for(let i=0;i<count/2;i++){
-        const bytes=Buffer.alloc(partBytes);
+      for(let i=0;i<Math.ceil(count/2);i++){
+        const bytes=Buffer.alloc(Math.min(partBytes,count*1024*1024-i*partBytes));
         for(let j=0;j<bytes.length;j++)bytes[j]=(seed+i+j)%251;
         whole.update(bytes);
         const fileName='JM_Vault_Part_'+id+'_'+String(i).padStart(2,'0')+'.bin';

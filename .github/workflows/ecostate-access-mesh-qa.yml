@@ -651,7 +651,7 @@ jobs:
                 const page=await browser.newPage({viewport:vp});
                 page.setDefaultTimeout(25000);
                 await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp26-private-key';});
-                const chunks=new Map();let all=[],posts=0,finalizes=0,once=false,sourceId=null,uploadId=null;
+                const chunks=new Map();let all=[],posts=0,inspections=0,finalizes=0,once=false,sourceId=null,uploadId=null;
                 await page.route('**/api/owner/vault*',async route=>{
                   const q=route.request(),url=new URL(q.url()),method=q.method(),mode=url.searchParams.get('mode');
                   const send=(status,obj)=>route.fulfill({status,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(obj)});
@@ -668,6 +668,20 @@ jobs:
                   if(method==='GET')return send(200,{schema:'JM.OwnerVault/0.1',state:{notes:'',favourites:[],recent:[]},bodies:[]});
                   if(method==='POST'){
                     const p=q.postDataJSON();
+                    if(p.action==='inspect-asset-parts'){
+                      inspections++;
+                      const f=p.file;
+                      if(f.bytes!==original.length||f.partCount!==7||f.sha256!==hash(original))
+                        return send(409,{error:'INSPECTION_DESCRIPTOR_MISMATCH'});
+                      if(sourceId&&(f.sourceInstanceId!==sourceId||f.uploadId!==uploadId))
+                        return send(409,{error:'INSPECTION_CHANGED_SOURCE_ID'});
+                      const present=Array.from(chunks,([partIndex,bytes])=>({partIndex,sha256:hash(bytes)}))
+                        .sort((a,b)=>a.partIndex-b.partIndex);
+                      const missing=Array.from({length:7},(_,i)=>i).filter(i=>!chunks.has(i));
+                      return send(200,{outcome:'ASSET_PART_INSPECTION',partCount:7,
+                        already_indexed:all.length>0,present:all.length?[]:present,
+                        missing:all.length?[]:missing,asset_id:all.length?all[0].id:undefined});
+                    }
                     if(p.action==='upload-asset-part'){
                       posts++;
                       const f=p.file, b=Buffer.from(p.base64,'base64');
@@ -715,6 +729,7 @@ jobs:
                 await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Large_Source.jmproject',mimeType:'application/octet-stream',buffer:original});
                 await page.locator('#jmVaultSaveFile').click();
                 await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'),{timeout:30000});
+                if(posts!==8||inspections<2)throw Error('CP27 skip-verified-parts resume did not avoid redundant resend');
                 if(chunks.size!==7||finalizes!==1||all.length!==1||all[0].sourceInstanceId!==sourceId
                   ||all[0].id!==uploadId)throw Error('large file failed to finalize one intact original');
                 const data=await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp23-file-save-pending'));
@@ -728,7 +743,7 @@ jobs:
                   throw Error('downloaded original differs from independent native source');
                 await page.close();
               }
-              console.log('PASS: CP26 phone + laptop synthetic 13 MiB original; 2 MiB parts, lost ack at part 4, reload, same-ID retry, single final record, verified native download.');
+              console.log('PASS: CP26–CP27 phone + laptop 13 MiB original, checkpoint-bound read-only part reconciliation, only 8 POSTed parts total after lost acknowledgement, same-ID recovery and exact native download.');
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP26_BROWSER_HOLD',e);process.exitCode=1});
           NODE

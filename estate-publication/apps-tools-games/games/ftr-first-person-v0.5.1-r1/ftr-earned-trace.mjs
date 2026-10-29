@@ -17,7 +17,7 @@ import {GameCoding,GameCodingRuntime,JMGameCore,JMGameCoreRuntime}
  from '../../../../coding-estate/sovereign-ten/direct/game-native.mjs';
 if(!window.FTR||typeof window.doInteract!=='function'||
    !window.JMFTREcho||!window.JMFTRMemory||!window.JMFTRSpatial||
-   typeof window.los!=='function'||!Array.isArray(window.terminals))
+   typeof window.los!=='function'||!Array.isArray(terminals))
  throw Error('JM_CP15_ORIGINAL_TRACE_RECIPIENT_ABSENT');
 
 const originalInteract=window.doInteract;
@@ -68,7 +68,7 @@ function eligibility(){
  const seen=enemies.some(enemy=>!enemy.dead&&
   Math.hypot(enemy.x-player.x,enemy.y-player.y)<9.5&&
   los(enemy.x,enemy.y,player.x,player.y));
- if(seen){blockedSight++;return {eligible:false,reason:'ORIGINAL_ENEMY_DIRECT_SIGHT',target:t.id};}
+ if(seen)return {eligible:false,reason:'ORIGINAL_ENEMY_DIRECT_SIGHT',target:t.id};
  return {eligible:true,reason:'ORIGINAL_WORLD_DISTRACTION_EARNED',target:t.id};
 }
 function refresh(){
@@ -84,7 +84,7 @@ window.doInteract=function(dt){
  if(!Number.isFinite(dt)||dt<=0)return originalInteract(dt);
  const target=promptTarget?.kind==='terminal'?promptTarget.ref:null;
  const check=eligibility();
- if(!check.eligible)return originalInteract(dt);
+ if(!check.eligible){if(check.reason==='ORIGINAL_ENEMY_DIRECT_SIGHT')blockedSight++;return originalInteract(dt);}
  const engine=new GameCodingRuntime(AST,{quiettrace:{ready:true,result:'held'}});
  const core=new JMGameCoreRuntime(CORE,engine);
  const receipt=core.dispatch('JMFTRQuietTrace','OriginalCoreTrace');

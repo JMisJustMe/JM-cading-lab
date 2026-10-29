@@ -23,6 +23,7 @@ assert(afterMotion.athletes[0].y<beforeMotion.y,'actual controlled player moved 
 assert(Number.isFinite(afterMotion.ballHeight),'dribble ball height finite');
 assert(afterMotion.athletes[0].energy<=100,'individual fatigue is bounded');
 assert(Number.isInteger(afterMotion.flightInterceptions),'flight contact ledger present');
+assert(Number.isInteger(afterMotion.bodyImpacts),'actual body-contact ledger present');
 await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 assert.deepEqual(errors,[]);

@@ -143,7 +143,7 @@ function moveEntity(p,dx,dy,dt,spd=160){
  const moved=Math.hypot(p.x-oldX,p.y-oldY);p.travel=(p.travel||0)+moved;p.energy=clamp((p.energy??100)+dt*(moved>dt*160?-8:11),35,100);
  if(Math.hypot(p.vx,p.vy)>34){p.heading=lerp(p.heading??-1,Math.sign(p.vy)||p.heading,Math.min(1,dt*9))}
  const before=Math.hypot(vx0,vy0),after=Math.hypot(p.vx,p.vy);
- if(before>80&&after>80&&vx0*p.vx+vy0*p.vy<-before*after*.35)p.plant=.23;
+ if(before>80&&after>80&&vx0*p.vx+vy0*p.vy<-before*after*.35)p.plant=.31;
  p.plant=Math.max(0,(p.plant||0)-dt);
 }
 // CP10 CONTACT COURT — body-up defence, stamina-limited shielding and angular contact.

@@ -49,6 +49,14 @@ This is a thin **working descendant of the existing game**, not another engine, 
 - Promote via existing JM publication governance and testable deployment route. **Do not claim live public deployment merely because the GitHub branch is readable.**
 - Keep source ownership and all original lineage. No extra generated ZIP or full duplicate game package is needed.
 
+## CP13 — bounded enemy knowledge and tactical counterplay
+
+**New actual playable addition:** `ftr-threat-memory.mjs`, a small module loaded into the unchanged original FTR world via the R1 carrier and authenticated original JM Game-CODING/GameCore imports. It observes actual original `los()` (including CP11 real cover), shares genuine last-known positions only to allies within range and sight, then searches through real original `tileAt`/`solid`/`circleFree` map constraints. Memory expires; it is never permanent enemy omniscience.
+
+**Role/play differences:** a hunter can investigate old contact; CP12's actual cover-flanking takes priority when both apply. Real **Phase** disrupts enemy targeting for its authentic active interval; real **Scan** reveals observed/remembered enemy awareness counts. Press **U** or tap **MEMORY ON/OFF** for an honest comparison with inherited AI. Previous FTR controls, original renderer, CP10 world-space route, CP11 destructible cover and CP12 original sentry/flanker tactics remain.
+
+**Receipts:** [GitHub 4-job real code execution](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40953277166) 51/51 real R1 Chromium checks and 148/148 complete heterogeneous suite checks, plus independently run 51/51 on owner-connected Windows Microsoft Edge 156. Source code head `9a48ed4ec8bad97e2248a050e2772f25005ebef2`, new memory source git blob `3286bfa4dc511c306e17d556450f36911ad5775e`. Dedicated owner laptop Edge visual proof shows HUD `SCAN · 1 SIGHTED · 0 SEARCHING · 1.0m` while actual FTR core v0.5.1 world remains visible. No native Gardles, owner phone/controller, public deployment or premium visual acceptance asserted. Draft stacked PR #630, not merged.
+
 ## CP12 — original enemy tactical contact (draft candidate)
 
 **Source-owned recipient, not a separate AI game:** `ftr-tactical-contact.mjs` mounts directly into the original FTR world update and existing CP11 cover. It retains actual source `ftr-world.js` enemies, `ftr-controls.js` `enemyShoot()` projectile production, original `circleFree` collision, `tileAt` doors/map authority and CP11 damage/interception. Authentically imports the existing `GameCodingRuntime` / `JMGameCoreRuntime` from `coding-estate/sovereign-ten/direct/game-native.mjs` before the sentry decides to pressure a player-built barrier. Exact donor: **original FTR AI source**, not generic behavioural simulation.

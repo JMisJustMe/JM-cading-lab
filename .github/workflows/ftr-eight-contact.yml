@@ -9,6 +9,7 @@ on:
       - 'coding-estate/integration/ftr-published-r1-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-cp16-natural-run-selftest.mjs'
       - 'coding-estate/integration/ftr-cp17-natural-quiet-selftest.mjs'
+      - 'coding-estate/integration/ftr-cp18-earned-fullwin-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -28,6 +29,7 @@ on:
       - 'coding-estate/integration/ftr-published-r1-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-cp16-natural-run-selftest.mjs'
       - 'coding-estate/integration/ftr-cp17-natural-quiet-selftest.mjs'
+      - 'coding-estate/integration/ftr-cp18-earned-fullwin-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -90,6 +92,8 @@ jobs:
         run: node coding-estate/integration/ftr-cp16-natural-run-selftest.mjs
       - name: Earn real native Quiet TRACE through unmodified original enemy population and real player inputs
         run: node coding-estate/integration/ftr-cp17-natural-quiet-selftest.mjs
+      - name: Confirm the same original run earns Quiet Core A and wins at original extraction
+        run: node coding-estate/integration/ftr-cp18-earned-fullwin-selftest.mjs
   godot-headless-target-bridge:
     runs-on: ubuntu-latest
     timeout-minutes: 12

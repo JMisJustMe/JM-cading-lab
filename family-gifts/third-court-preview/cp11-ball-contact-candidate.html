@@ -286,7 +286,7 @@ function court(){
 function drawPlayer(p){
  let team=p.team, active=(state.pos===0?p.id===state.carrier:p.id===state.defFocus),col=team===0?colors.you:colors.enemy;
  const speed=Math.hypot(p.vx,p.vy),move=Math.min(speed/155,1),phase=(p.travel||0)*.14+p.id*2.1,gait=Math.sin(phase)*move;
- const scale=.89+.17*p.y/H,lean=clamp(p.vx/210,-1,1)*.12;
+ const scale=(.89+.17*p.y/H)*(p.role==='Paint Anchor'?1.13:p.role==='Wing Shooter'?.95:1),lean=clamp(p.vx/210,-1,1)*.12;
  const skin=['#c97e56','#b87854','#d4a179','#87513c','#bb7652','#e0ad80'][p.id];
  const hair=['#171923','#35261d','#1b2330','#211c25','#44261b','#181721'][p.id];
  ctx.save();ctx.translate(p.x,p.y);ctx.scale(scale,scale);
@@ -399,7 +399,7 @@ function brCourt(){
  ctx.save();const mid=v(0,0);ctx.translate(mid.x,mid.y);ctx.rotate(-.1);ctx.font='1000 31px system-ui';ctx.textAlign='center';ctx.fillStyle='#ffe8bc44';ctx.fillText('THIRD COURT',0,0);ctx.restore();
 }
 function brBody(p){
- const ground=brWorld(p.x,0,p.y),size=clamp(ground.k/28,.75,1.6);
+ const ground=brWorld(p.x,0,p.y),size=clamp(ground.k/28,.75,1.6)*(p.role==='Paint Anchor'?1.13:p.role==='Wing Shooter'?.95:1);
  const team=p.team===0,sel=state.pos===0?p.id===state.carrier:p.id===state.defFocus;
  const foot=brWorld(p.x,.03,p.y),hip=brWorld(p.x,.85,p.y),shoulder=brWorld(p.x,1.5,p.y),head=brWorld(p.x,1.94,p.y);
  const armL=brWorld(p.x-12,1.22,p.y),armR=brWorld(p.x+12,1.22,p.y); // arm projection uses direct x coordinates below
@@ -546,8 +546,9 @@ function native3DInit(){
  }
  const lean=motion*.09+(state.driveBoost>0&&selected?.07:0);
  let waist=at(0,.94,0),chest=at(0,1.38,lean);
- box(waist[0],waist[1],waist[2],.77,.40,.43,shorts,turn);
- box(chest[0],chest[1],chest[2],.80,.66,.48,base,turn);
+ const frameWidth=p.role==='Paint Anchor'?1.16:p.role==='Wing Shooter'?.92:1;
+ box(waist[0],waist[1],waist[2],.77*frameWidth,.40,.43*frameWidth,shorts,turn);
+ box(chest[0],chest[1],chest[2],.80*frameWidth,.66,.48*frameWidth,base,turn);
  // Team strip and jersey number strokes are actual 3D foreground geometry.
  const mark=at(0,1.36,lean+.27);box(mark[0],mark[1],mark[2],.29,.28,.024,team?[.88,.95,.86]:[.92,.84,.69],turn);
  const number=p.id%3+1;

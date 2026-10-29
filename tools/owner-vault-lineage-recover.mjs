@@ -13,6 +13,7 @@
  */
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs/promises';
+import { constants as fsConstants } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -74,12 +75,37 @@ function validatePacket(packet) {
   return { ready, total };
 }
 
+// CP26: lstat + readFile is a path-reopening race. Open the actual regular
+// file with no-follow and nonblocking flags, then validate the OPEN handle.
+// This protects the final component even if it is swapped after preflight;
+// it is not an atomic defence against replacement of ancestor directories.
+async function readBoundedRegularFile(filename, maxBytes, openFile = fs.open) {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 0
+      || typeof fsConstants.O_NOFOLLOW !== 'number'
+      || typeof fsConstants.O_NONBLOCK !== 'number') {
+    fail('LINEAGE_SAFE_OPEN_UNSUPPORTED');
+  }
+  const flags = fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_NONBLOCK;
+  const handle = await openFile(filename, flags);
+  try {
+    const stat = await handle.stat();
+    if (!stat.isFile() || stat.size > maxBytes || stat.size < 0) {
+      fail('LINEAGE_OPENED_FILE_UNSAFE_OR_OVERBOUNDED');
+    }
+    const bytes = await handle.readFile();
+    if (bytes.length > maxBytes) fail('LINEAGE_OPENED_FILE_OVERBOUNDED');
+    return bytes;
+  } finally {
+    await handle.close();
+  }
+}
+
 async function readPacket(input) {
   const file = await fs.lstat(input);
   if (!file.isFile() || file.isSymbolicLink() || file.size > MAX_PACKET_BYTES) {
     fail('LINEAGE_INPUT_NOT_REGULAR_OR_OVERBOUNDED');
   }
-  const raw = await fs.readFile(input);
+  const raw = await readBoundedRegularFile(input, MAX_PACKET_BYTES);
   if (raw.length > MAX_PACKET_BYTES) fail('LINEAGE_PACKET_SIZE_LIMIT');
   let packet;
   try { packet = JSON.parse(raw.toString('utf8')); }
@@ -190,7 +216,7 @@ async function restorePacket(input, destination) {
       const name = `${metadata.id}.html`; // IDs only; never owner-provided filenames.
       const filename = path.join(dest, name);
       await writeDurableNewFile(filename, bytes);
-      const check = await fs.readFile(filename);
+      const check = await readBoundedRegularFile(filename, metadata.bytes);
       if (!check.equals(bytes) || digest(check) !== metadata.sha256.toLowerCase()) {
         fail('LINEAGE_DISK_READBACK_FAILED');
       }
@@ -199,7 +225,7 @@ async function restorePacket(input, destination) {
     const expectedManifest = Buffer.from(JSON.stringify(inventory, null, 2) + '\n', 'utf8');
     await writeDurableNewFile(manifestPath, expectedManifest);
     // Exact bytes, not merely two parsed fields, must survive before success.
-    const storedManifest = await fs.readFile(manifestPath);
+    const storedManifest = await readBoundedRegularFile(manifestPath, expectedManifest.length);
     if (!storedManifest.equals(expectedManifest)) {
       fail('LINEAGE_MANIFEST_READBACK_FAILED');
     }
@@ -247,7 +273,7 @@ async function auditRestoredPacket(input, destination) {
   }
   let storedManifest;
   try {
-    storedManifest = await fs.readFile(path.join(dest, 'recovery-manifest.json'), 'utf8');
+    storedManifest = (await readBoundedRegularFile(path.join(dest, 'recovery-manifest.json'), MAX_PACKET_BYTES)).toString('utf8');
   } catch { fail('LINEAGE_AUDIT_MANIFEST_UNREADABLE'); }
   // Reject forged offsite/deployment claims, extra fields and changed receipt
   // bytes, even when the original packet hash and ancestor list still match.
@@ -255,7 +281,7 @@ async function auditRestoredPacket(input, destination) {
     fail('LINEAGE_AUDIT_MANIFEST_MISMATCH');
   }
   for (const { metadata, bytes } of verified.ready) {
-    const restored = await fs.readFile(path.join(dest, `${metadata.id}.html`));
+    const restored = await readBoundedRegularFile(path.join(dest, `${metadata.id}.html`), metadata.bytes);
     if (!restored.equals(bytes) || digest(restored) !== metadata.sha256.toLowerCase()) {
       fail('LINEAGE_AUDIT_SOURCE_MISMATCH');
     }
@@ -299,4 +325,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 }
 
 export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery,
-  writeDurableNewFile, syncRecoveryDirectory };
+  writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile };

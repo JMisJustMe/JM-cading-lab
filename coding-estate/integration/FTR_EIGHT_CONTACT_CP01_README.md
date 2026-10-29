@@ -22,7 +22,7 @@ Additive operational integration, NOT a new Estate entrance. Builds from genuine
 
 ## Actual executable proof
 `node coding-estate/integration/ftr-eight-contact-selftest.mjs`
-Native route imports **real** GameCoding / GameCodingRuntime / JMGameCore / JMGameCoreRuntime from this repo. Tests include negative gates for identity, pressure, asset scope, bad RF inference, load exhaustion, device platform and unsupported Device Glove owner choices. **30/30 PASS** under GitHub Actions run 40873165125 on 2026-10-29, actual JM source imported. Host Node test is bounded and does not prove owner-device functionality.
+Native route imports **real** GameCoding / GameCodingRuntime / JMGameCore / JMGameCoreRuntime from this repo. Tests include negative gates for identity, pressure, asset scope, bad RF inference, load exhaustion, device platform and unsupported Device Glove owner choices. **34/34 PASS** native/source tests under GitHub Actions run 40874438173 on 2026-10-29, actual JM source imported. Host Node test is bounded and does not prove owner-device functionality.
 
 ## Boundaries / follow-on
 No Gardles-native execution: recover exact source, DO NOT substitute guards. No physical Ama-Pro, glove or Android hardware acceptance. No third-party engine renderer proof, Shodan key/API calls, Kali/Parrot installs or RuView live CSI proof. Avoid deleting ancestor files. Hardware gating includes safe latency, false-trigger, comfort and physical controls on owner devices. Native FTR v1.4 entrypoint remains untouched in CP01; route validated native contact into its actual KicPlay receiving function only after that API is recovered and tested. Promotion gated by GitHub CI and owner-device acceptance.
@@ -32,3 +32,24 @@ No Gardles-native execution: recover exact source, DO NOT substitute guards. No 
 - Running workflow: `.github/workflows/ftr-eight-contact.yml` (node syntax + native test)
 - Exact run: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40873165125
 - No main merge / owner device / external product installation claimed at this checkpoint.
+
+## CP02 tested breadth (no claim of hardware installation)
+- 7 separate KicPlay mechanical outcomes and state fields through **actual native JM Game-CODING + GameCore**, not cosmetic presentation.
+- JumpMax **Device Glove** adapted as observed-capability → available/limited → owner-preference contract; distinct from PalmVerse.
+- Scratch-like lesson source compiled and **executed** by original native GameCore; this does not run the external Scratch VM.
+- Parrot/NetHunter represented by strict isolated/home-lab environment profiles; installers and device support NOT TESTED.
+- `ftr-security-lab.mjs`: real isolated HTTP loopback service inspected; Shodan query adapter tested exclusively with a fake API response. **8/8 PASS**.
+- `ftr-routesense-rf.mjs`: RSSI/CSI-amplitude fixture features and baseline comparison; explicitly no human pose/presence/biometrics. **8/8 PASS**.
+- Source proof run: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40874438173 — **50/50 PASS**, 0 failures.
+- Existing **JM Sovereign Estate Integration Conformance** and **JM M001 Mandatory Production Admission** for that same commit: PASS.
+- PR remains **draft, unmerged**. Its code is source-owned, externally accessible and editable on GitHub; no public runnable FTR v1.4 host integration or owner-device proof has been asserted.
+- Owner laptop Desktop Commander endpoint was **offline at check time**, so remote hardware and app installations could not be executed or tested.
+
+## Gate ledger: do not crown unfinished capabilities
+- Engine: native mechanic proof YES; renderer/Gardles/GPU parity + Unity/Unreal/Godot output NOT TESTED.
+- Input: native action routing, mechanical variation and Glove user-choice proof YES; actual FTR hardware HID/gesture/pressure feel NOT TESTED.
+- Parrot and NetHunter: permissible local/authorised research environments specified; external OS install/boot, drivers/kernel and on-device training NOT TESTED.
+- Shodan: real offline host-review code and local HTTP audit YES; API credentials, live API and user-owned asset inventory NOT CONNECTED.
+- RuView: numerical features YES; real CSI capture, calibrated human sensing and any medical claims NOT PROVEN.
+- Consequences: native capacity/load changes YES; player testing and final game placement NOT PROVEN.
+- Scratch: concept-to-JM-native educational execution YES; actual Scratch import/export, runtime parity and kids-device QA NOT TESTED.

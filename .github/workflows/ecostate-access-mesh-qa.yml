@@ -747,6 +747,92 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP26_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP28 owner-click segmented original lineage export across phone and laptop
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash}=require('node:crypto');
+          const fs=require('node:fs/promises');
+          const hash=b=>createHash('sha256').update(b).digest('hex');
+          const id='00000000-0000-4000-8000-000000002855';
+          const source='asset-00000000-0000-4000-8000-000000002855';
+          const SIZE=2*1024*1024;
+          const original=Buffer.alloc(5*1024*1024+7);
+          for(let i=0;i<original.length;i++)original[i]=i%251;
+          const metadata={id,name:'JM original source',fileName:'JM_Original_Design.blend',
+            mediaType:'application/octet-stream',sourceInstanceId:source,
+            sha256:hash(original),bytes:original.length,previousVersionId:null};
+          const parts=Array.from({length:3},(_,i)=>{
+            const bytes=original.subarray(i*SIZE,Math.min((i+1)*SIZE,original.length));
+            return {index:i,bytes:bytes.length,sha256:hash(bytes),
+              fileName:'JM_Vault_Part_'+id+'_'+String(i).padStart(2,'0')+'.bin'};
+          });
+          const packet={schema:'JM.OwnerVault/0.1.AssetPartsCatalog',
+            selected_id:id,version_count:1,source_bytes:original.length,part_bytes:SIZE,
+            order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',versions:[{metadata,parts}]};
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const vp of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport:vp,acceptDownloads:true});
+                page.setDefaultTimeout(30000);
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp28-key';});
+                let writes=0,corruptFirst=true,contact=0;
+                await page.route('**/api/owner/vault*',async route=>{
+                  const r=route.request(),u=new URL(r.url()),mode=u.searchParams.get('mode');
+                  const respond=(status,body)=>route.fulfill({status,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(body)});
+                  if(mode==='status')return respond(200,{ready:true});
+                  if(r.headers()['x-jm-owner-key']!=='synthetic-cp28-key')
+                    return respond(401,{error:'AUTH'});
+                  if(r.method()!=='GET'){writes++;return respond(405,{error:'NO_MUTATION_PERMITTED'});}
+                  if(mode==='assets')return respond(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:[metadata]});
+                  if(mode==='export-asset-catalog')return respond(200,packet);
+                  if(mode==='export-asset-part'){
+                    const i=Number(u.searchParams.get('part'));
+                    if(u.searchParams.get('asset')!==id||i<0||i>2)return respond(404,{error:'MISSING'});
+                    contact++;
+                    const bytes=original.subarray(i*SIZE,Math.min((i+1)*SIZE,original.length));
+                    const mismatched=i===0&&corruptFirst;
+                    if(mismatched)corruptFirst=false;
+                    return route.fulfill({status:200,headers:{
+                      'content-type':'application/octet-stream',
+                      'x-jm-part-sha256':mismatched?'0'.repeat(64):hash(bytes),
+                      'x-jm-asset-id':id,'x-jm-part-index':String(i)},body:bytes});
+                  }
+                  return respond(200,{schema:'JM.OwnerVault/0.1',state:{notes:'',favourites:[],recent:[]},bodies:[]});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                await page.locator('[data-asset-cold="'+id+'"]').waitFor();
+                const catalogDownload=page.waitForEvent('download');
+                await page.locator('[data-asset-cold="'+id+'"]').click();
+                const cat=await catalogDownload;
+                if(cat.suggestedFilename()!=='JM_Vault_Cold_Catalog_'+id+'.json')
+                  throw Error('catalog file name lost');
+                const received=JSON.parse(await fs.readFile(await cat.path(),'utf8'));
+                if(received.versions[0].metadata.sha256!==metadata.sha256
+                  ||received.versions[0].parts.length!==3)throw Error('catalog identity lost');
+                await page.locator('#jmVaultPartNext').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_SOURCE_PIECE_SHA256_HOLD'));
+                if(contact!==1)throw Error('corrupt first piece not refused');
+                for(let i=0;i<3;i++){
+                  const action=page.waitForEvent('download');
+                  await page.locator('#jmVaultPartNext').click();
+                  const file=await action;
+                  const body=await fs.readFile(await file.path());
+                  if(file.suggestedFilename()!==parts[i].fileName||
+                     body.length!==parts[i].bytes||hash(body)!==parts[i].sha256)
+                    throw Error('verified browser part differs from original source');
+                }
+                if(!await page.locator('#jmVaultPartNext').isDisabled()
+                  ||writes!==0||contact!==4)throw Error('cold export silently mutated original or advanced incorrectly');
+                await page.close();
+              }
+              console.log('PASS CP28: phone + laptop owner-click catalog and three verified native parts; corrupted first response HOLD with same-part retry, no automatic remote write or backup claim.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP28_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
         shell: bash
         run: |

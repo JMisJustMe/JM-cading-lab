@@ -1,0 +1,27 @@
+name: JM FTR Eight-Discovery Native Contact
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/ftr-eight-contact.mjs'
+      - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
+      - '.github/workflows/ftr-eight-contact.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/integration/ftr-eight-contact.mjs'
+      - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
+      - '.github/workflows/ftr-eight-contact.yml'
+permissions:
+  contents: read
+jobs:
+  native-contact-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout original JM source
+        uses: actions/checkout@v4
+      - name: Check new source syntax
+        run: |
+          node --check coding-estate/integration/ftr-eight-contact.mjs
+          node --check coding-estate/integration/ftr-eight-contact-selftest.mjs
+      - name: Execute native JM Game-CODING/GameCore and eight contact negative tests
+        run: node coding-estate/integration/ftr-eight-contact-selftest.mjs

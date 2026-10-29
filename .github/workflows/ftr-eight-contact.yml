@@ -5,6 +5,8 @@ on:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
+      - 'estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/**'
+      - 'coding-estate/integration/ftr-published-r1-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -20,6 +22,8 @@ on:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
+      - 'estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/**'
+      - 'coding-estate/integration/ftr-published-r1-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-first-person-repair.mjs'
       - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
@@ -67,6 +71,7 @@ jobs:
             coding-estate/integration
             coding-estate/sovereign-ten/direct
             estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1
+            estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1
           sparse-checkout-cone-mode: true
       - name: Install isolated Chromium test runner
         run: |
@@ -74,6 +79,8 @@ jobs:
           npx playwright install chromium
       - name: Execute real original FTR first-person browser/viewport/consequence tests
         run: node coding-estate/integration/ftr-first-person-browser-selftest.mjs
+      - name: Execute published source-linked R1 carrier with actual offline PWA and touch cold reload
+        run: node coding-estate/integration/ftr-published-r1-browser-selftest.mjs
   godot-headless-target-bridge:
     runs-on: ubuntu-latest
     timeout-minutes: 12

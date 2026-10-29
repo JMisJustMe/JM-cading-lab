@@ -45,6 +45,20 @@ await page.mouse.up();
 await page.click('#resumeBtn');
 assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).shotReport,beforeLostShot,'late pointerup does not shoot after resuming');
 console.log('PASS CP23 lost-pointer shoot cancellation '+width+'px');
+// CP24: a cancelled touch or unrelated pointer must never release a live shot.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+const beforeCancel=await page.evaluate(()=>JM_THIRD_COURT.status());
+await page.locator('#shoot').hover();await page.mouse.down();await page.waitForTimeout(450);
+await page.evaluate(()=>document.querySelector('#shoot').dispatchEvent(new PointerEvent('pointerup',{pointerId:999,bubbles:true})));
+assert(await page.locator('#shoot').evaluate(el=>el.classList.contains('held')),'unrelated pointer cannot release the shoot hold');
+await page.evaluate(()=>document.querySelector('#shoot').dispatchEvent(new PointerEvent('pointercancel',{pointerId:1,bubbles:true})));
+assert(!(await page.locator('#shoot').evaluate(el=>el.classList.contains('held'))),'cancelled pointer clears shoot hold');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'cancelled pointer hides shot meter');
+await page.mouse.up();
+const afterCancel=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert.equal(afterCancel.shots,beforeCancel.shots,'cancelled touch must not count as a shot');
+assert.equal(afterCancel.shotReport,beforeCancel.shotReport,'cancelled touch must not report a shot');
+console.log('PASS CP24 pointercancel and pointer identity '+width+'px');
 // Isolate the interrupted-touch test from inherited natural footwork and off-ball possession checks.
 await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(850);await page.keyboard.up('ArrowUp');

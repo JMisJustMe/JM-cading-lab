@@ -1,4 +1,4 @@
-<!-- JM Scripture Companion v1.8.8 path-guided read and reflection continuity and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
+<!-- JM Scripture Companion v1.8.9 connected contextual Scripture study trail and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
 <!doctype html><html lang="en"><head><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#183932"><meta name="description" content="A personal scripture-reading companion with official Bible links and private local notes."><title>JM Scripture Companion · Reading Room</title>
 <style>
 /* CP24: inherited calm reading-room; guided passage without a new front door */
@@ -6,6 +6,8 @@
 .jm-focus .jm-steps{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 13px;color:var(--muted);font-size:.8rem}
 .jm-focus .jm-steps span{padding:6px 10px;border:1px solid var(--line);border-radius:20px}
 .jm-focus .actions{gap:8px}
+.jm-study-trail{padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:14px 0}
+.jm-study-trail p{margin:0 0 9px}
 
 /* CP23 original reading room: quiet progress, not a competing dashboard */
 #planMeter{width:100%;height:12px;accent-color:var(--accent);display:block;margin:12px 0 5px}#planJourney{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}#planJourney summary{cursor:pointer;font-weight:750;color:var(--ink);padding:7px 1px}#planSteps{margin-top:10px}.plan-step-title{display:block;margin-bottom:6px}
@@ -40,6 +42,10 @@
    <strong id="jmFocusRef">Psalms 23</strong>
    <p id="jmFocusProgress" class="soft" role="status" aria-live="polite">Reading is always your choice.</p>
    <p id="jmFocusPath" class="soft" role="status" aria-live="polite"></p>
+   <div class="jm-study-trail" role="group" aria-label="Adjacent chapters on chosen reading path">
+    <p id="jmTrailContext" class="soft" aria-live="polite">Choose a passage from your reading path to see its neighbours.</p>
+    <div class="actions"><button type="button" class="btn secondary small" id="jmTrailPrevious">← Previous passage</button><button type="button" class="btn secondary small" id="jmTrailFollowing">Following passage →</button></div>
+   </div>
    <div class="actions">
     <a id="jmFocusOfficial" class="btn secondary small" href="https://www.jw.org/en/library/bible/study-bible/books/psalms/23/" target="_blank" rel="noopener noreferrer">Official Study Edition ↗</a>
     <button type="button" class="btn secondary small" id="jmFocusReflect">Write private reflection</button>
@@ -501,6 +507,37 @@ $('#jmFocusNext').addEventListener('click',()=>{
  jump(route.next.book,route.next.chapter);
  $('#jmFocusStatus').textContent='Selected '+route.next.book+' '+route.next.chapter+'. Open the official chapter whenever you are ready.';
 });
+// CP26 chapter-to-chapter study trail: derives from the selected original route,
+ // completion queue and local chapter notes. Nothing external is scraped or copied.
+function neighbouringPassages(){
+ const route=readingPaths[$('#planPicker').value]||readingPaths.quiet,at=selected();
+ const index=route.chapters.findIndex(([book,ch])=>book===at.book&&ch===at.chapter);
+ const decorate=item=>item?{book:item[0],chapter:item[1],
+  done:(Array.isArray(data.queue)?data.queue:[]).some(q=>q.book===item[0]&&q.chapter===item[1]&&q.done),
+  notes:chapterReflections(item[0],item[1]).length}:null;
+ return {route:route.title,index,total:route.chapters.length,
+  previous:index>0?decorate(route.chapters[index-1]):null,
+  next:index>=0&&index<route.chapters.length-1?decorate(route.chapters[index+1]):null};
+}
+function renderStudyTrail(){
+ const neighbours=neighbouringPassages(),before=neighbours.previous,after=neighbours.next;
+ const summary=q=>q?readable(q)+' · '+(q.done?'marked read':'not marked read')+' · '+q.notes+' personal reflection'+(q.notes===1?'':'s'):'None';
+ $('#jmTrailContext').textContent=neighbours.index<0?
+  'This chapter is outside '+neighbours.route+'. Choose a chapter on that path to see adjacent study references.':
+  neighbours.route+' · passage '+(neighbours.index+1)+' of '+neighbours.total+' · Earlier: '+summary(before)+' · Following: '+summary(after);
+ $('#jmTrailPrevious').disabled=!before;
+ $('#jmTrailPrevious').textContent=before?'← '+before.book+' '+before.chapter:'← Start of path';
+ $('#jmTrailFollowing').disabled=!after;
+ $('#jmTrailFollowing').textContent=after?after.book+' '+after.chapter+' →':'End of path →';
+}
+$('#jmTrailPrevious').addEventListener('click',()=>{
+ const r=neighbouringPassages().previous;
+ if(r){jump(r.book,r.chapter);$('#jmFocusStatus').textContent='Selected previous passage. Reading remains your choice.';}
+});
+$('#jmTrailFollowing').addEventListener('click',()=>{
+ const r=neighbouringPassages().next;
+ if(r){jump(r.book,r.chapter);$('#jmFocusStatus').textContent='Selected following passage. Reading remains your choice.';}
+});
 function renderStudyFocus(){
  const r=selected();
  const read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===r.book&&q.chapter===r.chapter&&q.done);
@@ -513,6 +550,7 @@ function renderStudyFocus(){
  $('#jmFocusPath').textContent=route.title+' · '+route.completed+' of '+route.total+' personally marked read · '+(upcoming?'Next: '+upcoming.book+' '+upcoming.chapter:'All seven marked read; revisiting is always welcome.');
  $('#jmFocusNext').disabled=!upcoming;
  $('#jmFocusNext').textContent=upcoming?'Choose next: '+upcoming.book+' '+upcoming.chapter:'All passages marked read';
+ renderStudyTrail();
 }
 $('#jmFocusMark').addEventListener('click',()=>{
  const ref=selected(),read=Array.isArray(data.queue)&&data.queue.some(q=>q.book===ref.book&&q.chapter===ref.chapter&&q.done);

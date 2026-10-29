@@ -62,3 +62,34 @@ No Gardles-native execution: recover exact source, DO NOT substitute guards. No 
 - CI run **40890963146**, https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40890963146 on head **a5b0af4785bcdba3279019428584fa9ab400b4fa**: native JM, cybersecurity lab, original MEETPOINT recipient and RF steps ALL SUCCESS. JM M001 Mandatory Production Admission and JM Sovereign Estate Integration Conformance SUCCESS on the same head.
 - Scoped claim: **SOURCE-LEVEL EXISTING-RECIPIENT GAME STATE CONTACT PASS**. Not a physical Ama-Pro/Wearable/Gamepad DING, not full live MEETPOINT play, renderer or Gardles native contact. Original ancestors protected; branch DRAFT and unmerged at this checkpoint.
 - Law: **EXTERNAL DONOR → NATIVE ROUTE → EXISTING RECIPIENT → MEASURABLE DIFFERENCE → TRACE → ORIGINAL SURVIVES**. Further external capabilities require the same recipient proof, not parallel simulations or new front doors.
+
+## CP04 — full runnable host matrix · 29 October 2026 · SOURCE-CONTACT FLAZ (bounded)
+GitHub PR #613 continues **DRAFT / UNMERGED**. Scope: GitHub Actions/Chromium/Godot/offline container executables. User-device, external Shodan API, full NetHunter Android and live RuView CSI remain OPEN.
+Run: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40896342427
+Commit head independently CI-verified: `3d3215b0a1965db9897127330bb52d290c7c67ce`.
+Workflow conclusion **SUCCESS** in all four jobs, with M001 Mandatory Production Admission and JM Sovereign Estate Integration Conformance separately **SUCCESS**.
+
+### Source-custody and actual advancement
+1. **Existing FTR First-Person v0.5.1 original frozen and preserved.** In real Chromium its original `drawWeapon` produces `TypeError: CanvasRenderingContext2D.scale requires two arguments`, preventing continuous game loop. CP04 source identity `333463f73344b9af84204bea32b3cef7195388c2` asserted, test-only descendant repairs **one call** `ctx.scale(side<0?-1:1,1)`. Old file unchanged; generated duplicate is temporary, cleaned up. Unrepaired game BUGG preserved as evidence; not falsely crowned repaired.
+2. **Corrected original-game carrier browser proof 12/12 PASS**, real DOM/canvas/game loop. KicPlay routing hit existing `window.FTR.command`, not fabricated gameplay: Wake→START; Route→LOOK yaw; Pulse→FIRE & ammo decrement; Kic→PHASE; Flow→MOVE (measured ~4.12 world units); Hold→INTERACT (actually acquired a Trace Core); Create→honest unsupported hold. 390×844 Chromium viewport emulation full canvas and zero page exceptions. NOT an actual physical phone/GPU owner Ding. Code: `ftr-eight-contact.mjs`, `ftr-first-person-repair.mjs`, `ftr-first-person-browser-selftest.mjs`.
+3. **Godot 4.7.2 stable headless host execution PASS**. Exact JM-owned Target Bridge Unity host specimen (blob `3b73109dc8b476e0bb956686878ccd7ef2666966`) was used as a pre-existing *bounded semantic donor*, not represented as the original full game. Generator `target-bridge/godot-contact-001/emit-godot-from-jm-donor.mjs` produced an ingestible `project.godot`, scene and GDScript in TEMP ONLY. Actual official Godot engine executed synthetic right input, movement, contact, score 0→1, coin consumption, printed `JM_TARGET_BRIDGE_GODOT_RUNTIME_PASS`. Preserved holds: `hazard.consequence`, `goal.after_collecting`, `starting_player_hp`. Does not overwrite 2026-09-28 GDevelop/Unity 4/4 host receipts; distinct new headless engine route, not owner-editor Godot or whole SPINBREAK parity.
+4. **Official Parrot Nmap actual container execution PASS**, `parrotsec/nmap`, Nmap v7.95, `--network none`, scanned ONLY its own `127.0.0.1` ports 80/443, found both closed. No external network; this is a working tool in an official Parrot container, not an installed desktop. Initial `--cap-drop ALL` blocked image's file-capability binary, surfaced and corrected; safeguard not mislabelled a Parrot capability failure.
+5. **Official Kali rolling Linux container actual boot PASS** (`ID=kali`) with all network interfaces disabled and privilege restrictions. This is NOT Android Kali NetHunter, its mobile toolset or a target-device installation.
+6. **Shodan** owned-asset offline API adapter and authorised real localhost HTTP audit **8/8 PASS** in native job. No credential-connected Shodan query or internet target scan.
+7. **RouteSense / RuView** fixture numerical RSSI/CSI-amplitude feature calculations and ground-truth refusal **8/8 PASS**. No actual Wi-Fi CSI capture, pose, presence or vital-sign proof.
+8. **Original gameplay consequence and Scratch-style authoring** run in native JM Game-CODING/GameCore 34/34 checks; capacity/load/recovery state actually changes. Not yet gameplay-integrated wound cards or true Scratch VM runtime. Separate original MEETPOINT input contact 13/13 PASS and original THEOGAMY 18/18 regression checks PASS.
+
+### Counts and constraints
+**93 declared assertion/check passes** across native 34 + security 8 + original THEOGAMY 18 + existing-MEETPOINT contact 13 + RF 8 + browser 12, plus distinct Godot host receipt and two Parrot/Kali executable contacts. This is a heterogeneous bounded proof matrix; do **not** add unlike categories to claim a universal percent of completed products.
+
+### Remaining external/device gates
+- Owner phone/laptop: physical FTR controls, genuine ergonomic/haptic/wearable feedback, HUD visual quality, sustained gameplay, cold reload and deployment.
+- Godot: native player/editor verification, full SPINBREAK parity; Unreal: optional genuine new host contact, old storage/toolchain hold context may have changed, but no recent runtime Ding.
+- Kali NetHunter on Android and Parrot desktop: actual device/user environment boot and supported toolchain.
+- Shodan live API: credential connection plus exact owner-authorised targets; never assume all assets are owned.
+- RuView: source-compatible radio/CSI hardware, calibration, consent and measured false-positive rates.
+- Gardles: authentic native source not recovered; never alias to generic guards.
+- Wound/action-card gameplay and Scratch project: actual recipient/game/VM proof.
+- Corrected game carrier is **TEMP-BUILT TEST DESCENDANT**, not merged or deployed; owner-editable generator is retained in GitHub. No dead archive or duplicated generated output saved in repo.
+
+**Law:** OTHERNESS → EXACT ORIGINAL JM RECIPIENT → OBSERVED CHANGE → SOURCE PRESERVED → RETURNED TEST RECEIPT. HEADLESS HOST ≠ OWNER DEVICE. DRAFT ≠ PRODUCTION.

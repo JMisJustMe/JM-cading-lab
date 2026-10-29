@@ -1146,6 +1146,7 @@ console.log('PASS: CP19 portable exact-byte lineage includes all protected ances
     assert.equal(run('--verify-only').status, 0,
       'CP27 normal packet still verifies');
     assert.equal(run('--audit-dir',restoredDir).status,0);
+    console.log('PASS: CP27 packet input symlink ancestors refuse verify, restore and audit without creating files; normal cold audit survives.');
     const snapshots = [...storage.map.entries()].map(([k,v])=>[k,v.body]);
     const again = run('--output-dir',restoredDir);
     assertHeld(again,'EEXIST','Cannot replace owner-existing recovery directory');

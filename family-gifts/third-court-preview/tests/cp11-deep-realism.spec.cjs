@@ -1,0 +1,21 @@
+'use strict';
+const assert=require('node:assert/strict');const{chromium}=require('playwright');
+(async()=>{const browser=await chromium.launch();try{
+for(const width of [390,1280]){const context=await browser.newContext({viewport:{width,height:844}});
+const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:4198/family-gifts/third-court-preview/cp11-ball-contact-candidate.html');
+const initial=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert.equal(initial.playerCount,6);assert(['CP11','CP12'].includes(await page.evaluate(()=>JM_THIRD_COURT.version)));
+await page.click('#playQuick');let a=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(a.active&&a.time>0);assert(a.shotClock>0);assert.equal(a.playerCount,6);
+await page.evaluate(()=>JM_THIRD_COURT.pass());await page.evaluate(()=>JM_THIRD_COURT.callCut());
+await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_THIRD_COURT.setGuard(true));
+await page.waitForTimeout(200);a=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(Number.isFinite(a.time));assert(Number.isFinite(a.ball3DHeight));assert(a.native3DReady||!a.native3DActive);
+assert(a.visuals);assert(a.draws>=0);
+await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
+await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
+assert.deepEqual(errors,[]);
+console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
+await context.close()}
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

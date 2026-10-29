@@ -156,7 +156,8 @@ function hearEcho(x,y,radius=7.2){
  if(solid(x,y))return {heard:0,reason:'ORIGINAL_WORLD_BLOCKED'};
  let heard=0;
  for(const e of enemies){
-  if(e.dead||e.stun>0||directlyVisible(e))continue;
+  // Stun prevents acting, not sensing: remember sound and investigate on recovery.
+  if(e.dead||directlyVisible(e))continue;
   if(Math.hypot(e.x-x,e.y-y)>radius)continue;
   const path=sourceRoute(e,{x,y});
   if(!path.length||path.length>11)continue;

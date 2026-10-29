@@ -106,6 +106,23 @@ export function securityLabProfile(platform,{rooted=false,approvedTargets=[]}={}
    readyToInstall:false,permissionForThirdParty:false,physicalCompatibility:'NOT_TESTED'};
 }
 
+/** Recovered Device Glove (JumpMax DVER Pinnacle v0.3.1): real limits before owner choice.
+ * Pass a host's observed capability report; no fabricated host detection on Node.
+ * This is software host embodiment, NOT a claim of a manufactured wearable glove.
+ */
+export function forgeDeviceGlove({deviceLabel,observed,ownerEnabled=[]}){
+ fail(typeof deviceLabel==='string'&&deviceLabel.trim().length>0,'GLOVE_DEVICE_LABEL');
+ fail(observed&&typeof observed==='object'&&!Array.isArray(observed),'GLOVE_CAPABILITY_REPORT');
+ fail(Object.values(observed).every(v=>typeof v==='boolean'),'GLOVE_CAPABILITY_VALUES');
+ fail(Array.isArray(ownerEnabled)&&ownerEnabled.every(v=>typeof v==='string'),'GLOVE_OWNER_CHOICE');
+ const available=Object.keys(observed).filter(x=>observed[x]===true).sort();
+ const realLimits=Object.keys(observed).filter(x=>observed[x]===false).sort();
+ fail(ownerEnabled.every(x=>available.includes(x)),'GLOVE_UNSUPPORTED_SELECTION');
+ return {schema:'jm.device-glove.preference/0.1',ancestor:'JumpMax DVER Pinnacle v0.3.1 Device Glove',
+  deviceLabel,available,realLimits,ownerPreferences:[...new Set(ownerEnabled)].sort(),
+  physicalWearable:false,liveHostProbeInThisAdapter:false,proof:'USER_SUPPLIED_CAPABILITY_REPORT'};
+}
+
 export function authoringBridge({learningGoal,nativeAction}){
  fail(typeof learningGoal==='string'&&learningGoal.trim().length>0,'LESSON_GOAL_REQUIRED');
  fail(Object.values(ROUTES).includes(nativeAction),'LESSON_ACTION_INVALID');

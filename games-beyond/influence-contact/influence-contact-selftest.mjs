@@ -3,9 +3,9 @@ import {auditRegister,listCandidateContacts,comparePrivateEvidence,SCHEMA,TARGET
 import {executeNativeEvidenceContact} from './native-playform-contact.mjs';
 const synthetic={schema:'jm.gaming-influence-register.v1.1',counts:{games_identified:3,unresolved:1},
   games:[
-    {'Game title':'Rumble Stars Football','Evidence class':'Direct game title in Takeout','First recorded install':'2026-09-15','Latest recorded install':'2026-09-15','Install records':1,'Raw source path':'synthetic/Installs.json','Recorded devices':'DO_NOT_LEAK'},
-    {'Game title':'Rumble Hockey','Evidence class':'Direct game title in Takeout','First recorded install':'2026-01-01','Latest recorded install':'2026-01-02','Install records':2,'Raw source path':'synthetic/Installs.json'},
-    {'Game title':'Unmapped Game','Evidence class':'Direct game title in Takeout','First recorded install':'2025-01-01','Latest recorded install':'2025-01-01','Install records':1,'Raw source path':'synthetic/Installs.json'}],
+    {'Game title':'Rumble Stars Football','Evidence class':'Direct game title in Takeout','First recorded install':'2099-03-03','Latest recorded install':'2099-03-03','Install records':1,'Raw source path':'synthetic/Installs.json','Recorded devices':'DO_NOT_LEAK'},
+    {'Game title':'Rumble Hockey','Evidence class':'Direct game title in Takeout','First recorded install':'2099-01-01','Latest recorded install':'2099-01-02','Install records':2,'Raw source path':'synthetic/Installs.json'},
+    {'Game title':'Unmapped Game','Evidence class':'Direct game title in Takeout','First recorded install':'2099-05-05','Latest recorded install':'2099-05-05','Install records':1,'Raw source path':'synthetic/Installs.json'}],
   unresolved:[{'package':'synthetic.package'}]};
 let checks=0;
 const check=(cb)=>{cb();checks++};

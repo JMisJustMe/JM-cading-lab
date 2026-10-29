@@ -4,6 +4,7 @@ on:
     paths:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
+      - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
       - 'coding-estate/integration/ftr-security-lab.mjs'
@@ -16,6 +17,7 @@ on:
     paths:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'coding-estate/integration/ftr-existing-recipient-selftest.mjs'
+      - 'coding-estate/integration/ftr-first-person-browser-selftest.mjs'
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
       - 'coding-estate/integration/ftr-security-lab.mjs'
@@ -50,3 +52,15 @@ jobs:
         run: |
           node --check coding-estate/integration/ftr-routesense-rf.mjs
           node coding-estate/integration/ftr-routesense-rf-selftest.mjs
+  original-ftr-browser-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Checkout authentic frozen First-Person recipient
+        uses: actions/checkout@v4
+      - name: Install isolated Chromium test runner
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install chromium
+      - name: Execute real original FTR first-person browser/viewport/consequence tests
+        run: node coding-estate/integration/ftr-first-person-browser-selftest.mjs

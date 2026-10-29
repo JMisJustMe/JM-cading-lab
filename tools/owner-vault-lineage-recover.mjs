@@ -112,6 +112,22 @@ async function cleanupEmptyFailedRecovery(dest, createdIdentity) {
   }
 }
 
+// CP23: reject symlinks at EVERY existing directory component, not just the
+// final parent/destination. This is a preflight check, not a claim of
+// race-proof custody against a hostile concurrent filesystem actor.
+async function assertNoSymlinkDirectoryComponents(directory) {
+  const absolute = path.resolve(directory);
+  const root = path.parse(absolute).root;
+  let current = root;
+  for (const component of absolute.slice(root.length).split(path.sep).filter(Boolean)) {
+    current = path.join(current, component);
+    const stat = await fs.lstat(current);
+    if (!stat.isDirectory() || stat.isSymbolicLink()) {
+      fail('LINEAGE_PATH_COMPONENT_UNSAFE');
+    }
+  }
+}
+
 async function restorePacket(input, destination) {
   const verified = await readPacket(input);
   const dest = path.resolve(destination);
@@ -124,6 +140,9 @@ async function restorePacket(input, destination) {
   if (!parentStat.isDirectory() || parentStat.isSymbolicLink()) {
     fail('LINEAGE_PARENT_UNSAFE');
   }
+  // CP23: lstat(parent) alone misses a symlink in an earlier path component.
+  // Refuse redirected ancestors before any new owner source is written.
+  await assertNoSymlinkDirectoryComponents(parent);
   // mkdir without recursive is an atomic existing-directory refusal.
   await fs.mkdir(dest, { mode: 0o700 });
   const createdIdentity = await fs.lstat(dest);
@@ -176,6 +195,7 @@ async function auditRestoredPacket(input, destination) {
   if (!dirStat.isDirectory() || dirStat.isSymbolicLink()) {
     fail('LINEAGE_AUDIT_DIRECTORY_UNSAFE');
   }
+  await assertNoSymlinkDirectoryComponents(dest);
   const expectedNames = new Set(['recovery-manifest.json',
     ...verified.ready.map(({ metadata }) => `${metadata.id}.html`)]);
   const entries = await fs.readdir(dest, { withFileTypes: true });

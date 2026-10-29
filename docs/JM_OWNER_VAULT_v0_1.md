@@ -297,3 +297,34 @@ gates stay HOLD.
 Governed by same-PR prospective Build Route Manifest
 `registry/build-routes/JM_OWNER_VAULT_CP20_OFFLINE_RECOVERY_BUILD_ROUTE_MANIFEST_v0.1.json`
 after native entry gate identified this new executable path.
+
+
+## CP21 — independent cold-reload integrity audit (draft, 29 October 2026)
+
+The same CP20 standalone, offline utility now supports **read-only auditing of
+a previously recovered directory in a fresh process**. This closes a specific
+verification gap: CP20 proved bytes at initial write, but its existing
+`--verify-only` checked only the saved export packet, not the HTML and
+manifest remaining on disk after a later restart or accidental modification.
+
+```sh
+node owner-vault-lineage-recover.mjs --input JM_Vault_Lineage_<body-id>.json --audit-dir ./fresh-owner-recovery
+```
+
+CP21 reopens the saved packet, checks its SHA/ancestry, independently lists the
+recovery directory, rejects missing/extra/symlinked files, checks the exact
+manifest identity and original-version metadata, then compares every recovered
+HTML byte against its packet content and original SHA-256. It **never repairs
+or overwrites edited files**, never writes to the original R2 Vault, and
+does not treat a deliberately edited original as unchanged: owner edits should
+be preserved as separately named descendants, not silently declared exact
+originals. The test court performs a new-process audit after restore, then
+adversarially modifies source, manifest, inventory and directory type to prove
+failure without changing R2 or deleting the owner recovery.
+
+A successful audit is **local disk readback against the supplied packet**, not
+an independently authenticated packet origin, owner-device test, cloud custody,
+offsite backup, production merge or deployment propagation. A malicious party
+able to replace both packet and files could evade this unanchored comparison;
+preserve the separately recorded packet SHA in trusted custody. CP21 remains
+a draft candidate until actual owner-device and production gates are met.

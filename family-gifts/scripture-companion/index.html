@@ -46,6 +46,7 @@
     <button type="button" class="btn secondary small" id="jmFocusNotes">Revisit my notes</button>
     <button type="button" class="btn secondary small" id="jmFocusMark">Mark read</button>
     <button type="button" class="btn secondary small" id="jmFocusNext">Choose next on my path</button>
+    <button type="button" class="btn secondary small" id="jmFocusChoosePath">Change reading path</button>
    </div>
    <p id="jmFocusStatus" class="count" role="status" aria-live="polite"></p>
   </section>
@@ -493,6 +494,7 @@ function nextPersonalPassage(){
  const next=path.chapters.find(([book,chapter])=>!isRead(book,chapter));
  return {title:path.title,completed,total:path.chapters.length,next:next?{book:next[0],chapter:next[1]}:null};
 }
+$('#jmFocusChoosePath').addEventListener('click',()=>{tab('explore');$('#planPicker').focus()});
 $('#jmFocusNext').addEventListener('click',()=>{
  const route=nextPersonalPassage();
  if(!route.next){$('#jmFocusStatus').textContent='All chapters on this path have been marked read. You can revisit any passage.';return}

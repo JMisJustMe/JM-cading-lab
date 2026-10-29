@@ -127,12 +127,12 @@ def _sync_report_parent(path, parent_fd=None):
     os.fsync(parent_fd)
 
 
-def _verify_report_at_requested_path(path, parent_fd, written_stat):
-    """A successful receipt must still be reachable at the requested pathname.
+def _verify_report_at_requested_path(path, parent_fd, written_stat, raw):
+    """Confirm the original pathname still opens the exact persisted bytes.
 
-    The anchored file may be durable yet stranded if its parent was renamed
-    after creation. Refuse success rather than acknowledging a forged or
-    missing file at the owner-requested path.
+    Inode numbers may be REUSED after unlink/recreate, so comparing only
+    st_dev/st_ino is insufficient. Read the requested pathname independently
+    and compare its full bytes as well as identity and timestamps.
     """
     check_fd=_open_report_parent(path)
     try:
@@ -140,9 +140,15 @@ def _verify_report_at_requested_path(path, parent_fd, written_stat):
         current=os.fstat(check_fd)
         if (original.st_dev,original.st_ino)!=(current.st_dev,current.st_ino):
             raise ValueError('REPORT_OUTPUT_PATH_PARENT_CHANGED')
-        named=os.stat(path.name,dir_fd=check_fd,follow_symlinks=False)
-        if (named.st_dev,named.st_ino)!=(written_stat.st_dev,written_stat.st_ino):
-            raise ValueError('REPORT_OUTPUT_PATH_ENTRY_CHANGED')
+        fd=os.open(path.name,os.O_RDONLY | os.O_NOFOLLOW,dir_fd=check_fd)
+        with os.fdopen(fd,'rb') as f:
+            named=os.fstat(f.fileno())
+            if (named.st_dev,named.st_ino,named.st_ctime_ns,named.st_mtime_ns,named.st_size)!=(
+                    written_stat.st_dev,written_stat.st_ino,written_stat.st_ctime_ns,
+                    written_stat.st_mtime_ns,written_stat.st_size):
+                raise ValueError('REPORT_OUTPUT_PATH_ENTRY_CHANGED')
+            if f.read()!=raw:
+                raise ValueError('REPORT_OUTPUT_PATH_BYTES_CHANGED')
     finally:
         os.close(check_fd)
 
@@ -169,7 +175,7 @@ def write_once_verified(path, encoded):
         _sync_report_parent(path,parent_fd)
         if _read_report_exact(path,created,parent_fd)!=raw:
             raise ValueError('REPORT_READBACK_MISMATCH')
-        _verify_report_at_requested_path(path,parent_fd,created)
+        _verify_report_at_requested_path(path,parent_fd,created,raw)
     finally:
         os.close(parent_fd)
 

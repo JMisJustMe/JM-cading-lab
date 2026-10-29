@@ -545,7 +545,7 @@ function drawStudy(){
    if(!save()){data.bookmarks=prev;el('jmStudyStatus').textContent='Not saved: storage unavailable.';return}
    el('jmStudyStatus').textContent='Bookmarked '+x.ref+'.';renderSaved();
   });
-  const later=document.createElement('button');later.type='button';later.className='btn secondary small';later.textContent='＋ Reading list';later.onclick=()=>{if(window.JMExplore)window.JMExplore.add(x.book,x.chapter)};actions.append(open,choose,saveRef,later);card.append(h,p,actions);root.append(card);
+  const later=document.createElement('button');later.type='button';later.className='btn secondary small';later.textContent='＋ Reading list';later.onclick=()=>{if(window.JMExplore)window.JMExplore.add(x.book,x.chapter)};const reflect=document.createElement('button');reflect.type='button';reflect.className='btn secondary small';reflect.textContent='Write reflection';reflect.addEventListener('click',()=>{if(!el('noteText').value.trim()){el('noteRef').value=x.ref;storeDraft()}else{el('jmStudyStatus').textContent='Existing unfinished reflection preserved.'}tab('notes')});actions.append(open,choose,saveRef,later,reflect);card.append(h,p,actions);root.append(card);
  }
  if(!items.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='No matches; try another subject.';root.append(empty)}
 }

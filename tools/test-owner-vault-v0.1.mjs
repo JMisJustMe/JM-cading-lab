@@ -1550,3 +1550,121 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
   console.log('PASS: CP21 original multi-format binary bytes, auth, distinct identity, guarded revision, exact device recovery, tamper HOLD, ancestor custody and HTML non-regression.');
 }
 
+
+
+// CP22: original binary lineage must be cold-recoverable with the EXISTING
+// CP20 offline utility, after an explicit owner-only read-only export.
+// Test starts the offline utility in a separate isolated process without R2,
+// owner credentials, an app, cloud account, or a public source repository.
+{
+  const storage = new FakeR2();
+  const privateEnv = { JM_OWNER_VAULT: storage, JM_OWNER_VAULT_KEY: 'synthetic-local-cp22' };
+  const invoke = ({method='GET', query='', body, key=privateEnv.JM_OWNER_VAULT_KEY}={}) =>
+    call({method,query,body,key,env:privateEnv});
+  const sourceId = 'asset-00000000-0000-4000-8000-000000000221';
+  const otherId = 'asset-00000000-0000-4000-8000-000000000222';
+  const byteSets = [
+    Buffer.from([0,255,128,13,10,226,130,172]),
+    Buffer.from([0,255,128,13,10,226,130,173]),
+    Buffer.from([0,255,128,13,10,226,130,174])
+  ];
+  const hashes = byteSets.map(b=>createHash('sha256').update(b).digest('hex'));
+  const ids = [];
+  for (let i=0;i<byteSets.length;i++) {
+    const r=await invoke({method:'POST',body:{action:'upload-asset',file:{
+      name:'CP22 original composition',fileName:'original-project.wav',mediaType:'audio/wav',
+      sourceInstanceId:sourceId,sha256:hashes[i],base64:byteSets[i].toString('base64'),
+      ...(i?{expectedBaseId:ids[i-1],expectedBaseSha256:hashes[i-1]}:{})
+    }}});
+    assert.equal(r.status,201);
+    ids.push((await r.json()).asset.id);
+  }
+  const distinct=await invoke({method:'POST',body:{action:'upload-asset',file:{
+    name:'same file; distinct original use',fileName:'other.wav',mediaType:'audio/wav',
+    sourceInstanceId:otherId,sha256:hashes[0],base64:byteSets[0].toString('base64')
+  }}});
+  assert.equal(distinct.status,201);
+  const distinctId=(await distinct.json()).asset.id;
+  const query='?mode=export-asset-lineage&asset='+ids[2];
+  assert.equal((await invoke({query,key:'wrong-owner-key'})).status,401);
+  const before=[...storage.map.entries()].map(([k,v])=>[k,Buffer.isBuffer(v.body)?v.body.toString('hex'):v.body]);
+  const delivered=await invoke({query});
+  assert.equal(delivered.status,200);
+  assert.match(delivered.headers.get('content-disposition')||'',/attachment/);
+  const packet=await delivered.json();
+  assert.equal(packet.schema,'JM.OwnerVault/0.1.AssetLineageExport');
+  assert.equal(packet.version_count,3);
+  assert.equal(packet.source_bytes,byteSets.reduce((a,b)=>a+b.length,0));
+  assert.deepEqual(packet.versions.map(v=>v.metadata.id),[...ids].reverse());
+  assert.equal(packet.versions.some(v=>v.metadata.id===distinctId),false);
+  assert.deepEqual(
+    [...storage.map.entries()].map(([k,v])=>[k,Buffer.isBuffer(v.body)?v.body.toString('hex'):v.body]),before,
+    'read-only recovery export may not mutate the original R2 custody');
+  const isolated=await fs.mkdtemp(path.join(tmpdir(),'jm-vault-asset-cp22-'));
+  const tool=path.join(isolated,'owner-vault-lineage-recover.mjs');
+  const saved=path.join(isolated,'owner-export.json');
+  const destination=path.join(isolated,'cold-originals');
+  const run=(...args)=>spawnSync(process.execPath,[tool,'--input',saved,...args],
+    {cwd:isolated,encoding:'utf8',timeout:20000});
+  const rejects=(changed, expected) => {
+    assert.notEqual(changed.status,0,'invalid source must be rejected');
+    assert.match(changed.stderr,new RegExp(expected));
+  };
+  try {
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),tool);
+    await fs.writeFile(saved,JSON.stringify(packet,null,2));
+    const verified=run('--verify-only');
+    assert.equal(verified.status,0,verified.stderr);
+    assert.equal(JSON.parse(verified.stdout).kind,'ORIGINAL_BINARY_ASSET');
+    const restored=run('--output-dir',destination);
+    assert.equal(restored.status,0,restored.stderr);
+    assert.equal(JSON.parse(restored.stdout).kind,'ORIGINAL_BINARY_ASSET');
+    for(let i=0;i<ids.length;i++){
+      assert.deepEqual(await fs.readFile(path.join(destination,ids[i]+'.bin')),byteSets[i]);
+    }
+    const diskReceipt=JSON.parse(await fs.readFile(path.join(destination,'recovery-manifest.json'),'utf8'));
+    assert.equal(diskReceipt.original_schema,'JM.OwnerVault/0.1.AssetLineageExport');
+    assert.equal(diskReceipt.original_versions.length,3);
+    assert.equal(diskReceipt.original_versions.some(v=>v.id===distinctId),false);
+    const audit=run('--audit-dir',destination);
+    assert.equal(audit.status,0,audit.stderr);
+    assert.equal(JSON.parse(audit.stdout).outcome,'OFFLINE_RESTORED_FILES_AUDITED');
+    assert.equal(JSON.parse(audit.stdout).kind,'ORIGINAL_BINARY_ASSET');
+    rejects(run('--output-dir',destination),'EEXIST');
+    const binary=path.join(destination,ids[0]+'.bin');
+    await fs.writeFile(binary,Buffer.from([0,0,0,0,0,0,0,0]));
+    rejects(run('--audit-dir',destination),'LINEAGE_AUDIT_SOURCE_MISMATCH');
+    await fs.writeFile(binary,byteSets[0]);
+    assert.equal(run('--audit-dir',destination).status,0);
+
+    const adversarial=[
+      ['tampered-binary',p=>{p.versions[1].base64=Buffer.from('false-content').toString('base64');},'ASSET_LINEAGE_EXACT_BINARY_INTEGRITY_FAILED'],
+      ['missing-ancestor',p=>{p.versions.pop();p.version_count=2;},'ASSET_LINEAGE_INCOMPLETE_OR_TOTAL_WRONG'],
+      ['false-use',p=>{p.versions[1].metadata.sourceInstanceId=otherId;},'ASSET_LINEAGE_CROSS_PURPOSE_REFUSED'],
+      ['bad-id',p=>{p.versions[0].metadata.id='not-a-uuid';},'ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID'],
+      ['bad-padding',p=>{p.versions[0].base64+='!';},'ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID'],
+      ['wrong-total',p=>{p.source_bytes+=1;},'ASSET_LINEAGE_INCOMPLETE_OR_TOTAL_WRONG'],
+      ['extra-version',p=>{p.versions.push(p.versions[2]);p.version_count=4;},'ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID']
+    ];
+    for (const [name,mutate,expected] of adversarial) {
+      const corrupted=structuredClone(packet);mutate(corrupted);
+      await fs.writeFile(saved,JSON.stringify(corrupted));
+      rejects(run('--verify-only'),expected);
+      const shouldNotExist=path.join(isolated,'reject-'+name);
+      rejects(run('--output-dir',shouldNotExist),expected);
+      await assert.rejects(fs.lstat(shouldNotExist),/ENOENT/);
+    }
+    await fs.writeFile(saved,JSON.stringify(packet,null,2));
+    assert.equal(run('--audit-dir',destination).status,0);
+    const damaged=storage.map.get('jm-owner-vault/v0.1/assets/'+ids[0]+'.bin');
+    damaged.body[0]^=1;
+    const refused=await invoke({query});
+    assert.equal(refused.status,409,'tampered R2 ancestor must refuse portable backup');
+    assert.equal((await refused.json()).error,'ASSET_INTEGRITY_MISMATCH');
+    damaged.body[0]^=1;
+    console.log('PASS: CP22 exact offline original binary chain cold-recovered, independently audited, read-only export, cross-purpose and tamper refused without credentials or web host.');
+  } finally {
+    // Temporary synthetic test fixtures only; no owner vault/source deletion.
+    await fs.rm(isolated,{recursive:true,force:true});
+  }
+}

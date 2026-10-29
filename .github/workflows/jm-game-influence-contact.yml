@@ -1,0 +1,20 @@
+name: JM native gaming influence contact
+on:
+  pull_request:
+    paths:
+      - 'games-beyond/influence-contact/**'
+      - 'coding-estate/sovereign-batch-six/direct/game-input-native-b.mjs'
+      - 'coding-estate/sovereign-batch-six/direct/native-core.mjs'
+      - '.github/workflows/jm-game-influence-contact.yml'
+  workflow_dispatch:
+jobs:
+  native-source-contact:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node games-beyond/influence-contact/influence-contact-selftest.mjs

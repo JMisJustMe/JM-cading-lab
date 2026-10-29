@@ -513,7 +513,7 @@ document.addEventListener('click',e=>{
 });
 $('#book').addEventListener('change',renderRoom);$('#chapter').addEventListener('change',renderRoom);
 const obs=new MutationObserver(()=>{if($('#importStatus').textContent==='Backup restored.')renderRoom()});obs.observe($('#importStatus'),{childList:true,characterData:true,subtree:true});
-window.JMReadingRoom={render:renderRoom,markRead,paths:readingPaths,roomTarget,bookFromUrl};
+window.JMReadingRoom={render:renderRoom,markRead,setChapterReadState,paths:readingPaths,roomTarget,bookFromUrl};
 renderRoom();
 })();
 </script><script id="jm-study-desk-v2">
@@ -540,13 +540,21 @@ function renderJourney(){
   const acts=document.createElement('div');acts.className='entry-actions';
   const open=document.createElement('a');open.href=studyUrl(item.book,item.chapter);open.target='_blank';open.rel='noopener noreferrer';open.className='btn secondary small';open.textContent='Read official Study Bible ↗';
   const select=document.createElement('button');select.type='button';select.className='btn secondary small';select.textContent='Choose passage';select.onclick=()=>jump(item.book,item.chapter,String(item.verse));
-  const mark=document.createElement('button');mark.type='button';mark.className='btn secondary small';mark.textContent=journeyDone(item)?'Already marked read':'✓ Mark read';
-  mark.disabled=journeyDone(item);mark.onclick=()=>{
-   const ok=window.JMReadingRoom?.markRead({book:item.book,chapter:item.chapter,verse:String(item.verse)});
-   el('jmJourneyStatus').textContent=ok?item.ref+' marked read by you.':'Could not update reading progress; previous state kept.';
+  const mark=document.createElement('button');mark.type='button';mark.className='btn secondary small';mark.textContent=journeyDone(item)?'↶ Mark unread':'✓ Mark read';
+  mark.onclick=()=>{
+   const done=journeyDone(item);
+   const ok=window.JMReadingRoom?.setChapterReadState({book:item.book,chapter:item.chapter,verse:String(item.verse)},!done);
+   el('jmJourneyStatus').textContent=ok?item.ref+(done?' marked unread.':' marked read by you.'):'Could not update reading progress; previous state kept.';
    renderJourney();
   };
-  acts.append(open,select,mark);row.append(title,guide,acts);root.append(row);
+  const noteSearch=document.createElement('button');noteSearch.type='button';noteSearch.className='btn secondary small';
+  const noteCount=data.notes.filter(n=>String(n.ref||'').includes(item.book+' '+item.chapter)).length;
+  noteSearch.textContent='My notes ('+noteCount+')';noteSearch.onclick=()=>{
+   el('notesSearch').value=item.book+' '+item.chapter;
+   el('notesScope').value='all';
+   tab('notes');renderNotes();
+  };
+  acts.append(open,select,mark,noteSearch);row.append(title,guide,acts);root.append(row);
  }
 }
 journeyTheme.addEventListener('change',()=>{el('jmJourneyStatus').textContent='';renderJourney()});

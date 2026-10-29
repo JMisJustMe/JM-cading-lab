@@ -30,9 +30,24 @@ const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = code => { throw new Error(code); };
 
 
-// CP22: share the original CP20 offline verifier/reconstructor rather than
-// invent another CLI or alternative vault. Binary and HTML identities stay
-// distinct; the extension is fixed (.bin), never a supplied path or name.
+// CP22–CP24: one original CP20 recovery tool for HTML and genuine binary sources.
+// CP24 carries a safe original extension for native app re-entry without extra
+// working copies. The immutable source version UUID remains in every filename.
+
+// CP24: preserve the native extension for direct editing after cold restore.
+// Stable UUID prefix retains sovereign revision identity and prevents collisions.
+// The packet's untrusted filename is data: never an output path.
+function nativeRecoveryName(metadata) {
+  const original = typeof metadata.fileName === 'string' ? metadata.fileName : '';
+  const safe = original.replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-')
+    .replace(/\s+/g,' ').trim().replace(/^\.+$/, 'source')
+    .slice(0, 120).replace(/[. ]+$/g,'');
+  return metadata.id + '__' + (safe || 'original-file.bin');
+}
+function recoveryFilename(verified, metadata) {
+  return verified.asset ? nativeRecoveryName(metadata) : metadata.id + '.html';
+}
+
 function validateAssetPacket(packet) {
   if (!packet || typeof packet !== 'object' || Array.isArray(packet)
     || packet.schema !== ASSET_SCHEMA || !ID.test(packet.selected_id || '')
@@ -298,7 +313,7 @@ async function restorePacket(input, destination) {
   try {
     const inventory = recoveryManifest(verified);
     for (const { metadata, bytes } of verified.ready) {
-      const name = `${metadata.id}.${verified.asset ? 'bin' : 'html'}`; // IDs only, never owner-supplied paths.
+      const name = recoveryFilename(verified, metadata); // identity-bound safe filename
       const filename = path.join(dest, name);
       await writeDurableNewFile(filename, bytes);
       const check = await readBoundedRegularFile(filename, MAX_SINGLE_SOURCE);
@@ -350,7 +365,7 @@ async function auditRestoredPacket(input, destination) {
   }
   await assertNoSymlinkDirectoryComponents(dest);
   const expectedNames = new Set(['recovery-manifest.json',
-    ...verified.ready.map(({ metadata }) => `${metadata.id}.${verified.asset ? 'bin' : 'html'}`)]);
+    ...verified.ready.map(({ metadata }) => recoveryFilename(verified, metadata))]);
   const entries = await fs.readdir(dest, { withFileTypes: true });
   if (entries.length !== expectedNames.size || entries.some(e =>
     !expectedNames.has(e.name) || !e.isFile() || e.isSymbolicLink())) {
@@ -366,7 +381,7 @@ async function auditRestoredPacket(input, destination) {
     fail('LINEAGE_AUDIT_MANIFEST_MISMATCH');
   }
   for (const { metadata, bytes } of verified.ready) {
-    const restored = await readBoundedRegularFile(path.join(dest, `${metadata.id}.${verified.asset ? 'bin' : 'html'}`), verified.asset ? ASSET_MAX_SINGLE : MAX_SINGLE_SOURCE);
+    const restored = await readBoundedRegularFile(path.join(dest, recoveryFilename(verified, metadata)), verified.asset ? ASSET_MAX_SINGLE : MAX_SINGLE_SOURCE);
     if (!restored.equals(bytes) || digest(restored) !== metadata.sha256.toLowerCase()) {
       fail('LINEAGE_AUDIT_SOURCE_MISMATCH');
     }
@@ -410,4 +425,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 }
 
 export { validatePacket, readPacket, restorePacket, auditRestoredPacket, cleanupEmptyFailedRecovery,
-  writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile };
+  writeDurableNewFile, syncRecoveryDirectory, readBoundedRegularFile, nativeRecoveryName };

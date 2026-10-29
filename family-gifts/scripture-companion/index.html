@@ -190,8 +190,9 @@ $('#saveNote').addEventListener('click',()=>{
  data.notes=next;
  if(!save()){
   data.notes=previous;
+  storeDraft();
   $('#noteDraftStatus').textContent='Note was NOT saved. Your existing saved notes remain unchanged. Keep or export the draft.';
-  storeDraft();return;
+  return;
  }
  editingNoteId=null;$('#saveNote').textContent='Save note';$('#noteRef').value='';$('#noteText').value='';
  if(clearStoredDraft())$('#noteDraftStatus').textContent='Note saved.';

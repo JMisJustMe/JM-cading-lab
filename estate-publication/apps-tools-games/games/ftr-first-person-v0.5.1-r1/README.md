@@ -51,6 +51,17 @@ This is a thin **working descendant of the existing game**, not another engine, 
 
 
 
+
+## CP18 — earn Quiet Trace and win in one continuous real game
+
+Original FTR v0.5.1 remains the world, engine, renderer, original enemies, movement, Core A/Core B, gates, original scoring and real extraction. No new game created. The previous separate CP17 earned Quiet bonus and CP16 real full victory are now proven **in the same uninterrupted original run** using original MOVE, held TRACE and Phase and the existing original-world Echo button.
+
+**Gameplay route:** navigate to real Core A, begin TRACE until partial progress, activate real Phase, cast real Echo (J/touch), let nearby real actors hear that original-world lure, then finish original TRACE. Earned native JM GameCore quiet advantage seals exactly one additional +180 only after the original Core A truly mounts. Continue through original first door to Core B, mount original Core B, traverse second door and reach real extraction. The original game must end with RUN_END win:true. No actor freezes, teleport, score/health injections, fake Win or test-only original-game entrypoints are used.
+
+**Executable source and proof:** new coding-estate/integration/ftr-cp18-earned-fullwin-selftest.mjs runs inside original GitHub CI, after all inherited 67 browser R1 regressions, CP16 original full win and CP17 normal live-actor Quiet tests. Original source-tested commit d455fa9a5a816acda280f0310e5661991d315b85. GitHub Chromium independently won same-run with 2/2 cores, native Quiet 180, original RUN_END(win:true), score **3235**, HP **59** and 19.07 original game seconds. Owner GroundZeroJM Microsoft Edge independently won same-run, score **3210**, HP **55** and 21.11 game seconds, all seven original actors active, real original run identity unchanged. GitHub four jobs passed: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40976336877. **167/167 bounded heterogeneous checks PASS**, not a claim that every game feature is finished.
+
+**Source custody and holds:** additive draft stacked PR #639, externally editable in owner's GitHub, original CP09 protected and all CP10–17 source ancestors remain recoverable. Real owner manual gameplay, physical phone/gamepad/Ama-Pro/glove, Gardles-native original source, full visual-quality approval, public independent deployment and source writeback remain unverified. The game is locally playable via owner-connected laptop while its localhost server is running; localhost is not a phone/public link.
+
 ## CP17 — earn Quiet TRACE in a real live encounter
 
 **Actual player interaction:** Reach original Core A with ordinary original player movement. Hold the original E / TRACE control to begin original progress, then use the genuine original PHASE (Shift / existing control) and CAST ECHO (J / existing in-game button). If the source Echo really reaches a nearby original enemy, the real existing CP13 enemy memory can accept the false sound location while authentic Phase disrupts fresh sight. Continue original E/TRACE: native GameCoding and GameCore source can accelerate the original terminal at 1.7×. The extra source-authentic +180 Quiet bonus only seals when the **original FTR** mounts the actual core and the player has previously earned meaningful accelerated progress and kept the original same Echo active, without further damage or long interaction interruption. A staged or free bonus is not allowed.

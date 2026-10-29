@@ -16,7 +16,9 @@ const old=base+'ftr-first-person-v0.5.1/';
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webmanifest':'application/manifest+json'};
 const http=createServer(async(req,res)=>{
  try{
-  const path=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
+  const requested=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
+  // Static hosting maps directory requests to index.html; mirror that in local proof.
+  const path=requested.endsWith('/')?requested+'index.html':requested;
   const full=resolve(root,'.'+path);
   if(!full.startsWith(root+sep))throw Error('OUTSIDE_SOURCE');
   const contents=await readFile(full);
@@ -114,7 +116,7 @@ try{
   await page.evaluate(()=>{window.__JM_TEST_GAMEPAD.connected=false;window.__JM_TEST_GAMEPAD.mapping='standard';});
  });
  await check('R1 PWA worker installs independently of frozen original',async()=>{
-  await page.evaluate(()=>navigator.serviceWorker.ready);
+  await page.evaluate(()=>Promise.race([navigator.serviceWorker.ready,new Promise((_,reject)=>setTimeout(()=>reject(new Error('PWA_WORKER_INSTALL_TIMEOUT')),12000))]));
   const scope=await page.evaluate(async()=>{
    const reg=await navigator.serviceWorker.ready;return reg.scope;
   });

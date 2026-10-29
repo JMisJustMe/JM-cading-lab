@@ -194,7 +194,7 @@ function passLaneChaser(p){
  const nextT=clamp(a.t/Math.max(.001,a.dur)+.15,0,1);
  const target={x:lerp(a.from.x,a.to.x,nextT),y:lerp(a.from.y,a.to.y,nextT)};
  const nearest=defenders.reduce((best,q)=>dist(q,target)<dist(best,target)?q:best,defenders[0]);
- if(nearest?.id!==p.id||dist(p,target)>190)return null;
+ if(nearest?.id!==p.id||dist(p,target)>380)return null;
  const readyAt=state.difficulty==='LEGEND'?.04:state.difficulty==='ROOKIE'?.16:.09;
  if(a.t<readyAt)return null;
  return target;

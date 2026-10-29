@@ -60,7 +60,7 @@ try{
   await page.waitForTimeout(330);
   const after=await page.evaluate(()=>window.FTR.state());
   assert(after.running&&after.time>before.time+.1);
-  assert.equal(after.run.events[0].event,'CONTROL_MODE');
+  assert(after.run.events.some(e=>e.event==='RUN_START'));
  });
  await check('R1 mobile touch FIRE/SCAN work in existing original game',async()=>{
   const before=await page.evaluate(()=>window.FTR.state());

@@ -26,7 +26,7 @@
     <div class="actions"><a class="btn" id="resumeOfficial" target="_blank" rel="noopener noreferrer" href="https://www.jw.org/en/library/bible/nwt/books/psalms/23/">Read official chapter ↗</a><button id="resumeChoose" type="button" class="btn secondary">Choose passage</button></div>
   </div>
   <div class="room-grid"><div class="room-stat"><strong id="roomProgress">0</strong><span>chapters marked read</span></div><div class="room-stat"><strong id="roomSaved">0</strong><span>saved references</span></div><div class="room-stat"><strong id="roomNotes">0</strong><span>personal notes</span></div></div>
-  <div class="actions room-actions"><button class="btn secondary" id="markCurrentRead" type="button">✓ Mark selected chapter read</button><button class="btn secondary" id="roomNote" type="button">✎ Reflect on this passage</button><button class="btn secondary" id="roomFindNotes" type="button">⌕ Find notes for this chapter</button></div>
+  <div class="actions room-actions"><button class="btn secondary" id="markCurrentRead" type="button">✓ Mark selected chapter read</button><button class="btn secondary" id="markCurrentUnread" type="button">↶ Mark chapter unread</button><button class="btn secondary" id="focusNextUnread" type="button">Next unread chapter</button><button class="btn secondary" id="roomNote" type="button">✎ Reflect on this passage</button><button class="btn secondary" id="roomFindNotes" type="button">⌕ Find notes for this chapter</button></div>
   <p id="roomActionStatus" class="count" role="status" aria-live="polite"></p>
 </div><div class="panel" aria-labelledby="selectedReflectionTitle"><div class="topbar"><h3 id="selectedReflectionTitle">Reflections for the selected chapter</h3><small id="selectedReflectionCount" class="count">0 notes</small></div><p class="soft" id="selectedReflectionContext">Your thoughts stay on this device. Revisit a note before choosing your next chapter.</p><div class="list" id="selectedReflections"></div><div class="actions"><button id="selectedReflectionsAll" class="btn secondary small" type="button">View all notes for this chapter</button><button id="selectedReflectionsAdd" class="btn secondary small" type="button">Write a reflection</button></div></div>
 <div class="panel" aria-labelledby="recentChapterTitle"><div class="topbar"><h3 id="recentChapterTitle">Recently opened chapters</h3><small class="count" id="recentChapterCount">0 recorded</small></div><p class="soft">Only chapters opened through this companion are listed here. Opening is not the same as marking a chapter read.</p><div class="list" id="recentChapters"></div></div><div class="panel"><div class="tag">The Scriptures</div><h2>Find a passage</h2><div class="field"><label for="referenceSearch">Enter a Bible reference</label><input id="referenceSearch" type="search" autocomplete="off" placeholder="Psalms 23 or John 3:16" aria-describedby="referenceHelp"><small class="soft" id="referenceHelp">Choose a book and chapter. Verse numbers are saved in notes; the link opens the official chapter.</small></div><div class="actions"><button class="btn" id="findReference" type="button">Find passage</button></div><p id="referenceSearchStatus" class="count" role="status" aria-live="polite"></p><hr style="border:0;border-top:1px solid var(--line);margin:20px 0"><h2>Or choose a chapter</h2><div class="fields"><div class="field"><label for="book">Bible book</label><select id="book"></select></div><div class="field"><label for="chapter">Chapter</label><input id="chapter" type="number" min="1" value="1" inputmode="numeric"></div></div><div class="chapter-switch" role="group" aria-label="Move between Bible chapters"><button class="btn secondary" type="button" id="previousChapter" aria-label="Previous Bible chapter">← Previous chapter</button><button class="btn secondary" type="button" id="nextChapter" aria-label="Next Bible chapter">Next chapter →</button></div><p id="chapterNavStatus" class="count" role="status" aria-live="polite"></p><div class="field"><label for="verse">Verse (optional, for your note/reference)</label><input id="verse" type="number" min="1" placeholder="e.g. 16" inputmode="numeric"></div><p id="reference" class="soft" aria-live="polite"></p><div class="actions"><a class="btn" id="open" target="_blank" rel="noopener noreferrer" href="https://www.jw.org/en/library/bible/nwt/books/">Read on JW.org ↗</a><button class="btn secondary" id="bookmark">☆ Save reference</button></div><div class="actions" style="margin-top:12px"><button class="btn secondary" id="queueCurrent" type="button">＋ Add to reading list</button><button class="btn secondary" id="noteCurrent" type="button">✎ Note this passage</button></div><p id="readStatus" class="count" role="status" aria-live="polite"></p><p class="count">Scripture text opens on the official website; internet is needed for reading there. Your own saved references and notes work offline.</p></div><div class="panel"><h3>Familiar starting points</h3><div class="quick" id="quick"></div></div><div class="panel"><h3>Reading link</h3><p>Go straight to the official <em>New World Translation</em> book list.</p><a class="btn secondary" href="https://www.jw.org/en/library/bible/nwt/books/" target="_blank" rel="noopener noreferrer">View all Bible books ↗</a></div></section>
@@ -441,13 +441,39 @@ function renderPlan(){
  const count=plan.chapters.filter(([book,chapter])=>Array.isArray(data.queue)&&data.queue.some(x=>x.book===book&&x.chapter===chapter&&x.done)).length;
  $('#planProgress').textContent=`${count} of 7 chapters marked read · No deadline`;
 }
-function markRead(ref){if(!isValid(ref.book,ref.chapter))return false;
- data.queue=Array.isArray(data.queue)?data.queue:[];
- let row=data.queue.find(x=>x.book===ref.book&&x.chapter===ref.chapter);
- if(!row){row={id:Date.now().toString(36)+Math.random().toString(36).slice(2,8),book:ref.book,chapter:ref.chapter,done:false};data.queue.push(row)}
- if(row.done)return false;row.done=true;save();if(window.JMExplore)window.JMExplore.render();renderRoom();return true;
+function setChapterReadState(ref,done){
+ if(!isValid(ref.book,ref.chapter))return false;
+ const before=data.queue;
+ const next=(Array.isArray(before)?before:[]).map(x=>({...x}));
+ let row=next.find(x=>x.book===ref.book&&x.chapter===ref.chapter);
+ if(!row){
+  if(!done)return false;
+  if(next.length>=500){$('#roomActionStatus').textContent='Reading list limit reached. Remove an unused entry first.';return false}
+  row={id:Date.now().toString(36)+Math.random().toString(36).slice(2,8),book:ref.book,chapter:ref.chapter,done:false};
+  next.push(row);
+ }
+ if(row.done===done)return false;
+ row.done=done;data.queue=next;
+ if(!save()){data.queue=before;$('#roomActionStatus').textContent='Could not save reading progress; previous status retained.';return false}
+ if(window.JMExplore)window.JMExplore.render();renderRoom();return true;
 }
-$('#markCurrentRead').addEventListener('click',()=>{const ref=selected();$('#roomActionStatus').textContent=markRead(ref)?`${readable(ref)} marked read. You can change it in your reading list.`:`${readable(ref)} is already marked read.`});
+function markRead(ref){return setChapterReadState(ref,true)}
+$('#markCurrentRead').addEventListener('click',()=>{
+ const ref=selected();const changed=markRead(ref);
+ if($('#roomActionStatus').textContent.startsWith('Could not save'))return;
+ $('#roomActionStatus').textContent=changed?readable(ref)+' marked read.':'Already marked read or unable to update.';
+});
+$('#markCurrentUnread').addEventListener('click',()=>{
+ const ref=selected();const changed=setChapterReadState(ref,false);
+ if($('#roomActionStatus').textContent.startsWith('Could not save'))return;
+ $('#roomActionStatus').textContent=changed?readable(ref)+' marked unread.':'This chapter is not marked read.';
+});
+$('#focusNextUnread').addEventListener('click',()=>{
+ const next=pending();
+ if(!next){$('#roomActionStatus').textContent='No unread chapters in your reading list. Add one from Read or Explore.';return}
+ jump(next.book,next.chapter);renderRoom();
+ $('#roomActionStatus').textContent='Selected the next unread chapter: '+next.book+' '+next.chapter+'.';
+});
 $('#resumeChoose').addEventListener('click',()=>{const r=roomTarget();jump(r.book,r.chapter,r.verse);document.querySelector('#referenceSearch').focus();renderRoom()});
 $('#selectedReflectionsAll').addEventListener('click',()=>{$('#notesSearch').value='';$('#notesScope').value='chapter';tab('notes');$('#notesSearch').focus()});
 $('#selectedReflectionsAdd').addEventListener('click',()=>$('#roomNote').click());

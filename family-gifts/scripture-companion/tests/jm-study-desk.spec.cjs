@@ -9,6 +9,33 @@ const {chromium}=require('playwright');
    const page=await context.newPage(),errors=[];
    page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:4198/family-gifts/scripture-companion/',{waitUntil:'load'});
+   // CP22: walk the entire original book map; do not mistake navigation for embedded Bible text.
+   const coverage=await page.evaluate(()=>window.JMBibleCoverage);
+   assert.deepEqual(coverage,{books:66,chapters:1189,hebrewBooks:39,christianBooks:27,first:'Genesis',last:'Revelation'});
+   assert.equal(await page.locator('#book option').count(),66);
+   assert.equal(await page.locator('#book optgroup').count(),2);
+   assert.match(await page.locator('#jmBibleCoverage').textContent(),/66 books · 1189 chapters/);
+   const mapCheck=await page.evaluate(()=>{
+     const book=document.querySelector('#book'),chapter=document.querySelector('#chapter'),open=document.querySelector('#open'),checks=[];
+     for(const option of book.options){
+       book.value=option.value;book.dispatchEvent(new Event('change',{bubbles:true}));
+       const max=Number(chapter.max),url=new URL(open.href);
+       checks.push({name:option.value,max,valid:Number.isInteger(max)&&max>0&&url.origin==='https://www.jw.org'&&url.pathname.endsWith('/'+option.value.toLowerCase().replace(/\s+/g,'-')+'/1/')});
+     }
+     return checks;
+   });
+   assert.equal(mapCheck.length,66);
+   assert(mapCheck.every(row=>row.valid),'all 66 actual book selectors produce valid official chapter-one routes');
+   await page.selectOption('#book','Genesis');await page.fill('#chapter','50');await page.dispatchEvent('#chapter','change');
+   await page.click('#nextChapter');
+   assert.equal(await page.locator('#book').inputValue(),'Exodus');assert.equal(await page.locator('#chapter').inputValue(),'1');
+   await page.click('#previousChapter');
+   assert.equal(await page.locator('#book').inputValue(),'Genesis');assert.equal(await page.locator('#chapter').inputValue(),'50');
+   await page.selectOption('#book','Revelation');await page.fill('#chapter','22');await page.dispatchEvent('#chapter','change');
+   assert.equal(await page.locator('#nextChapter').isDisabled(),true,'cannot step beyond the final chapter');
+   await page.selectOption('#book','Genesis');assert.equal(await page.locator('#previousChapter').isDisabled(),true,'cannot step before the first chapter');
+   await page.selectOption('#book','Psalms');await page.fill('#chapter','23');await page.dispatchEvent('#chapter','change');
+   console.log('PASS CP22 COMPLETE BIBLE NAVIGATION '+width+'px: 66 books, 1189 chapters, two sections, all official routes, both boundaries');
    await page.locator('[data-tab="explore"]').click();
    assert(await page.locator('#jmStudyDesk').isVisible());
    assert.equal(await page.locator('#jmStudyResults .entry').count(),18);

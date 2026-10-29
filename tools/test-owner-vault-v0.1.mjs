@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-const fixtureEtag = value => createHash('sha256').update(String(value)).digest('hex');
+const fixtureEtag = value => createHash('sha256').update(value instanceof Uint8Array ? value : String(value)).digest('hex');
 
 class FakeR2Object {
   constructor(record) {
@@ -15,6 +15,11 @@ class FakeR2Object {
     this.etag = record.etag || fixtureEtag(record.body);
   }
   async text() { return String(this.record.body); }
+  async arrayBuffer() {
+    const bytes = this.record.body instanceof Uint8Array
+      ? Buffer.from(this.record.body) : Buffer.from(String(this.record.body));
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  }
   writeHttpMetadata(headers) {
     if (this.record.options?.httpMetadata?.contentType) headers.set('content-type', this.record.options.httpMetadata.contentType);
   }
@@ -42,7 +47,7 @@ class FakeR2 {
       this.dropNextSnapshotWrite = false;
       return;
     }
-    let stored = String(body);
+    let stored = body instanceof Uint8Array ? Buffer.from(body) : String(body);
     if (this.tamperNextStateWrite && key.endsWith('/state.json')) {
       this.tamperNextStateWrite = false;
       stored = stored.replace('saved note', 'tampered note');
@@ -1449,3 +1454,99 @@ console.log('PASS: CP26 bounded O_NOFOLLOW/O_NONBLOCK opened-file custody reject
   assert.equal(zeroReads, 1);
 }
 console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat growth without unbounded readFile allocation and closes handles.');
+
+
+// CP21: the original Owner Vault must carry real file bytes, never HTML
+// wrappers, without merging separately intended files or erasing ancestors.
+{
+  const original = Buffer.from([0, 255, 128, 0, 13, 10, 226, 130, 172]);
+  const changed = Buffer.from([0, 255, 128, 0, 13, 10, 226, 130, 173]);
+  const assetKey = 'asset-00000000-0000-4000-8000-000000000101';
+  const otherKey = 'asset-00000000-0000-4000-8000-000000000102';
+  const digest = b => createHash('sha256').update(b).digest('hex');
+  const assetEnv = { JM_OWNER_VAULT: new FakeR2(), JM_OWNER_VAULT_KEY: 'cp21-local-key' };
+  const invoke = (method, query, body, key=assetEnv.JM_OWNER_VAULT_KEY) =>
+    call({ method, query, body, key, env: assetEnv });
+  const write = async (data, sourceInstanceId=assetKey, opts={}) => {
+    const r = await invoke('POST', '', { action: 'upload-asset',
+      file: { name: 'Original JM Audio', fileName: 'recording.wav', mediaType: 'audio/wav',
+        sourceInstanceId, sha256: digest(data), base64: data.toString('base64'), ...opts } });
+    return r;
+  };
+  const denied = await invoke('GET', '?mode=assets', undefined, 'wrong');
+  assert.equal(denied.status, 401, 'asset index remains owner-authenticated');
+  const first = await write(original);
+  assert.equal(first.status, 201);
+  const firstReceipt = (await first.json()).asset;
+  assert.equal(firstReceipt.previousVersionId, null);
+  assert.equal(firstReceipt.bytes, original.length);
+  const object = assetEnv.JM_OWNER_VAULT.map.get('jm-owner-vault/v0.1/assets/' + firstReceipt.id + '.bin');
+  assert.ok(Buffer.isBuffer(object.body), 'actual R2 object stores binary bytes, not base64/HTML text');
+  assert.deepEqual(object.body, original);
+  const download = await invoke('GET', '?asset=' + firstReceipt.id);
+  assert.equal(download.status, 200);
+  assert.equal(download.headers.get('x-jm-asset-sha256'), digest(original));
+  assert.match(download.headers.get('content-disposition') || '', /attachment/);
+  assert.deepEqual(Buffer.from(await download.arrayBuffer()), original);
+
+  const same = await write(original);
+  assert.equal(same.status, 200);
+  assert.equal((await same.json()).asset.id, firstReceipt.id);
+  const distinct = await write(original, otherKey);
+  assert.equal(distinct.status, 201);
+  assert.notEqual((await distinct.json()).asset.id, firstReceipt.id,
+    'same bytes for a different purpose cannot collapse');
+
+  const wrongHead = await write(changed, assetKey, {
+    expectedBaseId: '00000000-0000-4000-8000-000000000999', expectedBaseSha256: digest(original)
+  });
+  assert.equal(wrongHead.status, 409);
+  const noPrecondition = await write(changed);
+  assert.equal(noPrecondition.status, 409, 'revisions require expected current head');
+  const badHash = await invoke('POST', '', { action: 'upload-asset',
+    file: { sourceInstanceId: assetKey, base64: original.toString('base64'),
+      sha256: '0'.repeat(64), fileName: 'fake.wav' } });
+  assert.equal(badHash.status, 409);
+
+  const revision = await write(changed, assetKey,
+    { expectedBaseId: firstReceipt.id, expectedBaseSha256: digest(original) });
+  assert.equal(revision.status, 201);
+  const latest = (await revision.json()).asset;
+  assert.equal(latest.previousVersionId, firstReceipt.id);
+  assert.deepEqual(Buffer.from(await (await invoke('GET', '?asset=' + firstReceipt.id)).arrayBuffer()), original);
+  assert.deepEqual(Buffer.from(await (await invoke('GET', '?asset=' + latest.id)).arrayBuffer()), changed);
+  const index = await (await invoke('GET', '?mode=assets')).json();
+  assert.equal(index.assets.length, 3);
+  assert.equal(index.max_asset_bytes, 12 * 1024 * 1024);
+  assert.equal((await invoke('DELETE', '?asset=' + firstReceipt.id)).status, 409,
+    'protected ancestor must not be deleted before descendants');
+  const remove = await invoke('DELETE', '?asset=' + latest.id);
+  assert.equal(remove.status, 200);
+  assert.equal((await remove.json()).outcome, 'ASSET_REMOVED');
+  assert.deepEqual(Buffer.from(await (await invoke('GET', '?asset=' + firstReceipt.id)).arrayBuffer()), original);
+  assert.equal((await (await invoke('GET', '?mode=assets')).json()).assets.length, 2);
+
+  const damaged = assetEnv.JM_OWNER_VAULT.map.get('jm-owner-vault/v0.1/assets/' + firstReceipt.id + '.bin');
+  damaged.body[0] ^= 1;
+  const corruptDownload = await invoke('GET', '?asset=' + firstReceipt.id);
+  assert.equal(corruptDownload.status, 409, 'tampered binary is not returned');
+  assert.equal((await corruptDownload.json()).error, 'ASSET_INTEGRITY_MISMATCH');
+  damaged.body[0] ^= 1;
+
+  const indexKey = 'jm-owner-vault/v0.1/assets/index.json';
+  const prior = assetEnv.JM_OWNER_VAULT.map.get(indexKey);
+  const originalMetadata = prior.body;
+  assetEnv.JM_OWNER_VAULT.map.set(indexKey, { ...prior, body: '{broken-json' });
+  assert.equal((await invoke('GET', '?mode=assets')).status, 503);
+  assert.equal((await write(Buffer.from([33]), 'asset-00000000-0000-4000-8000-000000000103')).status, 503,
+    'corrupt custody index must block new writes without replacing private originals');
+  assert.equal(assetEnv.JM_OWNER_VAULT.map.get(indexKey).body, '{broken-json');
+  assetEnv.JM_OWNER_VAULT.map.set(indexKey, { ...prior, body: originalMetadata });
+  assert.deepEqual(Buffer.from(await (await invoke('GET', '?asset=' + firstReceipt.id)).arrayBuffer()), original);
+  // Old HTML/body registry, notes and state remain independent of asset index.
+  const htmlIndex = await invoke('GET', '');
+  assert.equal(htmlIndex.status, 200);
+  assert.equal((await htmlIndex.json()).bodies.length, 0);
+  console.log('PASS: CP21 original multi-format binary bytes, auth, distinct identity, guarded revision, exact device recovery, tamper HOLD, ancestor custody and HTML non-regression.');
+}
+

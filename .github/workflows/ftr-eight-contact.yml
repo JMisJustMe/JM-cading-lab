@@ -4,12 +4,16 @@ on:
     paths:
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
+      - 'coding-estate/integration/ftr-security-lab.mjs'
+      - 'coding-estate/integration/ftr-security-lab-selftest.mjs'
       - '.github/workflows/ftr-eight-contact.yml'
   push:
     branches: [main]
     paths:
       - 'coding-estate/integration/ftr-eight-contact.mjs'
       - 'coding-estate/integration/ftr-eight-contact-selftest.mjs'
+      - 'coding-estate/integration/ftr-security-lab.mjs'
+      - 'coding-estate/integration/ftr-security-lab-selftest.mjs'
       - '.github/workflows/ftr-eight-contact.yml'
 permissions:
   contents: read
@@ -25,3 +29,7 @@ jobs:
           node --check coding-estate/integration/ftr-eight-contact-selftest.mjs
       - name: Execute native JM Game-CODING/GameCore and eight contact negative tests
         run: node coding-estate/integration/ftr-eight-contact-selftest.mjs
+      - name: Run actual isolated local HTTP security laboratory and bounded Shodan fixture
+        run: |
+          node --check coding-estate/integration/ftr-security-lab.mjs
+          node coding-estate/integration/ftr-security-lab-selftest.mjs

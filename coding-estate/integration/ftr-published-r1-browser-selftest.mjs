@@ -139,12 +139,10 @@ try{
  });
  await check('Native GameCore gates and performs earned dual action in real FTR game',async()=>{
   await page.evaluate(()=>{window.FTR.command('START');window.FTR.test.freezeEnemies();window.FTR.test.activateCore(0);});
-  const result=await page.evaluate(()=>{
-   const before=window.FTR.state();
-   document.getElementById('jmNativePulse').click();
-   const receipt=window.JMFTRNative.last(),after=window.FTR.state();
-   return {before,receipt,after};
-  });
+  const before=await page.evaluate(()=>window.FTR.state());
+  await page.locator('#jmNativePulse').tap();
+  const result=await page.evaluate(()=>({receipt:window.JMFTRNative.last(),after:window.FTR.state()}));
+  result.before=before;
   assert.equal(result.before.player.cores,1);
   assert.equal(result.receipt.status,'APPLIED');
   assert.equal(result.receipt.nativeIdentity,'JM.FTR.NativeCorePulse');

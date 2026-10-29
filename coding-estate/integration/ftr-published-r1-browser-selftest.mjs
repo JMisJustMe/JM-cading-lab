@@ -79,10 +79,11 @@ try{
   assert.equal(after.run.scans,before.run.scans+1);
  });
  await check('R1 original game actually mounts optional standard Gamepad recipient',async()=>{
-  const input=await page.evaluate(()=>window.FTRGamepad);
+  const input=await page.evaluate(()=>({schema:window.FTRGamepad.schema,
+    mapping:window.FTRGamepad.mapping,status:window.FTRGamepad.status()}));
   assert.equal(input.schema,'jm.ftr.first-person.existing-gamepad-contact/0.1');
   assert.equal(input.mapping,'standard-only');
-  assert.equal(input.status().physicalContactClaim,false);
+  assert.equal(input.status.physicalContactClaim,false);
  });
  await check('Virtual standard Gamepad FIRE causes real original ammo consumption',async()=>{
   await page.waitForTimeout(230);

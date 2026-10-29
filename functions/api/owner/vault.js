@@ -916,6 +916,96 @@ async function removeAsset(bucket, id) {
 }
 
 
+// CP28: piecewise extended owner export; the original 24 MiB packet remains
+// unchanged. A single read never base64-wraps an entire 64 MiB R2 original.
+const EXTENDED_SOURCE_BYTES = 64 * 1024 * 1024;
+const EXTENDED_SHARD_BYTES = 8 * 1024 * 1024;
+function extendedLineage(index, selectedId) {
+  const byId=new Map(index.assets.map(a=>[a.id,a]));
+  let current=byId.get(selectedId), total=0;
+  if (!current) return {error:json({schema:SCHEMA,error:'ASSET_NOT_FOUND'},404)};
+  const versions=[],seen=new Set(),source=current.sourceInstanceId;
+  while(current) {
+    if (versions.length>=8) return {error:json({schema:SCHEMA,error:'ASSET_EXTENDED_VERSION_LIMIT'},409)};
+    if(seen.has(current.id) || current.sourceInstanceId!==source)
+      throw new VaultCustodyHold();
+    if (total+current.bytes>EXTENDED_SOURCE_BYTES)
+      return {error:json({schema:SCHEMA,error:'ASSET_EXTENDED_TOTAL_LIMIT',max_bytes:EXTENDED_SOURCE_BYTES},413)};
+    versions.push(current);seen.add(current.id);total+=current.bytes;
+    current=current.previousVersionId?byId.get(current.previousVersionId):null;
+  }
+  return {versions,total};
+}
+async function extendedPlan(bucket,selectedId) {
+  if(!/^[0-9a-f-]{36}$/i.test(selectedId||''))
+    return json({schema:SCHEMA,error:'ASSET_EXTENDED_ID_INVALID'},400);
+  const index=await assetIndex(bucket),lineage=extendedLineage(index,selectedId);
+  if(lineage.error)return lineage.error;
+  const pin=await sha256Text(JSON.stringify(index.assets));
+  return json({schema:`${SCHEMA}.AssetExtendedPlan`,selected_id:selectedId,
+    index_pin_sha256:pin,version_count:lineage.versions.length,source_bytes:lineage.total,
+    shard_bytes:EXTENDED_SHARD_BYTES,order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',
+    versions:lineage.versions,boundary:'READ_ONLY_PLAN_NOT_AN_OFFSITE_BACKUP'});
+}
+async function extendedShard(bucket,selectedId,versionId,shardText,pin) {
+  if(!/^[0-9a-f-]{36}$/i.test(selectedId||'')
+    || !/^[0-9a-f-]{36}$/i.test(versionId||'')
+    || !/^[a-f0-9]{64}$/.test(pin||'')
+    || !/^(0|[1-9][0-9]?)$/.test(shardText||'')) {
+    return json({schema:SCHEMA,error:'ASSET_EXTENDED_REQUEST_INVALID'},400);
+  }
+  const index=await assetIndex(bucket),lineage=extendedLineage(index,selectedId);
+  if(lineage.error)return lineage.error;
+  if(await sha256Text(JSON.stringify(index.assets))!==pin)
+    return json({schema:SCHEMA,error:'ASSET_EXTENDED_INDEX_CHANGED'},409);
+  const metadata=lineage.versions.find(v=>v.id===versionId);
+  if(!metadata)return json({schema:SCHEMA,error:'ASSET_EXTENDED_VERSION_NOT_IN_LINEAGE'},409);
+  const shardIndex=Number(shardText);
+  const start=shardIndex*EXTENDED_SHARD_BYTES;
+  if(start>=metadata.bytes)return json({schema:SCHEMA,error:'ASSET_EXTENDED_SHARD_OUT_OF_RANGE'},400);
+  const len=Math.min(EXTENDED_SHARD_BYTES,metadata.bytes-start);
+  let bytes;
+  if(metadata.storageKind==='chunked-v1') {
+    // Four immutable 2 MiB parts at a time; never concatenate 64 MiB here.
+    const chunks=[];
+    const first=start/ASSET_PART_BYTES,last=Math.ceil((start+len)/ASSET_PART_BYTES);
+    for(let i=first;i<last;i++) {
+      let object;
+      try {object=await bucket.get(assetPartKey(metadata.id,i));}
+      catch {throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE');}
+      if(!object)throw new VaultBodyIntegrityError('ASSET_PART_MISSING');
+      let part;
+      try{part=new Uint8Array(await object.arrayBuffer());}
+      catch{throw new VaultBodyIntegrityError('ASSET_PART_UNREADABLE');}
+      const size=i===metadata.partCount-1?
+        metadata.bytes-ASSET_PART_BYTES*(metadata.partCount-1):ASSET_PART_BYTES;
+      if(part.length!==size || await assetHash(part)!==metadata.partHashes[i]
+        || object.customMetadata?.uploadId!==metadata.id
+        || object.customMetadata?.sourceInstanceId!==metadata.sourceInstanceId
+        || object.customMetadata?.fullSha256!==metadata.sha256
+        || object.customMetadata?.index!==String(i)
+        || object.customMetadata?.partCount!==String(metadata.partCount))
+        throw new VaultBodyIntegrityError('ASSET_PART_INTEGRITY_MISMATCH');
+      chunks.push(part);
+    }
+    bytes=new Uint8Array(len);let cursor=0;
+    for(const part of chunks) {bytes.set(part,cursor);cursor+=part.length;}
+    if(cursor!==len)throw new VaultBodyIntegrityError('ASSET_EXTENDED_SHARD_LENGTH_HOLD');
+  } else {
+    const full=await assetBytes(bucket,metadata);
+    bytes=full.subarray(start,start+len);
+  }
+  const sha=await assetHash(bytes);
+  const latest=await assetIndex(bucket);
+  if(await sha256Text(JSON.stringify(latest.assets))!==pin
+    || readVersions.get(latest)!==readVersions.get(index))
+    throw new VaultWriteConflict();
+  return json({schema:`${SCHEMA}.AssetExtendedShard`,selected_id:selectedId,
+    version_id:versionId,index_pin_sha256:pin,shard_index:shardIndex,
+    offset:start,bytes:len,sha256:sha,base64:assetBase64(bytes),
+    boundary:'OWNER_PRIVATE_READ_ONLY_EXACT_BYTES'});
+}
+
 // CP22: explicitly owner-triggered exact binary ancestry export, using only
 // the original authenticated Vault and immutable binary objects.
 function assetBase64(bytes) {
@@ -991,6 +1081,10 @@ async function handleOwnerRequest(context) {
   const bucket = env.JM_OWNER_VAULT;
 
   if (request.method === 'GET') {
+    if (mode === 'export-asset-extended-plan') return extendedPlan(bucket,url.searchParams.get('asset'));
+    if (mode === 'export-asset-extended-shard') return extendedShard(bucket,
+      url.searchParams.get('asset'),url.searchParams.get('version'),
+      url.searchParams.get('part'),url.searchParams.get('pin'));
     if (mode === 'export-asset-lineage') return exportAssetLineage(bucket, url.searchParams.get('asset'));
     if (mode === 'assets') {
       const index = await assetIndex(bucket);

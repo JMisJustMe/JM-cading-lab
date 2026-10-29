@@ -507,7 +507,7 @@ jobs:
                 await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Audio.wav',mimeType:'audio/wav',buffer:original});
                 if(writes!==0)throw Error('File uploaded before explicit SAVE');
                 await page.locator('#jmVaultSaveFile').click();
-                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('independently SHA-256 read back'));
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'));
                 if(writes!==1||!records.get(all[0].id)?.bytes.equals(original))throw Error('Original non-UTF8 bytes not saved and recovered exactly');
                 const firstId=all[0].id;
                 const offered=page.waitForEvent('download');
@@ -521,7 +521,7 @@ jobs:
                 await page.locator('[data-asset-revise="'+firstId+'"]').click();
                 await page.locator('#jmVaultFileInput').setInputFiles({name:'JM_Audio.wav',mimeType:'audio/wav',buffer:changed});
                 await page.locator('#jmVaultSaveFile').click();
-                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('independently SHA-256 read back'));
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'));
                 if(writes!==2||all[0].previousVersionId!==firstId
                   ||!records.get(firstId)?.bytes.equals(original)
                   ||!records.get(all[0].id)?.bytes.equals(changed))throw Error('Revision overwrote or lost ancestor bytes');
@@ -544,6 +544,95 @@ jobs:
               console.log('PASS: CP21/CP22 2/2 synthetic phone/laptop original byte SAVE, download, reload, revision, ancestor and full portable lineage export.');
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP21_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP23 authentic source identity survives lost write response, reload and changed input (phone + desktop mock)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash,randomUUID}=require('node:crypto');
+          const digest=b=>createHash('sha256').update(b).digest('hex');
+          const original=Buffer.from([0,255,128,9,8,7,6]);
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const vp of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport:vp});
+                page.setDefaultTimeout(15000);
+                const records=[], bytes=new Map();
+                let posts=0;
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp23-key';});
+                await page.route('**/api/owner/vault*',async route=>{
+                  const req=route.request(),u=new URL(req.url()),mode=u.searchParams.get('mode');
+                  const send=(status,data)=>route.fulfill({status,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(data)});
+                  if(mode==='status')return send(200,{ready:true});
+                  if(req.headers()['x-jm-owner-key']!=='synthetic-cp23-key')return send(401,{error:'AUTH_REQUIRED'});
+                  if(req.method()==='GET'&&mode==='assets')
+                    return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:records});
+                  const id=u.searchParams.get('asset');
+                  if(req.method()==='GET'&&id){
+                    const m=records.find(x=>x.id===id);
+                    if(!m)return send(404,{error:'ASSET_NOT_FOUND'});
+                    return route.fulfill({status:200,headers:{'content-type':'application/octet-stream','x-jm-asset-sha256':m.sha256},body:bytes.get(id)});
+                  }
+                  if(req.method()==='GET')return send(200,{state:{notes:'',favourites:[],recent:[]},bodies:[]});
+                  if(req.method()==='POST'){
+                    const d=req.postDataJSON();
+                    if(d.action!=='upload-asset')return send(400,{error:'UNEXPECTED_ACTION'});
+                    posts++;
+                    const f=d.file,b=Buffer.from(f.base64,'base64');
+                    if(digest(b)!==f.sha256)return send(409,{error:'MISMATCH'});
+                    const existing=records.find(x=>x.sourceInstanceId===f.sourceInstanceId);
+                    if(existing){
+                      if(existing.sha256!==f.sha256)return send(409,{error:'SOURCE_REVISION_CONFLICT'});
+                      return send(200,{outcome:'ASSET_UNCHANGED',asset:existing});
+                    }
+                    const m={id:randomUUID(),name:f.name,fileName:f.fileName,
+                      mediaType:f.mediaType,sourceInstanceId:f.sourceInstanceId,
+                      sha256:f.sha256,bytes:b.length,previousVersionId:null};
+                    records.unshift(m);bytes.set(m.id,b);
+                    // Actual committed mock storage, but client never saw receipt.
+                    return send(502,{error:'SIMULATED_LOST_ACK_AFTER_DURABLE_COMMIT'});
+                  }
+                  return send(405,{error:'METHOD_NOT_ALLOWED'});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                await page.locator('#jmVaultFileInput').setInputFiles({name:'Original-JM.wav',mimeType:'audio/wav',buffer:original});
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('SAVE HOLD'));
+                const pending=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-owner-vault-cp23-file-save-pending')||'null'));
+                if(posts!==1||records.length!==1||pending?.sourceInstanceId!==records[0].sourceInstanceId)
+                  throw Error('CP23 lost acknowledgement created wrong identity or lost checkpoint');
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelector('#jmVaultCheckPending')!==null);
+                if(posts!==1)throw Error('CP23 reload attempted a silent upload');
+
+                // Wrong file while a previous source identity is held cannot
+                // create a new purpose or overwrite an earlier original.
+                await page.locator('#jmVaultFileInput').setInputFiles({name:'Different.wav',mimeType:'audio/wav',buffer:Buffer.from([1,2,3])});
+                await page.locator('#jmVaultSaveFile').click();
+                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('DIFFERENT_FILE_WHILE_SOURCE_SAVE_PENDING'));
+                if(posts!==1||records.length!==1)throw Error('Different file escaped the pending-identity gate');
+
+                if(vp.width===390){
+                  await page.locator('#jmVaultCheckPending').click();
+                  await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('no new upload, no duplicate'));
+                  if(posts!==1)throw Error('Read-only recovery retried the POST');
+                }else{
+                  await page.locator('#jmVaultFileInput').setInputFiles({name:'Original-JM.wav',mimeType:'audio/wav',buffer:original});
+                  await page.locator('#jmVaultSaveFile').click();
+                  await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('exact source independently recovered'));
+                  if(posts!==2||records.length!==1)throw Error('Exact retry created duplicate rather than idempotent same-instance save');
+                }
+                if(await page.evaluate(()=>localStorage.getItem('jm-owner-vault-cp23-file-save-pending'))!==null)
+                  throw Error('Verified remote original did not release metadata-only checkpoint');
+                if(!records[0]||records[0].sha256!==digest(original))throw Error('Original hash changed');
+                await page.close();
+              }
+              console.log('CP23 2/2 PASS: exact owner source identity persisted before write; mock lost-ack, page reload, wrong-file refusal, read-only recovery and safe same-identity retry.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP23_BROWSER_HOLD',e);process.exitCode=1});
           NODE
       - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
         shell: bash

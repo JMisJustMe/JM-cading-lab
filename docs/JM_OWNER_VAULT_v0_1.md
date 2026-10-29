@@ -328,3 +328,26 @@ offsite backup, production merge or deployment propagation. A malicious party
 able to replace both packet and files could evade this unanchored comparison;
 preserve the separately recorded packet SHA in trusted custody. CP21 remains
 a draft candidate until actual owner-device and production gates are met.
+
+
+## CP22 — non-destructive interrupted offline recovery (draft, 29 October 2026)
+
+The original CP20/CP21 offline recovery recipient previously used a recursive
+`fs.rm(destination)` if an error occurred after creating the recovery folder.
+That could destroy already recovered source bytes or unrelated owner files
+placed in the new folder before a late write failure. **CP22 removes this
+destructive failure cleanup.** The same existing recipient records the
+directory identity it created, then only removes that directory with
+nonrecursive `rmdir` if it is still the same directory and completely empty.
+If original HTML, a partial manifest, an unexpected file or a replacement
+directory remains, it is **preserved for owner inspection**. This is a HOLD,
+not a successful recovery, and the original R2 Vault is untouched.
+
+The inherited synthetic regression checks preserved partial HTML, an empty
+failed directory, a redirected symlink destination and a replaced real
+directory. The recovery remains deliberately fail-closed and never deletes
+pre-existing destinations. This addresses the offline cleanup data-loss
+hazard, not an absolute filesystem-race guarantee; a concurrent hostile
+actor controlling the parent directory can still race pathname operations.
+Actual owner-device editing, real saved packet recovery, authenticated R2,
+independent offsite custody and deployment propagation remain HOLD.

@@ -1,0 +1,38 @@
+name: JM Scripture Companion v1.6.1 Real Browser Regression
+on:
+  pull_request:
+    paths:
+      - "family-gifts/scripture-companion/**"
+      - ".github/workflows/jm-scripture-companion-v161-qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  chromium-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check original service-worker and browser test syntax
+        run: |
+          node --check family-gifts/scripture-companion/sw.js
+          node --check family-gifts/scripture-companion/tests/v161-browser.spec.cjs
+          python3 -m json.tool family-gifts/scripture-companion/manifest.webmanifest >/dev/null
+      - name: Install real Chromium
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve existing JM Scripture Companion over HTTP
+        run: |
+          python3 -m http.server 4198 --bind 127.0.0.1 >/tmp/jm-scripture-qa-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4198/family-gifts/scripture-companion/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-scripture-qa-http.log
+          exit 1
+      - name: Exercise real browser drafts, chapter routing, backup, phone, desktop and offline reload
+        run: node family-gifts/scripture-companion/tests/v161-browser.spec.cjs

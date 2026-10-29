@@ -524,6 +524,32 @@ const studyUrl=(book,chapter)=>studyBase+book.toLowerCase().replace(/\s+/g,'-')+
 const studyItems=[{"theme":"Jehovah","book":"Psalms","chapter":83,"verse":18,"ref":"Psalms 83:18","guide":"Consider the divine name."},{"theme":"Jehovah","book":"Isaiah","chapter":42,"verse":8,"ref":"Isaiah 42:8","guide":"Explore how the name is presented."},{"theme":"Jesus","book":"John","chapter":14,"verse":28,"ref":"John 14:28","guide":"Explore how Jesus speaks about the Father."},{"theme":"Jesus","book":"John","chapter":17,"verse":3,"ref":"John 17:3","guide":"Reflect on knowing Jehovah and Jesus."},{"theme":"Kingdom","book":"Daniel","chapter":2,"verse":44,"ref":"Daniel 2:44","guide":"Consider God’s Kingdom in prophecy."},{"theme":"Kingdom","book":"Matthew","chapter":6,"verse":10,"ref":"Matthew 6:10","guide":"Reflect on the Kingdom in the model prayer."},{"theme":"Ransom","book":"John","chapter":3,"verse":16,"ref":"John 3:16","guide":"Explore the gift of God’s Son."},{"theme":"Ransom","book":"Matthew","chapter":20,"verse":28,"ref":"Matthew 20:28","guide":"Consider the ransom."},{"theme":"Resurrection","book":"John","chapter":5,"verse":28,"ref":"John 5:28","guide":"Explore resurrection hope."},{"theme":"Resurrection","book":"Acts","chapter":24,"verse":15,"ref":"Acts 24:15","guide":"Reflect on resurrection."},{"theme":"Hope","book":"Revelation","chapter":21,"verse":4,"ref":"Revelation 21:4","guide":"Consider the end of suffering."},{"theme":"Hope","book":"Isaiah","chapter":65,"verse":21,"ref":"Isaiah 65:21","guide":"Explore the hope for life on earth."},{"theme":"Family","book":"Colossians","chapter":3,"verse":13,"ref":"Colossians 3:13","guide":"Reflect on forgiving one another."},{"theme":"Prayer","book":"Philippians","chapter":4,"verse":6,"ref":"Philippians 4:6","guide":"Consider prayer."},{"theme":"Ministry","book":"Matthew","chapter":28,"verse":19,"ref":"Matthew 28:19","guide":"Explore teaching and disciple making."},{"theme":"Ministry","book":"Matthew","chapter":24,"verse":14,"ref":"Matthew 24:14","guide":"Consider the Kingdom message."},{"theme":"Study","book":"2 Timothy","chapter":3,"verse":16,"ref":"2 Timothy 3:16","guide":"Explore Scripture as guidance."},{"theme":"Study","book":"Acts","chapter":17,"verse":11,"ref":"Acts 17:11","guide":"Consider examining the Scriptures."}];
 const studyThemes=[...new Set(studyItems.map(x=>x.theme))];
 for(const theme of studyThemes){const option=document.createElement('option');option.value=theme;option.textContent=theme;el('jmStudyTheme').append(option)}
+// JM study-route orchestration uses the original queue and backup schema.
+const journeyTheme=el('jmJourneyTheme');
+for(const theme of studyThemes){const opt=document.createElement('option');opt.value=theme;opt.textContent=theme;journeyTheme.append(opt)}
+const journeyItems=()=>studyItems.filter(x=>x.theme===journeyTheme.value);
+const journeyDone=x=>(Array.isArray(data.queue)?data.queue:[]).some(q=>q.book===x.book&&q.chapter===x.chapter&&q.done);
+function renderJourney(){
+ const items=journeyItems(),root=el('jmJourneySteps');root.replaceChildren();
+ const done=items.filter(journeyDone).length;
+ el('jmJourneyProgress').textContent=done+' of '+items.length+' chapters personally marked read · No deadlines';
+ for(const item of items){
+  const row=document.createElement('div');row.className='entry';
+  const title=document.createElement('strong');title.textContent=(journeyDone(item)?'✓ ':'○ ')+item.ref;
+  const guide=document.createElement('p');guide.textContent=item.guide;
+  const acts=document.createElement('div');acts.className='entry-actions';
+  const open=document.createElement('a');open.href=studyUrl(item.book,item.chapter);open.target='_blank';open.rel='noopener noreferrer';open.className='btn secondary small';open.textContent='Read official Study Bible ↗';
+  const select=document.createElement('button');select.type='button';select.className='btn secondary small';select.textContent='Choose passage';select.onclick=()=>jump(item.book,item.chapter,String(item.verse));
+  const mark=document.createElement('button');mark.type='button';mark.className='btn secondary small';mark.textContent=journeyDone(item)?'Already marked read':'✓ Mark read';
+  mark.disabled=journeyDone(item);mark.onclick=()=>{
+   const ok=window.JMReadingRoom?.markRead({book:item.book,chapter:item.chapter,verse:String(item.verse)});
+   el('jmJourneyStatus').textContent=ok?item.ref+' marked read by you.':'Could not update reading progress; previous state kept.';
+   renderJourney();
+  };
+  acts.append(open,select,mark);row.append(title,guide,acts);root.append(row);
+ }
+}
+journeyTheme.addEventListener('change',()=>{el('jmJourneyStatus').textContent='';renderJourney()});
 function drawStudy(){
  const root=el('jmStudyResults'),term=el('jmStudySearch').value.toLowerCase().trim(),theme=el('jmStudyTheme').value;
  root.replaceChildren();

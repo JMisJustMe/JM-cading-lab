@@ -32,6 +32,12 @@ try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
  context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,serviceWorkers:'allow'});
  const page=await context.newPage();
+ await page.addInitScript(()=>{
+   const pad={connected:false,mapping:'standard',id:'JM virtual test gamepad',axes:[0,0,0,0],
+     buttons:Array.from({length:16},()=>({pressed:false,value:0}))};
+   window.__JM_TEST_GAMEPAD=pad;
+   Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>[window.__JM_TEST_GAMEPAD]});
+ });
  page.on('pageerror',e=>failures.push(e.message));
  const target=origin+r1+'index.html';
  const resp=await page.goto(target,{waitUntil:'load'});
@@ -69,6 +75,43 @@ try{
   const after=await page.evaluate(()=>window.FTR.state());
   assert.equal(after.run.shots,before.run.shots+1);
   assert.equal(after.run.scans,before.run.scans+1);
+ });
+ await check('R1 original game actually mounts optional standard Gamepad recipient',async()=>{
+  const input=await page.evaluate(()=>window.FTRGamepad);
+  assert.equal(input.schema,'jm.ftr.first-person.existing-gamepad-contact/0.1');
+  assert.equal(input.mapping,'standard-only');
+  assert.equal(input.status().physicalContactClaim,false);
+ });
+ await check('Virtual standard Gamepad FIRE causes real original ammo consumption',async()=>{
+  await page.waitForTimeout(230);
+  const before=await page.evaluate(()=>window.FTR.state());
+  await page.evaluate(()=>{window.__JM_TEST_GAMEPAD.connected=true;window.__JM_TEST_GAMEPAD.buttons[0].pressed=true;});
+  await page.waitForTimeout(75);
+  await page.evaluate(()=>window.__JM_TEST_GAMEPAD.buttons[0].pressed=false);
+  const after=await page.evaluate(()=>window.FTR.state());
+  assert.equal(after.run.shots,before.run.shots+1);
+  assert.equal(after.player.ammo,before.player.ammo-1);
+  assert.equal(await page.evaluate(()=>window.FTRGamepad.status().connected),true);
+ });
+ await check('Virtual standard Gamepad stick physically moves original game avatar',async()=>{
+  await page.evaluate(()=>{
+   window.FTR.test.freezeEnemies();
+   window.FTR.test.setPlayer(14.4,15.4,-Math.PI/2);
+   window.__JM_TEST_GAMEPAD.axes[1]=-.85;
+  });
+  const before=await page.evaluate(()=>window.FTR.state().player);
+  await page.waitForTimeout(420);
+  const after=await page.evaluate(()=>window.FTR.state().player);
+  await page.evaluate(()=>window.__JM_TEST_GAMEPAD.axes[1]=0);
+  assert(Math.hypot(after.x-before.x,after.y-before.y)>.15);
+ });
+ await check('Unrecognised Gamepad mapping is shown as unsupported, never invented',async()=>{
+  await page.evaluate(()=>{window.__JM_TEST_GAMEPAD.connected=true;window.__JM_TEST_GAMEPAD.mapping='vendor';});
+  await page.waitForTimeout(70);
+  const st=await page.evaluate(()=>window.FTRGamepad.status());
+  assert.equal(st.connected,false);
+  assert.equal(st.unsupported,true);
+  await page.evaluate(()=>{window.__JM_TEST_GAMEPAD.connected=false;window.__JM_TEST_GAMEPAD.mapping='standard';});
  });
  await check('R1 PWA worker installs independently of frozen original',async()=>{
   await page.evaluate(()=>navigator.serviceWorker.ready);

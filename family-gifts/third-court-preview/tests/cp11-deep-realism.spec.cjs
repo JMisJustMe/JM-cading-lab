@@ -13,6 +13,16 @@ await page.evaluate(()=>JM_THIRD_COURT.callScreen());await page.evaluate(()=>JM_
 await page.waitForTimeout(200);a=await page.evaluate(()=>JM_THIRD_COURT.status());
 assert(Number.isFinite(a.time));assert(Number.isFinite(a.ball3DHeight));assert(a.native3DReady||!a.native3DActive);
 assert(a.visuals);assert(a.draws>=0);
+assert.equal(a.athletes.length,6);assert(a.athletes.every(p=>p.energy>=35&&p.energy<=100));
+const beforeMotion=a.athletes[0];
+await page.keyboard.down('ArrowUp');
+await page.waitForTimeout(650);
+await page.keyboard.up('ArrowUp');
+const afterMotion=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert(afterMotion.athletes[0].y<beforeMotion.y,'actual controlled player moved up court');
+assert(Number.isFinite(afterMotion.ballHeight),'dribble ball height finite');
+assert(afterMotion.athletes[0].energy<=100,'individual fatigue is bounded');
+assert(Number.isInteger(afterMotion.flightInterceptions),'flight contact ledger present');
 await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 assert.deepEqual(errors,[]);

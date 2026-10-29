@@ -92,9 +92,24 @@ async function readBoundedRegularFile(filename, maxBytes, openFile = fs.open) {
     if (!stat.isFile() || stat.size > maxBytes || stat.size < 0) {
       fail('LINEAGE_OPENED_FILE_UNSAFE_OR_OVERBOUNDED');
     }
-    const bytes = await handle.readFile();
-    if (bytes.length > maxBytes) fail('LINEAGE_OPENED_FILE_OVERBOUNDED');
-    return bytes;
+    // CP28: readFile() allocates until EOF, so a file that grows after the
+    // opened-handle stat can exhaust memory before a post-read size check.
+    // Read at most maxBytes + 1, including under concurrent append.
+    const chunks = [];
+    let total = 0;
+    while (true) {
+      const length = Math.min(64 * 1024, maxBytes - total + 1);
+      const chunk = Buffer.allocUnsafe(length);
+      const { bytesRead } = await handle.read(chunk, 0, length, null);
+      if (!Number.isSafeInteger(bytesRead) || bytesRead < 0 || bytesRead > length) {
+        fail('LINEAGE_OPENED_FILE_READ_INVALID');
+      }
+      if (bytesRead === 0) break;
+      total += bytesRead;
+      if (total > maxBytes) fail('LINEAGE_OPENED_FILE_OVERBOUNDED');
+      chunks.push(chunk.subarray(0, bytesRead));
+    }
+    return Buffer.concat(chunks, total);
   } finally {
     await handle.close();
   }

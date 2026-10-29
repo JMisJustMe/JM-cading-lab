@@ -1620,7 +1620,7 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     assert.equal(restored.status,0,restored.stderr);
     assert.equal(JSON.parse(restored.stdout).kind,'ORIGINAL_BINARY_ASSET');
     for(let i=0;i<ids.length;i++){
-      assert.deepEqual(await fs.readFile(path.join(destination,ids[i]+'.bin')),byteSets[i]);
+      assert.deepEqual(await fs.readFile(path.join(destination,ids[i]+'__original-project.wav')),byteSets[i]);
     }
     const diskReceipt=JSON.parse(await fs.readFile(path.join(destination,'recovery-manifest.json'),'utf8'));
     assert.equal(diskReceipt.original_schema,'JM.OwnerVault/0.1.AssetLineageExport');
@@ -1631,7 +1631,7 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     assert.equal(JSON.parse(audit.stdout).outcome,'OFFLINE_RESTORED_FILES_AUDITED');
     assert.equal(JSON.parse(audit.stdout).kind,'ORIGINAL_BINARY_ASSET');
     rejects(run('--output-dir',destination),'EEXIST');
-    const binary=path.join(destination,ids[0]+'.bin');
+    const binary=path.join(destination,ids[0]+'__original-project.wav');
     await fs.writeFile(binary,Buffer.from([0,0,0,0,0,0,0,0]));
     rejects(run('--audit-dir',destination),'LINEAGE_AUDIT_SOURCE_MISMATCH');
     await fs.writeFile(binary,byteSets[0]);
@@ -1667,4 +1667,21 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     // Temporary synthetic test fixtures only; no owner vault/source deletion.
     await fs.rm(isolated,{recursive:true,force:true});
   }
+}
+
+
+// CP24: The cold-extracted original retains a directly usable native
+// extension; malicious path notation never escapes the UUID-named source seat.
+{
+  const { nativeRecoveryName } = await import('./owner-vault-lineage-recover.mjs');
+  const id = '00000000-0000-4000-8000-000000000241';
+  assert.equal(nativeRecoveryName({id,fileName:'original-project.wav'}),
+    id+'__original-project.wav');
+  assert.equal(nativeRecoveryName({id,fileName:'../../evil/../../../scan.exe'}),
+    id+'__..-..-evil-..-..-..-scan.exe');
+  assert.equal(nativeRecoveryName({id,fileName:'\\foo\\bar\\music.flac'}),
+    id+'__-foo-bar-music.flac');
+  assert.equal(nativeRecoveryName({id,fileName:'CON.wav'}),
+    id+'__CON.wav', 'UUID-prefix avoids reserved Windows basename');
+  assert.ok(!nativeRecoveryName({id,fileName:'something'.repeat(100)+'.mp3'}).includes('/'));
 }

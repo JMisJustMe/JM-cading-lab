@@ -27,9 +27,12 @@ assert(Number.isInteger(afterMotion.flightInterceptions),'flight contact ledger 
 assert(Number.isInteger(afterMotion.bodyImpacts),'actual body-contact ledger present');
 await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
 await page.keyboard.down('ArrowUp');await page.waitForTimeout(1100);await page.keyboard.up('ArrowUp');
+const beforePass=await page.evaluate(()=>JM_THIRD_COURT.status());
 await page.evaluate(()=>JM_THIRD_COURT.pass());
+const duringPass=await page.evaluate(()=>JM_THIRD_COURT.status());
 await page.waitForTimeout(400);
 const laneStatus=await page.evaluate(()=>JM_THIRD_COURT.status());
+console.log('CP18 PASS CONTACT OBSERVATION '+JSON.stringify({before:{pos:beforePass.pos,active:beforePass.active,air:beforePass.air,player0:beforePass.athletes[0],defenders:beforePass.athletes.slice(3)},during:{air:duringPass.air,pos:duringPass.pos,shotClock:duringPass.shotClock},after:{reads:laneStatus.passLaneReads,pos:laneStatus.pos,interceptions:laneStatus.flightInterceptions}}));
 assert(Number.isInteger(laneStatus.passLaneReads),'real pass-lane chase telemetry');
 assert(laneStatus.passLaneReads>0,'an actual defender reacted during a live pass in play');
 

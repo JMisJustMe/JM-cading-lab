@@ -5,6 +5,10 @@ const INDEX_KEY = `${PREFIX}/bodies/index.json`;
 const SNAPSHOT_PREFIX = `${PREFIX}/snapshots`;
 const BODY_PREFIX = `${PREFIX}/bodies`;
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
+// CP21 uses the EXISTING authenticated R2 Vault, preserving binary bytes.
+const ASSET_INDEX_KEY = `${PREFIX}/assets/index.json`;
+const ASSET_PREFIX = `${PREFIX}/assets`;
+const MAX_ASSET_BYTES = 12 * 1024 * 1024;
 const MAX_NOTES_CHARS = 200000;
 
 const jsonHeaders = {
@@ -132,6 +136,21 @@ function custodyShapeValid(record, key) {
       // CP18: a valid revision cannot point to a missing, younger, itself,
       // or a different sovereign source/use. Never silently repair ancestry.
       && custodyAncestryValid(record.bodies);
+  }
+  if (key === ASSET_INDEX_KEY) {
+    return record.schema === `${SCHEMA}.AssetIndex`
+      && Array.isArray(record.assets) && record.assets.length <= 2000
+      && record.assets.every(item => item && typeof item === 'object' && !Array.isArray(item)
+        && /^[0-9a-f-]{36}$/i.test(item.id || '')
+        && /^asset-[0-9a-f-]{36}$/i.test(item.sourceInstanceId || '')
+        && typeof item.fileName === 'string' && item.fileName.length <= 180
+        && typeof item.name === 'string' && item.name.length <= 500
+        && typeof item.mediaType === 'string' && item.mediaType.length <= 100
+        && /^[a-f0-9]{64}$/i.test(item.sha256 || '')
+        && Number.isSafeInteger(item.bytes) && item.bytes >= 0 && item.bytes <= MAX_ASSET_BYTES
+        && (item.previousVersionId === null || /^[0-9a-f-]{36}$/i.test(item.previousVersionId || '')))
+      && new Set(record.assets.map(item => item.id)).size === record.assets.length
+      && custodyAncestryValid(record.assets);
   }
   if (key === STATE_KEY) {
     const state = record.state;
@@ -543,6 +562,122 @@ async function exportBodyLineage(bucket, id) {
   }, 200, { 'content-disposition': `attachment; filename="JM_Vault_Lineage_${id}.json"` });
 }
 
+
+// CP21: multi-format ORIGINAL BYTE custody; never HTML/base64 wrapping.
+async function assetHash(bytes) {
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), v => v.toString(16).padStart(2, '0')).join('');
+}
+function emptyAssetIndex() {
+  return { schema: `${SCHEMA}.AssetIndex`, updated_at: null, assets: [] };
+}
+async function assetIndex(bucket) {
+  return readJson(bucket, ASSET_INDEX_KEY, emptyAssetIndex());
+}
+function decodeAsset(value) {
+  if (typeof value !== 'string' || value.length > Math.ceil(MAX_ASSET_BYTES / 3) * 4 + 4
+    || value.length % 4 !== 0 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) return null;
+  try {
+    const str = atob(value);
+    if (str.length > MAX_ASSET_BYTES) return null;
+    const bytes = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i);
+    return bytes;
+  } catch { return null; }
+}
+async function assetBytes(bucket, metadata) {
+  let object;
+  try { object = await bucket.get(`${ASSET_PREFIX}/${metadata.id}.bin`); }
+  catch { throw new VaultBodyIntegrityError('ASSET_BYTES_UNREADABLE'); }
+  if (!object) throw new VaultBodyIntegrityError('ASSET_BYTES_MISSING');
+  let bytes;
+  try { bytes = new Uint8Array(await object.arrayBuffer()); }
+  catch { throw new VaultBodyIntegrityError('ASSET_BYTES_UNREADABLE'); }
+  if (bytes.length > MAX_ASSET_BYTES || bytes.length !== metadata.bytes
+      || await assetHash(bytes) !== metadata.sha256.toLowerCase()) {
+    throw new VaultBodyIntegrityError('ASSET_INTEGRITY_MISMATCH');
+  }
+  return bytes;
+}
+async function uploadAsset(bucket, payload) {
+  const file = payload?.file;
+  if (!file || typeof file !== 'object' || Array.isArray(file)
+    || !/^asset-[0-9a-f-]{36}$/i.test(file.sourceInstanceId || '')) {
+    return { error: json({ schema: SCHEMA, error: 'ASSET_SOURCE_ID_REQUIRED' }, 400) };
+  }
+  const bytes = decodeAsset(file.base64);
+  if (!bytes) return { error: json({ schema: SCHEMA, error: 'ASSET_INVALID_OR_OVERBOUNDED', max_bytes: MAX_ASSET_BYTES }, 413) };
+  const hash = await assetHash(bytes);
+  if (typeof file.sha256 !== 'string' || file.sha256.toLowerCase() !== hash) {
+    return { error: json({ schema: SCHEMA, error: 'ASSET_CLIENT_HASH_MISMATCH' }, 409) };
+  }
+  const fileName = safeFileName(file.fileName || 'jm-original-file');
+  const name = boundedString(file.name || fileName, 500);
+  const mediaType = typeof file.mediaType === 'string'
+    && /^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i.test(file.mediaType) && file.mediaType.length <= 100
+      ? file.mediaType.toLowerCase() : 'application/octet-stream';
+  const index = await assetIndex(bucket), assets = index.assets;
+  const current = assets.find(item => item.sourceInstanceId === file.sourceInstanceId) || null;
+  if (current) {
+    if (current.sha256 === hash && current.bytes === bytes.length) {
+      await assetBytes(bucket, current);
+      return { unchanged: true, asset: current };
+    }
+    if (file.expectedBaseId !== current.id || file.expectedBaseSha256 !== current.sha256) {
+      return { error: json({ schema: SCHEMA, error: 'ASSET_REVISION_HEAD_CHANGED' }, 409) };
+    }
+  } else if (file.expectedBaseId || file.expectedBaseSha256) {
+    return { error: json({ schema: SCHEMA, error: 'ASSET_REVISION_BASE_NOT_FOUND' }, 409) };
+  }
+  if (assets.length >= 2000) return { error: json({ schema: SCHEMA, error: 'ASSET_INDEX_CAPACITY_HOLD' }, 409) };
+  const id = crypto.randomUUID(), now = new Date().toISOString();
+  // Actual binary R2 object, no duplicate HTML carrier or JSON wrapper.
+  await bucket.put(`${ASSET_PREFIX}/${id}.bin`, bytes, {
+    httpMetadata: { contentType: 'application/octet-stream' }, customMetadata: { sha256: hash }
+  });
+  const asset = { id, name, fileName, mediaType, bytes: bytes.length, sha256: hash,
+    sourceInstanceId: file.sourceInstanceId, previousVersionId: current?.id || null,
+    uploaded_at: now, status: 'PRIVATE_ORIGINAL_BYTES_NOT_PUBLICATION' };
+  await assetBytes(bucket, asset);
+  const next = { schema: `${SCHEMA}.AssetIndex`, updated_at: now, assets: [asset, ...assets] };
+  await writeJson(bucket, ASSET_INDEX_KEY, next, index);
+  const confirmed = await assetIndex(bucket);
+  if (JSON.stringify(confirmed) !== JSON.stringify(next)) {
+    throw new VaultBodyIntegrityError('ASSET_INDEX_READBACK_MISMATCH');
+  }
+  return { unchanged: false, asset };
+}
+async function downloadAsset(bucket, id) {
+  if (!/^[0-9a-f-]{36}$/i.test(id || '')) return json({ schema: SCHEMA, error: 'ASSET_ID_INVALID' }, 400);
+  const index = await assetIndex(bucket), asset = index.assets.find(x => x.id === id);
+  if (!asset) return json({ schema: SCHEMA, error: 'ASSET_NOT_FOUND' }, 404);
+  const bytes = await assetBytes(bucket, asset);
+  return new Response(bytes, { headers: {
+    'content-type': 'application/octet-stream', 'cache-control': 'no-store, max-age=0',
+    'x-content-type-options': 'nosniff', 'x-jm-asset-sha256': asset.sha256,
+    'content-disposition': `attachment; filename="${safeFileName(asset.fileName)}"`
+  } });
+}
+async function removeAsset(bucket, id) {
+  if (!/^[0-9a-f-]{36}$/i.test(id || '')) return json({ schema: SCHEMA, error: 'ASSET_ID_INVALID' }, 400);
+  const index = await assetIndex(bucket), asset = index.assets.find(x => x.id === id);
+  if (!asset) return json({ schema: SCHEMA, error: 'ASSET_NOT_FOUND' }, 404);
+  if (index.assets.some(x => x.previousVersionId === id)) {
+    return json({ schema: SCHEMA, error: 'ASSET_ANCESTOR_STILL_REFERENCED' }, 409);
+  }
+  await assetBytes(bucket, asset);
+  const next = { schema: `${SCHEMA}.AssetIndex`, updated_at: new Date().toISOString(),
+    assets: index.assets.filter(x => x.id !== id) };
+  await writeJson(bucket, ASSET_INDEX_KEY, next, index);
+  if (JSON.stringify(await assetIndex(bucket)) !== JSON.stringify(next)) {
+    throw new VaultBodyIntegrityError('ASSET_INDEX_READBACK_MISMATCH');
+  }
+  // Intentional owner removal of a leaf only. Interruptions preserve orphan bytes.
+  try { await bucket.delete(`${ASSET_PREFIX}/${id}.bin`); }
+  catch { throw new VaultBodyIntegrityError('ASSET_DELETE_HOLD'); }
+  return json({ schema: SCHEMA, outcome: 'ASSET_REMOVED', asset });
+}
+
 async function handleOwnerRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -568,6 +703,13 @@ async function handleOwnerRequest(context) {
   const bucket = env.JM_OWNER_VAULT;
 
   if (request.method === 'GET') {
+    if (mode === 'assets') {
+      const index = await assetIndex(bucket);
+      return json({ schema: `${SCHEMA}.AssetIndex`, assets: index.assets,
+        max_asset_bytes: MAX_ASSET_BYTES, boundary: 'PRIVATE_EXPLICIT_ORIGINAL_FILE_CUSTODY' });
+    }
+    const assetId = url.searchParams.get('asset');
+    if (assetId) return downloadAsset(bucket, assetId);
     const bodyId = url.searchParams.get('body');
     if (mode === 'export-lineage') return exportBodyLineage(bucket, bodyId);
     if (bodyId) return downloadBody(bucket, bodyId);
@@ -588,6 +730,11 @@ async function handleOwnerRequest(context) {
     try { payload = await request.json(); }
     catch { return json({ schema: SCHEMA, error: 'INVALID_JSON' }, 400); }
 
+    if (payload?.action === 'upload-asset') {
+      const outcome = await uploadAsset(bucket, payload);
+      if (outcome.error) return outcome.error;
+      return json({ schema: SCHEMA, outcome: outcome.unchanged ? 'ASSET_UNCHANGED' : 'ASSET_STORED', ...outcome }, outcome.unchanged ? 200 : 201);
+    }
     if (payload?.action === 'revise-body') {
       const outcome = await reviseBody(bucket, payload);
       if (outcome.error) return outcome.error;
@@ -605,6 +752,8 @@ async function handleOwnerRequest(context) {
   }
 
   if (request.method === 'DELETE') {
+    const assetId = url.searchParams.get('asset');
+    if (assetId) return removeAsset(bucket, assetId);
     const bodyId = url.searchParams.get('body');
     if (!bodyId) return json({ schema: SCHEMA, error: 'BODY_ID_REQUIRED' }, 400);
     const result = await deleteBody(bucket, bodyId);
@@ -644,7 +793,7 @@ export async function onRequest(context) {
         schema: SCHEMA,
         error: error.code,
         recovery: 'HOLD_SOURCE_BYTES_FOR_OWNER_INSPECTION_NO_AUTOMATIC_DELETION'
-      }, error.code === 'BODY_BYTES_MISSING' ? 404 : 409);
+      }, ['BODY_BYTES_MISSING', 'ASSET_BYTES_MISSING'].includes(error.code) ? 404 : 409);
     }
     throw error;
   }

@@ -909,7 +909,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         mediaType:selected.type || 'application/octet-stream',
         sourceInstanceId:pending.sourceInstanceId,
         sha256:pending.sha256,
-        base64:assetBase64(bytes)
+        ...(bytes.length <= 12*1024*1024 ? {base64:assetBase64(bytes)} : {})
       };
       if (pending.expectedBaseId) {
         file.expectedBaseId = pending.expectedBaseId;

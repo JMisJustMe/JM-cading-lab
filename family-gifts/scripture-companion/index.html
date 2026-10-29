@@ -397,7 +397,7 @@ const isValid=(book,ch)=>BOOKS.some(([b,n])=>b===book&&Number.isInteger(ch)&&ch>
 const chapterUrl=(book,ch)=>BASE+slug(book)+'/'+ch+'/';
 const selected=()=>{const p=current();return {book:p.book,chapter:p.chapter,verse:p.verse||''}};
 const readable=r=>r.book+' '+r.chapter+(r.verse?':'+r.verse:'');
-const bookFromUrl=url=>{try{const u=new URL(url);if(u.origin!=='https://www.jw.org')return null;const m=u.pathname.match(/^\/en\/library\/bible\/nwt\/books\/([a-z0-9-]+)\/(\d+)\/?$/);if(!m)return null;const b=BOOKS.find(([book])=>slug(book)===m[1]);const chapter=Number(m[2]);return b&&isValid(b[0],chapter)?{book:b[0],chapter,verse:''}:null}catch{return null}};
+const bookFromUrl=url=>{try{const u=new URL(url);if(u.origin!=='https://www.jw.org')return null;const m=u.pathname.match(/^\/en\/library\/bible\/(?:nwt|study-bible)\/books\/([a-z0-9-]+)\/(\d+)\/?$/);if(!m)return null;const b=BOOKS.find(([book])=>slug(book)===m[1]);const chapter=Number(m[2]);return b&&isValid(b[0],chapter)?{book:b[0],chapter,verse:''}:null}catch{return null}};
 const pending=()=>Array.isArray(data.queue)?data.queue.find(x=>x&&isValid(x.book,x.chapter)&&!x.done):null;
 function recordOfficialVisit(ref){
  if(!isValid(ref.book,ref.chapter))return false;

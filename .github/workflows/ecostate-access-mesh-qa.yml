@@ -833,6 +833,88 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP28_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP28 existing Owner Room bounded extended lineage export on synthetic phone and laptop
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const {createHash}=require('node:crypto');
+          const fs=require('node:fs/promises');
+          const hash=b=>createHash('sha256').update(b).digest('hex');
+          const old=Buffer.from([0,255,128,4,5,6]);
+          const now=Buffer.alloc(2*1024*1024+37);
+          for(let i=0;i<now.length;i++)now[i]=(i+13)%251;
+          const root='asset-00000000-0000-4000-8000-000000002801';
+          const older='00000000-0000-4000-8000-000000002802';
+          const newer='00000000-0000-4000-8000-000000002803';
+          const source='asset-00000000-0000-4000-8000-000000002804';
+          const pin='a'.repeat(64);
+          const oldMeta={id:older,sourceInstanceId:source,fileName:'JM_Original.jmproject',
+            name:'JM Original',mediaType:'application/octet-stream',sha256:hash(old),
+            bytes:old.length,previousVersionId:null};
+          const newMeta={...oldMeta,id:newer,sha256:hash(now),bytes:now.length,previousVersionId:older};
+          const versions=[newMeta,oldMeta];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const vp of [{width:390,height:844},{width:1366,height:900}]){
+                const page=await browser.newPage({viewport:vp,acceptDownloads:true});
+                page.setDefaultTimeout(30000);
+                await page.addInitScript(()=>{window.prompt=()=> 'synthetic-cp28-owner-key';});
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                let shardReads=0;
+                await page.route('**/api/owner/vault*',async route=>{
+                  const r=route.request(),url=new URL(r.url()),mode=url.searchParams.get('mode');
+                  const send=(status,data)=>route.fulfill({status,
+                    headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(data)});
+                  if(mode==='status')return send(200,{ready:true});
+                  if(r.headers()['x-jm-owner-key']!=='synthetic-cp28-owner-key')
+                    return send(401,{error:'NO_AUTH'});
+                  if(mode==='assets')return send(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:versions});
+                  if(mode==='export-asset-extended-plan'){
+                    if(url.searchParams.get('asset')!==newer)return send(404,{error:'WRONG_ROOT'});
+                    return send(200,{schema:'JM.OwnerVault/0.1.AssetExtendedPlan',
+                      selected_id:newer,index_pin_sha256:pin,version_count:2,
+                      source_bytes:old.length+now.length,shard_bytes:8*1024*1024,
+                      order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',versions});
+                  }
+                  if(mode==='export-asset-extended-shard'){
+                    shardReads++;
+                    const id=url.searchParams.get('version'),b=id===newer?now:id===older?old:null;
+                    if(!b||url.searchParams.get('asset')!==newer
+                      ||url.searchParams.get('part')!=='0'||url.searchParams.get('pin')!==pin)
+                      return send(409,{error:'BAD_FRAGMENT_ID'});
+                    return send(200,{schema:'JM.OwnerVault/0.1.AssetExtendedShard',
+                      selected_id:newer,version_id:id,index_pin_sha256:pin,
+                      shard_index:0,offset:0,bytes:b.length,sha256:hash(b),base64:b.toString('base64')});
+                  }
+                  if(r.method()==='GET')return send(200,{schema:'JM.OwnerVault/0.1',
+                    state:{notes:'',favourites:[],recent:[]},bodies:[]});
+                  return send(400,{error:'UNEXPECTED_WRITE'});
+                });
+                await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+                await page.locator('#jmVaultUnlock').click();
+                await page.locator('[data-asset-extended="'+newer+'"]').waitFor();
+                const download=page.waitForEvent('download',{timeout:30000});
+                await page.locator('[data-asset-extended="'+newer+'"]').click();
+                const saved=await download,packet=JSON.parse(await fs.readFile(await saved.path(),'utf8'));
+                if(packet.schema!=='JM.OwnerVault/0.1.AssetExtendedExport'
+                  || packet.selected_id!==newer || packet.version_count!==2
+                  || packet.source_bytes!==now.length+old.length||shardReads!==2)
+                  throw Error('CP28 extended packet identity/ancestry mismatch');
+                for(const [i,raw] of [now,old].entries()){
+                  if(packet.versions[i].metadata.id!==versions[i].id
+                    || !Buffer.from(packet.versions[i].shards[0].base64,'base64').equals(raw))
+                    throw Error('CP28 exact native source missing from owner download');
+                }
+                if(errors.length)throw Error(errors.join('; '));
+                await page.close();
+              }
+              console.log('PASS: CP28 original Owner Room synthetic phone/laptop extended export; complete two-version exact binary source, bounded authenticated shard requests and portable JSON download.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP28_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP09 original Games&Beyond deep-link source editing and independent device persistence
         shell: bash
         run: |

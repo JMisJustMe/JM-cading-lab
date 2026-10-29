@@ -40,16 +40,29 @@ export function contactEvent({source,gesture,pressure=0,sequence=0,capabilities=
 }
 
 /** Actual JM-native Game-CODING -> JM GameCore state change; not an eight-colour mock. */
+/** Meaningfully distinct native effects, not seven differently coloured copies. */
+const NATIVE_KIC_EFFECTS=Object.freeze({
+ Route:{field:'path',before:'straight',after:'rerouted'},
+ Pulse:{field:'impact',before:'pending',after:'struck'},
+ Hold:{field:'guard',before:'open',after:'anchored'},
+ Flow:{field:'continuity',before:'stopped',after:'flowing'},
+ Kic:{field:'energy',before:'stored',after:'expended'},
+ Wake:{field:'lifecycle',before:'asleep',after:'awake'},
+ Create:{field:'creation',before:'empty',after:'formed'}
+});
 export function executeNativeControl(contact){
  fail(contact?.schema==='jm.ftr.contact-event/1','INPUT_CONTACT_REQUIRED');
- const gameSource=`entity Contact {\n mode = "idle"\n}\nmechanic Engage {\n requires contact.mode == "idle"\n effect contact.mode = "active"\n}`;
- const coreSource=`organ HandContact {\n handles = [Contact]\n rules = [Engage]\n invariants = {\n contact.mode == "active"\n }\n}\nsystem FTRContact {\n organs = [HandContact]\n events = [Press]\n identity = "FTR.Native.Contact"\n}`;
+ const effect=NATIVE_KIC_EFFECTS[contact.kicPlay];
+ fail(!!effect,'NATIVE_ROUTE_UNRECOGNISED');
+ const gameSource=`entity Contact {\n ${effect.field} = "${effect.before}"\n}\nmechanic Engage {\n requires contact.${effect.field} == "${effect.before}"\n effect contact.${effect.field} = "${effect.after}"\n}`;
+ const coreSource=`organ HandContact {\n handles = [Contact]\n rules = [Engage]\n invariants = {\n contact.${effect.field} == "${effect.after}"\n }\n}\nsystem FTRContact {\n organs = [HandContact]\n events = [Press]\n identity = "FTR.Native.Contact.${contact.kicPlay}"\n}`;
  const game=new GameCodingRuntime(GameCoding.parse(gameSource),{},{});
  const core=new JMGameCoreRuntime(JMGameCore.parse(coreSource),game);
  const dispatch=core.dispatch('FTRContact','Press');
- fail(dispatch.state.contact.mode==='active','NATIVE_STATE_NOT_CHANGED');
+ fail(dispatch.state.contact[effect.field]===effect.after,'NATIVE_STATE_NOT_CHANGED');
  return {identity:dispatch.identity,source:contact.source,route:contact.kicPlay,
-  before:'idle',after:dispatch.state.contact.mode,gameReceipt:dispatch.receipt.resultDigest,
+  mechanicalField:effect.field,before:effect.before,after:dispatch.state.contact[effect.field],
+  state:dispatch.state.contact,gameReceipt:dispatch.receipt.resultDigest,
   nativeBodies:['GameCoding','GameCodingRuntime','JMGameCore','JMGameCoreRuntime'],gardles:AUTHORITY.gardles};
 }
 

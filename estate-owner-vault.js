@@ -112,7 +112,7 @@
       <div class="jm-vault-remote" id="jmVaultRemote" aria-live="polite"></div>
       <section class="jm-vault-editor" id="jmVaultFiles" aria-label="Original files private custody">
         <strong>ORIGINAL FILES · ANY FORMAT</strong>
-        <p class="jm-vault-note">Save a selected original file as exact private bytes (up to 12 MiB per file). Nothing is uploaded automatically. Download on another device, edit using the correct native application, and explicitly upload a revision. No public publication or automatic synchronisation is implied.</p>
+        <p class="jm-vault-note">Save a selected original file as exact private bytes (up to 64 MiB with 2 MiB protected parts). Nothing is uploaded automatically. Download on another device, edit using the correct native application, and explicitly upload a revision. No public publication or automatic synchronisation is implied.</p>
         <input type="file" id="jmVaultFileInput" aria-label="Select original file">
         <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCheckPending" type="button">CHECK HELD SAVE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
         <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
@@ -494,6 +494,8 @@
   // It intentionally contains no source bytes, owner key, or raw file content.
   const ASSET_PENDING_KEY = 'jm-owner-vault-cp23-file-save-pending';
   let assetSaveBusy = false;
+  const ASSET_PART_BYTES = 2 * 1024 * 1024;
+  const ASSET_LARGE_LIMIT = 64 * 1024 * 1024;
   function canonicalOriginalFileName(value) {
     return String(value || 'jm-original-file').slice(0,180)
       .replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-')
@@ -507,7 +509,8 @@
     if (!p || p.schema !== 'JM.OwnerVault.FileSavePending/0.1'
       || !/^asset-[0-9a-f-]{36}$/i.test(p.sourceInstanceId || '')
       || !/^[a-f0-9]{64}$/i.test(p.sha256 || '')
-      || !Number.isSafeInteger(p.bytes) || p.bytes < 0 || p.bytes > 12*1024*1024
+      || !Number.isSafeInteger(p.bytes) || p.bytes < 0 || p.bytes > ASSET_LARGE_LIMIT
+      || (p.bytes > 12*1024*1024 && !/^[0-9a-f-]{36}$/i.test(p.uploadId || ''))
       || typeof p.fileName !== 'string' || p.fileName.length < 1 || p.fileName.length > 180
       || (p.expectedBaseId !== null && !/^[0-9a-f-]{36}$/i.test(p.expectedBaseId || ''))
       || (p.expectedBaseSha256 !== null && !/^[a-f0-9]{64}$/i.test(p.expectedBaseSha256 || ''))
@@ -547,8 +550,8 @@
     if (!(await ensureUnlocked())) return;
     const input = el('jmVaultFileInput'), selected = input?.files?.[0];
     if (!selected) { assetMessage('Choose the original file on this device first.'); return; }
-    if (selected.size > 12 * 1024 * 1024) {
-      assetMessage('Original file exceeds the 12 MiB gate. Nothing truncated or uploaded.');
+    if (selected.size > ASSET_LARGE_LIMIT) {
+      assetMessage('Original file exceeds the current 64 MiB gate. Nothing truncated or uploaded.');
       return;
     }
     const btn = el('jmVaultSaveFile');
@@ -576,6 +579,7 @@
           schema:'JM.OwnerVault.FileSavePending/0.1',
           sourceInstanceId:revision?.sourceInstanceId || 'asset-' + crypto.randomUUID(),
           sha256:hash, bytes:bytes.length, fileName:canonicalOriginalFileName(selected.name),
+          uploadId:bytes.length > 12*1024*1024 ? crypto.randomUUID() : null,
           expectedBaseId:revision?.id || null,
           expectedBaseSha256:revision?.sha256 || null,
           createdAt:new Date().toISOString()
@@ -598,7 +602,36 @@
         file.expectedBaseSha256 = pending.expectedBaseSha256;
       }
       attempted = true;
-      const response = await request('',{method:'POST',body:JSON.stringify({action:'upload-asset',file})});
+      let response;
+      if (bytes.length > 12*1024*1024) {
+        // CP26: no new source UUID on reload. Each part is a deterministic
+        // R2 key under the saved uploadId; POST retries require exact bytes.
+        const partCount = Math.ceil(bytes.length / ASSET_PART_BYTES);
+        const descriptor = {
+          name:file.name, fileName:file.fileName, mediaType:file.mediaType,
+          uploadId:pending.uploadId, sourceInstanceId:pending.sourceInstanceId,
+          sha256:hash, bytes:bytes.length, partCount,
+          ...(pending.expectedBaseId?{expectedBaseId:pending.expectedBaseId,
+            expectedBaseSha256:pending.expectedBaseSha256}:{})
+        };
+        for(let i=0;i<partCount;i++) {
+          const part=bytes.subarray(i*ASSET_PART_BYTES,Math.min((i+1)*ASSET_PART_BYTES,bytes.length));
+          assetMessage('Saving exact original file part '+(i+1)+' / '+partCount+' (same source identity)…');
+          const saved=await request('',{method:'POST',body:JSON.stringify({
+            action:'upload-asset-part',file:descriptor,partIndex:i,
+            partSha256:await assetDigest(part),base64:assetBase64(part)
+          })});
+          if (!['ASSET_PART_UNCHANGED','ASSET_PART_STORED'].includes(saved.outcome)
+            || saved.partIndex!==i || saved.sha256!==await assetDigest(part))
+            throw new Error('ASSET_PART_RECEIPT_INVALID');
+        }
+        assetMessage('All original parts verified. Finalizing ONE private file identity…');
+        response=await request('',{method:'POST',body:JSON.stringify({
+          action:'finalize-chunked-asset',file:descriptor
+        })});
+      } else {
+        response=await request('',{method:'POST',body:JSON.stringify({action:'upload-asset',file})});
+      }
       if (!['ASSET_STORED','ASSET_UNCHANGED'].includes(response.outcome)
         || response.asset?.sha256 !== hash
         || response.asset?.sourceInstanceId !== pending.sourceInstanceId

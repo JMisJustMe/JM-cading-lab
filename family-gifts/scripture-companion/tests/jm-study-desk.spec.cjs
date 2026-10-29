@@ -19,6 +19,7 @@ const {chromium}=require('playwright');
    const card=page.locator('#jmStudyResults .entry').first();
    assert.equal(await card.getByRole('link',{name:/Read official Study Bible/}).getAttribute('href'),'https://www.jw.org/en/library/bible/study-bible/books/2-timothy/3/');
    await card.getByRole('button',{name:'Select in reader'}).click();
+   await page.locator('[data-tab="explore"]').click();
    assert.equal(await page.locator('#book').inputValue(),'2 Timothy');
    assert.equal(await page.locator('#chapter').inputValue(),'3');
    assert.equal(await page.locator('#verse').inputValue(),'16');

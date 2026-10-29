@@ -29,12 +29,15 @@ function nearestCore(){
   visible:Math.abs(angle)<Math.PI*.195,world:{x:target.x,y:target.y}};
 }
 function sampleFloor(){
- // In-place world-space floor caster. zBuffer from JM's ACTUAL DDA raycaster
- // prevents any new floor pixel from painting through source-owned walls.
+ // CP10 refinement: preserve the original FTR floor as the *material*.
+ // Only overlay sparse world-coordinate structural seams and scan responses;
+ // never replace it with a solid, blocky flat-texture carpet.
  const horizon=rh*.43-player.pitch*rh*.58+Math.sin(player.bob)*1.8;
- const scale=quality==='detail'?4:quality==='balanced'?6:9;
+ const scale=quality==='detail'?3:quality==='balanced'?4:6;
  const FOV=Math.PI*.39, half=FOV*.5;
+ const pending=terminals.find(t=>!t.active);
  let cells=0,hash=2166136261;
+ ctx.save();
  for(let y=Math.max(0,Math.ceil(horizon+4));y<rh;y+=scale){
   const baseDistance=(rh*.50)/(y-horizon);
   if(baseDistance>22)continue;
@@ -44,24 +47,27 @@ function sampleFloor(){
    if(distance>zBuffer[Math.min(rw-1,x)]-.10)continue;
    const wx=player.x+Math.cos(a)*distance,wy=player.y+Math.sin(a)*distance;
    if(tileAt(wx,wy)!=='.')continue;
-   let gx=wx-Math.floor(wx),gy=wy-Math.floor(wy);
-   const line=Math.min(gx,1-gx,gy,1-gy)<.045;
-   const corner=Math.min(gx,1-gx)<.12&&Math.min(gy,1-gy)<.12;
-   // Real state-lighting, not arbitrary palette switching: distance fog,
-   // grid seams, tile joins, and original scan wave determine material.
-   const scanWave=player.scan>0&&Math.sin(distance*2.5-time*5)>.81;
-   const attenuation=Math.max(0,1-distance/25);
-   let shade=Math.round(3+attenuation*6)+(line?2:0)+(corner?1:0)+(scanWave?2:0);
-   shade=Math.min(palette.length-1,shade);
-   ctx.fillStyle=palette[shade];
-   ctx.fillRect(x,y,scale+.25,scale+.25);
+   const gx=wx-Math.floor(wx),gy=wy-Math.floor(wy);
+   const seam=Math.min(gx,1-gx,gy,1-gy)<.031;
+   const corner=Math.min(gx,1-gx)<.09&&Math.min(gy,1-gy)<.09;
+   const coreDistance=pending?Math.hypot(wx-pending.x,wy-pending.y):100;
+   const coreField=player.scan>0&&coreDistance<1.15&&
+     Math.abs(Math.sin(coreDistance*6-time*5))>.86;
+   if(!seam&&!corner&&!coreField)continue;
+   const attenuation=Math.max(0,1-distance/22);
+   const lit=seam?8:corner?10:12;
+   const shade=Math.min(palette.length-1,Math.round(lit+attenuation*2));
+   ctx.globalAlpha=(coreField?.25:seam?.18:.12)*attenuation;
+   ctx.fillStyle=palette[shade];ctx.fillRect(x,y,scale+.1,scale+.1);
    cells++;
    hash=(Math.imul(hash,16777619)^(shade+x*3+y*5))>>>0;
   }
  }
+ ctx.restore();
  metrics.floorSamples=cells;
  worldFloorDigest=hash;
 }
+
 function markWorldSignals(){
  // Only when the original SCAN is active; terminal target selection,
  // visibility and blocked sight derive from original game-world state.
@@ -71,8 +77,8 @@ function markWorldSignals(){
  if(!target)return;
  const p=projectSprite(target.x,target.y,.8);
  if(!p||!visibleAt(p))return;
- const radius=Math.max(10,Math.min(105,p.size*.23))*(1+Math.sin(time*6)*.08);
- ctx.save();ctx.strokeStyle='rgba(113,245,204,.5)';ctx.lineWidth=1.6;
+ const radius=Math.max(7,Math.min(22,p.size*.07))*(1+Math.sin(time*6)*.06);
+ ctx.save();ctx.strokeStyle='rgba(113,245,204,.36)';ctx.lineWidth=1.6;
  ctx.beginPath();ctx.ellipse(p.x,p.y+p.size*.24,radius,radius*.22,0,0,Math.PI*2);ctx.stroke();
  ctx.beginPath();ctx.moveTo(p.x,p.y+p.size*.24-radius*.8);ctx.lineTo(p.x,p.y+p.size*.24+radius*.8);ctx.stroke();
  ctx.restore();

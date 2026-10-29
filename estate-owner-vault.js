@@ -539,6 +539,60 @@
         : '. No upload attempted.'));
     } finally { btn.disabled = false; }
   }
+
+  // CP22 uses the ORIGINAL Owner Room download pattern and original CP20
+  // offline lineage recovery utility. This is not automatic offsite custody.
+  async function exportAssetLineageLocal(item) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      assetMessage('Verifying all bounded original binary ancestors before export…');
+      const packet = await request('?mode=export-asset-lineage&asset=' + encodeURIComponent(item.id));
+      if (packet.schema !== 'JM.OwnerVault/0.1.AssetLineageExport'
+        || packet.selected_id !== item.id || !Array.isArray(packet.versions)
+        || packet.versions.length < 1 || packet.versions.length > 8
+        || packet.version_count !== packet.versions.length
+        || packet.order !== 'SELECTED_HEAD_TO_OLDEST_ANCESTOR')
+        throw new Error('ASSET_LINEAGE_RECEIPT_INVALID');
+      let total = 0, expected = item.id, firstSource = null;
+      const seen = new Set();
+      for (const version of packet.versions) {
+        const m = version?.metadata, value = version?.base64;
+        if (!m || m.id !== expected || seen.has(m.id)
+          || !/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId || '')
+          || !/^[a-f0-9]{64}$/i.test(m.sha256 || '')
+          || typeof value !== 'string'
+          || value.length > Math.ceil(12 * 1024 * 1024 / 3) * 4 + 4
+          || value.length % 4 !== 0
+          || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))
+          throw new Error('ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID');
+        if (firstSource !== null && firstSource !== m.sourceInstanceId)
+          throw new Error('ASSET_LINEAGE_CROSS_PURPOSE_HOLD');
+        firstSource = m.sourceInstanceId;
+        const decoded = atob(value);
+        const bytes = new Uint8Array(decoded.length);
+        for (let i = 0; i < decoded.length; i++) bytes[i] = decoded.charCodeAt(i);
+        if (bytes.length !== m.bytes || await assetDigest(bytes) !== m.sha256.toLowerCase()
+          || assetBase64(bytes) !== value)
+          throw new Error('ASSET_LINEAGE_EXACT_BYTES_MISMATCH');
+        total += bytes.length;
+        if (total > 24 * 1024 * 1024) throw new Error('ASSET_LINEAGE_OVERBOUNDED');
+        seen.add(m.id);
+        expected = m.previousVersionId || null;
+      }
+      if (expected !== null || total !== packet.source_bytes)
+        throw new Error('ASSET_LINEAGE_ANCESTRY_INCOMPLETE');
+      const url = URL.createObjectURL(new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'JM_Vault_Asset_Lineage_' + item.id + '.json';
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      assetMessage('Exact binary ancestry export offered. Save the JSON outside this website; verify/cold-recover using the EXISTING owner-vault-lineage-recover.mjs utility. Offsite possession not yet proved.');
+    } catch (error) {
+      assetMessage('Binary lineage export HOLD: ' + error.message + '. No backup or offsite success claimed.');
+    }
+  }
+
   async function refreshAssets() {
     if (!key()) return;
     try {
@@ -553,6 +607,7 @@
         </div><div class="jm-vault-card-actions">
         <button type="button" data-asset-download="${escapeHTML(item.id)}">DOWNLOAD VERIFIED</button>
         <button type="button" data-asset-revise="${escapeHTML(item.id)}">REVISE FILE</button>
+        <button type="button" data-asset-lineage="${escapeHTML(item.id)}">EXPORT FULL LINEAGE</button>
         <button type="button" class="danger" data-asset-remove="${escapeHTML(item.id)}">REMOVE LEAF</button>
         </div></article>`).join('') || '<div class="empty-state">No original non-HTML files deliberately saved yet.</div>';
       mount.querySelectorAll('[data-asset-download]').forEach(b => b.addEventListener('click', async () => {
@@ -569,6 +624,10 @@
           assetMessage('Verified source offered for device download; save and reopen it externally to prove independent possession.');
         } catch (e) { assetMessage('Download HOLD: ' + e.message); }
         finally { b.disabled = false; }
+      }));
+      mount.querySelectorAll('[data-asset-lineage]').forEach(b => b.addEventListener('click', () => {
+        const item = entries.find(x => x.id === b.dataset.assetLineage);
+        if (item) void exportAssetLineageLocal(item);
       }));
       mount.querySelectorAll('[data-asset-revise]').forEach(b => b.addEventListener('click', () => {
         const item = entries.find(x => x.id === b.dataset.assetRevise);

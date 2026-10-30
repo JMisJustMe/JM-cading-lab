@@ -484,7 +484,7 @@ function drawPlayer(p){
  const jump=VIZ.reduce?0:inAir;
  ctx.translate(0,-jump);
  // Distinct moving feet, socks, trainers and legs under the uniform.
- for(const s of [-1,1]){let stride=s*gait*11,spread=(pose.spread-.20)*32;line(s*8,-12,s*(10+spread)+stride,3-pose.footLift*23,'#573d39',9);line(s*(10+spread)+stride,3-pose.footLift*23,s*(11+spread)+stride*1.1,11-pose.footLift*18,'#f8f4db',7);roundRect(s*(11+spread)+stride*1.1-7,7-pose.footLift*18,14,7,3,team===0?'#102e48':'#fff5dc',team===0?'#7fe6e0':'#d9d2c0')}
+ for(const s of [-1,1]){let stride=s*gait*11,spread=(pose.spread-.20)*32,lift=s*pose.step>0?pose.footLift:0;line(s*8,-12,s*(10+spread)+stride,3-lift*23,'#573d39',9);line(s*(10+spread)+stride,3-lift*23,s*(11+spread)+stride*1.1,11-lift*18,'#f8f4db',7);roundRect(s*(11+spread)+stride*1.1-7,7-lift*18,14,7,3,team===0?'#102e48':'#fff5dc',team===0?'#7fe6e0':'#d9d2c0')}
  // Animated arm swings, ball-hand contact and contest raise.
  let hasBall=state.pos===team&&state.carrier===p.id&&!state.air;
  let dribble=hasBall?(Math.abs(Math.sin(state.clock*13+p.id))*.7):0;
@@ -599,7 +599,7 @@ function brBody(p){
  const torso=ctx.createLinearGradient(shoulder.x-15,shoulder.y,shoulder.x+15,hip.y);torso.addColorStop(0,team?'#a9fff4':'#ffd5ac');torso.addColorStop(.65,team?'#28babb':'#ed815a');torso.addColorStop(1,team?'#075369':'#753b32');
  ctx.lineCap='round';ctx.lineJoin='round';
  // Two independently animated legs with shoes and true projected height.
- for(let side of [-1,1]){ctx.strokeStyle='#493a39';ctx.lineWidth=8*size;ctx.beginPath();ctx.moveTo(hip.x+side*7*size,hip.y);ctx.lineTo(foot.x+side*(7*size+footSpread)+side*rhythm,foot.y-2-pose.footLift*29*size);ctx.stroke();ctx.strokeStyle='#faf8df';ctx.lineWidth=5*size;ctx.beginPath();ctx.moveTo(foot.x+side*(8*size+footSpread)+side*rhythm-5*size,foot.y-pose.footLift*29*size);ctx.lineTo(foot.x+side*(9*size+footSpread)+side*rhythm+5*size,foot.y-pose.footLift*29*size);ctx.stroke()}
+ for(let side of [-1,1]){const lift=side*pose.step>0?pose.footLift:0;ctx.strokeStyle='#493a39';ctx.lineWidth=8*size;ctx.beginPath();ctx.moveTo(hip.x+side*7*size,hip.y);ctx.lineTo(foot.x+side*(7*size+footSpread)+side*rhythm,foot.y-2-lift*29*size);ctx.stroke();ctx.strokeStyle='#faf8df';ctx.lineWidth=5*size;ctx.beginPath();ctx.moveTo(foot.x+side*(8*size+footSpread)+side*rhythm-5*size,foot.y-lift*29*size);ctx.lineTo(foot.x+side*(9*size+footSpread)+side*rhythm+5*size,foot.y-lift*29*size);ctx.stroke()}
  brPolygon([{x:shoulder.x-sw+(p.recoilX||0)*impact*12*size,y:shoulder.y-7*size+impact*4*size},{x:shoulder.x+sw+(p.recoilX||0)*impact*12*size,y:shoulder.y-7*size+impact*4*size},{x:hip.x+sw*.75,y:hip.y},{x:hip.x-sw*.75,y:hip.y}],torso,team?'#b4fefa':'#ffd0ae',.7);
  const skin=['#ac6549','#995941','#bf8054','#8d4d3a','#d29b6b','#ab6e52'][p.id];
  for(let side of [-1,1]){ctx.strokeStyle=skin;ctx.lineWidth=7.3*size;ctx.beginPath();ctx.moveTo(shoulder.x+side*sw,shoulder.y);ctx.lineTo(hip.x+side*(sw+3*size),hip.y-18*size+rhythm*side*.3);ctx.stroke()}
@@ -729,9 +729,10 @@ function native3DInit(){
  const at=(side,height,fore)=>[w.x+rx*side+fx*fore,height+lift,w.z+rz*side+fz*fore];
  // Articulated runner: two moving sections per leg, knee flex and off-ground foot clearance.
  for(const dir of [-1,1]){
-  let leg=swing*dir,hip=at(dir*pose.spread,shuffle?.78:.87,0),knee=at(dir*(pose.spread+.06)+leg*.02,shuffle?.42:.48,leg*(shuffle?.16:.28)),ankle=at(dir*(pose.spread+.10),.15+pose.footLift,leg*(shuffle?.17:.35)+(plant?.08:0));
+  const footLift=dir*pose.step>0?pose.footLift:0;
+  let leg=swing*dir,hip=at(dir*pose.spread,shuffle?.78:.87,0),knee=at(dir*(pose.spread+.06)+leg*.02,shuffle?.42:.48,leg*(shuffle?.16:.28)),ankle=at(dir*(pose.spread+.10),.15+footLift,leg*(shuffle?.17:.35)+(plant?.08:0));
   line(hip,knee,.145,shorts);line(knee,ankle,.10,skin);
-  const foot=at(dir*(pose.spread+.10),.115+pose.footLift,leg*(shuffle?.17:.35)+.13);
+  const foot=at(dir*(pose.spread+.10),.115+footLift,leg*(shuffle?.17:.35)+.13);
   box(foot[0],foot[1],foot[2],.26,.14,.43,shoes,turn);
  }
  const lean=pose.torsoLean+motion*.035+(state.driveBoost>0&&selected?.07:0);

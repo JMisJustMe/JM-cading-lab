@@ -281,6 +281,28 @@ const {chromium}=require('playwright');
    assert.equal(matthewRows[0].done,false,'CP28 reversed chapter progress is unread and not silently completed');
    assert.deepEqual(afterMark.notes,beforeMark.notes,'CP28 reading progress must not alter any saved original notes');
    assert(afterMark.notes.some(n=>n.ref==='Matthew 6'&&n.text.includes('A private Matthew 6 draft')),'CP28 the directly authored reflection remains in the original notes collection');
+   // CP31: one private seven-chapter review, rendered from the existing notes and queue only.
+   await page.selectOption('#planPicker','quiet');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview').evaluate(el=>el.open=true);
+   const cp31Before=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   await page.locator('#jmPathReviewToggle').click();
+   assert.equal(await page.locator('#jmPathReview').isVisible(),true);
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   assert.match(await page.locator('#jmPathReviewEntries').textContent(),/A private Matthew 6 draft/);
+   assert.match(await page.locator('#jmPathReviewStatus').textContent(),/private reflections/);
+   assert((await page.locator('#jmPathReviewEntries a').first().getAttribute('href')).startsWith('https://www.jw.org/en/library/bible/study-bible/'));
+   const cp31After=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(cp31After.queue,cp31Before.queue,'CP31 review never marks a chapter read');
+   assert.deepEqual(cp31After.notes,cp31Before.notes,'CP31 review never changes private note data');
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(1).getByRole('button',{name:'Open my notes'}).click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true,'CP31 returns to original note store');
+   assert.equal(await page.locator('#notesScope').inputValue(),'chapter');
+   assert.match(await page.locator('#notesList').textContent(),/A private Matthew 6 draft/);
+   await page.locator('[data-tab="read"]').click();
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   console.log('PASS CP31 ORIGINAL PRIVATE PATH REVIEW '+width+'px: seven original chapters, actual private note and zero queue mutation');
+
    console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');
 
 

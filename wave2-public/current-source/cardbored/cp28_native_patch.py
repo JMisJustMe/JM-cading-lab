@@ -25,7 +25,7 @@ def transform(source):
 </style>""")
     replace_one("function render(){renderHud();renderFormation();renderHand();renderControls();renderTicker();if($('#drawer').classList.contains('open'))renderDrawer()}",
                 "function render(){renderHud();renderFormation();renderHand();renderControls();renderTicker();if($('#drawer').classList.contains('open'))renderDrawer();CP28_visual()}")
-    replace_one("start();\n\n/* ===== cardBORED v0.5",r"""
+    replace_one("/* ===== cardBORED v0.5",r"""
 // CP28 native inputs: the existing game owns the card rules, CPU and combat.
 let cp28Card=0,cp28Target=0,cp28PadIndex=null,cp28PadRef=null;
 const cp28Held=new Set();
@@ -142,7 +142,6 @@ window.JM_CARDBORED_CP28=Object.freeze({
  core:[state.playerCore,state.cpuCore],
  trace:state.trace.slice(0,8).map(e=>({body:e.body,text:e.text}))}}
 });
-start();
 
 /* ===== cardBORED v0.5""")
     return html

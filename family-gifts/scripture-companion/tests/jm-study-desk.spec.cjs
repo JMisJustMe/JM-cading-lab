@@ -303,6 +303,22 @@ const {chromium}=require('playwright');
    await page.locator('[data-tab="read"]').click();
    assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
    console.log('PASS CP31 ORIGINAL PRIVATE PATH REVIEW '+width+'px: seven original chapters, actual private note and zero queue mutation');
+   // CP32: compare two actual path chapters, private content only, no silent writes.
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Compare this chapter'}).click();
+   assert.equal(await page.locator('#jmPathComparison').isVisible(),true);
+   assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),1);
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(1).getByRole('button',{name:'Compare this chapter'}).click();
+   assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),2);
+   assert.match(await page.locator('#jmPathCompareEntries').textContent(),/A private Matthew 6 draft/);
+   assert.match(await page.locator('#jmPathCompareStatus').textContent(),/side by side/);
+   const cp32After=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(cp32After.notes,cp31Before.notes,'CP32 comparisons never overwrite notes');
+   assert.deepEqual(cp32After.queue,cp31Before.queue,'CP32 comparisons never mark reading complete');
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Remove from comparison'}).click();
+   assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),1);
+   console.log('PASS CP32 ORIGINAL TWO CHAPTER REFLECTION COMPARISON '+width+'px: two actual chapters, private data untouched');
+
+
 
    console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');
 

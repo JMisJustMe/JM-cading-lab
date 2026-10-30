@@ -20,7 +20,7 @@ JM_ENGINE_MCP_TOOLS exposes four descriptors:
 - jm_engine_core_contact
 - jm_engine_world_contact
 
-Call through callJMEngineMcpTool(name,args,registry). On an authorised local/CI host, the existing Build Mesh can mount this handler using its existing host-adapter/operation authority path. Do NOT send raw private JM source to a public read-only service. The adapter itself does not register/deploy a new endpoint. No secrets, authentication tokens or private data are stored in this body.
+Call through callJMEngineMcpTool(name,args,registry). The jm_engine_plan tool additionally requires the checked-in Current-64 Coding Estate registry as args.current64. It validates 61 inherited + 3 post-census, accounts for all 64 identities as selected-for-route versus available, and never treats the separate 100-body router as 100 current coding identities. On an authorised local/CI host, the existing Build Mesh can mount this handler using its existing host-adapter/operation authority path. Do NOT send raw private JM source to a public read-only service. The adapter itself does not register/deploy a new endpoint. No secrets, authentication tokens or private data are stored in this body.
 
 ## Proof
 

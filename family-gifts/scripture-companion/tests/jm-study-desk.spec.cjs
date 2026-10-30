@@ -281,6 +281,129 @@ const {chromium}=require('playwright');
    assert.equal(matthewRows[0].done,false,'CP28 reversed chapter progress is unread and not silently completed');
    assert.deepEqual(afterMark.notes,beforeMark.notes,'CP28 reading progress must not alter any saved original notes');
    assert(afterMark.notes.some(n=>n.ref==='Matthew 6'&&n.text.includes('A private Matthew 6 draft')),'CP28 the directly authored reflection remains in the original notes collection');
+   // CP31: one private seven-chapter review, rendered from the existing notes and queue only.
+   await page.locator('[data-tab="explore"]').click();
+   await page.selectOption('#planPicker','quiet');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview').evaluate(el=>el.open=true);
+   const cp31Before=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   await page.locator('#jmPathReviewToggle').click();
+   assert.equal(await page.locator('#jmPathReview').isVisible(),true);
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   assert.match(await page.locator('#jmPathReviewEntries').textContent(),/A private Matthew 6 draft/);
+   assert.match(await page.locator('#jmPathReviewStatus').textContent(),/private reflections/);
+   assert((await page.locator('#jmPathReviewEntries a').first().getAttribute('href')).startsWith('https://www.jw.org/en/library/bible/study-bible/'));
+   const cp31After=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(cp31After.queue,cp31Before.queue,'CP31 review never marks a chapter read');
+   assert.deepEqual(cp31After.notes,cp31Before.notes,'CP31 review never changes private note data');
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(1).getByRole('button',{name:'Open my notes'}).click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true,'CP31 returns to original note store');
+   assert.equal(await page.locator('#notesScope').inputValue(),'chapter');
+   assert.match(await page.locator('#notesList').textContent(),/A private Matthew 6 draft/);
+   await page.locator('[data-tab="read"]').click();
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   console.log('PASS CP31 ORIGINAL PRIVATE PATH REVIEW '+width+'px: seven original chapters, actual private note and zero queue mutation');
+   // CP32: compare two actual path chapters, private content only, no silent writes.
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Compare this chapter'}).click();
+   assert.equal(await page.locator('#jmPathComparison').isVisible(),true);
+   assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),1);
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(1).getByRole('button',{name:'Compare this chapter'}).click();
+   assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),2);
+   assert.match(await page.locator('#jmPathCompareEntries').textContent(),/A private Matthew 6 draft/);
+   assert.match(await page.locator('#jmPathCompareStatus').textContent(),/side by side/);
+   const cp32After=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(cp32After.notes,cp31Before.notes,'CP32 comparisons never overwrite notes');
+   assert.deepEqual(cp32After.queue,cp31Before.queue,'CP32 comparisons never mark reading complete');
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Remove from comparison'}).click();
+   assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),1);
+   console.log('PASS CP32 ORIGINAL TWO CHAPTER REFLECTION COMPARISON '+width+'px: two actual chapters, private data untouched');
+
+   // CP33: private word search stays on device and filters only the already-saved notes.
+   await page.fill('#jmPathSearch','matthew 6 draft');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),1);
+   assert.match(await page.locator('#jmPathReviewEntries .jm-chapter-card').textContent(),/Matthew 6/);
+   assert.match(await page.locator('#jmPathReviewStatus').textContent(),/1 shown/);
+   await page.fill('#jmPathSearch','not-a-saved-private-term');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),0);
+   assert.match(await page.locator('#jmPathReviewEntries').textContent(),/No chapters match/);
+   await page.fill('#jmPathSearch','');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   // Re-select first chapter then explicitly author through ORIGINAL Notes editor.
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Compare this chapter'}).click();
+   assert.equal(await page.locator('#jmPathCompareWrite').isEnabled(),true);
+   // CP34: an unrelated unfinished note cannot be destroyed by comparison authoring.
+   await page.locator('[data-tab="notes"]').click();
+   await page.fill('#noteRef','John 3');
+   await page.fill('#noteText','An unfinished John 3 reflection must survive.');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmPathCompareWrite').click();
+   assert.equal(await page.locator('#noteRef').inputValue(),'John 3');
+   assert.equal(await page.locator('#noteText').inputValue(),'An unfinished John 3 reflection must survive.');
+   assert.match(await page.locator('#noteDraftStatus').textContent(),/unfinished reflection is preserved/);
+   await page.locator('#clearNote').click();
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmPathCompareWrite').click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true);
+   assert.match(await page.locator('#noteRef').inputValue(),/Psalms 23 \/ Matthew 6/);
+   assert.match(await page.locator('#noteText').inputValue(),/What do I notice in my own reflections/);
+   await page.fill('#noteText','My own comparison of these two chapters, kept private.');
+   await page.locator('#saveNote').click();
+   const afterNew=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert(afterNew.notes.some(n=>n.text.includes('My own comparison of these two chapters')));
+   assert.deepEqual(afterNew.queue,cp31Before.queue,'drafting a comparison must never mark any chapter read');
+   await page.reload();
+   const afterReload=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert(afterReload.notes.some(n=>n.text.includes('My own comparison of these two chapters')),'actual note survives reload through original store');
+   console.log('PASS CP33 ORIGINAL PRIVATE SEARCH AND COMPARISON AUTHORING '+width+'px: local search, original Notes, explicit save and reload');
+
+   // CP34: the same original saved comparison is found through either chapter.
+   for(const [book,chapter] of [['Psalms',23],['Matthew',6]]){
+    await page.evaluate(([b,ch])=>jump(b,ch),[book,chapter]);
+    await page.locator('[data-tab="notes"]').click();
+    await page.selectOption('#notesScope','chapter');
+    await page.fill('#notesSearch','');
+    assert.match(await page.locator('#notesList').textContent(),/My own comparison of these two chapters/);
+    assert.equal(await page.evaluate(([b,ch])=>JMReferenceParser.noteReferencesChapter('Psalms 23 / Matthew 6',b,ch),[book,chapter]),true);
+   }
+   assert.equal(await page.evaluate(()=>JMReferenceParser.noteReferencesChapter('Psalms 23 / Matthew 6','John',3)),false);
+   console.log('PASS CP34 COMPOSITE PRIVATE NOTE INDEX '+width+'px: either original chapter can recover the same saved comparison');
+
+
+   // CP35: completed reading does not imply a written reflection; both are separate, private.
+   await page.locator('[data-tab="explore"]').click();
+   await page.selectOption('#planPicker','quiet');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview').evaluate(el=>el.open=true);
+   await page.locator('#jmPathReviewToggle').click();
+   const cp35Before=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   const progress=await page.locator('#jmPathProgress').evaluate(el=>({value:Number(el.value),max:Number(el.max)}));
+   assert.equal(progress.max,7);
+   assert(progress.value>0&&progress.value<7,'the current genuine journey has some but not all reflections');
+   await page.selectOption('#jmPathView','unwritten');
+   const notWritten=await page.locator('#jmPathReviewEntries .jm-chapter-card').count();
+   assert.equal(notWritten,7-progress.value);
+   await page.selectOption('#jmPathView','written');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),progress.value);
+   await page.selectOption('#jmPathView','all');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   const resumeTitle=await page.locator('#jmPathResumeWriting').textContent();
+   assert.match(resumeTitle,/Continue reflection:/);
+   await page.locator('#jmPathResumeWriting').click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true);
+   assert.match(await page.locator('#noteRef').inputValue(),/Philippians 4/);
+   assert.match(await page.locator('#noteText').inputValue(),/What stood out to me/);
+   const cp35After=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(cp35After.notes,cp35Before.notes,'CP35 drafting is never auto-saving');
+   assert.deepEqual(cp35After.queue,cp35Before.queue,'CP35 drafting is never marking a chapter read');
+   await page.reload();
+   assert.equal(await page.locator('#noteRef').inputValue(),'Philippians 4','original draft recovery survived reload');
+   console.log('PASS CP35 PRIVATE REFLECTION CONTINUATION '+width+'px: seven-chapter filters, real next unwritten and protected draft recovery');
+
+
+
+
+
+
    console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');
 
 

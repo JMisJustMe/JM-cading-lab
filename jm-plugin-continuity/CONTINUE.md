@@ -12,6 +12,8 @@
 8. **Record the result:** PASS only at the specific provider/host and operation directly observed. Distinguish same filename, same bytes, restored original native file ID, independently live recovery, actual deployment and measured account storage quota. Maintain this existing register in place; do not fork duplicate log ledgers.
 9. **Owner-authority gate:** reauthentication, new provider scopes, interactive plugin install, physical host unlock/acceptance or irreversible deletions remain honest HOLDs. Routine permitted retrieval and tests proceed without unnecessary approval prompts. Never store credentials.
 
+**Owner Vault lineage correction:** 20 August original `registry/owner-vault-owner-roundtrip-receipt-v0.1.json` demonstrates an owner-authenticated private **notes** save→clear→restore, historically. Do not reset this to 'never tested.' Current private HTML/asset readback and owner access are different gates. Protected #645 candidate includes the existing #601 CP09/CP10 corrupted-record fail-closed repair; Actions run #40993823259's mandatory gate PASS at synthetic/source scope, but main's older Vault source remains unrepaired and #645 stays draft, unmerged. Original tracked issue #591 carries the exact gate evidence; no new fix/front door needed.
+
 **Source integration:** PR #658 was merged on 30 October after 9/9 source checks; these exact two continuity files now reside on main. Source changes to them must be made in place. 
 
 **Original preserved instructions:** Library `JM_PLUGIN_CONTINUITY_BOOTSTRAP.md` and `JM_PLUGIN_CONTINUITY_AGENTS_SNIPPET.md` define the starting intent. This two-file source handoff fulfils their missing GitHub persistence step; it cannot itself grant provider permissions or establish a successful login.

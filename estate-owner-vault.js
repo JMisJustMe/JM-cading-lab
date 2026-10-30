@@ -119,7 +119,7 @@
         <div class="jm-vault-actions"><button class="button secondary" id="jmVaultPartNext" disabled type="button">DOWNLOAD NEXT VERIFIED PIECE</button><button class="button secondary" id="jmVaultResumeCold" type="button">RESUME VERIFIED COLD EXPORT</button><button class="button secondary" id="jmVaultCancelCold" type="button">CANCEL HELD COLD EXPORT</button></div>
         <input id="jmVaultColdPieces" type="file" multiple aria-label="Select already downloaded original cold pieces for SHA-256 verification">
         <p class="jm-vault-note">After a reload, select the exact pieces already saved on this device, then RESUME. Only files independently hash-verified against the current authenticated catalog can be skipped. A browser offering a download is NOT proof that you saved it.</p>
-        <p class="jm-vault-note">For large/offline lineage recovery: use EXPORT COLD PARTS on a chosen original, then download every piece individually into the same folder as its catalog. Phone browsers may ask permission for multiple downloads. No offsite backup is claimed until independent audit.</p>
+        <p class="jm-vault-note">For large/offline lineage recovery: EXPORT COLD PARTS is the phone-compatible manual fallback. On browsers supporting permissioned local folders, SAVE VERIFIED COLD FOLDER writes each part to a folder YOU select and re-reads every part from disk. Existing exact files are reused; different ones are never deliberately overwritten. Complete the independent offline CLI audit before claiming an offsite backup.</p>
         <section aria-label="Cold recovered native file re-entry" class="jm-vault-editor">
           <strong>RETURN A RECOVERED ORIGINAL TO EDITING · CP29</strong>
           <p class="jm-vault-note">After independently recovering and editing a native file outside this website: choose its exact recovery-manifest.json below, then choose the edited file using the ORIGINAL FILE selector above. Prepare checks the complete ancestry against live private custody. Only SAVE uploads your explicit new version. Nothing overwrites or publishes your existing body.</p>
@@ -994,12 +994,9 @@
     a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
-  async function prepareColdExport(item,resume=false) {
-    if (!(await ensureUnlocked()))return;
-    coldExport=null;
-    const next=el('jmVaultPartNext');if(next)next.disabled=true;
-    try{
-      assetMessage('Reading authenticated source catalog; no remote writes…');
+  // Shared CP28–CP31 identity and byte-contract validation for manual,
+  // resumed and owner-selected folder export. No duplicate catalog rules.
+  async function verifiedColdSourceCatalog(item){
       const packet=await request('?mode=export-asset-catalog&asset='+encodeURIComponent(item.id));
       if(packet.schema!=='JM.OwnerVault/0.1.AssetPartsCatalog'
         ||packet.selected_id!==item.id||!Array.isArray(packet.versions)
@@ -1036,6 +1033,15 @@
       if(expected!==null||total!==packet.source_bytes||total>8*64*1024*1024)
         throw new Error('COLD_CATALOG_CHAIN_OR_SIZE_HOLD');
       const fingerprint=await assetDigest(new TextEncoder().encode(JSON.stringify(packet)));
+      return {packet,parts,fingerprint};
+  }
+  async function prepareColdExport(item,resume=false) {
+    if (!(await ensureUnlocked()))return;
+    coldExport=null;
+    const next=el('jmVaultPartNext');if(next)next.disabled=true;
+    try{
+      assetMessage('Reading authenticated source catalog; no remote writes…');
+      const {packet,parts,fingerprint}=await verifiedColdSourceCatalog(item);
       const held=readColdPending();
       if(resume){
         if(!held||held.selected_id!==item.id||held.catalog_sha256!==fingerprint)
@@ -1117,6 +1123,134 @@
     }
   }
 
+  // CP31: owner-picked actual device folder, NOT a new Vault or carrier.
+  // File System Access API permissions remain with the browser/owner and
+  // no directory handles or raw source bytes are stored persistently.
+  let coldDirectoryBusy=false;
+  async function existingColdDirectoryFile(directory,name){
+    try{return await directory.getFileHandle(name,{create:false});}
+    catch(error){if(error?.name==='NotFoundError')return null;throw error;}
+  }
+  async function verifiedColdDiskFile(handle,size,expectedHash){
+    const file=await handle.getFile();
+    if(file.size!==size || size<0 || size>2*1024*1024)
+      throw new Error('COLD_DIRECTORY_EXISTING_FILE_SIZE_HOLD');
+    const source=new Uint8Array(await file.arrayBuffer());
+    if(source.length!==size || await assetDigest(source)!==expectedHash)
+      throw new Error('COLD_DIRECTORY_DISK_HASH_HOLD');
+  }
+  async function saveExactColdDiskFile(directory,name,bytes,expectedHash){
+    const current=await existingColdDirectoryFile(directory,name);
+    if(current){
+      await verifiedColdDiskFile(current,bytes.length,expectedHash);
+      return 'EXISTING_VERIFIED';
+    }
+    // Browser directory API has no atomic O_EXCL flag: do not claim
+    // concurrent hostile filesystem writer protection.
+    const handle=await directory.getFileHandle(name,{create:true});
+    const before=await handle.getFile();
+    if(before.size!==0)throw new Error('COLD_DIRECTORY_CREATION_COLLISION_HOLD');
+    const writable=await handle.createWritable();
+    try{
+      await writable.write(bytes);
+      await writable.close();
+    }catch(error){
+      try{await writable.abort();}catch{}
+      throw error; // any partial bytes are preserved, not silently deleted
+    }
+    await verifiedColdDiskFile(handle,bytes.length,expectedHash);
+    return 'NEW_DISK_READBACK_VERIFIED';
+  }
+  async function saveColdDirectory(item){
+    if(coldDirectoryBusy)return;
+    if(typeof window.showDirectoryPicker!=='function'){
+      assetMessage('COLD DIRECTORY UNSUPPORTED ON THIS BROWSER: use EXPORT COLD PARTS (existing phone-safe path).');
+      return;
+    }
+    let directory;
+    // Important: call picker from the owner's click, BEFORE awaits that
+    // might consume the browser's transient user-activation permission.
+    try{directory=await window.showDirectoryPicker({mode:'readwrite'});}
+    catch(error){
+      if(error?.name!=='AbortError')
+        assetMessage('COLD DIRECTORY PICKER HOLD: '+error.message);
+      return;
+    }
+    if(!directory || directory.kind!=='directory'){
+      assetMessage('COLD DIRECTORY PICKER HOLD: no owner-approved directory.');
+      return;
+    }
+    if(!(await ensureUnlocked()))return;
+    coldDirectoryBusy=true;
+    try{
+      const {packet,parts,fingerprint}=await verifiedColdSourceCatalog(item);
+      const previous=readColdPending();
+      if(previous&&(previous.selected_id!==item.id
+        ||previous.catalog_sha256!==fingerprint))
+        throw new Error('COLD_DIRECTORY_DIFFERENT_HELD_SOURCE_HOLD');
+      if(!previous)saveColdPending({schema:'JM.OwnerVault.ColdPending/0.1',
+        selected_id:item.id,catalog_sha256:fingerprint});
+      const catalogName='JM_Vault_Cold_Catalog_'+item.id+'.json';
+      const catalogBytes=new TextEncoder().encode(JSON.stringify(packet,null,2)+'\n');
+      if(catalogBytes.length>512*1024)
+        throw new Error('COLD_DIRECTORY_CATALOG_SIZE_HOLD');
+      const catalogSha=await assetDigest(catalogBytes);
+      const alreadyCatalog=await existingColdDirectoryFile(directory,catalogName);
+      if(alreadyCatalog){
+        const file=await alreadyCatalog.getFile();
+        if(file.size!==catalogBytes.length || await assetDigest(
+          new Uint8Array(await file.arrayBuffer()))!==catalogSha)
+          throw new Error('COLD_DIRECTORY_CATALOG_COLLISION_HOLD');
+      }
+      let present=0,written=0;
+      for(let i=0;i<parts.length;i++){
+        const {m,p}=parts[i];
+        assetMessage('Owner folder: checking original '+(i+1)+' / '+parts.length
+          +' · exact '+m.id+' · no cloud writes…');
+        if(await existingColdDirectoryFile(directory,p.fileName)){
+          await verifiedColdDiskFile(await directory.getFileHandle(p.fileName,{create:false}),
+            p.bytes,p.sha256);
+          present++;continue;
+        }
+        const response=await request('?mode=export-asset-part&asset='+
+          encodeURIComponent(m.id)+'&part='+p.index);
+        if(!(response instanceof Response))
+          throw new Error('COLD_DIRECTORY_PART_RESPONSE_HOLD');
+        const bytes=new Uint8Array(await response.arrayBuffer());
+        if(bytes.length!==p.bytes || bytes.length>2*1024*1024
+          ||await assetDigest(bytes)!==p.sha256
+          ||response.headers.get('x-jm-part-sha256')!==p.sha256
+          ||response.headers.get('x-jm-asset-id')!==m.id
+          ||response.headers.get('x-jm-part-index')!==String(p.index))
+          throw new Error('COLD_DIRECTORY_REMOTE_PART_INTEGRITY_HOLD');
+        const result=await saveExactColdDiskFile(directory,p.fileName,bytes,p.sha256);
+        if(result==='EXISTING_VERIFIED')present++;else written++;
+      }
+      // A newer revision may have appeared while downloading. The saved
+      // originals are left intact, but never crown a stale catalog as HEAD.
+      const latest=await verifiedColdSourceCatalog(item);
+      if(latest.fingerprint!==fingerprint)
+        throw new Error('COLD_DIRECTORY_REMOTE_CATALOG_CHANGED_HOLD');
+      if(!alreadyCatalog)
+        await saveExactColdDiskFile(directory,catalogName,catalogBytes,catalogSha);
+      else{
+        const file=await alreadyCatalog.getFile();
+        if(file.size!==catalogBytes.length||await assetDigest(
+          new Uint8Array(await file.arrayBuffer()))!==catalogSha)
+          throw new Error('COLD_DIRECTORY_CATALOG_READBACK_HOLD');
+      }
+      assetMessage('COLD DIRECTORY LOCAL FILES VERIFIED: '+parts.length+'/'+parts.length
+        +' exact parts ('+present+' already saved, '+written+' newly written) and catalog'
+        +' read back from the owner-chosen folder. NEXT: original JM offline CLI'
+        +' --parts-catalog --verify-only and independent native recovery/audit.'
+        +' This is NOT an offsite backup or native-app edit proof.');
+    }catch(error){
+      assetMessage('COLD DIRECTORY HOLD: '+error.message
+        +'. Existing device originals kept. No remote write or backup completion claimed.'
+        +' Reselect the SAME directory to retry after resolving the held file.');
+    }finally{coldDirectoryBusy=false;}
+  }
+
   async function refreshAssets() {
     if (!key()) return;
     try {
@@ -1133,6 +1267,7 @@
         <button type="button" data-asset-revise="${escapeHTML(item.id)}">REVISE FILE</button>
         <button type="button" data-asset-lineage="${escapeHTML(item.id)}">EXPORT FULL LINEAGE</button>
         <button type="button" data-asset-cold="${escapeHTML(item.id)}">EXPORT COLD PARTS</button>
+        <button type="button" data-asset-cold-folder="${escapeHTML(item.id)}">SAVE VERIFIED COLD FOLDER</button>
         <button type="button" data-asset-extended="${escapeHTML(item.id)}">EXPORT EXTENDED (64 MiB)</button>
         <button type="button" class="danger" data-asset-remove="${escapeHTML(item.id)}">REMOVE LEAF</button>
         </div></article>`).join('') || '<div class="empty-state">No original non-HTML files deliberately saved yet.</div>';
@@ -1158,6 +1293,10 @@
       mount.querySelectorAll('[data-asset-extended]').forEach(b => b.addEventListener('click', () => {
         const item = entries.find(x => x.id === b.dataset.assetExtended);
         if (item) void exportExtendedAssetLineageLocal(item);
+      }));
+      mount.querySelectorAll('[data-asset-cold-folder]').forEach(b=>b.addEventListener('click',()=>{
+        const item=entries.find(x=>x.id===b.dataset.assetColdFolder);
+        if(item)void saveColdDirectory(item);
       }));
       mount.querySelectorAll('[data-asset-cold]').forEach(b => b.addEventListener('click',()=>{
         const item=entries.find(x=>x.id===b.dataset.assetCold);

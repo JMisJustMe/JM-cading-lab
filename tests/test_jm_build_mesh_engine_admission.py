@@ -5,6 +5,7 @@ import hashlib
 import os
 import subprocess
 import sys
+import tempfile
 import threading
 import unittest
 from unittest import mock
@@ -14,7 +15,8 @@ from http.server import ThreadingHTTPServer
 SERVICE = Path(__file__).resolve().parents[1] / "services/jm-ecostate-build-mesh-mcp-v0_5"
 sys.path.insert(0,str(SERVICE))
 import server
-from engine_admission import ENGINE_NAMES, engine_authorized, engine_runtime_ready
+from engine_admission import ENGINE_NAMES, engine_authorized, engine_runtime_ready, \
+    SOURCE_PINS, ROOT, git_blob_matches, original_source_pins_ok
 
 class NativeEngineHostAdmission(unittest.TestCase):
     @classmethod
@@ -192,6 +194,33 @@ console.log(JSON.stringify({GAME_CODING_SOURCE,JM_GAMECORE_SOURCE,INITIAL_FACTS,
                 _,called=self.rpc("tools/call",{
                     "name":"jm_engine_core_contact","arguments":{}},token=token)
                 self.assertEqual(called["error"]["code"],-32601)
+        finally:
+            engine_runtime_ready.cache_clear()
+
+
+    def test_source_pin_drift_denied_on_host(self):
+        # Pin against the original donor bytes. A deliberately changed source
+        # must not be able to masquerade as the tested JM game/renderer.
+        self.assertEqual(len(SOURCE_PINS),16)
+        self.assertTrue(original_source_pins_ok(),"ORIGINAL_JM_SOURCE_CUSTODY_HOLD")
+        original,original_sha=next(iter(SOURCE_PINS.items()))
+        with tempfile.TemporaryDirectory() as tmp:
+            copy=Path(tmp) / "native-source.mjs"
+            raw=(ROOT/original).read_bytes()
+            copy.write_bytes(raw)
+            self.assertTrue(git_blob_matches(copy,original_sha))
+            copy.write_bytes(raw+b"\\n")
+            self.assertFalse(git_blob_matches(copy,original_sha))
+        engine_runtime_ready.cache_clear()
+        try:
+            with mock.patch("engine_admission.original_source_pins_ok",return_value=False):
+                token=os.environ["JM_ENGINE_OWNER_TOKEN"]
+                _,listed=self.rpc("tools/list",token=token)
+                actual={x["name"] for x in listed["result"]["tools"]}
+                self.assertFalse(actual & ENGINE_NAMES)
+                _,denied=self.rpc("tools/call",{
+                    "name":"jm_engine_world_contact","arguments":{}},token=token)
+                self.assertEqual(denied["error"]["code"],-32601)
         finally:
             engine_runtime_ready.cache_clear()
 

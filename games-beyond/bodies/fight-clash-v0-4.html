@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="theme-color" content="#050711" />
 <title>Fight Clash: Chameleon Prologue v0.4 Open Ring</title>
 <style>
@@ -335,7 +335,7 @@ function updateParticles(dt){for(let i=game.particles.length-1;i>=0;i--){const p
 
 function loop(t){raf=0;const dt=Math.min(.032,(t-last)/1000||.016);last=t;update(dt);draw();if(game.running&&!game.paused&&!game.over)raf=requestAnimationFrame(loop)}
 
-function draw(){ctx.save();ctx.clearRect(0,0,W,H);const sx=game?.shake?rand(-game.shake,game.shake):0,sy=game?.shake?rand(-game.shake*.35,game.shake*.35):0;ctx.translate(sx,sy);drawArena();if(game){[game.player,game.enemy].sort((a,b)=>a.y-b.y).forEach(drawFighter);drawParticles()}ctx.restore()}
+function draw(){ctx.save();ctx.clearRect(0,0,W,H);const calm=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;const sx=game?.shake&&!calm?rand(-game.shake,game.shake):0,sy=game?.shake&&!calm?rand(-game.shake*.35,game.shake*.35):0;ctx.translate(sx,sy);drawArena();if(game){[game.player,game.enemy].sort((a,b)=>a.y-b.y).forEach(drawFighter);drawParticles()}ctx.restore()}
 function drawArena(){
   const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#101a33');g.addColorStop(.58,'#07101f');g.addColorStop(1,'#03060d');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   ctx.fillStyle='rgba(255,255,255,.025)';for(let x=0;x<W;x+=54)ctx.fillRect(x,0,1,H);for(let y=0;y<H;y+=54)ctx.fillRect(0,y,W,1);
@@ -386,10 +386,20 @@ canvas.addEventListener('pointermove',e=>{e.preventDefault();const p=pointers.ge
   if(p.side==='left'){setLeftVector(p,x,y)}
   else if(!p.fired&&!p.guarding){const threshold=20;if(Math.abs(dx)>threshold&&Math.abs(dx)>Math.abs(dy)*.72){p.fired=true;attemptAction(game.player,dx*game.player.facing>0?'cross':'hook')}else if(dy>threshold+2&&Math.abs(dy)>Math.abs(dx)*.72){p.fired=true;attemptAction(game.player,'body')}else if(dy<-(threshold+2)&&Math.abs(dy)>Math.abs(dx)*.72){p.fired=true;slip(game.player)}}
 }, {passive:false});
-function pointerEnd(e){e.preventDefault();const p=pointers.get(e.pointerId);if(!p)return;pointers.delete(e.pointerId);if(p.holdTimer)clearTimeout(p.holdTimer);hideThumb(p.side);if(p.side==='left'){hold.moveX=0;hold.moveY=0;const now=performance.now();if(!p.moved&&now-lastLeftTap<330)slip(game.player);if(!p.moved)lastLeftTap=now}if(p.guarding){hold.guard=false;return}if(p.side==='right'&&!p.fired){const elapsed=performance.now()-p.t;if(elapsed<360)tapStrike()}}
+function pointerEnd(e){e.preventDefault();const p=pointers.get(e.pointerId);if(!p)return;pointers.delete(e.pointerId);if(p.holdTimer)clearTimeout(p.holdTimer);hideThumb(p.side);if(p.side==='left'){hold.moveX=0;hold.moveY=0;const now=performance.now();if(!p.moved&&now-lastLeftTap<330)slip(game.player);if(!p.moved)lastLeftTap=now}if(p.guarding){hold.guard=false;return}if(e.type==='pointercancel')return; // cancelled touches do not throw phantom punches
+if(p.side==='right'&&!p.fired){const elapsed=performance.now()-p.t;if(elapsed<360)tapStrike()}}
 canvas.addEventListener('pointerup',pointerEnd,{passive:false});canvas.addEventListener('pointercancel',pointerEnd,{passive:false});
 function showThumb(side,x,y,r){const el=$(side+'Thumb');const localX=side==='left'?x:x-r.width/2;el.style.left=localX+'px';el.style.top=(y-(r.height*.54))+'px';el.style.display='block'}
 function hideThumb(side){$(side+'Thumb').style.display='none'}
+// CP24: an interrupted laptop key or phone pointer must not remain held.
+function releaseHeldContact(){
+  hold.moveX=0;hold.moveY=0;hold.guard=false;
+  for(const pointer of pointers.values()){if(pointer.holdTimer)clearTimeout(pointer.holdTimer);}
+  pointers.clear();hideThumb('left');hideThumb('right');
+  document.querySelectorAll('.held').forEach(el=>el.classList.remove('held'));
+}
+window.addEventListener('blur',releaseHeldContact);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseHeldContact()});
 
 // Mobile interaction lock: the fight surface is a controller, not selectable page text.
 for(const type of ['contextmenu','selectstart','dragstart']){
@@ -412,7 +422,7 @@ setLayout(preferredLayout);
 // Button + keyboard fallback routes.
 document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.action;if(a==='slip')slip(game.player);else if(a==='recover')recover(game.player);else attemptAction(game.player,a)}));
 document.querySelectorAll('[data-hold]').forEach(b=>{const key=b.dataset.hold;const on=e=>{e.preventDefault();if(!game.running)start();try{b.setPointerCapture(e.pointerId)}catch(_e){}if(key==='left')hold.moveX=-1;else if(key==='right')hold.moveX=1;else if(key==='up')hold.moveY=-1;else if(key==='down')hold.moveY=1;else hold[key]=true;b.classList.add('held')};const off=e=>{e.preventDefault();if(key==='left'||key==='right')hold.moveX=0;else if(key==='up'||key==='down')hold.moveY=0;else hold[key]=false;b.classList.remove('held')};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off)});
-window.addEventListener('keydown',e=>{if(e.repeat)return;const k=e.key.toLowerCase();if(k==='a')hold.moveX=-1;if(k==='d')hold.moveX=1;if(k==='w')hold.moveY=-1;if(k==='s')hold.moveY=1;if(k==='i')hold.guard=true;if(k==='j')attemptAction(game.player,'jab');if(k==='k')attemptAction(game.player,'cross');if(k==='l')attemptAction(game.player,'hook');if(k==='q')slip(game.player);if(k==='r')recover(game.player);if(k===' ')pause()});
+window.addEventListener('keydown',e=>{if(e.repeat||e.target.closest?.('input,textarea,select,[contenteditable="true"]'))return;const k=e.key.toLowerCase();if(k==='a')hold.moveX=-1;if(k==='d')hold.moveX=1;if(k==='w')hold.moveY=-1;if(k==='s')hold.moveY=1;if(k==='i')hold.guard=true;if(k==='j')attemptAction(game.player,'jab');if(k==='k')attemptAction(game.player,'cross');if(k==='l')attemptAction(game.player,'hook');if(k==='q')slip(game.player);if(k==='r')recover(game.player);if(k===' '){e.preventDefault();pause()}});
 window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='a'||k==='d')hold.moveX=0;if(k==='w'||k==='s')hold.moveY=0;if(k==='i')hold.guard=false});
 
 function syncDifficulty(){$('difficultyBtn').textContent='CPU: '+CPU_LEVELS[cpuLevel].label;$('difficultyBtn').classList.toggle('good',cpuLevel==='spar')}function cycleDifficulty(){cpuLevel=cpuLevel==='spar'?'match':cpuLevel==='match'?'beast':'spar';if(game)game.cpuLevel=cpuLevel;syncDifficulty();flash('CPU '+CPU_LEVELS[cpuLevel].label,cpuLevel==='spar'?'Sparring pace and reduced power.':cpuLevel==='match'?'Balanced match pace.':'Original hard pressure route.');RouteOS.log('cpu-level',cpuLevel,{})}

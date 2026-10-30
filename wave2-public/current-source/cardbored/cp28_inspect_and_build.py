@@ -17,3 +17,13 @@ if '--inspect' in sys.argv:
  print('CP28_INTERACTION_1',html[28600:35000])
  print('CP28_INTERACTION_2',html[39700:43500])
  print('CP28_DOM',html[17000:23800])
+
+if '--build' in sys.argv:
+ from cp28_native_patch import transform
+ candidate=transform(html)
+ assert len(candidate)>len(html), 'CP28 patch lost original source body'
+ assert "window.JM_CARDBORED_V05" in candidate, 'v0.5 original missing'
+ assert "function combat()" in candidate and "function applyCard(" in candidate, 'native game authority lost'
+ output=folder/'CP28_cardBORED_NATIVE_CONTACT.html'
+ output.write_text(candidate,encoding='utf8')
+ print("CP28_BUILT",str(output),len(candidate),sha256(candidate.encode('utf8')).hexdigest())

@@ -47,6 +47,14 @@ test('@puka-input gamepad held buttons are edge-triggered and select actual PUKA
   window.__proofPad=p;
  });
  const errors=await boot(page);
+ // The Gamepad API is event-driven: emulate real browser admission, not only
+ // presence in navigator.getGamepads() before the browser grants connection.
+ await page.evaluate(()=>{
+   if(!window.__proofPad)throw new Error('gamepad simulation not installed');
+   const event=new Event('gamepadconnected');
+   Object.defineProperty(event,'gamepad',{value:window.__proofPad});
+   window.dispatchEvent(event);
+ });
  await expect(page.locator('#pukaInputGuide')).toHaveAttribute('data-controller','on');
  await page.keyboard.press('n');
  const setButton=(index,pressed)=>page.evaluate(([i,val])=>{window.__proofPad.buttons[i].pressed=val},[index,pressed]);

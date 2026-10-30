@@ -274,7 +274,11 @@ const {chromium}=require('playwright');
    await page.locator('#jmJourneyOverview summary').click();
    assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).textContent(),/A private Matthew 6 draft/);
    const afterMark=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
-   assert.deepEqual(afterMark.queue,beforeMark.queue,'CP28 reversible chapter actions leave original reading queue equivalent');
+   assert.deepEqual(afterMark.queue.filter(q=>!(q.book==='Matthew'&&q.chapter===6)),beforeMark.queue,
+    'CP28 changing Matthew does not mutate other original reading-list chapters');
+   const matthewRows=afterMark.queue.filter(q=>q.book==='Matthew'&&q.chapter===6);
+   assert.equal(matthewRows.length,1,'CP28 one original reading-list entry after explicit chapter actions');
+   assert.equal(matthewRows[0].done,false,'CP28 reversed chapter progress is unread and not silently completed');
    assert.equal(afterMark.notes.length,beforeMark.notes.length+1,'CP28 note lives in the original notes collection');
    console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');
 

@@ -7,14 +7,19 @@ import {NATIVE_CONNECTED_WORLD_EXAMPLE} from '../navigator/estate-integration/ex
 
 const root=JSON.parse(fs.readFileSync('coding-estate/integration/REGISTRY.json'));
 const registry={...root,bodies:root.parts.flatMap(p=>JSON.parse(fs.readFileSync('coding-estate/integration/'+p)).bodies)};
+const current64=JSON.parse(fs.readFileSync('coding-estate/JM_CODING_ESTATE_CURRENT_64.json'));
 const bind=content=>({identity:'JM existing connected world original native source',content,sha256:createHash('sha256').update(content).digest('hex')});
 
 const inventory=await callJMEngineMcpTool('jm_engine_inventory');
 assert.equal(inventory.donors.find(x=>x.name==='Gardles').contact,'HOLD_NATIVE_SOURCE_NOT_MOUNTED_NO_ALIAS');
 assert.equal(typeof jmFederatedRendererInstall,'function');
 assert.deepEqual(JM_ENGINE_MCP_TOOLS.map(x=>x.name),['jm_engine_inventory','jm_engine_plan','jm_engine_core_contact','jm_engine_world_contact']);
-const plan=await callJMEngineMcpTool('jm_engine_plan',{goal:'build a touch arena game with visual feedback and proof'},registry);
+const plan=await callJMEngineMcpTool('jm_engine_plan',{goal:'build a touch arena game with visual feedback and proof',current64},registry);
 assert.equal(plan.state,'PLAN_ONLY_NO_EXECUTION');
+assert.equal(plan.current64.total,64);
+assert.equal(plan.current64.active.length+plan.current64.availableCount,64);
+assert.ok(plan.current64.active.some(x=>x.slug==='game-coding'||x.slug==='gameforge'));
+assert.ok(plan.current64.active.every(x=>x.state==='SELECTED_FOR_ROUTE_NOT_EXECUTED'));
 assert.ok(plan.route.route.some(x=>x.id==='game-coding'||x.id==='jm-gamecore'));
 
 const authorised={...structuredClone(INITIAL_FACTS),door:{...INITIAL_FACTS.door,authorized:true}};
@@ -45,7 +50,8 @@ assert.notEqual(burning.spatial.geometry.nonColourShapeSha256,living.spatial.geo
 
 await assert.rejects(()=>callJMEngineMcpTool('jm_engine_world_contact',{source:{...source,content:source.content+' '}},registry),/SOURCE_HASH_HOLD/);
 await assert.rejects(()=>callJMEngineMcpTool('jm_engine_world_contact',{source:{...source,sha256:'x'}},registry),/CONTRACT_HOLD/);
-await assert.rejects(()=>callJMEngineMcpTool('jm_engine_plan',{goal:'game'},null),/REGISTRY|Cannot read/);
+await assert.rejects(()=>callJMEngineMcpTool('jm_engine_plan',{goal:'game',current64},null),/REGISTRY|Cannot read/);
+await assert.rejects(()=>callJMEngineMcpTool('jm_engine_plan',{goal:'game',current64:{schema:'x'}},registry),/CURRENT64_AUTHORITY_HOLD/);
 await assert.rejects(()=>callJMEngineMcpTool('jm_engine_gardles',{},registry),/UNKNOWN_TOOL_HOLD/);
 await assert.rejects(()=>callJMEngineMcpTool('jm_engine_world_contact',{},registry),/SOURCE_REQUIRED_HOLD/);
 console.log(JSON.stringify({state:'PASS',nativeGameCoding:true,nativeGameCore:true,nativeSourceToWorld:true,

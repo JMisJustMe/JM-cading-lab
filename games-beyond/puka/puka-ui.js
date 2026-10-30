@@ -206,7 +206,7 @@
 
   // CP26 · Native PUKA input organ. All routes use this game's live PukaGame,
   // its current legal actions, its original evidence and its real save path.
-  const decisionInput={selected:0,raiseIndex:0,padIndex:null,padDown:new Set(),padFrame:0};
+  const decisionInput={selected:0,raiseIndex:0,padIndex:null,padRef:null,padDown:new Set(),padFrame:0};
   function currentChoices(){return game.snapshot().legal;}
   function actFromInput(kind,source='keyboard'){
     const fresh=game.snapshot();
@@ -285,7 +285,10 @@
     if(raiseOpen)raiseFromInput(Number(k)-1);
   });
   function readGamepad(){
-    const pad=navigator.getGamepads?.()[decisionInput.padIndex]||null;
+    // The connection event can precede browser getGamepads() enumeration;
+    // keep the exact connected Gamepad until the real disconnect event arrives.
+    const indexed=navigator.getGamepads?.()[decisionInput.padIndex]||null;
+    const pad=indexed?.connected?indexed:decisionInput.padRef;
     if(!pad||!pad.connected){stopGamepad();return}
     if(document.hidden){decisionInput.padDown.clear();decisionInput.padFrame=requestAnimationFrame(readGamepad);return}
     const down=new Set();
@@ -300,16 +303,16 @@
   }
   function stopGamepad(){
     cancelAnimationFrame(decisionInput.padFrame);decisionInput.padFrame=0;
-    decisionInput.padIndex=null;decisionInput.padDown.clear();
+    decisionInput.padIndex=null;decisionInput.padRef=null;decisionInput.padDown.clear();
     $('.jm-pad-selected').forEach(b=>b.classList.remove('jm-pad-selected'));
     const guide=$('#pukaInputGuide');if(guide)guide.dataset.controller='off';
   }
-  function startGamepad(index){
-    stopGamepad();decisionInput.padIndex=index;decisionInput.selected=0;
+  function startGamepad(index,pad){
+    stopGamepad();decisionInput.padIndex=index;decisionInput.padRef=pad||null;decisionInput.selected=0;
     const guide=$('#pukaInputGuide');if(guide)guide.dataset.controller='on';
     renderPadSelection();decisionInput.padFrame=requestAnimationFrame(readGamepad);
   }
-  window.addEventListener('gamepadconnected',e=>startGamepad(e.gamepad.index));
+  window.addEventListener('gamepadconnected',e=>startGamepad(e.gamepad.index,e.gamepad));
   window.addEventListener('gamepaddisconnected',e=>{
     if(e.gamepad.index===decisionInput.padIndex)stopGamepad();
   });
@@ -317,7 +320,7 @@
     if(document.hidden)decisionInput.padDown.clear();
   });
   const existingPad=Array.from(navigator.getGamepads?.()||[]).find(p=>p?.connected);
-  if(existingPad)startGamepad(existingPad.index);
+  if(existingPad)startGamepad(existingPad.index,existingPad);
 
   $('#dealBtn').onclick=deal;
   $$('[data-mode]').forEach(b=>b.onclick=()=>{game.setMode(b.dataset.mode);save();render();});

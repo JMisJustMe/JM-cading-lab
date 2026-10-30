@@ -1081,18 +1081,19 @@ jobs:
               await fs.writeFile(path.join(folder,damaged),nameToBytes.get(damaged));
               stale=true;
               await button.click();
-              try {
-                await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_DIRECTORY_DIFFERENT_HELD_SOURCE_HOLD'),{timeout:12000});
-              } catch (e) {
-                const observed=(await page.locator('#jmVaultFileStatus').textContent().catch(()=>''))?.slice(0,380);
-                const checkpoint=await page.evaluate(()=>{
-                  const raw=Object.entries(localStorage).filter(([k])=>k.includes('cold')||k.includes('Cold')).map(([k,v])=>[k,v?.slice(0,150)]);
-                  return raw;
-                });
-                throw Error('CP31_STALE_SOURCE_FAIL_CLOSED_DIAGNOSTIC status='+JSON.stringify(observed)+
-                  ' parts_read='+partReads+' posts='+writes+' page_errors='+JSON.stringify(errors)+
-                  ' local_checkpoint='+JSON.stringify(checkpoint)+' cause='+String(e));
-              }
+              // Either refuse a source changed BEFORE this export begins,
+              // or refuse one changed BETWEEN its first and final read.
+              // Both are safety HOLDS: neither may mutate R2 or overwrite
+              // the original owner-held disk catalog.
+              await page.waitForFunction(()=>{
+                const state=document.querySelector('#jmVaultFileStatus')?.textContent||'';
+                return state.startsWith('COLD DIRECTORY HOLD: ')
+                  && (state.includes('COLD_DIRECTORY_DIFFERENT_HELD_SOURCE_HOLD')
+                    ||state.includes('COLD_DIRECTORY_REMOTE_CATALOG_CHANGED_HOLD'));
+              });
+              const afterStale=JSON.parse(await fs.readFile(path.join(folder,catalogName),'utf8'));
+              if(JSON.stringify(afterStale)!==JSON.stringify(actualCatalog))
+                throw Error('CP31_STALE_CATALOG_OVERWROTE_OWNER_DISK');
               if(partReads!==allParts.length||writes!==0)
                 throw Error('CP31_CHANGED_CATALOG_USED_OR_POSTED');
               stale=false;

@@ -28,6 +28,8 @@ jobs:
         run: npm install
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Continuous original-body source quality sweep
+        run: node tests/jm-game-quality-sweep.mjs
       - name: Boot and registry gate
         run: npx playwright test --project=mobile-chromium --grep '@boot'
       - name: Mounted room opens

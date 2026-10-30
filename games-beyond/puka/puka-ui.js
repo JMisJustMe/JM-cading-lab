@@ -230,7 +230,7 @@
     return false;
   }
   function renderPadSelection(){
-    const options=$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]');
+    const options=$$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]');
     options.forEach(b=>b.classList.remove('jm-pad-selected'));
     if(!options.length)return;
     decisionInput.selected=((decisionInput.selected%options.length)+options.length)%options.length;
@@ -238,7 +238,7 @@
   }
   function choosePadAction(){
     if(raiseOpen){const opts=game.snapshot().raiseOptions;return opts.length?raiseFromInput(decisionInput.raiseIndex):false}
-    const options=$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]');
+    const options=$$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]');
     if(!options.length)return dealFromInput();
     decisionInput.selected%=options.length;
     const btn=options[decisionInput.selected];
@@ -250,11 +250,11 @@
     if(raiseOpen){
       const n=game.snapshot().raiseOptions.length;
       if(n)decisionInput.raiseIndex=(decisionInput.raiseIndex+dir+n)%n;
-      const opts=$('#raiseTray [data-raise-to]');
+      const opts=$$('#raiseTray [data-raise-to]');
       opts.forEach((b,i)=>b.classList.toggle('jm-pad-selected',i===decisionInput.raiseIndex));
       return;
     }
-    const n=$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]').length;
+    const n=$$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]').length;
     if(n){decisionInput.selected=(decisionInput.selected+dir+n)%n;renderPadSelection()}
   }
   function padInput(button){
@@ -304,7 +304,7 @@
   function stopGamepad(){
     cancelAnimationFrame(decisionInput.padFrame);decisionInput.padFrame=0;
     decisionInput.padIndex=null;decisionInput.padRef=null;decisionInput.padDown.clear();
-    $('.jm-pad-selected').forEach(b=>b.classList.remove('jm-pad-selected'));
+    $$('.jm-pad-selected').forEach(b=>b.classList.remove('jm-pad-selected'));
     const guide=$('#pukaInputGuide');if(guide)guide.dataset.controller='off';
   }
   function startGamepad(index,pad){

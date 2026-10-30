@@ -93,7 +93,7 @@ def engine_authorized(header):
         return False
     supplied=header[7:]
     return bool(len(supplied)==len(secret) and hmac.compare_digest(supplied,secret)
-                and engine_runtime_ready())
+                and engine_runtime_ready() and original_source_pins_ok())
 
 def call_native_engine(name,arguments):
     if name not in ENGINE_NAMES or not isinstance(arguments,dict):

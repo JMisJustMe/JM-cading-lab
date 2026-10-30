@@ -281,9 +281,10 @@ test('@thirdcourt-cp32 JET signature first step changes the original driving bur
  await page.locator('#playQuick').click();
  const before=await status(page);
  expect(before.athletes[0].name).toBe('JET');
- await page.evaluate(()=>JM_THIRD_COURT.switchPlayer());
- await expect.poll(async()=>(await status(page)).cutCount).toBe(1);
- const after=await status(page);
+ // Observe live gameplay state in the same browser turn as the drive input:
+ // the burst decays on each animation frame, so delayed polling cannot assert its initial value.
+ const after=await page.evaluate(()=>{JM_THIRD_COURT.switchPlayer();return JM_THIRD_COURT.status()});
+ expect(after.cutCount).toBe(1);
  expect(after.driveBoost).toBeGreaterThan(.40);
  expect(after.stamina).toBeGreaterThan(74);
  expect(after.stamina).toBeLessThan(81);

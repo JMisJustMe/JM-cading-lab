@@ -60,12 +60,12 @@ try{
   check(!intersects(menu,echo),sc.name+' original Echo must not overlap tactical drawer');
   const before=await page.evaluate(()=>window.JMFTRDevice.state());
   check(before.traceDisplayed&&before.coarse,sc.name+' original source-control contact admitted');
+  await page.locator('#startBtn').tap();
   await page.locator('#jmMobileTools').tap();
   check(await page.locator('#jmMobileShelf').isVisible(),sc.name+' optional JM controls expand in compact shelf');
   check(await page.locator('#jmCoverBuild').isVisible(),sc.name+' original-source cover remains accessible');
   await page.locator('#jmMobileTools').tap();
   check(!await page.locator('#jmMobileShelf').isVisible(),sc.name+' tactical shelf closes without deleting controls');
-  await page.locator('#startBtn').tap();
   const cdp=await context.newCDPSession(page);
   const center={x:act.x+act.width/2,y:act.y+act.height/2,id:9};
   await touch(cdp,'touchStart',[center]);

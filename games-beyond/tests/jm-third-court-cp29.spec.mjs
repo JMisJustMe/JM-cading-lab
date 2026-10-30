@@ -324,3 +324,43 @@ test('@thirdcourt-cp33 ROOT defender pressure requires actual geometric proximit
  expect(result.sameTeam).toBe(0);
  expect(errors).toEqual([]);
 });
+
+
+test('@thirdcourt-cp35 rival scouting classifies repeat basketball decisions, never score',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const start=await status(page);
+ expect(start.scoutStyle).toBe('UNREAD');
+ expect(start.scoutActions).toEqual({drives:0,passes:0,shots:0});
+ const styles=await page.evaluate(()=>[
+  JM_THIRD_COURT.scoutStyle({drives:3,passes:0,shots:0}),
+  JM_THIRD_COURT.scoutStyle({drives:0,passes:3,shots:0}),
+  JM_THIRD_COURT.scoutStyle({drives:0,passes:0,shots:3}),
+  JM_THIRD_COURT.scoutStyle({drives:3,passes:3,shots:0}),
+  JM_THIRD_COURT.scoutStyle({drives:2,passes:1,shots:1})
+ ]);
+ expect(styles).toEqual(['DRIVE','PASS','SHOT','MIXED','UNREAD']);
+ expect((await status(page)).score).toEqual(start.score);
+ await page.evaluate(()=>JM_THIRD_COURT.switchPlayer());
+ const driven=await status(page);
+ expect(driven.scoutActions.drives).toBe(1);
+ expect(driven.scoutStyle).toBe('UNREAD');
+ expect(driven.score).toEqual(start.score);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp35 tactical pass records the actual launched ball without awarding a free catch',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ await page.evaluate(()=>JM_THIRD_COURT.callCut());
+ const afterCall=await status(page);
+ expect(afterCall.cutCalls).toBe(1);
+ expect(afterCall.scoutActions.passes).toBe(0);
+ await page.evaluate(()=>JM_THIRD_COURT.pass());
+ const afterPass=await status(page);
+ expect(afterPass.scoutActions.passes).toBe(1);
+ expect(afterPass.ballInFlight).toBeTruthy();
+ expect(afterPass.scoutStyle).toBe('UNREAD');
+ expect(afterPass.score).toEqual([0,0]);
+ expect(afterPass.playerCount).toBe(6);
+ expect(errors).toEqual([]);
+});

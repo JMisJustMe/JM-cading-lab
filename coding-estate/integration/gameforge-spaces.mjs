@@ -71,7 +71,7 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   // external edit must not be silently repaired by a timer/lifecycle save.
   let durableValue=storage?storage.getItem(slot):null;
   const hash=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
-  if(storage){const packed=storage.getItem(slot);if(packed){const e=JSON.parse(packed);if(e.token===token){if(e?.schema!=='jm.gameforge.spaces-envelope/1'||typeof e.body!=='string'||await hash(e.body)!==e.sha256)throw Error('SPACES_STORAGE_HASH_HOLD');session=JSON.parse(e.body);model.validate(session);session.rooms.forEach((m,i)=>{if(m.snapshot)window.JMValidateArena(m.snapshot,model.rooms[i].world)});}}}
+  if(storage){const packed=storage.getItem(slot);if(packed){const e=JSON.parse(packed);if(e?.token!==token)throw Error('SPACES_STORAGE_TOKEN_HOLD');if(e?.schema!=='jm.gameforge.spaces-envelope/1'||typeof e.body!=='string'||await hash(e.body)!==e.sha256)throw Error('SPACES_STORAGE_HASH_HOLD');session=JSON.parse(e.body);model.validate(session);session.rooms.forEach((m,i)=>{if(m.snapshot)window.JMValidateArena(m.snapshot,model.rooms[i].world)});}}
   function applyRoom(spawn=null){
     const r=model.rooms[session.active],m=session.rooms[session.active];
     GF.applyBody(r.body,false);GFUX.start(false);

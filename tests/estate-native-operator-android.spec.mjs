@@ -188,6 +188,16 @@ try{
   await page.locator('#jm-space-dimension').click();
   await page.evaluate(()=>{window.JMHostPauseSaved=false});adb('shell','input','keyevent','KEYCODE_HOME');await page.waitForFunction(()=>window.JMHostPauseSaved===true,null,{timeout:10000,polling:100});
   const saved=await read();assert.equal(await page.evaluate(()=>window.JMRenderedWorldReadback().paused),true);
+  const sourceSlot='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700';
+  const durableBefore=await page.evaluate(k=>{
+    const raw=window.JMWorldStorage?.getItem(k);
+    const e=raw?JSON.parse(raw):null;
+    const s=e?.body?JSON.parse(e.body):null;
+    return {hasStorage:!!window.JMWorldStorage,hasEnvelope:!!e,token:e?.token,active:s?.active,transitions:s?.transitions,collected:s?.collected,opened:s?.opened,href:location.href};
+  },sourceSlot);
+  fs.writeFileSync(out+'/android-durable-before-force-stop.json',JSON.stringify(durableBefore));
+  assert.equal(durableBefore.hasEnvelope,true,'ANDROID_DURABLE_ENVELOPE_MISSING_BEFORE_FORCE_STOP');
+  assert.equal(durableBefore.active,saved.session.active,'ANDROID_DURABLE_ENVELOPE_STALE_BEFORE_FORCE_STOP');
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');await page.waitForTimeout(200);assert.deepEqual((await read()).session,saved.session);
   fs.writeFileSync(out+'/android-screen.png',execFileSync('adb',['exec-out','screencap','-p']));
   // Native process death destroys the previous WebView debugging transport.
@@ -196,7 +206,17 @@ try{
   await device.close();device=null;page=null;
   adb('shell','am','force-stop',pkg);await new Promise(r=>setTimeout(r,500));
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');
-  await connect();assert.deepEqual((await read()).session,saved.session);
+  await connect();
+  const durableAfter=await page.evaluate(k=>{
+    const raw=window.JMWorldStorage?.getItem(k);
+    const e=raw?JSON.parse(raw):null;
+    const s=e?.body?JSON.parse(e.body):null;
+    return {hasStorage:!!window.JMWorldStorage,hasEnvelope:!!e,token:e?.token,active:s?.active,transitions:s?.transitions,collected:s?.collected,opened:s?.opened,href:location.href};
+  },sourceSlot);
+  fs.writeFileSync(out+'/android-durable-after-force-stop.json',JSON.stringify(durableAfter));
+  assert.equal(durableAfter.hasEnvelope,true,'ANDROID_DURABLE_ENVELOPE_MISSING_AFTER_FORCE_STOP');
+  assert.equal(durableAfter.active,saved.session.active,'ANDROID_DURABLE_ENVELOPE_STALE_AFTER_FORCE_STOP');
+  assert.deepEqual((await read()).session,saved.session);
   const installedPath=adb('shell','pm','path',pkg).replace(/^package:/,'');adb('pull',installedPath,out+'/installed-exact.apk');assert.equal(sha(fs.readFileSync(out+'/installed-exact.apk')),proof.apk_sha256);fs.unlinkSync(out+'/installed-exact.apk');
   // Ordinary reload dispatches pagehide/visibilitychange and calls JMWorldSuspend,
   // which legitimately rewrites a clean envelope. To prove boot-time tamper

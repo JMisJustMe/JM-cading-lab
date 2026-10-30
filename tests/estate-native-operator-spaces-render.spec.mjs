@@ -144,6 +144,15 @@ try{
   await standalone.reload();await standalone.waitForFunction(()=>Boolean(window.JMConnectedWorldReadback?.()));
   assert.deepEqual(await standalone.evaluate(()=>window.JMConnectedWorldReadback().session),stored);
   await standalone.screenshot({path:'qa/estate-native-operator-spaces-standalone-phone.png'});
+  // An existing saved game with an unexpected owner/boot token must HOLD rather
+  // than silently start a new save and bury progression.
+  const originalEnvelope=await standalone.evaluate(()=>window.JMWorldStorage.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700'));
+  await standalone.evaluate(()=>{const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',e=JSON.parse(window.JMWorldStorage.getItem(k));e.token='wrong-world-authority';window.JMWorldStorage.setItem(k,JSON.stringify(e))});
+  await standalone.reload();await standalone.waitForFunction(()=>document.getElementById('jm-world-title')?.textContent.startsWith('WORLD HOLD'));
+  assert.match(await standalone.locator('#jm-world-title').innerText(),/SPACES_STORAGE_TOKEN_HOLD/);
+  await standalone.evaluate((envelope)=>window.JMWorldStorage.setItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',envelope),originalEnvelope);
+  await standalone.reload();await standalone.waitForFunction(()=>Boolean(window.JMConnectedWorldReadback?.()));
+  assert.deepEqual(await standalone.evaluate(()=>window.JMConnectedWorldReadback().session),stored);
   await standalone.evaluate(()=>{const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',e=JSON.parse(window.JMWorldStorage.getItem(k));e.body=e.body.replace('"active":0','"active":99');window.JMWorldStorage.setItem(k,JSON.stringify(e))});
   const corruptBytes=await standalone.evaluate(()=>window.JMWorldStorage.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700'));
   // Exercise the real autosave interval and lifecycle save, not just a fast reload.

@@ -24,20 +24,7 @@ assert(roleRun.athletes.every(p=>p.pose&&Number.isFinite(p.pose.step)&&p.pose.fo
 assert(roleRun.athletes.some(p=>Math.abs(p.pose.step)>.01),'CP28 a naturally moving roster member actually animates a moving foot');
 const runningFeet=roleRun.athletes.filter(p=>Math.abs(p.pose.step)>.01).length;
 console.log('PASS CP28 CROSS-RENDER ATHLETE POSE '+width+'px '+JSON.stringify({moving:runningFeet,athletes:roleRun.athletes.slice(0,3).map(p=>p.pose)}));
-const rendererModes=new Set();
-for(let phase=0;phase<3;phase++){
- await page.click('#cameraBtn');
- await page.waitForTimeout(90);
- const display=await page.locator('#rendererTag').textContent();
- rendererModes.add(display);
- const livePose=await page.evaluate(()=>JM_THIRD_COURT.status());
- assert.equal(livePose.athletes.length,6,'CP28 every active camera uses all six same source-owned athletes');
- assert(livePose.athletes.every(p=>Number.isFinite(p.pose.step)&&Number.isFinite(p.pose.brace)),'CP28 camera never detaches original articulated physical state');
-}
-assert(rendererModes.has('CLASSIC OVERHEAD'),'CP28 real Classic renderer reached with original camera control');
-assert(rendererModes.has('SOFTWARE 3D'),'CP28 real perspective Broadcast renderer reached with original camera control');
-if(roleRun.native3DReady)assert(rendererModes.has('NATIVE WEBGL2'),'CP28 available original GPU renderer reached with original camera control');
-console.log('PASS CP28 CAMERA-TO-BODY CONTACT '+width+'px '+JSON.stringify([...rendererModes]));
+
 
 assert(roleRun.athletes.some(p=>p.supportIntent),'CP27 off-ball movement target persisted in actual roster');
 assert(roleRun.athletes.every(p=>p.contactMass>0&&p.contactPulse>=0&&p.contactPulse<=1),'CP27 bodies expose bounded live mass and contact recovery');
@@ -151,6 +138,20 @@ assert(bounced.lastRim&&Math.abs(bounced.lastRim.reboundX-bounced.lastRim.x)<90,
 console.log('PASS CP21 LIVE RICOCHET '+width+'px '+JSON.stringify({arc:bounced.reboundArcStarts,ground:bounced.reboundGroundHits,lastRim:bounced.lastRim}));
 await page.click('#pauseButton');assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
 await page.click('#resumeBtn');assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused);
+const rendererModes=new Set();
+for(let phase=0;phase<3;phase++){
+ await page.click('#cameraBtn');
+ await page.waitForTimeout(90);
+ const display=await page.locator('#rendererTag').textContent();
+ rendererModes.add(display);
+ const livePose=await page.evaluate(()=>JM_THIRD_COURT.status());
+ assert.equal(livePose.athletes.length,6,'CP28 every active camera uses all six same source-owned athletes');
+ assert(livePose.athletes.every(p=>Number.isFinite(p.pose.step)&&Number.isFinite(p.pose.brace)),'CP28 camera never detaches original articulated physical state');
+}
+assert(rendererModes.has('CLASSIC OVERHEAD'),'CP28 real Classic renderer reached with original camera control');
+assert(rendererModes.has('SOFTWARE 3D'),'CP28 real perspective Broadcast renderer reached with original camera control');
+if(roleRun.native3DReady)assert(rendererModes.has('NATIVE WEBGL2'),'CP28 available original GPU renderer reached with original camera control');
+console.log('PASS CP28 CAMERA-TO-BODY CONTACT '+width+'px '+JSON.stringify([...rendererModes]));
 assert.deepEqual(errors,[]);
 await page.screenshot({path:'artifacts/jm-third-court-visual-proof/cp11-'+width+'.png'});
 const baseline=await context.newPage();

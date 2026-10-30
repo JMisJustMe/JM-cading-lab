@@ -29,6 +29,9 @@ body{background:radial-gradient(circle at 14% -8%,rgba(114,236,255,.08),transpar
 @media(min-width:760px){.app{padding-bottom:0}.nav{position:sticky;top:63px;bottom:auto;display:flex;justify-content:center;border-top:0;border-bottom:1px solid var(--line);padding:6px;background:rgba(5,8,16,.94)}.nav button{min-width:130px}.main{padding:12px}.play-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.45fr);gap:8px}.play-side{display:grid;align-content:start;gap:6px}.play-head,.hud{margin-top:0}.hud{grid-template-columns:1fr 1fr}.arena-shell{margin-top:0}.tune-grid,.proof-grid{grid-template-columns:1fr 1fr}.level-list{grid-template-columns:1fr 1fr}.toast{bottom:18px}}
 @media(max-height:520px) and (orientation:landscape){.topbar{display:none}.app{padding-bottom:0}.nav{position:fixed;left:0;top:0;bottom:0;right:auto;width:86px;display:grid;grid-template-columns:1fr;align-content:start;border-right:1px solid var(--line);border-top:0;padding:5px}.nav button{min-width:0;min-height:48px;font-size:.58rem}.main{margin-left:86px;width:calc(100% - 86px);padding:5px}.view[data-view="play"].active{display:block}.play-layout{grid-template-columns:minmax(0,1fr) 165px;gap:5px}.play-side{max-height:calc(100vh - 10px);overflow:auto}.play-head{padding:6px}.play-head h1{font-size:.83rem}.play-head span{display:none}.objective{max-width:58%;font-size:.58rem}.hud{grid-template-columns:1fr 1fr}.hud div{padding:4px}.arena-shell{height:calc(100vh - 10px);padding:4px}.arena-shell canvas{height:100%;width:100%;aspect-ratio:auto}.arena-overlay{bottom:8px;left:8px;right:8px}.hint{display:none}.play-actions{grid-template-columns:1fr}.play-actions button{min-height:38px;padding:5px;font-size:.62rem}.role-note{display:none}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* CP24 keyboard focus is contact, not decoration. */
+#arena:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -48,7 +51,7 @@ body{background:radial-gradient(circle at 14% -8%,rgba(114,236,255,.08),transpar
 <section class="view active" data-view="play">
   <div class="play-layout">
     <div class="arena-shell">
-      <canvas id="arena" width="960" height="600" aria-label="Drag and aim proof arena"></canvas>
+      <canvas id="arena" width="960" height="600" tabindex="0" aria-label="Drag and aim proof arena. Keyboard: left or right changes direction, up or down changes power, Space fires."></canvas>
       <div class="arena-overlay"><div id="hint" class="hint">Touch the gold core, pull backwards, release.</div><div class="power-readout">POWER <b id="dragPower">0%</b></div></div>
     </div>
     <aside class="play-side">
@@ -129,7 +132,40 @@ function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.l
 function down(e){e.preventDefault();const p=point(e);state.pointer=p;if(state.complete)return;const d=Math.hypot(p.x-state.ball.x,p.y-state.ball.y);if(d<=state.ball.r+38){const interrupted=+Math.hypot(state.ball.vx,state.ball.vy).toFixed(2);state.ball.vx=state.ball.vy=0;state.drag=true;canvas.setPointerCapture?.(e.pointerId);setStatus('AIMING');append('drag.reclaim',{interruptedSpeed:interrupted});render()}}
 function move(e){if(!state.drag)return;e.preventDefault();state.pointer=point(e);setStatus('CHARGING');render()}
 function up(e){if(!state.drag)return;e.preventDefault();state.pointer=point(e);state.drag=false;const dx=state.ball.x-state.pointer.x,dy=state.ball.y-state.pointer.y,m=Math.min(250,Math.hypot(dx,dy));if(m<8){setStatus('READY');render();return}const s=.065*state.tune.power;state.ball.vx=dx*s;state.ball.vy=dy*s;state.shots++;setStatus('MOVING');append('release',{vx:+state.ball.vx.toFixed(2),vy:+state.ball.vy.toFixed(2),power:+m.toFixed(1)});tone(260,.04);renderAll()}
-canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);
+// CP24: cancelling a finger never commits a shot.
+canvas.addEventListener('pointercancel',()=>{
+  if(!state.drag)return;
+  state.drag=false;state.pointer={x:state.ball.x,y:state.ball.y};
+  setStatus('READY');render();
+});
+// Laptop-first parity without replacing the original drag/release physics.
+const keyboardShot={angle:-.52,pull:120};
+window.addEventListener('keydown',e=>{
+  if(state.view!=='play'||state.complete||state.drag)return;
+  if(document.activeElement?.matches?.('input,textarea,select,[contenteditable="true"]'))return;
+  const key=e.key;
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','Enter'].includes(key))return;
+  e.preventDefault();
+  if(key==='ArrowLeft')keyboardShot.angle-=.09;
+  if(key==='ArrowRight')keyboardShot.angle+=.09;
+  if(key==='ArrowUp')keyboardShot.pull=Math.min(240,keyboardShot.pull+14);
+  if(key==='ArrowDown')keyboardShot.pull=Math.max(24,keyboardShot.pull-14);
+  if(key===' '||key==='Enter'){
+    const rect=canvas.getBoundingClientRect(),b=state.ball;
+    if(!rect.width||!rect.height)return;
+    const x=b.x-Math.cos(keyboardShot.angle)*keyboardShot.pull;
+    const y=b.y-Math.sin(keyboardShot.angle)*keyboardShot.pull;
+    state.drag=true;
+    up({preventDefault(){},clientX:rect.left+x*rect.width/W,clientY:rect.top+y*rect.height/H});
+    append('keyboard.aim_release',{angle:+keyboardShot.angle.toFixed(3),pull:keyboardShot.pull});
+    return;
+  }
+  const b=state.ball;
+  state.pointer={x:b.x-Math.cos(keyboardShot.angle)*keyboardShot.pull,y:b.y-Math.sin(keyboardShot.angle)*keyboardShot.pull};
+  $('hint').textContent='KEYBOARD AIM · ← → direction · ↑ ↓ power · SPACE release';
+  render();
+});
 function circle(a,b){return Math.hypot(a.x-b.x,a.y-b.y)<a.r+b.r}
 function hitRect(o,ball=state.ball,mutate=true){const nx=Math.max(o.x,Math.min(ball.x,o.x+o.w)),ny=Math.max(o.y,Math.min(ball.y,o.y+o.h)),dx=ball.x-nx,dy=ball.y-ny;if(dx*dx+dy*dy>ball.r*ball.r)return false;const b=state.tune.bounce,l=Math.abs(ball.x+ball.r-o.x),r=Math.abs(o.x+o.w-(ball.x-ball.r)),t=Math.abs(ball.y+ball.r-o.y),bt=Math.abs(o.y+o.h-(ball.y-ball.r)),m=Math.min(l,r,t,bt);if(m===l){ball.x=o.x-ball.r;ball.vx=-Math.abs(ball.vx)*b}else if(m===r){ball.x=o.x+o.w+ball.r;ball.vx=Math.abs(ball.vx)*b}else if(m===t){ball.y=o.y-ball.r;ball.vy=-Math.abs(ball.vy)*b}else{ball.y=o.y+o.h+ball.r;ball.vy=Math.abs(ball.vy)*b}if(mutate)append('contact.obstacle',{x:o.x,y:o.y});return true}
 function inHazard(z){return state.ball.x+state.ball.r>z.x&&state.ball.x-state.ball.r<z.x+z.w&&state.ball.y+state.ball.r>z.y&&state.ball.y-state.ball.r<z.y+z.h}

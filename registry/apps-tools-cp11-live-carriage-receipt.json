@@ -1,0 +1,65 @@
+{
+  "schema": "JM.AppsToolsWorkroomsLiveCarriageProof/1",
+  "verified_utc": "2026-10-30T02:46:15.308123+00:00",
+  "state": "LIVE_EXACT_SOURCE_PASS",
+  "source_commit": "df78a5c4519d81c99aec27aace4fec7c6a7bb577",
+  "github_workflow_run": "40993445852",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "files_verified": [
+    {
+      "path": "/estate-publication/apps-tools-convergence/index.html",
+      "sha256": "1198c042a408ece9aeb5207bf9ab4a15619cdf0ef872c44e9398451a5297a468",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_v0_1.css",
+      "sha256": "83a54b8fc1c09affd57a5e1be3ba3a6bfd9464bce38176ff8c0d7c19554f3a49",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js",
+      "sha256": "b23c348e60ae7fa9000ffed05b7f422c9d4423ca3792d911bfd11dc6effde326",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js",
+      "sha256": "ad3c29781971ec48f1f2a361444661c78999bc163392c6aa346c1f88c995175e",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/evidence-governance/index.html",
+      "sha256": "9e42ea65996e36d6450873ddf3df42f1aee2c8dd4ae4d9f035e89c8798234cba",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/creation-publication/index.html",
+      "sha256": "0a5d8205ebdcaa569594e737d5f44d37297bd1769115c6140e4979b54d71ce8d",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/contact-practice/index.html",
+      "sha256": "c607340997d84b1dd08f82062f979a7063858e0cbcb1bdba90a19c5132a6ebf2",
+      "http": 200,
+      "exact_bytes": true
+    },
+    {
+      "path": "/estate-publication/apps-tools-convergence/route-ftr/index.html",
+      "sha256": "ee90b3695fec4e851691d1361887d199ccade5a9bafc25b477720bc98de493ee",
+      "http": 200,
+      "exact_bytes": true
+    }
+  ],
+  "file_count": 8,
+  "apps_house_entry_verified": true,
+  "real_owner_device_proof": false,
+  "owner_content_or_secrets_collected": false,
+  "automatic_github_writeback_proof": false,
+  "other_jm_apps_live_editability_proof": false,
+  "boundary": "Proves public canonical delivery of eight exact source-derived static workroom assets and Apps House links; local browser persistence, owner device interaction, and private full bodies are separate."
+}

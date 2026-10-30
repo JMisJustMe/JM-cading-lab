@@ -282,6 +282,7 @@ const {chromium}=require('playwright');
    assert.deepEqual(afterMark.notes,beforeMark.notes,'CP28 reading progress must not alter any saved original notes');
    assert(afterMark.notes.some(n=>n.ref==='Matthew 6'&&n.text.includes('A private Matthew 6 draft')),'CP28 the directly authored reflection remains in the original notes collection');
    // CP31: one private seven-chapter review, rendered from the existing notes and queue only.
+   await page.locator('[data-tab="explore"]').click();
    await page.selectOption('#planPicker','quiet');
    await page.locator('[data-tab="read"]').click();
    await page.locator('#jmJourneyOverview').evaluate(el=>el.open=true);

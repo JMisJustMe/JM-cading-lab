@@ -279,7 +279,8 @@ const {chromium}=require('playwright');
    const matthewRows=afterMark.queue.filter(q=>q.book==='Matthew'&&q.chapter===6);
    assert.equal(matthewRows.length,1,'CP28 one original reading-list entry after explicit chapter actions');
    assert.equal(matthewRows[0].done,false,'CP28 reversed chapter progress is unread and not silently completed');
-   assert.equal(afterMark.notes.length,beforeMark.notes.length+1,'CP28 note lives in the original notes collection');
+   assert.deepEqual(afterMark.notes,beforeMark.notes,'CP28 reading progress must not alter any saved original notes');
+   assert(afterMark.notes.some(n=>n.ref==='Matthew 6'&&n.text.includes('A private Matthew 6 draft')),'CP28 the directly authored reflection remains in the original notes collection');
    console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');
 
 

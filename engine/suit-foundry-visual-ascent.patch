@@ -105,7 +105,7 @@
 + A('bevel',x,.08,z,.63,.14,.63,'#73796f');
 + A('cylinder',x,1.75,z,.18,1.64,.18,'#657d7c',0);
 + A('bevel',x,3.42,z,.38,.10,.38,'#c0b49a',0);
-+ if(k<6){const aa=a+Math.PI/12;A('bevel',Math.cos(aa)*10.3,3.55,Math.sin(aa)*10.3-1,.18,.12,1.40,'#809994',0,-aa);}
++ if(k<6){const aa=a+Math.PI/12;A('bevel',Math.cos(aa)*10.3,3.55,Math.sin(aa)*10.3-1,.18,.12,2.66,'#809994',0,-aa);}
 +}
 +for(let k=0;k<24;k++){
 + const a=k*Math.PI*2/24;

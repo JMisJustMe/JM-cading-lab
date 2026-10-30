@@ -1,0 +1,330 @@
+--- a/jm_code/04_actual_engine.js
++++ b/jm_code/04_actual_engine.js
+@@ -255,6 +255,14 @@
+  if(cross[0]*normal[0]+cross[1]*normal[1]+cross[2]*normal[2]<-1e-7){
+   for(const a of [v,n])for(let j=0;j<3;j++){const t=a[i+3+j];a[i+3+j]=a[i+6+j];a[i+6+j]=t;}
+  }}return {v,n};}
++function jmAscentLandform(){
++ const v=[],n=[],N=72,point=(i,j)=>{const x=-1+2*i/N,z=-1+2*j/N,r=Math.hypot(x,z),edge=Math.max(0,(r-.69)*3.8);return[x,edge*(.65+.18*Math.sin(x*18+z*5)+.12*Math.sin(z*23-x*9)),z]};
++ for(let j=0;j<N;j++)for(let i=0;i<N;i++){
++  if(Math.hypot(-1+2*(i+.5)/N,-1+2*(j+.5)/N)<.70)continue;
++  const a=point(i,j),b=point(i+1,j),c=point(i,j+1),d=point(i+1,j+1);
++  for(const tri of [[a,c,b],[b,c,d]]){const u=vec3Sub(tri[1],tri[0]),w=vec3Sub(tri[2],tri[0]),nn=vec3Norm(vec3Cross(u,w));for(const p of tri){v.push(...p);n.push(...nn)}}
++ }return{v,n};
++}
+ function jmNormalMatrix(m,scale){const s=scale.map(x=>Math.max(.00001,Math.abs(x)));return [
+  m[0]/(s[0]*s[0]),m[1]/(s[0]*s[0]),m[2]/(s[0]*s[0]),
+  m[4]/(s[1]*s[1]),m[5]/(s[1]*s[1]),m[6]/(s[1]*s[1]),
+@@ -349,7 +357,7 @@
+   vec3 jmTidelCyan=vec3(.16,.42,.55); // exact TIDELESS v0.7 rim-light colour
+   vec3 jmWildTint=mix(vec3(.02,.36,.19),vec3(.43,.13,.38),step(1.5,uJMWild));
+   float jmBattle=clamp(uJMCombat,0.0,1.0);
+-  base+=jmTidelCyan*jmTidelRim*(.12+.32*clamp(uJMRim,0.0,1.0)+jmBattle*.38);
++  base+=jmTidelCyan*jmTidelRim*(.025+.055*clamp(uJMRim,0.0,1.0)+jmBattle*.22);
+   base+=jmWildTint*jmTidelRim*step(.5,uJMWild)*(.18+.12*sin(uTime*2.0));
+   base+=vec3(.52,.28,.74)*jmBattle*jmTidelRim*.38;
+   base+=vec3(.07,.13,.08)*max(dot(n,normalize(vec3(.27,-.35,.58))),0.)*.2;
+@@ -368,8 +376,8 @@
+   float heroFocus=1.0-smoothstep(.6,1.45,distance(vWorld.xz,uJMSubject.xz));
+   float allyFocus=1.0-smoothstep(.5,1.22,distance(vWorld.xz,uJMCompanion.xz));
+   float bodyFocus=max(heroFocus,allyFocus*.72)*(1.0-step(.5,vBatch));
+-  base+=vec3(.12,.23,.19)*pow(1.0-max(dot(n,eye),0.0),1.8)*bodyFocus*.76;
+-  base+=vec3(.05,.10,.08)*bodyFocus*.14;
++  base+=vec3(.12,.16,.21)*pow(1.0-max(dot(n,eye),0.0),1.8)*bodyFocus*.16;
++  base+=vec3(.03,.04,.05)*bodyFocus*.10;
+   base+=jmToon*bodyFocus*(vec3(.21,.12,.17)*pow(1.0-max(dot(n,eye),0.0),2.0)*.35);
+   // JM Atelier: modest Fresnel metal edge, mineral side-glint, screen-space grain.
+   // Works on sculpted normals without extra textures or an external PBR engine.
+@@ -377,7 +385,7 @@
+   vec3 warmKey=normalize(vec3(-.62,.76,-.27));
+   float metalCut=pow(max(dot(reflect(-warmKey,n),eye),0.0),54.0);
+   float mottle=sin(vWorld.x*31.0+vWorld.z*17.0)*sin(vWorld.y*27.0-vWorld.x*8.0);
+-  base+=vec3(.29,.35,.51)*edgeView*(.105+.09*vGlow)*(1.0-jmToon*.60);
++  base+=vec3(.29,.35,.51)*edgeView*(.028+.06*vGlow)*(1.0-jmToon*.60);
+   base+=vec3(.70,.52,.40)*metalCut*.13*(1.0-jmBlock*.65);
+   base+=vColor*mottle*.015*(1.0-jmToon*.85);
+   // JM SCULPTED SKIN: character-local metal/cloth separation and clear directional
+@@ -398,6 +406,12 @@
+    base+=vec3(.015,.16,.09)*livingFalloff*uLife*(.68+.32*sin(uTime*2.2));
+    float stormFalloff=1.0-smoothstep(1.0,9.0,distance(vWorld.xz,vec2(4.0,1.0)));
+    base+=vec3(.19,.017,.058)*stormFalloff*uDanger*(.7+.3*sin(uTime*5.0));
++  float floorMask=(1.0-smoothstep(.08,.20,abs(vWorld.y)))*max(n.y,0.0);
++  float heroShadow=exp(-dot((vWorld.xz-uJMSubject.xz)/vec2(.58,.43),(vWorld.xz-uJMSubject.xz)/vec2(.58,.43))*2.0);
++  base*=1.0-floorMask*heroShadow*.62;
++  // Graphic Toonform contour from surface-facing angle, integrated in the native fragment path.
++  float contour=1.0-smoothstep(.12,.26,abs(dot(n,eye)));
++  base=mix(base,vec3(.025,.032,.055),contour*jmToon*bodyFocus*.86);
+   float distanceToCamera=length(uEye-vWorld);
+   float fog=smoothstep(21.,66.,distanceToCamera)*.58;
+   base=mix(base,fogColor(),fog);
+@@ -406,7 +420,7 @@
+  }`;
+  const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error('SHADER '+gl.getShaderInfoLog(sh));return sh};const p=gl.createProgram();gl.attachShader(p,mk(gl.VERTEX_SHADER,vs));gl.attachShader(p,mk(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error('LINK '+gl.getProgramInfoLog(p));this.program=p;
+  this.loc={position:gl.getAttribLocation(p,'aPosition'),normal:gl.getAttribLocation(p,'aNormal'),aColor:gl.getAttribLocation(p,'aColor'),aGlow:gl.getAttribLocation(p,'aGlow'),aVeil:gl.getAttribLocation(p,'aVeil'),uSubject:gl.getUniformLocation(p,'uJMSubject'),uCompanion:gl.getUniformLocation(p,'uJMCompanion'),uClarity:gl.getUniformLocation(p,'uJMClarity'),uHeroScreen:gl.getUniformLocation(p,'uJMHeroScreen'),uAllyScreen:gl.getUniformLocation(p,'uJMAllyScreen'),uBatch:gl.getUniformLocation(p,'uBatch'),mvp:gl.getUniformLocation(p,'uMVP'),model:gl.getUniformLocation(p,'uModel'),normalMatrix:gl.getUniformLocation(p,'uJMNormal'),color:gl.getUniformLocation(p,'uColor'),glow:gl.getUniformLocation(p,'uGlow'),eye:gl.getUniformLocation(p,'uEye'),time:gl.getUniformLocation(p,'uTime'),biome:gl.getUniformLocation(p,'uBiome'),life:gl.getUniformLocation(p,'uLife'),danger:gl.getUniformLocation(p,'uDanger'),jmRim:gl.getUniformLocation(p,'uJMRim'),jmWild:gl.getUniformLocation(p,'uJMWild'),jmCombat:gl.getUniformLocation(p,'uJMCombat'),jmStyle:gl.getUniformLocation(p,'uJMStyleWorld')};
+- for(const [name,shape] of Object.entries({cube:meshCube(),octa:meshOcta(),hex:meshHexPrism(),sphere:sphere(),cylinder:cylinder(),ring:ringMesh(),bevel:jmBevelBox(),capsule:jmCapsule(),spire:jmSpire(),helm:jmContourHelm(),plate:jmArticulatedPlate(),blade:jmCrestBlade(),mantle:jmWovenMantle(),crescent:jmArcCrescent(),gauntlet:jmRidgedGauntlet(),petal:jmPetalGlass()})){const aligned=jmOutwardWinding(shape);const m={v:gl.createBuffer(),n:gl.createBuffer(),count:aligned.v.length/3};gl.bindBuffer(gl.ARRAY_BUFFER,m.v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(aligned.v),gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,m.n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(aligned.n),gl.STATIC_DRAW);m.data=aligned;this.meshes[name]=m;}gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);this.error=null;this.buildStaticBatch();this.setupSky();
++ for(const [name,shape] of Object.entries({landform:jmAscentLandform(),cube:meshCube(),octa:meshOcta(),hex:meshHexPrism(),sphere:sphere(),cylinder:cylinder(),ring:ringMesh(),bevel:jmBevelBox(),capsule:jmCapsule(),spire:jmSpire(),helm:jmContourHelm(),plate:jmArticulatedPlate(),blade:jmCrestBlade(),mantle:jmWovenMantle(),crescent:jmArcCrescent(),gauntlet:jmRidgedGauntlet(),petal:jmPetalGlass()})){const aligned=jmOutwardWinding(shape);const m={v:gl.createBuffer(),n:gl.createBuffer(),count:aligned.v.length/3};gl.bindBuffer(gl.ARRAY_BUFFER,m.v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(aligned.v),gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,m.n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(aligned.n),gl.STATIC_DRAW);m.data=aligned;this.meshes[name]=m;}gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);this.error=null;this.buildStaticBatch();this.setupSky();
+  }
+  buildStaticBatch(){
+  const gl=this.gl,v=[],n=[],c=[],g=[],f=[];for(const item of this.static){const mesh=this.meshes[item.mesh].data,mat=modelMatrix(item);for(let i=0;i<mesh.v.length;i+=3){const p=transformPoint(mat,[mesh.v[i],mesh.v[i+1],mesh.v[i+2]]);v.push(p[0],p[1],p[2]);const a=mesh.n.slice(i,i+3),nm=jmNormalMatrix(mat,item.scale);const nn=vec3Norm([nm[0]*a[0]+nm[3]*a[1]+nm[6]*a[2],nm[1]*a[0]+nm[4]*a[1]+nm[7]*a[2],nm[2]*a[0]+nm[5]*a[1]+nm[8]*a[2]]);n.push(...nn);c.push(...item.color);g.push(item.em||0);f.push(item.jmVeil?1:0)}}
+@@ -454,7 +468,11 @@
+   const cam=inspect?[this.focus[0]+Math.sin(angle)*inspectDist,portrait?3.20:2.83,this.focus[2]+Math.cos(angle)*inspectDist]:
+     [this.focus[0]+(portrait?1.55:2.8)+drift,portrait?4.82:5.45,this.focus[2]+(portrait?5.60:7.15)];
+   const target=inspect?[this.focus[0],1.40,this.focus[2]]:[this.focus[0],1.47,this.focus[2]-.72];
+-  const vp=mat4Multiply(mat4Perspective((portrait?61:57)*Math.PI/180,this.w/this.h,.15,185),mat4LookAt(cam,target));this.vp=vp;this.cam=cam;
++  const diorama=game.camera==='DIORAMA';
++  if(diorama){cam[0]=this.focus[0]+12;cam[1]=12;cam[2]=this.focus[2]+12;target[0]=this.focus[0];target[1]=.7;target[2]=this.focus[2];}
++  const span=portrait?8:10,aspect=this.w/this.h,near=.15,far=185;
++  const ortho=[1/(span*aspect),0,0,0,0,1/span,0,0,0,0,-2/(far-near),0,0,0,-(far+near)/(far-near),1];
++  const vp=mat4Multiply(diorama?ortho:mat4Perspective((portrait?61:57)*Math.PI/180,aspect,near,far),mat4LookAt(cam,target));this.vp=vp;this.cam=cam;
+  gl.clearColor(.015,.047,.081,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);this.drawSky(time);gl.useProgram(this.program);gl.uniform3fv(this.loc.eye,new Float32Array(cam));gl.uniform1f(this.loc.time,time);gl.uniform1f(this.loc.biome,this.biome||0);
+   gl.uniform1f(this.loc.life,Math.max(0,Math.min(1,this.gameCoreLife||0)));
+   gl.uniform1f(this.loc.danger,Math.max(0,Math.min(1,this.gameCoreDanger||0)));
+--- a/jm_code/07_training_centre.js
++++ b/jm_code/07_training_centre.js
+@@ -216,7 +216,7 @@
+ // JM Game-CODING entities are actually lowered into native JM Actual Engine geometry.
+ for(const [zone,program] of Object.entries(parsedSources))for(const entity of program.entities.slice(1)){
+  const q=entity.fields;if(!['cube','cylinder','sphere','octa','helm','plate','blade','mantle','crescent','gauntlet','petal','spire','bevel','capsule'].includes(q.mesh))throw Error('JM_CENTRE_UNSUPPORTED_SOURCE_MESH');
+- A(q.mesh,Number(q.x),Number(q.y),Number(q.z),Number(q.width),Number(q.height),Number(q.depth),q.color,.35);
++ A(q.mesh,Number(q.x),Number(q.y),Number(q.z),Number(q.width),Number(q.height),Number(q.depth),q.color,.12);world[world.length-1].jmAuthoredSource=true;
+ }
+ // Connected walkways, not isolated maps. Four continuous world routes.
+ for(let step=0;step<10;step++){const u=(step+.5)/10;for(const p of ZONES.slice(1)){A('cube',p.x*u,.0,p.z*u,1.35,.02,1.35,'#3e6877',.07);}}
+@@ -299,6 +299,23 @@
+ A('ring',21,.08,19,4,.10,4,'#87e9ba',.5);
+ A('cube',-21,.10,-19,5,.15,5,'#534d7d');
+ for(let i=0;i<7;i++)A('octa',21+Math.cos(i)*5,.65+Math.sin(i*2)*.4,-19+Math.sin(i)*5,.23,.5,.23,'#80c8ff',.6);
++// Clear the hub's decoration corridor while retaining actual compiled source markers,
++// floor, dynamic interactive objects and all district collision geometry.
++for(let i=world.length-1;i>=0;i--){const o=world[i];if(Math.abs(o.pos[0])<10&&Math.abs(o.pos[2])<10&&o.pos[1]>.12&&!o.jmAuthoredSource)world.splice(i,1);}
++// Continuous authored landform replaces the cone wall; not physical walkable terrain.
++A('landform',0,-1.1,0,52,9,52,'#414d60',0);
++// A far-side semicircle frames the court without filling the chase-camera corridor.
++for(let k=0;k<7;k++){
++ const a=Math.PI+(k/6)*Math.PI,x=Math.cos(a)*10.3,z=Math.sin(a)*10.3-1;
++ A('bevel',x,.08,z,.63,.14,.63,'#73796f');
++ A('cylinder',x,1.75,z,.18,1.64,.18,'#657d7c',0);
++ A('bevel',x,3.42,z,.38,.10,.38,'#c0b49a',0);
++ if(k<6){const aa=a+Math.PI/12;A('bevel',Math.cos(aa)*10.3,3.55,Math.sin(aa)*10.3-1,.18,.12,1.40,'#809994',0,-aa);}
++}
++for(let k=0;k<24;k++){
++ const a=k*Math.PI*2/24;
++ A('bevel',Math.cos(a)*6.15,.068,Math.sin(a)*6.15,.24,.016,.8,k%2?'#8a8a77':'#556e71',0,Math.PI/2-a);
++}
+ return world;}
+ function dynWorld(time){const d=[],S=snap(),E=S.enemies,P=S.objects;
+ // Sculpted subjects belong to a physical floor plane: a soft-radius non-emissive
+@@ -406,22 +423,23 @@
+ const jmSculptCache=new Map();
+ let jmSculptState={parts:0,triangles:0,binds:0,buildMs:0,character:''};
+ function jmSculptLoft(sections,segments=18){
+- const vs=[],ns=[];
+- const point=(section,a)=>{const theta=a*2*Math.PI,ca=Math.cos(theta),sa=Math.sin(theta);
+-  return [section.x+section.rx*ca,section.y,section.z+section.rz*sa];};
++ const v=[],n=[],P=(j,k)=>{const q=sections[j],a=k/segments*Math.PI*2;return[q.x+q.rx*Math.cos(a),q.y,q.z+q.rz*Math.sin(a)]};
++ const N=(j,k)=>{const a=k/segments*Math.PI*2,q=sections[j],lo=sections[Math.max(0,j-1)],hi=sections[Math.min(sections.length-1,j+1)],
++  u=[-Math.max(.001,q.rx)*Math.sin(a),0,Math.max(.001,q.rz)*Math.cos(a)],w=[hi.x-lo.x+(hi.rx-lo.rx)*Math.cos(a),hi.y-lo.y,hi.z-lo.z+(hi.rz-lo.rz)*Math.sin(a)];
++  let nn=[w[1]*u[2]-w[2]*u[1],w[2]*u[0]-w[0]*u[2],w[0]*u[1]-w[1]*u[0]],L=Math.hypot(...nn)||1;
++  if(nn[0]*Math.cos(a)+nn[2]*Math.sin(a)<0)nn=nn.map(x=>-x);return nn.map(x=>x/L)};
+  for(let j=0;j<sections.length-1;j++)for(let k=0;k<segments;k++){
+-  const a=point(sections[j],k/segments),b=point(sections[j],(k+1)/segments),c=point(sections[j+1],k/segments),d=point(sections[j+1],(k+1)/segments);
+-  // Normal and winding aligned per triangle; smooth normal angle around anatomical surface.
+-  for(const tri of [[a,c,b],[b,c,d]]){
+-   const u=tri[1].map((v,i)=>v-tri[0][i]),w=tri[2].map((v,i)=>v-tri[0][i]);
+-   let n=[u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]],len=Math.hypot(...n)||1;n=n.map(q=>q/len);
+-   const cc=sections[j],p=tri[0],out=[(p[0]-cc.x)/Math.max(.05,cc.rx),.07,(p[2]-cc.z)/Math.max(.05,cc.rz)];
+-   if(out[0]*n[0]+out[2]*n[2]<0)tri.reverse();
+-   const nn=[0,0,0];for(const v of tri){const nearest=sections.reduce((best,q)=>Math.abs(q.y-v[1])<Math.abs(best.y-v[1])?q:best,sections[0]);
+-    const radial=[(v[0]-nearest.x)/Math.max(.03,nearest.rx),.02,(v[2]-nearest.z)/Math.max(.03,nearest.rz)];const L=Math.hypot(...radial)||1;vs.push(...v);ns.push(...radial.map(x=>x/L));}
+-  }
+- }
+- return {v:new Float32Array(vs),n:new Float32Array(ns)};
++  for(let ids of [[[j,k],[j+1,k],[j,k+1]],[[j,k+1],[j+1,k],[j+1,k+1]]]){
++   const q=ids.map(x=>P(...x)),a=q[1].map((x,i)=>x-q[0][i]),b=q[2].map((x,i)=>x-q[0][i]),cross=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],normal=N(...ids[0]);
++   if(cross.reduce((sum,x,i)=>sum+x*normal[i],0)<0)ids=ids.slice().reverse();
++   for(const id of ids){v.push(...P(...id));n.push(...N(...id));}
++  }
++ }
++ // Close the authored ends: no open shoulder, wrist or panel holes.
++ const up=sections.at(-1).y>=sections[0].y?1:-1;
++ for(const [j,sign] of [[0,-up],[sections.length-1,up]]){const q=sections[j];for(let k=0;k<segments;k++){
++  const a=P(j,k),b=P(j,k+1),c=[q.x,q.y,q.z],tri=sign>0?[c,b,a]:[c,a,b];for(const p of tri){v.push(...p);n.push(0,sign,0);}
++ }}return{v:new Float32Array(v),n:new Float32Array(n)};
+ }
+ function jmSculptTube(start,end,r0,r1,seg=14,rings=9,bend=0){
+  const [x0,y0,z0]=start,[x1,y1,z1]=end,arr=[];
+@@ -429,7 +447,7 @@
+  arr.push({x:x0+(x1-x0)*t+bend*sm,y:y0+(y1-y0)*t,z:z0+(z1-z0)*t,rx:taper*(1+.04*sm),rz:taper*.88});}
+  return jmSculptLoft(arr,seg);
+ }
+-function jmSculptAnatomy(character){
++function jmLegacySculptAnatomy(character){
+  const dense=character==='IRONFIST',ether=character==='VOID_WALKER',lunar=character==='LUNAR_PRIESTESS';
+  const torso=jmSculptLoft([
+   {x:0,y:.86,z:0,rx:.30,rz:.23},{x:0,y:1.0,z:0,rx:.34,rz:.29},{x:0,y:1.22,z:0,rx:.32,rz:.27},
+@@ -456,6 +474,93 @@
+  return [{mesh:torso,color:tone[0]},{mesh:head,color:tone[2]},{mesh:pelvis,color:tone[0]},
+  ...arms.map((m,i)=>({mesh:m,color:i%2?tone[1]:tone[0]})),...legs.map((m,i)=>({mesh:m,color:i%3===2?tone[3]:tone[1]}))];
+ }
++// Additive SUIT Foundry anatomy authoring, using the recovered CP39 skin and Actual Engine.
++// New geometry is authored here; it is not claimed to have existed in the donors.
++function jmAscentAnatomy(character, family){
++ const iron=character==='IRONFIST',lunar=character==='LUNAR_PRIESTESS',voided=character==='VOID_WALKER';
++ const wood=family==='WOODGLASS',block=family==='BLOCKFORM',toon=family==='TOONFORM';
++ const palette=wood?['#443326','#b3cf94','#244e49','#c4eee0','#dcba74']:
++ lunar?['#e2dfcc','#a0b7cf','#323a55','#f4d291','#765047']:
++ iron?['#343c46','#9a7770','#1b222d','#d8ad77','#f39e4d']:
++ voided?['#241e38','#685380','#101729','#b1a2e9','#9872ce']:
++ ['#19232e','#455469','#0c131e','#a3b2c3','#e74954'];
++ const groups=new Map(),S=block?4:toon?16:20;
++ const emit=(shape,c)=>{let g=groups.get(c);if(!g){g={v:[],n:[]};groups.set(c,g)}g.v.push(...shape.v);g.n.push(...shape.n);};
++ const loft=(rows,c,segments=S)=>emit(jmSculptLoft(rows.map(a=>({x:a[0],y:a[1],z:a[2],rx:a[3],rz:a[4]})),segments),c);
++ const ell=(x,y,z,rx,ry,rz,c,N=S)=>{const rows=[];for(let i=0;i<=10;i++){const a=i/10*Math.PI;rows.push([x,y-ry*Math.cos(a),z,Math.max(.001,rx*Math.sin(a)),Math.max(.001,rz*Math.sin(a))]);}loft(rows,c,N)};
++ const limb=(a,b,r0,r1,c)=>{const rows=[];for(let i=0;i<=8;i++){const t=i/8,bump=Math.sin(t*Math.PI);rows.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,r0+(r1-r0)*t+bump*r0*.13,(r0+(r1-r0)*t)*.82]);}loft(rows,c)};
++ const cube=(x,y,z,rx,ry,rz,c)=>{const v=[],n=[];for(let axis=0;axis<3;axis++)for(const sign of [-1,1]){const a=(axis+1)%3,b=(axis+2)%3,sz=[rx,ry,rz],cen=[x,y,z],p=[];for(const uv of [[-1,-1],[1,-1],[1,1],[-1,1]]){const q=cen.slice();q[axis]+=sign*sz[axis];q[a]+=uv[0]*sz[a];q[b]+=uv[1]*sz[b];p.push(q)}for(const ix of sign>0?[[0,1,2],[0,2,3]]:[[0,2,1],[0,3,2]])for(const i of ix){v.push(...p[i]);n.push(...[0,0,0].map((q,k)=>k===axis?sign:0));}}emit({v,n},c)};
++ const panel=(x,y,z,w,h,depth,c)=>{
++  const rows=[];for(let k=0;k<=6;k++){const t=k/6,bulge=Math.sin(t*Math.PI),width=w*(.48+.52*bulge);rows.push([x,y+(t-.5)*h,z-depth*bulge,width,.012+depth*.18]);}loft(rows,c,block?4:12);
++ };
++ const shoulder=iron?.56:lunar?.34:.41,waist=iron?.29:lunar?.205:.235;
++ const headR=(iron?.235:.215)*(toon?1.32:1),headY=2.29;
++ // Closed torso profile: clavicle, pectorals, ribcage, waist and separate hip mass.
++ loft([[0,.91,0,.21,.15],[0,1.04,0,waist,.165],[0,1.21,0,waist*.96,.16],[0,1.43,-.015,shoulder*.85,.22],[0,1.60,0,shoulder,.24],[0,1.72,.005,shoulder*.89,.19],[0,1.80,0,.15,.13]],palette[0]);
++ loft([[0,.78,0,.245,.17],[0,.90,0,.28,.19],[0,1.04,0,waist,.16]],palette[2]);
++ limb([0,1.77,0],[0,2.04,0],.125,.105,lunar?palette[4]:palette[2]);
++ // Crown and tapered jaw, deliberately six-to-seven-head figure rather than old barrel head.
++ loft([[0,2.06,-.01,.09,.105],[0,2.12,-.018,headR*.76,headR*.74],[0,headY,-.005,headR,headR*.91],[0,2.43,0,headR*.90,headR*.84],[0,2.50,.01,.08,.08],[0,2.52,.01,.002,.002]],lunar?palette[4]:palette[0],toon?24:S);
++ for(const s of [-1,1]){
++  const hip=s*.19,knee=s*(iron?.26:.22),ankle=s*.235;
++  if(block){
++   // Constructed anatomy: separated beams, hinge balls and treaded feet.
++   cube(s*shoulder,1.65,0,.18,.19,.19,palette[1]);ell(s*.52,1.25,0,.10,.10,.10,palette[3]);
++   cube(s*.54,1.04,-.025,.16,.18,.17,palette[0]);
++   cube(hip,.69,0,.16,.22,.17,palette[1]);ell(knee,.43,0,.105,.10,.105,palette[3]);
++   cube(ankle,.24,-.01,.13,.14,.14,palette[0]);cube(ankle,.08,-.12,.17,.075,.25,palette[2]);
++   for(let k=0;k<3;k++)cube(ankle,.12,-.29+k*.12,.18,.022,.025,palette[3]);
++  }else{
++   panel(s*shoulder,1.64,-.03,iron?.23:.17,.28,.13,palette[1]);
++   limb([s*shoulder,1.62,0],[s*.51,1.25,-.01],iron?.17:.12,.095,palette[0]);
++   ell(s*.51,1.23,-.01,.10,.105,.10,palette[2]);
++   limb([s*.51,1.20,-.01],[s*.55,.93,-.065],iron?.18:.12,iron?.16:.085,palette[1]);
++   ell(s*.55,.88,-.07,iron?.19:.092,iron?.16:.11,iron?.19:.105,palette[2]);
++   // Actual separated glove fingers, not a sphere standing in for a hand.
++   if(!iron)for(let k=0;k<4;k++)limb([s*.55+(k-1.5)*.035,.85,-.095],[s*.55+(k-1.5)*.035,.75+Math.abs(k-1.5)*.022,-.105],.017,.013,palette[1]);
++   limb([hip,.92,0],[knee,.49,.015],iron?.20:lunar?.133:.154,.115,palette[0]);
++   panel(knee,.48,-.09,.112,.20,.055,palette[1]);
++   limb([knee,.44,.015],[ankle,.13,0],.12,.075,palette[1]);
++   ell(ankle,.10,-.10,.112,.085,.205,palette[2]);
++  }
++  if(wood){
++   // Growing branch contours and translucent-looking leaf blades are actual separate meshes.
++   const rows=[];for(let k=0;k<9;k++){let t=k/8;rows.push([s*(.30+.18*Math.sin(t*2.6)),1.55+t*.54,.10,.10*(1-t)+.003,.045]);}loft(rows,palette[1],9);
++   ell(s*.48,1.41,-.08,.14,.32,.065,palette[3],9);
++  }
++  if(!lunar){
++   // Small segmented pectoral and abdominal armour; no billboard chest cover.
++   panel(s*(iron?.20:.16),1.53,-.215,iron?.23:.172,.29,.045,palette[1]);
++   for(let k=0;k<3;k++)panel(s*.105,1.15+k*.095,-.165,.105,.075,.026,k%2?palette[0]:palette[1]);
++   cube(s*.23,.98,-.18,.07,.065,.048,palette[1]);
++  }
++ }
++ // Face detail occupies the face, with recessed dark sockets and separate brows.
++ if(lunar||toon){
++  for(const s of [-1,1]){ell(s*headR*.43,headY+.014,-headR*.84,headR*.30,.043,.028,palette[2],12);ell(s*headR*.43,headY+.018,-headR*.94,.023,.027,.012,lunar?'#d9d2b5':'#f4e9cf',12);ell(s*headR*.43,headY+.018,-headR*.985,.011,.019,.009,'#171c27',10);ell(s*headR*.43,headY+.078,-headR*.84,headR*.30,.014,.022,palette[2],10);}
++  ell(0,headY-.045,-headR*.98,.025,.057,.041,lunar?'#976653':palette[1],12);
++  ell(0,headY-.113,-headR*.79,.054,.015,.019,lunar?'#462c35':palette[4],12);
++ }else{
++  for(const s of [-1,1]){ell(s*.102,2.29,-headR*.88,.082,.020,.018,palette[2],12);ell(s*.102,2.292,-headR*.94,.065,.010,.009,palette[4],12);}
++  loft([[0,2.11,-.09,.09,.08],[0,2.19,-.11,.14,.10],[0,2.23,-.1,.13,.105]],palette[1],12);
++ }
++ if(lunar||voided){
++  // Split tailored robe panels. Open front and curved hems preserve readable legs.
++  for(const s of [-1,1])for(let panel=0;panel<3;panel++){
++   const rows=[];for(let k=0;k<9;k++){const t=k/8;rows.push([s*(.22+.18*t+panel*.018),.95-.76*t,.08+panel*.09+.06*Math.sin(t*3),.10+.07*t,.04]);}loft(rows,panel===1?palette[1]:palette[0],10);
++  }
++ }
++ if(lunar){
++  // Hair cap, swept side locks and shaped golden breastplate inherit real weighted binding.
++  ell(0,2.42,.025,headR*1.02,.115,headR*.92,'#25232d',20);
++  for(const sign of [-1,1]){limb([sign*.19,2.37,.03],[sign*.20,2.06,.075],.045,.032,'#25232d');panel(sign*.12,1.51,-.20,.14,.31,.045,palette[1]);panel(sign*.22,1.08,-.14,.12,.28,.04,palette[3]);}
++ }
++ // Shorter exposed neck and a longer leg-to-body relationship. Native bind is resolved after shaping.
++ for(const g of groups.values())for(let i=1;i<g.v.length;i+=3){const y=g.v[i];g.v[i]=y>2.02?y-.13:y>1.79?1.79+(y-1.79)*.43:y;}
++ return [...groups].map(([color,g])=>({color,mesh:{v:new Float32Array(g.v),n:new Float32Array(g.n)}}));
++}
++
++function jmSculptAnatomy(character){return jmAscentAnatomy(character,style);}
+ function jmBuildSkinGrid(key){
+  const grid=new Map(),unit=.20;let refs=[];
+  for(const name of registered){if(!name.startsWith('JM_TC_MESH_'))continue;
+@@ -503,13 +608,13 @@
+ }
+ const c=x.clips[clipName];if(!c)throw Error('JM_SUIT_ANIMATION_CLIP_MISSING_'+clipName);const sample=clipName==='JM_WALK'?time:time-actionSince,idx=Math.min(c.count-1,Math.floor(((Math.max(0,sample)%c.duration)*c.fps))),stamp=key+':'+clipName+':'+idx;if(lastPoseId===stamp)return;lastPoseId=stamp;const raw=bytes(c.matrix),d=new DataView(raw.buffer);const m=new Int16Array(x.joints*12),offset=idx*x.joints*24;for(let j=0;j<m.length;j++)m[j]=d.getInt16(offset+j*2,true);
+ jmCurrentSkinMatrices=m;
+-const gl=renderer.gl;for(const name of registered){const e=renderer.meshes[name],v=e.origin,n=e.norm,w=e.joints,out=e.shifted,nout=e.shiftedNormals;for(let i=0;i<v.length/3;i++){const u=i*3,b=i*8;let px=0,py=0,pz=0,nx=0,ny=0,nz=0;for(let j=0;j<4;j++){const wt=w[b+4+j]/255;if(!wt)continue;const off=w[b+j]*12;px+=wt*(m[off]*v[u]+m[off+1]*v[u+1]+m[off+2]*v[u+2]+m[off+3])/8192;py+=wt*(m[off+4]*v[u]+m[off+5]*v[u+1]+m[off+6]*v[u+2]+m[off+7])/8192;pz+=wt*(m[off+8]*v[u]+m[off+9]*v[u+1]+m[off+10]*v[u+2]+m[off+11])/8192;nx+=wt*(m[off]*n[u]+m[off+1]*n[u+1]+m[off+2]*n[u+2])/8192;ny+=wt*(m[off+4]*n[u]+m[off+5]*n[u+1]+m[off+6]*n[u+2])/8192;nz+=wt*(m[off+8]*n[u]+m[off+9]*n[u+1]+m[off+10]*n[u+2])/8192;}out[u]=px;out[u+1]=py;out[u+2]=pz;const len=Math.hypot(nx,ny,nz)||1;nout[u]=nx/len;nout[u+1]=ny/len;nout[u+2]=nz/len;}
++const gl=renderer.gl;for(const name of registered){const e=renderer.meshes[name];if(jmSculptBodyEnabled&&name.startsWith('JM_TC_MESH_'))continue;const v=e.origin,n=e.norm,w=e.joints,out=e.shifted,nout=e.shiftedNormals;for(let i=0;i<v.length/3;i++){const u=i*3,b=i*8;let px=0,py=0,pz=0,nx=0,ny=0,nz=0;for(let j=0;j<4;j++){const wt=w[b+4+j]/255;if(!wt)continue;const off=w[b+j]*12;px+=wt*(m[off]*v[u]+m[off+1]*v[u+1]+m[off+2]*v[u+2]+m[off+3])/8192;py+=wt*(m[off+4]*v[u]+m[off+5]*v[u+1]+m[off+6]*v[u+2]+m[off+7])/8192;pz+=wt*(m[off+8]*v[u]+m[off+9]*v[u+1]+m[off+10]*v[u+2]+m[off+11])/8192;nx+=wt*(m[off]*n[u]+m[off+1]*n[u+1]+m[off+2]*n[u+2])/8192;ny+=wt*(m[off+4]*n[u]+m[off+5]*n[u+1]+m[off+6]*n[u+2])/8192;nz+=wt*(m[off+8]*n[u]+m[off+9]*n[u+1]+m[off+10]*n[u+2])/8192;}out[u]=px;out[u+1]=py;out[u+2]=pz;const len=Math.hypot(nx,ny,nz)||1;nout[u]=nx/len;nout[u+1]=ny/len;nout[u+2]=nz/len;}
+ gl.bindBuffer(gl.ARRAY_BUFFER,e.v);gl.bufferSubData(gl.ARRAY_BUFFER,0,out);gl.bindBuffer(gl.ARRAY_BUFFER,e.n);gl.bufferSubData(gl.ARRAY_BUFFER,0,nout);}framesUpdated++;}
+ // Owner-authored expressive proportions: original CP39 weighted deformation preserved.
+ // The drawn model and its native attachments receive the SAME root-space transform;
+ // GameCore hitboxes deliberately remain stable across visual SUIT families.
+ const jmHeroProportions={SHADOW_STRIKER:[.87,1.18,.88],IRONFIST:[.95,1.11,.96],VOID_WALKER:[.86,1.18,.88],LUNAR_PRIESTESS:[.88,1.17,.90]};
+-function suitModels(time,d){if(!renderer?.gl)return;const key=selected+'/'+style;try{installMesh(key);applySkin(key,time);const rec=JM_CP_MESH[key],pr=jmHeroProportions[selected];for(let i=0;i<rec.groups.length;i++){let g=rec.groups[i];if(!jmSculptBodyEnabled)d.push(O('JM_TC_MESH_'+i,player.x,0,player.z,pr[0],pr[1],pr[2],g.color,g.color==='#ff3948'?.6:.04,player.heading));}const sculpt=jmSculptCache.get(key)||[];for(let i=0;i<sculpt.length;i++){const m=O('JM_TC_BODY_'+i,player.x,0,player.z,pr[0],pr[1],pr[2],sculpt[i].color,.045,player.heading);m.jmAtelier=true;d.push(m);}}catch(e){failures.push(String(e));if(failures.length>12)failures.shift();}}
++function suitModels(time,d){if(!renderer?.gl)return;const key=selected+'/'+style;try{installMesh(key);applySkin(key,time);const rec=JM_CP_MESH[key],pr=jmHeroProportions[selected];for(let i=0;i<rec.groups.length;i++){let g=rec.groups[i];if(!jmSculptBodyEnabled)d.push(O('JM_TC_MESH_'+i,player.x,0,player.z,pr[0],pr[1],pr[2],g.color,g.color==='#ff3948'?.6:.04,player.heading));}const sculpt=jmSculptBodyEnabled?(jmSculptCache.get(key)||[]):[];for(let i=0;i<sculpt.length;i++){const m=O('JM_TC_BODY_'+i,player.x,0,player.z,pr[0],pr[1],pr[2],sculpt[i].color,.045,player.heading);m.jmAtelier=true;d.push(m);}}catch(e){failures.push(String(e));if(failures.length>12)failures.shift();}}
+ // v1.6 authored JM SUIT equipment: inherited skinned mesh stays authoritative.
+ // This adds reversible geometry driven by the real character, style and player heading.
+ // These parts are design studies, not claims of completed Atlas-accurate modelling.
+@@ -580,7 +685,7 @@
+ // The CP39 weighted body and animation remain sovereign. Every armour component follows
+ // a fixed authored bind-space socket: no unbounded cache keys from moving coordinates.
+ let jmAtelierLast={parts:0,character:'',triangles:0};
+-function jmSuitAttachments(time,d){
++function jmLegacySuitAttachments(time,d){
+  if(!jmDetailsEnabled||!renderer?.gl){jmAtelierLast={parts:0,character:selected,triangles:0};return 0;}
+  const key=selected,wood=style==='WOODGLASS',block=style==='BLOCKFORM',toon=style==='TOONFORM';
+  const dark=wood?'#272c2b':block?'#26364b':toon?'#253147':'#171d2b',steel=wood?'#9d9c89':block?'#879fb8':toon?'#adb6ce':'#7d91ad';
+@@ -693,6 +798,28 @@
+  return count;
+ }
+ 
++function jmSuitAttachments(time,d){
++ if(!jmDetailsEnabled||!renderer?.gl)return 0;
++ const start=d.length,pr=jmHeroProportions[selected],ca=Math.cos(player.heading),sa=Math.sin(player.heading);
++ const put=(mesh,x,y,z,sx,sy,sz,c,em=0,yaw=0)=>{
++  const pose=jmEquipmentSkinSocket(selected+'/'+style,x,y,z),px=(x+pose.delta[0])*pr[0],py=(y+pose.delta[1])*pr[1],pz=(z+pose.delta[2])*pr[2];
++  const o=O(mesh,player.x+ca*px+sa*pz,py,player.z-sa*px+ca*pz,sx*pr[0],sy*pr[1],sz*pr[2],c,em,player.heading+yaw);
++  if(pose.basis){o.rot=[0,player.heading,0];o.jmSkinBasis=pose.basis;o.jmLocalYaw=yaw;}o.jmAtelier=true;d.push(o);
++ };
++ if(selected==='SHADOW_STRIKER'){
++  for(const side of [-1,1]){put('blade',side*.57,.63,-.13,.055,.31,.055,'#e7414b',.38,side*.18);put('plate',side*.34,1.65,-.115,.13,.11,.08,'#526070',.01,side*.25);}
++  put('mantle',-.10,1.26,.22,.30,.51,.15,'#46242d',.01);
++ }else if(selected==='IRONFIST'){
++  for(const side of [-1,1]){put('gauntlet',side*.55,.99,-.08,.22,.23,.23,'#80685d',.01);for(let i=0;i<3;i++)put('bevel',side*.55+(i-1)*.11,.94,-.27,.04,.075,.03,'#d8a36e',.08);}
++ }else if(selected==='LUNAR_PRIESTESS'){
++  put('cylinder',.67,1.26,0,.023,.88,.023,'#c5a56b',.02);put('crescent',.67,2.27,0,.20,.22,.055,'#e4cf98',.12);
++  put('sphere',.67,2.28,0,.07,.07,.07,'#b6d7f0',.35);put('crescent',0,2.62,.04,.28,.25,.035,'#d2b67d',.06);
++ }else{
++  put('mantle',0,1.34,.20,.40,.65,.18,'#312b48',.01);
++  for(const side of [-1,1])put('spire',side*.30,2.16,.05,.09,.22,.10,'#54416e',.01,side*.4);
++ }
++ jmAtelierLast={parts:d.length-start,character:selected,geometry:'anatomical segmented native skin / distinct authored families',socketCache:jmEquipmentSockets.size};return d.length-start;
++}
+ function setup(){renderer=new R.Renderer($('scene'));if(renderer.error){$('engineState').textContent='JM GPU HOLD: '+renderer.error;failures.push(renderer.error);$('gpuHold').classList.remove('is-hidden');$('gpuHold').textContent='3D RENDERER UNAVAILABLE · '+renderer.error+' · Use a WebGL-capable browser. GameCore continues for inspection; visual gameplay is not running.';return;}renderer.staticScene(staticWorld());renderer.jmClarityEnabled=true;renderer.setBiome('ice');$('engineState').textContent='JM ACTUAL ENGINE · LIVE WEBGL';}
+ function notify(msg){$('notice').textContent=msg;$('notice').classList.add('show');setTimeout(()=>$('notice').classList.remove('show'),1600);}
+ function nearest(limit=3,mode='ANY'){const s=snap();const enemies=mode==='USE'?[]:Object.values(s.enemies).filter(e=>e.alive);
+@@ -821,7 +948,7 @@
+ function init(){setup();$('char').onchange=select;$('style').onchange=select;$('hit').onclick=()=>perform('hit');$('guard').onclick=()=>perform('guard');$('evade').onclick=()=>perform('evade');$('use').onclick=()=>perform('use');$('reset').onclick=()=>perform('reset');$('export').onclick=exportProof;
+ $('mapToggle').onclick=()=>{$('minimap').classList.toggle('is-hidden')};$('menu').onclick=()=>{$('setup').classList.toggle('is-hidden')};$('helpBtn').onclick=()=>{$('help').classList.toggle('is-hidden')};$('helpClose').onclick=()=>{$('help').classList.add('is-hidden')};$('motion').onclick=()=>{motionEnabled=!motionEnabled;$('motion').textContent='JM MOTION '+(motionEnabled?'ON':'OFF');lastPoseId='';};$('sources').onclick=()=>{const contents=Object.entries(WORLD_SOURCES).map(([k,v])=>'// '+k+'\n'+v).join('\n\n');download('JM_CENTRE_5_ZONES.gamecoding',contents)};
+ $('qualitySculpt').onclick=()=>{jmSculptBodyEnabled=!jmSculptBodyEnabled;$('qualitySculpt').textContent='SCULPTED BODY '+(jmSculptBodyEnabled?'ON':'LEGACY');notify(jmSculptBodyEnabled?'JM SCULPTED NATIVE SKIN':'CP30 LEGACY RENDER VIEW');};$('qualityDetail').onclick=()=>{jmDetailsEnabled=!jmDetailsEnabled;$('qualityDetail').textContent='JM DETAIL '+(jmDetailsEnabled?'ON':'OFF');notify('JM SUIT DETAIL '+(jmDetailsEnabled?'ENABLED':'DISABLED'));};$('aiToggle').onclick=()=>{aiEnabled=!aiEnabled;$('aiToggle').textContent='ENEMY AI '+(aiEnabled?'ON':'PAUSED');notify(aiEnabled?'ENEMIES ACTIVE':'ENEMIES PAUSED');};
+-$('cameraToggle').onclick=()=>{cameraMode=cameraMode==='CHASE'?'ORBIT':'CHASE';$('cameraToggle').textContent='CAMERA '+cameraMode;};$('jmInspectToggle').onclick=()=>{cameraMode=cameraMode==='INSPECT'?'CHASE':'INSPECT';$('jmInspectToggle').textContent=cameraMode==='INSPECT'?'RETURN TO WORLD':'INSPECT SUIT 360°';notify(cameraMode==='INSPECT'?'JM NATIVE SUIT · LIVE 360°':'FREE-ROAM CAMERA');};
++$('cameraToggle').onclick=()=>{cameraMode=({CHASE:'ORBIT',ORBIT:'DIORAMA',DIORAMA:'CHASE'})[cameraMode]||'CHASE';$('cameraToggle').textContent='CAMERA '+cameraMode;};$('jmInspectToggle').onclick=()=>{cameraMode=cameraMode==='INSPECT'?'CHASE':'INSPECT';$('jmInspectToggle').textContent=cameraMode==='INSPECT'?'RETURN TO WORLD':'INSPECT SUIT 360°';notify(cameraMode==='INSPECT'?'JM NATIVE SUIT · LIVE 360°':'FREE-ROAM CAMERA');};
+ $('fastTravel').onchange=e=>{const z=ZONES.find(q=>q.id===e.target.value);if(!z)return;player.x=z.x;player.z=z.z+2;send('MOVE',{x:player.x,z:player.z});currentZone=z.id;notify('TRAINING ZONE · '+z.name);ui();};
+ $('saveBtn').onclick=saveSession;$('loadBtn').onclick=()=>$('loadFile').click();$('loadFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>100000)throw Error('JM_SAVE_TOO_LARGE');const p=JSON.parse(await f.text());loadSession(p);}catch(e){notify('JM IMPORT HOLD · '+String(e.message||e));}e.target.value='';};
+ $('showArt').onclick=()=>{const art=JM_CP_ORIGINAL[selected];if(art){$('artImage').src=art;$('art').classList.remove('is-hidden');}};$('artClose').onclick=()=>{$('art').classList.add('is-hidden')};
+@@ -831,7 +958,7 @@
+ window.JM_CENTRE=Object.freeze({schema:'JM.SUIT.TrainingCentre/1.6',sources:()=>({...WORLD_SOURCES}),compile:(id)=>JMNativeAuthor.GameCoding.parse(WORLD_SOURCES[id]),state:()=>snap(),gamecore:()=>core.receipt(),renderer:()=>renderer?.proof(),mesh:()=>({...meshCounts,framesUpdated,clip:activeClip}),moveTo:(x,z)=>{player.x=clamp(x,-36,36);player.z=clamp(z,-36,36);send('MOVE',{x:player.x,z:player.z});return {...player}},action:perform,select:(ch,sty)=>{$('char').value=ch;$('style').value=sty;select()},step:(seconds)=>{stepAI(seconds);return snap()},snapshot:()=>({character:selected,style,zone:currentZone,camera:cameraMode,aiEnabled,failures:failures.slice(),fieldExercises:snap().trials,projectiles:snap().projectiles.length}),save:()=>({schema:'JM.SUIT.CENTRE.SAVE/1',version:1,release:'JM.SUIT.CENTRE/1.5',character:selected,style,training:snap()}),load:loadSession,advanceProjectiles:(delta)=>{stepProjectiles(delta);return snap()},cover:(a,b)=>hasCover(a,b),trialRules:()=>({...TRIAL_RULES}),objective:()=>jmNextObjective(snap()),guidance:()=>({enabled:jmGuidanceOn,compact:$('jmHud').classList.contains('jm-compact')}),inspect:(on,yaw=null)=>{cameraMode=on?'INSPECT':'CHASE';if(renderer)renderer.jmInspectYaw=Number.isFinite(yaw)?yaw:null;return cameraMode;},
+  facilities:()=>Object.fromEntries(OBJECT_SPECS.filter(o=>o.kind==='facility').map(o=>[o.id,{engaged:snap().objects[o.id].engaged,zone:o.zone,x:o.x,z:o.z}])),
+  quarryCover:()=>QUARRY_COVER.map(x=>({...x})),occlusionContact:(a,b)=>hasCover(a,b),collisionAt:(x,z)=>collision(x,z),facilityStep:stepFacilities,
+- qualityGeometry:()=>({atelier:{...jmAtelierLast},sculpt:{...jmSculptState,enabled:jmSculptBodyEnabled},nativeMeshes:['bevel','capsule','spire','helm','plate','blade','mantle','crescent','gauntlet','petal'],artDetailEnabled:jmDetailsEnabled,character: selected,style,worldDistricts:ZONES.length,unchangedInheritedBodies:6,artisticAcceptance:false}),
++ qualityGeometry:()=>({representations:[...jmSculptCache].map(([key,parts])=>{let hash=2166136261,verts=0;for(const p of parts)for(const v of p.mesh.v){hash=Math.imul(hash^Math.round(v*10000),16777619)>>>0;verts++;}return {key,positionFingerprint:hash.toString(16),vertices:verts/3};}),atelier:{...jmAtelierLast},sculpt:{...jmSculptState,enabled:jmSculptBodyEnabled},nativeMeshes:['bevel','capsule','spire','helm','plate','blade','mantle','crescent','gauntlet','petal'],artDetailEnabled:jmDetailsEnabled,character: selected,style,worldDistricts:ZONES.length,unchangedInheritedBodies:6,ascent:'authored-anatomy-2026-10-30',artisticAcceptance:false}),
+  geometryAudit:()=>({staticObjects:staticWorld().length,dynamicObjects:dynWorld(t).length,
+  nativeEntities:Object.fromEntries(Object.entries(parsedSources).map(([id,p])=>[id,p.entities.length])),
+  currentZone:zoneAt(player.x,player.z).id})});

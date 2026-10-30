@@ -67,6 +67,39 @@ class StorageMCPTests(unittest.TestCase):
         self.assertEqual(x["state"], "FORMAT_HOLD")
         self.assertEqual(x["library"]["format_state"], "STORED_SERVER_ERROR_HOLD")
 
+    def test_json_named_identical_serverbusy_default_format_still_holds(self):
+        xml = b'<?xml version="1.0"?><Error><Code>ServerBusy</Code></Error>'
+        (self.a / "item.json").write_bytes(xml)
+        (self.b / "item.json").write_bytes(xml)
+        for args in (
+            {"library_file":"item.json","recovery_file":"item.json"},
+            {"library_file":"item.json","recovery_file":"item.json","format":"any"},
+        ):
+            with self.subTest(args=args):
+                result = m.compare(self.roots, args)
+                self.assertEqual(result["state"], "FORMAT_HOLD")
+                self.assertEqual(result["recovery"]["format_state"], "STORED_SERVER_ERROR_HOLD")
+                self.assertTrue(m.dispatch({"jsonrpc":"2.0","id":99,"method":"tools/call",
+                    "params":{"name":"custody_compare","arguments":args}},
+                    self.roots)["result"]["isError"])
+
+    def test_valid_named_json_omitted_format_passes(self):
+        args = {"library_file":"item.json","recovery_file":"item.json"}
+        self.assertEqual(m.compare(self.roots, args)["state"], "EXACT_BYTES_MATCH")
+
+    def test_json_one_side_named_is_still_checked(self):
+        (self.b / "file.txt").write_bytes(b'<?xml version="1.0"?><Error><Code>ServerBusy</Code></Error>')
+        (self.a / "item.json").write_bytes((self.b / "file.txt").read_bytes())
+        args = {"library_file":"item.json","recovery_file":"file.txt"}
+        self.assertEqual(m.compare(self.roots, args)["state"], "FORMAT_HOLD")
+
+    def test_non_json_file_retains_opt_in_json_parse(self):
+        (self.a / "first.txt").write_bytes(b"not-json")
+        (self.b / "second.txt").write_bytes(b"not-json")
+        args = {"library_file":"first.txt","recovery_file":"second.txt"}
+        self.assertEqual(m.compare(self.roots, args)["state"], "EXACT_BYTES_MATCH")
+        self.assertEqual(m.compare(self.roots, dict(args, format="json"))["state"], "FORMAT_HOLD")
+
     def test_bad_json_hold(self):
         (self.b / "item.json").write_bytes(b"not JSON")
         self.assertEqual(m.compare(self.roots, self.args)["state"], "FORMAT_HOLD")

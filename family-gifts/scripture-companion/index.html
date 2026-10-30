@@ -73,11 +73,13 @@
     <div class="actions"><button id="jmPathReviewToggle" type="button" class="btn secondary small" aria-controls="jmPathReview" aria-expanded="false">Review my journey reflections</button></div>
     <section id="jmPathReview" class="jm-atelier" hidden aria-label="My private reflections across this study journey">
      <p id="jmPathReviewStatus" class="soft" role="status" aria-live="polite"></p>
+     <div class="field"><label for="jmPathSearch">Find a word in my journey reflections</label><input id="jmPathSearch" type="search" autocomplete="off" maxlength="100" placeholder="Search my own notes or chapter names"></div>
      <div id="jmPathReviewEntries" class="jm-chapter-atlas"></div>
      <section id="jmPathComparison" class="jm-focus" hidden aria-label="Compare two of my saved chapter reflections">
       <h4>My two-chapter reflection comparison</h4>
       <p id="jmPathCompareStatus" class="soft" role="status" aria-live="polite"></p>
       <div id="jmPathCompareEntries" class="jm-chapter-atlas"></div>
+      <div class="actions"><button id="jmPathCompareWrite" class="btn secondary small" type="button" disabled>Write a private comparison</button></div>
      </section>
     </section>
     <p class="jm-atelier-note">This is your personal journey, not an official reading programme. Only you decide what to mark read. Your reflections remain on this device; Scripture opens on JW.org.</p>
@@ -603,6 +605,7 @@ let pathCompare=[];
 function renderPathComparison(){
  const panel=$('#jmPathComparison'),root=$('#jmPathCompareEntries');root.replaceChildren();
  panel.hidden=pathCompare.length===0;
+ $('#jmPathCompareWrite').disabled=pathCompare.length!==2;
  $('#jmPathCompareStatus').textContent=pathCompare.length===1?'Choose a second chapter to compare your own reflections.':pathCompare.length===2?'Your two chapter reflections, side by side. No reading progress changed.':'';
  for(const {book,chapter} of pathCompare){
   const notes=chapterReflections(book,chapter),card=make('article',undefined,'jm-chapter-card');
@@ -620,10 +623,13 @@ function renderPathReview(){
  pathCompare=pathCompare.filter(x=>plan.chapters.some(([b,ch])=>b===x.book&&ch===x.chapter));
  const root=$('#jmPathReviewEntries');root.replaceChildren();
  const queue=Array.isArray(data.queue)?data.queue:[];
- let total=0,withNotes=0;
+ const query=$('#jmPathSearch').value.trim().toLocaleLowerCase();
+ let total=0,withNotes=0,shown=0;
  for(const [book,chapter] of plan.chapters){
   const notes=chapterReflections(book,chapter);
   total+=notes.length;if(notes.length)withNotes++;
+  if(query&&!((book+' '+chapter+' '+notes.map(n=>String(n.ref||'')+' '+String(n.text||'')).join(' ')).toLocaleLowerCase().includes(query)))continue;
+  shown++;
   const done=queue.some(q=>q.book===book&&q.chapter===chapter&&q.done);
   const card=make('article',undefined,'jm-chapter-card');
   card.append(make('h4',book+' '+chapter));
@@ -647,9 +653,26 @@ function renderPathReview(){
   read.href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(book)+'/'+chapter+'/';read.target='_blank';read.rel='noopener noreferrer';
   actions.append(read);card.append(actions);root.append(card);
  }
- $('#jmPathReviewStatus').textContent=plan.title+' · '+withNotes+' of 7 chapters have private reflections · '+total+' saved note'+(total===1?'':'s')+'. No reading status was changed.';
+ if(!shown)root.append(make('p','No chapters match this private search. Your notes are unchanged.','soft'));
+ $('#jmPathReviewStatus').textContent=plan.title+' · '+withNotes+' of 7 chapters have private reflections · '+total+' saved note'+(total===1?'':'s')+(query?' · '+shown+' matching chapter'+(shown===1?'':'s'):'')+'. No reading status was changed.';
  renderPathComparison();
 }
+$('#jmPathSearch').addEventListener('input',()=>{
+ if(!$('#jmPathReview').hidden)renderPathReview();
+});
+$('#jmPathCompareWrite').addEventListener('click',()=>{
+ if(pathCompare.length!==2){$('#jmPathCompareStatus').textContent='Choose two chapters first.';return}
+ if(hasUnfinishedDraft()){
+  $('#noteDraftStatus').textContent='Your unfinished reflection is preserved. Save or clear it before starting a comparison.';
+  tab('notes');$('#noteText').focus();return;
+ }
+ const references=pathCompare.map(x=>readable(x));
+ $('#noteRef').value=references.join(' / ').slice(0,100);
+ $('#noteText').value='Comparing '+references.join(' and ')+'\n\nWhat do I notice in my own reflections?\n\nWhat would I like to remember or apply?\n\n';
+ const saved=storeDraft();
+ tab('notes');$('#noteText').focus();
+ if(!saved)$('#noteDraftStatus').textContent='Draft could not be saved on this device. Copy your writing before leaving.';
+});
 $('#jmPathReviewToggle').addEventListener('click',()=>{
  const panel=$('#jmPathReview'),opening=panel.hidden;panel.hidden=!opening;
  $('#jmPathReviewToggle').setAttribute('aria-expanded',String(opening));

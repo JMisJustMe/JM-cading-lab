@@ -1,0 +1,129 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Owner Vault CP32 — Native external provider-readiness route without unreliable in-chat plugins",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "Existing JM Owner Vault Cloudflare readiness rail; portable bounded classifier",
+    "body_type": "one scoped Python standard-library classifier of existing read-only Cloudflare project/bucket/anonymous status receipts, not a new Vault, hosting system, login, deployment pipeline or source identity",
+    "intended_destination": "Extend original .github/workflows/check-owner-vault-cloudflare.yml; use tools/owner_vault_provider_readiness.py for offline and GitHub Actions checks",
+    "body_path": "tools/owner_vault_provider_readiness.py"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 641,
+    "head_branch": "fix/owner-vault-readiness-external-20261030",
+    "owner_instruction": "Stop depending on unreliable in-chat Cloudflare and similar plugin connections; preserve Cloudflare provider infrastructure and operate through existing JM-controlled external source/workflows.",
+    "detected_new_boundaries": [
+      "tools/owner_vault_provider_readiness.py"
+    ],
+    "source_authority": [
+      "Existing canonical Cloudflare Pages Estate project jmisjustme-estate is retained; no new site",
+      "Current original Owner Vault Cloudflare readiness workflow .github/workflows/check-owner-vault-cloudflare.yml on main (read-only API probes but dangerously overwrote stale GitHub receipt)",
+      "Canonical Estate independent workflow .github/workflows/deploy-estate-sovereign-integrated-v1.yml (production route, unchanged)",
+      "Original GET ?mode=status defined by functions/api/owner/vault.js; no private owner key required for bounded anonymous status",
+      "Main AGENTS.md rule committed fe9499098e3a5d5f2cb6ab56b3adc34d5cf343c7 forbids in-chat connector as runtime dependency",
+      "JM Build Route Manifest Contract and active Build Entry Gate"
+    ],
+    "source_rule": "ONE ORIGINAL PROVIDER_NATIVE_READINESS_WORKFLOW__NO_CHAT_DEPENDENCY__NO_HOST_MUTATION",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "recovered_sources": [
+      "Existing Cloudflare readiness workflow with API GET project and bucket using GitHub Actions encrypted secrets",
+      "Existing manual workflow_dispatch and original provider-native Cloudflare REST endpoints",
+      "Main-only historical registry/owner-vault-cloudflare-readiness-v0.1.json dated 18 August 2026; stale and cannot represent today's state",
+      "Original Vault public anonymous status API contract; not authenticated owner-byte proof"
+    ],
+    "actual_gap": "Current readiness rail writes an inspection snapshot back into main with broad contents:write; stale dated data can be mistaken for current proof, and an absent provider credential or function runtime cannot be diagnosed independently from current source without in-chat Cloudflare plugin. Its evaluator was embedded in a workflow and not portable/testable on its own.",
+    "donor_boundary": "Original workflow remains sole entry/authority. Python standard-library evaluator is a small subordinate companion for offline fixture test and run-specific sanitized result; not a replacement Cloudflare integration.",
+    "no_double_storage": "No second R2 bucket, Cloudflare project, copies of owner data, permanent CI artifact or repo-pushed report. Existing historical registry receipt left untouched."
+  },
+  "exact_stack": {
+    "source": [
+      ".github/workflows/check-owner-vault-cloudflare.yml",
+      "functions/api/owner/vault.js anonymous mode=status",
+      "AGENTS.md in-chat plugin independent rule"
+    ],
+    "native_recipient": "tools/owner_vault_provider_readiness.py",
+    "CI": ".github/workflows/check-owner-vault-cloudflare.yml PR-bound offline tests, workflow_dispatch for authenticated external provider GET-only observation",
+    "provider": "Cloudflare Pages/R2 HTTP GET from GitHub Actions with existing external CI secret context; no ChatGPT Cloudflare connector or owner credentials in chat",
+    "governance": [
+      "scripts/jm_build_entry_gate.py",
+      "registry/build-routes/JM_BUILD_ROUTE_MANIFEST_CONTRACT_v0.1.json"
+    ],
+    "host_technology": [
+      "Python 3 standard library JSON/time/path/argparse, portable on Windows/Linux/Android Termux where Python exists",
+      "Bash and curl on existing GitHub-hosted Actions runner only for actual provider GET"
+    ],
+    "unchanged": [
+      "original Cloudflare website and automatic deployment workflow",
+      "Original source and R2 indexed private owner data",
+      "Original owner credentials and live binding settings",
+      "Protected Owner Vault PR #601 and #621, no merge or deploy",
+      "No file deletion or storage-retirement permission"
+    ]
+  },
+  "true_gaps": {
+    "state": "RECOVERED_AND_SCOPED_TO_ORIGINAL_PROVIDER_READINESS_RAIL",
+    "new_cloud_host_required": false,
+    "new_vault_required": false,
+    "new_sovereign_app_required": false,
+    "scoped_offline_evaluator_required": true,
+    "gap": "Existing workflow contains a nonportable inline classifier and writes stale GitHub main receipt. Need independently testable read-only classification with run-specific sanitized output, without in-chat plugin access.",
+    "why_existing_tools_insufficient": "Original GH Actions workflow did API fetch but did not compare expected bucket mapping, secret type, function runtime and anonymous live status together, and permanently overwrote main with the current result. Source reusable Python avoids a second workflow/backend and enables isolated synthetic test."
+  },
+  "proof_lanes": {
+    "source": {
+      "state": "PASS_BOUNDED_SYNTHETIC_CI",
+      "evidence": "Exact first branch head 8585497c01a1b9704423f85cbc3649a81757bf7a; GitHub Actions Inspect JM Owner Vault Cloudflare Readiness run #40978520272 succeeded on PR #641, executing Python syntax and 15 offline hostile fixtures without provider credentials."
+    },
+    "build_entry": {
+      "state": "HELD_UNTIL_MANIFEST_AND_EXACT_FINAL_CI",
+      "evidence": "Run #40978520293 failed closed: legitimate new tools/owner_vault_provider_readiness.py executable boundary had no same-PR prospective manifest. This manifested scoped donor route corrects the omission; gate unchanged."
+    },
+    "provider": {
+      "state": "NOT_EXECUTED",
+      "criterion": "Owner-approved manual workflow_dispatch of original external GitHub Actions readiness rail with verified GitHub CI secrets; read-only Cloudflare GET; HOLD when invalid/missing. Not a release."
+    },
+    "live_owner_auth": {
+      "state": "HOLD",
+      "criterion": "Separate explicit owner-authorized actual private R2 source save-readback; not inferred from GET status or synthetic CI."
+    },
+    "deployment": {
+      "state": "HOLD",
+      "criterion": "Protected Vault PRs and mainline release authority, source-to-live deployment pin and HTTP proof. No merge or automatic trigger issued."
+    },
+    "owner_device": {
+      "state": "HOLD",
+      "criterion": "Independent owner device/source work and acceptance remain separate from CI."
+    }
+  },
+  "host_and_surfaces": {
+    "target": "Original GitHub Actions GH runner and optionally standalone Python on owner-controlled Windows/Termux; provider-native API remains Cloudflare",
+    "contact_status": "OFFLINE_SYNTHETIC_GITHUB_PR_PASS_ONLY",
+    "public_body": false,
+    "private_vault_data_access": false,
+    "owner_device_tested": false,
+    "production_deployed": false
+  },
+  "escalation": {
+    "failure_route": "READ-ONLY HOLD → INSPECT EXACT EXTERNAL RUN AND PROVIDER METADATA → PRESERVE LAST PROVEN OWNER VAULT AND SITE → CORRECT SAME ORIGINAL WORKFLOW WITHOUT CHAT PLUGIN RETRIES",
+    "manual_user_contact": "Only when owner/provider privileged configuration, manual dispatch, real R2 login, deployment or physical acceptance is necessary.",
+    "forbidden": "No in-chat Cloudflare dependency; no auto-create bucket, no mutate secrets or private records, no push to main from report, no false live Ding, no source replacement."
+  },
+  "state": {
+    "route": "AUTHORIZED_SCOPED_EXISTING_WORKFLOW_READONLY_PROVIDER_REENTRY_CHECK_ONLY",
+    "build_authorized_by_manifest": true,
+    "authorization_scope": "Offline executable classifier + original workflow READ-ONLY GET and CI run summary; no release, provider mutation, owner-key action or source-data copy",
+    "crown": "NOT EARNED",
+    "provider_live": "HOLD",
+    "production": "HOLD"
+  },
+  "next_route": {
+    "step": "Commit prospective same-PR manifest, rerun native JM Build Entry + manifest validator and external readiness offline fixture test at exact final head; inspect red tests without weakening security.",
+    "close_condition": "All affected source/route CI pass on exact PR head; retain draft until manual live provider inspection and separate owner/release authority."
+  },
+  "manifest_proof": {
+    "result": "Original runtime/workflows, source law and concrete CI failing gate recovered before prospective manifest. Route grants only narrowly scoped read-only portability. Synthetic proof cannot become real Cloudflare or owner-device acceptance."
+  }
+}

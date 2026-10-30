@@ -322,6 +322,10 @@ try{
    });
    await page.waitForTimeout(1250);
    const before=await page.evaluate(()=>window.FTR.state());
+   // CP19 exposes the *same* original cover action through an honest
+   // phone-sized tactical drawer; open it using the actual visible control.
+   if(!(await page.locator('#jmCoverBuild').isVisible()))
+     await page.locator('#jmMobileTools').tap();
    await page.locator('#jmCoverBuild').tap();
    const r=await page.evaluate(()=>{
      const receipt=window.JMFTRCover.last(),after=window.FTR.state(),cover=window.JMFTRCover.state();
@@ -625,6 +629,8 @@ try{
   assert(end.events.some(e=>e.event==='JM_AI_FORGOT'));
  });
  await check('CP13 memory toggle returns responsibility to inherited original FTR AI',async()=>{
+  if(!(await page.locator('#jmAwarenessToggle').isVisible()))
+   await page.locator('#jmMobileTools').tap();
   await page.locator('#jmAwarenessToggle').tap();
   const a=await page.evaluate(()=>({
     enabled:window.JMFTRMemory.enabled(),

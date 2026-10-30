@@ -1,17 +1,44 @@
-name: JM cardBORED CP28 — Exact Source Recovery
+name: JM cardBORED CP28 — Native House Board Proof
 on:
   pull_request:
     paths:
       - 'wave2-public/current-source/cardbored/**'
+      - 'games-beyond/tests/jm-cardbored-cp28.spec.mjs'
       - '.github/workflows/jm-cardbored-cp28.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  original-cardbored-recovery:
+  source-owned-cardbored:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Recover original game and expose bounded structure
-        run: python wave2-public/current-source/cardbored/cp28_inspect_and_build.py --inspect
+      - name: Original SHA-256, source-native CP28 one-file build
+        run: python wave2-public/current-source/cardbored/cp28_inspect_and_build.py --build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install existing JM Games&Beyond test runner
+        working-directory: games-beyond
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium browser
+        working-directory: games-beyond
+        run: npx playwright install --with-deps chromium
+      - name: Contact real cardBORED gameplay in mobile + desktop browsers
+        working-directory: games-beyond
+        run: npx playwright test tests/jm-cardbored-cp28.spec.mjs --project=mobile-chromium --project=desktop-chromium
+      - name: One CP28 playable candidate (not an extra permanent source copy)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-cardbored-cp28-original-playable
+          path: wave2-public/current-source/cardbored/CP28_cardBORED_NATIVE_CONTACT.html
+          retention-days: 14
+      - name: Failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-cardbored-cp28-failure
+          path: games-beyond/test-results/
+          if-no-files-found: ignore

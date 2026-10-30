@@ -337,6 +337,28 @@ assert.deepEqual(await page.evaluate(()=>({
 })),cp31Before,'restored history survives independent second cold reload');
 console.log('PASS CP31 persisted match receipt, export, invalid import rejection, exact restore and cold reload '+width+'px');
 
+// CP32: denied browser-storage reads must fail clearly without changing existing history.
+await page.evaluate(()=>{
+ const original=Storage.prototype.getItem;
+ window.__cp32OriginalGetItem=original;
+ Storage.prototype.getItem=function(key){
+  if(key==='jm.thirdcourt.birthday.cp01.matches')throw new DOMException('Storage unavailable','SecurityError');
+  return original.call(this,key);
+ };
+});
+page.once('dialog',dialog=>dialog.accept());
+await page.locator('#historyFile').setInputFiles({name:'JM_THIRD_COURT_match_receipt.json',mimeType:'application/json',buffer:Buffer.from(cp31Backup)});
+await page.waitForFunction(()=>document.querySelector('#historyStatus').textContent.startsWith('RESTORE FAILED'));
+await page.evaluate(()=>{Storage.prototype.getItem=window.__cp32OriginalGetItem;delete window.__cp32OriginalGetItem});
+await page.reload();
+assert.deepEqual(await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+})),cp31Before,'storage-denied restore leaves original records unchanged across cold reload');
+console.log('PASS CP32 denied-storage restore preserves owner records '+width+'px');
+
+
+
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

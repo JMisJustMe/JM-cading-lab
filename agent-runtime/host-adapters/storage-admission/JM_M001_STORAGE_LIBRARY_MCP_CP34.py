@@ -138,7 +138,7 @@ def compare(roots, arguments):
 
 def tool_result(value):
     return {"content": [{"type": "text", "text": json.dumps(value, sort_keys=True)}],
-            "structuredContent": value, "isError": value.get("state") == "HOLD"}
+            "structuredContent": value, "isError": value.get("state") not in ("READ_ONLY", "EXACT_BYTES_MATCH")}
 
 
 def tools_list():

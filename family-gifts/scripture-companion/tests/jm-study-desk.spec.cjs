@@ -331,6 +331,17 @@ const {chromium}=require('playwright');
    // Re-select first chapter then explicitly author through ORIGINAL Notes editor.
    await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Compare this chapter'}).click();
    assert.equal(await page.locator('#jmPathCompareWrite').isEnabled(),true);
+   // CP34: an unrelated unfinished note cannot be destroyed by comparison authoring.
+   await page.locator('[data-tab="notes"]').click();
+   await page.fill('#noteRef','John 3');
+   await page.fill('#noteText','An unfinished John 3 reflection must survive.');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmPathCompareWrite').click();
+   assert.equal(await page.locator('#noteRef').inputValue(),'John 3');
+   assert.equal(await page.locator('#noteText').inputValue(),'An unfinished John 3 reflection must survive.');
+   assert.match(await page.locator('#noteDraftStatus').textContent(),/unfinished reflection is preserved/);
+   await page.locator('#clearNote').click();
+   await page.locator('[data-tab="read"]').click();
    await page.locator('#jmPathCompareWrite').click();
    assert.equal(await page.locator('#page-notes').isVisible(),true);
    assert.match(await page.locator('#noteRef').inputValue(),/Psalms 23 \/ Matthew 6/);

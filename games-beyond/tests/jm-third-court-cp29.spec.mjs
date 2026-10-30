@@ -291,3 +291,36 @@ test('@thirdcourt-cp32 JET signature first step changes the original driving bur
  expect(after.playerCount).toBe(6);
  expect(errors).toEqual([]);
 });
+
+
+test('@thirdcourt-cp33 six genuine athlete hair geometry identities survive three render routes',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const initial=await status(page);
+ expect(initial.athletes.map(a=>a.hairStyle)).toEqual([0,1,2,3,4,5]);
+ expect(new Set(initial.athletes.map(a=>a.name))).size.toBe(6);
+ expect(new Set(initial.athletes.map(a=>a.signatureRead))).size.toBe(6);
+ for(const camera of [1,2,0]){
+  await page.evaluate(stage=>JM_THIRD_COURT.selectNativeCamera(stage),camera);
+  const actual=await status(page);
+  expect(actual.athletes.map(a=>a.hairStyle)).toEqual([0,1,2,3,4,5]);
+  expect(actual.playerCount).toBe(6);
+ }
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp33 ROOT defender pressure requires actual geometric proximity',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const result=await page.evaluate(()=>{
+  const a=JM_THIRD_COURT.status().athletes;
+  const root=a.find(p=>p.name==='ROOT');
+  return {near:JM_THIRD_COURT.rimWallPressure({team:0,x:root.x,y:root.y}),
+   far:JM_THIRD_COURT.rimWallPressure({team:0,x:root.x+250,y:root.y+250}),
+   sameTeam:JM_THIRD_COURT.rimWallPressure({team:1,x:root.x,y:root.y})};
+ });
+ expect(result.near).toBeGreaterThan(.14);
+ expect(result.near).toBeLessThanOrEqual(.16);
+ expect(result.far).toBe(0);
+ expect(result.sameTeam).toBe(0);
+ expect(errors).toEqual([]);
+});

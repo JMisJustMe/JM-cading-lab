@@ -369,6 +369,38 @@ const {chromium}=require('playwright');
    console.log('PASS CP34 COMPOSITE PRIVATE NOTE INDEX '+width+'px: either original chapter can recover the same saved comparison');
 
 
+   // CP35: completed reading does not imply a written reflection; both are separate, private.
+   await page.locator('[data-tab="explore"]').click();
+   await page.selectOption('#planPicker','quiet');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview').evaluate(el=>el.open=true);
+   await page.locator('#jmPathReviewToggle').click();
+   const cp35Before=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   const progress=await page.locator('#jmPathProgress').evaluate(el=>({value:Number(el.value),max:Number(el.max)}));
+   assert.equal(progress.max,7);
+   assert(progress.value>0&&progress.value<7,'the current genuine journey has some but not all reflections');
+   await page.selectOption('#jmPathView','unwritten');
+   const notWritten=await page.locator('#jmPathReviewEntries .jm-chapter-card').count();
+   assert.equal(notWritten,7-progress.value);
+   await page.selectOption('#jmPathView','written');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),progress.value);
+   await page.selectOption('#jmPathView','all');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   const resumeTitle=await page.locator('#jmPathResumeWriting').textContent();
+   assert.match(resumeTitle,/Continue reflection:/);
+   await page.locator('#jmPathResumeWriting').click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true);
+   assert.match(await page.locator('#noteRef').inputValue(),/Philippians 4/);
+   assert.match(await page.locator('#noteText').inputValue(),/What stood out to me/);
+   const cp35After=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(cp35After.notes,cp35Before.notes,'CP35 drafting is never auto-saving');
+   assert.deepEqual(cp35After.queue,cp35Before.queue,'CP35 drafting is never marking a chapter read');
+   await page.reload();
+   assert.equal(await page.locator('#noteRef').inputValue(),'Philippians 4','original draft recovery survived reload');
+   console.log('PASS CP35 PRIVATE REFLECTION CONTINUATION '+width+'px: seven-chapter filters, real next unwritten and protected draft recovery');
+
+
+
 
 
 

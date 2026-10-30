@@ -24,5 +24,3 @@ For owner-approved local-network phone testing, replace `127.0.0.1` with the lap
 ## BIAT / FLAZ decision
 
 **EARNED:** reproducible original-source LAN carrier; exact JM donor import graph accessible; no replacement; independent owner-editable server source; limited path admission and negative control. **HOLD:** phone-to-laptop inbound connection, actual owner manual play, phone portrait/landscape acceptance, physical HID/controller, native Gardles, owner visual approval, offline install, independent public release, merge. Never label this `PHYSICAL_DEVICE_PASS` without physical-device evidence.
-
-[executed on device: GroundZeroJM (397d444c-e212-4670-878b-c8937ca2f05a)]

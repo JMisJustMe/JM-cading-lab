@@ -386,6 +386,33 @@ console.log('PASS CP32 denied-storage restore preserves owner records '+width+'p
 
 
 
+// CP34: native keyboard activation of visible menus must coexist with gameplay Space shooting.
+await page.locator('#howBtn').focus();
+await page.keyboard.press('Space');
+assert(!(await page.locator('#helpScreen').evaluate(el=>el.classList.contains('hidden'))),
+  'CP34 Space activates the focused HOW TO PLAY menu button');
+await page.locator('#helpBack').focus();
+await page.keyboard.press('Space');
+assert(!(await page.locator('#menuScreen').evaluate(el=>el.classList.contains('hidden'))),
+  'CP34 Space activates the focused menu BACK button');
+await page.locator('#playQuick').focus();
+await page.keyboard.press('Space');
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).active,
+  'CP34 Space starts the match from the focused menu button');
+await page.keyboard.down('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),
+  'CP34 Space still charges gameplay SHOOT after the start button becomes hidden');
+await page.keyboard.up('Space');
+await page.locator('#pauseButton').focus();
+await page.keyboard.press('Space');
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,
+  'CP34 Space activates focused in-game PAUSE without charging a shot');
+await page.locator('#resumeBtn').focus();
+await page.keyboard.press('Space');
+assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused,
+  'CP34 Space activates focused RESUME');
+console.log('PASS CP34 keyboard menu, focused buttons and inherited shooting '+width+'px');
+
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

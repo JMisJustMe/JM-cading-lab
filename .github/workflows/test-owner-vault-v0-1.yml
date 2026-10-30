@@ -9,18 +9,22 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'tools/owner-vault-lineage-recover.mjs'
       - 'docs/JM_OWNER_VAULT_v0_1.md'
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
       - '.github/workflows/test-owner-vault-v0-1.yml'
+  # Protected JM work can be admitted through a draft child PR before its
+  # upstream custody PR is merged. Existing path filters remain restrictive.
   pull_request:
-    branches: [main]
+    branches: ['**']
     paths:
       - 'estate-app.js'
       - 'estate-owner-vault.js'
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'tools/owner-vault-lineage-recover.mjs'
       - 'docs/JM_OWNER_VAULT_v0_1.md'
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
@@ -50,25 +54,19 @@ jobs:
         run: |
           set -euo pipefail
           node --check estate-owner-vault.js
+          node --check tools/owner-vault-lineage-recover.mjs
           node --input-type=module --check < functions/api/owner/vault.js
           node tools/test-owner-vault-v0.1.mjs
           python3 -m json.tool registry/owner-vault-contract-v0.1.json >/dev/null
           grep -Fq 'ONLY_SAME_SOURCE_INSTANCE_AND_BYTES' registry/owner-vault-contract-v0.1.json
           python3 -m py_compile tools/apply-owner-vault-v0.1.py
-      - name: CP10 strict corrupted-metadata safety gate (diagnostic red until fixed)
-        id: custody
-        continue-on-error: true
+      - name: CP09 custody fail-closed hard gate (required)
         run: node tools/test-owner-vault-v0.1.mjs --require-custody-safe
-      - name: Keep actual private custody HOLD visible
-        if: always()
-        env:
-          CUSTODY_OUTCOME: ${{ steps.custody.outcome }}
+      - name: Distinguish synthetic source pass from real-owner proof
         run: |
-          if [ "$CUSTODY_OUTCOME" != 'success' ]; then
-            echo "::warning::Owner Vault corrupted-record safety is HOLD; see issue #591. This job's success is not custody proof."
-          fi
-          echo "CP10_STRICT_CUSTODY_GATE=$CUSTODY_OUTCOME"
+          echo "CP09_SYNTHETIC_CUSTODY=SOURCE_TEST_ONLY"
           echo "REAL_OWNER_PRIVATE_STORAGE=NOT_ACCESSED"
+          echo "DEPLOYED_OWNER_EDIT_ROUNDTRIP=HOLD"
 
       - name: Verify exact one-body owner-room graft and service worker preservation
         shell: bash
@@ -102,3 +100,92 @@ jobs:
           print('PASS: single original owner bridge is exact, no stale cache reversion')
           PY
           git diff --check
+
+  # CP31 owner-device Windows compatibility, discovered on GroundZeroJM:
+  # POSIX O_NOFOLLOW/O_DIRECTORY and directory fsync cannot be assumed.
+  # This is a genuine Windows runner using the SAME original recovery CLI.
+  windows-native-cold-recovery:
+    name: Windows native JM offline recovery — explicit durability boundary
+    runs-on: windows-2025
+    timeout-minutes: 8
+    steps:
+      - name: Check out original owner source
+        uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: CP31 actual Windows verify, independent native restore and corruption refusal
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $PSNativeCommandUseErrorActionPreference=$false
+          $root=Join-Path $env:RUNNER_TEMP ('JM_CP31_WINDOWS_SYNTH_'+[guid]::NewGuid().ToString('N'))
+          $null=New-Item -ItemType Directory -Path $root
+          try {
+            $folder=Join-Path $root 'source-pieces'
+            $null=New-Item -ItemType Directory -Path $folder
+            $id='00000000-0000-4000-8000-000000003211'
+            $name='JM_Vault_Part_'+$id+'_00.bin'
+            $original=[byte[]](0,255,128,13,10,77,201,42)
+            [IO.File]::WriteAllBytes((Join-Path $folder $name),$original)
+            $sha=(Get-FileHash (Join-Path $folder $name) -Algorithm SHA256).Hash.ToLowerInvariant()
+            $metadata=[ordered]@{
+              id=$id
+              sourceInstanceId='asset-00000000-0000-4000-8000-000000003212'
+              name='JM native CI original'
+              fileName='JM-Original.jmproject'
+              mediaType='application/octet-stream'
+              sha256=$sha
+              bytes=$original.Length
+              previousVersionId=$null
+            }
+            $part=[ordered]@{
+              index=0
+              bytes=$original.Length
+              sha256=$sha
+              fileName=$name
+            }
+            $catalog=[ordered]@{
+              schema='JM.OwnerVault/0.1.AssetPartsCatalog'
+              selected_id=$id
+              version_count=1
+              source_bytes=$original.Length
+              order='SELECTED_HEAD_TO_OLDEST_ANCESTOR'
+              part_bytes=2097152
+              versions=@([ordered]@{metadata=$metadata;parts=@($part)})
+            }
+            $catalogPath=Join-Path $folder ('JM_Vault_Cold_Catalog_'+$id+'.json')
+            [IO.File]::WriteAllText($catalogPath,($catalog|ConvertTo-Json -Depth 20),[Text.UTF8Encoding]::new($false))
+            $cli='tools/owner-vault-lineage-recover.mjs'
+            $verified=& node $cli --parts-catalog $catalogPath --verify-only
+            if($LASTEXITCODE -ne 0){throw 'WINDOWS_ORIGINAL_VERIFY_HOLD'}
+            $result=($verified|ConvertFrom-Json)
+            if($result.source_bytes -ne $original.Length){throw 'WINDOWS_VERIFY_BYTES_HOLD'}
+            $dest=Join-Path $root 'native-restored'
+            $restored=& node $cli --parts-catalog $catalogPath --output-dir $dest
+            if($LASTEXITCODE -ne 0){throw 'WINDOWS_ORIGINAL_RESTORE_HOLD'}
+            $restoredReceipt=($restored|ConvertFrom-Json)
+            if($restoredReceipt.directory_fsync_proven -ne $false -or
+              $restoredReceipt.atomic_nofollow_proven -ne $false -or
+              $restoredReceipt.durability_boundary -notmatch 'WINDOWS_FILE_FSYNC_READBACK')
+              {throw 'WINDOWS_MISSING_DURABILITY_DISCLAIMER'}
+            $audited=& node $cli --parts-catalog $catalogPath --audit-dir $dest
+            if($LASTEXITCODE -ne 0){throw 'WINDOWS_ORIGINAL_AUDIT_HOLD'}
+            $native=Join-Path $dest ($id+'__JM-Original.jmproject')
+            if((Get-FileHash $native -Algorithm SHA256).Hash.ToLowerInvariant() -ne $sha)
+              {throw 'WINDOWS_NATIVE_EXACT_BYTES_MISMATCH'}
+            $changed=[byte[]]($original.Clone())
+            $changed[0]=1
+            [IO.File]::WriteAllBytes((Join-Path $folder $name),$changed)
+            $null=& node $cli --parts-catalog $catalogPath --verify-only 2>&1
+            if($LASTEXITCODE -eq 0){throw 'WINDOWS_CORRUPTION_ACCEPTED'}
+            # The expected corruption refusal is a PASS; clear its native exit
+            # code or PowerShell forwards 3 despite every assertion succeeding.
+            $global:LASTEXITCODE=0
+            Write-Output 'PASS CP31: Windows native one-source exact cold verification, independent file-fsynced recovery, separate read-only audit, corrupted source HOLD, explicit no-directory-fsync and non-atomic-reparse boundary.'
+          } finally {
+            if($root -match 'JM_CP31_WINDOWS_SYNTH_[0-9a-f]{32}$'){
+              Remove-Item -LiteralPath $root -Recurse -Force
+              Write-Output 'CP31 synthetic Windows fixture retired; no original owner file removed.'
+            }
+          }

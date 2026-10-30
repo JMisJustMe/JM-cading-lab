@@ -319,6 +319,8 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
   const SESSION_KEY = 'jm-owner-vault-key';
   let editing = null;
   let proofBusy = false;
+  // Last authenticated state head; never treat an unseen remote state as blank.
+  let observedStateRevision = null;
   const DOCUMENT_INSTANCE = crypto.randomUUID(); // changes on a genuine document reload
   const PROOF_PENDING = 'jm-owner-vault-cp08-pending';
   const PROOF_RECEIPT = 'jm-owner-vault-cp08-receipt';
@@ -422,6 +424,24 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         <p class="jm-vault-note" id="jmVaultProofStatus" role="status" aria-live="polite">Not run on this device; no private owner proof claimed.</p>
       </section>
       <div class="jm-vault-remote" id="jmVaultRemote" aria-live="polite"></div>
+      <section class="jm-vault-editor" id="jmVaultFiles" aria-label="Original files private custody">
+        <strong>ORIGINAL FILES · ANY FORMAT</strong>
+        <p class="jm-vault-note">Save a selected original file as exact private bytes (up to 64 MiB with 2 MiB protected parts). Nothing is uploaded automatically. Download on another device, edit using the correct native application, and explicitly upload a revision. No public publication or automatic synchronisation is implied.</p>
+        <input type="file" id="jmVaultFileInput" aria-label="Select original file">
+        <div class="jm-vault-actions"><button class="button primary" id="jmVaultSaveFile" type="button">SAVE SELECTED ORIGINAL FILE</button><button class="button secondary" id="jmVaultCheckPending" type="button">CHECK HELD SAVE</button><button class="button secondary" id="jmVaultCancelFileRevision" type="button">CANCEL REVISION</button></div>
+        <p class="jm-vault-note" id="jmVaultFileStatus" role="status" aria-live="polite">Unlock the existing private Vault to read or save original files.</p>
+        <div class="jm-vault-actions"><button class="button secondary" id="jmVaultPartNext" disabled type="button">DOWNLOAD NEXT VERIFIED PIECE</button><button class="button secondary" id="jmVaultResumeCold" type="button">RESUME VERIFIED COLD EXPORT</button><button class="button secondary" id="jmVaultCancelCold" type="button">CANCEL HELD COLD EXPORT</button></div>
+        <input id="jmVaultColdPieces" type="file" multiple aria-label="Select already downloaded original cold pieces for SHA-256 verification">
+        <p class="jm-vault-note">After a reload, select the exact pieces already saved on this device, then RESUME. Only files independently hash-verified against the current authenticated catalog can be skipped. A browser offering a download is NOT proof that you saved it.</p>
+        <p class="jm-vault-note">For large/offline lineage recovery: EXPORT COLD PARTS is the phone-compatible manual fallback. On browsers supporting permissioned local folders, SAVE VERIFIED COLD FOLDER writes each part to a folder YOU select and re-reads every part from disk. Existing exact files are reused; different ones are never deliberately overwritten. Complete the independent offline CLI audit before claiming an offsite backup.</p>
+        <section aria-label="Cold recovered native file re-entry" class="jm-vault-editor">
+          <strong>RETURN A RECOVERED ORIGINAL TO EDITING · CP29</strong>
+          <p class="jm-vault-note">After independently recovering and editing a native file outside this website: choose its exact recovery-manifest.json below, then choose the edited file using the ORIGINAL FILE selector above. Prepare checks the complete ancestry against live private custody. Only SAVE uploads your explicit new version. Nothing overwrites or publishes your existing body.</p>
+          <input type="file" id="jmVaultColdReceipt" accept=".json,application/json" aria-label="Select independent offline recovery-manifest.json">
+          <div class="jm-vault-actions"><button type="button" class="button secondary" id="jmVaultPrepareColdRevision">VERIFY RECOVERY AND PREPARE REVISION</button></div>
+        </section>
+        <div class="jm-vault-remote" id="jmVaultAssetCards"></div>
+      </section>
       <section class="jm-vault-editor" id="jmVaultEditor" hidden aria-label="Private HTML source editor">
         <strong id="jmVaultEditorTitle">Private body source</strong>
         <p class="jm-vault-note">Editing a private Vault copy creates an additional protected revision. The ancestor is retained; no public app or website is deployed by this action.</p>
@@ -507,8 +527,13 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     const button = el('jmVaultSync');
     button.disabled = true;
     try {
-      message('Saving owner state…');
-      await request('', { method: 'PUT', body: JSON.stringify({ state: localState() }) });
+      if (!observedStateRevision) throw new Error('OWNER_STATE_BASELINE_REQUIRED_REOPEN_VAULT');
+      message('Saving owner state against the last verified private revision…');
+      const savedState = await request('', { method: 'PUT', body: JSON.stringify({
+        state: localState(), expectedStateRevision: observedStateRevision
+      }) });
+      observedStateRevision = /^[a-f0-9]{64}$/.test(savedState.state_revision || '')
+        ? savedState.state_revision : null;
       const bodies = localBodies();
       let stored = 0;
       let alreadySynced = 0;
@@ -761,6 +786,861 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     }catch(e){proofMessage('Proof export HOLD: '+e.message);}
   }
 
+
+  // CP21 file custody is a new capability INSIDE original Owner Room.
+  // Never change HTML body editor identity or silently sync all device files.
+  let assetRevision = null;
+  const assetMessage = text => { const node = el('jmVaultFileStatus'); if (node) node.textContent = text; };
+  async function assetDigest(bytes) {
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function assetBase64(bytes) {
+    const chunks = [];
+    for (let i = 0; i < bytes.length; i += 32768) {
+      chunks.push(String.fromCharCode(...bytes.subarray(i, i + 32768)));
+    }
+    return btoa(chunks.join(''));
+  }
+  async function checkedAssetDownload(asset) {
+    const response = await request('?asset=' + encodeURIComponent(asset.id));
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    const digest = await assetDigest(bytes);
+    if (bytes.length !== asset.bytes || digest !== asset.sha256
+      || response.headers.get('x-jm-asset-sha256') !== digest) {
+      throw new Error('ASSET_EXACT_SOURCE_READBACK_MISMATCH');
+    }
+    return bytes;
+  }
+
+  // CP23 — the same explicit upload is the same purposeful source use.
+  // A durable metadata-only checkpoint exists BEFORE its first network write.
+  // It intentionally contains no source bytes, owner key, or raw file content.
+  const ASSET_PENDING_KEY = 'jm-owner-vault-cp23-file-save-pending';
+  let assetSaveBusy = false;
+  const ASSET_PART_BYTES = 2 * 1024 * 1024;
+  const ASSET_LARGE_LIMIT = 64 * 1024 * 1024;
+  function canonicalOriginalFileName(value) {
+    return String(value || 'jm-original-file').slice(0,180)
+      .replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-')
+      .replace(/\s+/g,' ').trim() || 'jm-original-file';
+  }
+  function readAssetPending() {
+    const raw = localStorage.getItem(ASSET_PENDING_KEY);
+    if (raw === null) return null;
+    let p;
+    try { p = JSON.parse(raw); } catch { throw new Error('FILE_SAVE_CHECKPOINT_CORRUPT_HOLD'); }
+    if (!p || p.schema !== 'JM.OwnerVault.FileSavePending/0.1'
+      || !/^asset-[0-9a-f-]{36}$/i.test(p.sourceInstanceId || '')
+      || !/^[a-f0-9]{64}$/i.test(p.sha256 || '')
+      || !Number.isSafeInteger(p.bytes) || p.bytes < 0 || p.bytes > ASSET_LARGE_LIMIT
+      || (p.bytes > 12*1024*1024 && !/^[0-9a-f-]{36}$/i.test(p.uploadId || ''))
+      || typeof p.fileName !== 'string' || p.fileName.length < 1 || p.fileName.length > 180
+      || (p.expectedBaseId !== null && !/^[0-9a-f-]{36}$/i.test(p.expectedBaseId || ''))
+      || (p.expectedBaseSha256 !== null && !/^[a-f0-9]{64}$/i.test(p.expectedBaseSha256 || ''))
+      || Boolean(p.expectedBaseId) !== Boolean(p.expectedBaseSha256)) {
+      throw new Error('FILE_SAVE_CHECKPOINT_INVALID_HOLD');
+    }
+    return p;
+  }
+  async function confirmPendingAsset() {
+    if (!(await ensureUnlocked())) return;
+    try {
+      const pending = readAssetPending();
+      if (!pending) { assetMessage('No held file upload checkpoint on this device.'); return; }
+      const index = await request('?mode=assets');
+      if (index.schema !== 'JM.OwnerVault/0.1.AssetIndex' || !Array.isArray(index.assets))
+        throw new Error('PRIVATE_ASSET_INDEX_UNAVAILABLE');
+      const sameUse = index.assets.filter(a => a.sourceInstanceId === pending.sourceInstanceId);
+      if (!sameUse.length) {
+        if (pending.bytes > 12 * 1024 * 1024) {
+          // Read-only server contact: discover held original bytes without
+          // resending them, overwriting them or inventing another source ID.
+          const file={uploadId:pending.uploadId,sourceInstanceId:pending.sourceInstanceId,
+            sha256:pending.sha256,bytes:pending.bytes,fileName:pending.fileName,
+            partCount:Math.ceil(pending.bytes / ASSET_PART_BYTES),
+            ...(pending.expectedBaseId ? {expectedBaseId:pending.expectedBaseId,
+              expectedBaseSha256:pending.expectedBaseSha256} : {})};
+          const inspection=await request('',{method:'POST',body:JSON.stringify({
+            action:'inspect-asset-parts',file
+          })});
+          if (inspection.outcome!=='ASSET_PART_INSPECTION'
+              || inspection.partCount!==file.partCount
+              || !Array.isArray(inspection.present) || !Array.isArray(inspection.missing)
+              || inspection.already_indexed) throw new Error('HELD_FILE_PART_INSPECTION_INVALID');
+          if (inspection.present.length+inspection.missing.length!==file.partCount)
+            throw new Error('HELD_FILE_PART_COUNT_MISMATCH');
+          assetMessage('SAVE HOLD: '+inspection.present.length+' / '+file.partCount
+            +' original pieces verified in private storage. Reselect the SAME source and press SAVE to send missing pieces only; no new identity or automatic deletion.');
+          return;
+        }
+        assetMessage('SAVE HOLD: this purposeful file identity is not yet indexed. Keep the original file selected and press SAVE to resume the SAME exact identity; no new identity will be created.');
+        return;
+      }
+      const head = sameUse[0];
+      if (head.sha256 !== pending.sha256 || head.bytes !== pending.bytes
+        || head.fileName !== pending.fileName) {
+        throw new Error('FILE_SAVE_REMOTE_HEAD_DIFFERENT_HOLD');
+      }
+      await checkedAssetDownload(head);
+      localStorage.removeItem(ASSET_PENDING_KEY);
+      await refreshAssets();
+      assetMessage('Previously interrupted save independently recovered with exact file hash. Checkpoint cleared; no new upload, no duplicate source.');
+    } catch (error) {
+      assetMessage('SAVE HOLD: ' + error.message + '. Protected checkpoint retained. No new upload attempted.');
+    }
+  }
+
+  // CP29 — External recovered native edit -> SAME original Vault lineage.
+  // A local recovery receipt is untrusted until every ancestor matches the
+  // authenticated current R2 index AND current-head original bytes read back.
+  // This ONLY prepares the original REVISE control; SAVE remains explicit.
+  async function prepareColdNativeRevision() {
+    if (!(await ensureUnlocked())) return;
+    const receiptInput=el('jmVaultColdReceipt'), sourceInput=el('jmVaultFileInput');
+    const receiptFile=receiptInput?.files?.[0], editedFile=sourceInput?.files?.[0];
+    const button=el('jmVaultPrepareColdRevision');
+    if (!receiptFile || !editedFile) {
+      assetMessage('Select BOTH the independent recovery-manifest.json and your externally edited original file before preparing re-entry.');
+      return;
+    }
+    if (assetSaveBusy || readAssetPending()) {
+      assetMessage('COLD RE-ENTRY HOLD: an earlier original-file save is still pending. CHECK HELD SAVE first; no new identity or write.');
+      return;
+    }
+    button.disabled=true;
+    assetRevision=null;
+    try {
+      if (receiptFile.size<20 || receiptFile.size>512*1024)
+        throw new Error('COLD_RECEIPT_SIZE_HOLD');
+      if (editedFile.size>ASSET_LARGE_LIMIT)
+        throw new Error('EDITED_ORIGINAL_OVER_64_MIB_HOLD');
+      let receipt;
+      try { receipt=JSON.parse(await receiptFile.text()); }
+      catch { throw new Error('COLD_RECEIPT_JSON_INVALID'); }
+      const supported=new Set([
+        'JM.OwnerVault/0.1.AssetLineageExport',
+        'JM.OwnerVault/0.1.AssetExtendedExport',
+        'JM.OwnerVault/0.1.AssetPartsCatalog'
+      ]);
+      if (receipt?.schema!=='JM.OwnerVault/0.1.OfflineRecovered'
+        || !supported.has(receipt.original_schema)
+        || !/^[0-9a-f-]{36}$/i.test(receipt.selected_id||'')
+        || !Array.isArray(receipt.original_versions)
+        || receipt.original_versions.length<1 || receipt.original_versions.length>8
+        || !/^[a-f0-9]{64}$/i.test(receipt.packet_sha256||'')) {
+        throw new Error('COLD_RECOVERY_MANIFEST_NOT_NATIVE_ASSET');
+      }
+      const versions=receipt.original_versions, seen=new Set();
+      let expected=receipt.selected_id, family=null, sourceTotal=0;
+      for(const m of versions) {
+        if(!m || m.id!==expected || seen.has(m.id)
+          || !/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId||'')
+          || !/^[a-f0-9]{64}$/i.test(m.sha256||'')
+          || !Number.isSafeInteger(m.bytes) || m.bytes<0 || m.bytes>ASSET_LARGE_LIMIT
+          || typeof m.fileName!=='string' || !m.fileName || m.fileName.length>180
+          || (m.previousVersionId!==null && !/^[0-9a-f-]{36}$/i.test(m.previousVersionId||''))
+          || (family!==null && family!==m.sourceInstanceId))
+          throw new Error('COLD_RECOVERY_LINEAGE_INVALID');
+        seen.add(m.id);family=m.sourceInstanceId;
+        expected=m.previousVersionId;sourceTotal+=m.bytes;
+      }
+      if(expected!==null || sourceTotal!==receipt.original_source_bytes)
+        throw new Error('COLD_RECOVERY_ANCESTRY_INCOMPLETE');
+      const index=await request('?mode=assets');
+      if(index.schema!=='JM.OwnerVault/0.1.AssetIndex' || !Array.isArray(index.assets))
+        throw new Error('COLD_PRIVATE_INDEX_HOLD');
+      const current=index.assets.find(a=>a.sourceInstanceId===family);
+      if(!current || current.id!==receipt.selected_id)
+        throw new Error('COLD_RECOVERY_STALE_HEAD_OR_DIFFERENT_SOURCE_HOLD');
+      for(const m of versions) {
+        const remote=index.assets.find(a=>a.id===m.id);
+        if(!remote || remote.sourceInstanceId!==m.sourceInstanceId
+          || remote.sha256!==m.sha256 || remote.bytes!==m.bytes
+          || remote.previousVersionId!==m.previousVersionId
+          || remote.fileName!==m.fileName)
+          throw new Error('COLD_RECOVERY_ANCESTOR_MISMATCH');
+      }
+      // A forged/unverified local receipt cannot admit a new use by itself.
+      // Full source readback pins the parent to actual authenticated R2 bytes.
+      await checkedAssetDownload(current);
+      const editedBytes=new Uint8Array(await editedFile.arrayBuffer());
+      if(editedBytes.length!==editedFile.size)
+        throw new Error('COLD_EDITED_FILE_CHANGED_DURING_READ');
+      const hash=await assetDigest(editedBytes);
+      if(hash===current.sha256 && editedBytes.length===current.bytes)
+        throw new Error('COLD_EDIT_NOT_CHANGED_HOLD');
+      if (readAssetPending())
+        throw new Error('COLD_SAVE_CHECKPOINT_CHANGED_DURING_PREPARATION');
+      assetRevision={...current,coldLocalName:canonicalOriginalFileName(editedFile.name)};
+      assetMessage('COLD RE-ENTRY PREPARED: exact current original '+current.id
+        +' and '+versions.length+' saved ancestors matched private custody. Your edited file is different. Press SAVE SELECTED ORIGINAL FILE to CREATE ONE PROTECTED REVISION, or CANCEL; no bytes uploaded yet. Native filename stays '+current.fileName+'.');
+    }catch(e){
+      assetRevision=null;
+      assetMessage('COLD RE-ENTRY HOLD: '+e.message+'. No remote write, duplicate purpose or replacement.');
+    }finally{
+      button.disabled=false;
+    }
+  }
+
+  async function saveSelectedOriginal() {
+    if (assetSaveBusy) return;
+    if (!(await ensureUnlocked())) return;
+    const input = el('jmVaultFileInput'), selected = input?.files?.[0];
+    if (!selected) { assetMessage('Choose the original file on this device first.'); return; }
+    if (selected.size > ASSET_LARGE_LIMIT) {
+      assetMessage('Original file exceeds the current 64 MiB gate. Nothing truncated or uploaded.');
+      return;
+    }
+    const btn = el('jmVaultSaveFile');
+    assetSaveBusy = true;
+    btn.disabled = true;
+    let attempted = false;
+    try {
+      const bytes = new Uint8Array(await selected.arrayBuffer());
+      if (bytes.length !== selected.size) throw new Error('LOCAL_FILE_CHANGED_DURING_READ');
+      const hash = await assetDigest(bytes);
+      let pending = readAssetPending();
+      const revision = assetRevision;
+      if (pending) {
+        // Never transform a held source identity into a new one. A retry must
+        // use the exact same file bytes, filename and revision precondition.
+        if (pending.sha256 !== hash || pending.bytes !== bytes.length
+          || (pending.localFileName || pending.fileName) !== canonicalOriginalFileName(selected.name)
+          || (revision && (revision.sourceInstanceId !== pending.sourceInstanceId
+            || revision.id !== pending.expectedBaseId
+            || revision.sha256 !== pending.expectedBaseSha256))) {
+          throw new Error('DIFFERENT_FILE_WHILE_SOURCE_SAVE_PENDING');
+        }
+      } else {
+        pending = {
+          schema:'JM.OwnerVault.FileSavePending/0.1',
+          sourceInstanceId:revision?.sourceInstanceId || 'asset-' + crypto.randomUUID(),
+          sha256:hash, bytes:bytes.length,
+          fileName:revision?.coldLocalName ? revision.fileName : canonicalOriginalFileName(selected.name),
+          localFileName:revision?.coldLocalName || null,
+          uploadId:bytes.length > 12*1024*1024 ? crypto.randomUUID() : null,
+          expectedBaseId:revision?.id || null,
+          expectedBaseSha256:revision?.sha256 || null,
+          createdAt:new Date().toISOString()
+        };
+        // No durable device checkpoint means NO remote write.
+        localStorage.setItem(ASSET_PENDING_KEY, JSON.stringify(pending));
+        if (readAssetPending()?.sourceInstanceId !== pending.sourceInstanceId)
+          throw new Error('LOCAL_CHECKPOINT_READBACK_FAILED');
+      }
+      const file = {
+        name:revision?.name || pending.fileName,
+        fileName:pending.fileName,
+        mediaType:selected.type || revision?.mediaType || 'application/octet-stream',
+        sourceInstanceId:pending.sourceInstanceId,
+        sha256:pending.sha256,
+        ...(bytes.length <= 12*1024*1024 ? {base64:assetBase64(bytes)} : {})
+      };
+      if (pending.expectedBaseId) {
+        file.expectedBaseId = pending.expectedBaseId;
+        file.expectedBaseSha256 = pending.expectedBaseSha256;
+      }
+      attempted = true;
+      let response;
+      if (bytes.length > 12*1024*1024) {
+        // CP26: no new source UUID on reload. Each part is a deterministic
+        // R2 key under the saved uploadId; POST retries require exact bytes.
+        const partCount = Math.ceil(bytes.length / ASSET_PART_BYTES);
+        const descriptor = {
+          name:file.name, fileName:file.fileName, mediaType:file.mediaType,
+          uploadId:pending.uploadId, sourceInstanceId:pending.sourceInstanceId,
+          sha256:hash, bytes:bytes.length, partCount,
+          ...(pending.expectedBaseId?{expectedBaseId:pending.expectedBaseId,
+            expectedBaseSha256:pending.expectedBaseSha256}:{})
+        };
+        // CP27: inspect checkpoint-bound R2 parts BEFORE resending bytes.
+        // Never trust a remote 'present' result until its digest matches
+        // the actual selected local original; corrupt or alien pieces HOLD.
+        const inspection=await request('',{method:'POST',body:JSON.stringify({
+          action:'inspect-asset-parts',file:descriptor
+        })});
+        if (inspection.outcome!=='ASSET_PART_INSPECTION'
+          || inspection.partCount!==partCount
+          || typeof inspection.already_indexed!=='boolean'
+          || !Array.isArray(inspection.present) || !Array.isArray(inspection.missing))
+          throw new Error('ASSET_PART_INSPECTION_INVALID');
+        const present=new Map(), missing=new Set();
+        for(const p of inspection.present){
+          if (!Number.isSafeInteger(p.partIndex) || p.partIndex<0 || p.partIndex>=partCount
+            || present.has(p.partIndex) || !/^[a-f0-9]{64}$/.test(p.sha256||''))
+            throw new Error('ASSET_PART_INSPECTION_DUPLICATE_OR_INVALID');
+          present.set(p.partIndex,p.sha256);
+        }
+        for(const i of inspection.missing){
+          if (!Number.isSafeInteger(i) || i<0 || i>=partCount
+            || missing.has(i) || present.has(i)) throw new Error('ASSET_PART_INSPECTION_MISSING_INVALID');
+          missing.add(i);
+        }
+        if (inspection.already_indexed) {
+          if (present.size || missing.size || !/^[0-9a-f-]{36}$/i.test(inspection.asset_id||''))
+            throw new Error('ASSET_PART_INDEXED_INSPECTION_INVALID');
+        } else if (present.size+missing.size!==partCount)
+          throw new Error('ASSET_PART_INSPECTION_INCOMPLETE');
+        for(let i=0;i<partCount;i++) {
+          if (inspection.already_indexed) break;
+          const part=bytes.subarray(i*ASSET_PART_BYTES,Math.min((i+1)*ASSET_PART_BYTES,bytes.length));
+          const partSha=await assetDigest(part);
+          if (present.has(i)) {
+            if (present.get(i)!==partSha) throw new Error('ASSET_PART_REMOTE_SOURCE_DIFFERS_HOLD');
+            continue;
+          }
+          if (!missing.has(i)) throw new Error('ASSET_PART_INSPECTION_GAP');
+          assetMessage('Saving missing original part '+(i+1)+' / '+partCount+' (same source identity)…');
+          const saved=await request('',{method:'POST',body:JSON.stringify({
+            action:'upload-asset-part',file:descriptor,partIndex:i,
+            partSha256:partSha,base64:assetBase64(part)
+          })});
+          if (!['ASSET_PART_UNCHANGED','ASSET_PART_STORED'].includes(saved.outcome)
+            || saved.partIndex!==i || saved.sha256!==partSha)
+            throw new Error('ASSET_PART_RECEIPT_INVALID');
+        }
+        assetMessage('All original parts verified. Finalizing ONE private file identity…');
+        response=await request('',{method:'POST',body:JSON.stringify({
+          action:'finalize-chunked-asset',file:descriptor
+        })});
+      } else {
+        response=await request('',{method:'POST',body:JSON.stringify({action:'upload-asset',file})});
+      }
+      if (!['ASSET_STORED','ASSET_UNCHANGED'].includes(response.outcome)
+        || response.asset?.sha256 !== hash
+        || response.asset?.sourceInstanceId !== pending.sourceInstanceId
+        || response.asset?.bytes !== bytes.length
+        || response.asset?.fileName !== pending.fileName) throw new Error('ASSET_SAVE_RECEIPT_INVALID');
+      const remote = await checkedAssetDownload(response.asset);
+      if (remote.length !== bytes.length) throw new Error('ASSET_READBACK_LENGTH_MISMATCH');
+      const index = await request('?mode=assets');
+      const head = index.assets?.find(a => a.sourceInstanceId === pending.sourceInstanceId);
+      if (head?.id !== response.asset.id || head.sha256 !== hash)
+        throw new Error('ASSET_CURRENT_HEAD_INDEX_MISMATCH');
+      // Only proven exact remote original bytes justify releasing the
+      // local pending checkpoint, without retiring any owner creation.
+      localStorage.removeItem(ASSET_PENDING_KEY);
+      assetRevision = null;
+      input.value = '';
+      await refreshAssets();
+      assetMessage('Original file saved and exact source independently recovered. Previous versions retained; no duplicate identity.');
+    } catch (error) {
+      if (error.status === 401) { setKey(''); authLabel(false); }
+      assetMessage('Original-file SAVE HOLD: ' + error.message
+        + (attempted
+            ? '. The same source identity is retained; CHECK HELD SAVE or reselect the SAME original file to resume without a duplicate.'
+            : '. No remote write was made.'));
+    } finally { assetSaveBusy = false; btn.disabled = false; }
+  }
+
+  // CP22 uses the ORIGINAL Owner Room download pattern and original CP20
+  // offline lineage recovery utility. This is not automatic offsite custody.
+  function validBoundedBase64(value) {
+    if (typeof value !== 'string' || value.length % 4 !== 0) return false;
+    const padding=value.endsWith('==')?2:value.endsWith('=')?1:0;
+    const end=value.length-padding;
+    for(let i=0;i<end;i+=32768) {
+      if (!/^[A-Za-z0-9+/]*$/.test(value.slice(i,Math.min(end,i+32768)))) return false;
+    }
+    return true;
+  }
+
+  async function exportAssetLineageLocal(item) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      assetMessage('Verifying all bounded original binary ancestors before export…');
+      const packet = await request('?mode=export-asset-lineage&asset=' + encodeURIComponent(item.id));
+      if (packet.schema !== 'JM.OwnerVault/0.1.AssetLineageExport'
+        || packet.selected_id !== item.id || !Array.isArray(packet.versions)
+        || packet.versions.length < 1 || packet.versions.length > 8
+        || packet.version_count !== packet.versions.length
+        || packet.order !== 'SELECTED_HEAD_TO_OLDEST_ANCESTOR')
+        throw new Error('ASSET_LINEAGE_RECEIPT_INVALID');
+      let total = 0, expected = item.id, firstSource = null;
+      const seen = new Set();
+      for (const version of packet.versions) {
+        const m = version?.metadata, value = version?.base64;
+        if (!m || m.id !== expected || seen.has(m.id)
+          || !/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId || '')
+          || !/^[a-f0-9]{64}$/i.test(m.sha256 || '')
+          || typeof value !== 'string'
+          || value.length > Math.ceil(12 * 1024 * 1024 / 3) * 4 + 4
+          || !validBoundedBase64(value))
+          throw new Error('ASSET_LINEAGE_IDENTITY_OR_ENCODING_INVALID');
+        if (firstSource !== null && firstSource !== m.sourceInstanceId)
+          throw new Error('ASSET_LINEAGE_CROSS_PURPOSE_HOLD');
+        firstSource = m.sourceInstanceId;
+        const decoded = atob(value);
+        const bytes = new Uint8Array(decoded.length);
+        for (let i = 0; i < decoded.length; i++) bytes[i] = decoded.charCodeAt(i);
+        if (bytes.length !== m.bytes || await assetDigest(bytes) !== m.sha256.toLowerCase()
+          || assetBase64(bytes) !== value)
+          throw new Error('ASSET_LINEAGE_EXACT_BYTES_MISMATCH');
+        total += bytes.length;
+        if (total > 24 * 1024 * 1024) throw new Error('ASSET_LINEAGE_OVERBOUNDED');
+        seen.add(m.id);
+        expected = m.previousVersionId || null;
+      }
+      if (expected !== null || total !== packet.source_bytes)
+        throw new Error('ASSET_LINEAGE_ANCESTRY_INCOMPLETE');
+      const url = URL.createObjectURL(new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'JM_Vault_Asset_Lineage_' + item.id + '.json';
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      assetMessage('Exact binary ancestry export offered. Save the JSON outside this website; verify/cold-recover using the EXISTING owner-vault-lineage-recover.mjs utility. Offsite possession not yet proved.');
+    } catch (error) {
+      assetMessage('Binary lineage export HOLD: ' + error.message + '. No backup or offsite success claimed.');
+    }
+  }
+
+  // CP28: one explicit owner-selected portable export. Remote reads are
+  // bounded 8 MiB; no 64 MiB single-response base64 or extra cloud copy.
+  async function exportExtendedAssetLineageLocal(item) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      assetMessage('Preparing bounded extended original-file lineage…');
+      const plan=await request('?mode=export-asset-extended-plan&asset='+encodeURIComponent(item.id));
+      if(plan.schema!=='JM.OwnerVault/0.1.AssetExtendedPlan'
+        || plan.selected_id!==item.id || !/^[a-f0-9]{64}$/.test(plan.index_pin_sha256||'')
+        || plan.shard_bytes!==8*1024*1024 || !Array.isArray(plan.versions)
+        || plan.versions.length<1 || plan.versions.length>8
+        || plan.version_count!==plan.versions.length
+        || plan.order!=='SELECTED_HEAD_TO_OLDEST_ANCESTOR'
+        || !Number.isSafeInteger(plan.source_bytes) || plan.source_bytes>64*1024*1024)
+        throw new Error('ASSET_EXTENDED_PLAN_INVALID');
+      let previous=item.id,total=0,source=null;
+      const versions=[];
+      for(const m of plan.versions){
+        if(!m || m.id!==previous || !/^[a-f0-9]{64}$/.test(m.sha256||'')
+          || !Number.isSafeInteger(m.bytes) || m.bytes<0 || m.bytes>64*1024*1024
+          || !/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId||'')
+          || typeof m.fileName!=='string' || !m.fileName)
+          throw new Error('ASSET_EXTENDED_ANCESTOR_INVALID');
+        if(source && source!==m.sourceInstanceId)
+          throw new Error('ASSET_EXTENDED_CROSS_SOURCE_HOLD');
+        source=m.sourceInstanceId;
+        const shards=[], decodedPieces=[];
+        const count=Math.ceil(m.bytes/plan.shard_bytes);
+        for(let i=0;i<count;i++){
+          assetMessage('Verifying protected original shard '+(i+1)+'/'+count+' for '+m.fileName+'…');
+          const shard=await request('?mode=export-asset-extended-shard&asset='+
+            encodeURIComponent(item.id)+'&version='+encodeURIComponent(m.id)+
+            '&part='+i+'&pin='+plan.index_pin_sha256);
+          const len=Math.min(plan.shard_bytes,m.bytes-i*plan.shard_bytes);
+          if(shard.schema!=='JM.OwnerVault/0.1.AssetExtendedShard'
+            || shard.selected_id!==item.id || shard.version_id!==m.id
+            || shard.index_pin_sha256!==plan.index_pin_sha256
+            || shard.shard_index!==i || shard.offset!==i*plan.shard_bytes
+            || shard.bytes!==len || !/^[a-f0-9]{64}$/.test(shard.sha256||'')
+            || typeof shard.base64!=='string'
+            || shard.base64.length>Math.ceil(plan.shard_bytes/3)*4+4
+            || !validBoundedBase64(shard.base64))
+            throw new Error('ASSET_EXTENDED_SHARD_RESPONSE_INVALID');
+          const binary=atob(shard.base64),bytes=new Uint8Array(binary.length);
+          for(let j=0;j<bytes.length;j++)bytes[j]=binary.charCodeAt(j);
+          if(bytes.length!==len || await assetDigest(bytes)!==shard.sha256
+            || assetBase64(bytes)!==shard.base64)
+            throw new Error('ASSET_EXTENDED_SHARD_BYTES_MISMATCH');
+          decodedPieces.push(bytes);
+          shards.push({shard_index:i,offset:shard.offset,bytes:shard.bytes,
+            sha256:shard.sha256,base64:shard.base64});
+        }
+        const whole=new Uint8Array(m.bytes);
+        let offset=0;
+        for(const bytes of decodedPieces){whole.set(bytes,offset);offset+=bytes.length;}
+        if(offset!==m.bytes || await assetDigest(whole)!==m.sha256)
+          throw new Error('ASSET_EXTENDED_WHOLE_FILE_MISMATCH');
+        total+=m.bytes;
+        if(total>64*1024*1024)throw new Error('ASSET_EXTENDED_TOTAL_HOLD');
+        versions.push({metadata:m,shards});
+        previous=m.previousVersionId||null;
+      }
+      if(previous!==null || total!==plan.source_bytes)
+        throw new Error('ASSET_EXTENDED_INCOMPLETE_OR_CHANGED');
+      const packet={schema:'JM.OwnerVault/0.1.AssetExtendedExport',
+        selected_id:item.id,index_pin_sha256:plan.index_pin_sha256,
+        shard_bytes:plan.shard_bytes,version_count:versions.length,
+        source_bytes:total,order:plan.order,versions,
+        boundary:'PRIVATE_OWNER_TRIGGERED; NOT_OFFSITE_UNTIL_SEPARATELY_VERIFIED'};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(packet)],{type:'application/json'}));
+      const link=document.createElement('a');
+      link.href=url;link.download='JM_Vault_Asset_Extended_'+item.id+'.json';
+      document.body.appendChild(link);link.click();link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),30000);
+      assetMessage('Extended exact-source export offered. Save and cold-audit using the ORIGINAL offline recovery CLI; physical offsite custody remains unproven.');
+    } catch(error) {
+      assetMessage('Extended lineage HOLD: '+error.message+'. Original files and checkpoint unchanged.');
+    }
+  }
+
+
+  // CP30: persist only source identity + authenticated catalog fingerprint.
+  // Never persist original bytes, filenames, owner key or pretend a browser's
+  // offer to download proves a piece is on the owner's device.
+  const COLD_PENDING_KEY='jm-owner-vault-cp30-cold-catalog-pending';
+  function readColdPending(){
+    const raw=localStorage.getItem(COLD_PENDING_KEY);
+    if(raw===null)return null;
+    let state;try{state=JSON.parse(raw);}catch{throw new Error('COLD_PENDING_CORRUPT_HOLD');}
+    if(!state||state.schema!=='JM.OwnerVault.ColdPending/0.1'
+      ||!/^[0-9a-f-]{36}$/i.test(state.selected_id||'')
+      ||!/^[a-f0-9]{64}$/.test(state.catalog_sha256||'')
+      ||Object.keys(state).sort().join(',')!=='catalog_sha256,schema,selected_id')
+      throw new Error('COLD_PENDING_IDENTITY_INVALID_HOLD');
+    return state;
+  }
+  function saveColdPending(state){
+    localStorage.setItem(COLD_PENDING_KEY,JSON.stringify(state));
+    const observed=readColdPending();
+    if(observed?.selected_id!==state.selected_id
+      ||observed.catalog_sha256!==state.catalog_sha256)
+      throw new Error('COLD_PENDING_CHECKPOINT_READBACK_HOLD');
+  }
+  // CP28: manually initiated, one download per click. Browsers/phones can
+  // block multi-file auto-downloads; never call an unreceived part a backup.
+  let coldExport = null;
+  function offerColdFile(bytes, name, type='application/octet-stream') {
+    const url=URL.createObjectURL(new Blob([bytes],{type}));
+    const a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+  // Shared CP28–CP31 identity and byte-contract validation for manual,
+  // resumed and owner-selected folder export. No duplicate catalog rules.
+  async function verifiedColdSourceCatalog(item){
+      const packet=await request('?mode=export-asset-catalog&asset='+encodeURIComponent(item.id));
+      if(packet.schema!=='JM.OwnerVault/0.1.AssetPartsCatalog'
+        ||packet.selected_id!==item.id||!Array.isArray(packet.versions)
+        ||packet.versions.length<1||packet.versions.length>8
+        ||packet.version_count!==packet.versions.length
+        ||packet.part_bytes!==2*1024*1024
+        ||packet.order!=='SELECTED_HEAD_TO_OLDEST_ANCESTOR')
+        throw new Error('COLD_CATALOG_SCHEMA_HOLD');
+      let expected=item.id,identity=null,total=0;
+      const parts=[],ids=new Set();
+      for(const v of packet.versions){
+        const m=v?.metadata;
+        if(!m||m.id!==expected||ids.has(m.id)
+          ||!/^[0-9a-f-]{36}$/i.test(m.id||'')
+          ||!/^asset-[0-9a-f-]{36}$/i.test(m.sourceInstanceId||'')
+          ||!/^[a-f0-9]{64}$/.test(m.sha256||'')
+          ||!Number.isSafeInteger(m.bytes)||m.bytes<0||m.bytes>64*1024*1024
+          ||(identity!==null&&identity!==m.sourceInstanceId)
+          ||!Array.isArray(v.parts)
+          ||v.parts.length!==Math.max(1,Math.ceil(m.bytes/(2*1024*1024))))
+          throw new Error('COLD_CATALOG_IDENTITY_OR_PART_COUNT_HOLD');
+        identity=m.sourceInstanceId;ids.add(m.id);
+        for(let i=0;i<v.parts.length;i++){
+          const p=v.parts[i];
+          const name='JM_Vault_Part_'+m.id+'_'+String(i).padStart(2,'0')+'.bin';
+          const count=i===v.parts.length-1?m.bytes-(2*1024*1024)*(v.parts.length-1):2*1024*1024;
+          if(!p||p.index!==i||p.fileName!==name||p.bytes!==count
+            ||!/^[a-f0-9]{64}$/.test(p.sha256||''))
+            throw new Error('COLD_CATALOG_PART_INTEGRITY_HOLD');
+          parts.push({m,p});
+        }
+        total+=m.bytes;expected=m.previousVersionId||null;
+      }
+      if(expected!==null||total!==packet.source_bytes||total>8*64*1024*1024)
+        throw new Error('COLD_CATALOG_CHAIN_OR_SIZE_HOLD');
+      const fingerprint=await assetDigest(new TextEncoder().encode(JSON.stringify(packet)));
+      return {packet,parts,fingerprint};
+  }
+  async function prepareColdExport(item,resume=false) {
+    if (!(await ensureUnlocked()))return;
+    coldExport=null;
+    const next=el('jmVaultPartNext');if(next)next.disabled=true;
+    try{
+      assetMessage('Reading authenticated source catalog; no remote writes…');
+      const {packet,parts,fingerprint}=await verifiedColdSourceCatalog(item);
+      const held=readColdPending();
+      if(resume){
+        if(!held||held.selected_id!==item.id||held.catalog_sha256!==fingerprint)
+          throw new Error('COLD_PENDING_CATALOG_CHANGED_OR_MISSING_HOLD');
+      }else{
+        if(held&&(held.selected_id!==item.id||held.catalog_sha256!==fingerprint))
+          throw new Error('COLD_PREVIOUS_EXPORT_HELD_CANCEL_EXPLICITLY');
+        if(!held)saveColdPending({schema:'JM.OwnerVault.ColdPending/0.1',
+          selected_id:item.id,catalog_sha256:fingerprint});
+      }
+      const verified=new Set();
+      if(resume){
+        const selected=Array.from(el('jmVaultColdPieces')?.files||[]);
+        if(!selected.length)throw new Error('COLD_RESUME_SELECT_SAVED_PIECES_FIRST');
+        const byName=new Map(parts.map((part,i)=>[part.p.fileName,{...part,i}]));
+        for(const file of selected){
+          const match=byName.get(file.name);
+          if(!match||verified.has(match.i)||file.size!==match.p.bytes
+            ||file.size>2*1024*1024)
+            throw new Error('COLD_RESUME_UNRECOGNISED_OR_DUPLICATE_PIECE_HOLD');
+          const bytes=new Uint8Array(await file.arrayBuffer());
+          if(bytes.length!==match.p.bytes||await assetDigest(bytes)!==match.p.sha256)
+            throw new Error('COLD_RESUME_LOCAL_ORIGINAL_HASH_HOLD');
+          verified.add(match.i);
+        }
+      }
+      const cursor=parts.findIndex((_,i)=>!verified.has(i));
+      coldExport={packet,parts,verified,cursor:cursor<0?parts.length:cursor};
+      if(!resume){
+        const catalogName='JM_Vault_Cold_Catalog_'+item.id+'.json';
+        offerColdFile(JSON.stringify(packet,null,2)+'\n',catalogName,'application/json');
+        assetMessage('Cold catalog offered. Save every source piece. Reload safety checkpoint contains ONLY IDs and catalog SHA-256. No backup claimed.');
+      }else{
+        assetMessage('Cold export resumed: '+verified.size+'/'+parts.length
+          +' actual owner-selected pieces hash-verified against the authenticated original. '
+          +(cursor<0?'All selected pieces verified; separately audit the saved folder using JM offline CLI.':
+            'DOWNLOAD NEXT VERIFIED PIECE will offer only pieces missing from your verified local selection.'));
+      }
+      if(next)next.disabled=cursor<0;
+    }catch(e){
+      coldExport=null;
+      assetMessage('Cold source export HOLD: '+e.message+'. No offsite backup claimed.');
+    }
+  }
+  async function nextColdPart(){
+    const session=coldExport,next=el('jmVaultPartNext');
+    if(!session||session.cursor>=session.parts.length)return;
+    while(session.cursor<session.parts.length && session.verified?.has(session.cursor))
+      session.cursor++;
+    if(session.cursor>=session.parts.length){
+      if(next)next.disabled=true;return;
+    }
+    if(!(await ensureUnlocked()))return;
+    if(next)next.disabled=true;
+    try{
+      const {m,p}=session.parts[session.cursor];
+      const response=await request('?mode=export-asset-part&asset='
+        +encodeURIComponent(m.id)+'&part='+p.index);
+      const bytes=new Uint8Array(await response.arrayBuffer());
+      if(bytes.length!==p.bytes||await assetDigest(bytes)!==p.sha256
+        ||response.headers.get('x-jm-part-sha256')!==p.sha256
+        ||response.headers.get('x-jm-asset-id')!==m.id
+        ||response.headers.get('x-jm-part-index')!==String(p.index))
+        throw new Error('COLD_SOURCE_PIECE_SHA256_HOLD');
+      offerColdFile(bytes,p.fileName);
+      session.cursor++;
+      while(session.cursor<session.parts.length && session.verified?.has(session.cursor))
+        session.cursor++;
+      assetMessage('Original piece '+session.cursor+' / '+session.parts.length
+        +' offered and hash verified. Keep every piece in the SAME folder as the catalog.'
+        +(session.cursor===session.parts.length
+          ? ' All downloads offered; independently verify with the original offline JM recovery CLI before claiming custody.'
+          : ' Press DOWNLOAD NEXT VERIFIED PIECE to continue.'));
+      if(next)next.disabled=session.cursor>=session.parts.length;
+    }catch(e){
+      assetMessage('Cold part HOLD at '+(session.cursor+1)+' / '+session.parts.length
+        +': '+e.message+'. No piece accepted; click again to retry the SAME identity.');
+      if(next)next.disabled=false;
+    }
+  }
+
+  // CP31: owner-picked actual device folder, NOT a new Vault or carrier.
+  // File System Access API permissions remain with the browser/owner and
+  // no directory handles or raw source bytes are stored persistently.
+  let coldDirectoryBusy=false;
+  async function existingColdDirectoryFile(directory,name){
+    try{return await directory.getFileHandle(name,{create:false});}
+    catch(error){if(error?.name==='NotFoundError')return null;throw error;}
+  }
+  async function verifiedColdDiskFile(handle,size,expectedHash){
+    const file=await handle.getFile();
+    if(file.size!==size || size<0 || size>2*1024*1024)
+      throw new Error('COLD_DIRECTORY_EXISTING_FILE_SIZE_HOLD');
+    const source=new Uint8Array(await file.arrayBuffer());
+    if(source.length!==size || await assetDigest(source)!==expectedHash)
+      throw new Error('COLD_DIRECTORY_DISK_HASH_HOLD');
+  }
+  async function saveExactColdDiskFile(directory,name,bytes,expectedHash){
+    const current=await existingColdDirectoryFile(directory,name);
+    if(current){
+      await verifiedColdDiskFile(current,bytes.length,expectedHash);
+      return 'EXISTING_VERIFIED';
+    }
+    // Browser directory API has no atomic O_EXCL flag: do not claim
+    // concurrent hostile filesystem writer protection.
+    const handle=await directory.getFileHandle(name,{create:true});
+    const before=await handle.getFile();
+    if(before.size!==0)throw new Error('COLD_DIRECTORY_CREATION_COLLISION_HOLD');
+    const writable=await handle.createWritable();
+    try{
+      await writable.write(bytes);
+      await writable.close();
+    }catch(error){
+      try{await writable.abort();}catch{}
+      throw error; // any partial bytes are preserved, not silently deleted
+    }
+    await verifiedColdDiskFile(handle,bytes.length,expectedHash);
+    return 'NEW_DISK_READBACK_VERIFIED';
+  }
+  async function saveColdDirectory(item){
+    if(coldDirectoryBusy)return;
+    if(typeof window.showDirectoryPicker!=='function'){
+      assetMessage('COLD DIRECTORY UNSUPPORTED ON THIS BROWSER: use EXPORT COLD PARTS (existing phone-safe path).');
+      return;
+    }
+    let directory;
+    // Important: call picker from the owner's click, BEFORE awaits that
+    // might consume the browser's transient user-activation permission.
+    try{directory=await window.showDirectoryPicker({mode:'readwrite'});}
+    catch(error){
+      if(error?.name!=='AbortError')
+        assetMessage('COLD DIRECTORY PICKER HOLD: '+error.message);
+      return;
+    }
+    if(!directory || directory.kind!=='directory'){
+      assetMessage('COLD DIRECTORY PICKER HOLD: no owner-approved directory.');
+      return;
+    }
+    if(!(await ensureUnlocked()))return;
+    coldDirectoryBusy=true;
+    try{
+      const {packet,parts,fingerprint}=await verifiedColdSourceCatalog(item);
+      const previous=readColdPending();
+      if(previous&&(previous.selected_id!==item.id
+        ||previous.catalog_sha256!==fingerprint))
+        throw new Error('COLD_DIRECTORY_DIFFERENT_HELD_SOURCE_HOLD');
+      if(!previous)saveColdPending({schema:'JM.OwnerVault.ColdPending/0.1',
+        selected_id:item.id,catalog_sha256:fingerprint});
+      const catalogName='JM_Vault_Cold_Catalog_'+item.id+'.json';
+      const catalogBytes=new TextEncoder().encode(JSON.stringify(packet,null,2)+'\n');
+      if(catalogBytes.length>512*1024)
+        throw new Error('COLD_DIRECTORY_CATALOG_SIZE_HOLD');
+      const catalogSha=await assetDigest(catalogBytes);
+      const alreadyCatalog=await existingColdDirectoryFile(directory,catalogName);
+      if(alreadyCatalog){
+        const file=await alreadyCatalog.getFile();
+        if(file.size!==catalogBytes.length || await assetDigest(
+          new Uint8Array(await file.arrayBuffer()))!==catalogSha)
+          throw new Error('COLD_DIRECTORY_CATALOG_COLLISION_HOLD');
+      }
+      let present=0,written=0;
+      for(let i=0;i<parts.length;i++){
+        const {m,p}=parts[i];
+        assetMessage('Owner folder: checking original '+(i+1)+' / '+parts.length
+          +' · exact '+m.id+' · no cloud writes…');
+        if(await existingColdDirectoryFile(directory,p.fileName)){
+          await verifiedColdDiskFile(await directory.getFileHandle(p.fileName,{create:false}),
+            p.bytes,p.sha256);
+          present++;continue;
+        }
+        const response=await request('?mode=export-asset-part&asset='+
+          encodeURIComponent(m.id)+'&part='+p.index);
+        if(!(response instanceof Response))
+          throw new Error('COLD_DIRECTORY_PART_RESPONSE_HOLD');
+        const bytes=new Uint8Array(await response.arrayBuffer());
+        if(bytes.length!==p.bytes || bytes.length>2*1024*1024
+          ||await assetDigest(bytes)!==p.sha256
+          ||response.headers.get('x-jm-part-sha256')!==p.sha256
+          ||response.headers.get('x-jm-asset-id')!==m.id
+          ||response.headers.get('x-jm-part-index')!==String(p.index))
+          throw new Error('COLD_DIRECTORY_REMOTE_PART_INTEGRITY_HOLD');
+        const result=await saveExactColdDiskFile(directory,p.fileName,bytes,p.sha256);
+        if(result==='EXISTING_VERIFIED')present++;else written++;
+      }
+      // A newer revision may have appeared while downloading. The saved
+      // originals are left intact, but never crown a stale catalog as HEAD.
+      const latest=await verifiedColdSourceCatalog(item);
+      if(latest.fingerprint!==fingerprint)
+        throw new Error('COLD_DIRECTORY_REMOTE_CATALOG_CHANGED_HOLD');
+      if(!alreadyCatalog)
+        await saveExactColdDiskFile(directory,catalogName,catalogBytes,catalogSha);
+      else{
+        const file=await alreadyCatalog.getFile();
+        if(file.size!==catalogBytes.length||await assetDigest(
+          new Uint8Array(await file.arrayBuffer()))!==catalogSha)
+          throw new Error('COLD_DIRECTORY_CATALOG_READBACK_HOLD');
+      }
+      assetMessage('COLD DIRECTORY LOCAL FILES VERIFIED: '+parts.length+'/'+parts.length
+        +' exact parts ('+present+' already saved, '+written+' newly written) and catalog'
+        +' read back from the owner-chosen folder. NEXT: original JM offline CLI'
+        +' --parts-catalog --verify-only and independent native recovery/audit.'
+        +' This is NOT an offsite backup or native-app edit proof.');
+    }catch(error){
+      assetMessage('COLD DIRECTORY HOLD: '+error.message
+        +'. Existing device originals kept. No remote write or backup completion claimed.'
+        +' Reselect the SAME directory to retry after resolving the held file.');
+    }finally{coldDirectoryBusy=false;}
+  }
+
+  async function refreshAssets() {
+    if (!key()) return;
+    try {
+      const index = await request('?mode=assets');
+      if (index.schema !== 'JM.OwnerVault/0.1.AssetIndex' || !Array.isArray(index.assets))
+        throw new Error('ASSET_INDEX_NOT_VERIFIED');
+      const entries = index.assets, mount = el('jmVaultAssetCards');
+      if (!mount) return;
+      mount.innerHTML = entries.map(item => `
+        <article class="jm-vault-card"><div><b>${escapeHTML(item.name)}</b>
+        <small>${escapeHTML(item.fileName)} · ${Math.round(item.bytes / 1024)} KiB · ${escapeHTML(item.mediaType)} · ${escapeHTML(item.sha256.slice(0,12))}…</small>
+        </div><div class="jm-vault-card-actions">
+        <button type="button" data-asset-download="${escapeHTML(item.id)}">DOWNLOAD VERIFIED</button>
+        <button type="button" data-asset-revise="${escapeHTML(item.id)}">REVISE FILE</button>
+        <button type="button" data-asset-lineage="${escapeHTML(item.id)}">EXPORT FULL LINEAGE</button>
+        <button type="button" data-asset-cold="${escapeHTML(item.id)}">EXPORT COLD PARTS</button>
+        <button type="button" data-asset-cold-folder="${escapeHTML(item.id)}">SAVE VERIFIED COLD FOLDER</button>
+        <button type="button" data-asset-extended="${escapeHTML(item.id)}">EXPORT EXTENDED (64 MiB)</button>
+        <button type="button" class="danger" data-asset-remove="${escapeHTML(item.id)}">REMOVE LEAF</button>
+        </div></article>`).join('') || '<div class="empty-state">No original non-HTML files deliberately saved yet.</div>';
+      mount.querySelectorAll('[data-asset-download]').forEach(b => b.addEventListener('click', async () => {
+        const item = entries.find(x => x.id === b.dataset.assetDownload);
+        if (!item) return;
+        b.disabled = true;
+        try {
+          const bytes = await checkedAssetDownload(item);
+          const url = URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
+          const link = document.createElement('a');
+          link.href = url; link.download = item.fileName;
+          document.body.appendChild(link); link.click(); link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+          assetMessage('Verified source offered for device download; save and reopen it externally to prove independent possession.');
+        } catch (e) { assetMessage('Download HOLD: ' + e.message); }
+        finally { b.disabled = false; }
+      }));
+      mount.querySelectorAll('[data-asset-lineage]').forEach(b => b.addEventListener('click', () => {
+        const item = entries.find(x => x.id === b.dataset.assetLineage);
+        if (item) void exportAssetLineageLocal(item);
+      }));
+      mount.querySelectorAll('[data-asset-extended]').forEach(b => b.addEventListener('click', () => {
+        const item = entries.find(x => x.id === b.dataset.assetExtended);
+        if (item) void exportExtendedAssetLineageLocal(item);
+      }));
+      mount.querySelectorAll('[data-asset-cold-folder]').forEach(b=>b.addEventListener('click',()=>{
+        const item=entries.find(x=>x.id===b.dataset.assetColdFolder);
+        if(item)void saveColdDirectory(item);
+      }));
+      mount.querySelectorAll('[data-asset-cold]').forEach(b => b.addEventListener('click',()=>{
+        const item=entries.find(x=>x.id===b.dataset.assetCold);
+        if(item)void prepareColdExport(item);
+      }));
+      mount.querySelectorAll('[data-asset-revise]').forEach(b => b.addEventListener('click', () => {
+        const item = entries.find(x => x.id === b.dataset.assetRevise);
+        if (!item || entries.some(x => x.previousVersionId === item.id)) {
+          assetMessage('That is an ancestor, not the latest editable version. Choose its current head.');
+          return;
+        }
+        assetRevision = item;
+        assetMessage('Revision selected: ' + item.fileName + '. Select the updated ORIGINAL file, then press SAVE. Its ancestor will be retained.');
+        el('jmVaultFileInput')?.click();
+      }));
+      mount.querySelectorAll('[data-asset-remove]').forEach(b => b.addEventListener('click', async () => {
+        const item = entries.find(x => x.id === b.dataset.assetRemove);
+        if (!item) return;
+        if (!window.confirm('Permanently remove only this private Vault file version? Protected ancestors cannot be removed while referenced.')) return;
+        try {
+          const result = await request('?asset=' + encodeURIComponent(item.id), { method: 'DELETE' });
+          if (result.outcome !== 'ASSET_REMOVED' || result.asset?.id !== item.id) throw new Error('ASSET_REMOVE_RECEIPT_INVALID');
+          await refreshAssets(); assetMessage('One explicitly selected private file version removed; other sources unchanged.');
+        } catch (e) { assetMessage('Removal HOLD: ' + e.message); }
+      }));
+    } catch (error) {
+      assetMessage('Original-file index HOLD: ' + error.message + '. Existing HTML custody and local creations are unchanged.');
+    }
+  }
+
   async function previewRemote(id, name) {
     try {
       const response = await request(`?body=${encodeURIComponent(id)}`);
@@ -796,6 +1676,42 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
       setTimeout(() => URL.revokeObjectURL(url), 1500);
     } catch (error) {
       message(`Download failed: ${error.message}`);
+    }
+  }
+
+  async function downloadLineageRemote(id) {
+    if (!(await ensureUnlocked())) return;
+    try {
+      message('Reading verified private revision ancestry for local recovery export…');
+      const packet = await request(`?mode=export-lineage&body=${encodeURIComponent(id)}`);
+      if (packet.schema !== 'JM.OwnerVault/0.1.LineageExport'
+        || packet.selected_id !== id || !Array.isArray(packet.versions)
+        || packet.versions.length < 1 || packet.version_count !== packet.versions.length
+        || packet.versions.length > 16) throw new Error('LINEAGE_EXPORT_RECEIPT_INVALID');
+      let total = 0, expectedId = id;
+      for (const v of packet.versions) {
+        if (!v || !v.metadata || typeof v.content !== 'string'
+          || v.metadata.id !== expectedId
+          || !/^[a-f0-9]{64}$/i.test(v.metadata.sha256 || ''))
+          throw new Error('LINEAGE_EXPORT_ANCESTRY_INVALID');
+        const count = new TextEncoder().encode(v.content).byteLength;
+        if (count !== v.metadata.bytes || await hashText(v.content) !== v.metadata.sha256.toLowerCase())
+          throw new Error('LINEAGE_EXPORT_SOURCE_HASH_MISMATCH');
+        total += count;
+        expectedId = v.metadata.previousVersionId || null;
+      }
+      if (expectedId !== null || total !== packet.source_bytes || total > 32 * 1024 * 1024)
+        throw new Error('LINEAGE_EXPORT_INCOMPLETE_OR_OVERBOUNDED');
+      const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `JM_Vault_Lineage_${id}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      message(`Portable lineage export offered: ${packet.version_count} verified ${packet.version_count === 1 ? 'version' : 'versions'}. Keep the JSON outside this host and verify the saved file independently; no offsite custody is claimed yet.`);
+    } catch (error) {
+      message(`Lineage export HOLD: ${error.message}. No backup-success claim issued.`);
     }
   }
 
@@ -859,8 +1775,14 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     if (!key()) return;
     try {
       const data = await request('');
+      observedStateRevision = /^[a-f0-9]{64}$/.test(data.state_revision || '')
+        ? data.state_revision : null;
       authLabel(true);
       const bodies = Array.isArray(data.bodies) ? data.bodies : [];
+      await refreshAssets();
+      try {
+        if (readAssetPending()) assetMessage('An original-file SAVE checkpoint is held on this device. Choose CHECK HELD SAVE for read-only recovery; nothing is automatically reuploaded.');
+      } catch (error) { assetMessage(error.message + ': source data protected; no automatic reset.'); }
       el('jmVaultCount').textContent = `${bodies.length} REMOTE ${bodies.length === 1 ? 'BODY' : 'BODIES'}`;
       const shelf = el('jmVaultRemote');
       shelf.innerHTML = bodies.length ? bodies.map(body => `
@@ -870,6 +1792,7 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
             <button type="button" data-vault-preview="${escapeHTML(body.id)}">PREVIEW</button>
             <button type="button" data-vault-edit="${escapeHTML(body.id)}">EDIT SOURCE</button>
             <button type="button" data-vault-download="${escapeHTML(body.id)}">DOWNLOAD</button>
+            <button type="button" data-vault-lineage="${escapeHTML(body.id)}">EXPORT LINEAGE</button>
             <button type="button" data-vault-restore="${escapeHTML(body.id)}">RESTORE TO DEVICE</button>
             <button type="button" class="danger" data-vault-delete="${escapeHTML(body.id)}">REMOVE</button>
           </div>
@@ -887,6 +1810,10 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
         const body = bodies.find(item => item.id === button.dataset.vaultDownload);
         if (body) downloadRemote(body.id, body.fileName);
       }));
+      shelf.querySelectorAll('[data-vault-lineage]').forEach(button => button.addEventListener('click', () => {
+        const body = bodies.find(item => item.id === button.dataset.vaultLineage);
+        if (body) downloadLineageRemote(body.id);
+      }));
       shelf.querySelectorAll('[data-vault-restore]').forEach(button => button.addEventListener('click', () => {
         const body = bodies.find(item => item.id === button.dataset.vaultRestore);
         if (body) restoreRemoteBody(body);
@@ -903,6 +1830,32 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
 
   function bind() {
     el('jmVaultUnlock')?.addEventListener('click', unlock);
+    el('jmVaultSaveFile')?.addEventListener('click', saveSelectedOriginal);
+    el('jmVaultCheckPending')?.addEventListener('click', confirmPendingAsset);
+    el('jmVaultPrepareColdRevision')?.addEventListener('click',prepareColdNativeRevision);
+    el('jmVaultPartNext')?.addEventListener('click',nextColdPart);
+    el('jmVaultResumeCold')?.addEventListener('click',async()=>{
+      try{
+        const held=readColdPending();
+        if(!held)throw new Error('NO_HELD_COLD_CATALOG');
+        if(!(await ensureUnlocked()))return;
+        const index=await request('?mode=assets');
+        if(index.schema!=='JM.OwnerVault/0.1.AssetIndex'||!Array.isArray(index.assets)
+          ||!index.assets.some(x=>x.id===held.selected_id))
+          throw new Error('COLD_HELD_HEAD_NOT_INDEXED');
+        await prepareColdExport({id:held.selected_id},true);
+      }catch(e){
+        assetMessage('COLD RESUME HOLD: '+e.message+'. Nothing uploaded, deleted or treated as backed up.');
+      }
+    });
+    el('jmVaultCancelCold')?.addEventListener('click',()=>{
+      try{
+        readColdPending();localStorage.removeItem(COLD_PENDING_KEY);
+        coldExport=null;if(el('jmVaultPartNext'))el('jmVaultPartNext').disabled=true;
+        assetMessage('Held cold export checkpoint cancelled. No locally downloaded original or remote source deleted.');
+      }catch(e){assetMessage('COLD CANCEL HOLD: '+e.message+'. Original state preserved.');}
+    });
+    el('jmVaultCancelFileRevision')?.addEventListener('click', () => { assetRevision = null; el('jmVaultFileInput').value = ''; assetMessage('Revision cancelled; no file uploaded.'); });
     el('jmVaultSync')?.addEventListener('click', sync);
     el('jmVaultRestore')?.addEventListener('click', restoreState);
     el('jmVaultSnapshot')?.addEventListener('click', snapshot);
@@ -911,7 +1864,10 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     el('jmVaultSaveRevision')?.addEventListener('click', saveRevision);
     el('jmVaultCancelEdit')?.addEventListener('click', closeEditor);
     el('jmVaultLock')?.addEventListener('click', () => {
-      setKey(''); authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
+      assetRevision = null; coldExport=null;
+      if(el('jmVaultPartNext'))el('jmVaultPartNext').disabled=true;
+      if (el('jmVaultAssetCards')) el('jmVaultAssetCards').innerHTML = '';
+      setKey(''); observedStateRevision = null; authLabel(false); closeEditor(); el('jmVaultRemote').innerHTML = ''; el('jmVaultCount').textContent = '0 REMOTE BODIES';
       message('Vault locked. The session key was removed from this browser tab/session.');
     });
   }
@@ -920,6 +1876,11 @@ init().catch(error=>{console.error(error);toast('The Estate loaded with its buil
     installStyle();
     if (!buildPanel()) return;
     bind();
+    try{
+      const held=readColdPending();
+      if(held)assetMessage('A held cold export is pinned to original '+held.selected_id
+        +'. Select saved pieces and use RESUME VERIFIED COLD EXPORT after unlocking. No downloads assumed saved.');
+    }catch(e){assetMessage('COLD CHECKPOINT HOLD: '+e.message+'. Do not start a different source export.');}
     proofState();
     void status().then(()=>{
       const p=getPending();

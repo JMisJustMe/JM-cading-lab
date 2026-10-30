@@ -111,7 +111,9 @@ jobs:
           node --check functions/api/estate-contact.js
           node --input-type=module --check < functions/api/owner/vault.js
           node --check estate-owner-vault.js
-          node tools/test-owner-vault-v0.1.mjs
+          # Native JM custody law: malformed EXISTING private records must not
+          # be interpreted as empty or overwritten. Refuse a production upload.
+          node tools/test-owner-vault-v0.1.mjs --require-custody-safe
           node --check unified-browser/jm-cloud-workspace-client.mjs
           node --check unified-browser/jm-ailatheo-cloud-contact.mjs
           node navigator/mcp-public-v1/test.mjs

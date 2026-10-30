@@ -548,7 +548,9 @@ $('historyFile').addEventListener('change',async e=>{const file=e.target.files?.
  if(incoming?.schema!=='jm.thirdcourt.birthday/1'||!validBest||!validRecords){status.textContent='RESTORE REJECTED · Not a valid THIRD COURT receipt.';return}
  if(!confirm('Replace this device’s local THIRD COURT record and match history with the selected backup? Export your current history first if needed.')){status.textContent='RESTORE CANCELLED · Current history preserved.';return}
  const restored=r.slice(-100),nextBest={wins:b.wins,matches:b.matches,bestScore:b.bestScore};
- const priorHistory=localStorage.getItem(historyKey),priorBest=localStorage.getItem(bestKey);
+ let priorHistory,priorBest;
+ try{priorHistory=localStorage.getItem(historyKey);priorBest=localStorage.getItem(bestKey)}
+ catch(err){status.textContent='RESTORE FAILED · Browser storage unavailable; current history preserved.';return}
  try{localStorage.setItem(historyKey,JSON.stringify(restored));localStorage.setItem(bestKey,JSON.stringify(nextBest))}
  catch(err){try{if(priorHistory===null)localStorage.removeItem(historyKey);else localStorage.setItem(historyKey,priorHistory);if(priorBest===null)localStorage.removeItem(bestKey);else localStorage.setItem(bestKey,priorBest)}catch(rollbackError){}status.textContent='RESTORE FAILED · Browser storage unavailable; existing record retained where possible.';return}
  stats=restored;best=nextBest;saveBest();status.textContent='RESTORED · '+stats.length+' matches. Export a fresh backup any time.'

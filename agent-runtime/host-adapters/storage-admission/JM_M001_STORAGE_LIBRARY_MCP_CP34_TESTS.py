@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""Bounded actual MCP/byte checks for JM M001 CP34.1 (synthetic fixtures only)."""
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+SCRIPT = Path(__file__).with_name("JM_M001_STORAGE_LIBRARY_MCP_CP34.py")
+spec = importlib.util.spec_from_file_location("jm_m001_cp34", SCRIPT)
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+
+
+class StorageMCPTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.a = Path(self.tmp.name) / "library"
+        self.b = Path(self.tmp.name) / "recovery"
+        self.a.mkdir()
+        self.b.mkdir()
+        self.source = b'{"source":"JM","version":1}\n'
+        (self.a / "item.json").write_bytes(self.source)
+        (self.b / "item.json").write_bytes(self.source)
+        self.roots = {"library": str(self.a), "recovery": str(self.b)}
+        self.args = {"library_file": "item.json", "recovery_file": "item.json", "format": "json"}
+
+    def test_real_two_root_bytes_equal(self):
+        x = m.compare(self.roots, self.args)
+        self.assertEqual(x["state"], "EXACT_BYTES_MATCH")
+        self.assertTrue(x["same_bytes"])
+        self.assertEqual(x["library"]["sha256"], hashlib.sha256(self.source).hexdigest())
+        self.assertEqual(x["native_mutations"], 0)
+        self.assertFalse(x["retirement_authorised"])
+        self.assertFalse(x["independent_restore_proven"])
+
+    def test_authoritative_digest_and_dropbox_content_hash(self):
+        x = dict(self.args, expected_sha256=hashlib.sha256(self.source).hexdigest(),
+                 recovery_dropbox_content_hash=m.dropbox_content_hash(self.source))
+        self.assertEqual(m.compare(self.roots, x)["state"], "EXACT_BYTES_MATCH")
+        self.assertTrue(m.compare(self.roots, x)["dropbox_content_hash_matches"])
+
+    def test_tampered_provider_digest_hold(self):
+        x = dict(self.args, recovery_dropbox_content_hash="0" * 64)
+        self.assertEqual(m.compare(self.roots, x)["state"], "PROVIDER_DIGEST_HOLD")
+
+    def test_wrong_expected_source_digest_hold(self):
+        x = dict(self.args, expected_sha256="0" * 64)
+        self.assertEqual(m.compare(self.roots, x)["state"], "EXPECTED_DIGEST_HOLD")
+
+    def test_different_same_length_is_not_duplicate(self):
+        changed = self.source.replace(b"JM", b"NX")
+        (self.b / "item.json").write_bytes(changed)
+        self.assertEqual(len(changed), len(self.source))
+        self.assertEqual(m.compare(self.roots, self.args)["state"], "DIFFERENT_BYTES_HOLD")
+
+    def test_stored_serverbusy_error_detected_even_when_same_bytes(self):
+        xml = b'\xef\xbb\xbf<?xml version="1.0"?><Error><Code>ServerBusy</Code></Error>{"valid":true}'
+        (self.a / "item.json").write_bytes(xml)
+        (self.b / "item.json").write_bytes(xml)
+        x = m.compare(self.roots, self.args)
+        self.assertTrue(x["same_bytes"])
+        self.assertEqual(x["state"], "FORMAT_HOLD")
+        self.assertEqual(x["library"]["format_state"], "STORED_SERVER_ERROR_HOLD")
+
+    def test_bad_json_hold(self):
+        (self.b / "item.json").write_bytes(b"not JSON")
+        self.assertEqual(m.compare(self.roots, self.args)["state"], "FORMAT_HOLD")
+
+    def test_traversal_and_absolute_paths_hold(self):
+        for path in ("../elsewhere", "/etc/passwd", "~/notes", ".secret/a", "sub/../../escape", "a\\b"):
+            with self.subTest(path=path):
+                with self.assertRaises(m.Hold):
+                    m.compare(self.roots, dict(self.args, library_file=path))
+
+    def test_symlink_and_missing_hold(self):
+        (self.b / "alias.json").symlink_to(self.a / "item.json")
+        with self.assertRaises(m.Hold):
+            m.compare(self.roots, dict(self.args, recovery_file="alias.json"))
+        with self.assertRaises(m.Hold):
+            m.compare(self.roots, dict(self.args, recovery_file="not_here.json"))
+
+    def test_not_same_root(self):
+        with self.assertRaises(m.Hold):
+            m.compare({"library": str(self.a), "recovery": str(self.a)}, self.args)
+
+    def test_large_file_hold(self):
+        with (self.b / "item.json").open("wb") as f:
+            f.truncate(m.MAX_BYTES + 1)
+        with self.assertRaises(m.Hold):
+            m.compare(self.roots, self.args)
+
+    def test_tool_dispatch_never_returns_file_contents(self):
+        request = {"jsonrpc":"2.0","id":7,"method":"tools/call",
+                   "params":{"name":"custody_compare","arguments":self.args}}
+        reply = m.dispatch(request, self.roots)
+        self.assertEqual(reply["result"]["structuredContent"]["state"], "EXACT_BYTES_MATCH")
+        self.assertNotIn('"source":"JM"', json.dumps(reply))
+        self.assertEqual(m.dispatch({"jsonrpc":"2.0","id":4,"method":"tools/list"},self.roots)["result"]["tools"][1]["name"],"custody_compare")
+        self.assertIsNone(m.dispatch({"jsonrpc":"2.0","method":"notifications/initialized"},self.roots))
+        self.assertEqual(m.dispatch({"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"delete"}} ,self.roots)["error"]["code"],-32601)
+
+    def test_stdin_stdout_jsonrpc_process(self):
+        messages = [
+            {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"fixture","version":"1"}}},
+            {"jsonrpc":"2.0","id":2,"method":"tools/list"},
+            {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"custody_compare","arguments":self.args}},
+            {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"storage_contact_status"}},
+        ]
+        cp = subprocess.run([sys.executable, str(SCRIPT), "--library-root",str(self.a),
+                             "--recovery-root", str(self.b)], input="\n".join(map(json.dumps,messages))+"\n",
+                             text=True,capture_output=True,timeout=10,check=True)
+        responses = [json.loads(line) for line in cp.stdout.splitlines()]
+        self.assertEqual(len(responses),4)
+        self.assertEqual(responses[0]["result"]["serverInfo"]["name"],"JM M001 Storage Steward Local Contact")
+        self.assertEqual(responses[2]["result"]["structuredContent"]["state"],"EXACT_BYTES_MATCH")
+        self.assertEqual(responses[3]["result"]["structuredContent"]["native_mutations"],0)
+        self.assertEqual(cp.stderr, "")
+
+    def test_no_mutation_of_snapshot_files(self):
+        before = [(p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+                  for p in (self.a/"item.json",self.b/"item.json")]
+        for _ in range(3):
+            m.compare(self.roots,self.args)
+        after = [(p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+                 for p in (self.a/"item.json",self.b/"item.json")]
+        self.assertEqual(before,after)
+
+    def test_invalid_arguments_fail_closed(self):
+        for args in ({}, None, {"library_file":"item.json","recovery_file":"item.json","format":"xml"},
+                     dict(self.args, expected_sha256="bad")):
+            reply = m.dispatch({"jsonrpc":"2.0","id":1,"method":"tools/call",
+                     "params":{"name":"custody_compare","arguments":args}}, self.roots)
+            self.assertEqual(reply["result"]["structuredContent"]["state"],"HOLD")
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

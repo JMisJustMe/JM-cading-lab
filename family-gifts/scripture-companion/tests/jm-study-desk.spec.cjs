@@ -318,6 +318,34 @@ const {chromium}=require('playwright');
    assert.equal(await page.locator('#jmPathCompareEntries .jm-chapter-card').count(),1);
    console.log('PASS CP32 ORIGINAL TWO CHAPTER REFLECTION COMPARISON '+width+'px: two actual chapters, private data untouched');
 
+   // CP33: private word search stays on device and filters only the already-saved notes.
+   await page.fill('#jmPathSearch','matthew 6 draft');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),1);
+   assert.match(await page.locator('#jmPathReviewEntries .jm-chapter-card').textContent(),/Matthew 6/);
+   assert.match(await page.locator('#jmPathReviewStatus').textContent(),/1 matching chapter/);
+   await page.fill('#jmPathSearch','not-a-saved-private-term');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),0);
+   assert.match(await page.locator('#jmPathReviewEntries').textContent(),/No chapters match/);
+   await page.fill('#jmPathSearch','');
+   assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),7);
+   // Re-select first chapter then explicitly author through ORIGINAL Notes editor.
+   await page.locator('#jmPathReviewEntries .jm-chapter-card').nth(0).getByRole('button',{name:'Compare this chapter'}).click();
+   assert.equal(await page.locator('#jmPathCompareWrite').isEnabled(),true);
+   await page.locator('#jmPathCompareWrite').click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true);
+   assert.match(await page.locator('#noteRef').inputValue(),/Psalms 23 \/ Matthew 6/);
+   assert.match(await page.locator('#noteText').inputValue(),/What do I notice in my own reflections/);
+   await page.fill('#noteText','My own comparison of these two chapters, kept private.');
+   await page.locator('#saveNote').click();
+   const afterNew=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert(afterNew.notes.some(n=>n.text.includes('My own comparison of these two chapters')));
+   assert.deepEqual(afterNew.queue,cp31Before.queue,'drafting a comparison must never mark any chapter read');
+   await page.reload();
+   const afterReload=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert(afterReload.notes.some(n=>n.text.includes('My own comparison of these two chapters')),'actual note survives reload through original store');
+   console.log('PASS CP33 ORIGINAL PRIVATE SEARCH AND COMPARISON AUTHORING '+width+'px: local search, original Notes, explicit save and reload');
+
+
 
 
    console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');

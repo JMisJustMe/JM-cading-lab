@@ -59,6 +59,18 @@
  color:#b5e9dc;background:rgba(1,17,23,.74);border:1px solid rgba(115,226,204,.22);
  border-radius:9px}
 @media (orientation:landscape) and (max-height:500px){#jmTraceSignal{bottom:calc(26% + 42px);font-size:9px}}
+/* CP22 original-input feedback: appears only during gamepad contact. */
+#jmControllerStatus{position:absolute;right:12px;top:108px;z-index:7;
+ max-width:min(330px,58vw);padding:6px 9px;pointer-events:none;
+ border:1px solid rgba(119,224,194,.52);border-radius:9px;
+ background:rgba(3,19,27,.92);color:#c7f9e8;font-size:10px;
+ font-weight:700;line-height:1.4;text-align:right}
+#jmControllerStatus:empty{display:none}
+#jmControllerStatus[data-contact="hold"]{border-color:rgba(255,207,118,.55);color:#ffe1b1}
+@media(max-width:520px){#jmControllerStatus{top:90px;right:9px;max-width:52vw;font-size:9px}}
+@media(orientation:landscape) and (max-height:500px){
+ #jmControllerStatus{top:57px;right:8px;max-width:34vw;font-size:9px}
+}
 </style>
 <link rel="stylesheet" href="ftr-device-fit.css">
 </head>
@@ -88,8 +100,9 @@
 <output id="jmEchoStatus" aria-live="polite">ECHO STANDBY</output>
 </section>
 <button type="button" id="jmMobileTools" aria-expanded="false" aria-controls="jmMobileShelf">TOOLS</button>
+<output id="jmControllerStatus" role="status" aria-live="polite" aria-atomic="true"></output>
 <div class="tracker"><canvas id="trackerMarks"></canvas></div><div class="objective" id="objective">FIND THE FIRST <b>TRACE CORE</b></div><output id="jmTraceSignal" aria-live="polite">QUIET TRACE STANDBY</output><div class="reticle" id="reticle"><i></i></div><div id="prompt"></div><div id="toast"></div><div class="footer">FTR FIRST-PERSON v0.5.1-R1 | JMLOGIC CORE | TRUE 360 AIM-DECK CARRIER</div>
-<div class="overlay" id="startOverlay"><div class="panel"><h1>ENTER <span>BODY</span></h1><p>A real first-person space. Find two Trace Cores, breach the gate, then reach extraction. Scan the environment, use cover, phase through pressure and choose which side carries your extension.</p><div class="verbs">FREE MOVE | AUTO FLOW | TRUE 360 AIM | TAP FIRE | HOLD PULSE | SCAN | PHASE</div><button class="primary" id="startBtn">MOUNT FIRST-PERSON BODY</button><div class="desktopHint">Desktop: WASD | full mouse look | click/space fire | R auto-flow | E trace | F scan | Shift phase | Q side</div></div></div>
+<div class="overlay" id="startOverlay"><div class="panel"><h1>ENTER <span>BODY</span></h1><p>A real first-person space. Find two Trace Cores, breach the gate, then reach extraction. Scan the environment, use cover, phase through pressure and choose which side carries your extension.</p><div class="verbs">FREE MOVE | AUTO FLOW | TRUE 360 AIM | TAP FIRE | HOLD PULSE | SCAN | PHASE</div><button class="primary" id="startBtn">MOUNT FIRST-PERSON BODY</button><div class="desktopHint">Desktop: WASD | mouse/trackpad look | click/space fire | R flow | E trace | F scan | Shift phase | Q side | J Echo | B cover | N material | G Core Pulse</div><div class="desktopHint">Standard controller: left stick move | right stick look | A fire | B phase | X scan | Y side | LB flow | RB hold TRACE | Menu start | D-pad ↑ Echo / ↓ cover / ← material / → native Core Pulse. Original touch controls remain available.</div></div></div>
 <div class="overlay hidden" id="endOverlay"><div class="panel"><h1 id="endTitle">BODY COMPLETE</h1><p id="endText"></p><button class="primary" id="restartBtn">REMOUNT</button><button class="secondary" id="receiptBtn">COPY RUN RECEIPT</button></div></div>
 </div>
 <script src="../ftr-first-person-v0.5.1/ftr-core.js"></script><script src="../ftr-first-person-v0.5.1/ftr-controls.js"></script><script src="../ftr-first-person-v0.5.1/ftr-world.js"></script><script src="../ftr-first-person-v0.5.1/ftr-raycast-sprites.js"></script><script src="ftr-spatial-depth.js"></script><script src="ftr-hud-render-loop.js"></script><script src="../ftr-first-person-v0.5.1/ftr-input-bridge.js"></script>

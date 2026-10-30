@@ -1,0 +1,20 @@
+name: JM FTR CP22 Original Controller Contract
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/**'
+      - 'coding-estate/integration/ftr-cp22-controller-contract-selftest.mjs'
+      - '.github/workflows/ftr-cp22-controller-contact.yml'
+  workflow_dispatch:
+jobs:
+  original-source-controller:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check actual FTR controller bridge syntax
+        run: node --check estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/ftr-gamepad-contact.js
+      - name: Verify original FTR recipient and existing JM mechanics
+        run: node coding-estate/integration/ftr-cp22-controller-contract-selftest.mjs

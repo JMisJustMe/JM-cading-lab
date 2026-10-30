@@ -364,3 +364,25 @@ test('@thirdcourt-cp35 tactical pass records the actual launched ball without aw
  expect(afterPass.playerCount).toBe(6);
  expect(errors).toEqual([]);
 });
+
+
+test('@thirdcourt-cp36 final buzzer retains a true scouting and cut-decision receipt',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ await page.evaluate(()=>JM_THIRD_COURT.switchPlayer());
+ const actual=await status(page);
+ expect(actual.scoutActions.drives).toBe(1);
+ await page.evaluate(()=>JM_THIRD_COURT.stop());
+ await expect(page.locator('#endScreen')).toBeVisible();
+ const report=await page.locator('#finishTactics').innerText();
+ expect(report).toContain('Drives 1');
+ expect(report).toContain('Rival adjustments 0');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches')||'[]'));
+ expect(saved.length).toBeGreaterThan(0);
+ const last=saved[saved.length-1];
+ expect(last.scouting.drives).toBe(1);
+ expect(last.rivalRead).toBe('UNREAD');
+ expect(last.rivalAdjustments).toBe(0);
+ expect(last.score).toEqual([0,0]);
+ expect(errors).toEqual([]);
+});

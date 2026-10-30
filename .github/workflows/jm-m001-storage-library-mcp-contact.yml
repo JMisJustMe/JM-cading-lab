@@ -1,0 +1,19 @@
+name: JM M001 Storage Library MCP Local Contact
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/JM_M001_STORAGE_LIBRARY_MCP_CP34*'
+      - '.github/workflows/jm-m001-storage-library-mcp-contact.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  local-readonly-contact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove JM M001 real local MCP and fail-closed custody
+        run: |
+          set -euo pipefail
+          python3 -m py_compile agent-runtime/host-adapters/storage-admission/JM_M001_STORAGE_LIBRARY_MCP_CP34.py
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_STORAGE_LIBRARY_MCP_CP34_TESTS.py

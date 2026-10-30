@@ -74,6 +74,11 @@
     <section id="jmPathReview" class="jm-atelier" hidden aria-label="My private reflections across this study journey">
      <p id="jmPathReviewStatus" class="soft" role="status" aria-live="polite"></p>
      <div id="jmPathReviewEntries" class="jm-chapter-atlas"></div>
+     <section id="jmPathComparison" class="jm-focus" hidden aria-label="Compare two of my saved chapter reflections">
+      <h4>My two-chapter reflection comparison</h4>
+      <p id="jmPathCompareStatus" class="soft" role="status" aria-live="polite"></p>
+      <div id="jmPathCompareEntries" class="jm-chapter-atlas"></div>
+     </section>
     </section>
     <p class="jm-atelier-note">This is your personal journey, not an official reading programme. Only you decide what to mark read. Your reflections remain on this device; Scripture opens on JW.org.</p>
    </details>
@@ -592,8 +597,27 @@ function beginChapterReflection(ref){
 }
 // CP31: aggregate ONLY the owner's saved notes for the current seven-chapter route.
 // No second note store, inferred doctrine, new Scripture text or automatic progress.
+// CP32: temporary private two-chapter comparison, using ONLY original notes.
+// No new persistent store, generated interpretation, external sync or auto-mark-read.
+let pathCompare=[];
+function renderPathComparison(){
+ const panel=$('#jmPathComparison'),root=$('#jmPathCompareEntries');root.replaceChildren();
+ panel.hidden=pathCompare.length===0;
+ $('#jmPathCompareStatus').textContent=pathCompare.length===1?'Choose a second chapter to compare your own reflections.':pathCompare.length===2?'Your two chapter reflections, side by side. No reading progress changed.':'';
+ for(const {book,chapter} of pathCompare){
+  const notes=chapterReflections(book,chapter),card=make('article',undefined,'jm-chapter-card');
+  card.append(make('h4',book+' '+chapter));
+  if(!notes.length)card.append(make('p','No saved private reflections for this chapter.','soft'));
+  for(const note of notes.slice(-3).reverse()){
+   card.append(make('strong',String(note.ref||book+' '+chapter)));
+   card.append(make('p',String(note.text||''),'jm-reflection-preview'));
+  }
+  root.append(card);
+ }
+}
 function renderPathReview(){
  const plan=readingPaths[$('#planPicker').value]||readingPaths.quiet;
+ pathCompare=pathCompare.filter(x=>plan.chapters.some(([b,ch])=>b===x.book&&ch===x.chapter));
  const root=$('#jmPathReviewEntries');root.replaceChildren();
  const queue=Array.isArray(data.queue)?data.queue:[];
  let total=0,withNotes=0;
@@ -609,12 +633,22 @@ function renderPathReview(){
    card.append(make('p',String(recent.text||'').slice(0,240)+(String(recent.text||'').length>240?'…':''),'jm-reflection-preview'));
   }else card.append(make('p','No private reflection recorded for this chapter.','jm-reflection-preview'));
   const actions=make('div',undefined,'actions');
+  const isChosen=pathCompare.some(x=>x.book===book&&x.chapter===chapter);
+  const compare=makeButton(isChosen?'Remove from comparison':'Compare this chapter',()=>{
+   const idx=pathCompare.findIndex(x=>x.book===book&&x.chapter===chapter);
+   if(idx>=0)pathCompare.splice(idx,1);
+   else{if(pathCompare.length===2)pathCompare.shift();pathCompare.push({book,chapter})}
+   renderPathReview();
+  });
+  compare.setAttribute('aria-pressed',String(isChosen));
+  actions.append(compare);
   actions.append(makeButton('Open my notes',()=>{jump(book,chapter);$('#notesScope').value='chapter';$('#notesSearch').value='';tab('notes')}));
   const read=make('a','Official Study Edition ↗','btn secondary small');
   read.href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(book)+'/'+chapter+'/';read.target='_blank';read.rel='noopener noreferrer';
   actions.append(read);card.append(actions);root.append(card);
  }
  $('#jmPathReviewStatus').textContent=plan.title+' · '+withNotes+' of 7 chapters have private reflections · '+total+' saved note'+(total===1?'':'s')+'. No reading status was changed.';
+ renderPathComparison();
 }
 $('#jmPathReviewToggle').addEventListener('click',()=>{
  const panel=$('#jmPathReview'),opening=panel.hidden;panel.hidden=!opening;

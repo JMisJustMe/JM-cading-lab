@@ -14,10 +14,11 @@ Scope: additive host adapter to the existing JM ECOSTATE Build Mesh, NOT a secon
 
 Read code at coding-estate/integration/jm-engine-federation.mjs.
 
-JM_ENGINE_MCP_TOOLS exposes four descriptors:
+JM_ENGINE_MCP_TOOLS exposes five descriptors:
 - jm_engine_inventory
 - jm_engine_plan
 - jm_engine_core_contact
+- jm_engine_visual_contact
 - jm_engine_world_contact
 
 Call through callJMEngineMcpTool(name,args,registry). The jm_engine_plan tool additionally requires the checked-in Current-64 Coding Estate registry as args.current64. It validates 61 inherited + 3 post-census, accounts for all 64 identities as selected-for-route versus available, and never treats the separate 100-body router as 100 current coding identities. On an authorised local/CI host, the existing Build Mesh can mount this handler using its existing host-adapter/operation authority path. Do NOT send raw private JM source to a public read-only service. The adapter itself does not register/deploy a new endpoint. No secrets, authentication tokens or private data are stored in this body.
@@ -48,3 +49,7 @@ The adapter can now be launched directly from the existing repository on an auth
 node coding-estate/integration/jm-engine-federation-mcp-stdio.mjs
 
 This is a genuine JSON-RPC MCP stdio adapter (initialize, tools/list, tools/call, ping) that loads the original 100-body execution registry AND Current-64 identity authority from the same repository checkout. It is an optional contact adapter to the existing JM Build Mesh, not another Estate service, cloud endpoint or independent engine. The local process must be started/configured by an authorised MCP client; it is not silently installed in the existing hosted ChatGPT plugin. Native conformance test: node tests/jm-engine-federation-mcp-stdio.mjs. No network listener or credentials.
+
+## Additional proven native visual organ
+
+JMVisualGraft, JM Visual Interaction Runtime, GlyphForge and GlyphPlay are used through their original Sovereign Batch Six native implementations, chained to the actual Game-CODING / GameCore returned state. Changing authorised gameplay state changes the grafted visible-expression data (open versus closed), while touch writes the input state and GlyphForge preserves control grammar. These are inspectable typed outputs, **not** renderer pixel or player-feel claims. Input and capability rejection gates must pass. The original WebGL 3D renderer remains entirely untouched.

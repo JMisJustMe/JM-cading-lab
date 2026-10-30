@@ -3,6 +3,7 @@ import {spawn} from 'node:child_process';
 import {createInterface} from 'node:readline';
 import {createHash} from 'node:crypto';
 import {GAME_CODING_SOURCE,JM_GAMECORE_SOURCE,INITIAL_FACTS} from '../coding-estate/sovereign-ten/direct/native-corpus.mjs';
+import {VISUAL_GRAFT_SOURCE,VISUAL_RUNTIME_SOURCE,GLYPHFORGE_SOURCE,GLYPHPLAY_SOURCE} from '../coding-estate/sovereign-batch-six/direct/native-corpus.mjs';
 import {NATIVE_CONNECTED_WORLD_EXAMPLE} from '../navigator/estate-integration/execution-lanes.mjs';
 const child=spawn(process.execPath,['coding-estate/integration/jm-engine-federation-mcp-stdio.mjs'],{cwd:process.cwd(),stdio:['pipe','pipe','pipe']});
 let next=1,buffer='',rejectStartup;
@@ -27,7 +28,7 @@ const tool=async(name,args={})=>{
 try{
  const init=await rpc('initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'JM Native Proof',version:'1'}});
  assert.equal(init.serverInfo.name,'JM ECOSTATE Build Mesh / native game-engine host adapter');
- assert.equal((await rpc('tools/list',{})).tools.length,4);
+ assert.equal((await rpc('tools/list',{})).tools.length,5);
  assert.deepEqual(await rpc('ping',{}),{});
  const i=await tool('jm_engine_inventory');
  assert.equal(i.error,false);
@@ -39,12 +40,22 @@ try{
  const game=await tool('jm_engine_core_contact',{gameSource:GAME_CODING_SOURCE,coreSource:JM_GAMECORE_SOURCE,
   initialState:{...INITIAL_FACTS,door:{...INITIAL_FACTS.door,authorized:true}}});
  assert.equal(game.error,false);assert.equal(game.data.game.state.door.state,'open');
+ const visual=await tool('jm_engine_visual_contact',{
+ gameSource:GAME_CODING_SOURCE,coreSource:JM_GAMECORE_SOURCE,
+ visualGraftSource:VISUAL_GRAFT_SOURCE,interactionSource:VISUAL_RUNTIME_SOURCE,
+ glyphForgeSource:GLYPHFORGE_SOURCE,glyphPlaySource:GLYPHPLAY_SOURCE,
+ game:{name:'DoorGame',identity:'DoorGame.v1',capabilities:['tap','drag','save']},
+ glyph:'OPEN',input:{type:'tap',value:'opened'},
+ initialState:{...INITIAL_FACTS,door:{...INITIAL_FACTS.door,authorized:true}}
+ });
+ assert.equal(visual.error,false);assert.equal(visual.data.visualGraft.state.expression,'door:open');
+ assert.equal(visual.data.visualInput.after.door.input,'opened');
  const source=NATIVE_CONNECTED_WORLD_EXAMPLE;
  const world=await tool('jm_engine_world_contact',{source:{identity:'JM original native world',content:source,sha256:createHash('sha256').update(source).digest('hex')}});
  assert.equal(world.error,false);assert.equal(world.data.spatial.playerConsequence.kind,'collect');
  const missing=await rpc('tools/call',{name:'jm_engine_gardles',arguments:{}});
  assert.equal(missing.isError,true);assert.match(missing.content[0].text,/UNKNOWN_TOOL_HOLD/);
  await assert.rejects(()=>rpc('no-such-method',{}),/METHOD_NOT_FOUND/);
- console.log(JSON.stringify({pass:true,mcpInitialize:true,mcpToolList:4,mcpCoreExecution:true,mcpGameForgeWorld:true,
+ console.log(JSON.stringify({pass:true,mcpInitialize:true,mcpToolList:5,mcpCoreExecution:true,mcpGameForgeWorld:true,mcpVisualRuntime:true,
   current64Selection:true,gardlesHold:true,scope:'LOCAL_STDIO_HOST_NOT_DEPLOYED'}));
 }finally{child.stdin.end();child.kill();}

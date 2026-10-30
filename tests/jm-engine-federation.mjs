@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {JM_ENGINE_MCP_TOOLS,jmFederatedRendererInstall,callJMEngineMcpTool} from '../coding-estate/integration/jm-engine-federation.mjs';
 import {GAME_CODING_SOURCE,JM_GAMECORE_SOURCE,INITIAL_FACTS} from '../coding-estate/sovereign-ten/direct/native-corpus.mjs';
+import {VISUAL_GRAFT_SOURCE,VISUAL_RUNTIME_SOURCE,GLYPHFORGE_SOURCE,GLYPHPLAY_SOURCE} from '../coding-estate/sovereign-batch-six/direct/native-corpus.mjs';
 import {NATIVE_CONNECTED_WORLD_EXAMPLE} from '../navigator/estate-integration/execution-lanes.mjs';
 
 const root=JSON.parse(fs.readFileSync('coding-estate/integration/REGISTRY.json'));
@@ -13,7 +14,7 @@ const bind=content=>({identity:'JM existing connected world original native sour
 const inventory=await callJMEngineMcpTool('jm_engine_inventory');
 assert.equal(inventory.donors.find(x=>x.name==='Gardles').contact,'HOLD_NATIVE_SOURCE_NOT_MOUNTED_NO_ALIAS');
 assert.equal(typeof jmFederatedRendererInstall,'function');
-assert.deepEqual(JM_ENGINE_MCP_TOOLS.map(x=>x.name),['jm_engine_inventory','jm_engine_plan','jm_engine_core_contact','jm_engine_world_contact']);
+assert.deepEqual(JM_ENGINE_MCP_TOOLS.map(x=>x.name),['jm_engine_inventory','jm_engine_plan','jm_engine_core_contact','jm_engine_visual_contact','jm_engine_world_contact']);
 const plan=await callJMEngineMcpTool('jm_engine_plan',{goal:'build a touch arena game with visual feedback and proof',current64},registry);
 assert.equal(plan.state,'PLAN_ONLY_NO_EXECUTION');
 assert.equal(plan.current64.total,64);
@@ -33,6 +34,26 @@ const denied=await callJMEngineMcpTool('jm_engine_core_contact',{gameSource:GAME
 assert.equal(denied.game.state.door.state,'closed');
 assert.equal(denied.core.executions[0].applied,false);
 
+const visualArgs={gameSource:GAME_CODING_SOURCE,coreSource:JM_GAMECORE_SOURCE,
+ visualGraftSource:VISUAL_GRAFT_SOURCE,interactionSource:VISUAL_RUNTIME_SOURCE,
+ glyphForgeSource:GLYPHFORGE_SOURCE,glyphPlaySource:GLYPHPLAY_SOURCE,
+ game:{name:'DoorGame',identity:'DoorGame.v1',capabilities:['tap','drag','save']},
+ glyph:'OPEN',input:{type:'tap',value:'opened'},
+ initialState:authorised};
+const visual=await callJMEngineMcpTool('jm_engine_visual_contact',visualArgs);
+assert.equal(visual.gameCore.identity,'PlayerInteraction.v1');
+assert.equal(visual.nativeGameState.door.state,'open');
+assert.equal(visual.visualInput.after.door.input,'opened');
+assert.equal(visual.visualGraft.state.expression,'door:open');
+assert.equal(visual.glyphForge.state.controlIdentityPreserved,true);
+assert.equal(visual.glyphPlay.state.sourceRoutePreserved,true);
+const visualDenied=await callJMEngineMcpTool('jm_engine_visual_contact',{...visualArgs,initialState:INITIAL_FACTS});
+assert.equal(visualDenied.visualGraft.state.expression,'door:closed');
+assert.notEqual(visual.visualGraft.state.expression,visualDenied.visualGraft.state.expression);
+await assert.rejects(()=>callJMEngineMcpTool('jm_engine_visual_contact',{...visualArgs,input:{type:'swipe',value:1}}),/VRT_INPUT_UNKNOWN/);
+await assert.rejects(()=>callJMEngineMcpTool('jm_engine_visual_contact',{...visualArgs,game:{...visualArgs.game,capabilities:['tap']}}),/GLYPHFORGE_CAPABILITY_MISSING/);
+await assert.rejects(()=>callJMEngineMcpTool('jm_engine_visual_contact',{...visualArgs,glyph:'UNKNOWN'}),/GLYPHPLAY_GLYPH_UNKNOWN/);
+assert.deepEqual(authorised,before);
 const source=bind(NATIVE_CONNECTED_WORLD_EXAMPLE),frozen=structuredClone(source);
 const burning=await callJMEngineMcpTool('jm_engine_world_contact',{source},registry);
 assert.deepEqual(source,frozen);
@@ -55,5 +76,5 @@ await assert.rejects(()=>callJMEngineMcpTool('jm_engine_plan',{goal:'game',curre
 await assert.rejects(()=>callJMEngineMcpTool('jm_engine_gardles',{},registry),/UNKNOWN_TOOL_HOLD/);
 await assert.rejects(()=>callJMEngineMcpTool('jm_engine_world_contact',{},registry),/SOURCE_REQUIRED_HOLD/);
 console.log(JSON.stringify({state:'PASS',nativeGameCoding:true,nativeGameCore:true,nativeSourceToWorld:true,
- nativeGameForgeContact:true,jmRendererImported:true,nonColourGeometryDistinct:true,
+ nativeGameForgeContact:true,nativeVisualContact:true,glyphControlIdentity:true,jmRendererImported:true,nonColourGeometryDistinct:true,
  negativeHolds:true,gardles:'HOLD_NATIVE_SOURCE',webgl:'SEPARATE_GATE',android:'SEPARATE_GATE',ownerDevice:'SEPARATE_GATE'}));

@@ -1,5 +1,6 @@
 // Additive native engine capability bridge for existing JM Build Mesh. Not a second engine.
 import {gameChain} from '../sovereign-ten/direct/game-native.mjs';
+import {JMVisualGraft,JMVisualRuntime,GlyphForge,GlyphPlay} from '../sovereign-batch-six/direct/game-input-native-a.mjs';
 import {planEstateRoute,validateRegistry} from './router-core.mjs';
 import {executeSourceAwareCreation} from './source-aware-creation.mjs';
 import {GameForgeSpaces} from './gameforge-spaces.mjs';
@@ -12,6 +13,7 @@ export const JM_ENGINE_MCP_TOOLS=Object.freeze([
  {name:'jm_engine_inventory',description:'Source-owned JM engine organs and proof boundaries',inputSchema:{type:'object',properties:{}}},
  {name:'jm_engine_plan',description:'Route through the original 100-body estate router; plan only',inputSchema:{type:'object',properties:{goal:{type:'string'},current64:{type:'object'}},required:['goal','current64']}},
  {name:'jm_engine_core_contact',description:'Run original Game-CODING and JM GameCore sources and native dispatch',inputSchema:{type:'object',properties:{gameSource:{type:'string'},coreSource:{type:'string'},initialState:{type:'object'}},required:['gameSource','coreSource']}},
+ {name:'jm_engine_visual_contact',description:'Execute source-owned GameCore into visual input/state, VisualGraft, GlyphForge and GlyphPlay, preserving identities',inputSchema:{type:'object',properties:{gameSource:{type:'string'},coreSource:{type:'string'},initialState:{type:'object'},visualGraftSource:{type:'string'},interactionSource:{type:'string'},glyphForgeSource:{type:'string'},glyphPlaySource:{type:'string'},game:{type:'object'},glyph:{type:'string'},input:{type:'object'}},required:['gameSource','coreSource','visualGraftSource','interactionSource','glyphForgeSource','glyphPlaySource','game','glyph','input']}},
  {name:'jm_engine_world_contact',description:'Source-hash checked native world, GameForge state and actual JM 3D geometry; no GPU claim',inputSchema:{type:'object',properties:{source:{type:'object'}},required:['source']}}
 ]);
 const DONORS=[
@@ -19,6 +21,7 @@ const DONORS=[
  {name:'Estate 100-body router',path:'coding-estate/integration/router-core.mjs',contact:'COMPATIBILITY_ROUTE_ONLY'},
  {name:'Native source/world operator',path:'coding-estate/integration/source-aware-creation.mjs',contact:'SHA256_TO_NATIVE_RUNTIME'},
  {name:'GameForge connected spaces',path:'coding-estate/integration/gameforge-spaces.mjs',contact:'SPATIAL_STATE_AND_PLAYER_INTERACTION'},
+ {name:'JMVisualGraft / JM Visual Interaction Runtime / GlyphForge / GlyphPlay',path:'coding-estate/sovereign-batch-six/direct/game-input-native-a.mjs',contact:'NATIVE_INPUT_STATE_VISUAL_EXPRESSION_AND_GLYPH_CONTROL'},
  {name:'JM spatial grammar',path:'coding-estate/integration/gameforge-spatial-grammar.mjs',contact:'SOURCE_DEPENDENT_3D_GEOMETRY'},
  {name:'JM Actual Engine renderer',path:'coding-estate/integration/jm-actual-renderer-organ.mjs',contact:'EXACT_WEBGL_RENDERER_FUNCTION_BROWSER_PROOF_SEPARATE'},
  {name:'GameForge v3.16',path:'estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16/transport/',sha256:GAMEFORGE_DONOR_SHA256,contact:'SOURCE_HASH_GATE'},
@@ -81,6 +84,25 @@ export async function callJMEngineMcpTool(name,args={},registry=null){
   const n=gameChain(args.gameSource,args.coreSource,args.initialState??{});
   return {schema:'jm.engine-federation.core/1',core:{identity:n.dispatch.identity,event:n.dispatch.event,executions:n.dispatch.executions,receipt:n.dispatch.receipt},
     game:{state:n.game.state,frame:n.game.frame,receipt:n.game.receipt},boundary:'Real native runtime, not visual/owner-device proof'};
+ }
+ if(name==='jm_engine_visual_contact'){
+  for(const key of ['gameSource','coreSource','visualGraftSource','interactionSource','glyphForgeSource','glyphPlaySource','glyph']){
+   need(typeof args[key]==='string'&&args[key].trim(),'JM_ENGINE_VISUAL_SOURCE_HOLD:'+key);
+  }
+  need(args.game&&typeof args.game==='object'&&args.input&&typeof args.input==='object','JM_ENGINE_VISUAL_ARGUMENTS_HOLD');
+  // No synthetic mechanics, renderer or source-free stand-in: each organ executes its own parser/runtime.
+  const native=gameChain(args.gameSource,args.coreSource,args.initialState??{});
+  const before=structuredClone(native.game.state);
+  const input=JMVisualRuntime.execute(args.interactionSource,args.input,native.game.state);
+  const graft=JMVisualGraft.execute(args.visualGraftSource,input.state);
+  const glyphForge=GlyphForge.execute(args.glyphForgeSource,args.game);
+  const glyphPlay=GlyphPlay.execute(args.glyphPlaySource,args.glyph,args.input);
+  need(input.result.consequenceReadable&&graft.state.mechanicLinked&&glyphForge.state.controlIdentityPreserved&&glyphPlay.state.sourceRoutePreserved,'JM_ENGINE_VISUAL_CONSEQUENCE_HOLD');
+  return {schema:'jm.engine-federation.visual/1',gameCore:{identity:native.dispatch.identity,event:native.dispatch.event,executions:native.dispatch.executions,receipt:native.dispatch.receipt},
+   nativeGameState:before,visualInput:{before,after:input.state,result:input.result,receipt:input.receipt},
+   visualGraft:{state:graft.state,receipt:graft.receipt},
+   glyphForge:{state:glyphForge.state,receipt:glyphForge.receipt},glyphPlay:{state:glyphPlay.state,receipt:glyphPlay.receipt},
+   boundary:'Original Game-CODING/GameCore + Visual Interaction Runtime + VisualGraft + GlyphForge/GlyphPlay executed. Visual expression/state contact is NOT a GPU frame or physical-device proof.'};
  }
  validRegistry(registry);
  need(args.source&&typeof args.source==='object','JM_ENGINE_SOURCE_REQUIRED_HOLD');

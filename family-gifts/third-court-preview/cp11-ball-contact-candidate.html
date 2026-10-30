@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#061321"/><meta name="description" content="THIRD COURT · Broadcast: an original, playable JM birthday basketball game with 3v3, tactical passing, adaptive rivals, Crown Runs and phone controls."/><title>THIRD COURT · CP11 Realism Field // JM Birthday Basketball</title>
+<meta name="theme-color" content="#061321"/><meta name="description" content="THIRD COURT · Broadcast: an original, playable JM birthday basketball game with 3v3, tactical passing, adaptive rivals, Crown Runs and phone controls."/><title>THIRD COURT · CP29 Real Gamepad Contact // JM Birthday Basketball</title>
 <style>
 :root{color-scheme:dark;--cyan:#65e5df;--gold:#ffcd71;--ink:#07101c}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;width:100%;margin:0;overscroll-behavior:none;background:#020811;color:#f2fbff;font:600 14px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
@@ -63,7 +63,7 @@ canvas{display:block;width:100%;height:100%;object-fit:contain;object-position:c
 <div id="shotFeedback" aria-live="polite"></div><div id="shotMeter"><div id="shotGood"></div><div id="shotFill"></div></div>
 <button id="cutBtn" type="button" title="Send a teammate cutting to the rim">CALL CUT <small>[C]</small></button><button id="screenBtn" type="button" title="Run a real pick and roll to free the ball handler">SET SCREEN [Q]</button><button id="guardBtn" type="button" title="Hold to defend with your body or shield the dribble. Uses stamina.">HOLD GUARD [G]</button><span id="rendererTag" aria-live="polite">3D check pending</span><button id="cameraBtn" type="button" title="Toggle depth broadcast and overhead court view">CAMERA · DEPTH</button><div id="controls"><div id="joy" role="group" aria-label="Virtual move joystick"><div id="joyKnob"></div></div><div class="ctrlGroup"><button class="action" id="pass">PASS</button><button class="action" id="shoot">HOLD<br/>SHOOT</button><button class="action" id="switch">DRIVE / STEAL</button></div></div>
 <div id="menuScreen" class="screen"><section class="panel"><div class="eyebrow">A JM BIRTHDAY ORIGINAL · CP11 BALL CONTACT COMPARISON · REAL GPU TEST</div><div class="big">THIRD<br/><span>COURT.</span></div><p>Built for my little brother. Three on three, full-court basketball with real possessions, an arcade <b>18-second possession clock</b>, honest assist tracking, tactical passing and a three-pass <b>Crown Run</b>, contact defence and dribble shielding, animated players and a cinematic night court.</p><button id="playQuick" class="mainBtn">▶ TIP OFF · 2-MINUTE RUN</button><button id="playClutch" class="altBtn">⚡ FINAL MINUTE · 60 SECONDS</button><button id="difficultyBtn" class="altBtn">RIVAL LEVEL · STREET</button><button id="graphicsBtn" class="altBtn" aria-label="Toggle graphics performance mode">VISUALS · SHOWTIME</button><p class="legend" id="difficultyInfo">Change opponents: Rookie / Street / Legend. Play the Native 3D WebGL scene where supported, switch to Broadcast depth or Classic fallback, and call an off-ball SCREEN. The shot clock makes every attack count.</p><button id="howBtn" class="altBtn">HOW TO PLAY</button><p id="bestText" class="legend">LOCAL RECORD: FIRST TIP-OFF</p><button id="exportHistory" class="altBtn" type="button">EXPORT LOCAL HISTORY</button><button id="importHistory" class="altBtn" type="button">RESTORE HISTORY FROM FILE</button><input id="historyFile" type="file" accept=".json,application/json" hidden/><p id="historyStatus" class="legend" role="status">Records stay on this device. Export a backup to move or recover them.</p></section></div>
-<div id="helpScreen" class="screen hidden"><section class="panel"><div class="eyebrow">THE PLAYBOOK</div><div class="big">OWN<br/><span>THE RUN.</span></div><p><b>CAMERA:</b> perspective Broadcast or overhead Classic. Both preserve the same game physics and possession. <b>CALL CUT:</b> send an off-ball teammate towards the hoop (C on keyboard). <b>MOVE:</b> drag the left joystick or use WASD / arrows. <b>SHOOT:</b> hold and release in the green timing window. <b>PASS:</b> aim with the stick to choose a teammate; on defence, PASS switches your defender. <b>DRIVE / STEAL:</b> burst towards the hoop with the ball, or press a ball-carrier when defending.</p><p>Three completed team passes charge a <b>Crown Run</b>. A green-release basket can earn four points. Every attack runs on a possession clock: 18 seconds in the full match, 12 in Final Minute. Shoot before zero! Passing does not reset the clock. <b>CALL CUT:</b> use the CUT control or C key to send a teammate towards the rim; aim and pass before the defender recovers.</p><button id="helpBack" class="mainBtn">BACK TO THE COURT</button></section></div>
+<div id="helpScreen" class="screen hidden"><section class="panel"><div class="eyebrow">THE PLAYBOOK</div><div class="big">OWN<br/><span>THE RUN.</span></div><p><b>CAMERA:</b> perspective Broadcast or overhead Classic. Both preserve the same game physics and possession. <b>CALL CUT:</b> send an off-ball teammate towards the hoop (C on keyboard). <b>MOVE:</b> drag the left joystick or use WASD / arrows. <b>SHOOT:</b> hold and release in the green timing window. <b>PASS:</b> aim with the stick to choose a teammate; on defence, PASS switches your defender. <b>DRIVE / STEAL:</b> burst towards the hoop with the ball, or press a ball-carrier when defending.</p><p>Three completed team passes charge a <b>Crown Run</b>. A green-release basket can earn four points. Every attack runs on a possession clock: 18 seconds in the full match, 12 in Final Minute. Shoot before zero! Passing does not reset the clock. <b>CALL CUT:</b> use the CUT control or C key to send a teammate towards the rim; aim and pass before the defender recovers.</p><p><b>CONTROLLER · CP29:</b> Left stick moves the actual Floor General, Wing Shooter or Paint Anchor. Hold/release A to shoot on original timing; B passes or switches defender; X drives or steals; Y calls a cut; LB sets a screen; hold RB to guard; Back changes camera; Start tips off or pauses/resumes. All actions share the original court, physics, fatigue and possession rules.</p><button id="helpBack" class="mainBtn">BACK TO THE COURT</button></section></div>
 <div id="pauseScreen" class="screen hidden"><section class="panel"><div class="eyebrow">HALF-TIME HUDDLE</div><div class="big">PAUSED.</div><p id="pauseSummary">Your court is waiting.</p><button id="resumeBtn" class="mainBtn">RESUME</button><button id="pauseRestart" class="altBtn">RESTART MATCH</button><button id="pauseSound" class="altBtn">SOUND: OFF</button><button id="pauseMenu" class="altBtn">QUIT TO MENU</button></section></div>
 <div id="endScreen" class="screen hidden"><section class="panel"><div class="eyebrow">FINAL BUZZER</div><div class="big" id="finishTitle">RUN<br/><span>COMPLETE.</span></div><p id="finishLine">Good game.</p><div id="resultStats"><div class="tile">YOUR SCORE<b id="finalYou">0</b></div><div class="tile">RIVALS<b id="finalThem">0</b></div><div class="tile">TRUE ASSISTS<b id="finalAssists">0</b></div><div class="tile">CROWN MAKES<b id="finalCrowns">0</b></div></div><button id="rematchBtn" class="mainBtn">RUN IT BACK</button><button id="endMenu" class="altBtn">BACK TO MENU</button><button id="exportStats" class="altBtn">EXPORT MATCH RECEIPT</button></section></div>
 </main><aside class="side"><div><div class="tag">THE PLAYBOOK</div><h1 style="font-size:clamp(32px,4.6vw,64px)">PASS.<br/><b>MOVE.</b><br/>RISE.</h1><p>Three connected passes charge a four-point Crown Run. Watch the possession clock: 18 seconds to finish your attack, 12 in Final Minute. The defenders pressure the paint. CALL CUT sends a teammate into the lane. SET SCREEN opens a pick-and-roll, while HOLD GUARD on defence pressures the dribbler. On offence HOLD SHIELD to protect possession, at a stamina cost.</p><div class="stat">TOUCH <b>Move + three actions</b></div><div class="stat">SCORING <b>2 · 3 · Crown 4</b></div><div class="stat">CONTINUITY <b>Local record</b></div></div><p class="small">Birthday game development candidate CP10 · creator JM / TB Scott. All original ancestors preserved.</p></aside></div>
@@ -525,7 +525,7 @@ function render(){VIZ.draws++;VIZ.lastRenderer=VIZ.showtime?'showtime':'performa
   }
  if(state.active&&state.pos===0&&!state.air&&!state.loose){const p=holder();ctx.save();ctx.strokeStyle=state.crown?'#f6e6a7e0':'#ccecc892';ctx.lineWidth=2;ctx.setLineDash([6,8]);ctx.beginPath();ctx.moveTo(p.x,p.y-48);ctx.lineTo(CX,TOP);ctx.stroke();ctx.setLineDash([]);ctx.restore()}
 }
-function animate(ts){const dt=state.lastTs?clamp((ts-state.lastTs)/1000,0,.033):0;state.lastTs=ts;update(dt);if(!(NATIVE3D.enabled&&native3DDraw())){if(BROADCAST.enabled)brDraw();else render();}frameId=requestAnimationFrame(animate)}
+function animate(ts){const dt=state.lastTs?clamp((ts-state.lastTs)/1000,0,.033):0;state.lastTs=ts;CP29_pollPad();update(dt);if(!(NATIVE3D.enabled&&native3DDraw())){if(BROADCAST.enabled)brDraw();else render();}frameId=requestAnimationFrame(animate)}
 function setJoy(x,y){stick={x:clamp(x,-1,1),y:clamp(y,-1,1)};$('joyKnob').style.transform=`translate(${stick.x*49}px,${stick.y*49}px)`}
 function joyAt(e){const r=$('joy').getBoundingClientRect();let cx=r.left+r.width/2,cy=r.top+r.height/2,dx=(e.clientX-cx)/(r.width*.32),dy=(e.clientY-cy)/(r.height*.32),m=Math.hypot(dx,dy);setJoy(dx/Math.max(1,m),dy/Math.max(1,m))}
 $('joy').addEventListener('pointerdown',e=>{if(!state.active||state.paused||joyPointer!==null)return;e.preventDefault();joyPointer=e.pointerId;$('joy').setPointerCapture(e.pointerId);joyAt(e)});$('joy').addEventListener('pointermove',e=>{if(e.pointerId===joyPointer)joyAt(e)});for(const evt of ['pointerup','pointercancel','lostpointercapture'])$('joy').addEventListener(evt,e=>{if(e.pointerId!==joyPointer)return;joyPointer=null;setJoy(0,0)});
@@ -556,7 +556,7 @@ $('historyFile').addEventListener('change',async e=>{const file=e.target.files?.
  stats=restored;best=nextBest;saveBest();status.textContent='RESTORED · '+stats.length+' matches. Export a fresh backup any time.'
  }catch(err){status.textContent='RESTORE REJECTED · File is not readable JSON.'}
 });
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();const visibleControl=e.target instanceof Element&&e.target.closest('button,input,select,textarea,[contenteditable]')&&!e.target.closest('.screen.hidden');if(k===' '&&visibleControl)return;if(state.active&&!state.paused&&['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(!keys.has(k)&&state.active&&!state.paused){if(k===' '&&shotOwner===null){shotOwner='keyboard';pressShot()}if(k==='z')pass();if(k==='x')switchPlayer();if(k==='g')setGuard(true);if(k==='p')pause();if(k==='v')$('graphicsBtn').click()}if(state.active&&!state.paused)keys.add(k)});addEventListener('keyup',e=>{let k=e.key.toLowerCase();keys.delete(k);if(k==='g'&&guardPointer===null)setGuard(false);if(k===' '&&shotOwner==='keyboard'){shotOwner=null;releaseShot()}});function cancelHeldInput(){keys.clear();joyPointer=null;setJoy(0,0);guardPointer=null;setGuard(false);cancelShotPointer()}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();const visibleControl=e.target instanceof Element&&e.target.closest('button,input,select,textarea,[contenteditable]')&&!e.target.closest('.screen.hidden');if(k===' '&&visibleControl)return;if(state.active&&!state.paused&&['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(!keys.has(k)&&state.active&&!state.paused){if(k===' '&&shotOwner===null){shotOwner='keyboard';pressShot()}if(k==='z')pass();if(k==='x')switchPlayer();if(k==='g')setGuard(true);if(k==='p')pause();if(k==='v')$('graphicsBtn').click()}if(state.active&&!state.paused)keys.add(k)});addEventListener('keyup',e=>{let k=e.key.toLowerCase();keys.delete(k);if(k==='g'&&guardPointer===null)setGuard(false);if(k===' '&&shotOwner==='keyboard'){shotOwner=null;releaseShot()}});function cancelHeldInput(){keys.clear();joyPointer=null;setJoy(0,0);guardPointer=null;setGuard(false);cancelShotPointer();CP29_cancelHeld()}
 addEventListener('blur',()=>{cancelHeldInput();if(state.active&&!state.paused)pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelHeldInput();if(state.active&&!state.paused)pause()}});
 saveBest();state.players=roster();state.ball={x:320,y:710,z:10};// CP07: CPU depth-projection renderer. Native Canvas2D perspective projection;
 // preserves the exact CP06.1 game physics/logic and remains playable without WebGL.
@@ -834,6 +834,91 @@ function cameraCP08Sync(){let label=NATIVE3D.enabled?'CAMERA · TRUE 3D':BROADCA
 let nativeCamStage=0;function selectNativeCamera(stage){nativeCamStage=stage;if(stage===0&&NATIVE3D.available){NATIVE3D.enabled=true;BROADCAST.enabled=true;}else{NATIVE3D.enabled=false;BROADCAST.enabled=stage!==2;}cameraCP08Sync();$('gameWrap').classList.toggle('depth-view',BROADCAST.enabled);$('rendererTag').textContent=NATIVE3D.enabled?'NATIVE WEBGL2':BROADCAST.enabled?'SOFTWARE 3D':'CLASSIC OVERHEAD';return NATIVE3D.enabled;}
 const gpuOK=native3DInit();nativeCamStage=gpuOK?0:1;selectNativeCamera(nativeCamStage);
 $('cameraBtn').onclick=()=>{nativeCamStage=nativeCamStage===0?1:nativeCamStage===1?2:0;if(nativeCamStage===0&&!NATIVE3D.available)nativeCamStage=1;selectNativeCamera(nativeCamStage);notify(NATIVE3D.enabled?'NATIVE 3D · TRUE DEPTH':BROADCAST.enabled?'SOFTWARE COURT':'OVERHEAD · CLASSIC',.8)};
+
+// CP29: original THIRD COURT gamepad contact, with no second basketball engine.
+let CP29_padIndex=null,CP29_padRef=null,CP29_padHeld=new Set();
+let CP29_shot=false,CP29_guard=false,CP29_motion=false,CP29_edges=0;
+const CP29_mapping={0:'shoot',1:'pass',2:'drive',3:'cut',4:'screen',5:'guard',8:'camera',9:'start'};
+function CP29_cancelHeld(){
+ CP29_padHeld.clear();
+ if(CP29_shot&&shotOwner==='gamepad')cancelShotPointer(); // never turn interruption into a real scored shot
+ CP29_shot=false;
+ if(CP29_guard){CP29_guard=false;if(guardPointer===null&&!keys.has('g'))setGuard(false)}
+ if(CP29_motion&&joyPointer===null)setJoy(0,0);
+ CP29_motion=false;
+}
+function CP29_connect(p){
+ if(!p||!p.connected)return;
+ if(CP29_padIndex!==null&&CP29_padIndex!==p.index)CP29_cancelHeld();
+ CP29_padIndex=p.index;CP29_padRef=p;CP29_padHeld.clear();
+}
+function CP29_disconnect(p){
+ if(!p||p.index!==CP29_padIndex)return;
+ CP29_cancelHeld();CP29_padIndex=null;CP29_padRef=null;
+}
+function CP29_down(kind){
+ if(!state.active||state.paused){
+  if(kind==='start'){
+   if(state.screen==='pauseScreen')resume();
+   else if(state.screen==='menuScreen'||state.screen==='endScreen')start('quick');
+  }
+  return;
+ }
+ CP29_edges++;
+ switch(kind){
+  case 'shoot':
+   if(shotOwner===null){shotOwner='gamepad';CP29_shot=true;pressShot()}
+   break;
+  case 'pass':pass();break;
+  case 'drive':switchPlayer();break;
+  case 'cut':callCut();break;
+  case 'screen':callScreen();break;
+  case 'guard':CP29_guard=true;setGuard(true);break;
+  case 'camera':$('cameraBtn').click();break;
+  case 'start':pause();break;
+ }
+}
+function CP29_up(kind){
+ if(kind==='shoot'&&CP29_shot){
+  CP29_shot=false;if(shotOwner==='gamepad'){shotOwner=null;releaseShot()}
+ }
+ if(kind==='guard'&&CP29_guard){
+  CP29_guard=false;
+  if(guardPointer===null&&!keys.has('g'))setGuard(false);
+ }
+}
+function CP29_pollPad(){
+ if(CP29_padIndex===null||document.hidden)return;
+ const enumeration=navigator.getGamepads?.()?.[CP29_padIndex]||null;
+ const p=enumeration?.connected?enumeration:CP29_padRef;
+ if(!p?.connected){CP29_disconnect({index:CP29_padIndex});return}
+ const ax=Number(p.axes?.[0]||0),ay=Number(p.axes?.[1]||0);
+ if(state.active&&!state.paused&&joyPointer===null){
+  const magnitude=Math.hypot(ax,ay),active=magnitude>.21;
+  const scale=active?Math.min(1,(magnitude-.21)/.79):0;
+  const x=active?ax/magnitude*scale:0,y=active?ay/magnitude*scale:0;
+  if(active||CP29_motion)setJoy(x,y);
+  CP29_motion=active;
+ }else if(CP29_motion&&joyPointer===null){setJoy(0,0);CP29_motion=false}
+ const down=new Set();
+ for(const [i,kind] of Object.entries(CP29_mapping)){
+  if(p.buttons?.[+i]?.pressed)down.add(kind);
+ }
+ for(const kind of down)if(!CP29_padHeld.has(kind))CP29_down(kind);
+ // Release is explicit; a held shoot button is never fired repeatedly.
+ for(const kind of CP29_padHeld)if(!down.has(kind))CP29_up(kind);
+ CP29_padHeld=down;
+}
+addEventListener('gamepadconnected',e=>CP29_connect(e.gamepad));
+addEventListener('gamepaddisconnected',e=>CP29_disconnect(e.gamepad));
+const CP29_initial=Array.from(navigator.getGamepads?.()||[]).find(p=>p?.connected);
+if(CP29_initial)CP29_connect(CP29_initial);
+window.JM_THIRD_COURT_CP29=Object.freeze({
+ parent:'THIRD COURT CP11 · original three-renderer basketball, on CP11 held-input recovery',
+ get contact(){return {connected:CP29_padIndex!==null,index:CP29_padIndex,shotHeld:CP29_shot,guardHeld:CP29_guard,moving:CP29_motion,edgeEvents:CP29_edges}},
+ get match(){return {active:state.active,paused:state.paused,score:state.score.slice(),pos:state.pos,shotHeld:state.shotHeld,guardHeld:state.guardHeld,cuts:state.cutCalls,screens:state.screenCalls,shots:state.shots,passes:state.completedPasses}}
+});
+
 window.JM_THIRD_COURT={version:'CP11',status:()=>({athletes:state.players.map(p=>({id:p.id,role:p.role,pace:p.pace,shotForm:+shotForm(p).toFixed(3),formWidth:ATHLETE_FORM[p.role].width,contactPulse:+(p.contactPulse||0).toFixed(3),contactMass:+((ATHLETE_FORM[p.role]?.width||1)**2).toFixed(3),supportIntent:p.supportTarget?{x:+p.supportTarget.x.toFixed(1),y:+p.supportTarget.y.toFixed(1)}:null,footwork:p.footwork||'ready',pose:{step:+liveBodyPose(p).step.toFixed(3),footLift:+liveBodyPose(p).footLift.toFixed(3),brace:+liveBodyPose(p).brace.toFixed(3),spread:+liveBodyPose(p).spread.toFixed(3)},pivots:p.pivots||0,endurance:p.endurance,burst:p.burst,x:+p.x.toFixed(1),y:+p.y.toFixed(1),speed:+Math.hypot(p.vx,p.vy).toFixed(1),energy:+(p.energy??100).toFixed(1)})),ballHeight:state.ball?.z||0,rimContacts:state.rimContacts||0,reboundArcStarts:state.reboundArcStarts||0,reboundGroundHits:state.reboundGroundHits||0,looseHeight:state.loose?+state.loose.height.toFixed(3):null,lastRim:state.lastRim||null,flightMissSide:state.air?.kind==='shot'?(state.air.missSide||0):null,flightInterceptions:state.flightInterceptions||0,passLaneReads:state.passLaneReads||0,bodyImpacts:state.bodyImpacts||0,heavyContactEvents:state.heavyContactEvents||0,lastBodyCollision:state.lastBodyCollision||null,supportReplans:state.supportReplans||0,cutDefensiveReads:state.cutDefensiveReads||0,cutCoverReads:state.cutCoverReads||0,cutDefensiveHandoffs:state.cutDefensiveHandoffs||0,lastCutCover:state.lastCutCover||null,lastCutDefense:state.lastCutDefense||null,offBallReads:state.offBallReads||0,offBallSpaceGains:state.offBallSpaceGains||0,lastOffBall:state.lastOffBall||null,pivotPlants:state.pivotPlants||0,active:state.active,paused:state.paused,time:state.time,score:state.score.slice(),pos:state.pos,carrier:state.carrier,defFocus:state.defFocus,playerCount:state.players.length,flow:state.passCombo,crown:state.crown,mode:state.mode,difficulty:state.difficulty,stamina:Math.round(state.stamina),swaps:state.swaps,visuals:NATIVE3D.enabled?NATIVE3D.mode:BROADCAST.enabled?BROADCAST.last:VIZ.lastRenderer,native3DReady:NATIVE3D.available,native3DActive:NATIVE3D.enabled,native3DReason:NATIVE3D.reason,native3DFrames:NATIVE3D.frames,ball3DHeight:+(ballContactPose()?.h||0).toFixed(3),ballInFlight:!!state.air,native3DContextLosses:NATIVE3D.contextLosses,draws:BROADCAST.enabled?BROADCAST.draws:VIZ.draws,depthCamera:BROADCAST.enabled,cutCalls:state.cutCalls,screenCalls:state.screenCalls,successfulScreens:state.successfulScreens,screenActive:!!state.screenPlay,rollActive:!!state.rollPlay,rollCalls:state.rollCalls,rollCatches:state.rollCatches,rollShots:state.rollShots,rollMakes:state.rollMakes,rollWindow:+state.rollWindow.toFixed(2),guardHeld:state.guardHeld,guardPressure:+state.guardPressure.toFixed(2),guardSeconds:+state.guardSeconds.toFixed(2),shieldSeconds:+state.shieldSeconds.toFixed(2),contactFrames:state.contactFrames,activeCut:state.cutPlay?.id??null,trailLength:VIZ.trail.length,blocks:state.blockCount,contests:state.contests,shotReport:state.shotReport,charge:state.shotCharge,air:state.air?.kind||null,pendingPoints:state.air?.pts||0,pendingSpecial:!!state.air?.special,shotClock:+state.shotClock.toFixed(2),shotLimit:state.shotLimit,shotViolations:state.shotViolations.slice(),passes:state.completedPasses,assists:state.assists,driveBoost:+state.driveBoost.toFixed(3),driveMeters:Math.round(state.driveMeters),rebounds:state.rebounds.slice(),offensiveRebounds:state.offensiveRebounds,loose:!!state.loose,looseAge:state.loose?.t||0,cutCount:state.cutCount,aiReads:state.aiReads,aiSafePasses:state.aiSafePasses,aiUnsafePasses:state.aiUnsafePasses,markRecoveries:+state.markRecoveries.toFixed(2),ui:state.screen}),start,pass,callCut,callScreen,callRoll,setGuard,contactPressure,selectNativeCamera,native3DInit,switchPlayer,pressShot,releaseShot,pause,resume,stop:closeMatch,setVisuals:(mode)=>{VIZ.showtime=mode!=='performance';$('graphicsBtn').textContent='VISUALS · '+(VIZ.showtime?'SHOWTIME':'PERFORMANCE');},source:'CP11 unified 3D ball-contact pose: live dribble bounce, hand-held shooting, 2.57m rim-height arc and native GPU trajectory; individually differentiated Afrocentric athlete embodiments; inherits CP10 contact-driven defensive guarding and offensive dribble shielding with direct body pressure, exhaustion and hand-side 3D ball rendering; CP09 articulated 3D athlete motion and two-stage pick-and-roll with timed bonus; CP08 original 3D raw WebGL + CPU fallback, screen play; authored using JM AFTERHOURS TIDELESS WebGL matrix donor ideas, not donor gameplay; CP07 Broadcast 3D software-perspective + CUT play-call descendant of CP06.1 owner phone; preserved CP06 Floor IQ descendant · owner Samsung phone viewport correction; original THIRD COURT CP05 Live Ball descendant; moving drive impulses and physical rebound race; comparisons: JM AFTERHOURS v0.2, JM ONE ON ONE v0.6.1; no inherited copy'};requestAnimationFrame(animate);
 })();
 </script></body></html>

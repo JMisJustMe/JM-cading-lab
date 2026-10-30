@@ -82,9 +82,13 @@ try{
  });
  await check('R1 original game actually mounts optional standard Gamepad recipient',async()=>{
   const input=await page.evaluate(()=>({schema:window.FTRGamepad.schema,
-    mapping:window.FTRGamepad.mapping,status:window.FTRGamepad.status()}));
-  assert.equal(input.schema,'jm.ftr.first-person.existing-gamepad-contact/0.1');
+    mapping:window.FTRGamepad.mapping,buttons:window.FTRGamepad.buttons,
+    status:window.FTRGamepad.status()}));
+  assert.equal(input.schema,'jm.ftr.first-person.existing-gamepad-contact/0.2');
   assert.equal(input.mapping,'standard-only');
+  assert.deepEqual([input.buttons.ECHO,input.buttons.COVER,input.buttons.MATERIAL,input.buttons.CORE_PULSE],
+    [12,13,14,15],'CP22 must connect four real original JM tactical controls');
+  assert.equal(input.status.gameplayAuthority,'original FTR + existing JM recipients');
   assert.equal(input.status.physicalContactClaim,false);
  });
  await check('Virtual standard Gamepad FIRE causes real original ammo consumption',async()=>{

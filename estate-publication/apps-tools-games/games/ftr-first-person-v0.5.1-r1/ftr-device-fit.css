@@ -8,7 +8,7 @@
 @media (pointer:coarse), (hover:none){
   #jmMobileTools{
     display:flex;align-items:center;justify-content:center;
-    position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom) + 304px);
+    position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom) + 326px);
     min-width:94px;min-height:40px;z-index:16;
     padding:6px 11px;border-radius:12px;touch-action:manipulation;
     border:1px solid rgba(130,255,208,.58);

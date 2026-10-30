@@ -257,3 +257,36 @@ test('@thirdcourt-cp31 six athletes have distinct actual body masses and shootin
  expect(after.map(p=>({id:p.id,mass:p.contactMass}))).toEqual(before);
  expect(errors).toEqual([]);
 });
+
+
+test('@thirdcourt-cp32 Court Heat escalates with real match duration and rival deficit',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const initial=await status(page);
+ expect(initial.heatLevel).toBe(0);
+ const stages=await page.evaluate(()=>[
+  JM_THIRD_COURT.courtHeat(120,'quick',[0,0]),
+  JM_THIRD_COURT.courtHeat(90,'quick',[0,0]),
+  JM_THIRD_COURT.courtHeat(58,'quick',[0,0]),
+  JM_THIRD_COURT.courtHeat(28,'quick',[0,0]),
+  JM_THIRD_COURT.courtHeat(118,'quick',[8,0]),
+  JM_THIRD_COURT.courtHeat(60,'clutch',[0,0])
+ ]);
+ expect(stages).toEqual([0,1,2,3,1,0]);
+ expect(initial.playerCount).toBe(6);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp32 JET signature first step changes the original driving burst and stamina',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const before=await status(page);
+ expect(before.athletes[0].name).toBe('JET');
+ await page.evaluate(()=>JM_THIRD_COURT.switchPlayer());
+ await expect.poll(async()=>(await status(page)).cutCount).toBe(1);
+ const after=await status(page);
+ expect(after.driveBoost).toBeGreaterThan(.40);
+ expect(after.stamina).toBeGreaterThan(74);
+ expect(after.stamina).toBeLessThan(81);
+ expect(after.playerCount).toBe(6);
+ expect(errors).toEqual([]);
+});

@@ -1,0 +1,23 @@
+# JM cardBORED CP28 — Original House / Board Contact
+
+**Date:** 30 October 2026  
+**Status:** Original source and browser contact PASS; **owner-device acceptance, independent public deployment and merge HOLD**.  
+**Candidate authority:** Draft PR #657, branch `feat/jm-cardbored-native-quality-cp28-20261030`.  
+**Original authority:** v0.5 House Decks / Pressure Boards, reconstructed **exactly** from the original three LZMA source segments (no source overwrite), **53,434 bytes**, SHA-256 `963ccc11699a72d6a6f06d2d84688265cdcd661fcfd8c5892a005405195091cb`.
+
+## Actual native recipient improvement
+
+The source-owned build script `cp28_inspect_and_build.py` verifies original bytes before invoking `cp28_native_patch.py` to generate one portable HTML file. It preserves original cardBORED v0.5 `state`, `render`, `legalTargets`, `selectCard`, `selectTarget`, `commit`, `driveShift`, `nextTurn`, `applyCard`, `combat`, CPU, House/Pressure-Board variants, and local progression.
+
+- Keyboard **1–9** selects affordable source-native cards. **Left/Right** changes legal hand choice; **Up/Down** selects legal board target; **Enter/Space** confirms through the original resolver. **D** Drive shifts when earned; **K** keeps/backs out; **H** opens original House selection; **T** opens Trace.
+- Standard Gamepad API: D-pad/stick chooses cards/targets, A confirms, B cancels/keeps, X Drive, Y House; shoulder buttons cycle, Select opens Trace. Buttons trigger only on pressed edge; disconnect and background contact are respected.
+- Original on-board visual grammar is enriched through the actual `pressure('player')`, `state.drive`, selected/legally targetable slots and existing `state.phase`; no new game logic or hidden-state spoofing.
+- 44px House controls, visible selection focus, accessible browser zoom and preserved reduced-motion behaviour.
+
+## Proof receipt
+
+**GitHub Actions run 41072757393:** source check and original game boot SUCCESS; **10/10 Playwright gameplay tests PASS** in mobile- and desktop-sized Chromium contexts (5 tests each). Source gate: **PASS**. Candidate: **60,111 bytes**, SHA-256 `ca5949b65726fee19de31297a735638802720a413d86672afc01394a150b77f6`. Single temporary [playable candidate artifact](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41072757393/artifacts/12984734892), 14-day retention, downloadable ZIP contains HTML. Original and candidate hashes belong to distinct authority scopes.
+
+**HOLD:** Physical Samsung Fold/touch, actual controller hardware, owner laptop feel, sustained performance, aesthetic owner review, deploy/publish/merge. Browser-sized mobile proof is not physical device proof. No public release or permanent second game authority is claimed.
+
+**No Ding No Claim. Integration ≠ Replacement. The exact original and independent candidate are recoverable without leaving unbounded redundant descendants.**

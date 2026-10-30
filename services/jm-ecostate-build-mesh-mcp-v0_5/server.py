@@ -12,6 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 from cross_client import TOOLS as CROSS_CLIENT_TOOLS, HANDLERS as CROSS_CLIENT_HANDLERS
+from engine_admission import ENGINE_TOOLS, ENGINE_NAMES, engine_authorized, call_native_engine
 
 VERSION = "0.8.6"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
@@ -1337,10 +1338,22 @@ class Handler(BaseHTTPRequestHandler):
         if method == "ping":
             return self.send_json(200, rpc_result(request_id, {}))
         if method == "tools/list":
-            return self.send_json(200, rpc_result(request_id, {"tools": TOOLS}))
+            return self.send_json(200, rpc_result(request_id, {"tools": TOOLS + (ENGINE_TOOLS if engine_authorized(self.headers.get("Authorization", "")) else [])}))
         if method == "tools/call":
             name = params.get("name", "")
             args = params.get("arguments") or {}
+            if name in ENGINE_NAMES:
+                # Public callers cannot discover or execute source-bearing organs.
+                # No configured owner credential means fail-closed admission.
+                if not engine_authorized(self.headers.get("Authorization", "")):
+                    return self.send_json(200, rpc_error(request_id, -32601, f"Unknown tool: {name}"))
+                try:
+                    return self.send_json(200, rpc_result(request_id, call_native_engine(name, args)))
+                except Exception as exc:
+                    return self.send_json(200, rpc_result(request_id, {
+                        "content": [{"type": "text", "text": f"{type(exc).__name__}: {exc}"}],
+                        "isError": True,
+                    }))
             if name not in HANDLERS:
                 return self.send_json(200, rpc_error(request_id, -32601, f"Unknown tool: {name}"))
             try:

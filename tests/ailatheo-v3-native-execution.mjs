@@ -1,5 +1,9 @@
-import fs from "node:fs"; import {executeAILatheoCreation} from "../unified-browser/ailatheo-creation-runtime.mjs";
-const registry=JSON.parse(fs.readFileSync("coding-estate/integration/REGISTRY.json","utf8"));
+import fs from "node:fs"; import path from "node:path"; import {executeAILatheoCreation} from "../unified-browser/ailatheo-creation-runtime.mjs";
+const registryPath="coding-estate/integration/REGISTRY.json";
+const manifest=JSON.parse(fs.readFileSync(registryPath,"utf8"));
+const parts=(manifest.parts??[]).map(rel=>JSON.parse(fs.readFileSync(path.join(path.dirname(registryPath),rel),"utf8")));
+const registry=manifest.bodies ? manifest : {...manifest,bodies:parts.flatMap(part=>part.bodies??[])};
+if(registry.bodies?.length!==manifest.count) throw new Error("REGISTRY_EMPTY");
 const out=executeAILatheoCreation("build a touch visual game with drag aim, browser and android delivery",registry);
 if(!out.passed) throw new Error("AILATHEO_EXECUTION_FAILED");
 if(out.executedBodies.length!==6||out.receipts.length!==9) throw new Error("EXECUTION_RECEIPT_COUNT");

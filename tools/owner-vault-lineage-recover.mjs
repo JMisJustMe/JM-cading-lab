@@ -223,18 +223,48 @@ function validatePacket(packet) {
   return { ready, total };
 }
 
+// CP31: actual authorised Windows device exposed unavailable POSIX flags.
+// Retain Linux atomic final-component O_NOFOLLOW unchanged. Windows checks
+// pre/post lstat against its opened handle; these checks are NOT atomically
+// equivalent to FILE_FLAG_OPEN_REPARSE_POINT or directory fsync.
+async function assertWindowsOpenedRegularFile(filename,handle) {
+  const current=await fs.lstat(filename),opened=await handle.stat();
+  if(!current.isFile()||current.isSymbolicLink()||!opened.isFile()
+    ||current.dev!==opened.dev||current.ino!==opened.ino
+    ||!Number.isSafeInteger(current.ino)||current.ino===0)
+    fail('WINDOWS_OPENED_SOURCE_REPARSE_OR_IDENTITY_HOLD');
+  return opened;
+}
+async function openBoundedSourceFile(filename,openFile=fs.open) {
+  if(process.platform==='win32') {
+    await assertNoSymlinkDirectoryComponents(path.dirname(path.resolve(filename)));
+    const first=await fs.lstat(filename);
+    if(!first.isFile()||first.isSymbolicLink()
+      ||!Number.isSafeInteger(first.ino)||first.ino===0)
+      fail('WINDOWS_SOURCE_PATH_REPARSE_HOLD');
+    const h=await openFile(filename,fsConstants.O_RDONLY);
+    try{
+      const stat=await assertWindowsOpenedRegularFile(filename,h);
+      if(first.dev!==stat.dev||first.ino!==stat.ino)
+        fail('WINDOWS_SOURCE_CHANGED_BETWEEN_CHECK_AND_OPEN');
+      return h;
+    }catch(error){await h.close();throw error;}
+  }
+  if(typeof fsConstants.O_NOFOLLOW!=='number'
+    ||typeof fsConstants.O_NONBLOCK!=='number')
+    fail('LINEAGE_SAFE_OPEN_UNSUPPORTED');
+  return openFile(filename,fsConstants.O_RDONLY
+    |fsConstants.O_NOFOLLOW|fsConstants.O_NONBLOCK);
+}
+
 // CP26: lstat + readFile is a path-reopening race. Open the actual regular
 // file with no-follow and nonblocking flags, then validate the OPEN handle.
 // This protects the final component even if it is swapped after preflight;
 // it is not an atomic defence against replacement of ancestor directories.
 async function readBoundedRegularFile(filename, maxBytes, openFile = fs.open) {
-  if (!Number.isSafeInteger(maxBytes) || maxBytes < 0
-      || typeof fsConstants.O_NOFOLLOW !== 'number'
-      || typeof fsConstants.O_NONBLOCK !== 'number') {
+  if(!Number.isSafeInteger(maxBytes)||maxBytes<0)
     fail('LINEAGE_SAFE_OPEN_UNSUPPORTED');
-  }
-  const flags = fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_NONBLOCK;
-  const handle = await openFile(filename, flags);
+  const handle=await openBoundedSourceFile(filename,openFile);
   try {
     const stat = await handle.stat();
     if (!stat.isFile() || stat.size > maxBytes || stat.size < 0) {
@@ -257,6 +287,8 @@ async function readBoundedRegularFile(filename, maxBytes, openFile = fs.open) {
       if (total > maxBytes) fail('LINEAGE_OPENED_FILE_OVERBOUNDED');
       chunks.push(chunk.subarray(0, bytesRead));
     }
+    if(process.platform==='win32')
+      await assertWindowsOpenedRegularFile(filename,handle);
     return Buffer.concat(chunks, total);
   } finally {
     await handle.close();
@@ -352,6 +384,17 @@ async function writeDurableNewFile(filename, bytes, openFile = fs.open) {
 // preflight. Bind it to the previously observed destination/parent identity.
 // This is final-component protection, not an atomic ancestor-directory lock.
 async function syncRecoveryDirectory(directory, openFile = fs.open, expectedIdentity = null) {
+  if(process.platform==='win32') {
+    await assertNoSymlinkDirectoryComponents(directory);
+    const stat=await fs.lstat(directory);
+    if(!stat.isDirectory()||stat.isSymbolicLink()
+      ||(expectedIdentity&&(stat.dev!==expectedIdentity.dev
+        ||stat.ino!==expectedIdentity.ino)))
+      fail('WINDOWS_DIRECTORY_IDENTITY_HOLD');
+    // Actual Windows Node refuses directory fsync with EPERM.
+    // Exact file fsync/readback and independent later audit remain active.
+    return {directory_fsync_proven:false};
+  }
   if (typeof fsConstants.O_NOFOLLOW !== 'number'
       || typeof fsConstants.O_DIRECTORY !== 'number') {
     fail('LINEAGE_DIRECTORY_SYNC_UNSUPPORTED');
@@ -666,10 +709,7 @@ function coldRecoveryManifest(catalog){
 // allocate a whole 64 MiB native file merely to prove it was restored.
 // This is a read-only verification, not an editor or new custody copy.
 async function verifyColdNativeInPieces(filename, version, openFile=fs.open) {
-  if(typeof fsConstants.O_NOFOLLOW!=='number'
-    ||typeof fsConstants.O_NONBLOCK!=='number')fail('COLD_NATIVE_SAFE_OPEN_UNSUPPORTED');
-  const handle=await openFile(filename,
-    fsConstants.O_RDONLY|fsConstants.O_NOFOLLOW|fsConstants.O_NONBLOCK);
+  const handle=await openBoundedSourceFile(filename,openFile);
   try{
     const initial=await handle.stat();
     if(!initial.isFile()||initial.size!==version.metadata.bytes
@@ -695,6 +735,8 @@ async function verifyColdNativeInPieces(filename, version, openFile=fs.open) {
     const final=await handle.stat();
     if(!final.isFile()||final.size!==initial.size||final.ino!==initial.ino
       ||final.dev!==initial.dev)fail('COLD_NATIVE_CHANGED_DURING_READ_HOLD');
+    if(process.platform==='win32')
+      await assertWindowsOpenedRegularFile(filename,handle);
   }finally{await handle.close();}
 }
 
@@ -744,7 +786,12 @@ async function restoreColdParts(input,destination){
   return {outcome:'OFFLINE_SEGMENTED_SOURCE_RECOVERED',
     selected_id:catalog.packet.selected_id,version_count:catalog.packet.versions.length,
     source_bytes:catalog.total,destination:dest,remote_vault_modified:false,
-    owner_offsite_custody_claimed:false};
+    owner_offsite_custody_claimed:false,
+    directory_fsync_proven:process.platform!=='win32',
+    atomic_nofollow_proven:process.platform!=='win32',
+    durability_boundary:process.platform==='win32'
+      ?'WINDOWS_FILE_FSYNC_READBACK; DIRECTORY_METADATA_FSYNC_UNAVAILABLE'
+      :'NATIVE_FILE_AND_DIRECTORY_FSYNC'};
 }
 async function auditColdParts(input,destination){
   const catalog=await inspectColdParts(await readPartsCatalog(input));
@@ -766,7 +813,9 @@ async function auditColdParts(input,destination){
   return {outcome:'OFFLINE_SEGMENTED_SOURCE_AUDITED',
     selected_id:catalog.packet.selected_id,version_count:catalog.packet.versions.length,
     source_bytes:catalog.total,destination:dest,remote_vault_modified:false,
-    owner_offsite_custody_claimed:false};
+    owner_offsite_custody_claimed:false,
+    directory_fsync_proven:process.platform!=='win32',
+    atomic_nofollow_proven:process.platform!=='win32'};
 }
 
 async function main(args) {

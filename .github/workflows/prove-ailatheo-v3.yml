@@ -31,7 +31,7 @@ on:
 permissions: {contents: read}
 jobs:
   native-route:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,6 +42,8 @@ jobs:
       - run: node tests/estate-native-operator-world.mjs
       - run: node tests/estate-native-operator-spaces.mjs
       - run: node tests/mission002-source-aware-creation.mjs
+      - run: node tests/jm-engine-federation.mjs
+      - run: node tests/jm-engine-federation-mcp-stdio.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs

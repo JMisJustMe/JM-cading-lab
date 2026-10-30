@@ -40,3 +40,11 @@ No deployment, merge, original overwrites, data deletion or second permanent cop
 
 SOURCE → ENTRY → STRUCTURE → BEHAVIOUR → DELIVERY → RECEIPT.
 MESH ≠ MERGE. NO DING NO CLAIM.
+
+## Optional local MCP host contact
+
+The adapter can now be launched directly from the existing repository on an authorised owner/CI host using:
+
+node coding-estate/integration/jm-engine-federation-mcp-stdio.mjs
+
+This is a genuine JSON-RPC MCP stdio adapter (initialize, tools/list, tools/call, ping) that loads the original 100-body execution registry AND Current-64 identity authority from the same repository checkout. It is an optional contact adapter to the existing JM Build Mesh, not another Estate service, cloud endpoint or independent engine. The local process must be started/configured by an authorised MCP client; it is not silently installed in the existing hosted ChatGPT plugin. Native conformance test: node tests/jm-engine-federation-mcp-stdio.mjs. No network listener or credentials.

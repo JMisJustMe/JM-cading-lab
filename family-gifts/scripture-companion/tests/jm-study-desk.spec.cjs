@@ -322,7 +322,7 @@ const {chromium}=require('playwright');
    await page.fill('#jmPathSearch','matthew 6 draft');
    assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),1);
    assert.match(await page.locator('#jmPathReviewEntries .jm-chapter-card').textContent(),/Matthew 6/);
-   assert.match(await page.locator('#jmPathReviewStatus').textContent(),/1 matching chapter/);
+   assert.match(await page.locator('#jmPathReviewStatus').textContent(),/1 shown/);
    await page.fill('#jmPathSearch','not-a-saved-private-term');
    assert.equal(await page.locator('#jmPathReviewEntries .jm-chapter-card').count(),0);
    assert.match(await page.locator('#jmPathReviewEntries').textContent(),/No chapters match/);

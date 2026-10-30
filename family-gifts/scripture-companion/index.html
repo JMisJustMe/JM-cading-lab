@@ -620,7 +620,9 @@ function renderPathComparison(){
 }
 function renderPathReview(){
  const plan=readingPaths[$('#planPicker').value]||readingPaths.quiet;
- pathCompare=pathCompare.filter(x=>plan.chapters.some(([b,ch])=>b===x.book&&ch===x.chapter));
+ pathCompare=pathCompare.filter(x=>plan.chapters.some(([b,ch])=>b===x.book&&ch===x.chapter))
+  .sort((a,b)=>plan.chapters.findIndex(([book,ch])=>book===a.book&&ch===a.chapter)-
+               plan.chapters.findIndex(([book,ch])=>book===b.book&&ch===b.chapter));
  const root=$('#jmPathReviewEntries');root.replaceChildren();
  const queue=Array.isArray(data.queue)?data.queue:[];
  const query=$('#jmPathSearch').value.trim().toLocaleLowerCase();

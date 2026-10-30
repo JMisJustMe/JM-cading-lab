@@ -180,6 +180,19 @@ Rules:
 - A changed canonical door requires an explicit reason and a continuity/migration route; do not imply automatic cross-origin state migration unless it is actually implemented and proved.
 - **THE DOOR IDENTIFIES THE LIVING BODY, NOT ONE PARTICULAR BUILD.**
 
+## External-service reliability — IN-CHAT CONNECTOR IS NOT RUNTIME AUTHORITY
+
+**Standing owner instruction (30 October 2026):** JM may continue to use Cloudflare and other authorised service providers as infrastructure, but **unreliable ChatGPT in-chat app/plugin connections are not an accepted execution dependency or primary operational route.** Repeated connector failures must not result in repeated in-chat retry loops, owner reauthorisation churn, duplicate integrations, or another replacement front door.
+
+Operational order:
+1. **Recover the real existing JM-owned source and external execution route first.** For the canonical Cloudflare Estate use the existing GitHub Actions `.github/workflows/deploy-estate-sovereign-integrated-v1.yml` for governed production releases, and `.github/workflows/check-owner-vault-cloudflare.yml` for explicitly triggered **read-only** readiness inspection. Reuse current GitHub Actions and securely provisioned external credentials, not the ChatGPT Cloudflare plugin. Do not deploy merely because a workflow exists; production still requires its actual release/owner authority.
+2. Use provider-native CLI/API (e.g. Wrangler/Cloudflare HTTPS) **inside independently executable owner-managed devices or authorized CI**, with secrets supplied by those environments and never copied into source, chat or receipts. Cloudflare remains the canonical host; GitHub is the source/workflow rail, not a new website owner.
+3. A chat connector may supply optional observation **only when explicitly appropriate and demonstrably working**; never make release, recovery, file custody, storage maintenance or continuity depend on that chat session. If an in-chat provider app fails or access changes, HOLD only the unsupported operation while independent existing workflows continue. Do not replace provider infrastructure solely because its chat plugin is unreliable.
+4. Record exact source commit, workflow run, authorised deployment ID and independently checked live HTTP/device consequences separately. **CI PASS ≠ PROVIDER DEPLOY ≠ OWNER DEVICE DING.** Existing unreadable private R2 metadata or missing bindings are HOLD; never synthesize an empty bucket or silently recreate/overwrite original custody.
+5. **No second permanent copy or new deploy pipeline without a verified original gap.** Preserve the last proven public live body; do not automatically merge protected draft PRs (#601 / #621), republish private content, alter R2 bindings/secrets or perform deletions to work around a chat plugin.
+
+**Short law: PROVIDER MAY REMAIN; CHAT PLUGIN IS OPTIONAL; EXTERNAL JM-OWNED EXECUTION IS THE DEPENDABLE PATH.**
+
 ## Ground zero — OWNER CONTACT & ON-DEMAND DEPLOYMENT
 
 Before handing over, repairing, redeploying or re-proving a live Estate door, read:
@@ -192,7 +205,7 @@ Canonical keeper:
 
 Rules:
 - When JM asks for a live link, the job is to produce a currently reachable door, not merely recall a previously valid URL.
-- If current connected deployment/redeployment tooling is available and deployment is required, use it in the current chat rather than only explaining what could be deployed.
+- If deployment is required, prefer the verified existing **external JM-owned GitHub Actions / provider-native workflow** over an unreliable in-chat connector. Use in-chat tools only as optional authoring/observation aids, not as a runtime dependency; preserve explicit release and owner-contact gates.
 - If JM reports a failed owner-side contact, treat that as a real failed contact event even if an earlier CI/live probe passed.
 - Prefer repairing/redeploying the singular canonical door. Use a governed recovery carrier for immediate access when necessary without silently minting a new canonical identity.
 - Do not call owner contact / Cold Ding from automation alone; owner-side evidence remains the final authority for present owner access.

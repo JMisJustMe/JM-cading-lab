@@ -212,6 +212,23 @@ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'unrelated p
 await page.mouse.up();
 assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'own guard release clears guard');
 console.log('PASS CP25 multi-pointer joystick and guard ownership '+width+'px');
+// CP29: SHOOT is owned by its initiating input; an unrelated touch or Space release cannot fire early.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.keyboard.down('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'Space begins keyboard-owned charge');
+await page.locator('#shoot').hover();await page.mouse.down();await page.mouse.up();
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'unrelated touch release cannot end keyboard-owned shot');
+await page.keyboard.up('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'own Space release ends keyboard charge');
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.locator('#shoot').hover();await page.mouse.down();
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'touch begins pointer-owned charge');
+await page.keyboard.down('Space');await page.keyboard.up('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'unrelated Space release cannot end touch-owned shot');
+await page.mouse.up();
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'own touch release ends pointer charge');
+console.log('PASS CP29 keyboard/touch SHOOT ownership '+width+'px');
+
  // CP26: manual pause, new-match and paused-key transitions must not carry held input into play.
  await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
  const cp26Shots=(await page.evaluate(()=>JM_THIRD_COURT.status())).shots;

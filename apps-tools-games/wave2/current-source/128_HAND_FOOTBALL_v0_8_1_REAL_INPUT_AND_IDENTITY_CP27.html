@@ -80,6 +80,35 @@ function actor(a,label,role){let light=role!=="opp";ctx.save();ctx.shadowColor=l
  if(own){ctx.fillStyle='#a4f6df';ctx.fillRect(-a.r*.06,-a.r*.19,a.r*.12,a.r*.44)}
  if(support){ctx.strokeStyle='#eeffd0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-a.r*.16,a.r*.18);ctx.lineTo(a.r*.16,-a.r*.05);ctx.stroke()}
  if(goalie){ctx.strokeStyle='#e8c69c';ctx.lineWidth=3;ctx.strokeRect(-a.r*.52,-a.r*.22,a.r*1.04,a.r*.37)}
+ // Each squad body has its OWN silhouette and motion language.
+ if(own){ // MAKO · lead / wide pivot shoulders and directional authority
+  ctx.fillStyle='#283d58';
+  ctx.fillRect(-a.r*.72,-a.r*.31,a.r*.24,a.r*.45);
+  ctx.fillRect(a.r*.48,-a.r*.31,a.r*.24,a.r*.45);
+  ctx.strokeStyle='#f4cf83';ctx.lineWidth=2;ctx.beginPath();
+  ctx.moveTo(-a.r*.13,-a.r*.12);ctx.lineTo(0,a.r*.30);ctx.lineTo(a.r*.14,-a.r*.12);ctx.stroke();
+ }else if(support){ // AYA · slender winged support and stride response
+  ctx.fillStyle='#b9f5dc';ctx.beginPath();
+  ctx.moveTo(-a.r*.47,-a.r*.29);ctx.lineTo(-a.r*.88,-a.r*.52);
+  ctx.lineTo(-a.r*.60,a.r*.14);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(a.r*.47,-a.r*.29);ctx.lineTo(a.r*.88,-a.r*.52);
+  ctx.lineTo(a.r*.60,a.r*.14);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#7beac2';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-a.r*.50,a.r*.54);ctx.lineTo(-a.r*.25,a.r*.73+Math.sin(performance.now()/130)*a.r*.06);ctx.stroke();
+ }else if(goalie){ // BRASS · broad stopping block and goalkeeper palms
+  ctx.fillStyle='#efc690';
+  ctx.fillRect(-a.r*.85,-a.r*.05,a.r*.31,a.r*.41);
+  ctx.fillRect(a.r*.54,-a.r*.05,a.r*.31,a.r*.41);
+  ctx.strokeStyle='#613e24';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-a.r*.43,a.r*.54);ctx.lineTo(a.r*.43,a.r*.54);ctx.stroke();
+ }else{ // LATCH · angular defensive shield with side fins
+  ctx.fillStyle='#bc9adb';ctx.beginPath();
+  ctx.moveTo(0,-a.r*.79);ctx.lineTo(a.r*.62,-a.r*.34);
+  ctx.lineTo(a.r*.43,a.r*.34);ctx.lineTo(0,a.r*.69);
+  ctx.lineTo(-a.r*.43,a.r*.34);ctx.lineTo(-a.r*.62,-a.r*.34);
+  ctx.closePath();ctx.strokeStyle='#301e47';ctx.lineWidth=2;ctx.fill();ctx.stroke();
+  ctx.strokeStyle='#452b61';ctx.beginPath();ctx.moveTo(0,-a.r*.69);ctx.lineTo(0,a.r*.52);ctx.stroke();
+ }
  ctx.restore();
  ctx.font=`900 ${Math.max(9,a.r*.31)}px system-ui`;ctx.fillStyle=light?'#101820':'#ffffff';
  ctx.fillText(label,a.x,a.y+a.r*.06);ctx.restore()}

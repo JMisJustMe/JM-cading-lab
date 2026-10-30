@@ -25,3 +25,24 @@ button,summary{touch-action:manipulation}.app{width:min(100%,560px)!important;ma
  .boardWrap{grid-area:board;padding:0!important;height:calc(100dvh - 50px)!important}.boardShell{height:100%!important;width:auto!important;max-width:100%!important;aspect-ratio:720/920!important}.sourceRun{grid-area:supports;padding:0!important;gap:4px!important}.conditionBench{grid-area:conditions;padding:0!important;gap:4px!important}.controlDeck{grid-area:controls;padding:0!important;align-self:start!important}.reflexRow{grid-area:reflex;position:relative!important;bottom:auto!important;padding:0!important;align-self:end!important}.ancientRow,.status,.wakePool,.info{display:none!important}.sourceRun .action,.runState,.conditionCard{min-height:38px!important}.dropCard,.leverCard{min-height:52px!important}.reflex{min-height:42px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* CP25: source-native keyboard lane, no new game shell or renderer. */
+#game:focus-visible,.lever:focus-visible,.reflex:focus-visible,
+.sourceRun .action:focus-visible,.conditionCard:focus-visible{
+ outline:3px solid #b8f6e9!important;outline-offset:2px!important;
+}
+.keyboardCoach{
+ color:#b2e5d9;background:rgba(8,34,37,.92);border:1px solid rgba(85,221,213,.3);
+ margin:4px 6px;padding:7px 10px;border-radius:9px;text-align:center;
+ font:700 10px/1.4 system-ui;letter-spacing:.03em;
+}
+.sourceRun .action,.conditionCard,.reflex{min-height:44px!important}
+@media(pointer:coarse){.keyboardCoach{display:none!important}}
+@media(max-width:520px) and (orientation:portrait){
+ .boardShell{width:min(100%,calc((100dvh - 306px)*.7826087))!important}
+ html[data-bonewake-phase="live"] .boardShell{width:min(100%,calc((100dvh - 258px)*.7826087))!important}
+}
+@media(orientation:landscape) and (max-height:620px){
+ .keyboardCoach{display:none!important}
+ .reflex{min-height:44px!important}
+}

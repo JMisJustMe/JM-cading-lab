@@ -226,3 +226,34 @@ test('@thirdcourt-cp30 all three original renderer routes stay on identical 3v3 
  expect(end.active).toBeTruthy();
  expect(errors).toEqual([]);
 });
+
+test('@thirdcourt-cp31 actual green meter is quicker on the same live shot',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const shooter=(await status(page)).athletes[0];
+ expect(shooter.shotTempo).toBeGreaterThan(1);
+ await button(page,0,true);
+ await expect.poll(async()=>(await status(page)).charge,{timeout:850}).toBeGreaterThanOrEqual(.65);
+ expect((await status(page)).charge).toBeLessThanOrEqual(1);
+ await button(page,0,false);
+ await expect.poll(async()=>(await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots).toBe(1);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp31 six athletes have distinct actual body masses and shooting signatures',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const a=(await status(page)).athletes;
+ expect(a).toHaveLength(6);
+ expect(new Set(a.map(p=>p.name)).size).toBe(6);
+ expect(new Set(a.map(p=>p.signature)).size).toBe(6);
+ expect(new Set(a.map(p=>p.formWidth)).size).toBe(6);
+ expect(new Set(a.map(p=>p.shotForm)).size).toBe(6);
+ expect(new Set(a.map(p=>p.shotTempo)).size).toBe(6);
+ // The original three court roles are still present on each team.
+ expect(a.map(p=>p.role)).toEqual(['Floor General','Wing Shooter','Paint Anchor','Floor General','Wing Shooter','Paint Anchor']);
+ const before=a.map(p=>({id:p.id,mass:p.contactMass}));
+ await page.evaluate(()=>JM_THIRD_COURT.selectNativeCamera(2));
+ const after=(await status(page)).athletes;
+ expect(after.map(p=>({id:p.id,mass:p.contactMass}))).toEqual(before);
+ expect(errors).toEqual([]);
+});

@@ -10,7 +10,7 @@ import {GAMEFORGE_DONOR_SHA256} from './gameforge-world-carrier.mjs';
 export const jmFederatedRendererInstall=installJMActualRenderer;
 export const JM_ENGINE_MCP_TOOLS=Object.freeze([
  {name:'jm_engine_inventory',description:'Source-owned JM engine organs and proof boundaries',inputSchema:{type:'object',properties:{}}},
- {name:'jm_engine_plan',description:'Route through the original 100-body estate router; plan only',inputSchema:{type:'object',properties:{goal:{type:'string'}},required:['goal']}},
+ {name:'jm_engine_plan',description:'Route through the original 100-body estate router; plan only',inputSchema:{type:'object',properties:{goal:{type:'string'},current64:{type:'object'}},required:['goal','current64']}},
  {name:'jm_engine_core_contact',description:'Run original Game-CODING and JM GameCore sources and native dispatch',inputSchema:{type:'object',properties:{gameSource:{type:'string'},coreSource:{type:'string'},initialState:{type:'object'}},required:['gameSource','coreSource']}},
  {name:'jm_engine_world_contact',description:'Source-hash checked native world, GameForge state and actual JM 3D geometry; no GPU claim',inputSchema:{type:'object',properties:{source:{type:'object'}},required:['source']}}
 ]);
@@ -26,6 +26,18 @@ const DONORS=[
 ];
 const need=(truth,code)=>{if(!truth)throw Error(code)};
 const validRegistry=registry=>{const r=validateRegistry(registry);need(r.valid,'JM_ENGINE_REGISTRY_HOLD:'+r.failures.join(','));return registry};
+const current64Activation=(field,route)=>{
+ need(field?.schema==='JM.CodingEstate.Current64/1.0'&&field.counts?.current_coding_identities===64&&
+ field.counts?.inherited_role_qualified===61&&field.counts?.post_census_new===3&&
+ Array.isArray(field.identities)&&field.identities.length===64,'JM_ENGINE_CURRENT64_AUTHORITY_HOLD');
+ const ids=field.identities.map(x=>x.code_id),slugs=field.identities.map(x=>x.slug);
+ need(new Set(ids).size===64&&new Set(slugs).size===64,'JM_ENGINE_CURRENT64_DUPLICATE_HOLD');
+ const selected=new Set(route.route.map(x=>x.id));
+ const active=field.identities.filter(x=>selected.has(x.slug)).map(x=>({code_id:x.code_id,name:x.name,slug:x.slug,state:'SELECTED_FOR_ROUTE_NOT_EXECUTED'}));
+ return {schema:'JM.CodingBodyActivation.Candidate/1',authority:'coding-estate/JM_CODING_ESTATE_CURRENT_64.json',
+   active,availableCount:64-active.length,total:64,
+   boundary:'The 100-body route selects a subset of the current 64 coding identities by slug; other game/renderer organs remain separately governed. Planning does not spawn or execute them.'};
+};
 const object=(mesh,x,y,z,sx,sy,sz,color,em=0,rotY=0)=>({mesh,x,y,z,sx,sy,sz,color,em,rotY});
 const point=(x,y)=>({x:(x-450)/18,z:(y-285)/18});
 const hash=async text=>{
@@ -61,7 +73,8 @@ export async function callJMEngineMcpTool(name,args={},registry=null){
  if(name==='jm_engine_inventory')return {schema:'jm.engine-federation.inventory/1',donors:DONORS,boundary:'Source pointers and contact purposes do not transfer proof'};
  if(name==='jm_engine_plan'){
   need(typeof args.goal==='string'&&args.goal.trim(),'JM_ENGINE_GOAL_HOLD');
-  return {schema:'jm.engine-federation.plan/1',route:planEstateRoute(args.goal,validRegistry(registry)),state:'PLAN_ONLY_NO_EXECUTION'};
+  const route=planEstateRoute(args.goal,validRegistry(registry));
+  return {schema:'jm.engine-federation.plan/1',route,current64:current64Activation(args.current64,route),state:'PLAN_ONLY_NO_EXECUTION'};
  }
  if(name==='jm_engine_core_contact'){
   need(typeof args.gameSource==='string'&&args.gameSource.trim()&&typeof args.coreSource==='string'&&args.coreSource.trim(),'JM_ENGINE_SOURCE_HOLD');

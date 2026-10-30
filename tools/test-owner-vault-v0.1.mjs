@@ -2308,3 +2308,89 @@ console.log('PASS: CP28 opened-file bounded incremental read refuses post-stat g
     await fs.rm(root,{recursive:true,force:true}); // strictly synthetic local tests
   }
 }
+
+
+// CP31: full source-bound 512 MiB original history: eight exact 64 MiB
+// native revisions and all 256 binary parts, cold-recovered by the ORIGINAL
+// independent offline CLI. This is synthetic actual-disk proof, not a
+// physical owner-device/real-provider deployment or offsite receipt.
+{
+  const root=await fs.mkdtemp(path.join(tmpdir(),'jm-owner-cp31-fullbound-'));
+  const folder=path.join(root,'owner-cold-pieces');
+  const output=path.join(root,'native-original-recovery');
+  const cliCopy=path.join(root,'owner-vault-lineage-recover.mjs');
+  const bytesPerPart=2*1024*1024,partsPerVersion=32;
+  const ids=Array.from({length:8},(_,i)=>
+    '00000000-0000-4000-8000-'+String(310000+i).padStart(12,'0'));
+  const source='asset-00000000-0000-4000-8000-000000003199';
+  const expectedTotal=8*64*1024*1024;
+  const hash=b=>createHash('sha256').update(b).digest('hex');
+  let pathToCatalog=null;
+  const cli=(...args)=>spawnSync(process.execPath,[cliCopy,'--parts-catalog',pathToCatalog,...args],
+    {cwd:root,encoding:'utf8',timeout:240000,maxBuffer:1024*1024});
+  try{
+    await fs.mkdir(folder);
+    await fs.copyFile(new URL('./owner-vault-lineage-recover.mjs',import.meta.url),cliCopy);
+    const versions=[];
+    for(let v=0;v<8;v++){
+      const originalHash=createHash('sha256'),parts=[];
+      for(let i=0;i<partsPerVersion;i++){
+        const b=Buffer.alloc(bytesPerPart,(v*32+i)%251);
+        const name='JM_Vault_Part_'+ids[v]+'_'+String(i).padStart(2,'0')+'.bin';
+        originalHash.update(b);
+        parts.push({index:i,bytes:b.length,sha256:hash(b),fileName:name});
+        await fs.writeFile(path.join(folder,name),b,{flag:'wx'});
+      }
+      versions.push({metadata:{id:ids[v],sourceInstanceId:source,
+        name:'JM native original sovereign source',fileName:'JM-Full-Bound.jmproject',
+        mediaType:'application/octet-stream',bytes:64*1024*1024,
+        sha256:originalHash.digest('hex'),previousVersionId:v?ids[v-1]:null
+      },parts});
+    }
+    const catalog={schema:'JM.OwnerVault/0.1.AssetPartsCatalog',
+      selected_id:ids[7],version_count:8,source_bytes:expectedTotal,
+      order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',part_bytes:bytesPerPart,
+      versions:versions.reverse()};
+    pathToCatalog=path.join(folder,'JM_Vault_Cold_Catalog_'+ids[7]+'.json');
+    await fs.writeFile(pathToCatalog,JSON.stringify(catalog)+'\n',{flag:'wx'});
+    let result=cli('--verify-only');
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).source_bytes,expectedTotal);
+    result=cli('--output-dir',output);
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).source_bytes,expectedTotal);
+    for(let v=0;v<8;v++){
+      const file=path.join(output,ids[v]+'__JM-Full-Bound.jmproject');
+      const stat=await fs.stat(file);
+      assert.equal(stat.size,64*1024*1024);
+    }
+    result=cli('--audit-dir',output);
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(JSON.parse(result.stdout).source_bytes,expectedTotal);
+    // Fail closed for a ninth revision. This is a rule, not auto-retirement.
+    const bad={...catalog,version_count:9,versions:[
+      ...catalog.versions,{...catalog.versions[7],metadata:{
+        ...catalog.versions[7].metadata,id:'00000000-0000-4000-8000-000000003199'}}]};
+    await fs.writeFile(pathToCatalog,JSON.stringify(bad));
+    result=cli('--verify-only');
+    assert.notEqual(result.status,0);
+    assert.match(result.stderr,/COLD_CATALOG_SCHEMA_HOLD/);
+    await fs.writeFile(pathToCatalog,JSON.stringify(catalog)+'\n');
+    // Corrupt the actual last piece in the HEAD's original, not a forged receipt.
+    const last=catalog.versions[0].parts[31];
+    const piece=path.join(folder,last.fileName);
+    const handle=await fs.open(piece,'r+');
+    try{const b=Buffer.alloc(1);await handle.read(b,0,1,0);
+      await handle.write(Buffer.from([b[0]^1]),0,1,0);
+    }finally{await handle.close();}
+    result=cli('--verify-only');
+    assert.notEqual(result.status,0);
+    assert.match(result.stderr,/COLD_PART_EXACT_HASH_HOLD/);
+    // Existing owner recovery remains untouched by failed source verification.
+    const file=await fs.stat(path.join(output,ids[7]+'__JM-Full-Bound.jmproject'));
+    assert.equal(file.size,64*1024*1024);
+    console.log('PASS: CP31 exact 512 MiB source-bound eight-native-revision 256-part offline cold verification, durable reconstruction and separate audit; ninth revision and corrupted original piece HOLD; no owner provider contact.');
+  }finally{
+    await fs.rm(root,{recursive:true,force:true}); // only disposable synthetic fixture and its own descendants
+  }
+}

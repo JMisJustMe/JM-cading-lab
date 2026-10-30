@@ -29,6 +29,18 @@ def transform(source):
 // CP28 native inputs: the existing game owns the card rules, CPU and combat.
 let cp28Card=0,cp28Target=0,cp28PadIndex=null,cp28PadRef=null;
 const cp28Held=new Set();
+function CP28_fixOpening(){
+ if(!state||state.phase!=='decision'||state.player.some(Boolean))return;
+ if(state.hand.some(c=>c.cost<=state.energy&&legalTargets(c).length>0))return;
+ // Ensure the selected House genuinely reaches the first hand when a
+ // shuffled Gear/Move opening has no legal position on the empty board.
+ const i=state.playerDeck.findIndex(c=>c.kind==='GOER'&&c.cost<=state.energy);
+ if(i<0)return;
+ const playable=state.playerDeck.splice(i,1)[0],displaced=state.hand.shift();
+ state.hand.unshift(playable);
+ if(displaced)state.playerDeck.unshift(displaced);
+ log('HOUSE','First playable route restored from the original House deck: '+playable.name);
+}
 function CP28_visual(){
  if(!state)return;
  const a=$('#arena'),p=pressure('player');
@@ -144,4 +156,8 @@ window.JM_CARDBORED_CP28=Object.freeze({
 });
 
 /* ===== cardBORED v0.5""")
+    replace_one("const cb5StartBase=start;start=function(){cb5StartBase();cb5Apply();render();cb5Badge()};",
+                "const cb5StartBase=start;start=function(){cb5StartBase();cb5Apply();CP28_fixOpening();render();cb5Badge()};")
+    replace_one("cb5Apply();render();cb5Badge();",
+                "cb5Apply();CP28_fixOpening();render();cb5Badge();")
     return html

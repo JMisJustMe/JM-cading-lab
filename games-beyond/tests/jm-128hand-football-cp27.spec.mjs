@@ -33,8 +33,12 @@ test('@128hand-cp27 phone viewport boots ORIGINAL football and preserves full-ac
     expect(h,id).toBeGreaterThanOrEqual(43.5);
   }
   const nonempty=await page.locator('#game').evaluate(c=>{
-    const a=c.getContext('2d').getImageData(0,0,Math.min(120,c.width),Math.min(120,c.height)).data;
-    return a.some((v,i)=>i%4!==3&&v>20);
+    // The original transparent canvas draws its real pitch/actors in the centre.
+    // Top-left clear pixels are an intentional feature, not a blank game.
+    const a=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    let covered=0;
+    for(let i=3;i<a.length;i+=4)if(a[i]>0)covered++;
+    return covered>100;
   });
   expect(nonempty).toBeTruthy();
   expect(errors).toEqual([]);

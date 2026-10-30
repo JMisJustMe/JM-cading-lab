@@ -98,6 +98,11 @@ def compare(roots, arguments):
     left = file_bytes(roots["library"], arguments.get("library_file"))
     right = file_bytes(roots["recovery"], arguments.get("recovery_file"))
     fmt = arguments.get("format", "any")
+    # JSON-named files must be parsed even if the caller omits format or
+    # explicitly requests "any". Identical poisoned bytes are not a Ding.
+    if fmt == "any" and any(str(arguments.get(key, "")).lower().endswith(".json")
+                            for key in ("library_file", "recovery_file")):
+        fmt = "json"
     if fmt not in ("any", "json"):
         raise Hold("FORMAT_NOT_SUPPORTED")
     expected = arguments.get("expected_sha256")

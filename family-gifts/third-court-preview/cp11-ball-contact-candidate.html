@@ -849,7 +849,12 @@ function CP29_cancelHeld(){
 }
 function CP29_connect(p){
  if(!p||!p.connected)return;
- if(CP29_padIndex!==null&&CP29_padIndex!==p.index)CP29_cancelHeld();
+ // One controlling pad at a time: duplicate connection events cannot replay held actions.
+ // A second pad cannot unexpectedly steal control of an active match.
+ if(CP29_padIndex!==null){
+  if(CP29_padIndex===p.index)CP29_padRef=p;
+  return;
+ }
  CP29_padIndex=p.index;CP29_padRef=p;CP29_padHeld.clear();
 }
 function CP29_disconnect(p){
@@ -889,9 +894,12 @@ function CP29_up(kind){
 }
 function CP29_pollPad(){
  if(CP29_padIndex===null||document.hidden)return;
- const enumeration=navigator.getGamepads?.()?.[CP29_padIndex]||null;
- const p=enumeration?.connected?enumeration:CP29_padRef;
+ const pads=navigator.getGamepads?.();
+ // An absent pad in an available authoritative enumeration is disconnected:
+ // do not reuse a stale, formerly connected Gamepad object indefinitely.
+ const p=pads?pads[CP29_padIndex]:CP29_padRef;
  if(!p?.connected){CP29_disconnect({index:CP29_padIndex});return}
+ CP29_padRef=p;
  const ax=Number(p.axes?.[0]||0),ay=Number(p.axes?.[1]||0);
  if(state.active&&!state.paused&&joyPointer===null){
   const magnitude=Math.hypot(ax,ay),active=magnitude>.21;

@@ -298,8 +298,8 @@ test('@thirdcourt-cp33 six genuine athlete hair geometry identities survive thre
  await page.locator('#playQuick').click();
  const initial=await status(page);
  expect(initial.athletes.map(a=>a.hairStyle)).toEqual([0,1,2,3,4,5]);
- expect(new Set(initial.athletes.map(a=>a.name))).size.toBe(6);
- expect(new Set(initial.athletes.map(a=>a.signatureRead))).size.toBe(6);
+ expect(new Set(initial.athletes.map(a=>a.name)).size).toBe(6);
+ expect(new Set(initial.athletes.map(a=>a.signatureRead)).size).toBe(6);
  for(const camera of [1,2,0]){
   await page.evaluate(stage=>JM_THIRD_COURT.selectNativeCamera(stage),camera);
   const actual=await status(page);

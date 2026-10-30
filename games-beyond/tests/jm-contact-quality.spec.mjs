@@ -44,8 +44,17 @@ test('@jm-contact Fight Clash never keeps held UI after browser focus loss', asy
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   await page.goto('./bodies/fight-clash-v0-4.html');
-  await page.locator('#startBtn').click();
+  // Genuine opening route: First Bell modal blocks the start button until a mode is chosen.
+  await page.locator('#introBoxing').click();
+  await expect(page.locator('#intro')).not.toHaveClass(/show/);
+  const startButton=page.locator('#startBtn');
+  if(await startButton.isVisible()) await startButton.click();
+  else await page.locator('#game').click({position:{x:40,y:40}});
+  await page.keyboard.down('w');
+  await page.keyboard.down('i');
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await page.keyboard.up('w');
+  await page.keyboard.up('i');
   await expect(page.locator('.held')).toHaveCount(0);
   expect(errors).toEqual([]);
 });

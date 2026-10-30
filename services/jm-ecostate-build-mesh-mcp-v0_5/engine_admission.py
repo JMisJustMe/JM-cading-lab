@@ -6,8 +6,11 @@ tools stay untouched. Native calls use the exact recovered Node MCP program.
 import hmac
 import json
 import os
+import re
+import shutil
 import subprocess
 import threading
+from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,12 +34,27 @@ for entry in ENGINE_TOOLS:
     entry["annotations"]={"readOnlyHint":True,"destructiveHint":False,
                           "idempotentHint":True,"openWorldHint":False}
 
+@lru_cache(maxsize=1)
+def engine_runtime_ready():
+    """Never advertise native engines unless a usable real Node runtime exists."""
+    executable=shutil.which("node")
+    if not executable or not NATIVE.is_file():
+        return False
+    try:
+        probe=subprocess.run([executable,"--version"],capture_output=True,text=True,
+                             timeout=3,check=False)
+    except (OSError,subprocess.TimeoutExpired):
+        return False
+    version=re.fullmatch(r"v(\\d+)\\.(\\d+)\\.(\\d+)",probe.stdout.strip())
+    return bool(probe.returncode==0 and version and int(version.group(1))>=22)
+
 def engine_authorized(header):
     secret=os.environ.get("JM_ENGINE_OWNER_TOKEN","")
     if len(secret)<32 or not isinstance(header,str) or not header.startswith("Bearer "):
         return False
     supplied=header[7:]
-    return len(supplied)==len(secret) and hmac.compare_digest(supplied,secret)
+    return bool(len(supplied)==len(secret) and hmac.compare_digest(supplied,secret)
+                and engine_runtime_ready())
 
 def call_native_engine(name,arguments):
     if name not in ENGINE_NAMES or not isinstance(arguments,dict):
@@ -51,7 +69,7 @@ def call_native_engine(name,arguments):
         raise RuntimeError("JM_ENGINE_CONCURRENCY_HOLD")
     try:
         try:
-            proc=subprocess.run(["node",str(NATIVE)],input=payload+"\n",capture_output=True,
+            proc=subprocess.run(["node","--max-old-space-size=128",str(NATIVE)],input=payload+"\n",capture_output=True,
                                 text=True,timeout=25,cwd=ROOT,check=False,
                                 env={"PATH":os.environ.get("PATH",""),"LANG":"C.UTF-8",
                                      "HOME":"/tmp","NODE_OPTIONS":""})

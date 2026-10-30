@@ -11,11 +11,50 @@ import shutil
 import subprocess
 import threading
 from functools import lru_cache
+from hashlib import sha1
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 NATIVE = ROOT / "coding-estate/integration/jm-engine-federation-mcp-stdio.mjs"
 LOCK = threading.BoundedSemaphore(2)
+
+# Exact original Git blob object hashes, not independently recreated bodies.
+# A downstream file edit needs explicit reproof before hosted execution.
+SOURCE_PINS = {
+    "coding-estate/integration/jm-engine-federation.mjs": "3e7a68091bf8f08326e6753a86f568b826df81ba",
+    "coding-estate/integration/jm-engine-federation-mcp-stdio.mjs": "91a089bb3110bac41d7adaa4699cf87d46aa036f",
+    "coding-estate/integration/source-aware-creation.mjs": "0fc2443715435db08c1ee4399608acdd0b5f1cee",
+    "coding-estate/integration/gameforge-spaces.mjs": "9e86d5f1053523ca97c1fd24e170012f7fd8fd3e",
+    "coding-estate/integration/gameforge-encounter.mjs": "460c29f763009f27e2aaf5e6cd80afe4d4baad06",
+    "coding-estate/integration/gameforge-spatial-grammar.mjs": "091f22f8eac2fa015771106bdc46b80f1161f2ed",
+    "coding-estate/integration/jm-actual-renderer-organ.mjs": "18dd18a33c7d594415403bf1c5a35745b8dfd4fb",
+    "coding-estate/integration/gameforge-world-carrier.mjs": "440f322a407dc4e89185a5d816b7624c8a3a4dc2",
+    "coding-estate/integration/REGISTRY.json": "cb8e4d9c814e20d011509c79d7a6ca868434f73b",
+    "coding-estate/JM_CODING_ESTATE_CURRENT_64.json": "b00cf8a7567016468728d7d6d989952e3456a29b",
+    "navigator/estate-integration/execution-lanes.mjs": "b79e4442dc7f0a3fc0bd5d2e5f7b4f16bdcf9524",
+    "coding-estate/sovereign-ten/direct/game-native.mjs": "30d3f831e39e1749d28f0cdb10a1bb020c0b9ee4",
+    "coding-estate/sovereign-ten/direct/native-core.mjs": "1f5d1d2f6567fc5532c4ad57e2f329638f050048",
+    "coding-estate/sovereign-batch-six/direct/game-input-native-a.mjs": "8de368df9878fa641f8cb5875a90b8bbb387129a",
+    "coding-estate/sovereign-batch-six/direct/native-core.mjs": "b33045c45ca61bdc6010645776fbf7b319dfab33",
+    "coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs": "bc82c44ce56ec48c6fa09e42a57529b1b91c47dc",
+}
+
+def git_blob_matches(file, expected):
+    try:
+        if not file.is_file() or file.is_symlink():
+            return False
+        raw=file.read_bytes()
+    except (OSError, ValueError):
+        return False
+    return hmac.compare_digest(
+        sha1(b"blob " + str(len(raw)).encode("ascii") + b"\x00" + raw).hexdigest(),
+        expected)
+
+def original_source_pins_ok(root=ROOT):
+    return all(git_blob_matches(root / path, blob)
+               for path, blob in SOURCE_PINS.items())
+
+
 ENGINE_NAMES = frozenset(("jm_engine_inventory", "jm_engine_plan", "jm_engine_core_contact",
                           "jm_engine_visual_contact", "jm_engine_world_contact"))
 ENGINE_TOOLS = [
@@ -46,7 +85,7 @@ def engine_runtime_ready():
     except (OSError,subprocess.TimeoutExpired):
         return False
     version=re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)",probe.stdout.strip())
-    return bool(probe.returncode==0 and version and int(version.group(1))>=22)
+    return bool(probe.returncode==0 and version and int(version.group(1))>=22 and original_source_pins_ok())
 
 def engine_authorized(header):
     secret=os.environ.get("JM_ENGINE_OWNER_TOKEN","")
@@ -63,6 +102,8 @@ def call_native_engine(name,arguments):
                         "params":{"name":name,"arguments":arguments}},separators=(",",":"))
     if len(payload.encode("utf-8"))>131072:
         raise ValueError("JM_ENGINE_PAYLOAD_LIMIT_HOLD")
+    if not original_source_pins_ok():
+        raise RuntimeError("JM_ENGINE_SOURCE_PIN_HOLD")
     if not NATIVE.is_file():
         raise RuntimeError("JM_ENGINE_EXACT_NATIVE_SOURCE_HOLD")
     if not LOCK.acquire(blocking=False):

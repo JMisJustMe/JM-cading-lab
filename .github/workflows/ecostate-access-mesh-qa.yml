@@ -915,6 +915,187 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP28_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP31 owner-chosen folder end-to-end source bytes, real CI filesystem, offline cold restore and guarded resume
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const fs=require('node:fs/promises');
+          const path=require('node:path');
+          const os=require('node:os');
+          const {spawnSync}=require('node:child_process');
+          const {createHash}=require('node:crypto');
+          const hash=b=>createHash('sha256').update(b).digest('hex');
+          const PART=2*1024*1024;
+          const root=await fs.mkdtemp(path.join(os.tmpdir(),'jm-vault-cp31-'));
+          const tool=path.resolve('tools/owner-vault-lineage-recover.mjs');
+          const ids=['00000000-0000-4000-8000-000000003101','00000000-0000-4000-8000-000000003102'];
+          const source='asset-00000000-0000-4000-8000-000000003103';
+          const files=[Buffer.alloc(PART+17),Buffer.alloc(2*PART+29)];
+          files.forEach((b,index)=>{for(let i=0;i<b.length;i++)b[i]=(i+index*53)%251;});
+          const metas=files.map((b,i)=>({id:ids[i],sourceInstanceId:source,
+            name:'JM Native Original',fileName:'JM-Sovereign.jmproject',
+            mediaType:'application/octet-stream',sha256:hash(b),bytes:b.length,
+            previousVersionId:i?ids[i-1]:null}));
+          const versionList=[1,0].map(i=>({metadata:metas[i],parts:
+            Array.from({length:Math.ceil(files[i].length/PART)},(_,j)=>{
+              const b=files[i].subarray(j*PART,Math.min((j+1)*PART,files[i].length));
+              return {index:j,bytes:b.length,sha256:hash(b),
+                fileName:'JM_Vault_Part_'+ids[i]+'_'+String(j).padStart(2,'0')+'.bin'};
+            })}));
+          const catalog={schema:'JM.OwnerVault/0.1.AssetPartsCatalog',
+            selected_id:ids[1],version_count:2,source_bytes:files[0].length+files[1].length,
+            order:'SELECTED_HEAD_TO_OLDEST_ANCESTOR',part_bytes:PART,
+            versions:versionList};
+          const allParts=versionList.flatMap(v=>v.parts);
+          const nameToBytes=new Map();
+          versionList.forEach(v=>v.parts.forEach(p=>{
+            const idx=ids.indexOf(v.metadata.id),b=files[idx];
+            nameToBytes.set(p.fileName,b.subarray(p.index*PART,p.index*PART+p.bytes));
+          }));
+          const safe=/^(?:JM_Vault_Part_[0-9a-f-]{36}_[0-9]{2}\.bin|JM_Vault_Cold_Catalog_[0-9a-f-]{36}\.json)$/;
+          const browser=await chromium.launch({headless:true});
+          try{
+            for(const [mode,viewport] of [['laptop',{width:1366,height:900}],['phone',{width:390,height:844}]]){
+              const folder=path.join(root,mode+'-owner-chosen');
+              await fs.mkdir(folder);
+              const page=await browser.newPage({viewport});
+              page.setDefaultTimeout(35000);
+              await page.exposeFunction('cp31FileOp',async ({op,name,base64})=>{
+                if(typeof name!=='string'||!safe.test(name))throw Error('CP31_UNSAFE_SYNTHETIC_FILENAME');
+                const filename=path.join(folder,name);
+                if(op==='read'){
+                  try{const b=await fs.readFile(filename);
+                    return {exists:true,size:b.length,base64:b.toString('base64')};}
+                  catch(e){if(e.code==='ENOENT')return {exists:false};throw e;}
+                }
+                if(op==='create'){
+                  try{await fs.writeFile(filename,Buffer.alloc(0),{flag:'wx'});}
+                  catch(e){if(e.code!=='EEXIST')throw e;}
+                  return {ok:true};
+                }
+                if(op==='write'){await fs.writeFile(filename,Buffer.from(base64,'base64'));return {ok:true};}
+                throw Error('CP31_UNEXPECTED_FILE_OPERATION');
+              });
+              await page.addInitScript(()=>{
+                window.prompt=()=> 'synthetic-cp31-key';
+                window.showDirectoryPicker=async()=>({
+                  kind:'directory',getFileHandle:async(name,option)=>{
+                    let rec=await window.cp31FileOp({op:'read',name});
+                    if(!rec.exists){
+                      if(!option?.create)throw Object.assign(new Error('no file'),{name:'NotFoundError'});
+                      await window.cp31FileOp({op:'create',name});
+                    }
+                    return {kind:'file',
+                      getFile:async()=>{
+                        const found=await window.cp31FileOp({op:'read',name});
+                        if(!found.exists)throw Error('MISSING_OWNER_SOURCE');
+                        const binary=atob(found.base64),bytes=new Uint8Array(binary.length);
+                        for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+                        return new File([bytes],name);
+                      },
+                      createWritable:async()=>({
+                        write:async data=>{
+                          const b=data instanceof Uint8Array?data:new Uint8Array(data);
+                          const chunks=[];
+                          for(let i=0;i<b.length;i+=32768)
+                            chunks.push(String.fromCharCode(...b.subarray(i,i+32768)));
+                          await window.cp31FileOp({op:'write',name,base64:btoa(chunks.join(''))});
+                        },
+                        close:async()=>{},abort:async()=>{}
+                      })};
+                  }
+                });
+              });
+              let writes=0,partReads=0,stale=false;const errors=[];
+              page.on('pageerror',e=>errors.push(String(e)));
+              await page.route('**/api/owner/vault*',async route=>{
+                const r=route.request(),u=new URL(r.url()),which=u.searchParams.get('mode');
+                const json=(status,data)=>route.fulfill({status,headers:{
+                  'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(data)});
+                if(which==='status')return json(200,{ready:true});
+                if(r.headers()['x-jm-owner-key']!=='synthetic-cp31-key')
+                  return json(401,{error:'CP31_OWNER_AUTH_REQUIRED'});
+                if(r.method()!=='GET'){writes++;return json(405,{error:'CP31_READ_ONLY'});}
+                if(which==='assets')return json(200,{schema:'JM.OwnerVault/0.1.AssetIndex',assets:metas});
+                if(which==='export-asset-catalog')return json(200,
+                  stale?{...catalog,versions:[{...versionList[0],parts:[
+                    {...versionList[0].parts[0],sha256:'0'.repeat(64)},...versionList[0].parts.slice(1)
+                  ]},versionList[1]]}:catalog);
+                if(which==='export-asset-part'){
+                  const id=u.searchParams.get('asset'),index=Number(u.searchParams.get('part'));
+                  const whichFile=ids.indexOf(id);
+                  if(whichFile<0||index<0||index>=Math.ceil(files[whichFile].length/PART))
+                    return json(404,{error:'NOT_FOUND'});
+                  partReads++;
+                  const b=files[whichFile].subarray(index*PART,Math.min((index+1)*PART,files[whichFile].length));
+                  return route.fulfill({status:200,headers:{
+                    'content-type':'application/octet-stream','x-jm-part-sha256':hash(b),
+                    'x-jm-asset-id':id,'x-jm-part-index':String(index)},body:b});
+                }
+                return json(200,{schema:'JM.OwnerVault/0.1',
+                  state:{notes:'',recent:[],favourites:[]},bodies:[]});
+              });
+              await page.goto('http://127.0.0.1:4178/#owner',{waitUntil:'domcontentloaded'});
+              await page.locator('#jmVaultUnlock').click();
+              const button=page.locator('[data-asset-cold-folder="'+ids[1]+'"]');
+              await button.waitFor();
+              await button.click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD DIRECTORY LOCAL FILES VERIFIED'));
+              if(partReads!==allParts.length||writes!==0)
+                throw Error('CP31_FULL_EXPORT_REMOTE_PARTS_INCORRECT');
+              for(const [name,expected] of nameToBytes){
+                const saved=await fs.readFile(path.join(folder,name));
+                if(!saved.equals(expected))throw Error('CP31_DISK_BYTES_NOT_ORIGINAL_'+name);
+              }
+              const catalogName='JM_Vault_Cold_Catalog_'+ids[1]+'.json';
+              const actualCatalog=JSON.parse(await fs.readFile(path.join(folder,catalogName),'utf8'));
+              if(actualCatalog.version_count!==2||actualCatalog.source_bytes!==catalog.source_bytes)
+                throw Error('CP31_CATALOG_NOT_ON_ACTUAL_DISK');
+              const restored=path.join(root,mode+'-recovered');
+              const invoke=(...args)=>spawnSync(process.execPath,[tool,
+                '--parts-catalog',path.join(folder,catalogName),...args],
+                {encoding:'utf8',timeout:90000,maxBuffer:1024*1024});
+              let report=invoke('--verify-only');
+              if(report.status!==0)throw Error('CP31_OFFLINE_VERIFY_HOLD '+report.stderr);
+              report=invoke('--output-dir',restored);
+              if(report.status!==0)throw Error('CP31_OFFLINE_RESTORE_HOLD '+report.stderr);
+              report=invoke('--audit-dir',restored);
+              if(report.status!==0)throw Error('CP31_OFFLINE_AUDIT_HOLD '+report.stderr);
+              for(let i=0;i<files.length;i++){
+                const recovered=await fs.readFile(path.join(restored,ids[i]+'__JM-Sovereign.jmproject'));
+                if(!recovered.equals(files[i]))throw Error('CP31_NATIVE_RECONSTRUCTION_CHANGED');
+              }
+              await button.click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('already saved'));
+              if(partReads!==allParts.length)throw Error('CP31_ALREADY_SAVED_DOWNLOADED_AGAIN');
+              const damaged=allParts[0].fileName;
+              const damagedBytes=Buffer.from(nameToBytes.get(damaged));
+              damagedBytes[0]^=1;await fs.writeFile(path.join(folder,damaged),damagedBytes);
+              await button.click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_DIRECTORY_DISK_HASH_HOLD'));
+              if(!(await fs.readFile(path.join(folder,damaged))).equals(damagedBytes))
+                throw Error('CP31_OWNER_COLLISION_WAS_OVERWRITTEN');
+              if(partReads!==allParts.length)throw Error('CP31_BAD_DISK_FILE_FETCHED_OVER');
+              await fs.writeFile(path.join(folder,damaged),nameToBytes.get(damaged));
+              stale=true;
+              await button.click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD_DIRECTORY_DIFFERENT_HELD_SOURCE_HOLD'));
+              if(partReads!==allParts.length||writes!==0)
+                throw Error('CP31_CHANGED_CATALOG_USED_OR_POSTED');
+              stale=false;
+              await page.evaluate(()=>{window.showDirectoryPicker=undefined;});
+              await button.click();
+              await page.waitForFunction(()=>document.querySelector('#jmVaultFileStatus')?.textContent?.includes('COLD DIRECTORY UNSUPPORTED'));
+              if(errors.length)throw Error('CP31_PAGE_ERRORS '+errors.join(';'));
+              await page.close();
+            }
+            console.log('PASS CP31: original Owner Room owner-approved directory route synthetic laptop/phone handles backed by ACTUAL isolated CI disk files, 5 immutable source parts, full offline original JM CLI verify/recovery/audit and native exact bytes, idempotent retry, corrupted collision and changed catalog HOLD, unsupported fallback, zero remote writes.');
+          }finally{
+            await browser.close();
+            await fs.rm(root,{recursive:true,force:true}); // only disposable synthetic test paths
+          }
+          NODE
       - name: CP30 checkpointed cold export resumes only locally verified pieces after reload on phone and laptop
         shell: bash
         run: |

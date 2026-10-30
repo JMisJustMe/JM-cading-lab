@@ -300,6 +300,33 @@ console.log('PASS CP29 keyboard/touch SHOOT ownership '+width+'px');
  assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'last G release clears guard');
  console.log('PASS CP27 independent keyboard and touch guard ownership '+width+'px');
 
+// CP33: a paused game must not let a new touch seize the joystick, SHOOT or GUARD.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.evaluate(()=>document.querySelector('#pauseButton').click());
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'CP33 begins from a genuinely paused match');
+const cp33PausedInputs=await page.evaluate(()=>{
+  // Deliver late pointerdown to the controls directly, as may occur across an interrupted touch route.
+  // Stub capture only for these synthetic pointer IDs; real-pointer CP24–CP29 tests run above unchanged.
+  for(const id of ['joy','shoot','guardBtn']){
+    const el=document.getElementById(id),capture=el.setPointerCapture;
+    el.setPointerCapture=()=>{};
+    try{el.dispatchEvent(new PointerEvent('pointerdown',{pointerId:777,clientX:240,clientY:310,bubbles:true,cancelable:true}))}
+    finally{el.setPointerCapture=capture}
+  }
+  return {knob:document.getElementById('joyKnob').style.transform,
+    shootHeld:document.getElementById('shoot').classList.contains('held'),
+    guardHeld:JM_THIRD_COURT.status().guardHeld};
+});
+assert.equal(cp33PausedInputs.knob,'translate(0px, 0px)','CP33 paused touch cannot move the joystick');
+assert.equal(cp33PausedInputs.shootHeld,false,'CP33 paused touch cannot seize SHOOT');
+assert.equal(cp33PausedInputs.guardHeld,false,'CP33 paused touch cannot engage GUARD');
+await page.click('#resumeBtn');
+await page.keyboard.down('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),
+  'CP33 live keyboard SHOOT still charges after ignored paused touch');
+await page.keyboard.up('Space');
+console.log('PASS CP33 paused-touch control ownership and live resume '+width+'px');
+
 // CP31: real browser cold-reload and owner-editable JSON recovery of local match history.
 await page.evaluate(()=>JM_THIRD_COURT.stop());
 const cp31Before=await page.evaluate(()=>({

@@ -14,3 +14,6 @@ if '--inspect' in sys.argv:
  print('CP28_HEAD',html[:6500])
  print('CP28_TAIL',html[-7500:])
  print('CP28_FUNCTIONS',[(i,html[i:i+90]) for i in range(len(html)) if html.startswith('function ',i)][:65])
+ print('CP28_INTERACTION_1',html[28600:35000])
+ print('CP28_INTERACTION_2',html[39700:43500])
+ print('CP28_DOM',html[17000:23800])

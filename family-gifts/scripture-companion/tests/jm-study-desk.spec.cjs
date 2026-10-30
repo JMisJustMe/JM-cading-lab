@@ -345,6 +345,19 @@ const {chromium}=require('playwright');
    assert(afterReload.notes.some(n=>n.text.includes('My own comparison of these two chapters')),'actual note survives reload through original store');
    console.log('PASS CP33 ORIGINAL PRIVATE SEARCH AND COMPARISON AUTHORING '+width+'px: local search, original Notes, explicit save and reload');
 
+   // CP34: the same original saved comparison is found through either chapter.
+   for(const [book,chapter] of [['Psalms',23],['Matthew',6]]){
+    await page.evaluate(([b,ch])=>jump(b,ch),[book,chapter]);
+    await page.locator('[data-tab="notes"]').click();
+    await page.selectOption('#notesScope','chapter');
+    await page.fill('#notesSearch','');
+    assert.match(await page.locator('#notesList').textContent(),/My own comparison of these two chapters/);
+    assert.equal(await page.evaluate(([b,ch])=>JMReferenceParser.noteReferencesChapter('Psalms 23 / Matthew 6',b,ch),[book,chapter]),true);
+   }
+   assert.equal(await page.evaluate(()=>JMReferenceParser.noteReferencesChapter('Psalms 23 / Matthew 6','John',3)),false);
+   console.log('PASS CP34 COMPOSITE PRIVATE NOTE INDEX '+width+'px: either original chapter can recover the same saved comparison');
+
+
 
 
 

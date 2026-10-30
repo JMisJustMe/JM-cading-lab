@@ -58,5 +58,3 @@ if __name__ == '__main__':
     print('FTR CP20 URL:', f'http://{args.host}:{args.port}{GAME_URL}', flush=True)
     try: ThreadingHTTPServer((args.host, args.port), FTRSourceOnly).serve_forever()
     except KeyboardInterrupt: pass
-
-[executed on device: GroundZeroJM (397d444c-e212-4670-878b-c8937ca2f05a)]

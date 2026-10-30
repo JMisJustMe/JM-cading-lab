@@ -1,0 +1,92 @@
+/*
+ * JM FTR CP19 · DEVICE FIRST CONTROL FIT
+ * Additive R1 carrier CSS only. Original FTR styles.css stays byte exact.
+ * Existing #act is original FTR held TRACE, not a duplicate action.
+ */
+#jmMobileTools{display:none}
+#jmMobileShelf{display:contents}
+@media (pointer:coarse), (hover:none){
+  #jmMobileTools{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom) + 326px);
+    min-width:94px;min-height:40px;z-index:16;
+    padding:6px 11px;border-radius:12px;touch-action:manipulation;
+    border:1px solid rgba(130,255,208,.58);
+    background:rgba(4,22,31,.95);color:#c7ffed;
+    font-size:11px;font-weight:800;letter-spacing:.045em
+  }
+  #jmMobileTools[aria-expanded=true]{border-color:#ffd36d;color:#ffe6b3}
+  #jmMobileShelf{
+    position:fixed;z-index:15;left:10px;top:calc(env(safe-area-inset-top) + 72px);
+    width:min(278px,82vw);max-height:min(43dvh,360px);
+    background:rgba(2,15,23,.96);border:1px solid rgba(145,234,235,.56);
+    border-radius:14px;padding:9px;overflow-y:auto;
+    overscroll-behavior:contain;touch-action:pan-y;
+    display:none;flex-direction:column;gap:11px;
+  }
+  #jmMobileShelf.is-open{display:flex}
+  #jmMobileShelf #jmSpatialConsole,
+  #jmMobileShelf #jmCoverPanel,
+  #jmMobileShelf #jmTacticsPanel{
+    position:relative;top:auto;left:auto;right:auto;bottom:auto;
+    transform:none;max-width:100%;width:100%;margin:0;
+    display:flex;flex-direction:column;gap:5px;
+  }
+  #jmMobileShelf button{min-height:38px;touch-action:manipulation}
+  #jmMobileShelf output{font-size:10px}
+  #act{
+    display:flex!important;align-items:center;justify-content:center;
+    position:fixed;z-index:13;left:12px;right:auto;top:auto;bottom:calc(env(safe-area-inset-bottom) + 185px);
+    width:98px;height:52px;min-height:52px;
+    border:1px solid rgba(255,211,109,.85);
+    background:rgba(47,33,6,.94);color:#ffdf98;
+    border-radius:14px;letter-spacing:.08em;
+    opacity:1;touch-action:none;pointer-events:auto
+  }
+  #act.jm-held{
+    background:rgba(120,81,7,.98);
+    box-shadow:0 0 0 3px rgba(255,211,109,.22) inset
+  }
+  #jmEchoPanel{
+    position:fixed;z-index:12;left:12px;right:auto;top:auto;
+    bottom:calc(env(safe-area-inset-bottom) + 246px);width:125px;max-width:125px;
+  }
+  #jmEchoLaunch{min-height:43px}
+  #jmEchoStatus{max-width:125px;font-size:10px}
+  #jmNativeFeedback{max-width:130px}
+  #jmTraceSignal{max-width:58vw;white-space:normal;font-size:9px}
+}
+@media (pointer:coarse) and (max-width:520px) and (orientation:portrait),
+       (hover:none) and (max-width:520px) and (orientation:portrait){
+  #act{bottom:calc(env(safe-area-inset-bottom) + 154px);width:96px;height:50px}
+  #jmEchoPanel{bottom:calc(env(safe-area-inset-bottom) + 211px)}
+  #jmMobileTools{bottom:calc(env(safe-area-inset-bottom) + 277px)}
+  #jmMobileShelf{top:calc(env(safe-area-inset-top) + 76px);max-height:43dvh}
+  #jmTraceSignal{bottom:calc(26% + 46px)}
+  #jmNativePulse{right:8px;bottom:calc(env(safe-area-inset-bottom) + 199px);width:104px;min-height:38px}
+  #jmNativeFeedback{right:8px;bottom:calc(env(safe-area-inset-bottom) + 242px);width:120px}
+}
+@media (pointer:coarse) and (orientation:landscape),
+       (hover:none) and (orientation:landscape){
+  #act{left:calc(env(safe-area-inset-left) + 135px);bottom:calc(env(safe-area-inset-bottom) + 12px);
+    width:92px;height:45px}
+  #jmEchoPanel{left:calc(env(safe-area-inset-left) + 238px);
+    bottom:calc(env(safe-area-inset-bottom) + 12px);
+    width:128px;max-width:128px}
+  #jmMobileTools{left:calc(env(safe-area-inset-left) + 372px);
+    bottom:calc(env(safe-area-inset-bottom) + 14px);min-width:90px;height:38px}
+  #jmMobileShelf{left:calc(env(safe-area-inset-left) + 12px);
+    top:calc(env(safe-area-inset-top) + 46px);max-height:calc(100dvh - 102px);
+    width:min(260px,44vw)}
+  #jmTraceSignal{left:50%;bottom:calc(env(safe-area-inset-bottom) + 60px);
+    max-width:240px;font-size:9px}
+  #jmNativePulse{right:calc(env(safe-area-inset-right) + 120px);
+    bottom:calc(env(safe-area-inset-bottom) + 8px);width:104px;min-height:38px}
+  #jmNativeFeedback{right:calc(env(safe-area-inset-right) + 120px);
+    bottom:calc(env(safe-area-inset-bottom) + 50px);min-width:104px}
+}
+@media (pointer:fine) and (hover:hover){
+  #jmMobileTools{display:none}
+  #jmMobileShelf{display:contents}
+  #act{display:none}
+}

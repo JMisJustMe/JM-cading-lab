@@ -60,11 +60,13 @@
  border-radius:9px}
 @media (orientation:landscape) and (max-height:500px){#jmTraceSignal{bottom:calc(26% + 42px);font-size:9px}}
 </style>
+<link rel="stylesheet" href="ftr-device-fit.css">
 </head>
 <body>
 <div id="app">
 <canvas id="game"></canvas><div class="lookZone" id="lookZone"></div>
 <div class="hud"><div class="top"><div class="mark">FTR<b>BODY</b></div><div class="status"><div class="chip"><small>SCORE</small><strong id="score">000000</strong></div><div class="chip"><small>CORES</small><strong id="cores">0/2</strong></div><div class="chip integrity"><small>INTEGRITY <span id="hpText">100</span></small><div class="bar"><i id="hpBar"></i></div></div></div></div><div class="bottom"><div class="joy" data-label="MOVE" id="joy"><div id="stick"></div></div><div class="actions"><button class="mini" id="phase">PHASE</button><button class="mini" id="scan">SCAN</button><output id="jmNativeFeedback" aria-live="polite" aria-atomic="true"></output><button class="mini" id="jmNativePulse" title="Earn one Trace Core to combine Scan and Fire. Shortcut: G">CORE PULSE</button><button class="mini" id="flow">FLOW</button><button class="mini" id="side">SIDE</button><button class="mini" id="act">TRACE</button><button class="fire" id="fire">AIM / PULSE<small id="ammo">20</small></button></div></div></div>
+<div id="jmMobileShelf">
 <section id="jmSpatialConsole" aria-label="JM source-owned spatial scan">
   <button type="button" id="jmSpatialToggle" aria-pressed="true" title="Toggle CP10 spatial field (V)">FIELD ON</button>
   <output id="jmSpatialEcho" aria-live="polite">FIELD STANDBY</output>
@@ -80,10 +82,12 @@
 <button type="button" id="jmAwarenessToggle" aria-pressed="true" title="Compare source-owned threat memory (U)">MEMORY ON</button>
 <output id="jmAwarenessStatus" aria-live="polite">MEMORY STANDBY</output>
 </section>
+</div>
 <section id="jmEchoPanel" aria-label="JM original-world tactical sound contact">
 <button type="button" id="jmEchoLaunch" title="Throw a real world Echo decoy, costing two original ammunition (J)">CAST ECHO</button>
 <output id="jmEchoStatus" aria-live="polite">ECHO STANDBY</output>
 </section>
+<button type="button" id="jmMobileTools" aria-expanded="false" aria-controls="jmMobileShelf">TOOLS</button>
 <div class="tracker"><canvas id="trackerMarks"></canvas></div><div class="objective" id="objective">FIND THE FIRST <b>TRACE CORE</b></div><output id="jmTraceSignal" aria-live="polite">QUIET TRACE STANDBY</output><div class="reticle" id="reticle"><i></i></div><div id="prompt"></div><div id="toast"></div><div class="footer">FTR FIRST-PERSON v0.5.1-R1 | JMLOGIC CORE | TRUE 360 AIM-DECK CARRIER</div>
 <div class="overlay" id="startOverlay"><div class="panel"><h1>ENTER <span>BODY</span></h1><p>A real first-person space. Find two Trace Cores, breach the gate, then reach extraction. Scan the environment, use cover, phase through pressure and choose which side carries your extension.</p><div class="verbs">FREE MOVE | AUTO FLOW | TRUE 360 AIM | TAP FIRE | HOLD PULSE | SCAN | PHASE</div><button class="primary" id="startBtn">MOUNT FIRST-PERSON BODY</button><div class="desktopHint">Desktop: WASD | full mouse look | click/space fire | R auto-flow | E trace | F scan | Shift phase | Q side</div></div></div>
 <div class="overlay hidden" id="endOverlay"><div class="panel"><h1 id="endTitle">BODY COMPLETE</h1><p id="endText"></p><button class="primary" id="restartBtn">REMOUNT</button><button class="secondary" id="receiptBtn">COPY RUN RECEIPT</button></div></div>
@@ -96,6 +100,7 @@
 <script type="module" src="ftr-threat-memory.mjs"></script>
 <script type="module" src="ftr-echo-contact.mjs"></script>
 <script type="module" src="ftr-earned-trace.mjs"></script>
+<script type="module" src="ftr-device-contact.mjs"></script>
 <script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});</script>
 </body>
 </html>

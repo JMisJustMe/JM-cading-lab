@@ -78,6 +78,24 @@ class FakeR2 {
   }
 }
 
+// CP31 native Windows re-entry: retain full-precision file identity. Some
+// ordinary owner NTFS file IDs exceed JS's MAX_SAFE_INTEGER; still reject
+// symlinks, absent IDs and identity switches in the original recovery helper.
+{
+  const {readBoundedRegularFile}=await import('./owner-vault-lineage-recover.mjs');
+  const dir=await fs.mkdtemp(path.join(tmpdir(),'jm-vault-win-id-'));
+  const file=path.join(dir,'native-original-proof.dat');
+  try {
+    const original=Buffer.from('JM_CP31_NATIVE_OWNER_FILE');
+    await fs.writeFile(file,original,{flag:'wx'});
+    const before=await fs.lstat(file,{bigint:true});
+    assert.equal(typeof before.ino,'bigint');
+    assert.ok(before.ino>0n);
+    assert.deepEqual(await readBoundedRegularFile(file,original.length),original);
+    console.log('PASS: CP31 true native file ID readback, including Windows BigInt NTFS IDs; symlink and identity guards retained.');
+  } finally { await fs.rm(dir,{recursive:true,force:true}); }
+}
+
 const source = await fs.readFile(new URL('../functions/api/owner/vault.js', import.meta.url), 'utf8');
 const moduleUrl = `data:text/javascript;base64,${Buffer.from(source).toString('base64')}`;
 const { onRequest } = await import(moduleUrl);

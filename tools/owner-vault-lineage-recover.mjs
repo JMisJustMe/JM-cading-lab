@@ -228,19 +228,23 @@ function validatePacket(packet) {
 // pre/post lstat against its opened handle; these checks are NOT atomically
 // equivalent to FILE_FLAG_OPEN_REPARSE_POINT or directory fsync.
 async function assertWindowsOpenedRegularFile(filename,handle) {
-  const current=await fs.lstat(filename),opened=await handle.stat();
+  // Windows NTFS file IDs can exceed Number.MAX_SAFE_INTEGER. Use lossless
+  // BigInt identities on BOTH sides, rather than accepting rounded/zero IDs.
+  const current=await fs.lstat(filename,{bigint:true});
+  const opened=await handle.stat({bigint:true});
   if(!current.isFile()||current.isSymbolicLink()||!opened.isFile()
     ||current.dev!==opened.dev||current.ino!==opened.ino
-    ||!Number.isSafeInteger(current.ino)||current.ino===0)
+    ||typeof current.ino!=='bigint'||current.ino<=0n
+    ||typeof opened.ino!=='bigint'||opened.ino<=0n)
     fail('WINDOWS_OPENED_SOURCE_REPARSE_OR_IDENTITY_HOLD');
   return opened;
 }
 async function openBoundedSourceFile(filename,openFile=fs.open) {
   if(process.platform==='win32') {
     await assertNoSymlinkDirectoryComponents(path.dirname(path.resolve(filename)));
-    const first=await fs.lstat(filename);
+    const first=await fs.lstat(filename,{bigint:true});
     if(!first.isFile()||first.isSymbolicLink()
-      ||!Number.isSafeInteger(first.ino)||first.ino===0)
+      ||typeof first.ino!=='bigint'||first.ino<=0n)
       fail('WINDOWS_SOURCE_PATH_REPARSE_HOLD');
     const h=await openFile(filename,fsConstants.O_RDONLY);
     try{

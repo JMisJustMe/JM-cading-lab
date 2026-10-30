@@ -143,7 +143,14 @@ function parseReference(raw){
  if(verse!==null&&(verse<1||verse>176))return {error:'Please enter a verse number from 1 to 176.'};
  return {book,chapter,verse:verse===null?'':String(verse)};
 }
-window.JMReferenceParser={parseReference};
+// CP34: existing dual-chapter note refs are recoverable from EACH chapter.
+function noteReferencesChapter(raw,book,chapter){
+ return String(raw||'').split(/\s+\/\s+/).some(part=>{
+  const ref=parseReference(part.trim());
+  return !ref.error&&ref.book===book&&ref.chapter===chapter;
+ });
+}
+window.JMReferenceParser={parseReference,noteReferencesChapter};
 
 const getBook=()=>BOOKS.find(b=>b[0]===$('#book').value)||BOOKS[0];
 function current(){const b=getBook();const chapter=Math.max(1,Math.min(b[1],Math.floor(Number($('#chapter').value)||1)));const verse=$('#verse').value.trim();return {book:b[0],chapter,verse:/^[1-9]\d*$/.test(verse)?verse:'',url:BASE+slug(b[0])+'/'+chapter+'/'};}
@@ -206,8 +213,7 @@ function renderNotes(){
   const words=(String(note.ref||'')+' '+String(note.text||'')).toLocaleLowerCase();
   if(term&&!words.includes(term))return false;
   if(!showChapter)return true;
-  const parsed=parseReference(String(note.ref||''));
-  return !parsed.error&&parsed.book===active.book&&parsed.chapter===active.chapter;
+  return noteReferencesChapter(note.ref,active.book,active.chapter);
  });
  holder.replaceChildren();
  $('#notesCount').textContent=matches.length+' of '+data.notes.length+' saved notes'+(showChapter?' · '+active.book+' '+active.chapter:'');
@@ -498,8 +504,7 @@ function recordOfficialVisit(ref){
 }
 function chapterReflections(book,chapter){
  return (Array.isArray(data.notes)?data.notes:[]).filter(n=>{
-  const r=parseReference(String(n.ref||''));
-  return !r.error&&r.book===book&&r.chapter===chapter;
+  return noteReferencesChapter(n.ref,book,chapter);
  });
 }
 function renderChapterReflections(){

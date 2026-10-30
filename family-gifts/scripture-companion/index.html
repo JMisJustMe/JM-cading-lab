@@ -73,7 +73,12 @@
     <div class="actions"><button id="jmPathReviewToggle" type="button" class="btn secondary small" aria-controls="jmPathReview" aria-expanded="false">Review my journey reflections</button></div>
     <section id="jmPathReview" class="jm-atelier" hidden aria-label="My private reflections across this study journey">
      <p id="jmPathReviewStatus" class="soft" role="status" aria-live="polite"></p>
+     <div class="actions"><button id="jmPathResumeWriting" class="btn secondary small" type="button">Continue my next unwritten reflection</button></div>
+     <p id="jmPathResumeStatus" class="soft" role="status" aria-live="polite"></p>
+     <label for="jmPathProgress" class="soft">My journey's reflections</label>
+     <progress id="jmPathProgress" max="7" value="0" aria-label="Chapters with at least one saved private reflection"></progress>
      <div class="field"><label for="jmPathSearch">Find a word in my journey reflections</label><input id="jmPathSearch" type="search" autocomplete="off" maxlength="100" placeholder="Search my own notes or chapter names"></div>
+     <div class="field"><label for="jmPathView">Review chapters</label><select id="jmPathView"><option value="all">All seven chapters</option><option value="unwritten">Not yet reflected on</option><option value="unread">Not personally marked read</option><option value="written">With private reflections</option></select></div>
      <div id="jmPathReviewEntries" class="jm-chapter-atlas"></div>
      <section id="jmPathComparison" class="jm-focus" hidden aria-label="Compare two of my saved chapter reflections">
       <h4>My two-chapter reflection comparison</h4>
@@ -631,13 +636,20 @@ function renderPathReview(){
  const root=$('#jmPathReviewEntries');root.replaceChildren();
  const queue=Array.isArray(data.queue)?data.queue:[];
  const query=$('#jmPathSearch').value.trim().toLocaleLowerCase();
- let total=0,withNotes=0,shown=0;
+ const view=$('#jmPathView').value;
+ let total=0,withNotes=0,shown=0,readCount=0;
+ const nextUnwritten=plan.chapters.find(([book,ch])=>chapterReflections(book,ch).length===0);
+ $('#jmPathResumeWriting').disabled=!nextUnwritten;
+ $('#jmPathResumeWriting').textContent=nextUnwritten?'Continue reflection: '+nextUnwritten[0]+' '+nextUnwritten[1]:'All seven chapters have reflections';
+ $('#jmPathResumeStatus').textContent=nextUnwritten?'Your next unwritten chapter is '+nextUnwritten[0]+' '+nextUnwritten[1]+'. This does not mark it read.':'All seven chapters have a private reflection. You can revisit them whenever you wish.';
  for(const [book,chapter] of plan.chapters){
   const notes=chapterReflections(book,chapter);
   total+=notes.length;if(notes.length)withNotes++;
+  const done=queue.some(q=>q.book===book&&q.chapter===chapter&&q.done);
+  if(done)readCount++;
+  if(view==='unwritten'&&notes.length||view==='written'&&!notes.length||view==='unread'&&done)continue;
   if(query&&!((book+' '+chapter+' '+notes.map(n=>String(n.ref||'')+' '+String(n.text||'')).join(' ')).toLocaleLowerCase().includes(query)))continue;
   shown++;
-  const done=queue.some(q=>q.book===book&&q.chapter===chapter&&q.done);
   const card=make('article',undefined,'jm-chapter-card');
   card.append(make('h4',book+' '+chapter));
   card.append(make('p',(done?'Marked read by you':'Not marked read')+' · '+notes.length+' saved private reflection'+(notes.length===1?'':'s'),'soft'));
@@ -660,12 +672,23 @@ function renderPathReview(){
   read.href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(book)+'/'+chapter+'/';read.target='_blank';read.rel='noopener noreferrer';
   actions.append(read);card.append(actions);root.append(card);
  }
- if(!shown)root.append(make('p','No chapters match this private search. Your notes are unchanged.','soft'));
- $('#jmPathReviewStatus').textContent=plan.title+' · '+withNotes+' of 7 chapters have private reflections · '+total+' saved note'+(total===1?'':'s')+(query?' · '+shown+' matching chapter'+(shown===1?'':'s'):'')+'. No reading status was changed.';
+ if(!shown)root.append(make('p','No chapters match these private review filters. Your notes are unchanged.','soft'));
+ $('#jmPathProgress').value=withNotes;
+ $('#jmPathReviewStatus').textContent=plan.title+' · '+withNotes+' of 7 chapters have private reflections · '+readCount+' personally marked read · '+total+' saved note'+(total===1?'':'s')+' · '+shown+' shown. No reading status was changed.';
  renderPathComparison();
 }
 $('#jmPathSearch').addEventListener('input',()=>{
  if(!$('#jmPathReview').hidden)renderPathReview();
+});
+$('#jmPathView').addEventListener('change',()=>{
+ if(!$('#jmPathReview').hidden)renderPathReview();
+});
+$('#jmPathResumeWriting').addEventListener('click',()=>{
+ const plan=readingPaths[$('#planPicker').value]||readingPaths.quiet;
+ const next=plan.chapters.find(([book,ch])=>chapterReflections(book,ch).length===0);
+ if(!next){$('#jmPathResumeStatus').textContent='All seven chapters already have saved reflections.';return}
+ // The ORIGINAL note editor checks for and preserves any unrelated unfinished draft.
+ beginChapterReflection({book:next[0],chapter:next[1],verse:''});
 });
 $('#jmPathCompareWrite').addEventListener('click',()=>{
  if(pathCompare.length!==2){$('#jmPathCompareStatus').textContent='Choose two chapters first.';return}

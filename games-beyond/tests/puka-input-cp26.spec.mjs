@@ -49,13 +49,20 @@ test('@puka-input gamepad held buttons are edge-triggered and select actual PUKA
  const errors=await boot(page);
  // The Gamepad API is event-driven: emulate real browser admission, not only
  // presence in navigator.getGamepads() before the browser grants connection.
- await page.evaluate(()=>{
-   if(!window.__proofPad)throw new Error('gamepad simulation not installed');
+ const padProbe=await page.evaluate(()=>{
+   const before=document.querySelector('#pukaInputGuide')?.dataset.controller;
+   const fake=window.__proofPad;
+   const enumerated=navigator.getGamepads?.()[0];
+   if(!fake)throw new Error('gamepad simulation not installed');
    const event=new Event('gamepadconnected');
-   Object.defineProperty(event,'gamepad',{value:window.__proofPad});
+   Object.defineProperty(event,'gamepad',{value:fake});
    window.dispatchEvent(event);
+   return {before,after:document.querySelector('#pukaInputGuide')?.dataset.controller,
+     fakeConnected:fake.connected,enumeratedConnected:enumerated?.connected,
+     sameReference:fake===enumerated,type:typeof navigator.getGamepads};
  });
- await expect(page.locator('#pukaInputGuide')).toHaveAttribute('data-controller','on');
+ console.log('CP26_GAMEPAD_ADMISSION',JSON.stringify(padProbe));
+ await expect(page.locator('#pukaInputGuide')).toHaveAttribute('data-controller','on',{timeout:800});
  await page.keyboard.press('n');
  const setButton=(index,pressed)=>page.evaluate(([i,val])=>{window.__proofPad.buttons[i].pressed=val},[index,pressed]);
  await setButton(3,true); // Y: original PUKA raise tray

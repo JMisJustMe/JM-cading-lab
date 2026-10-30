@@ -212,6 +212,9 @@ console.log(JSON.stringify({GAME_CODING_SOURCE,JM_GAMECORE_SOURCE,INITIAL_FACTS,
             copy.write_bytes(raw+b"\\n")
             self.assertFalse(git_blob_matches(copy,original_sha))
         engine_runtime_ready.cache_clear()
+        self.assertTrue(engine_runtime_ready())
+        # Simulate bytes drifting AFTER the runtime readiness result is cached.
+        # The live authorization path must still reject the new source.
         try:
             with mock.patch("engine_admission.original_source_pins_ok",return_value=False):
                 token=os.environ["JM_ENGINE_OWNER_TOKEN"]

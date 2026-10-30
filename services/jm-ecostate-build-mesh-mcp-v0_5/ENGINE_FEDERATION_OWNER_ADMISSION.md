@@ -24,6 +24,28 @@ only a minimal environment with NO Render/service secrets.
 Original mechanical and geometry execution results are native-only;
 do not claim deployed GPU, mobile, or physical owner-device proof from CI.
 
+**Source custody gate**: the candidate pins 16 critical original JM coding,
+GameForge, renderer, registry and MCP source files to the exact original Git
+blob bytes. Missing or changed donors close the owner gate *before* the engine
+appears in `tools/list`; changes during runtime are rechecked before native
+execution. A deliberately altered local copy must fail the source check in CI.
+A valid HTTP owner credential never overrides this source-identity HOLD.
+
+**Reusable original JM authentication**: the owner’s recovered CP09 OAuth
+gateway lineage already implements PKCE S256, short-lived tokens, consent and
+scoped original-service delegation. Its deployed Commons and Receipt realms
+are separate authorities; their scopes do NOT authorize Build Mesh engine
+execution. No new OAuth realm or credential bridge has been deployed, and
+no hosted engine can be reached through those existing scopes by implication.
+
+**Render runtime evidence**: Render’s published native-runtime inventory
+documents that `node` is supplied even on Python native services:
+https://render.com/docs/native-runtimes . This does not measure the exact
+existing JM service runtime version. The admission code requires Node 22+
+and an intact native MCP program, and fails closed if the real runtime
+cannot meet that requirement. The original Render service and its build
+and start commands are unchanged.
+
 **Deployment HOLD**: the existing Render service runs the Python runtime.
 Confirm Node 22 is available on that exact Python service image, real
 owner-client credential delivery is supported, and deployment is authorized.

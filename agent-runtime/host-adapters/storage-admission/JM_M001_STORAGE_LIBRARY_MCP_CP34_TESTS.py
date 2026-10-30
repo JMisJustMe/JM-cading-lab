@@ -121,6 +121,19 @@ class StorageMCPTests(unittest.TestCase):
         self.assertEqual(responses[3]["result"]["structuredContent"]["native_mutations"],0)
         self.assertEqual(cp.stderr, "")
 
+    def test_mcp_hold_is_error_not_green_result(self):
+        req = {"jsonrpc":"2.0","id":22,"method":"tools/call",
+               "params":{"name":"custody_compare","arguments":self.args}}
+        self.assertFalse(m.dispatch(req, self.roots)["result"]["isError"])
+        (self.b / "item.json").write_bytes(b"not JSON")
+        bad = m.dispatch(req, self.roots)["result"]
+        self.assertTrue(bad["isError"])
+        self.assertEqual(bad["structuredContent"]["state"], "FORMAT_HOLD")
+        (self.b / "item.json").write_bytes(b'{"source":"NX","version":1}\n')
+        different = m.dispatch(req, self.roots)["result"]
+        self.assertTrue(different["isError"])
+        self.assertEqual(different["structuredContent"]["state"], "DIFFERENT_BYTES_HOLD")
+
     def test_no_mutation_of_snapshot_files(self):
         before = [(p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
                   for p in (self.a/"item.json",self.b/"item.json")]

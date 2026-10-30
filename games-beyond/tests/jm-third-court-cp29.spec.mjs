@@ -51,10 +51,10 @@ test('@thirdcourt-cp29 held A is exactly one original shot; release earns basket
  await expect.poll(async()=> (await status(page)).charge).toBeGreaterThan(0.1);
  await page.waitForTimeout(1000);
  await button(page,0,false);
- await expect.poll(async()=> (await status(page)).shots).toBeGreaterThan(0);
- const fired=(await status(page)).shots;
+ await expect.poll(async()=> (await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots).toBeGreaterThan(0);
+ const fired=(await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots;
  await page.waitForTimeout(200);
- expect((await status(page)).shots).toBe(fired);
+ expect((await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots).toBe(fired);
  expect((await input(page)).shotHeld).toBeFalsy();
  expect(errors).toEqual([]);
 });
@@ -83,7 +83,7 @@ test('@thirdcourt-cp29 RB guard holds real contact and focus loss clears input w
  await expect.poll(async()=> (await status(page)).paused).toBeTruthy();
  expect((await input(page)).shotHeld).toBeFalsy();
  expect((await status(page)).guardHeld).toBeFalsy();
- expect((await status(page)).shots).toBe(0);
+ expect((await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots).toBe(0);
  await button(page,0,false);await button(page,5,false);
  expect(errors).toEqual([]);
 });

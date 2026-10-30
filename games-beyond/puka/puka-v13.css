@@ -147,3 +147,20 @@ html[data-puka-mode="royal"][data-court-tier="throne"] .deep-house-field:before{
   .playing-card,.board,.action,.raise-size,.table-deal,.deal,.entry-suits button,.suit,.modes button,.secondary,.deep-house-consequence{transition-duration:.01ms!important;animation:none!important}
   .deep-house-field:after{background:radial-gradient(ellipse at 50% 45%,transparent 38%,rgba(0,0,0,.18) 71%,rgba(0,0,0,.52))}
 }
+
+/* CP26 native PUKA game-input clarity; original poker table and cards unchanged. */
+.puka-input-guide{
+ display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;
+ padding:5px 8px;margin:4px 0 0;
+ border:1px solid rgba(179,208,167,.18);border-radius:10px;
+ color:#b5cdba;background:rgba(7,23,19,.70);
+ font:700 10px/1.35 system-ui;letter-spacing:.018em;text-align:center;
+}
+.puka-input-guide .controller-help{display:none}
+.puka-input-guide[data-controller="on"] .controller-help{display:inline;color:#d1c58c}
+#actions .jm-pad-selected,#raiseTray .jm-pad-selected{
+ outline:3px solid #ead486!important;outline-offset:2px!important;
+ box-shadow:0 0 0 5px rgba(232,203,129,.12)!important;
+}
+@media(pointer:coarse){.puka-input-guide[data-controller="off"]{display:none}}
+@media(max-height:600px){.puka-input-guide{font-size:9px;padding:3px 5px;margin:2px 0 0}}

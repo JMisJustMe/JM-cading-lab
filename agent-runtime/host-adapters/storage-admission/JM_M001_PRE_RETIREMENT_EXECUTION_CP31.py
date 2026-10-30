@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -40,6 +41,25 @@ def assess(inp, donor_path, cp13_path, now=None):
     if len(inp['records'])>100: raise ValueError('OVERBROAD_BATCH_REFUSED')
     cp13=load_cp13(cp13_path)
     gate=cp13.run(inp,donor_path,now=now or datetime.now(timezone.utc))
+    # A CP13 decision is bound to its exact original row, not merely its
+    # position. Refuse incomplete, reordered or substituted host evidence.
+    if not isinstance(gate,dict) or not isinstance(gate.get('records'),list) or len(gate['records'])!=len(inp['records']):
+        raise ValueError('CP13_RECORD_CARDINALITY_MISMATCH')
+    # Bind the entire upstream custody summary to the expected read-only
+    # CP13 contract; a mismatched summary cannot be called a valid receipt.
+    if (gate.get('schema')!=cp13.SCHEMA or gate.get('record_count')!=len(inp['records'])
+            or gate.get('native_mutations')!=0 or gate.get('retirement_authorised_count')!=0
+            or gate.get('review_ready_count')!=sum(
+                r.get('decision')=='REVIEW_READY_NEEDS_HOST_AUTHORIZATION'
+                for r in gate['records'] if isinstance(r,dict))):
+        raise ValueError('CP13_SUMMARY_OR_READ_ONLY_CONTRACT_MISMATCH')
+    for row,proof in zip(inp['records'],gate['records']):
+        if (not isinstance(row,dict) or not isinstance(proof,dict)
+                or proof.get('schema')!=cp13.SCHEMA
+                or proof.get('root_native_id')!=row.get('root_native_id')
+                or proof.get('house_native_id')!=row.get('house_native_id')
+                or proof.get('label')!=str(row.get('label',''))):
+            raise ValueError('CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH')
     out=[]
     seen=set()
     for row,proof in zip(inp['records'],gate['records']):
@@ -69,6 +89,97 @@ def assess(inp, donor_path, cp13_path, now=None):
             'boundary':'READ_ONLY; do not call Library delete until evidence is authenticated by an independent host and precise owner native-ID role release is earned. This tool NEVER authorises deletion.'}
 
 
+def _open_report_parent(path):
+    """Walk EVERY parent component without symlinks; anchor one directory inode."""
+    if not hasattr(os, 'O_DIRECTORY') or not hasattr(os, 'O_NOFOLLOW'):
+        raise ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')
+    flags=os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    absolute=Path(os.path.abspath(path.parent))
+    fd=os.open(absolute.anchor,flags)
+    try:
+        for component in absolute.parts[1:]:
+            next_fd=os.open(component,flags,dir_fd=fd)
+            os.close(fd)
+            fd=next_fd
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def _read_report_exact(path, written_stat, parent_fd=None):
+    """Reopen through the SAME parent directory descriptor used for creation."""
+    if parent_fd is None:
+        raise ValueError('REPORT_PARENT_ANCHOR_REQUIRED')
+    flags=os.O_RDONLY | os.O_NOFOLLOW
+    fd=os.open(path.name,flags,dir_fd=parent_fd)
+    with os.fdopen(fd,'rb') as f:
+        checked=os.fstat(f.fileno())
+        if (checked.st_dev,checked.st_ino)!=(written_stat.st_dev,written_stat.st_ino):
+            raise ValueError('REPORT_READBACK_IDENTITY_CHANGED')
+        return f.read()
+
+
+def _sync_report_parent(path, parent_fd=None):
+    """Sync the original directory entry, even if its pathname is retargeted."""
+    if parent_fd is None:
+        raise ValueError('REPORT_PARENT_ANCHOR_REQUIRED')
+    os.fsync(parent_fd)
+
+
+def _verify_report_at_requested_path(path, parent_fd, written_stat, raw):
+    """Confirm the original pathname still opens the exact persisted bytes.
+
+    Inode numbers may be REUSED after unlink/recreate, so comparing only
+    st_dev/st_ino is insufficient. Read the requested pathname independently
+    and compare its full bytes as well as identity and timestamps.
+    """
+    check_fd=_open_report_parent(path)
+    try:
+        original=os.fstat(parent_fd)
+        current=os.fstat(check_fd)
+        if (original.st_dev,original.st_ino)!=(current.st_dev,current.st_ino):
+            raise ValueError('REPORT_OUTPUT_PATH_PARENT_CHANGED')
+        fd=os.open(path.name,os.O_RDONLY | os.O_NOFOLLOW,dir_fd=check_fd)
+        with os.fdopen(fd,'rb') as f:
+            named=os.fstat(f.fileno())
+            if (named.st_dev,named.st_ino,named.st_ctime_ns,named.st_mtime_ns,named.st_size)!=(
+                    written_stat.st_dev,written_stat.st_ino,written_stat.st_ctime_ns,
+                    written_stat.st_mtime_ns,written_stat.st_size):
+                raise ValueError('REPORT_OUTPUT_PATH_ENTRY_CHANGED')
+            if f.read()!=raw:
+                raise ValueError('REPORT_OUTPUT_PATH_BYTES_CHANGED')
+    finally:
+        os.close(check_fd)
+
+
+def write_once_verified(path, encoded):
+    """Private, exclusive report write; verify the exact bytes before claiming success.
+
+    On a failed readback, retain the anomalous file for owner-led investigation;
+    never overwrite a pre-existing receipt or the evidence input.
+    """
+    path=Path(path)
+    raw=encoded.encode('utf-8')
+    flags=os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os,'O_NOFOLLOW',0)
+    parent_fd=_open_report_parent(path)
+    try:
+        # Relative operations against this descriptor cannot be redirected by
+        # swapping the parent pathname between creation, fsync and readback.
+        fd=os.open(path.name,flags,0o600,dir_fd=parent_fd)
+        with os.fdopen(fd,'wb') as f:
+            f.write(raw)
+            f.flush()
+            os.fsync(f.fileno())
+            created=os.fstat(f.fileno())
+        _sync_report_parent(path,parent_fd)
+        if _read_report_exact(path,created,parent_fd)!=raw:
+            raise ValueError('REPORT_READBACK_MISMATCH')
+        _verify_report_at_requested_path(path,parent_fd,created,raw)
+    finally:
+        os.close(parent_fd)
+
+
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--input',required=True)
@@ -83,7 +194,7 @@ def main(argv=None):
             source=Path(a.input);dst=Path(a.output)
             if dst.is_symlink() or source.resolve()==dst.resolve() or dst.exists():
                 raise ValueError('OUTPUT_OVERWRITE_OR_SYMLINK_REFUSED')
-            dst.write_text(encoded)
+            write_once_verified(dst,encoded)
         print(encoded)
         return 3 # A review result is NEVER a successful deletion-admission exit.
     except (ValueError,OSError,TypeError,KeyError,AssertionError) as exc:

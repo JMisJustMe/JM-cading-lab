@@ -13,10 +13,11 @@ The source-owned build script `cp28_inspect_and_build.py` verifies original byte
 - Standard Gamepad API: D-pad/stick chooses cards/targets, A confirms, B cancels/keeps, X Drive, Y House; shoulder buttons cycle, Select opens Trace. Buttons trigger only on pressed edge; disconnect and background contact are respected.
 - Original on-board visual grammar is enriched through the actual `pressure('player')`, `state.drive`, selected/legally targetable slots and existing `state.phase`; no new game logic or hidden-state spoofing.
 - 44px House controls, visible selection focus, accessible browser zoom and preserved reduced-motion behaviour.
+- Opening-deck resilience: if the original randomized first hand has no affordable card with a legal target on an empty board, **swap** an affordable GOER from the selected existing House deck into the hand, returning the displaced card to the draw pile. Card count, existing units and original legality stay authoritative. This addresses a genuine first-turn gameplay softlock rather than merely changing tests.
 
 ## Proof receipt
 
-**GitHub Actions run 41072757393:** source check and original game boot SUCCESS; **10/10 Playwright gameplay tests PASS** in mobile- and desktop-sized Chromium contexts (5 tests each). Source gate: **PASS**. Candidate: **60,111 bytes**, SHA-256 `ca5949b65726fee19de31297a735638802720a413d86672afc01394a150b77f6`. Single temporary [playable candidate artifact](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41072757393/artifacts/12984734892), 14-day retention, downloadable ZIP contains HTML. Original and candidate hashes belong to distinct authority scopes.
+**GitHub Actions run 41073506213:** source check and original game boot SUCCESS; **10/10 Playwright gameplay tests PASS** in mobile- and desktop-sized Chromium contexts (5 tests each). Source gate: **PASS**. Candidate: **60,819 bytes**, SHA-256 `498c9ad34806a0714f1f43bd503fd85d8de48238c5cab3fe9e3a877e9e71f571`.  Single temporary [playable candidate artifact](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41073506213/artifacts/12985557606), 14-day retention, downloadable ZIP contains HTML. Original and candidate hashes belong to distinct authority scopes.
 
 **HOLD:** Physical Samsung Fold/touch, actual controller hardware, owner laptop feel, sustained performance, aesthetic owner review, deploy/publish/merge. Browser-sized mobile proof is not physical device proof. No public release or permanent second game authority is claimed.
 

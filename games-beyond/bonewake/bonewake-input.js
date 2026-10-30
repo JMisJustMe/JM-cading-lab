@@ -81,7 +81,7 @@ function cancelHeldKeys(){
  heldKeys.clear();
  abortAimContact();abortReflexContact();
  if(state.leverDown)abortLeverContact();
- for(const side of ['L','R']){const f=flipperPack(side);f.held=false;f.pull=0;f.flick=0;f.charge=0;f.releaseCharge=0;}
+ for(const side of ['L','R']){const f=flipperPack(side);if(f.held){f.held=false;f.pull=0;f.flick=0;f.charge=0;f.releaseCharge=0;}}
  state.left=state.right=false;syncUI();
 }
 window.addEventListener('keydown',e=>{

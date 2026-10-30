@@ -104,3 +104,125 @@ test('@thirdcourt-cp29 Start pauses and resumes without rapid-repeat; non-contro
  await expect(page.locator('#shoot')).toBeVisible();
  expect(errors).toEqual([]);
 });
+// CP30 explicit controller action coverage: original basketball, no synthetic game clone.
+test('@thirdcourt-cp30 B triggers a real pass exactly once while held',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ await button(page,1,true);
+ await expect.poll(async()=>(await status(page)).air).toBe('pass');
+ const events=(await input(page)).edgeEvents;
+ await page.waitForTimeout(400);
+ expect((await input(page)).edgeEvents).toBe(events);
+ expect((await status(page)).playerCount).toBe(6);
+ await button(page,1,false);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp30 X makes a real stamina-costing drive without held-button repeats',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ await button(page,2,true);
+ await expect.poll(async()=>(await status(page)).cutCount).toBe(1);
+ const events=(await input(page)).edgeEvents;
+ await page.waitForTimeout(260);
+ expect((await status(page)).cutCount).toBe(1);
+ expect((await input(page)).edgeEvents).toBe(events);
+ await button(page,2,false);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp30 Back cycles the actual camera, preserving one match and no repeat',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const original=await page.locator('#rendererTag').innerText();
+ const before=await status(page);
+ await button(page,8,true);
+ await expect.poll(()=>page.locator('#rendererTag').innerText()).not.toBe(original);
+ const changed=await page.locator('#rendererTag').innerText();
+ await page.waitForTimeout(200);
+ expect(await page.locator('#rendererTag').innerText()).toBe(changed);
+ await button(page,8,false);await page.waitForTimeout(80);
+ await button(page,8,true);
+ await expect.poll(()=>page.locator('#rendererTag').innerText()).not.toBe(changed);
+ await button(page,8,false);
+ const after=await status(page);
+ expect(after.playerCount).toBe(before.playerCount);
+ expect(after.score).toEqual(before.score);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp30 authoritative pad disappearance cancels held shot and guard, reconnects cleanly',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ await button(page,5,true);
+ await expect.poll(async()=>(await input(page)).guardHeld).toBeTruthy();
+ await button(page,0,true);
+ await expect.poll(async()=>(await input(page)).shotHeld).toBeTruthy();
+ // Simulate a vanished Gamepad API slot while its cached JS object still says connected.
+ await page.evaluate(()=>{
+  window.__jmCP29PadList=[];
+  Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>window.__jmCP29PadList});
+ });
+ await expect.poll(async()=>(await input(page)).connected).toBeFalsy();
+ expect((await input(page)).shotHeld).toBeFalsy();
+ expect((await input(page)).guardHeld).toBeFalsy();
+ expect((await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots).toBe(0);
+ await page.evaluate(()=>{
+  const p=window.__jmCP29Pad;
+  p.buttons[0].pressed=false;p.buttons[5].pressed=false;
+  window.__jmCP29PadList=[p];
+  const event=new Event('gamepadconnected');
+  Object.defineProperty(event,'gamepad',{value:p});
+  window.dispatchEvent(event);
+ });
+ await expect.poll(async()=>(await input(page)).connected).toBeTruthy();
+ await button(page,0,true);
+ await expect.poll(async()=>(await input(page)).shotHeld).toBeTruthy();
+ await page.waitForTimeout(1000);
+ await button(page,0,false);
+ await expect.poll(async()=>(await page.evaluate(()=>JM_THIRD_COURT_CP29.match)).shots).toBe(1);
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp30 primary pad owns gameplay through secondary and duplicate connect events',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ await button(page,5,true);
+ await expect.poll(async()=>(await input(page)).guardHeld).toBeTruthy();
+ const before=await input(page);
+ await page.evaluate(()=>{
+  const p=window.__jmCP29Pad;
+  const repeated=new Event('gamepadconnected');
+  Object.defineProperty(repeated,'gamepad',{value:p});
+  window.dispatchEvent(repeated);
+  const second={id:'secondary pad',index:1,connected:true,axes:[0,0],buttons:Array.from({length:18},()=>({pressed:false}))};
+  const extra=new Event('gamepadconnected');
+  Object.defineProperty(extra,'gamepad',{value:second});
+  window.dispatchEvent(extra);
+ });
+ await page.waitForTimeout(150);
+ const after=await input(page);
+ expect(after.index).toBe(0);
+ expect(after.guardHeld).toBeTruthy();
+ expect(after.edgeEvents).toBe(before.edgeEvents);
+ await button(page,5,false);
+ await expect.poll(async()=>(await status(page)).guardHeld).toBeFalsy();
+ expect(errors).toEqual([]);
+});
+test('@thirdcourt-cp30 all three original renderer routes stay on identical 3v3 state',async({page})=>{
+ const errors=await boot(page);
+ await page.locator('#playQuick').click();
+ const start=await status(page);
+ await page.evaluate(()=>JM_THIRD_COURT.selectNativeCamera(1));
+ await expect.poll(async()=>(await status(page)).depthCamera).toBeTruthy();
+ expect((await status(page)).native3DActive).toBeFalsy();
+ expect(await page.locator('#rendererTag').innerText()).toBe('SOFTWARE 3D');
+ await page.evaluate(()=>JM_THIRD_COURT.selectNativeCamera(2));
+ await expect.poll(async()=>(await status(page)).depthCamera).toBeFalsy();
+ expect((await status(page)).native3DActive).toBeFalsy();
+ expect(await page.locator('#rendererTag').innerText()).toBe('CLASSIC OVERHEAD');
+ await page.evaluate(()=>JM_THIRD_COURT.selectNativeCamera(0));
+ const end=await status(page);
+ expect(end.native3DActive).toBe(end.native3DReady);
+ expect(end.depthCamera).toBeTruthy();
+ expect(end.playerCount).toBe(start.playerCount);
+ expect(end.score).toEqual(start.score);
+ expect(end.active).toBeTruthy();
+ expect(errors).toEqual([]);
+});

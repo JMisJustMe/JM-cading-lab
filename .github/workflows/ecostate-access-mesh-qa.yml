@@ -927,6 +927,7 @@ jobs:
           const {createHash}=require('node:crypto');
           const hash=b=>createHash('sha256').update(b).digest('hex');
           const PART=2*1024*1024;
+          (async()=>{
           const root=await fs.mkdtemp(path.join(os.tmpdir(),'jm-vault-cp31-'));
           const tool=path.resolve('tools/owner-vault-lineage-recover.mjs');
           const ids=['00000000-0000-4000-8000-000000003101','00000000-0000-4000-8000-000000003102'];
@@ -1095,6 +1096,7 @@ jobs:
             await browser.close();
             await fs.rm(root,{recursive:true,force:true}); // only disposable synthetic test paths
           }
+          })().catch(error=>{console.error('CP31_BROWSER_DISK_HOLD',error);process.exitCode=1;});
           NODE
       - name: CP30 checkpointed cold export resumes only locally verified pieces after reload on phone and laptop
         shell: bash

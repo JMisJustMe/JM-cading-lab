@@ -179,6 +179,9 @@ jobs:
             [IO.File]::WriteAllBytes((Join-Path $folder $name),$changed)
             $null=& node $cli --parts-catalog $catalogPath --verify-only 2>&1
             if($LASTEXITCODE -eq 0){throw 'WINDOWS_CORRUPTION_ACCEPTED'}
+            # The expected corruption refusal is a PASS; clear its native exit
+            # code or PowerShell forwards 3 despite every assertion succeeding.
+            $global:LASTEXITCODE=0
             Write-Output 'PASS CP31: Windows native one-source exact cold verification, independent file-fsynced recovery, separate read-only audit, corrupted source HOLD, explicit no-directory-fsync and non-atomic-reparse boundary.'
           } finally {
             if($root -match 'JM_CP31_WINDOWS_SYNTH_[0-9a-f]{32}$'){

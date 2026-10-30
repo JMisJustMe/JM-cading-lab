@@ -300,6 +300,43 @@ console.log('PASS CP29 keyboard/touch SHOOT ownership '+width+'px');
  assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'last G release clears guard');
  console.log('PASS CP27 independent keyboard and touch guard ownership '+width+'px');
 
+// CP31: real browser cold-reload and owner-editable JSON recovery of local match history.
+await page.evaluate(()=>JM_THIRD_COURT.stop());
+const cp31Before=await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+}));
+assert(cp31Before.best.matches>=1,'completed match writes local best to browser storage');
+assert.equal(cp31Before.history.length,1,'completed match persists a structured receipt');
+assert.equal(cp31Before.history[0].score.length,2,'persisted receipt keeps both sides of the match');
+await page.reload();
+assert.match(await page.locator('#bestText').textContent(),new RegExp(cp31Before.best.matches+' MATCHES'),'cold reload restores existing record');
+const downloadPromise=page.waitForEvent('download');
+await page.click('#exportHistory');
+const historyDownload=await downloadPromise;
+assert.equal(historyDownload.suggestedFilename(),'JM_THIRD_COURT_match_receipt.json','owner can export history after cold reload');
+const cp31Backup=JSON.stringify({schema:'jm.thirdcourt.birthday/1',owner:'JM / TB Scott',records:cp31Before.history,localBest:cp31Before.best});
+await page.locator('#historyFile').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{"schema":"other"}')});
+await page.waitForFunction(()=>document.querySelector('#historyStatus').textContent.startsWith('RESTORE REJECTED'));
+assert.equal((await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches')))).length,1,'invalid restore cannot replace valid history');
+await page.evaluate(()=>{localStorage.removeItem('jm.thirdcourt.birthday.cp01.record');localStorage.removeItem('jm.thirdcourt.birthday.cp01.matches')});
+await page.reload();
+assert.equal(await page.evaluate(()=>localStorage.getItem('jm.thirdcourt.birthday.cp01.matches')),null,'cold reset has no match history');
+page.once('dialog',dialog=>dialog.accept());
+await page.locator('#historyFile').setInputFiles({name:'JM_THIRD_COURT_match_receipt.json',mimeType:'application/json',buffer:Buffer.from(cp31Backup)});
+await page.waitForFunction(()=>document.querySelector('#historyStatus').textContent.startsWith('RESTORED'));
+const cp31Restored=await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+}));
+assert.deepEqual(cp31Restored,cp31Before,'imported local history and record exactly match exported state');
+await page.reload();
+assert.deepEqual(await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+})),cp31Before,'restored history survives independent second cold reload');
+console.log('PASS CP31 persisted match receipt, export, invalid import rejection, exact restore and cold reload '+width+'px');
+
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

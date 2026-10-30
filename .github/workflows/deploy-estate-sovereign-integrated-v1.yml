@@ -789,10 +789,10 @@ jobs:
           ]
           base='https://jmisjustme-estate.pages.dev/'
           verified=[]
-          # CP34: public Cloudflare Pages normalizes /index.html to / (HTTP 308).
-          # Python's default urllib user agent can receive 403 while the exact
-          # eight public source bytes are intact. Follow the canonical redirect
-          # with a browser-compatible GET; SHA-256 and status checks remain strict.
+          # CP34: Cloudflare Pages normalizes /index.html to / (HTTP 308).
+          # Python's default urllib user agent can receive 403 while the
+          # exact public source bytes are intact. Follow the redirect with
+          # a browser-compatible GET; original SHA-256 gates remain strict.
           for part in files:
               path=root+part
               expected=hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
@@ -845,20 +845,38 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p registry
-          cp "$RUNNER_TEMP/jm-apps-tools-cp11-live.json" registry/apps-tools-cp11-live-carriage-receipt.json
-          git config user.name 'JM Apps & Tools Live Proof Rail'
-          git config user.email 'actions@users.noreply.github.com'
-          git add registry/apps-tools-cp11-live-carriage-receipt.json
-          git diff --cached --quiet || git commit -m 'Record exact live source proof for four Apps & Tools workrooms [skip ci]'
-          pushed=0
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main
-            if git push origin HEAD:main; then pushed=1; break; fi
-            sleep 2
-          done
-          test "$pushed" = 1
+          # CP35: prior live runtime checks leave generated, unstaged files.
+          # Rebasing that deployment checkout fails even after the receipt
+          # itself was committed. Use a disposable isolated Git worktree so
+          # the live source checkout and any proofs are never stashed,
+          # reset, overwritten or accidentally swept into the receipt.
+          test -s "$RUNNER_TEMP/jm-apps-tools-cp11-live.json"
+          git fetch origin main
+          receipt_tree="$(mktemp -d "$RUNNER_TEMP/jm-cp11-receipt.XXXXXXXX")"
+          trap 'git worktree remove --force "$receipt_tree" 2>/dev/null || true' EXIT
+          git worktree add --detach "$receipt_tree" origin/main
+          (
+            cd "$receipt_tree"
+            mkdir -p registry
+            cp "$RUNNER_TEMP/jm-apps-tools-cp11-live.json" registry/apps-tools-cp11-live-carriage-receipt.json
+            git config user.name 'JM Apps & Tools Live Proof Rail'
+            git config user.email 'actions@users.noreply.github.com'
+            git add registry/apps-tools-cp11-live-carriage-receipt.json
+            if git diff --cached --quiet; then
+              echo 'CP11 original live source receipt already current; no write needed.'
+              exit 0
+            fi
+            git commit -m 'Record exact live source proof for four Apps & Tools workrooms [skip ci]'
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep 2
+            done
+            test "$pushed" = 1
+          )
+          echo 'CP11 exact live source receipt committed from isolated temporary worktree.'
 
       - uses: actions/upload-artifact@v4
         with:

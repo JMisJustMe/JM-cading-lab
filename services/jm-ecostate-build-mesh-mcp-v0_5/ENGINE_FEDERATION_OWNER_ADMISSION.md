@@ -38,13 +38,16 @@ are separate authorities; their scopes do NOT authorize Build Mesh engine
 execution. No new OAuth realm or credential bridge has been deployed, and
 no hosted engine can be reached through those existing scopes by implication.
 
-**Render runtime evidence**: Render’s published native-runtime inventory
-documents that `node` is supplied even on Python native services:
-https://render.com/docs/native-runtimes . This does not measure the exact
-existing JM service runtime version. The admission code requires Node 22+
-and an intact native MCP program, and fails closed if the real runtime
-cannot meet that requirement. The original Render service and its build
-and start commands are unchanged.
+**Render runtime evidence**: Render documents Python and Node.js as
+distinct supported native runtimes with their own relevant utilities:
+https://render.com/docs/native-runtimes . It does **not** guarantee that
+a Python-runtime service contains a working `node` executable. The
+exact original Render Python service must therefore be probed directly
+for Node.js 22+ and the exact JM source before owner-only admission.
+The current native gate deliberately fails closed when Node is missing,
+too old, or the source byte identities do not match. No runtime claim
+is earned from generic Render documentation. Existing build/start
+commands and live service remain unchanged.
 
 **Deployment HOLD**: the existing Render service runs the Python runtime.
 Confirm Node 22 is available on that exact Python service image, real

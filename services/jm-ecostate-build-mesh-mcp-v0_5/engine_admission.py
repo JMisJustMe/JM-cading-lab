@@ -45,7 +45,7 @@ def engine_runtime_ready():
                              timeout=3,check=False)
     except (OSError,subprocess.TimeoutExpired):
         return False
-    version=re.fullmatch(r"v(\\d+)\\.(\\d+)\\.(\\d+)",probe.stdout.strip())
+    version=re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)",probe.stdout.strip())
     return bool(probe.returncode==0 and version and int(version.group(1))>=22)
 
 def engine_authorized(header):

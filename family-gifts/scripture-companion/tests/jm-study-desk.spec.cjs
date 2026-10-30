@@ -248,6 +248,36 @@ const {chromium}=require('playwright');
    assert.match(await page.locator('#jmJourneyCount').textContent(),/0 of 7/);
    assert.match(await page.locator('#jmJourneyCards .jm-reflection-preview').first().textContent(),/A private note that must remain/);
    console.log('PASS CP27 PROFESSIONAL PRIVATE STUDY ATELIER '+width+'px: seven cards, saved local reflection, completion/reversal and reload');
+   // CP28: seven existing chapter cards are now genuine, private authoring actions.
+   const secondCard=page.locator('#jmJourneyCards .jm-chapter-card').nth(1);
+   await secondCard.getByRole('button',{name:'Write reflection'}).click();
+   assert.equal(await page.locator('#page-notes').isVisible(),true);
+   assert.equal(await page.locator('#noteRef').inputValue(),'Matthew 6');
+   assert.match(await page.locator('#noteText').inputValue(),/What stood out to me in Matthew 6/);
+   await page.fill('#noteText','A private Matthew 6 draft that must never be overwritten.');
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyCards .jm-chapter-card').nth(2).getByRole('button',{name:'Write reflection'}).click();
+   assert.equal(await page.locator('#noteRef').inputValue(),'Matthew 6','unfinished draft reference must not be replaced by another chapter');
+   assert.equal(await page.locator('#noteText').inputValue(),'A private Matthew 6 draft that must never be overwritten.');
+   assert.match(await page.locator('#noteDraftStatus').textContent(),/unfinished reflection is preserved/);
+   await page.click('#saveNote');
+   await page.locator('[data-tab="read"]').click();
+   assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).textContent(),/1 private reflection/);
+   assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).textContent(),/A private Matthew 6 draft/);
+   const beforeMark=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).getByRole('button',{name:'Mark read: Matthew 6'}).click();
+   assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).textContent(),/Marked read by you/);
+   await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).getByRole('button',{name:'Mark unread: Matthew 6'}).click();
+   assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).textContent(),/Not marked read/);
+   await page.reload({waitUntil:'load'});
+   await page.locator('[data-tab="read"]').click();
+   await page.locator('#jmJourneyOverview summary').click();
+   assert.match(await page.locator('#jmJourneyCards .jm-chapter-card').nth(1).textContent(),/A private Matthew 6 draft/);
+   const afterMark=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.family.scripture-companion.v1')));
+   assert.deepEqual(afterMark.queue,beforeMark.queue,'CP28 reversible chapter actions leave original reading queue equivalent');
+   assert.equal(afterMark.notes.length,beforeMark.notes.length+1,'CP28 note lives in the original notes collection');
+   console.log('PASS CP28 ORIGINAL CHAPTER AUTHORING '+width+'px: protected unsaved draft, direct authoring, reversible chapter marking, saved notes and reload');
+
 
 
 

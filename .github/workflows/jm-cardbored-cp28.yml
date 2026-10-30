@@ -1,0 +1,17 @@
+name: JM cardBORED CP28 — Exact Source Recovery
+on:
+  pull_request:
+    paths:
+      - 'wave2-public/current-source/cardbored/**'
+      - '.github/workflows/jm-cardbored-cp28.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-cardbored-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover original game and expose bounded structure
+        run: python wave2-public/current-source/cardbored/cp28_inspect_and_build.py --inspect

@@ -42,7 +42,7 @@ def evaluate(project_payload, bucket_payload, live_payload, http, *, run="", com
     vars_ = production.get("env_vars") if is_obj(production) else None
     binding = r2.get("JM_OWNER_VAULT") if is_obj(r2) else None
     # A binding label alone is not enough: require the intended bucket identity.
-    r2_ok = is_obj(binding) and binding.get("bucket_name") == BUCKET
+    r2_ok = is_obj(binding) and binding.get("name") == BUCKET
     key_entry = vars_.get("JM_OWNER_VAULT_KEY") if is_obj(vars_) else None
     # Public/plaintext configuration is not adequate for a private owner key.
     key_ok = is_obj(key_entry) and key_entry.get("type") in ("secret_text", "secret")
@@ -115,7 +115,7 @@ def self_test():
         "result": {"name": PROJECT, "production_branch": "main",
                    "uses_functions": True,
                    "deployment_configs": {"production": {
-                       "r2_buckets": {"JM_OWNER_VAULT": {"bucket_name": BUCKET}},
+                       "r2_buckets": {"JM_OWNER_VAULT": {"name": BUCKET}},
                        "env_vars": {"JM_OWNER_VAULT_KEY": {"type": "secret_text"}}
                    }}, "canonical_deployment": {"id": "synthetic-id"}}
     }
@@ -139,7 +139,7 @@ def self_test():
         lambda p: p["result"].update(uses_functions=False),
         lambda p: p["result"].update(production_branch="preview"),
         lambda p: p["result"]["deployment_configs"]["production"]["r2_buckets"].clear(),
-        lambda p: p["result"]["deployment_configs"]["production"]["r2_buckets"]["JM_OWNER_VAULT"].update(bucket_name="other"),
+        lambda p: p["result"]["deployment_configs"]["production"]["r2_buckets"]["JM_OWNER_VAULT"].update(name="other"),
         lambda p: p["result"]["deployment_configs"]["production"]["env_vars"]["JM_OWNER_VAULT_KEY"].update(type="plain_text"),
     ):
         changed = copy.deepcopy(project)
@@ -189,7 +189,7 @@ def main():
             stream.write("## JM Owner Vault — independent provider readiness\n\n")
             stream.write(f"**{result['state']}** · run {result['workflow_run']} · source {result['workflow_source_sha']}\n\n")
             for key, passed in result["checks"].items():
-                stream.write(f"- {'PASS' if passed else 'HOLD'} — \`{key}\`\n")
+                stream.write(f"- {'PASS' if passed else 'HOLD'} — `{key}`\n")
             stream.write("\nNo private owner bytes, credentials, Cloudflare mutation, publication, or device acceptance.\n")
             stream.write("This CI-run-specific observation never overwrites the historical repository receipt.\n")
     return 0 if result["state"] == "READY_FOR_OWNER_AUTHENTICATED_PROOF" else 2

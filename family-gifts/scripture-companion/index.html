@@ -1,4 +1,4 @@
-<!-- JM Scripture Companion v1.9.0 private seven-chapter study atelier and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
+<!-- JM Scripture Companion v1.9.1 actionable chapter studies and protected draft handoffs and original visual family: original JM app, official external Scripture links only; compatible with v1.5 storage. -->
 <!doctype html><html lang="en"><head><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#183932"><meta name="description" content="A personal scripture-reading companion with official Bible links and private local notes."><title>JM Scripture Companion · Reading Room</title>
 <style>
 /* CP24: inherited calm reading-room; guided passage without a new front door */
@@ -22,7 +22,10 @@
 .jm-chapter-card .jm-index{font-size:.76rem;font-weight:800;letter-spacing:.05em;color:var(--muted)}
 .jm-chapter-card h4{font-size:1rem;line-height:1.35;margin:0;color:var(--ink)}
 .jm-chapter-card .jm-reflection-preview{font-size:.9rem;color:var(--ink);line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
-.jm-chapter-card .actions{margin-top:auto}
+.jm-chapter-card .actions{margin-top:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.jm-chapter-card .actions>*{text-align:center;min-width:0;overflow-wrap:break-word}
+.jm-chapter-card .actions .btn{font-size:.82rem}
+.jm-chapter-card [data-reading-state="done"]{color:var(--accent);font-weight:750}
 .jm-chapter-card .btn{min-height:38px}
 .jm-atelier-note{font-size:.86rem;color:var(--muted);line-height:1.5;margin:12px 0 0}
 @media(max-width:530px){.jm-atelier{padding:11px}.jm-chapter-atlas{grid-template-columns:1fr}.jm-chapter-card{gap:8px}.jm-chapter-card .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -567,6 +570,21 @@ $('#jmTrailFollowing').addEventListener('click',()=>{
 });
 // CP27 professional study atelier: a read-only projection of existing JM
 // source-owned chapter status and notes, never another database or backup schema.
+// CP28: one accountable route into the established JM Notes editor.
+// A new chapter never overwrites another passage's unfinished private draft.
+function beginChapterReflection(ref){
+ if(hasUnfinishedDraft()){
+  $('#noteDraftStatus').textContent='Your unfinished reflection is preserved. Finish or save it before starting '+readable(ref)+'.';
+  tab('notes');$('#noteText').focus();return false;
+ }
+ jump(ref.book,ref.chapter);
+ $('#noteRef').value=readable(ref);
+ $('#noteText').value='What stood out to me in '+readable(ref)+'?\n\nWhat would I like to remember or apply?\n\n';
+ const saved=storeDraft();
+ tab('notes');$('#noteText').focus();
+ if(!saved)$('#noteDraftStatus').textContent='Draft could not be stored on this device. Copy your writing before leaving.';
+ return saved;
+}
 function renderJourneyAtelier(){
  const plan=readingPaths[$('#planPicker').value]||readingPaths.quiet;
  const chosen=selected(),root=$('#jmJourneyCards');root.replaceChildren();
@@ -582,12 +600,21 @@ function renderJourneyAtelier(){
   const tag=make('span','CHAPTER '+String(index+1).padStart(2,'0')+' / 07','jm-index');
   const title=make('h4',book+' '+chapter);
   const status=make('p',(done?'✓ Marked read by you':'○ Not marked read')+' · '+notes.length+' private reflection'+(notes.length===1?'':'s'),'soft');
+ status.dataset.readingState=done?'done':'pending';
   const preview=make('p',notes.length?notes[notes.length-1].text.slice(0,175)+(notes[notes.length-1].text.length>175?'…':''):'Your own thoughts can be added when you are ready.','jm-reflection-preview');
   const actions=make('div',undefined,'actions');
   actions.append(makeButton('Choose',()=>{jump(book,chapter);$('#jmFocusStatus').textContent='Selected '+book+' '+chapter+'. Your reading progress is unchanged.';}));
   const official=make('a','Study Edition ↗','btn secondary small');official.href='https://www.jw.org/en/library/bible/study-bible/books/'+slug(book)+'/'+chapter+'/';official.target='_blank';official.rel='noopener noreferrer';actions.append(official);
   const reflect=makeButton('My reflections',()=>{jump(book,chapter);$('#notesScope').value='chapter';$('#notesSearch').value='';tab('notes');});
   actions.append(reflect);
+  actions.append(makeButton('Write reflection',()=>beginChapterReflection(ref)));
+  const toggle=makeButton(done?'↶ Mark unread':'✓ Mark read',()=>{
+   const changed=setChapterReadState(ref,!done);
+   if(changed)$('#jmFocusStatus').textContent=readable(ref)+(done?' marked unread.':' marked read by you.');
+   else $('#jmFocusStatus').textContent='Reading progress unchanged; check whether device storage is available.';
+  });
+  toggle.setAttribute('aria-label',(done?'Mark unread: ':'Mark read: ')+readable(ref));
+  actions.append(toggle);
   card.append(tag,title,status,preview,actions);root.append(card);
  });
 }

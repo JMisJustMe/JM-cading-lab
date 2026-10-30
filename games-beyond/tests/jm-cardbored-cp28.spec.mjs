@@ -9,6 +9,17 @@ async function boot(page){
  await expect.poll(()=>page.evaluate(()=>Boolean(window.JM_CARDBORED_CP28&&window.JM_CARDBORED_V05))).toBeTruthy();
  return errors;
 }
+async function selectAnActuallyLegalOpening(page,method='keyboard'){
+ const start=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
+ for(let i=0;i<start.hand.length;i++){
+   if(start.hand[i].cost>start.energy)continue;
+   if(method==='keyboard')await page.keyboard.press(String(i+1));
+   else await page.locator('#hand [data-card]').nth(i).click();
+   const chosen=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
+   if(chosen.selectedCard===i&&chosen.legal.length)return {index:i,chosen};
+ }
+ throw new Error('No legal opening despite House-deck recovery; original game softlocked');
+}
 test('@cardbored-cp28 actual original v0.5 boots with 4 houses / boards and phone touch contact',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  const errors=await boot(page);
@@ -23,12 +34,8 @@ test('@cardbored-cp28 actual original v0.5 boots with 4 houses / boards and phon
 });
 test('@cardbored-cp28 keyboard card → legal board target → original commit and combat evidence',async({page})=>{
  const errors=await boot(page);
- const before=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
- const affordable=before.hand.findIndex(c=>c.cost<=before.energy);
- expect(affordable).toBeGreaterThanOrEqual(0);
- await page.keyboard.press(String(affordable+1));
- await expect.poll(()=>page.evaluate(()=>window.JM_CARDBORED_CP28.state.selectedCard)).toBe(affordable);
- const chosen=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
+ const {index:affordable,chosen}=await selectAnActuallyLegalOpening(page,'keyboard');
+ expect(chosen.selectedCard).toBe(affordable);
  expect(chosen.legal.length).toBeGreaterThan(0);
  await page.keyboard.press('ArrowDown');
  await expect.poll(()=>page.evaluate(()=>window.JM_CARDBORED_CP28.state.selectedTarget)).not.toBeNull();
@@ -53,10 +60,7 @@ test('@cardbored-cp28 genuine House + Pressure Board selection changes native co
 });
 test('@cardbored-cp28 physical button still dispatches original card and target click',async({page})=>{
  const errors=await boot(page);
- const cards=page.locator('#hand [data-card]');
- const available=await page.evaluate(()=>window.JM_CARDBORED_CP28.state.hand.findIndex(c=>c.cost<=window.JM_CARDBORED_CP28.state.energy));
- await cards.nth(available).click();
- const state=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
+ const {index:available,chosen:state}=await selectAnActuallyLegalOpening(page,'touch');
  expect(state.selectedCard).toBe(available);
  await page.locator('.slot.legal').first().click();
  const chosen=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);

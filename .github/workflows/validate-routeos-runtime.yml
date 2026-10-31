@@ -74,7 +74,10 @@ jobs:
           assert "const SEED_WORLD=Object.freeze({w:900,h:620})" in runtime
           assert 'function seedCamera()' in runtime
           assert 'const {w,h}=SEED_WORLD' in runtime
-          assert "games-beyond-v0-9-whole-estate-current-r1" in sw
+          # Cache revisions advance during source-faithful House upgrades.
+          # Check the canonical cache family, not one expired cache instance.
+          cache = re.search(r"^const CACHE='([^']+)';", sw, re.M)
+          assert cache and re.fullmatch(r'games-beyond-v[0-9]+-[0-9]+-whole-estate-current-r[1-9][0-9]*', cache[1]), 'Invalid House cache identity'
 
           receipt = {
               'schema':'JM.RouteOSRunnableRuntimeValidation/1.0',

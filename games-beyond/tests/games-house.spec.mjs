@@ -68,6 +68,56 @@ test('@registry-source exact 22/24 identities match the authoritative payload ma
   expect(registry.cp09_source_edit_contact.mounted_registry_bodies).toBe(21); // Frozen historical CP09 proof, not current authority.
 });
 
+// Public fixture tests the actual House adapter source without checking private
+// original HTML into Git. Separate exact-source Chromium proof remains 12/12.
+test('@historical-room adapter routes six original-named redirects, fails closed on missing lineage', async ({ page }) => {
+  const app = readFileSync(new URL('../app.js', import.meta.url), 'utf8');
+  const start = app.indexOf('function adaptOriginalJMStudiosHistoricalRoutes(doc){');
+  const end = app.indexOf('async function commitHouseImport(items){', start);
+  expect(start).toBeGreaterThan(-1);
+  expect(end).toBeGreaterThan(start);
+  const adapter = app.slice(start, end);
+  const pathById = {
+    room_007: 'OPEN_FIRST_JM_STUDIOS_B0_5_2.html',
+    room_008: 'OPEN_FIRST_JM_STUDIOS_B0_5_3.html',
+    room_009: 'OPEN_FIRST_JM_STUDIOS_B0_5_4.html',
+    room_010: 'OPEN_FIRST_JM_STUDIOS_B0_5_OBSERVERS_DOOR.html',
+    room_011: 'OPEN_FIRST_JM_STUDIOS_B0_6.html',
+    room_012: 'OPEN_FIRST_JM_STUDIOS_B0_7.html',
+    room_013: 'OPEN_FIRST_JM_STUDIOS_B0_8.html'
+  };
+  const to = {
+    room_007: pathById.room_008, room_008: pathById.room_009,
+    room_009: pathById.room_011, room_010: pathById.room_007,
+    room_011: pathById.room_012, room_012: pathById.room_013
+  };
+  const target = '<!doctype html><html><title>Original successor fixture</title></html>';
+  const fixture = (broken = false) => {
+    const rooms = Array.from({ length: 13 }, (_, i) => {
+      const id = 'room_' + String(i + 1).padStart(3, '0');
+      const next = broken && id === 'room_011' ? 'ABSENT_ORIGINAL.html' : to[id];
+      const html = next ? '<script>location.href=\'' + next + '\';</script>' : target;
+      return { id, path: pathById[id] || 'substantive-' + id + '.html', html_b64: btoa(html) };
+    });
+    return '<!doctype html><html><body><output id="opened"></output>' +
+      rooms.map(room => '<button data-room="' + room.id + '">' + room.id + '</button>').join('') +
+      '<iframe id="roomFrame"></iframe><script>const ROOMS = ' + JSON.stringify(rooms) +
+      ';function openRoom(id){const r=ROOMS.find(x=>x.id===id);document.querySelector("#roomFrame").srcdoc=atob(r.html_b64);document.querySelector("#opened").textContent=id}</script></body></html>';
+  };
+  await page.setContent(fixture());
+  await page.addScriptTag({ content: adapter + '\nwindow.__jmRouted=adaptOriginalJMStudiosHistoricalRoutes(document);' });
+  expect(await page.evaluate(() => window.__jmRouted)).toBe(6);
+  for (let n = 7; n <= 12; n++) {
+    await page.locator('[data-room="room_' + String(n).padStart(3, '0') + '"]').click();
+    await expect(page.locator('#opened')).toHaveText('room_013');
+    expect(await page.locator('#roomFrame').getAttribute('srcdoc')).toBe(target);
+  }
+  await page.setContent(fixture(true));
+  await page.addScriptTag({ content: adapter + '\nwindow.__jmRouted=adaptOriginalJMStudiosHistoricalRoutes(document);' });
+  expect(await page.evaluate(() => window.__jmRouted)).toBe(0);
+  expect(await page.locator('[data-original-historical-target]').count()).toBe(0);
+});
+
 test('@boot current 22-built-in / 24-full House contract boots cleanly', async ({ page }) => {
   const errors = await openHouse(page);
   await expect(page.locator('.hero h1')).toContainText('One front door.');

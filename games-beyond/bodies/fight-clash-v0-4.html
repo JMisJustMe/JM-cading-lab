@@ -210,8 +210,8 @@ const RouteOS = {
   queue:[],
   log(type,note,data={}){this.ledger.unshift({type,note,data,at:nowISO()});if(this.ledger.length>30)this.ledger.pop();renderRouteLedger();},
   queueRuntime(command,payload){const req={id:'runtime-'+Date.now(),command,payload,status:'processed',at:nowISO()};this.queue.unshift(req);this.log('runtime',command,payload);return req;},
-  save(){const packet={recordType:'FightClashRouteOSState',version:'0.4',savedAt:nowISO(),game:serializeGame(),events:JMGameCore.events.slice(-80),ledger:this.ledger};try{localStorage.setItem(this.key,JSON.stringify(packet));this.log('save','State saved locally',{round:game.round,mode:game.mode});flash('SAVE DING','RouteOS stored the current body.');return true}catch(e){this.log('save-fallback','Local storage blocked; use Export Receipt',{error:String(e)});flash('SAVE FALLBACK','Storage blocked here — Export Receipt remains available.');return false}},
-  load(){try{const raw=localStorage.getItem(this.key);if(!raw)return false;const p=JSON.parse(raw);if(!p?.game)return false;restoreGame(p.game);JMGameCore.events=p.events||[];this.ledger=p.ledger||[];this.log('restore','Saved state restored');return true}catch(e){return false}},
+  save(){if(game.roundOver&&!game.over){flash('SAVE HOLD','Round result is settling — save when the next round is ready.');return false}const packet={recordType:'FightClashRouteOSState',version:'0.4',savedAt:nowISO(),game:serializeGame(),events:JMGameCore.events.slice(-80),ledger:this.ledger};try{localStorage.setItem(this.key,JSON.stringify(packet));this.log('save','State saved locally',{round:game.round,mode:game.mode});flash('SAVE DING','RouteOS stored the current body.');return true}catch(e){this.log('save-fallback','Local storage blocked; use Export Receipt',{error:String(e)});flash('SAVE FALLBACK','Storage blocked here — Export Receipt remains available.');return false}},
+  load(){try{const raw=localStorage.getItem(this.key);if(!raw)return false;const p=JSON.parse(raw);if(p?.recordType!=='FightClashRouteOSState'||p.version!=='0.4'||!Array.isArray(p.events)||!Array.isArray(p.ledger)||![...p.events,...p.ledger].every(isFightRecord)||!validSavedFight(p.game))return false;restoreGame(p.game);JMGameCore.events=p.events;this.ledger=p.ledger;renderTrace();this.log('restore','Saved state restored');return true}catch(e){return false}},
   export(){const packet={recordType:'FightClashChameleonReceipt',version:'0.4',createdAt:nowISO(),sourceLineage:['128 Hand v0.5.1','JM Fighting Proof Demo v0.1A','JM GameCore v0.2I','GameForge','RouteOS','Radius Lexicon'],boundary:'Single-file browser/PWA-ready open-ring prototype; Android field feel still decides the next correction.',game:serializeGame(),events:JMGameCore.events,routeLedger:this.ledger,lexicon:RadiusLexicon};const blob=new Blob([JSON.stringify(packet,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='FIGHT_CLASH_CHAMELEON_PROLOGUE_v0_4_OPEN_RING_RECEIPT.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);this.log('export','Receipt exported');}
 };
 
@@ -234,7 +234,37 @@ function freshGame(mode='boxing'){
 }
 function serializeF(f){const o={...f};return o}
 function serializeGame(){return {mode:game.mode,activeLaw:game.activeLaw,running:game.running,paused:game.paused,round:game.round,time:game.time,lawClock:game.lawClock,pRounds:game.pRounds,eRounds:game.eRounds,over:game.over,roundOver:game.roundOver,cpuLevel,player:serializeF(game.player),enemy:serializeF(game.enemy)}}
-function restoreGame(g){cpuLevel=g.cpuLevel||'spar';game={...g,cpuLevel,particles:[],shake:0,hitstop:0,calloutT:0,status:'RESTORED',detail:'RouteOS restored the saved fight.',contact:'Q0 · NO CONTACT',result:'RECOVER',cpuThink:.55,startedAt:performance.now()};syncDifficulty();syncUI();draw()}
+function isFightRecord(value){return !!value&&typeof value==='object'&&!Array.isArray(value)}
+function validSavedFight(g){
+  if(!isFightRecord(g)||!['boxing','ringout','chameleon'].includes(g.mode)||!['boxing','ringout'].includes(g.activeLaw)||!Object.hasOwn(CPU_LEVELS,g.cpuLevel))return false;
+  if(g.mode!=='chameleon'&&g.mode!==g.activeLaw)return false;
+  if(!['running','paused','over','roundOver'].every(k=>typeof g[k]==='boolean'))return false;
+  // The 0.4 packet does not carry the delayed round-result callback/winner.
+  if(g.roundOver&&!g.over)return false;
+  if(!['round','time','lawClock','pRounds','eRounds'].every(k=>Number.isFinite(g[k])))return false;
+  if(!Number.isInteger(g.round)||g.round<1||g.round>3||g.time<0||g.time>30||g.lawClock<0||g.lawClock>8)return false;
+  if(!['pRounds','eRounds'].every(k=>Number.isInteger(g[k])&&g[k]>=0&&g[k]<=2))return false;
+  const actions=['idle','guard','slip','recover','tell','jab','cross','hook','body','feint'];
+  return [['player','p'],['enemy','e']].every(([key,side])=>{
+    const f=g[key],shape=fighter(side);
+    if(!isFightRecord(f)||f.side!==side||![1,-1].includes(f.facing)||!actions.includes(f.action))return false;
+    if(!Object.entries(shape).every(([k,v])=>v===null?Object.hasOwn(f,k):typeof v==='number'?Number.isFinite(f[k]):typeof f[k]===typeof v))return false;
+    if(!['hp','stamina','balance'].every(k=>f[k]>=0&&f[k]<=100))return false;
+    if(f.buffer!==null&&!actionSpec(f.buffer))return false;
+    if(f.pendingAttack!==null&&(!isFightRecord(f.pendingAttack)||!actionSpec(f.pendingAttack.name)||!Number.isFinite(f.pendingAttack.t)))return false;
+    return Object.entries(f).every(([k,v])=>(typeof v!=='number'||Number.isFinite(v))&&(k!=='_hitDone'||typeof v==='boolean'));
+  });
+}
+function restoreGame(g){
+  if(raf)cancelAnimationFrame(raf);raf=0;releaseHeldContact();
+  cpuLevel=g.cpuLevel;
+  // Reopening never consumes offline time or silently starts a saved fight.
+  game={...g,paused:g.running&&!g.over,cpuLevel,particles:[],shake:0,hitstop:0,calloutT:0,status:'RESTORED',detail:'RouteOS restored the saved fight. Resume when ready.',contact:'Q0 · NO CONTACT',result:'RECOVER',cpuThink:.55,startedAt:performance.now()};
+  $('intro').classList.remove('show');$('pauseBtn').textContent=game.paused?'RESUME':'PAUSE';
+  document.body.classList.toggle('in-fight',game.running&&!game.over);
+  document.querySelectorAll('.modeBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===game.mode));
+  syncDifficulty();syncUI();draw();
+}
 
 function resize(){const oldL=arena.ropeLeft,oldR=arena.ropeRight,oldT=arena.ropeTop,oldB=arena.ropeBottom;const r=canvas.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.max(320,Math.floor(r.width*dpr));canvas.height=Math.max(240,Math.floor(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);W=r.width;H=r.height;arena.left=W*.035;arena.right=W*.965;arena.top=H*.19;arena.bottom=H*.88;arena.ropeLeft=W*.07;arena.ropeRight=W*.93;arena.ropeTop=H*.22;arena.ropeBottom=H*.84;arena.ground=arena.ropeBottom;if(game&&oldR>oldL&&oldB>oldT){for(const f of [game.player,game.enemy]){const rx=clamp((f.x-oldL)/(oldR-oldL),-.12,1.12),ry=clamp((f.y-oldT)/(oldB-oldT),-.12,1.12);f.x=lerp(arena.ropeLeft,arena.ropeRight,rx);f.y=lerp(arena.ropeTop,arena.ropeBottom,ry)}}draw();}
 window.addEventListener('resize',resize,{passive:true});

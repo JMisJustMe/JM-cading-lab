@@ -197,7 +197,8 @@ for(const paused of [false,true]){
         await live.touchscreen.tap(box.x+box.width*.78,box.y+box.height*.65);
       }else await live.keyboard.press('j');
       const acted=await saveFight(live);
-      expect(acted.game.player.action==='jab'||acted.game.player.buffer==='jab').toBeTruthy();
+      const strikes=p=>p.events.filter(e=>(e.actor==='PLAYER'&&['WHIFF','HIT'].includes(e.phase))||(e.actor==='CPU'&&e.phase==='BLOCK')).length;
+      expect(acted.game.player.action==='jab'||acted.game.player.buffer==='jab'||strikes(acted)>strikes(moved)).toBeTruthy();
       const frames=await live.evaluate(()=>({peak:window.__jmFightFrames.peak,pending:window.__jmFightFrames.pending()}));
       expect(frames).toEqual({peak:1,pending:1});
       expect(acted.game.time).toBeLessThan(saved.game.time);

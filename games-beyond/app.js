@@ -29,7 +29,8 @@ async function commitHouseImport(items){
    tx.onabort=()=>reject(tx.error||Error('HOUSE_IMPORT_TRANSACTION_ABORTED'));
    tx.onerror=()=>reject(tx.error||Error('HOUSE_IMPORT_TRANSACTION_FAILED'));
    const store=tx.objectStore('edits');
-   for(const item of items)store.put(structuredClone(item));
+   try{for(const item of items)store.put(structuredClone(item));}
+   catch(error){try{tx.abort()}catch{}reject(error)}
  });
 }
 function toast(text,bad=false){const n=$('toast');n.textContent=text;n.className='toast show'+(bad?' bad':'');clearTimeout(toast.t);toast.t=setTimeout(()=>n.className='toast',2600)}
@@ -218,7 +219,7 @@ async function importHouse(file){
   for(const item of staged){
    const at=pack.bodies.findIndex(b=>b.id===item.id);
    if(at>=0)pack.bodies[at]=item;
-   else pack.bodies.push(item);
+   else{pack.bodies.push(item);protectedBodies.set(item.id,structuredClone(item))}
    if(!item.edited)protectedBodies.set(item.id,structuredClone(item));
   }
   const full=manifest.fullTargetCount||23,done=pack.bodies.length>=full;

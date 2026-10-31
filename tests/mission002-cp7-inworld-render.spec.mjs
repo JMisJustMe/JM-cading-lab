@@ -127,3 +127,6 @@ try{
  fs.writeFileSync(out+'/CP7_CONTACT_RUNTIME_PROOF.json',JSON.stringify(record,null,2)+'\n');
  console.log(JSON.stringify(record));
 }finally{await browser.close();}
+
+// CP9 exact shared multi-recipient kernel regression, after inherited CP7 playable proof.
+await import('./mission002-cp9-multi-recipient.mjs');

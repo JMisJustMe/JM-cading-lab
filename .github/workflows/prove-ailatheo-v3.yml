@@ -31,7 +31,8 @@ on:
 permissions: {contents: read}
 jobs:
   native-route:
-    runs-on: ubuntu-latest
+    # Keep the existing pinned Playwright build on its supported Ubuntu host.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -44,6 +45,8 @@ jobs:
       - run: node tests/mission002-source-aware-creation.mjs
       - run: node tests/mission002-sovereign-compiler-contact.mjs
       - run: node tests/mission002-shared-two-current-creation.mjs
+      - name: Verify exact shared contact kernel and recipient eligibility
+        run: node tests/mission002-cp9-multi-recipient.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs

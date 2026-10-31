@@ -136,13 +136,19 @@ class ScopedMemory:
             if name is not None and os.path.exists(name):
                 os.unlink(name)
 
-    async def write(self, name: str, body: str, *, mode="create", before_commit: Optional[Callable[[], Awaitable[None]]] = None):
+    async def write(self, name: str, body: str, *, mode="create", expected_digest: Optional[str] = None,
+                    before_commit: Optional[Callable[[], Awaitable[None]]] = None):
         if not isinstance(name, str) or not SLUG.fullmatch(name):
             raise ValueError("invalid note slug")
         if not isinstance(body, str) or not 0 < len(body.encode("utf-8")) <= 8192:
             raise ValueError("note body must be 1..8192 UTF-8 bytes")
-        if mode not in ("create", "update"):
-            raise ValueError("mode must be create or update")
+        if mode not in ("create", "update", "correct"):
+            raise ValueError("mode must be create, update or correct")
+        if mode == "correct":
+            if not isinstance(expected_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", expected_digest):
+                raise ValueError("correct requires the exact prior SHA-256 note digest")
+        elif expected_digest is not None:
+            raise ValueError("expected_digest belongs only to correct mode")
         lease = self.host.lease()
         if before_commit is not None:
             await before_commit()
@@ -155,8 +161,10 @@ class ScopedMemory:
             previous = doc["notes"].get(name)
             if mode == "create" and previous:
                 raise MemoryConflict("ALREADY_EXISTS")
-            if mode == "update" and previous is None:
+            if mode in ("update", "correct") and previous is None:
                 raise MemoryConflict("NOT_FOUND")
+            if mode == "correct" and previous["digest"] != expected_digest:
+                raise MemoryConflict("STALE_CORRECTION")
             if previous is None and len(doc["notes"]) >= 256:
                 raise ValueError("scope note limit reached")
             content = {"body": body, "revision": previous["revision"] + 1 if previous else 1,

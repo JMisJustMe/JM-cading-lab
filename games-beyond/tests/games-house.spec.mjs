@@ -254,3 +254,21 @@ test('@source-boundary fake lineage cannot crown altered JMStudios HTML', async 
   await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`);
   expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.filter(x => x.id.startsWith('jmstudios-')).length)).toBe(0);
 });
+
+// Current mount totals are derived from the manifest. CP09 remains historical.
+test('@boot registry and runtime agree without rewriting historical contact', async ({ page }) => {
+  await openHouse(page);
+  const registry = await (await page.request.get('registry.json')).json();
+  const manifest = await (await page.request.get('payload-manifest.json')).json();
+  expect(registry.publicBuiltInCount).toBe(manifest.builtInBodyCount);
+  expect(registry.fullHouseCount).toBe(manifest.fullTargetCount);
+  expect(registry.registered_bodies.filter(b => b.mounted).map(b => b.id).sort())
+    .toEqual([...manifest.bodyIdsBuiltIn].sort());
+  expect(registry.registered_bodies.filter(b => !b.mounted).map(b => b.id).sort())
+    .toEqual(manifest.fullImportAdds.map(b => b.id).sort());
+  expect(registry.cp09_source_edit_contact.mounted_registry_bodies).toBe(21);
+  await page.locator('#proofQuick').click();
+  const proof = JSON.parse(await page.locator('#proofBox').textContent());
+  expect(proof.bodyCount).toBe(manifest.builtInBodyCount);
+  expect(proof.fullTarget).toBe(manifest.fullTargetCount);
+});

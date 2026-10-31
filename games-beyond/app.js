@@ -7,6 +7,32 @@ const req=r=>new Promise((ok,no)=>{r.onsuccess=()=>ok(r.result);r.onerror=()=>no
 const os=(name,mode='readonly')=>db.transaction(name,mode).objectStore(name);
 const all=name=>req(os(name).getAll()), put=(name,value)=>req(os(name,'readwrite').put(value)), remove=(name,key)=>req(os(name,'readwrite').delete(key));
 const hash=async data=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',typeof data==='string'?new TextEncoder().encode(data):data))].map(x=>x.toString(16).padStart(2,'0')).join('');
+
+// Source-custody guard for the two recovered, independently SHA-proved JMStudios originals.
+// Only exact source bytes may inherit this grade. This does not publish either body.
+const JMSTUDIOS_ORIGINAL_HASHES=Object.freeze({
+ 'jmstudios-source-rebegin':'b033ab12aee459b6a388732a2b3ab7952c21d035d0fb0cd741f1db36da01406f',
+ 'jmstudios-actual-crown':'27c877edbf044862bab22d8273595d6baaafc93d894cff89c88b9c50e1fda896'
+});
+const JMSTUDIOS_LINEAGE='JM_STUDIOS_B0_8_CROWN_CHAIN_UNIQUE_LINEAGE_v1_0.zip';
+async function isOriginalJMStudios(b){
+ const expected=JMSTUDIOS_ORIGINAL_HASHES[b?.id];
+ return !!(expected&&typeof b?.html==='string'&&b.hash===expected&&
+   b.originalSourceIntegrity==='PASS_EXACT_SHA256'&&
+   b.sourceTransport==='RECOVERED_FROM_EXISTING_JM_LINEAGE_NOT_NEW_CREATION'&&
+   new Blob([b.html]).size===b.size&&await hash(b.html)===expected);
+}
+async function commitHouseImport(items){
+ return new Promise((resolve,reject)=>{
+   const tx=db.transaction('edits','readwrite');
+   tx.oncomplete=()=>resolve();
+   tx.onabort=()=>reject(tx.error||Error('HOUSE_IMPORT_TRANSACTION_ABORTED'));
+   tx.onerror=()=>reject(tx.error||Error('HOUSE_IMPORT_TRANSACTION_FAILED'));
+   const store=tx.objectStore('edits');
+   try{for(const item of items)store.put(structuredClone(item));}
+   catch(error){try{tx.abort()}catch{}reject(error)}
+ });
+}
 function toast(text,bad=false){const n=$('toast');n.textContent=text;n.className='toast show'+(bad?' bad':'');clearTimeout(toast.t);toast.t=setTimeout(()=>n.className='toast',2600)}
 function progress(value,text){value=Math.max(0,Math.min(100,Math.round(value)));$('loadPct').textContent=value+'%';$('loadBar').style.width=value+'%';$('loadText').textContent=text;$('loadProgress').setAttribute('aria-valuenow',value)}
 async function receipt(type,body='Games&Beyond',extra={}){if(!db)return;await put('receipts',{key:Date.now()+Math.random(),time:NOW(),type,body,extra});stats();renderReceipts()}
@@ -20,7 +46,7 @@ async function decodePayload(){
  let text=await new Promise((ok,no)=>LZMA.decompress([...compressed],(value,error)=>error?no(error):ok(value),p=>progress(55+25*p,'Decompressing exact bodies…')));if(typeof text!=='string')text=new TextDecoder().decode(Uint8Array.from(text));if(await hash(text)!==manifest.rawSha256)throw Error('Full payload digest mismatch');const result=JSON.parse(text);if(!Array.isArray(result.bodies)||result.bodies.length!==manifest.payloadBodyCount)throw Error('Payload body count mismatch');
  progress(82,'Mounting committed House bodies…');for(let i=0;i<(manifest.extraBodies||[]).length;i++){const meta=manifest.extraBodies[i],html=await fetch(`${meta.path}?release=${RELEASE}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`${meta.path} HTTP ${r.status}`);return r.text()});if(!/<html|<!doctype/i.test(html))throw Error(`${meta.id} is not HTML`);result.bodies.push({...meta,html,hash:await hash(html),size:new Blob([html]).size,mounted:true,status:'MOUNTED',sourceName:meta.path,bundled:true,updatedAt:NOW()});progress(82+(i+1)/(manifest.extraBodies.length||1)*12,`Mounting committed body ${i+1}/${manifest.extraBodies.length}`)}
  const protectedSnapshot=new Map(result.bodies.map(x=>[x.id,structuredClone(x)]));
- const edits=await all('edits');for(const edit of edits){const at=result.bodies.findIndex(x=>x.id===edit.id);if(at>=0)result.bodies[at]={...result.bodies[at],...edit,edited:true};else{const imported={...edit,mounted:true,status:'MOUNTED',edited:true};result.bodies.push(imported);protectedSnapshot.set(edit.id,structuredClone(imported))}}
+ const edits=await all('edits');for(const edit of edits){const exactOriginal=await isOriginalJMStudios(edit);const at=result.bodies.findIndex(x=>x.id===edit.id);if(at>=0)result.bodies[at]={...result.bodies[at],...edit,edited:!exactOriginal};else{const imported={...edit,mounted:true,status:'MOUNTED',edited:!exactOriginal};result.bodies.push(imported);protectedSnapshot.set(edit.id,structuredClone(imported))}}
  if(result.bodies.length<(manifest.builtInBodyCount||manifest.bodyCount))throw Error('Built-in body count short');pack=result;protectedBodies=protectedSnapshot;progress(100,`${result.bodies.length} bodies mounted. Full target: ${manifest.fullTargetCount||result.bodies.length}.`);$('status').textContent=`${result.bodies.length} MOUNTED · ${manifest.fullTargetCount||result.bodies.length} FULL`;$('status').className='status ok';$('enterBtn').disabled=false;await receipt('ACCESSIBLE_PUBLIC_HOUSE_BOOT','Games&Beyond',{bodies:result.bodies.length,fullTarget:manifest.fullTargetCount,accessibilityVersion:'0.5'});renderAll();openRequestedSourceEditor();await openRequestedHouseBody();setTimeout(()=>runAudit(false),30)
 }
 function card(b){const a=b.accessibilityAudit;return `<article class="room ${b.id===selected?'selected':''}" aria-labelledby="room-${esc(b.id)}"><h3 id="room-${esc(b.id)}">${esc(b.name)} <span>${esc(b.version||'')}</span></h3><p>${esc(b.role||'Sovereign mounted body')}</p><div class="tags"><span class="tag">${esc(b.category||'Room')}</span><span class="tag live">MOUNTED</span><span class="tag">${bytes(new Blob([b.html]).size)}</span>${b.edited?'<span class="tag live">CREATOR REVISION</span>':''}${a?`<span class="tag ${a.grade==='A'?'live':''}">ACCESS ${a.grade}</span>`:''}</div><div class="roomActions"><button data-play="${esc(b.id)}" aria-label="Open ${esc(b.name)}">OPEN BODY</button><button data-edit="${esc(b.id)}">EDIT</button><button data-export="${esc(b.id)}">EXPORT</button></div></article>`}
@@ -159,7 +185,51 @@ async function runAudit(open=true){if(!pack)return;const results=pack.bodies.map
 function renderAudit(){if(!lastAudit)return;const grades=lastAudit.results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{});$('a11ySummary').textContent=`Static preflight: A ${grades.A||0} · B ${grades.B||0} · C ${grades.C||0}. Runtime help remains separate from stored source.`;$('a11yList').innerHTML=lastAudit.results.map(a=>`<article class="auditCard"><div style="display:flex;align-items:center;gap:9px"><span class="grade ${a.grade}">${a.grade}</span><div><b>${esc(a.name)} · ${esc(a.version||'')}</b><span>${a.issueCount} detected items · ${bytes(a.bytes)}</span></div></div>${a.issues.length?`<details><summary>Review items</summary><ul>${a.issues.map(x=>`<li><strong>${esc(x.severity.toUpperCase())}</strong> · ${esc(x.message)}${x.count>1?' × '+x.count:''}</li>`).join('')}</ul></details>`:'<p>No issue in this limited rule set.</p>'}</article>`).join('')}
 async function proof(){const results=[];for(const b of pack.bodies)results.push({id:b.id,name:b.name,html:/<html|<!doctype/i.test(b.html),bytes:new Blob([b.html]).size,digest:await hash(b.html),edited:!!b.edited});const built=manifest.builtInBodyCount||manifest.bodyCount,full=manifest.fullTargetCount||built,pass=results.length>=built&&results.every(x=>x.html),fullMount=results.length===full,report={schema:'JM.GamesBeyond.PublicProof/0.5',checkedAt:NOW(),pass,fullMount,bodyCount:results.length,builtInExpected:built,fullTarget:full,accessibilityAudit:!!lastAudit,results};$('proofBox').textContent=JSON.stringify(report,null,2);await receipt(fullMount?'FULL_23_BODY_HOUSE_PROOF':'BUILT_IN_HOUSE_PROOF',pass?'DING':'BUGG',{pass,fullMount,bodyCount:results.length,fullTarget:full});view('proof');toast(pass?(fullMount?'23-body full House proof DING':`${results.length}-body built-in proof DING`):'Proof found a gap',!pass)}
 async function exportHouse(){download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
-async function importHouse(file){try{const incoming=JSON.parse(await file.text());if(!Array.isArray(incoming.bodies))throw Error('No bodies array');let added=0,updated=0;for(const item of incoming.bodies){if(!item?.id||!item.html||!/<html|<!doctype/i.test(item.html))continue;const at=pack.bodies.findIndex(x=>x.id===item.id);if(at>=0){pack.bodies[at]={...pack.bodies[at],...item,mounted:true,status:'MOUNTED',edited:true};updated++}else{pack.bodies.push({...item,mounted:true,status:'MOUNTED',edited:true});protectedBodies.set(item.id,structuredClone(item));added++}await put('edits',structuredClone(findBody(item.id)))}const full=manifest.fullTargetCount||23,done=pack.bodies.length>=full;$('status').textContent=done?`${full}/${full} FULL HOUSE`:`${pack.bodies.length} MOUNTED · ${full} FULL`;$('status').className='status '+(done?'ok':'');await receipt(done?'ECO_ESTATE_FULL_HOUSE_IMPORTED':'HOUSE_BACKUP_IMPORTED','Games&Beyond',{incoming:incoming.bodies.length,added,updated,mounted:pack.bodies.length,fullTarget:full});renderAll();await runAudit(false);toast(done?`${full}-body full House mounted`:`Import added ${added} bodies`)}catch(err){toast('Import failed: '+err.message,true)}}
+async function importHouse(file){
+ try{
+  const incoming=JSON.parse(await file.text());
+  if(!Array.isArray(incoming.bodies))throw Error('No bodies array');
+  const exactPair=incoming.source_custody?.original_lineage_zip_file===JMSTUDIOS_LINEAGE;
+  if(exactPair){
+   const ids=incoming.bodies.map(b=>b?.id);
+   if(ids.length!==2||new Set(ids).size!==2||!ids.every(id=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,id)))
+     throw Error('JMStudios lineage pair identity mismatch');
+  }
+  const staged=[],seen=new Set();let added=0,updated=0;
+  for(const item of incoming.bodies){
+   if(!item?.id||typeof item.html!=='string'||!/<html|<!doctype/i.test(item.html)){
+    if(exactPair)throw Error('JMStudios source body missing or invalid');
+    continue;
+   }
+   if(seen.has(item.id))throw Error('Duplicate imported identity: '+item.id);
+   seen.add(item.id);
+   const isOriginal=exactPair&&await isOriginalJMStudios(item);
+   if(exactPair&&!isOriginal)throw Error('JMStudios exact-source verification HOLD: '+item.id);
+   const previous=findBody(item.id);
+   if(previous?.edited&&!await isOriginalJMStudios(previous))
+     throw Error('Existing local creator revision held from replacement: '+item.id);
+   const replacement={...previous,...item,mounted:true,status:'MOUNTED',edited:!isOriginal};
+   staged.push(replacement);
+   if(previous)updated++;else added++;
+  }
+  if(exactPair&&staged.length!==2)throw Error('JMStudios full pair not verified');
+  if(!staged.length)throw Error('No valid source bodies to import');
+  // One IndexedDB transaction: no half-import and no in-memory crown before commit.
+  await commitHouseImport(staged);
+  for(const item of staged){
+   const at=pack.bodies.findIndex(b=>b.id===item.id);
+   if(at>=0)pack.bodies[at]=item;
+   else{pack.bodies.push(item);protectedBodies.set(item.id,structuredClone(item))}
+   if(!item.edited)protectedBodies.set(item.id,structuredClone(item));
+  }
+  const full=manifest.fullTargetCount||23,done=pack.bodies.length>=full;
+  $('status').textContent=done?`${full}/${full} FULL HOUSE`:`${pack.bodies.length} MOUNTED · ${full} FULL`;
+  $('status').className='status '+(done?'ok':'');
+  await receipt(done?'ECO_ESTATE_FULL_HOUSE_IMPORTED':'HOUSE_BACKUP_IMPORTED','Games&Beyond',{incoming:incoming.bodies.length,added,updated,mounted:pack.bodies.length,fullTarget:full,verifiedOriginals:exactPair?2:0});
+  renderAll();await runAudit(false);
+  toast(done?`${full}-body full House mounted`:`Import added ${added} bodies`);
+ }catch(err){toast('Import failed: '+err.message,true)}
+}
 async function clearEdits(){if(!confirm('Clear all local edits and imported bodies?'))return;for(const x of await all('edits'))await remove('edits',x.id);location.reload()}
 async function renderReceipts(){if(!db)return;const rows=(await all('receipts')).sort((a,b)=>b.key-a.key).slice(0,100);$('receipts').innerHTML=rows.map(x=>`<div class="receipt"><b>${esc(x.type)} · ${esc(x.body)}</b><span>${esc(x.time)}\n${esc(JSON.stringify(x.extra||{}))}</span></div>`).join('')||'<div class="empty">No receipts yet.</div>'}
 function toggle(cls,id){const on=!document.documentElement.classList.contains(cls);document.documentElement.classList.toggle(cls,on);localStorage.setItem('jm-gb-'+cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text')document.documentElement.style.setProperty('--scale',on?'1.18':'1')}

@@ -133,3 +133,20 @@ The same `jm_scoped_memory_mcp.py` serves **both** the legacy handshake versions
 - Modern and legacy proof remains **local MCP wire + persisted consequence**, not proof of a specific installed AI provider/phone or remote device. The client identity advertised in protocol `_meta` is not authentication.
 
 CI adds independent stateless modern protocol subprocess tests for discovery, direct calls, restart, concurrency, workspace isolation, version errors, deleted-method rejection and default write HOLD, while rerunning all older tests. Release/owner-device contact must be earned separately.
+
+
+## Bounded corrective-contact addition — 31 October 2026 (candidate)
+
+The existing `ScopedMemory` and its repository-process/MCP adapters now support an opt-in
+`mode=correct`, requiring the *currently observed* lowercase SHA-256 note `expected_digest`.
+The host checks that digest under its existing scope/process lock before replacing the note;
+`STALE_CORRECTION` preserves a newer note when an older observer attempts to overwrite it.
+The normal create/update paths and the original JM core remain unchanged. The resulting
+new revision stores the original note digest in `previous`. Another repository process can
+read the new body and its digest, demonstrating retained and reused correction in the same
+local Git workspace. This is not neural-weight training, automatic proof inheritance,
+phone sensor ingestion, live provider contact, or a new sovereign body.
+
+The only changed test obligations are current-digest success, stale-digest refusal,
+read-after-correction on another process, malformed/missing digest refusal, and inherited
+scoped-memory/host-adapter CI. No owner-phone or proven source test needs repeating.

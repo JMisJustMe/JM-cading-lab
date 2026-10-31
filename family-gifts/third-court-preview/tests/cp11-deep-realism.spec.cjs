@@ -413,6 +413,28 @@ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused,
   'CP34 Space activates focused RESUME');
 console.log('PASS CP34 keyboard menu, focused buttons and inherited shooting '+width+'px');
 
+// CP35 focused-control isolation: native control keys are not stolen by gameplay.
+await page.locator('#pauseButton').focus();
+const cp35ArrowPrevented=await page.evaluate(()=>{
+ const button=document.querySelector('#pauseButton');
+ const event=new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true,cancelable:true});
+ button.dispatchEvent(event);
+ button.dispatchEvent(new KeyboardEvent('keyup',{key:'ArrowUp',bubbles:true}));
+ return event.defaultPrevented;
+});
+assert.equal(cp35ArrowPrevented,false,'CP35 focused visible button retains native ArrowUp');
+await page.keyboard.press('p');
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,false,
+ 'CP35 P while a visible button has focus must not pause the live game');
+await page.evaluate(()=>document.activeElement.blur());
+await page.keyboard.press('p');
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,true,
+ 'CP35 P still pauses gameplay without visible control focus');
+await page.locator('#resumeBtn').click();
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,false,
+ 'CP35 resume restores live game after shortcut');
+console.log('PASS CP35 focused-control keyboard isolation and inherited P shortcut '+width+'px');
+
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

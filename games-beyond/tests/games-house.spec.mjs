@@ -212,3 +212,45 @@ test('@responsive portrait, landscape and desktop House routes', async ({ page }
     await expect(page.locator(`.view[data-view="${view}"]`)).toBeVisible();
   }
 });
+
+test('@source-boundary protected JMStudios identity cannot enter through ordinary import', async ({ page }) => {
+  await openHouse(page);
+  const forged = {
+    bodies: [{
+      id: 'jmstudios-actual-crown',
+      name: 'JMStudios',
+      html: '<!doctype html><html lang="en"><head><title>UNVERIFIED</title></head><body>Not the original JM source</body></html>'
+    }]
+  };
+  await page.locator('#importFile').setInputFiles({
+    name: 'unverified-jmstudios.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(forged))
+  });
+  await expect(page.locator('#toast')).toContainText('JMStudios original-source identity requires verified lineage pair');
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`);
+  expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.some(x => x.id === 'jmstudios-actual-crown'))).toBeFalsy();
+  await page.reload();
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
+  expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.some(x => x.id === 'jmstudios-actual-crown'))).toBeFalsy();
+});
+
+test('@source-boundary fake lineage cannot crown altered JMStudios HTML', async ({ page }) => {
+  await openHouse(page);
+  const source = '<!doctype html><html><head><title>UNVERIFIED</title></head><body>Wrong source</body></html>';
+  const forged = {
+    source_custody: { original_lineage_zip_file: 'JM_STUDIOS_B0_8_CROWN_CHAIN_UNIQUE_LINEAGE_v1_0.zip' },
+    bodies: [
+      {id:'jmstudios-source-rebegin',html:source,hash:'not-original',size:source.length},
+      {id:'jmstudios-actual-crown',html:source,hash:'not-original',size:source.length}
+    ]
+  };
+  await page.locator('#importFile').setInputFiles({
+    name: 'forged-jmstudios-lineage.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(forged))
+  });
+  await expect(page.locator('#toast')).toContainText('JMStudios exact-source verification HOLD');
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`);
+  expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.filter(x => x.id.startsWith('jmstudios-')).length)).toBe(0);
+});

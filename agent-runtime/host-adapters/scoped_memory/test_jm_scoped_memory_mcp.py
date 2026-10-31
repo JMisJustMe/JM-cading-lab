@@ -109,6 +109,32 @@ class MCPContact(unittest.TestCase):
         final = self.send([init(), READY, call(2, "jm_memory_read", {"name": "project"})])
         self.assertEqual(final[1]["result"]["structuredContent"]["consequence"]["body"], "v2")
 
+    def test_mcp_correction_digest_guard_and_reentry(self):
+        first = self.send([init(), READY, call(2, "jm_memory_write",
+                          {"name": "observed", "body": "Initial Notion connection unknown"})], write=True)
+        initial = first[-1]["result"]["structuredContent"]["consequence"]
+        note_digest = initial["digest"]
+        updated = self.send([init(), READY, call(2, "jm_memory_write",
+                            {"name": "observed", "body": "Notion direct read verified",
+                             "mode": "correct", "expected_digest": note_digest})], write=True)
+        self.assertFalse(updated[-1]["result"]["isError"])
+        corrected_digest = updated[-1]["result"]["structuredContent"]["consequence"]["digest"]
+        self.assertNotEqual(note_digest, corrected_digest)
+        stale = self.send([init(), READY, call(2, "jm_memory_write",
+                          {"name": "observed", "body": "outdated mistaken state",
+                           "mode": "correct", "expected_digest": note_digest})], write=True)
+        self.assertTrue(stale[-1]["result"]["isError"])
+        self.assertEqual(stale[-1]["result"]["structuredContent"]["status"], "HOLD")
+        missing = self.send([init(), READY, call(2, "jm_memory_write",
+                            {"name": "observed", "body": "no observed digest", "mode": "correct"})], write=True)
+        self.assertTrue(missing[-1]["result"]["isError"])
+        read = self.send([init(), READY, call(2, "jm_memory_read",
+                         {"name": "observed"})])
+        final = read[-1]["result"]["structuredContent"]["consequence"]
+        self.assertEqual(final["body"], "Notion direct read verified")
+        self.assertEqual(final["previous"], note_digest)
+        self.assertEqual(final["digest"], corrected_digest)
+
     def test_no_owner_workspace_override_or_invented_proof(self):
         x = self.send([init(), READY, call(2, "jm_memory_write",
                    {"name": "x", "body": "text", "owner": "other"})], write=True)

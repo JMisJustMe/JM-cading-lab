@@ -26,12 +26,15 @@ class RepositoryProcessContact(unittest.TestCase):
         self.env["XDG_STATE_HOME"] = self.tmp.name
         self.workspace = ROOT
 
-    def command(self, action, name=None, *, harness="worker-a", body=None, cwd=None, mode=None):
+    def command(self, action, name=None, *, harness="worker-a", body=None, cwd=None,
+                mode=None, expected_digest=None):
         cmd = [sys.executable, str(HOST), action, "--harness", harness]
         if name:
             cmd += ["--name", name]
         if mode:
             cmd += ["--mode", mode]
+        if expected_digest is not None:
+            cmd += ["--expected-digest", expected_digest]
         proc = subprocess.run(cmd, input=body or "", capture_output=True, text=True,
                               cwd=cwd or self.workspace, env=self.env, check=False)
         if proc.returncode == 0:
@@ -106,6 +109,27 @@ class RepositoryProcessContact(unittest.TestCase):
         self.assertEqual(second["consequence"]["revision"], 2)
         proc, after = self.command("read", "revision")
         self.assertEqual(after["consequence"]["body"], "two")
+
+    def test_cross_process_correction_inherits_exact_digest_and_rejects_stale(self):
+        proc, first = self.command("write", "observation", body="Notion unavailable")
+        self.assertEqual(proc.returncode, 0, first)
+        original_digest = first["consequence"]["digest"]
+        proc, corrected = self.command("write", "observation", body="Notion directly contacted",
+                                       mode="correct", expected_digest=original_digest,
+                                       harness="worker-b")
+        self.assertEqual(proc.returncode, 0, corrected)
+        self.assertEqual(corrected["consequence"]["revision"], 2)
+        proc, third = self.command("read", "observation", harness="worker-c")
+        self.assertEqual(proc.returncode, 0, third)
+        self.assertEqual(third["consequence"]["previous"], original_digest)
+        self.assertEqual(third["consequence"]["body"], "Notion directly contacted")
+        proc, stale = self.command("write", "observation", body="stale correction",
+                                   mode="correct", expected_digest=original_digest,
+                                   harness="worker-d")
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(stale["error_type"], "MemoryConflict")
+        proc, last = self.command("read", "observation")
+        self.assertEqual(last["consequence"]["digest"], corrected["consequence"]["digest"])
 
     def test_corruption_is_hold_not_auto_repair(self):
         proc, result = self.command("write", "drift", body="original")

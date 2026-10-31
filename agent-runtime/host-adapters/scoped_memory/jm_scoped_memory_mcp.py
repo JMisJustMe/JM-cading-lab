@@ -43,7 +43,8 @@ def tool_defs(writes):
                           "Write one non-secret project note, create or update; commits and reads back before success.",
                           {"name": NOTE,
                            "body": {"type": "string", "minLength": 1, "maxLength": MAX_BODY_BYTES},
-                           "mode": {"type": "string", "enum": ["create", "update"]}}, ["name", "body"]))
+                           "mode": {"type": "string", "enum": ["create", "update", "correct"]},
+                           "expected_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, ["name", "body"]))
     return tools
 
 def success(id_, result):
@@ -97,13 +98,23 @@ class JMScopedMCP:
             if not 0 < body_bytes <= MAX_BODY_BYTES:
                 return tool_result({"status": "HOLD", "reason": "invalid note body"}, True)
         mode = args.get("mode", "create")
-        if action == "write" and mode not in ("create", "update"):
+        if action == "write" and mode not in ("create", "update", "correct"):
             return tool_result({"status": "HOLD", "reason": "invalid write mode"}, True)
+        expected_digest = args.get("expected_digest")
+        if action == "write":
+            if mode == "correct":
+                if (not isinstance(expected_digest, str) or len(expected_digest) != 64
+                        or any(c not in "0123456789abcdef" for c in expected_digest)):
+                    return tool_result({"status": "HOLD", "reason": "correct requires current note digest"}, True)
+            elif expected_digest is not None:
+                return tool_result({"status": "HOLD", "reason": "digest only permitted for correct"}, True)
         argv = [sys.executable, str(HOST), action, "--harness", "mcp-stdio"]
         if action in ("read", "write"):
             argv.extend(["--name", note_name])
         if action == "write":
             argv.extend(["--mode", mode])
+            if mode == "correct":
+                argv.extend(["--expected-digest", expected_digest])
         try:
             # No network; no executable path, owner, workspace or core supplied by tool client.
             proc = subprocess.run(argv, input=body if action == "write" else "",

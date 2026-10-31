@@ -267,7 +267,9 @@ test('@boot registry and runtime agree without rewriting historical contact', as
   expect(registry.registered_bodies.filter(b => !b.mounted).map(b => b.id).sort())
     .toEqual(manifest.fullImportAdds.map(b => b.id).sort());
   expect(registry.cp09_source_edit_contact.mounted_registry_bodies).toBe(21);
-  await page.locator('#proofQuick').click();
+  await page.locator('.nav [data-view="proof"]').click();
+  await page.locator('#runProof').click();
+  await expect(page.locator('#proofBox')).toContainText('builtInExpected');
   const proof = JSON.parse(await page.locator('#proofBox').textContent());
   expect(proof.bodyCount).toBe(manifest.builtInBodyCount);
   expect(proof.fullTarget).toBe(manifest.fullTargetCount);

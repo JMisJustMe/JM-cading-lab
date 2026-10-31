@@ -347,7 +347,12 @@ test('@jm-pointer Drag & Aim interrupted contact recovers without phantom releas
     if(touch){await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p.start,id:11}]});await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...p.end,id:11}]})}
     else{await page.mouse.move(p.start.x,p.start.y);await page.mouse.down();await page.mouse.move(p.end.x,p.end.y)}
     const owner=await page.evaluate(()=>window.__jmOwnerId);
-    if(cause==='capture')await p.canvas.evaluate((el,id)=>el.releasePointerCapture(id),owner);
+    if(cause==='capture'){
+      await p.canvas.evaluate((el,id)=>el.releasePointerCapture(id),owner);
+      // Touch capture overrides are processed at the next native pointer event.
+      if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...p.end,x:p.end.x+1,id:11}]});
+      else await page.mouse.move(p.end.x+1,p.end.y);
+    }
     if(cause==='cancel'){
       if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
       else await p.canvas.dispatchEvent('pointercancel',{pointerId:owner});

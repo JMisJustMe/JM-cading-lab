@@ -105,7 +105,7 @@ def original_jm_session(workspace, query):
 
 def bounded_phone_git_status_receipt(payload, source_url):
     """Untrusted external receipt -> privacy-minimised JM source reference, never attestation."""
-    source_pattern = (r"https://github\\.com/JMisJustMe/JM-ai-studio-surface/"
+    source_pattern = (r"https://github\.com/JMisJustMe/JM-ai-studio-surface/"
                       r"issues/[1-9][0-9]*#issuecomment-[1-9][0-9]*")
     if not isinstance(source_url, str) or re.fullmatch(source_pattern, source_url) is None:
         raise ValueError("HOLD: private original Phone Commander issue-comment URL required")
@@ -124,7 +124,7 @@ def bounded_phone_git_status_receipt(payload, source_url):
            or part["stderr"] != "" for part in (git, branch)):
         raise ValueError("HOLD: device command error or unbounded output")
     raw_branch = branch["stdout"].strip()
-    if not re.fullmatch(r"[a-zA-Z0-9_.\\/-]{1,120}", raw_branch):
+    if not re.fullmatch(r"[a-zA-Z0-9_./-]{1,120}", raw_branch):
         raise ValueError("HOLD: branch data is not an inert bounded identifier")
     if len(git["stdout"].encode("utf-8")) > 4096:
         raise ValueError("HOLD: git-status output too large")

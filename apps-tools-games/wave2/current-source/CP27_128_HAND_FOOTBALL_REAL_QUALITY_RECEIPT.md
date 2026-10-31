@@ -20,3 +20,12 @@ The candidate is patched from the strongest directly readable public v0.8 footba
 Browser tests simulate mobile and desktop configurations. No physical device, owner gameplay feel, GPU FPS soak or public deployment is claimed. cardBORED v0.5 was discovered as exact compressed original source-carriage and protected; not silently recreated, bypassed or modified. The next cardBORED candidate requires a verified extracted live source and its own code-level action proof.
 
 **No Ding No Claim — CP27 preserves v0.8 frozen parent, all game identity and estate quality governance.**
+
+
+## 31 October continuation — squad setup must hold the actual simulation
+
+Original source head `c98b9596c29a11d44a12edd26774108c9b411022` retained the inherited setup/serve-pause defect: `update()` processed the goal serve countdown while the squad gate was open, and `resetBall()` released `paused` before TAKE THE PITCH. Regression commit `f5f86070004b8f7f16e562818d2a59728db1948f`, existing PR #654, real Chromium CI run `41213687993`, reproduced it on both mobile and desktop: 12 inherited tests PASS, two new setup tests FAIL (`paused` expected true, actual false). Failure traces/screenshots remain in artifact `13047691024`; no earlier failure is erased.
+
+The correction adds a gate-specific early return to the existing `update(dt)` before input, actor/ball integration, score and serve handling. It preserves the ordinary goal/serve countdown after actual start. The regression holds the original ball and 0–0 score for 1.1 seconds during setup, selects FINISHER / TIGHT BOX, then requires TAKE THE PITCH to start live ball movement without page errors. No new physics implementation, save namespace, launcher, donor replacement or protected-v0.8 mutation. Exact parent SHA remains `fe1c9fba29a8676352aeec3ab05dcf33082d6ec4be196e4666c1691c3d724991`.
+
+Corrected-head browser CI must pass before this correction is called verified. Branch remains draft/unmerged; owner physical phone/controller, gameplay feel, offline/independent-save-return and deployment gates remain separate. Cloud Browser could not reach workspace localhost (`ERR_CONNECTION_REFUSED`); the repository's existing mobile/desktop Chromium CI is the rendered proof route.

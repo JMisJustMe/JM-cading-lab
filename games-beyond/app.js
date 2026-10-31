@@ -28,7 +28,7 @@ async function isOriginalJMStudios(b){
 function adaptOriginalJMStudiosHistoricalRoutes(doc){
  const runtime=doc?.defaultView;
  if(!runtime||typeof runtime.openRoom!=='function')return 0;
- const script=[...doc.scripts].find(s=>s.textContent.includes('const ROOMS = '));
+ const script=[...doc.scripts].find(s=>/^\s*const ROOMS\s*=\s*\[/m.test(s.textContent));
  if(!script)return 0;
  const source=script.textContent,marker='const ROOMS = ',start=source.indexOf(marker)+marker.length,end=source.indexOf('];',start);
  if(start<marker.length||end<0)return 0;

@@ -289,3 +289,81 @@ test('@jm-power Drag & Aim real release and preview respect the original 100 per
   expect(errors).toEqual([]);
   await test.info().attach('drag-aim-power-parity.json',{body:JSON.stringify(evidence),contentType:'application/json'});
 });
+
+async function kernelReceipt(page){
+  await page.locator('[data-open="proof"]').click();
+  const waiting=page.waitForEvent('download');await page.locator('#exportReceipt').click();
+  const file=await waiting,fs=await import('node:fs/promises');
+  const receipt=JSON.parse(await fs.readFile(await file.path(),'utf8'));
+  await page.locator('[data-open="play"]').click();return receipt;
+}
+async function kernelPoints(page){
+  const canvas=page.locator('#arena');await canvas.scrollIntoViewIfNeeded();const b=await canvas.boundingBox();
+  return{canvas,start:{x:b.x+b.width*150/960,y:b.y+b.height*440/600},end:{x:b.x+b.width*450/960,y:b.y+b.height*440/600},other:{x:b.x+b.width*750/960,y:b.y+b.height*440/600}};
+}
+test('@jm-pointer Drag & Aim initiating contact owns the shot through unrelated fingers and releases',async({page,context},info)=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto('./bodies/drag-aim-loop-kernel-v0-9-9.html');const p=await kernelPoints(page);
+  await p.canvas.evaluate(el=>{
+    window.__jmDownIds=[];window.__jmUpShots=[];
+    el.addEventListener('pointerdown',e=>window.__jmDownIds.push(e.pointerId));
+    el.addEventListener('pointerup',e=>window.__jmUpShots.push({id:e.pointerId,shots:+document.getElementById('hudShots').textContent}));
+  });
+  const touch=info.project.name==='mobile-chromium'?await context.newCDPSession(page):null;
+  if(touch){
+    // The non-owning finger starts first, away from the ball, so it releases first.
+    await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p.other,id:1}]});
+    await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p.other,id:1},{...p.start,id:2}]});
+    await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...p.other,id:1},{...p.end,id:2}]});
+  }else{
+    await page.mouse.move(p.start.x,p.start.y);await page.mouse.down();await page.mouse.move(p.end.x,p.end.y);
+    await p.canvas.dispatchEvent('pointerdown',{pointerId:99,clientX:p.start.x,clientY:p.start.y});
+  }
+  await p.canvas.dispatchEvent('pointermove',{pointerId:99,clientX:p.other.x,clientY:p.other.y});
+  await p.canvas.dispatchEvent('pointerup',{pointerId:99,clientX:p.other.x,clientY:p.other.y});
+  await p.canvas.dispatchEvent('pointercancel',{pointerId:99});await p.canvas.dispatchEvent('lostpointercapture',{pointerId:99});
+  await expect(page.locator('#hudShots')).toHaveText('0');
+  await expect(page.locator('#statePill')).toHaveText('CHARGING');
+  const owner=await page.evaluate(()=>window.__jmDownIds.filter(id=>id!==99).at(-1));
+  if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await page.mouse.up();
+  await expect(page.locator('#hudShots')).toHaveText('1');
+  const ups=await page.evaluate(()=>window.__jmUpShots.filter(e=>e.id!==99));
+  if(touch){expect(ups).toHaveLength(2);expect(ups[0].id).not.toBe(owner);expect(ups[0].shots).toBe(0)}
+  expect(ups.at(-1)).toEqual({id:owner,shots:1});
+  const receipt=await kernelReceipt(page);expect(receipt.chainValid).toBe(true);
+  const releases=receipt.trace.filter(e=>e.type==='release');expect(releases).toHaveLength(1);
+  expect(releases[0].payload.power).toBe(250);expect(releases[0].payload.vx).toBeCloseTo(-16.25,1);
+  expect(errors).toEqual([]);
+  await test.info().attach('drag-owner.json',{body:JSON.stringify({owner,ups,releases}),contentType:'application/json'});
+});
+
+test('@jm-pointer Drag & Aim interrupted contact recovers without phantom release and keeps both keyboard routes',async({page,context},info)=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto('./bodies/drag-aim-loop-kernel-v0-9-9.html');
+  await page.locator('#arena').evaluate(el=>el.addEventListener('pointerdown',e=>window.__jmOwnerId=e.pointerId));
+  const touch=info.project.name==='mobile-chromium'?await context.newCDPSession(page):null;
+  for(const cause of ['capture','cancel','blur','reset','restart']){
+    await page.locator('#restartLevel').click();const p=await kernelPoints(page);
+    if(touch){await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p.start,id:11}]});await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...p.end,id:11}]})}
+    else{await page.mouse.move(p.start.x,p.start.y);await page.mouse.down();await page.mouse.move(p.end.x,p.end.y)}
+    const owner=await page.evaluate(()=>window.__jmOwnerId);
+    if(cause==='capture')await p.canvas.evaluate((el,id)=>el.releasePointerCapture(id),owner);
+    if(cause==='cancel'){
+      if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
+      else await p.canvas.dispatchEvent('pointercancel',{pointerId:owner});
+    }
+    if(cause==='blur')await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+    if(cause==='reset'||cause==='restart')await page.locator(cause==='reset'?'#resetBall':'#restartLevel').press('Enter');
+    await expect(page.locator('#statePill')).toHaveText('READY');
+    if(touch){if(cause!=='cancel')await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]})}else await page.mouse.up();
+    await expect(page.locator('#hudShots')).toHaveText('0');
+    await p.canvas.focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('Space');
+    await expect(page.locator('#hudShots')).toHaveText('1');await page.keyboard.press('Enter');
+    await expect(page.locator('#hudShots')).toHaveText('2');
+  }
+  const receipt=await kernelReceipt(page);expect(receipt.chainValid).toBe(true);
+  const reasons=receipt.trace.filter(e=>e.type==='drag.cancel').map(e=>e.payload.reason);
+  expect(reasons).toEqual(expect.arrayContaining(['capture.lost','pointer.cancel','focus.lost','core.reset','level.restart']));
+  expect(receipt.trace.filter(e=>e.type==='keyboard.aim_release')).toHaveLength(10);
+  expect(errors).toEqual([]);
+});

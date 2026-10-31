@@ -111,7 +111,7 @@ const DEFAULT_LEVELS=[
  {id:5,name:'Pressure Route',objective:'Keep the route alive while avoiding breakfields.',proof:'consequence + recovery',goal:7,shotLimit:13,start:{x:120,y:485},targets:[{x:830,y:95},{x:840,y:500},{x:690,y:270},{x:520,y:95},{x:760,y:185},{x:540,y:490},{x:835,y:310}],obstacles:[{x:320,y:75,w:30,h:250,kind:'wall'},{x:490,y:300,w:260,h:28,kind:'bar'},{x:665,y:80,w:28,h:135,kind:'wall'}],hazards:[{x:380,y:400,w:150,h:90},{x:760,y:390,w:120,h:80}]}
 ];
 const DEFAULT_TUNE={power:1,friction:.985,bounce:.82,guideLength:100,aimGuide:true,haptics:true,sound:true,highContrast:false};
-const state={view:'play',level:1,levels:deep(DEFAULT_LEVELS),tune:{...DEFAULT_TUNE},unlocked:1,hits:0,shots:0,score:0,dings:0,routeBreaks:0,complete:false,drag:false,pointer:{x:0,y:0},ball:{x:150,y:440,r:23,vx:0,vy:0},target:{x:760,y:440,r:27},receipts:[],cool:0,started:performance.now(),lastTime:performance.now(),audio:null};
+const state={view:'play',level:1,levels:deep(DEFAULT_LEVELS),tune:{...DEFAULT_TUNE},unlocked:1,hits:0,shots:0,score:0,dings:0,routeBreaks:0,complete:false,drag:false,dragPointer:null,pointer:{x:0,y:0},ball:{x:150,y:440,r:23,vx:0,vy:0},target:{x:760,y:440,r:27},receipts:[],cool:0,started:performance.now(),lastTime:performance.now(),audio:null};
 const canvas=$('arena'),ctx=canvas.getContext('2d');
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0')}
 function append(type,payload={}){const prev=state.receipts.at(-1)?.hash||'ROOT';const entry={time:new Date().toISOString(),type,level:state.level,payload:deep(payload),previousHash:prev};entry.hash=hash(prev+JSON.stringify({type:entry.type,level:entry.level,payload:entry.payload,time:entry.time}));state.receipts.push(entry);if(state.receipts.length>160)state.receipts.shift();renderReceipts();return entry}
@@ -122,24 +122,32 @@ function setStatus(value){$('statePill').textContent=value;$('statePill').classN
 function toast(msg,hold=false){const t=$('toast');t.textContent=msg;t.className='toast show'+(hold?' hold':'');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.className='toast',1900)}
 function haptic(ms=18){if(state.tune.haptics&&navigator.vibrate)navigator.vibrate(ms)}
 function tone(freq=440,duration=.05){if(!state.tune.sound)return;try{state.audio=state.audio||new (window.AudioContext||window.webkitAudioContext)();const o=state.audio.createOscillator(),g=state.audio.createGain();o.frequency.value=freq;g.gain.setValueAtTime(.045,state.audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,state.audio.currentTime+duration);o.connect(g).connect(state.audio.destination);o.start();o.stop(state.audio.currentTime+duration)}catch{}}
-function resetBall(reason='core.reset'){const s=level().start;Object.assign(state.ball,{x:s.x,y:s.y,vx:0,vy:0});state.drag=false;setStatus(state.complete?'LEVEL COMPLETE':'READY');append(reason,{x:s.x,y:s.y});render()}
+function resetBall(reason='core.reset'){cancelDrag(null,reason);const s=level().start;Object.assign(state.ball,{x:s.x,y:s.y,vx:0,vy:0});state.drag=false;setStatus(state.complete?'LEVEL COMPLETE':'READY');append(reason,{x:s.x,y:s.y});render()}
 function loadLevel(n,reason='level.load'){n=clamp(Math.round(n),1,state.levels.length);if(n>state.unlocked){toast('Complete the previous level first.',true);return false}state.level=n;state.hits=state.shots=state.score=state.dings=state.routeBreaks=0;state.complete=false;state.started=performance.now();const t=targetPoint();Object.assign(state.target,t);resetBall(reason);$('levelJson').value=JSON.stringify(level(),null,2);renderAll();return true}
 function restart(){loadLevel(state.level,'level.restart')}
 function unlockNext(){state.unlocked=Math.max(state.unlocked,Math.min(state.levels.length,state.level+1));try{localStorage.setItem('jm.dragAim.unlocked',String(state.unlocked))}catch{}renderLevels()}
 function completeLevel(){state.complete=true;state.ball.vx=state.ball.vy=0;const accuracy=state.shots?state.hits/state.shots:0,duration=Math.round((performance.now()-state.started)/1000),bonus=Math.max(0,Math.round(500*accuracy)+Math.max(0,level().shotLimit-state.shots)*35),stars=accuracy>=.9?3:accuracy>=.65?2:1;state.score+=bonus;setStatus('LEVEL COMPLETE');append('level.complete',{goal:level().goal,shots:state.shots,hits:state.hits,accuracy:+(accuracy*100).toFixed(1),score:state.score,bonus,stars,durationSeconds:duration});unlockNext();haptic([25,30,45]);tone(760,.14);$('nextLevel').disabled=state.level>=state.levels.length;toast(state.level===state.levels.length?'Kernel route complete.':'Level Ding — next route unlocked.');renderAll()}
 function newTarget(){const p=targetPoint();Object.assign(state.target,p);append('target.next',{index:state.hits+1,x:p.x,y:p.y})}
 function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
-function down(e){e.preventDefault();state.keyboardPreview=false;const p=point(e);state.pointer=p;if(state.complete)return;const d=Math.hypot(p.x-state.ball.x,p.y-state.ball.y);if(d<=state.ball.r+38){const interrupted=+Math.hypot(state.ball.vx,state.ball.vy).toFixed(2);state.ball.vx=state.ball.vy=0;state.drag=true;canvas.setPointerCapture?.(e.pointerId);setStatus('AIMING');append('drag.reclaim',{interruptedSpeed:interrupted});render()}}
-function move(e){if(!state.drag)return;e.preventDefault();state.pointer=point(e);setStatus('CHARGING');render()}
+function down(e){e.preventDefault();if(state.drag)return;state.keyboardPreview=false;const p=point(e);state.pointer=p;if(state.complete)return;const d=Math.hypot(p.x-state.ball.x,p.y-state.ball.y);if(d<=state.ball.r+38){const interrupted=+Math.hypot(state.ball.vx,state.ball.vy).toFixed(2);state.ball.vx=state.ball.vy=0;state.drag=true;state.dragPointer=e.pointerId;canvas.setPointerCapture?.(e.pointerId);setStatus('AIMING');append('drag.reclaim',{interruptedSpeed:interrupted});render()}}
+function move(e){if(!state.drag||e.pointerId!==state.dragPointer)return;e.preventDefault();state.pointer=point(e);setStatus('CHARGING');render()}
 function shotVelocity(dx,dy){const distance=Math.hypot(dx,dy),scale=.065*state.tune.power*Math.min(1,250/(distance||1));return {vx:dx*scale,vy:dy*scale}}
-function up(e){if(!state.drag)return;e.preventDefault();state.pointer=point(e);state.drag=false;const dx=state.ball.x-state.pointer.x,dy=state.ball.y-state.pointer.y,m=Math.min(250,Math.hypot(dx,dy));if(m<8){setStatus('READY');render();return}Object.assign(state.ball,shotVelocity(dx,dy));state.shots++;setStatus('MOVING');append('release',{vx:+state.ball.vx.toFixed(2),vy:+state.ball.vy.toFixed(2),power:+m.toFixed(1)});tone(260,.04);renderAll()}
+function up(e){if(!state.drag||e.pointerId!==state.dragPointer)return;e.preventDefault();state.pointer=point(e);state.drag=false;state.dragPointer=null;const dx=state.ball.x-state.pointer.x,dy=state.ball.y-state.pointer.y,m=Math.min(250,Math.hypot(dx,dy));if(m<8){setStatus('READY');render();return}Object.assign(state.ball,shotVelocity(dx,dy));state.shots++;setStatus('MOVING');append('release',{vx:+state.ball.vx.toFixed(2),vy:+state.ball.vy.toFixed(2),power:+m.toFixed(1)});tone(260,.04);renderAll()}
 canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);
-// CP24: cancelling a finger never commits a shot.
-canvas.addEventListener('pointercancel',()=>{
-  if(!state.drag)return;
-  state.drag=false;state.pointer={x:state.ball.x,y:state.ball.y};
-  setStatus('READY');render();
-});
+// Shared Mechanisms Drag/Release contract: preserve the initiating contact; interruption is not release.
+function cancelDrag(e,reason='pointer.cancel'){
+  if(e&&e.pointerId!==state.dragPointer)return;
+  const active=state.drag,preview=state.keyboardPreview,id=state.dragPointer;
+  state.drag=false;state.dragPointer=null;state.keyboardPreview=false;
+  state.pointer={x:state.ball.x,y:state.ball.y};
+  if(id!==null&&canvas.hasPointerCapture?.(id))canvas.releasePointerCapture(id);
+  if(active){setStatus(state.complete?'LEVEL COMPLETE':'READY');append('drag.cancel',{reason});}
+  if(active||preview)render();
+}
+canvas.addEventListener('pointercancel',e=>cancelDrag(e,'pointer.cancel'));
+canvas.addEventListener('lostpointercapture',e=>cancelDrag(e,'capture.lost'));
+window.addEventListener('blur',()=>cancelDrag(null,'focus.lost'));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelDrag(null,'document.hidden')});
 // Laptop-first parity without replacing the original drag/release physics.
 const keyboardShot={angle:-.52,pull:120};
 window.addEventListener('keydown',e=>{
@@ -157,8 +165,8 @@ window.addEventListener('keydown',e=>{
     if(!rect.width||!rect.height)return;
     const x=b.x-Math.cos(keyboardShot.angle)*keyboardShot.pull;
     const y=b.y-Math.sin(keyboardShot.angle)*keyboardShot.pull;
-    state.drag=true;state.keyboardPreview=false;
-    up({preventDefault(){},clientX:rect.left+x*rect.width/W,clientY:rect.top+y*rect.height/H});
+    state.drag=true;state.dragPointer=null;state.keyboardPreview=false;
+    up({pointerId:null,preventDefault(){},clientX:rect.left+x*rect.width/W,clientY:rect.top+y*rect.height/H});
     append('keyboard.aim_release',{angle:+keyboardShot.angle.toFixed(3),pull:keyboardShot.pull});
     return;
   }

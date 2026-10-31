@@ -174,8 +174,8 @@ printf '%s' '{"state":"PASS","consequence":{"result":"PASS","git":{"exit_code":0
     --source-url 'https://github.com/JMisJustMe/JM-ai-studio-surface/issues/12#issuecomment-6527606601'
 ```
 
-The original phone remains **untouched**. A subsequent correction of the local
-note uses existing `write --mode correct --expected-digest SHA256` and exact
+The original phone remains **untouched**. A subsequent correction of a SEPARATE interpretation
+note (leaving the original receipt note unchanged) uses existing `write --mode correct --expected-digest SHA256` and exact
 readback. An imported reference never becomes autonomous learning, verified
 phone attestation, cloud memory sync, or direct sensor observation. No owner
 retest is needed for this bounded host-source change. Run only the inherited

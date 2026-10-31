@@ -252,6 +252,26 @@ class RepositoryProcessContact(unittest.TestCase):
         self.assertEqual(proc.returncode, 2)
         self.assertEqual(invalid["status"], "HOLD")
 
+    def test_original_workspace_boundary_precedes_external_comment_read(self):
+        # A missing JM workspace must HOLD before any external gh command runs.
+        import stat
+        fake = Path(self.tmp.name) / "gh"
+        marker = Path(self.tmp.name) / "gh_called"
+        fake.write_text('#!/bin/sh\nprintf touched > "$JM_GH_CALLED_MARKER"\nexit 99\n',
+                        encoding="utf-8")
+        fake.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        self.env["PATH"] = self.tmp.name + os.pathsep + self.env["PATH"]
+        self.env["JM_GH_CALLED_MARKER"] = str(marker)
+        without_workspace = Path(self.tmp.name) / "not-a-repository"
+        without_workspace.mkdir()
+        url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"
+               "issues/12#issuecomment-6527606601")
+        proc, held = self.command("fetch-phone-comment", "no_contact",
+                                  source_url=url, cwd=without_workspace)
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(held["status"], "HOLD")
+        self.assertFalse(marker.exists(), "External gh contacted before JM workspace gate")
+
     def test_phone_receipt_intake_refuses_spoofed_or_failed_source(self):
         from jm_scoped_memory_host import stable
         good_url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"

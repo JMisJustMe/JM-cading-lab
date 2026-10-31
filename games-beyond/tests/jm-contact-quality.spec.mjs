@@ -182,6 +182,8 @@ for(const paused of [false,true]){
       await expect(live.locator('#intro')).not.toHaveClass(/show/);
       await expect(live.locator('#pauseBtn')).toHaveText('RESUME');
       expect(await live.evaluate(()=>window.__jmFightFrames.pending())).toBe(0);
+      // Repeated same-size resize notifications must preserve exact saved coordinates.
+      await live.evaluate(()=>{for(let i=0;i<10;i++)window.dispatchEvent(new Event('resize'))});
       const restored=await saveFight(live);
       expect(restored.game).toEqual({...saved.game,paused:true});
       const frozen=await live.locator('#timer').textContent();await live.waitForTimeout(350);

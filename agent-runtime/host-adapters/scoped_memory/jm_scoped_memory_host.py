@@ -188,8 +188,8 @@ def main():
             raise ValueError("expected-digest requires a write action")
         if args.action != "ingest-phone-git-status" and args.source_url is not None:
             raise ValueError("source-url is only for phone receipt ingestion")
-        if args.action == "ingest-phone-git-status" and args.mode not in ("create", "correct"):
-            raise ValueError("phone receipt ingestion cannot perform unconditional update")
+        if args.action == "ingest-phone-git-status" and args.mode != "create":
+            raise ValueError("phone source observations are create-only; correct a separate interpretation note")
         if not re.fullmatch(r"[a-z0-9_-]{1,40}", args.harness):
             raise ValueError("invalid harness label")
         if args.action != "write" and not sys.stdin.isatty():

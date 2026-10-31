@@ -159,19 +159,36 @@ class RepositoryProcessContact(unittest.TestCase):
         self.assertTrue(record["reported_clean_tracked_files"])
         self.assertEqual(record["source_authentication"], "NOT_PERFORMED_BY_LOCAL_HOST")
         self.assertNotIn("stdout", record)
-        initial = read["consequence"]["digest"]
-        # Interpretation may be corrected, but only after the exact earlier digest is presented.
-        proc, updated = self.command("write", "phone_receipt", body="Review: newer main source not on this phone branch",
-                                     mode="correct", expected_digest=initial)
+        original_digest = read["consequence"]["digest"]
+        # The observation remains source-linked and immutable. Corrections belong
+        # in a distinct interpretation note, never in the original receipt.
+        proc, created = self.command("write", "phone_interpretation",
+                                     body=json.dumps({"source_note": "phone_receipt",
+                                                      "source_digest": original_digest,
+                                                      "interpretation": "Original phone source branch still present"}),
+                                     mode="create")
+        self.assertEqual(proc.returncode, 0, created)
+        interpreted_digest = created["consequence"]["digest"]
+        proc, updated = self.command("write", "phone_interpretation",
+                                     body="Updated interpretation: phone source branch is behind current main",
+                                     mode="correct", expected_digest=interpreted_digest)
         self.assertEqual(proc.returncode, 0, updated)
-        proc, stale = self.command("write", "phone_receipt", body="outdated interpretation",
-                                   mode="correct", expected_digest=initial)
+        proc, stale = self.command("write", "phone_interpretation",
+                                   body="outdated interpretation",
+                                   mode="correct", expected_digest=interpreted_digest)
         self.assertEqual(proc.returncode, 2)
         self.assertEqual(stale["error_type"], "MemoryConflict")
-        proc, final = self.command("read", "phone_receipt")
+        proc, final = self.command("read", "phone_interpretation")
         self.assertEqual(final["consequence"]["revision"], 2)
-        self.assertEqual(final["consequence"]["previous"], initial)
-        self.assertEqual(final["consequence"]["body"], "Review: newer main source not on this phone branch")
+        self.assertEqual(final["consequence"]["previous"], interpreted_digest)
+        proc, preserved = self.command("read", "phone_receipt")
+        self.assertEqual(preserved["consequence"]["digest"], original_digest)
+        self.assertEqual(json.loads(preserved["consequence"]["body"])["source_url"], source_url)
+        proc, held = self.command("ingest-phone-git-status", "phone_receipt",
+                                  body=stable(phone_return), source_url=source_url,
+                                  mode="correct", expected_digest=original_digest)
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(held["status"], "HOLD")
 
     def test_phone_receipt_intake_refuses_spoofed_or_failed_source(self):
         from jm_scoped_memory_host import stable

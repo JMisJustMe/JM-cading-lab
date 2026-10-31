@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 
 const BUILT_IN = 22;
 const FULL_TARGET = 24;
@@ -52,6 +53,20 @@ async function openGameForgeEditor(page) {
 async function frameHtmlLength(page) {
   return page.locator('#bodyFrame').evaluate(frame => frame.contentDocument?.documentElement?.outerHTML.length || 0);
 }
+
+test('@registry-source exact 22/24 identities match the authoritative payload manifest', () => {
+  const registry = JSON.parse(readFileSync(new URL('../registry.json', import.meta.url), 'utf8'));
+  const manifest = JSON.parse(readFileSync(new URL('../payload-manifest.json', import.meta.url), 'utf8'));
+  const builtInIds = registry.registered_bodies.filter(body => body.mounted).map(body => body.id).sort();
+  const privateIds = registry.registered_bodies.filter(body => !body.mounted).map(body => body.id).sort();
+  expect(registry.publicBuiltInCount).toBe(manifest.builtInBodyCount);
+  expect(registry.fullHouseCount).toBe(manifest.fullTargetCount);
+  expect(builtInIds).toEqual([...manifest.bodyIdsBuiltIn].sort());
+  expect(registry.registered_bodies).toHaveLength(manifest.fullTargetCount);
+  expect(privateIds).toEqual(manifest.fullImportAdds.map(body => body.id).sort());
+  expect(privateIds).toEqual(['jmstudios-actual-crown', 'jmstudios-source-rebegin']);
+  expect(registry.cp09_source_edit_contact.mounted_registry_bodies).toBe(21); // Frozen historical CP09 proof, not current authority.
+});
 
 test('@boot current 22-built-in / 24-full House contract boots cleanly', async ({ page }) => {
   const errors = await openHouse(page);

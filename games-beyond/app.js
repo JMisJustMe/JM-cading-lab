@@ -190,6 +190,13 @@ async function importHouse(file){
   const incoming=JSON.parse(await file.text());
   if(!Array.isArray(incoming.bodies))throw Error('No bodies array');
   const exactPair=incoming.source_custody?.original_lineage_zip_file===JMSTUDIOS_LINEAGE;
+  // An absent/spoofed custody declaration must NOT route protected JMStudios
+  // identities through the ordinary creator-import lane. Empty externalized
+  // placeholders remain skipped by that lane; actual HTML requires full proof.
+  const protectedHTML=incoming.bodies.some(b=>
+    Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b?.id)&&
+    typeof b?.html==='string'&&/<html|<!doctype/i.test(b.html));
+  if(protectedHTML&&!exactPair)throw Error('JMStudios original-source identity requires verified lineage pair');
   if(exactPair){
    const ids=incoming.bodies.map(b=>b?.id);
    if(ids.length!==2||new Set(ids).size!==2||!ids.every(id=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,id)))

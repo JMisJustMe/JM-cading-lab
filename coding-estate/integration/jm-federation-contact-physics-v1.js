@@ -4,9 +4,13 @@ Authority: extracted from COMBOUND Original v3.8 / JM Game Engine D2 runtime fed
 Scope: true unit-pair impulse/separation/restitution, NOT character abilities,
 scoring, obstacles, or the entire collision semantics. This body is re-entrant:
 there is no global game state or DOM dependency. Units are updated by reference.
+v1.0.1: explicit zero restitution tuning is preserved; only absent/null values
+use inherited defaults. Existing nonzero COMBOUND formula parity is retained.
+Recipient proof is in the existing selftest via real GameCoding/GameCore calls;
+this does not promote any full game, private source or physical-device release.
 */
 (function(root){'use strict';
- const VERSION='1.0.0';
+ const VERSION='1.0.1';
  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
  let pairCount=0, impulseCount=0, totalImpulse=0;
  function solvePair(a,b,model){
@@ -21,7 +25,7 @@ there is no global game state or DOM dependency. Units are updated by reference.
    let j=0;
    if(vel<0){
      const ra=fighters[a.key].restitution,rb=fighters[b.key].restitution;
-     const e=clamp(Math.sqrt(ra*rb)*(rules.contact_restitution_scale||1.055)+(rules.contact_restitution_add||0),rules.contact_restitution_min||.72,rules.contact_restitution_max||1.13);
+     const e=clamp(Math.sqrt(ra*rb)*(rules.contact_restitution_scale??1.055)+(rules.contact_restitution_add??0),rules.contact_restitution_min??.72,rules.contact_restitution_max??1.13);
      j=-(1+e)*vel/sum;
      a.vx-=j*nx*invA;a.vy-=j*ny*invA;b.vx+=j*nx*invB;b.vy+=j*ny*invB;
      const release=clamp((-vel)*(rules.contact_release_factor||0),0,rules.contact_release_cap||0);

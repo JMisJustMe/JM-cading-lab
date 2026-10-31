@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import './jm-federation-contact-physics-v1.js';
+import {GameCoding,GameCodingRuntime,JMGameCore,JMGameCoreRuntime} from '../sovereign-ten/direct/game-native.mjs';
 const e=globalThis.JM_FEDERATION_PHYSICS;
 const rules={contact_restitution_scale:1.055,contact_restitution_add:0,contact_restitution_min:.72,contact_restitution_max:1.13,contact_release_factor:.065,contact_release_cap:48};
 const model={fighters:{ZIPP:{restitution:.88},BRAX:{restitution:.94}},rules};
@@ -41,5 +42,47 @@ assert.equal(e.stats().pairs,contacts);
 assert.throws(()=>e.solvePair({},{},{}),/JM_PHYSICS_INVALID_MODEL/);
 e.reset();assert.equal(e.stats().pairs,0);
 assert(Object.isFrozen(e));
-console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,
+// Explicit zero is authored tuning, not an absent default. Existing native
+// GameCoding/GameCore service dispatch must observe that exact physical result.
+const gameSource=`entity Arena {
+ resolved = false
+}
+mechanic Contact {
+ requires arena.resolved == false
+ effect call physics.resolve()
+}`;
+const coreSource=`organ ContactOrgan {
+ handles = [Arena]
+ rules = [Contact]
+ invariants = {
+ arena.resolved == true
+ }
+}
+system ContactSystem {
+ organs = [ContactOrgan]
+ events = [Impact]
+ identity = "JM.ContactPhysics.RecipientFixture"
+}`;
+let recipientContacts=0;
+for(const [name,tuning,expected] of [
+ ['zero-scale',{contact_restitution_scale:0,contact_restitution_min:0},0],
+ ['zero-cap',{contact_restitution_max:0,contact_restitution_min:0},0],
+ ['bounded-cap',{contact_restitution_max:.25,contact_restitution_min:0},.25]
+]){
+ const recipientModel={fighters:{ZIPP:{restitution:1},BRAX:{restitution:1}},rules:{...rules,contact_release_factor:0,...tuning}};
+ const pair={left:{key:'ZIPP',x:0,y:0,r:1,mass:1,vx:1,vy:0,spin:0,squash:0},right:{key:'BRAX',x:1.5,y:0,r:1,mass:1,vx:-1,vy:0,spin:0,squash:0}};
+ const runtime=new GameCodingRuntime(GameCoding.parse(gameSource),pair,{'physics.resolve':(_,state)=>{
+  e.solvePair(state.left,state.right,recipientModel);state.arena.resolved=true;
+ }});
+ const core=new JMGameCoreRuntime(JMGameCore.parse(coreSource),runtime);
+ const dispatch=core.dispatch('ContactSystem','Impact');
+ assert.equal(dispatch.identity,'JM.ContactPhysics.RecipientFixture');
+ assert.equal(dispatch.executions[0].applied,true,name);
+ assert(Math.abs(dispatch.state.left.vx+expected)<1e-12,name+' left velocity');
+ assert(Math.abs(dispatch.state.right.vx-expected)<1e-12,name+' right velocity');
+ assert.equal(dispatch.state.right.x-dispatch.state.left.x,2,name+' separation');
+ assert.equal(pair.left.vx,1,'recipient initial state remains unchanged');
+ recipientContacts++;
+}
+console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,
  outcome:'PASS',claim:'pair geometry and impulse only; original COMBOUND art, abilities, walls, AI remain outside scope'},null,2));

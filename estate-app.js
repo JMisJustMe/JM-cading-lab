@@ -52,7 +52,7 @@ const FALLBACK = {
 
 const HOUSES = [
   {id:'games-house',name:'Games & Beyond',kind:'Games',state:'LIVE EDITABLE HOUSE',accent:'#ffd166',path:'./games-beyond/',summary:'Every playable game, engine, reusable loop, benchmark and recovery body enters through one phone-first house.',proof:'Existing PWA host and registry are live.'},
-  {id:'coding-house',name:'Cading & Coding Estate',kind:'Coding',state:'LIVE WORKBENCH',accent:'#72ecff',path:'./coding-estate/everybody/',summary:'JM coding bodies remain sovereign while parsers, IR, runtimes, adapters and targets connect through the EveryBody fabric.',proof:'76 recovered entries and portable target lanes registered.'},
+  {id:'coding-house',name:'Cading & Coding Estate',kind:'Coding',state:'LIVE WORKBENCH',accent:'#72ecff',path:'./coding-estate/everybody/',summary:'JM coding bodies remain sovereign while parsers, IR, runtimes, adapters and targets connect through the EveryBody fabric.',proof:'100 current canonical-native specifications are registered; historical recovered-source evidence remains separately labelled.'},
   {id:'tools-house',name:'Apps & Tools',kind:'Tools',state:'LIVE LAB + EXPANDING',accent:'#7ff0a6',path:'./fresh-app-lab/',summary:'Working utilities, creator tools, app proofs, operating surfaces and future product rooms.',proof:'Fresh App Lab public room is live.'},
   {id:'market-house',name:'Market Ecosystem Lab',kind:'Markets',state:'LIVE CLOUD CORRIDOR',accent:'#5de08b',path:'./market-lab/',summary:'Marketplace-of-markets research: public order-book contact, depth-aware paper routes, historical macro series and mismatched-clock testing.',proof:'Exact v1.5 corridor recovered onto current ECOSTATE and freshly re-contacted at the public Render endpoint on 27 September 2026; real capital remains £0 by design.'},
   {id:'theory-house',name:'Theory & Publications',kind:'Theory',state:'REGISTRY CONNECTED',accent:'#b69cff',path:'./registry/theory-wing.json',summary:'Human systems, language, proof, play, story, physics and public methods remain deep bodies with readable routes.',proof:'Nine theory districts are indexed.'},
@@ -101,7 +101,7 @@ function applyEstateHeadPublicAuthority(){
     'games-house':{path:'./games-beyond/',state:'LIVE SOVEREIGN HOUSE'},
     'coding-house':{path:'./coding-estate/everybody/',state:'CURRENT CANONICAL-NATIVE FABRIC'},
     'tools-house':{path:'./apps/',state:'LIVE GOVERNED APPS HOUSE'},
-    'theory-house':{path:'./theory/',state:'37 FULL BODIES · 297 CENSUS ROUTES'},
+    'theory-house':{path:'./theory/',state:`PUBLIC THEORY HOUSE · EH ${contract.current_public_subset_version || 'current'}`},
     'studio-house':{path:'./lyrics/',state:'LYRICSTUDIO v0.5.1 LIVE'}
   };
   HOUSES.forEach(h=>{const patch=houseRoutes[h.id];if(patch)Object.assign(h,patch)});
@@ -142,7 +142,7 @@ function toggleFavourite(id){
 }
 function getAllItems(){
   const gameItems=state.data.games.map(g=>({...g,kind:'Games',state:g.stage,summary:g.role,path:'./games-beyond/',proof:`${g.room} · ${g.version}`}));
-  const theoryItems=state.data.theory.flatMap(d=>d.bodies.map((name,index)=>({id:`theory-${slug(d.name)}-${index}`,name,kind:'Theory',state:'REGISTERED',summary:`Theory body inside ${d.name}.`,proof:d.name,path:'./registry/theory-wing.json'})));
+  const theoryItems=state.data.theory.flatMap(d=>d.bodies.map((name,index)=>({id:`theory-${slug(d.name)}-${index}`,name,kind:'Theory',state:'REGISTERED',summary:`Theory body inside ${d.name}; enter the Theory House to find its reader/source route.`,proof:d.name,path:'./theory/'})));
   const routes=state.data.estate.routes.map(r=>({...r,summary:r.role||'Live public route.',proof:r.state}));
   return [...HOUSES,...routes,...gameItems,...theoryItems];
 }

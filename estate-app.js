@@ -142,7 +142,7 @@ function toggleFavourite(id){
 }
 function getAllItems(){
   const gameItems=state.data.games.map(g=>({...g,kind:'Games',state:g.stage,summary:g.role,path:'./games-beyond/',proof:`${g.room} · ${g.version}`}));
-  const theoryItems=state.data.theory.flatMap(d=>d.bodies.map((name,index)=>({id:`theory-${slug(d.name)}-${index}`,name,kind:'Theory',state:'REGISTERED',summary:`Theory body inside ${d.name}; enter the Theory House to find its reader/source route.`,proof:d.name,path:'./theory/'})));
+  const theoryItems=state.data.theory.flatMap(d=>d.bodies.map((name,index)=>({id:`theory-${slug(d.name)}-${index}`,name,kind:'Theory',state:'REGISTERED',summary:`Theory body inside ${d.name}; search its existing reader/source route.`,proof:d.name,path:`./theory/?find=${encodeURIComponent(name)}`})));
   const routes=state.data.estate.routes.map(r=>({...r,summary:r.role||'Live public route.',proof:r.state}));
   return [...HOUSES,...routes,...gameItems,...theoryItems];
 }

@@ -143,7 +143,7 @@ class RepositoryProcessContact(unittest.TestCase):
         phone_return = {"state": "PASS", "consequence": {
             "result": "PASS",
             "git": {"exit_code": 0, "stdout": "", "stderr": ""},
-            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\\n",
+            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\n",
                        "stderr": ""}}}
         proc, inserted = self.command("ingest-phone-git-status", "phone_receipt",
                                       body=stable(phone_return), source_url=source_url)
@@ -180,14 +180,14 @@ class RepositoryProcessContact(unittest.TestCase):
         good = {"state": "PASS", "consequence": {
             "result": "PASS",
             "git": {"exit_code": 0, "stdout": "", "stderr": ""},
-            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\\n", "stderr": ""}}}
+            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\n", "stderr": ""}}}
         for changed, url in [
             (good, "https://evil.example.com/receipt"),
             ({"state": "HOLD", "reason": "NOT_RUN"}, good_url),
             ({"state": "PASS", "consequence": {"result": "PASS", "git": {
                 "exit_code": 1, "stdout": "", "stderr": ""}, "branch": good["consequence"]["branch"]}}, good_url),
             ({"state": "PASS", "consequence": {"result": "PASS", "git": good["consequence"]["git"],
-                "branch": {"exit_code": 0, "stdout": "branch; rm -rf /\\n", "stderr": ""}}}, good_url),
+                "branch": {"exit_code": 0, "stdout": "branch; rm -rf /\n", "stderr": ""}}}, good_url),
         ]:
             proc, held = self.command("ingest-phone-git-status", "bad_receipt",
                                       body=stable(changed), source_url=url)

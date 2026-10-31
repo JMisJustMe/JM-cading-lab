@@ -143,8 +143,60 @@ def bounded_phone_git_status_receipt(payload, source_url):
     return stable(summary)
 
 
+
+def fetch_original_phone_comment(source_url):
+    """Use owner-authorised GitHub CLI to read one original private JM receipt.
+
+    This does not command the handset or cryptographically attest the device.
+    """
+    if not isinstance(source_url, str):
+        raise ValueError("HOLD: phone comment source URL missing")
+    match = re.fullmatch(
+        r"https://github\.com/JMisJustMe/JM-ai-studio-surface/"
+        r"issues/([1-9][0-9]*)#issuecomment-([1-9][0-9]*)", source_url)
+    if match is None:
+        raise ValueError("HOLD: wrong private Phone Commander source")
+    issue_id, comment_id = match.groups()
+    endpoint = "repos/JMisJustMe/JM-ai-studio-surface/issues/comments/" + comment_id
+    try:
+        proc = subprocess.run(["gh", "api", "--method", "GET", endpoint],
+                              text=True, capture_output=True, timeout=20, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise RuntimeError("HOLD: GitHub CLI original-source contact unavailable") from exc
+    if proc.returncode != 0 or len(proc.stdout.encode("utf-8")) > 32768:
+        raise RuntimeError("HOLD: GitHub API comment read unavailable or oversized")
+    try:
+        comment = json.loads(proc.stdout)
+    except ValueError as exc:
+        raise ValueError("HOLD: invalid GitHub comment response") from exc
+    expected_issue = ("https://api.github.com/repos/"
+                      "JMisJustMe/JM-ai-studio-surface/issues/" + issue_id)
+    if (not isinstance(comment, dict) or type(comment.get("id")) is not int
+            or str(comment["id"]) != comment_id
+            or comment.get("html_url") != source_url
+            or comment.get("issue_url") != expected_issue
+            or not isinstance(comment.get("user"), dict)
+            or comment["user"].get("login") != "JMisJustMe"):
+        raise ValueError("HOLD: comment, issue or author identity mismatch")
+    body = comment.get("body")
+    prefix = "JM PHONE COMMANDER RECEIPT\n" + chr(96) * 3 + "json\n"
+    suffix = "\n" + chr(96) * 3
+    if (not isinstance(body, str) or len(body.encode("utf-8")) > 16384
+            or not body.startswith(prefix) or not body.rstrip().endswith(suffix)):
+        raise ValueError("HOLD: unsupported original Phone Commander receipt envelope")
+    try:
+        original_receipt = json.loads(body[len(prefix):].rstrip()[:-len(suffix)])
+    except ValueError as exc:
+        raise ValueError("HOLD: original phone receipt JSON invalid") from exc
+    summary = json.loads(bounded_phone_git_status_receipt(original_receipt, source_url))
+    summary["source_authentication"] = "GH_API_COMMENT_FIELDS_MATCHED_AUTHORISATION_HOST_BOUND"
+    summary["source_comment_id"] = comment["id"]
+    summary["source_contact"] = "GITHUB_COMMENT_READ_NOT_NEW_ANDROID_CONTACT"
+    return stable(summary)
+
+
 async def action(memory, args, body):
-    if args.action in ("write", "ingest-phone-git-status"):
+    if args.action in ("write", "ingest-phone-git-status", "fetch-phone-comment"):
         committed = await memory.write(args.name, body, mode=args.mode,
                                        expected_digest=args.expected_digest)
         returned = await memory.read(args.name)
@@ -157,6 +209,8 @@ async def action(memory, args, body):
                        "scope": committed["scope"]}
         if args.action == "ingest-phone-git-status":
             consequence["source_contact"] = "REFERENCE_ONLY_LOCAL_HOST_DID_NOT_FETCH_PHONE"
+        elif args.action == "fetch-phone-comment":
+            consequence["source_contact"] = "GITHUB_API_COMMENT_FIELDS_MATCHED_NOT_NEW_ANDROID_CONTACT"
         return consequence
     if args.action == "read":
         result = await memory.read(args.name)
@@ -171,7 +225,7 @@ async def action(memory, args, body):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("write", "read", "list", "ingest-phone-git-status"))
+    parser.add_argument("action", choices=("write", "read", "list", "ingest-phone-git-status", "fetch-phone-comment"))
     parser.add_argument("--name", help="note key, required for read and write")
     parser.add_argument("--mode", choices=("create", "update", "correct"), default="create")
     parser.add_argument("--expected-digest", help="exact current note digest for correct mode")
@@ -182,13 +236,13 @@ def main():
                         help="query routed through the original JM adapter")
     args = parser.parse_args()
     try:
-        if args.action in ("write", "read", "ingest-phone-git-status") and not args.name:
+        if args.action in ("write", "read", "ingest-phone-git-status", "fetch-phone-comment") and not args.name:
             raise ValueError("name required for read/write/intake")
-        if args.action not in ("write", "ingest-phone-git-status") and args.expected_digest is not None:
+        if args.action not in ("write", "ingest-phone-git-status", "fetch-phone-comment") and args.expected_digest is not None:
             raise ValueError("expected-digest requires a write action")
-        if args.action != "ingest-phone-git-status" and args.source_url is not None:
+        if args.action not in ("ingest-phone-git-status", "fetch-phone-comment") and args.source_url is not None:
             raise ValueError("source-url is only for phone receipt ingestion")
-        if args.action == "ingest-phone-git-status" and args.mode != "create":
+        if args.action in ("ingest-phone-git-status", "fetch-phone-comment") and args.mode != "create":
             raise ValueError("phone source observations are create-only; correct a separate interpretation note")
         if not re.fullmatch(r"[a-z0-9_-]{1,40}", args.harness):
             raise ValueError("invalid harness label")
@@ -206,6 +260,10 @@ def main():
                 except ValueError as exc:
                     raise ValueError("HOLD: malformed original Phone Commander receipt") from exc
                 body = bounded_phone_git_status_receipt(parsed, args.source_url)
+        if args.action == "fetch-phone-comment":
+            if args.expected_digest is not None:
+                raise ValueError("original observations cannot be updated")
+            body = fetch_original_phone_comment(args.source_url)
         workspace = git_workspace()
         os.umask(0o077)
         owner = local_owner()

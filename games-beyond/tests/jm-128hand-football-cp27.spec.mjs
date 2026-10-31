@@ -19,6 +19,26 @@ async function start(page){
   return errors;
 }
 const field=p=>p.evaluate(()=>window.__JM128_CP27__.field);
+test('@128hand-cp27 setup holds the real match until TAKE THE PITCH',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto(door);
+  await expect(page.locator('#jm128Gate')).toBeVisible();
+  const before=await field(page);
+  await page.waitForTimeout(1100);
+  expect(await page.evaluate(()=>window.__JM128_V08__.state.paused)).toBe(true);
+  expect((await field(page)).ball).toEqual(before.ball);
+  expect((await field(page)).score).toEqual([0,0]);
+  await page.getByRole('button',{name:'FINISHER',exact:false}).click();
+  await page.getByRole('button',{name:'TIGHT BOX',exact:true}).click();
+  await page.locator('#jm128Start').click();
+  await expect(page.locator('#jm128Gate')).toBeHidden();
+  await expect.poll(()=>page.evaluate(()=>window.__JM128_CP27__.contact.live)).toBe(true);
+  expect((await field(page)).role).toBe('finisher');
+  expect((await field(page)).shape).toBe('tight');
+  const liveBall=(await field(page)).ball;
+  await expect.poll(async()=>(await field(page)).ball.x).not.toBe(liveBall.x);
+  expect(errors).toEqual([]);
+});
 test('@128hand-cp27 exact original football parent remains byte-for-byte protected',async()=>{
   expect(createHash('sha256').update(readFileSync(parent)).digest('hex')).toBe(parentHash);
 });

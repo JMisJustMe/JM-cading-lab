@@ -22,6 +22,13 @@ async function isOriginalJMStudios(b){
    b.sourceTransport==='RECOVERED_FROM_EXISTING_JM_LINEAGE_NOT_NEW_CREATION'&&
    new Blob([b.html]).size===b.size&&await hash(b.html)===expected);
 }
+// A full backup may carry unchanged built-in source as well as creator revisions.
+// Grade the bytes against this boot's protected base, never trust the backup label.
+async function isOriginalBuiltIn(b,snapshot){
+ const original=snapshot.get(b?.id);
+ return !!(original&&!b.edited&&typeof b.html==='string'&&b.hash===original.hash&&
+   new Blob([b.html]).size===original.size&&await hash(b.html)===original.hash);
+}
 async function commitHouseImport(items){
  return new Promise((resolve,reject)=>{
    const tx=db.transaction('edits','readwrite');
@@ -46,7 +53,7 @@ async function decodePayload(){
  let text=await new Promise((ok,no)=>LZMA.decompress([...compressed],(value,error)=>error?no(error):ok(value),p=>progress(55+25*p,'Decompressing exact bodies…')));if(typeof text!=='string')text=new TextDecoder().decode(Uint8Array.from(text));if(await hash(text)!==manifest.rawSha256)throw Error('Full payload digest mismatch');const result=JSON.parse(text);if(!Array.isArray(result.bodies)||result.bodies.length!==manifest.payloadBodyCount)throw Error('Payload body count mismatch');
  progress(82,'Mounting committed House bodies…');for(let i=0;i<(manifest.extraBodies||[]).length;i++){const meta=manifest.extraBodies[i],html=await fetch(`${meta.path}?release=${RELEASE}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`${meta.path} HTTP ${r.status}`);return r.text()});if(!/<html|<!doctype/i.test(html))throw Error(`${meta.id} is not HTML`);result.bodies.push({...meta,html,hash:await hash(html),size:new Blob([html]).size,mounted:true,status:'MOUNTED',sourceName:meta.path,bundled:true,updatedAt:NOW()});progress(82+(i+1)/(manifest.extraBodies.length||1)*12,`Mounting committed body ${i+1}/${manifest.extraBodies.length}`)}
  const protectedSnapshot=new Map(result.bodies.map(x=>[x.id,structuredClone(x)]));
- const edits=await all('edits');for(const edit of edits){const exactOriginal=await isOriginalJMStudios(edit);const at=result.bodies.findIndex(x=>x.id===edit.id);if(at>=0)result.bodies[at]={...result.bodies[at],...edit,edited:!exactOriginal};else{const imported={...edit,mounted:true,status:'MOUNTED',edited:!exactOriginal};result.bodies.push(imported);protectedSnapshot.set(edit.id,structuredClone(imported))}}
+ const edits=await all('edits');for(const edit of edits){const exactOriginal=await isOriginalJMStudios(edit)||await isOriginalBuiltIn(edit,protectedSnapshot);const at=result.bodies.findIndex(x=>x.id===edit.id);if(at>=0)result.bodies[at]={...result.bodies[at],...edit,edited:!exactOriginal};else{const imported={...edit,mounted:true,status:'MOUNTED',edited:!exactOriginal};result.bodies.push(imported);protectedSnapshot.set(edit.id,structuredClone(imported))}}
  if(result.bodies.length<(manifest.builtInBodyCount||manifest.bodyCount))throw Error('Built-in body count short');pack=result;protectedBodies=protectedSnapshot;progress(100,`${result.bodies.length} bodies mounted. Full target: ${manifest.fullTargetCount||result.bodies.length}.`);$('status').textContent=`${result.bodies.length} MOUNTED · ${manifest.fullTargetCount||result.bodies.length} FULL`;$('status').className='status ok';$('enterBtn').disabled=false;await receipt('ACCESSIBLE_PUBLIC_HOUSE_BOOT','Games&Beyond',{bodies:result.bodies.length,fullTarget:manifest.fullTargetCount,accessibilityVersion:'0.5'});renderAll();openRequestedSourceEditor();await openRequestedHouseBody();setTimeout(()=>runAudit(false),30)
 }
 function card(b){const a=b.accessibilityAudit;return `<article class="room ${b.id===selected?'selected':''}" aria-labelledby="room-${esc(b.id)}"><h3 id="room-${esc(b.id)}">${esc(b.name)} <span>${esc(b.version||'')}</span></h3><p>${esc(b.role||'Sovereign mounted body')}</p><div class="tags"><span class="tag">${esc(b.category||'Room')}</span><span class="tag live">MOUNTED</span><span class="tag">${bytes(new Blob([b.html]).size)}</span>${b.edited?'<span class="tag live">CREATOR REVISION</span>':''}${a?`<span class="tag ${a.grade==='A'?'live':''}">ACCESS ${a.grade}</span>`:''}</div><div class="roomActions"><button data-play="${esc(b.id)}" aria-label="Open ${esc(b.name)}">OPEN BODY</button><button data-edit="${esc(b.id)}">EDIT</button><button data-export="${esc(b.id)}">EXPORT</button></div></article>`}
@@ -55,7 +62,7 @@ function bindCards(){$$('[data-play]').forEach(x=>x.onclick=()=>openBody(x.datas
 function renderRooms(){const bodies=shown();$('roomRail').innerHTML=bodies.length?bodies.map(card).join(''):'<div class="empty">No rooms match that route.</div>';$('searchSummary').textContent=`${bodies.length} rooms shown`;bindCards()}
 function renderFilters(){const cats=['all',...new Set((pack?.bodies||[]).map(x=>x.category))];$('filters').innerHTML=cats.map(x=>`<button class="filter ${x===filter?'active':''}" data-cat="${esc(x)}" aria-pressed="${x===filter}">${x==='all'?'ALL ROOMS':esc(x)}</button>`).join('');$$('[data-cat]').forEach(x=>x.onclick=()=>{filter=x.dataset.cat;renderFilters();renderRooms()})}
 function renderRecent(){const bodies=recent.map(findBody).filter(Boolean).slice(0,5);$('recentRooms').innerHTML=bodies.length?bodies.map(card).join(''):'<div class="empty">Open a room and the House will remember the route.</div>';bindCards()}
-async function stats(){$('mountedStat').textContent=pack?.bodies.length||0;$('editedStat').textContent=(await all('edits')).length;$('receiptStat').textContent=(await all('receipts')).length}
+async function stats(){$('mountedStat').textContent=pack?.bodies.length||0;$('editedStat').textContent=(pack?.bodies||[]).filter(b=>b.edited).length;$('receiptStat').textContent=(await all('receipts')).length}
 function renderAll(){renderFilters();renderRooms();renderRecent();stats();if(selected&&findBody(selected))editBody(selected)}
 function view(name,focus=true){$$('.view').forEach(x=>x.hidden=x.dataset.view!==name);$$('.nav button').forEach(x=>{const on=x.dataset.view===name;x.classList.toggle('active',on);x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});if(focus){const h=document.querySelector(`.view[data-view="${name}"] h1,.view[data-view="${name}"] h2`);if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}scrollTo({top:0,behavior:document.documentElement.classList.contains('reduced-motion')?'auto':'smooth'})}
 // Host-only navigation assistance for SHA-verified frozen JMStudios originals.
@@ -224,6 +231,7 @@ async function importHouse(file){
   const incoming=JSON.parse(await file.text());
   if(!Array.isArray(incoming.bodies))throw Error('No bodies array');
   const exactPair=incoming.source_custody?.original_lineage_zip_file===JMSTUDIOS_LINEAGE;
+  const fullBackup=incoming.schema==='JM.GamesBeyondHouse/0.5-public-export';
   // An absent/spoofed custody declaration must NOT route protected JMStudios
   // identities through the ordinary creator-import lane. Empty externalized
   // placeholders remain skipped by that lane; actual HTML requires full proof.
@@ -232,7 +240,6 @@ async function importHouse(file){
     typeof b?.html==='string'&&/<html|<!doctype/i.test(b.html));
   if(protectedHTML&&!exactPair)throw Error('JMStudios original-source identity requires verified lineage pair');
   if(exactPair){
-   const fullBackup=incoming.schema==='JM.GamesBeyondHouse/0.5-public-export';
    const ids=incoming.bodies.filter(b=>!fullBackup||Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b?.id)).map(b=>b?.id);
    if(ids.length!==2||new Set(ids).size!==2||!ids.every(id=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,id)))
      throw Error('JMStudios lineage pair identity mismatch');
@@ -251,7 +258,8 @@ async function importHouse(file){
    const previous=findBody(item.id);
    if(previous?.edited&&!await isOriginalJMStudios(previous))
      throw Error('Existing local creator revision held from replacement: '+item.id);
-   const replacement={...previous,...item,mounted:true,status:'MOUNTED',edited:!isOriginal};
+   const pristineBuiltIn=fullBackup&&await isOriginalBuiltIn(item,protectedBodies);
+   const replacement={...previous,...item,mounted:true,status:'MOUNTED',edited:!(isOriginal||pristineBuiltIn)};
    staged.push(replacement);
    if(previous)updated++;else added++;
   }

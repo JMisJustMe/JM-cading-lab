@@ -260,14 +260,14 @@ def main():
                 except ValueError as exc:
                     raise ValueError("HOLD: malformed original Phone Commander receipt") from exc
                 body = bounded_phone_git_status_receipt(parsed, args.source_url)
-        if args.action == "fetch-phone-comment":
-            if args.expected_digest is not None:
-                raise ValueError("original observations cannot be updated")
-            body = fetch_original_phone_comment(args.source_url)
+        if args.action == "fetch-phone-comment" and args.expected_digest is not None:
+            raise ValueError("original observations cannot be updated")
         workspace = git_workspace()
         os.umask(0o077)
         owner = local_owner()
         envelope = original_jm_session(workspace, args.query)
+        if args.action == "fetch-phone-comment":
+            body = fetch_original_phone_comment(args.source_url)
         memory = ScopedMemory(memory_home(), HostScope(owner, workspace), envelope["core"], args.harness)
         with corpus_lock(memory.root):
             result = asyncio.run(action(memory, args, body))

@@ -29,3 +29,10 @@ Original source head `c98b9596c29a11d44a12edd26774108c9b411022` retained the inh
 The correction adds a gate-specific early return to the existing `update(dt)` before input, actor/ball integration, score and serve handling. It preserves the ordinary goal/serve countdown after actual start. The regression holds the original ball and 0–0 score for 1.1 seconds during setup, selects FINISHER / TIGHT BOX, then requires TAKE THE PITCH to start live ball movement without page errors. No new physics implementation, save namespace, launcher, donor replacement or protected-v0.8 mutation. Exact parent SHA remains `fe1c9fba29a8676352aeec3ab05dcf33082d6ec4be196e4666c1691c3d724991`.
 
 Corrected-head browser CI must pass before this correction is called verified. Branch remains draft/unmerged; owner physical phone/controller, gameplay feel, offline/independent-save-return and deployment gates remain separate. Cloud Browser could not reach workspace localhost (`ERR_CONNECTION_REFUSED`); the repository's existing mobile/desktop Chromium CI is the rendered proof route.
+
+
+### Corrected-head contact and origin-local return continuation
+
+Source correction commit `7906776248d9d2a570d9a0ace87675374ccfd99b`, original Chromium run `41213819584`, job `124574091587`: **14/14 PASS** (mobile + desktop); log read back. The earlier failing run is retained.
+
+Added a separate original-browser lifecycle test: select SHIELD / BREAK LANE through actual setup controls, start (original `jm128.v08` save), reload, then open a fresh document in the same browser context/origin; require exact stored JSON equality, restored active role/shape, 0–0 new-match state and setup remaining paused until explicit start. This verifies the game's existing preference/stat payload return, not resumable mid-match state, cross-origin migration, external backup import, AI Studio execution or physical offline handling. No save code/schema or storage authority changed. New test-head Chromium result must be checked separately.

@@ -42,6 +42,34 @@ test('@128hand-cp27 setup holds the real match until TAKE THE PITCH',async({page
 test('@128hand-cp27 exact original football parent remains byte-for-byte protected',async()=>{
   expect(createHash('sha256').update(readFileSync(parent)).digest('hex')).toBe(parentHash);
 });
+test('@128hand-cp27 original settings survive reload and a fresh document without auto-start',async({page,context})=>{
+  await page.goto(door);
+  await page.getByRole('button',{name:'SHIELD',exact:false}).click();
+  await page.getByRole('button',{name:'BREAK LANE',exact:true}).click();
+  await page.locator('#jm128Start').click();
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm128.v08')));
+  expect(saved.role).toBe('shield');
+  expect(saved.shape).toBe('break');
+  await page.reload();
+  await expect(page.locator('#jm128Gate')).toBeVisible();
+  expect((await field(page)).role).toBe('shield');
+  expect((await field(page)).shape).toBe('break');
+  expect(await page.evaluate(()=>window.__JM128_V08__.state.paused)).toBe(true);
+  const returned=await context.newPage();
+  try {
+    await returned.goto(door);
+    await expect(returned.locator('#jm128Gate')).toBeVisible();
+    await expect(returned.locator('[data-role="shield"]')).toHaveClass(/active/);
+    await expect(returned.locator('[data-shape="break"]')).toHaveClass(/active/);
+    expect(await returned.evaluate(()=>JSON.parse(localStorage.getItem('jm128.v08')))).toEqual(saved);
+    expect((await field(returned)).score).toEqual([0,0]);
+    expect(await returned.evaluate(()=>window.__JM128_V08__.state.paused)).toBe(true);
+    await returned.locator('#jm128Start').click();
+    await expect.poll(()=>returned.evaluate(()=>window.__JM128_CP27__.contact.live)).toBe(true);
+    expect((await field(returned)).role).toBe('shield');
+    expect((await field(returned)).shape).toBe('break');
+  } finally { await returned.close(); }
+});
 test('@128hand-cp27 phone viewport boots ORIGINAL football and preserves full-action contact floor',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const errors=await start(page);

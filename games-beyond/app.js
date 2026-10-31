@@ -21,7 +21,7 @@ async function decodePayload(){
  progress(82,'Mounting committed House bodies…');for(let i=0;i<(manifest.extraBodies||[]).length;i++){const meta=manifest.extraBodies[i],html=await fetch(`${meta.path}?release=${RELEASE}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`${meta.path} HTTP ${r.status}`);return r.text()});if(!/<html|<!doctype/i.test(html))throw Error(`${meta.id} is not HTML`);result.bodies.push({...meta,html,hash:await hash(html),size:new Blob([html]).size,mounted:true,status:'MOUNTED',sourceName:meta.path,bundled:true,updatedAt:NOW()});progress(82+(i+1)/(manifest.extraBodies.length||1)*12,`Mounting committed body ${i+1}/${manifest.extraBodies.length}`)}
  const protectedSnapshot=new Map(result.bodies.map(x=>[x.id,structuredClone(x)]));
  const edits=await all('edits');for(const edit of edits){const at=result.bodies.findIndex(x=>x.id===edit.id);if(at>=0)result.bodies[at]={...result.bodies[at],...edit,edited:true};else{const imported={...edit,mounted:true,status:'MOUNTED',edited:true};result.bodies.push(imported);protectedSnapshot.set(edit.id,structuredClone(imported))}}
- if(result.bodies.length<(manifest.builtInBodyCount||manifest.bodyCount))throw Error('Built-in body count short');pack=result;protectedBodies=protectedSnapshot;progress(100,`${result.bodies.length} bodies mounted. Full target: ${manifest.fullTargetCount||result.bodies.length}.`);$('status').textContent=`${result.bodies.length} MOUNTED · ${manifest.fullTargetCount||result.bodies.length} FULL`;$('status').className='status ok';$('enterBtn').disabled=false;await receipt('ACCESSIBLE_PUBLIC_HOUSE_BOOT','Games&Beyond',{bodies:result.bodies.length,fullTarget:manifest.fullTargetCount,accessibilityVersion:'0.5'});renderAll();openRequestedSourceEditor();setTimeout(()=>runAudit(false),30)
+ if(result.bodies.length<(manifest.builtInBodyCount||manifest.bodyCount))throw Error('Built-in body count short');pack=result;protectedBodies=protectedSnapshot;progress(100,`${result.bodies.length} bodies mounted. Full target: ${manifest.fullTargetCount||result.bodies.length}.`);$('status').textContent=`${result.bodies.length} MOUNTED · ${manifest.fullTargetCount||result.bodies.length} FULL`;$('status').className='status ok';$('enterBtn').disabled=false;await receipt('ACCESSIBLE_PUBLIC_HOUSE_BOOT','Games&Beyond',{bodies:result.bodies.length,fullTarget:manifest.fullTargetCount,accessibilityVersion:'0.5'});renderAll();openRequestedSourceEditor();await openRequestedHouseBody();setTimeout(()=>runAudit(false),30)
 }
 function card(b){const a=b.accessibilityAudit;return `<article class="room ${b.id===selected?'selected':''}" aria-labelledby="room-${esc(b.id)}"><h3 id="room-${esc(b.id)}">${esc(b.name)} <span>${esc(b.version||'')}</span></h3><p>${esc(b.role||'Sovereign mounted body')}</p><div class="tags"><span class="tag">${esc(b.category||'Room')}</span><span class="tag live">MOUNTED</span><span class="tag">${bytes(new Blob([b.html]).size)}</span>${b.edited?'<span class="tag live">CREATOR REVISION</span>':''}${a?`<span class="tag ${a.grade==='A'?'live':''}">ACCESS ${a.grade}</span>`:''}</div><div class="roomActions"><button data-play="${esc(b.id)}" aria-label="Open ${esc(b.name)}">OPEN BODY</button><button data-edit="${esc(b.id)}">EDIT</button><button data-export="${esc(b.id)}">EXPORT</button></div></article>`}
 function shown(){const q=($('search')?.value||'').toLowerCase();return (pack?.bodies||[]).filter(b=>(filter==='all'||b.category===filter)&&(!q||[b.id,b.name,b.version,b.role,b.category,b.stage].join(' ').toLowerCase().includes(q)))}
@@ -36,6 +36,35 @@ function runtimeLayer(doc,b){const notes=[];if(!doc.documentElement.lang){doc.do
 async function openBody(id,override=null){const b=findBody(id);if(!b)return toast('Room unavailable',true);recent=[id,...recent.filter(x=>x!==id)].slice(0,8);localStorage.setItem('jm-gb-recent-v05',JSON.stringify(recent));renderRecent();selected=id;lastFocus=document.activeElement;$('dialogTitle').textContent=`${b.name} ${b.version||''}`;$('dialogMeta').textContent=`${b.category||'Room'} · ${b.stage||'MOUNTED'} · exact source in wrapper`;$('bodySummary').textContent='Runtime assistance is applied only in this opening. Stored source remains unchanged.';$('bodyFrame').title=`${b.name} ${b.version||''} mounted body`;$('bodyFrame').srcdoc=override??b.html;$('bodyDialog').showModal();$('bodyFrame').onload=()=>{try{const notes=runtimeLayer($('bodyFrame').contentDocument,b);$('bodySummary').textContent=notes.length?`Runtime assistance: ${notes.join('; ')}. Stored source remains unchanged.`:'No runtime repair was required by this limited host scanner.'}catch{}};await receipt('BODY_OPENED_ACCESSIBLE_WRAPPER',b.name,{id,edited:!!b.edited})}
 function closeBody(){$('bodyDialog').close();$('bodyFrame').srcdoc='';lastFocus?.focus?.()}
 function separateBody(){const b=findBody(selected);if(!b)return;const url=URL.createObjectURL(new Blob([$('bodyFrame').srcdoc||b.html],{type:'text/html'})),a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.click();setTimeout(()=>URL.revokeObjectURL(url),120000);receipt('BODY_OPENED_SEPARATE',b.name,{id:b.id})}
+
+// JM House-to-body contact: reuse the original mounted game and existing
+// openBody wrapper. A registry entry is only a candidate until its real source
+// is present; missing/invalid identities remain visibly on hold.
+async function openRequestedHouseBody(){
+ const params=new URL(location.href).searchParams;
+ const id=params.get('jm-play');
+ if(id===null)return;
+ if(params.has('jm-edit')){
+   $('status').textContent+=' · PLAY HOLD: competing edit request';
+   toast('Choose play or edit, not both.',true);
+   return;
+ }
+ view('rooms',false);
+ if(!/^[a-z0-9-]{1,80}$/.test(id)){
+   $('status').textContent+=' · PLAY HOLD: invalid body identity';
+   toast('Body contact refused: invalid identity.',true);
+   return;
+ }
+ const body=findBody(id);
+ if(!body||body.mounted===false||typeof body.html!=='string'||!/<html|<!doctype/i.test(body.html)){
+   $('search').value=id;
+   renderRooms();
+   $('status').textContent+=' · PLAY HOLD: requested body not mounted';
+   toast('This original body is not mounted in this House.',true);
+   return;
+ }
+ await openBody(id);
+}
 
 // CP09 owner-source contact: direct route into the existing Games&Beyond
 // HTML editor; do not create an independent editor or a new game body.

@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).with_name("JM_M001_STORAGE_LIBRARY_MCP_CP34.py")
 spec = importlib.util.spec_from_file_location("jm_m001_cp34", SCRIPT)
@@ -196,6 +197,26 @@ class StorageMCPTests(unittest.TestCase):
         different = m.dispatch(req, self.roots)["result"]
         self.assertTrue(different["isError"])
         self.assertEqual(different["structuredContent"]["state"], "DIFFERENT_BYTES_HOLD")
+
+    def test_same_size_source_change_during_read_holds(self):
+        target = self.a / "item.json"
+        stamp = target.stat()
+        real_fdopen = os.fdopen
+
+        class ChangingReader:
+            def __init__(self, handle): self.handle = handle
+            def __enter__(self): self.handle.__enter__(); return self
+            def __exit__(self, *args): return self.handle.__exit__(*args)
+            def fileno(self): return self.handle.fileno()
+            def read(self, limit):
+                data = self.handle.read(limit)
+                target.write_bytes(data.replace(b"JM", b"NX"))
+                os.utime(target, ns=(stamp.st_atime_ns, stamp.st_mtime_ns + 1_000_000_000))
+                return data
+
+        with patch.object(m.os, "fdopen", side_effect=lambda *a, **kw: ChangingReader(real_fdopen(*a, **kw))):
+            with self.assertRaisesRegex(m.Hold, "SOURCE_CHANGED_DURING_READ"):
+                m.compare(self.roots, self.args)
 
     def test_no_mutation_of_snapshot_files(self):
         before = [(p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())

@@ -57,7 +57,9 @@ def file_bytes(root, relative, *, with_identity=False):
         fd = os.open(str(target), flags)
         with os.fdopen(fd, "rb") as handle:
             opened = os.fstat(handle.fileno())
-            if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (st.st_dev, st.st_ino):
+            if (not stat.S_ISREG(opened.st_mode) or
+                    (opened.st_dev, opened.st_ino, opened.st_mtime_ns, opened.st_ctime_ns) !=
+                    (st.st_dev, st.st_ino, st.st_mtime_ns, st.st_ctime_ns)):
                 raise Hold("SOURCE_CHANGED_DURING_READ")
             data = handle.read(MAX_BYTES + 1)
             after = os.fstat(handle.fileno())
@@ -65,6 +67,8 @@ def file_bytes(root, relative, *, with_identity=False):
         raise Hold("SOURCE_NOT_READABLE")
     if len(data) > MAX_BYTES or len(data) != after.st_size or st.st_size != after.st_size:
         raise Hold("SOURCE_CHANGED_OR_OVERSIZED")
+    if (opened.st_mtime_ns, opened.st_ctime_ns) != (after.st_mtime_ns, after.st_ctime_ns):
+        raise Hold("SOURCE_CHANGED_DURING_READ")
     identity = (opened.st_dev, opened.st_ino)
     return (data, identity) if with_identity else data
 

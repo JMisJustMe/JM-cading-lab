@@ -135,3 +135,107 @@ test('@jm-contact FUTARIZED aim belongs to its initiating pointer and cancellati
   await expect(page.locator('#aimShots')).toHaveText('0');
   expect(errors).toEqual([]);
 });
+
+const fightStore='fight_clash_chameleon_v0_4';
+const fightPath='./bodies/fight-clash-v0-4.html';
+async function observeFightFrames(context){
+  await context.addInitScript(()=>{
+    const schedule=window.requestAnimationFrame.bind(window),cancel=window.cancelAnimationFrame.bind(window),pending=new Set();
+    window.__jmFightFrames={peak:0,pending:()=>pending.size};
+    window.requestAnimationFrame=callback=>{const id=schedule(time=>{pending.delete(id);callback(time)});pending.add(id);window.__jmFightFrames.peak=Math.max(window.__jmFightFrames.peak,pending.size);return id};
+    window.cancelAnimationFrame=id=>{pending.delete(id);cancel(id)};
+  });
+}
+async function beginFight(page){
+  await page.locator('#introBoxing').click();
+  if(await page.locator('#startBtn').isVisible())await page.locator('#startBtn').click();
+  else await page.locator('#game').click({position:{x:40,y:40}});
+}
+async function saveFight(page){
+  const panel=page.locator('#sidePanel');
+  const opened=!(await panel.isVisible());
+  if(opened)await page.locator('#panelBtn').click();
+  await page.locator('[data-tab="routeos"]').click();
+  await page.locator('#saveBtn').click();
+  if(opened)await page.locator('#panelBtn').click();
+  return page.evaluate(k=>JSON.parse(localStorage.getItem(k)),fightStore);
+}
+async function reopenFight(page,context,errors){
+  await page.close();
+  const next=await context.newPage();next.on('pageerror',e=>errors.push(String(e)));
+  await next.goto(fightPath);return next;
+}
+
+for(const paused of [false,true]){
+  test('@jm-return Fight Clash '+(paused?'paused':'running')+' bout survives real close/reopen and resumes once',async({page,context},info)=>{
+    await observeFightFrames(context);
+    const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+    let live=page;await live.goto(fightPath);await beginFight(live);
+    await live.keyboard.down('w');await live.waitForTimeout(220);await live.keyboard.up('w');
+    if(paused)await live.locator('#pauseBtn').click();
+    let saved=await saveFight(live);
+    expect(saved.recordType).toBe('FightClashRouteOSState');expect(saved.game.paused).toBe(paused);
+    const observations=[];
+    for(let pass=0;pass<2;pass++){
+      live=await reopenFight(live,context,errors);
+      await expect(live.locator('#status')).toHaveText('RESTORED');
+      await expect(live.locator('#intro')).not.toHaveClass(/show/);
+      await expect(live.locator('#pauseBtn')).toHaveText('RESUME');
+      expect(await live.evaluate(()=>window.__jmFightFrames.pending())).toBe(0);
+      const restored=await saveFight(live);
+      expect(restored.game).toEqual({...saved.game,paused:true});
+      const frozen=await live.locator('#timer').textContent();await live.waitForTimeout(350);
+      await expect(live.locator('#timer')).toHaveText(frozen);
+      await live.locator('#pauseBtn').click();
+      await expect(live.locator('#timer')).not.toHaveText(frozen);
+      await live.keyboard.down('w');await live.waitForTimeout(220);await live.keyboard.up('w');
+      const moved=await saveFight(live);
+      expect(moved.game.player.y).not.toBe(restored.game.player.y);
+      // Both native keyboard and real mobile touch routes must still reach combat.
+      if(info.project.name==='mobile-chromium'){
+        const box=await live.locator('#game').boundingBox();
+        await live.touchscreen.tap(box.x+box.width*.78,box.y+box.height*.65);
+      }else await live.keyboard.press('j');
+      const acted=await saveFight(live);
+      expect(acted.game.player.action==='jab'||acted.game.player.buffer==='jab').toBeTruthy();
+      const frames=await live.evaluate(()=>({peak:window.__jmFightFrames.peak,pending:window.__jmFightFrames.pending()}));
+      expect(frames).toEqual({peak:1,pending:1});
+      expect(acted.game.time).toBeLessThan(saved.game.time);
+      observations.push({pass,savedTime:saved.game.time,restoredTime:restored.game.time,continuedTime:acted.game.time,frames});
+      if(paused)await live.locator('#pauseBtn').click();
+      saved=await saveFight(live);
+    }
+    expect(errors).toEqual([]);
+    await test.info().attach('fight-clash-return.json',{body:JSON.stringify(observations),contentType:'application/json'});
+    await live.close();
+  });
+}
+
+test('@jm-return Fight Clash rejects invalid or incomplete saved packets without partial restoration',async({page,context})=>{
+  test.setTimeout(60_000);await observeFightFrames(context);
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto(fightPath);await beginFight(page);const valid=await saveFight(page);
+  const altered=change=>{const p=structuredClone(valid);change(p);return JSON.stringify(p)};
+  const invalid=[
+    '{broken', 'null', JSON.stringify({game:{}}),
+    altered(p=>p.recordType='OtherGame'),altered(p=>p.version='999'),
+    altered(p=>delete p.game.player),altered(p=>delete p.game.player.x),
+    altered(p=>p.game.player.hp='100'),altered(p=>p.game.enemy.vx=null),
+    altered(p=>p.game.time=-1),altered(p=>p.game.cpuLevel='unknown'),
+    altered(p=>delete p.game.running),altered(p=>p.game.activeLaw='unknown'),
+    altered(p=>p.events={}),altered(p=>p.ledger=[null]),
+    altered(p=>p.game.roundOver=true)
+  ];
+  for(const raw of invalid){
+    await page.evaluate(({key,raw})=>localStorage.setItem(key,raw),{key:fightStore,raw});
+    await page.reload();
+    await expect(page.locator('#intro')).toHaveClass(/show/);
+    await expect(page.locator('#status')).toHaveText('READY');
+    await expect(page.locator('#timer')).toHaveText('30');
+    expect(await page.evaluate(()=>window.__jmFightFrames.pending())).toBe(0);
+    expect(await page.evaluate(k=>localStorage.getItem(k),fightStore)).toBe(raw);
+    await beginFight(page);
+    await expect(page.locator('#timer')).not.toHaveText('30');
+  }
+  expect(errors).toEqual([]);
+});

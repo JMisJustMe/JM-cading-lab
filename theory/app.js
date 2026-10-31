@@ -2,7 +2,9 @@
 
 const PARTS = 7;
 const EXPECTED_ROUTES = 297;
-const EXPECTED_B64 = 50428;
+const EXPECTED_B64 = 51292;
+const EXPECTED_JSON_BYTES = 388809;
+const EXPECTED_JSON_SHA256 = '3fd3b234123b70d374141a71b339e3a8deeaa03b506f78a1412b93768a5237bb';
 let DATA = { records: [], districts: [] };
 let state = { view: 'home', query: '', filter: 'ALL', selected: null };
 let loadAttempt = 0;
@@ -344,6 +346,13 @@ async function loadData() {
 
     status.textContent = 'Opening 297 routes…';
     const raw = await ungzip(base64Bytes(joined));
+    if (raw.byteLength !== EXPECTED_JSON_BYTES) {
+      throw new Error(`Decoded payload length mismatch: ${raw.byteLength} instead of ${EXPECTED_JSON_BYTES}.`);
+    }
+    if (!crypto?.subtle) throw new Error('Cannot cryptographically verify the Theory Wing payload in this browser.');
+    const sha = await crypto.subtle.digest('SHA-256', raw);
+    const actualSha = Array.from(new Uint8Array(sha), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    if (actualSha !== EXPECTED_JSON_SHA256) throw new Error('Theory Wing payload SHA-256 mismatch.');
     DATA = JSON.parse(new TextDecoder().decode(raw));
     if (!Array.isArray(DATA.records) || DATA.records.length !== EXPECTED_ROUTES) {
       throw new Error(`Route count mismatch: ${DATA.records?.length || 0} instead of ${EXPECTED_ROUTES}.`);

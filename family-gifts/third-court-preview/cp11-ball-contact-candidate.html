@@ -556,7 +556,8 @@ $('historyFile').addEventListener('change',async e=>{const file=e.target.files?.
  stats=restored;best=nextBest;saveBest();status.textContent='RESTORED · '+stats.length+' matches. Export a fresh backup any time.'
  }catch(err){status.textContent='RESTORE REJECTED · File is not readable JSON.'}
 });
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();const visibleControl=e.target instanceof Element&&e.target.closest('button,input,select,textarea,[contenteditable]')&&!e.target.closest('.screen.hidden');if(visibleControl)return;if(state.active&&!state.paused&&['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(!keys.has(k)&&state.active&&!state.paused){if(k===' '&&shotOwner===null){shotOwner='keyboard';pressShot()}if(k==='z')pass();if(k==='x')switchPlayer();if(k==='g')setGuard(true);if(k==='p')pause();if(k==='v')$('graphicsBtn').click()}if(state.active&&!state.paused)keys.add(k)});addEventListener('keyup',e=>{let k=e.key.toLowerCase();keys.delete(k);if(k==='g'&&guardPointer===null)setGuard(false);if(k===' '&&shotOwner==='keyboard'){shotOwner=null;releaseShot()}});function cancelHeldInput(){keys.clear();joyPointer=null;setJoy(0,0);guardPointer=null;setGuard(false);cancelShotPointer()}
+function focusedVisibleControl(e){return e.target instanceof Element&&!!e.target.closest('button,input,select,textarea,[contenteditable]')&&!e.target.closest('.screen.hidden')}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(focusedVisibleControl(e))return;if(state.active&&!state.paused&&['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(!keys.has(k)&&state.active&&!state.paused){if(k===' '&&shotOwner===null){shotOwner='keyboard';pressShot()}if(k==='z')pass();if(k==='x')switchPlayer();if(k==='g')setGuard(true);if(k==='p')pause();if(k==='v')$('graphicsBtn').click()}if(state.active&&!state.paused)keys.add(k)});addEventListener('keyup',e=>{let k=e.key.toLowerCase();keys.delete(k);if(k==='g'&&guardPointer===null)setGuard(false);if(k===' '&&shotOwner==='keyboard'){shotOwner=null;releaseShot()}});function cancelHeldInput(){keys.clear();joyPointer=null;setJoy(0,0);guardPointer=null;setGuard(false);cancelShotPointer()}
 addEventListener('blur',()=>{cancelHeldInput();if(state.active&&!state.paused)pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelHeldInput();if(state.active&&!state.paused)pause()}});
 saveBest();state.players=roster();state.ball={x:320,y:710,z:10};// CP07: CPU depth-projection renderer. Native Canvas2D perspective projection;
 // preserves the exact CP06.1 game physics/logic and remains playable without WebGL.
@@ -661,12 +662,12 @@ $('cutBtn').addEventListener('pointerdown',e=>{e.preventDefault();callCut()});
 $('cameraBtn').onclick=()=>{BROADCAST.enabled=!BROADCAST.enabled;$('cameraBtn').textContent=BROADCAST.enabled?'CAMERA · DEPTH':'CAMERA · CLASSIC';$('gameWrap').classList.toggle('depth-view',BROADCAST.enabled);notify(BROADCAST.enabled?'BROADCAST COURT · DEPTH VIEW':'CLASSIC COURT · TOP DOWN',1);};
 $('gameWrap').classList.add('depth-view');
 $('pauseSound').onclick=()=>{$('sideSound').click();$('pauseSound').textContent=$('sideSound').textContent;};
-addEventListener('keydown',e=>{if(e.key.toLowerCase()==='c'&&!e.repeat)callCut()});
+addEventListener('keydown',e=>{if(e.key.toLowerCase()==='c'&&!e.repeat&&!focusedVisibleControl(e))callCut()});
 function callRoll(){if(!state.active||state.paused||state.pos!==0||state.air||state.loose||!state.screenPlay?.claimed)return false;
  const id=state.screenPlay.id;if(id===state.carrier)return false;
  state.rollPlay={id,time:3.5,from:state.clock};state.screenPlay=null;state.rollCalls++;notify('PICK & ROLL · PASS TO THE CUTTER!',1.15);sound(660,.08);syncHud();return true}
 function callScreen(){if(state.screenPlay?.claimed)return callRoll();if(!state.active||state.paused||state.pos!==0||state.air||state.loose||state.screenCooldown>0){notify('SCREEN · WAIT FOR YOUR SET',.8);return false}const p=holder();const mates=state.players.filter(a=>a.team===0&&a.id!==p.id);if(!mates.length)return false;const chosen=mates.sort((a,b)=>dist(a,p)-dist(b,p))[0];state.screenPlay={id:chosen.id,time:3.5,contacts:0,claimed:false};state.screenCalls++;state.screenCooldown=3.7;notify('SCREEN SET · USE THE PICK!',1.2);sound(510,.08);syncHud();return true}
-$('screenBtn').addEventListener('pointerdown',e=>{e.preventDefault();callScreen()});addEventListener('keydown',e=>{if(e.key.toLowerCase()==='q'&&!e.repeat)callScreen()});
+$('screenBtn').addEventListener('pointerdown',e=>{e.preventDefault();callScreen()});addEventListener('keydown',e=>{if(e.key.toLowerCase()==='q'&&!e.repeat&&!focusedVisibleControl(e))callScreen()});
 // CP08 NATIVE COURT — authored raw WebGL2 basketball scene.
 // Adapts JM AFTERHOURS v0.2's authenticated TIDELESS-style matrix/shader geometry approach.
 // Does NOT import or overwrite another basketball game's state machine.

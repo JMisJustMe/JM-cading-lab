@@ -53,6 +53,26 @@ class ScopedMemoryContact(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(MemoryConflict):
             await self.codex.write('missing', 'absent', mode='update')
 
+    async def test_correction_requires_current_evidence_and_reuses_new_state(self):
+        first = await self.codex.write("observed", "Initial reading: NOTION_NOT_CONNECTED")
+        reader = ScopedMemory(self.root, HostScope("owner-a", str(Path(self.temp.name) / "repo-a")),
+                              self.core, "second-host")
+        observed = await reader.read("observed")
+        self.assertEqual(observed["digest"], first["digest"])
+        corrected = await reader.write("observed", "Corrected: NOTION_CONNECTED_SOURCE_READ",
+                                       mode="correct", expected_digest=observed["digest"])
+        final = await self.codex.read("observed")
+        self.assertEqual(final["body"], "Corrected: NOTION_CONNECTED_SOURCE_READ")
+        self.assertEqual(final["previous"], first["digest"])
+        self.assertEqual(final["revision"], 2)
+        self.assertEqual(final["digest"], corrected["digest"])
+        with self.assertRaises(MemoryConflict):
+            await self.codex.write("observed", "Outdated correction must not replace evidence",
+                                   mode="correct", expected_digest=first["digest"])
+        self.assertEqual((await self.codex.read("observed"))["digest"], corrected["digest"])
+        with self.assertRaises(ValueError):
+            await self.codex.write("observed", "No anchor", mode="correct")
+
     async def test_cross_owner_and_workspace_isolation(self):
         await self.codex.write('note', 'owned')
         other_owner = ScopedMemory(self.root, HostScope('owner-b', str(Path(self.temp.name) / 'repo-a')), self.core, 'claude-code')

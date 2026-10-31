@@ -218,7 +218,7 @@ function audit(b){const html=b.html||'',issues=[],add=(code,severity,message,cou
 async function runAudit(open=true){if(!pack)return;const results=pack.bodies.map(b=>{const a=audit(b);b.accessibilityAudit=a;return a});lastAudit={schema:'JM.AccessibilitySweep/0.5-runtime',checkedAt:NOW(),bodyCount:results.length,claimBoundary:'Automated static preflight and runtime assistance; not a WCAG certification.',results};await receipt('ACCESSIBILITY_SWEEP','Games&Beyond',{bodyCount:results.length,grades:results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{})});renderAudit();renderRooms();if(open)view('access');toast(`${results.length}-body accessibility sweep complete`)}
 function renderAudit(){if(!lastAudit)return;const grades=lastAudit.results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{});$('a11ySummary').textContent=`Static preflight: A ${grades.A||0} · B ${grades.B||0} · C ${grades.C||0}. Runtime help remains separate from stored source.`;$('a11yList').innerHTML=lastAudit.results.map(a=>`<article class="auditCard"><div style="display:flex;align-items:center;gap:9px"><span class="grade ${a.grade}">${a.grade}</span><div><b>${esc(a.name)} · ${esc(a.version||'')}</b><span>${a.issueCount} detected items · ${bytes(a.bytes)}</span></div></div>${a.issues.length?`<details><summary>Review items</summary><ul>${a.issues.map(x=>`<li><strong>${esc(x.severity.toUpperCase())}</strong> · ${esc(x.message)}${x.count>1?' × '+x.count:''}</li>`).join('')}</ul></details>`:'<p>No issue in this limited rule set.</p>'}</article>`).join('')}
 async function proof(){const results=[];for(const b of pack.bodies)results.push({id:b.id,name:b.name,html:/<html|<!doctype/i.test(b.html),bytes:new Blob([b.html]).size,digest:await hash(b.html),edited:!!b.edited});const built=manifest.builtInBodyCount||manifest.bodyCount,full=manifest.fullTargetCount||built,pass=results.length>=built&&results.every(x=>x.html),fullMount=results.length===full,report={schema:'JM.GamesBeyond.PublicProof/0.5',checkedAt:NOW(),pass,fullMount,bodyCount:results.length,builtInExpected:built,fullTarget:full,accessibilityAudit:!!lastAudit,results};$('proofBox').textContent=JSON.stringify(report,null,2);await receipt(fullMount?'FULL_HOUSE_PROOF':'BUILT_IN_HOUSE_PROOF',pass?'DING':'BUGG',{pass,fullMount,bodyCount:results.length,fullTarget:full});view('proof');toast(pass?(fullMount?`${full}-body full House proof DING`:`${results.length}-body built-in proof DING`):'Proof found a gap',!pass)}
-async function exportHouse(){download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
+async function exportHouse(){const originals=pack.bodies.filter(b=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b.id));const verifiedPair=originals.length===2&&(await Promise.all(originals.map(isOriginalJMStudios))).every(Boolean);download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',source_custody:verifiedPair?{original_lineage_zip_file:JMSTUDIOS_LINEAGE}:undefined,exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
 async function importHouse(file){
  try{
   const incoming=JSON.parse(await file.text());
@@ -232,7 +232,8 @@ async function importHouse(file){
     typeof b?.html==='string'&&/<html|<!doctype/i.test(b.html));
   if(protectedHTML&&!exactPair)throw Error('JMStudios original-source identity requires verified lineage pair');
   if(exactPair){
-   const ids=incoming.bodies.map(b=>b?.id);
+   const fullBackup=incoming.schema==='JM.GamesBeyondHouse/0.5-public-export';
+   const ids=incoming.bodies.filter(b=>!fullBackup||Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b?.id)).map(b=>b?.id);
    if(ids.length!==2||new Set(ids).size!==2||!ids.every(id=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,id)))
      throw Error('JMStudios lineage pair identity mismatch');
   }
@@ -244,8 +245,9 @@ async function importHouse(file){
    }
    if(seen.has(item.id))throw Error('Duplicate imported identity: '+item.id);
    seen.add(item.id);
-   const isOriginal=exactPair&&await isOriginalJMStudios(item);
-   if(exactPair&&!isOriginal)throw Error('JMStudios exact-source verification HOLD: '+item.id);
+   const protectedIdentity=Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,item.id);
+   const isOriginal=exactPair&&protectedIdentity&&await isOriginalJMStudios(item);
+   if(exactPair&&protectedIdentity&&!isOriginal)throw Error('JMStudios exact-source verification HOLD: '+item.id);
    const previous=findBody(item.id);
    if(previous?.edited&&!await isOriginalJMStudios(previous))
      throw Error('Existing local creator revision held from replacement: '+item.id);
@@ -253,7 +255,7 @@ async function importHouse(file){
    staged.push(replacement);
    if(previous)updated++;else added++;
   }
-  if(exactPair&&staged.length!==2)throw Error('JMStudios full pair not verified');
+  if(exactPair&&staged.filter(b=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b.id)).length!==2)throw Error('JMStudios full pair not verified');
   if(!staged.length)throw Error('No valid source bodies to import');
   // One IndexedDB transaction: no half-import and no in-memory crown before commit.
   await commitHouseImport(staged);

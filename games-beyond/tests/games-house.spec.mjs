@@ -339,3 +339,15 @@ test('@source-boundary verified pair survives full backup into a fresh browser c
     expect(restored.sort((a,b)=>a.id.localeCompare(b.id))).toEqual(bodies.map(b=>({id:b.id,html:b.html,hash:b.hash,edited:false})).sort((a,b)=>a.id.localeCompare(b.id)));
   } finally {await context.close();}
 });
+
+
+test('@boot legacy catalogue re-entry cannot overwrite live House authority', async ({ page }) => {
+  await openHouse(page);
+  await page.waitForFunction(()=>navigator.serviceWorker.controller!==null);
+  await page.reload();
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, {timeout:45_000});
+  await expect(page.locator('.hero p')).toContainText('Mounted Rooms follow the verified payload manifest');
+  await expect(page.locator('#catalogueStat').locator('..')).toContainText('Legacy catalogue subset');
+  await expect(page.locator('.hero p')).not.toContainText('Twenty-one');
+  await expect(page.locator('#status')).not.toContainText('WHOLE CATALOGUE CURRENT');
+});

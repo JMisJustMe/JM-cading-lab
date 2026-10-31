@@ -59,11 +59,12 @@ function activateCatalogue(){
       note.querySelector('[data-open-whole-catalogue]').onclick=()=>btn.click();
     }
   }
+  const description=document.querySelector('#view-house .hero p');
+  if(description)description.textContent='Mounted Rooms follow the verified payload manifest. The two exact private JMStudios originals complete the local House after import. The current Games Estate catalogue is a separate scope; neither catalogue source nor its older counts overrides live mount proof.';
+  const legacyStat=document.getElementById('catalogueStat');
+  if(legacyStat?.parentElement?.querySelector('span'))legacyStat.parentElement.querySelector('span').textContent='Legacy catalogue subset';
   const status=document.getElementById('status');
   if(status){
-    const n=document.getElementById('mountedStat')?.textContent?.trim();
-    status.textContent=(n&&/^\d+$/.test(n)?n+' MOUNTED · ':'')+'WHOLE CATALOGUE CURRENT';
-    status.classList.add('ok');
     status.title='Mounted-room count is separate from the whole Games Estate catalogue.';
   }
   mounted=true;
@@ -72,4 +73,5 @@ function activateCatalogue(){
 let tries=0;
 const timer=setInterval(()=>{tries++;if(activateCatalogue()||tries>200)clearInterval(timer)},100);
 window.addEventListener('load',()=>setTimeout(activateCatalogue,250));
+window.addEventListener('jm-games-beyond-legacy-catalogue-ready',activateCatalogue);
 })();

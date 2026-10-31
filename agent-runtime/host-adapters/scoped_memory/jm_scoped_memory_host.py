@@ -104,7 +104,8 @@ def original_jm_session(workspace, query):
 
 async def action(memory, args, body):
     if args.action == "write":
-        committed = await memory.write(args.name, body, mode=args.mode)
+        committed = await memory.write(args.name, body, mode=args.mode,
+                                       expected_digest=args.expected_digest)
         returned = await memory.read(args.name)
         if (returned["digest"] != committed["digest"]
                 or returned["revision"] != committed["revision"]
@@ -127,7 +128,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("write", "read", "list"))
     parser.add_argument("--name", help="note key, required for read and write")
-    parser.add_argument("--mode", choices=("create", "update"), default="create")
+    parser.add_argument("--mode", choices=("create", "update", "correct"), default="create")
+    parser.add_argument("--expected-digest", help="exact current note digest for correct mode")
     parser.add_argument("--harness", default="repository-cli",
                         help="telemetry label ONLY, not proof of a live provider")
     parser.add_argument("--query", default="coding runtime",
@@ -136,6 +138,8 @@ def main():
     try:
         if args.action in ("write", "read") and not args.name:
             raise ValueError("name required for read/write")
+        if args.action != "write" and args.expected_digest is not None:
+            raise ValueError("expected-digest requires a write action")
         if not re.fullmatch(r"[a-z0-9_-]{1,40}", args.harness):
             raise ValueError("invalid harness label")
         if args.action != "write" and not sys.stdin.isatty():

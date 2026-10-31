@@ -73,3 +73,30 @@ test('@jm-contact FUTARIZED 44px actions survive short portrait viewport', async
   await expect(page.locator('#aimCanvas')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('@jm-contact FUTARIZED aim belongs to its initiating pointer and cancellation never shoots', async ({ page }) => {
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto('./bodies/futarized-v1-2.html');
+  const canvas=page.locator('#aimCanvas');
+  await canvas.scrollIntoViewIfNeeded();
+  const box=await canvas.boundingBox();
+  const x=box.x+box.width*.23,y=box.y+box.height*.60;
+  await page.mouse.move(x,y);await page.mouse.down();
+  await canvas.dispatchEvent('pointermove',{pointerId:99,clientX:box.x+box.width*.05,clientY:y});
+  await canvas.dispatchEvent('pointerup',{pointerId:99,clientX:box.x+box.width*.05,clientY:y});
+  await expect(page.locator('#aimShots')).toHaveText('0');
+  await canvas.dispatchEvent('pointercancel',{pointerId:99});
+  await page.mouse.move(box.x+box.width*.08,y);
+  await page.mouse.up();
+  await expect(page.locator('#aimShots')).toHaveText('1');
+  await page.locator('#resetAim').click();
+  await page.mouse.move(x,y);await page.mouse.down();
+  await canvas.dispatchEvent('lostpointercapture',{pointerId:1});
+  await page.mouse.move(box.x+box.width*.08,y);await page.mouse.up();
+  await expect(page.locator('#aimShots')).toHaveText('0');
+  await page.mouse.move(x,y);await page.mouse.down();
+  await page.locator('#resetAim').evaluate(el=>el.click());
+  await page.mouse.move(box.x+box.width*.08,y);await page.mouse.up();
+  await expect(page.locator('#aimShots')).toHaveText('0');
+  expect(errors).toEqual([]);
+});

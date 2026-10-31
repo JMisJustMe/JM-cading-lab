@@ -36,3 +36,9 @@ The established Games & Beyond House already has its own mounted-body and regist
 ## Recovery/rollback
 
 These changes are isolated on `feat/jm-cross-game-quality-contact-cp24-20261030`. Frozen originals on `main` remain unchanged unless a separately reviewed PR is merged. No temporary copies are required to stay resident.
+
+## 31 October — FUTARIZED original aiming pointer ownership
+
+Continued the existing CP24 public v1.2 recipient from `0ed16bb79d3ddddb28402052cbd88387f33c9777`; this does not replace private v3.3, v3.1 publication or other role authorities. Direct execution of the original event handlers reproduced an unrelated pointerup firing one shot (expected zero); no lostpointercapture handler existed. The existing drag now retains its initiating pointer ID, ignores unrelated moves/releases/cancellation, and cancels on its own capture loss. Reset Duel also clears the active charge timer/drag so a late release cannot fire into a new duel. Original launchAim, physics, stage progression, other controls and visual identity remain.
+
+The existing jm-contact-quality browser suite gains a real mouse-drag plus unrelated-pointer regression, normal owner release, capture loss cancellation and active-drag reset. Local exact-handler execution passes; actual Chromium proof remains pending until the exact updated head runs. Physical Fold/multi-touch feel remains separate TESTER HOLD; no merge, deployment or new public source permission inferred.

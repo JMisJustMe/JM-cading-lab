@@ -242,3 +242,50 @@ test('@jm-return Fight Clash rejects invalid or incomplete saved packets without
   }
   expect(errors).toEqual([]);
 });
+
+test('@jm-power Drag & Aim real release and preview respect the original 100 percent power ceiling',async({page,context},info)=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  // Observe the original guide's first segment without substituting drawing/physics.
+  await page.addInitScript(()=>{
+    const p=CanvasRenderingContext2D.prototype,set=p.setLineDash,move=p.moveTo,line=p.lineTo,restore=p.restore;
+    let guide=false,first=false,origin=null;
+    p.setLineDash=function(d){guide=d.length>0;first=false;origin=null;return set.call(this,d)};
+    p.moveTo=function(x,y){if(guide&&!first)origin={x,y};return move.call(this,x,y)};
+    p.lineTo=function(x,y){if(guide&&!first&&origin){window.__jmGuideVelocity={vx:(x-origin.x)/.48,vy:(y-origin.y)/.48};first=true}return line.call(this,x,y)};
+    p.restore=function(){guide=false;return restore.call(this)};
+  });
+  await page.goto('./bodies/drag-aim-loop-kernel-v0-9-9.html');
+  const touch=info.project.name==='mobile-chromium'?await context.newCDPSession(page):null;
+  const evidence=[];
+  for(const pull of [100,250,600]){
+    await page.locator('#resetBall').click();
+    const canvas=page.locator('#arena');await canvas.scrollIntoViewIfNeeded();const box=await canvas.boundingBox();
+    const from={x:box.x+box.width*150/960,y:box.y+box.height*440/600},to={x:from.x+box.width*pull/960,y:from.y};
+    if(touch){
+      await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});
+      await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});
+    }else{await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y)}
+    await expect(page.locator('#dragPower')).toHaveText(pull===100?'40%':'100%');
+    const preview=await page.evaluate(()=>window.__jmGuideVelocity);
+    const expected=-.065*Math.min(pull,250);
+    const previewSpeed=Math.hypot(preview.vx,preview.vy);
+    expect(preview.vx).toBeLessThan(0);expect(previewSpeed).toBeLessThanOrEqual(16.250001);
+    if(pull===600)expect(previewSpeed).toBeCloseTo(16.25,2);
+    else expect(previewSpeed).toBeCloseTo(Math.abs(expected),0);
+    if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await page.mouse.up();
+    await page.locator('[data-open="proof"]').click();
+    const download=page.waitForEvent('download');await page.locator('#exportReceipt').click();
+    const file=await download;
+    const fs=await import('node:fs/promises');const receipt=JSON.parse(await fs.readFile(await file.path(),'utf8'));
+    const release=receipt.trace.filter(e=>e.type==='release').at(-1).payload;
+    expect(receipt.chainValid).toBe(true);expect(release.power).toBeLessThanOrEqual(250);
+    if(pull===600)expect(release.power).toBe(250);
+    // Native input coordinates may be quantised; compare authored power to its actual vector.
+    expect(Math.hypot(release.vx,release.vy)).toBeCloseTo(release.power*.065,1);
+    expect(release.vx).toBeCloseTo(preview.vx,1);expect(release.vy).toBeCloseTo(preview.vy,1);
+    evidence.push({pull,preview,release,chainValid:receipt.chainValid});
+    await page.locator('[data-open="play"]').click();
+  }
+  expect(errors).toEqual([]);
+  await test.info().attach('drag-aim-power-parity.json',{body:JSON.stringify(evidence),contentType:'application/json'});
+});

@@ -190,6 +190,88 @@ class RepositoryProcessContact(unittest.TestCase):
         self.assertEqual(proc.returncode, 2)
         self.assertEqual(held["status"], "HOLD")
 
+
+    def test_private_gh_comment_read_using_bounded_cli_fixture(self):
+        # Real repo-process execution with fixture gh CLI; no provider/device contact claim.
+        import stat
+        fake = Path(self.tmp.name) / "gh"
+        fake.write_text(
+            '#!/bin/sh\n'
+            'if [ "$1" != "api" ] || [ "$2" != "--method" ] || [ "$3" != "GET" ] || '
+            '[ "$4" != "repos/JMisJustMe/JM-ai-studio-surface/issues/comments/6527606601" ]; then\n'
+            '  exit 2\n'
+            'fi\n'
+            'printf "%s" "$JM_FIXTURE_GH_COMMENT"\n', encoding="utf-8")
+        fake.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        self.env["PATH"] = self.tmp.name + os.pathsep + self.env["PATH"]
+        url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"
+               "issues/12#issuecomment-6527606601")
+        raw = {"state": "PASS", "consequence": {
+            "result": "PASS",
+            "git": {"exit_code": 0, "stdout": "", "stderr": ""},
+            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\n", "stderr": ""}}}
+        comment = {"id": 6527606601, "html_url": url,
+                   "issue_url": "https://api.github.com/repos/JMisJustMe/JM-ai-studio-surface/issues/12",
+                   "user": {"login": "JMisJustMe"},
+                   "body": "JM PHONE COMMANDER RECEIPT\n" + chr(96)*3 + "json\n" +
+                           json.dumps(raw) + "\n" + chr(96)*3}
+        self.env["JM_FIXTURE_GH_COMMENT"] = json.dumps(comment)
+        proc, result = self.command("fetch-phone-comment", "verified_reference",
+                                    source_url=url, harness="one")
+        self.assertEqual(proc.returncode, 0, result)
+        self.assertEqual(result["consequence"]["status"], "COMMITTED_AND_READ_BACK")
+        proc, output = self.command("read", "verified_reference", harness="two")
+        self.assertEqual(proc.returncode, 0, output)
+        saved = json.loads(output["consequence"]["body"])
+        self.assertEqual(saved["source_url"], url)
+        self.assertEqual(saved["source_comment_id"], 6527606601)
+        self.assertEqual(saved["source_contact"], "GITHUB_COMMENT_READ_NOT_NEW_ANDROID_CONTACT")
+        self.assertNotIn("git", saved)
+        prior = output["consequence"]["digest"]
+        for mutation in (
+            {"id": 42},
+            {"user": {"login": "NotTheOwner"}},
+            {"issue_url": "https://api.github.com/repos/JMisJustMe/JM-ai-studio-surface/issues/13"},
+            {"body": "JM PHONE COMMANDER RECEIPT\n" + chr(96)*3 + "json\n" +
+                     json.dumps({"state": "HOLD"}) + "\n" + chr(96)*3},
+        ):
+            self.env["JM_FIXTURE_GH_COMMENT"] = json.dumps({**comment, **mutation})
+            proc, failed = self.command("fetch-phone-comment", "untrusted",
+                                        source_url=url)
+            self.assertEqual(proc.returncode, 2, failed)
+            self.assertEqual(failed["status"], "HOLD")
+        self.env["JM_FIXTURE_GH_COMMENT"] = json.dumps(comment)
+        proc, duplicate = self.command("fetch-phone-comment", "verified_reference",
+                                       source_url=url)
+        self.assertEqual(proc.returncode, 2, duplicate)
+        self.assertEqual(duplicate["error_type"], "MemoryConflict")
+        proc, readback = self.command("read", "verified_reference")
+        self.assertEqual(readback["consequence"]["digest"], prior)
+        proc, invalid = self.command("fetch-phone-comment", "invalid",
+                                     source_url="https://evil.example.com/receipt")
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(invalid["status"], "HOLD")
+
+    def test_original_workspace_boundary_precedes_external_comment_read(self):
+        # A missing JM workspace must HOLD before any external gh command runs.
+        import stat
+        fake = Path(self.tmp.name) / "gh"
+        marker = Path(self.tmp.name) / "gh_called"
+        fake.write_text('#!/bin/sh\nprintf touched > "$JM_GH_CALLED_MARKER"\nexit 99\n',
+                        encoding="utf-8")
+        fake.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        self.env["PATH"] = self.tmp.name + os.pathsep + self.env["PATH"]
+        self.env["JM_GH_CALLED_MARKER"] = str(marker)
+        without_workspace = Path(self.tmp.name) / "not-a-repository"
+        without_workspace.mkdir()
+        url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"
+               "issues/12#issuecomment-6527606601")
+        proc, held = self.command("fetch-phone-comment", "no_contact",
+                                  source_url=url, cwd=without_workspace)
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(held["status"], "HOLD")
+        self.assertFalse(marker.exists(), "External gh contacted before JM workspace gate")
+
     def test_phone_receipt_intake_refuses_spoofed_or_failed_source(self):
         from jm_scoped_memory_host import stable
         good_url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"

@@ -62,5 +62,131 @@
     "reason_manual_contact_not_required": "The claimed behavior is native GitHub CI governance behavior, fully observable through the built-in itself.",
     "law": "Estate -> creation. A future high-confidence new executable body cannot silently enter through this gate without first carrying its own prospective route."
   },
-  "boundary": "This receipt proves the Build Entry Gate mechanism only. It does not prove runtime/contact quality of any future body and cannot be used to crown one."
+  "boundary": "This receipt proves the Build Entry Gate mechanism only. It does not prove runtime/contact quality of any future body and cannot be used to crown one.",
+  "pr394_scope_reconciliation_2026_10_31": {
+    "head": "0a0ffedd93ff04c9a70ee838cc3e8a3786d3cf9d",
+    "event_base": "38fc7bedb57f0788270ab1811b0070972f82553b",
+    "synthetic_merge": "75ce360dad22cdb60b7774eb548dc2bf70c40c46",
+    "merge_target": "1358afd86f0b620b96cecf566718a2fd18fa3184",
+    "failed_workflow": 41216752570,
+    "artifact": {
+      "id": 13048417701,
+      "name": "JM_BUILD_ENTRY_DRAFT_PR_394",
+      "zip_sha256": "36e879e67ba66ce349766f659ae1e3a037e3a8c0c8f7c2ef564338cb99e408b5",
+      "crc": "PASS"
+    },
+    "incorrect_merge_delta_count": 246,
+    "actual_pr_delta": [
+      ".github/workflows/jm-game-engine-contact-physics.yml",
+      "coding-estate/integration/jm-federation-contact-physics-selftest.mjs",
+      "coding-estate/integration/jm-federation-contact-physics-v1.js"
+    ],
+    "signals": [
+      {
+        "path": "games-beyond/bodies/source_vault/OPEN_FIRST_JMGAMECORE_v0_2I_A_CORRECTED_THREE_GAME_INTEGRATION.html",
+        "new_boundary": "games-beyond/bodies/source_vault",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "games-beyond/bodies/source_vault/drag-aim-level-proof-loop-v0-9-8-2.html",
+        "new_boundary": "games-beyond/bodies/source_vault",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "games-beyond/bodies/source_vault/service-worker.js",
+        "new_boundary": "games-beyond/bodies/source_vault",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "mmzg-runtime-v0.6/service_worker.js",
+        "new_boundary": "mmzg-runtime-v0.6/service_worker.js",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/gong_auto_checks_cp06.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/gong_chain_guard_cp07.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/gong_ci_cp03.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/gong_family_plan_cp05.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/gong_scope_request_cp04.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/public_risk_cp03.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/tests/gong_auto_checks_cp06.test.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/tests/gong_chain_guard_cp07.test.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/tests/gong_cp03.test.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/tests/gong_family_cp05.test.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/gong/tests/gong_scope_cp04.test.js",
+        "new_boundary": "tools/gong",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      },
+      {
+        "path": "tools/owner_vault_provider_readiness.py",
+        "new_boundary": "tools/owner_vault_provider_readiness.py",
+        "in_actual_pr_delta": false,
+        "same_blob_as_merge_target": true
+      }
+    ],
+    "diagnosis": "All 16 signals are unchanged target/main blobs outside the submitted three-file delta. Workflow classified synthetic merge HEAD against stale event base. A PR394 manifest is not required by the existing narrow policy: additions are within existing coding-estate/integration. No source ownership or authority transferred.",
+    "repair": "Bind workflow --head to authenticated event head.sha; read candidate manifests from that same Git revision, not merge/worktree bytes. Enforcement and policy thresholds unchanged.",
+    "differential_proof": {
+      "before": "Existing implementation fails the real-Git scope regression (approved worktree route leaks into submitted-head decision).",
+      "after": "7 real-Git merge/head/authority assertions PASS; existing calibration PASS; explicit original PR394 head signals=0 PASS",
+      "command": "python3 scripts/jm_build_entry_gate.py --self-test --base 38fc7bedb57f0788270ab1811b0070972f82553b --head 0a0ffedd93ff04c9a70ee838cc3e8a3786d3cf9d --pr-number 394"
+    },
+    "inherited_physics_proof": "Physics source and selftest unchanged at 0a0ffedd93ff: 250 formula fixtures +3 native recipients +14 integration checks retained; no manual rerun.",
+    "promotion": "DRAFT_UNMERGED; affected live CI still required; no gate bypass or manifest fabricated."
+  }
 }

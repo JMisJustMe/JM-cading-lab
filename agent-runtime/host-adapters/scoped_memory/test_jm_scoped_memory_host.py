@@ -27,7 +27,7 @@ class RepositoryProcessContact(unittest.TestCase):
         self.workspace = ROOT
 
     def command(self, action, name=None, *, harness="worker-a", body=None, cwd=None,
-                mode=None, expected_digest=None):
+                mode=None, expected_digest=None, source_url=None):
         cmd = [sys.executable, str(HOST), action, "--harness", harness]
         if name:
             cmd += ["--name", name]
@@ -35,6 +35,8 @@ class RepositoryProcessContact(unittest.TestCase):
             cmd += ["--mode", mode]
         if expected_digest is not None:
             cmd += ["--expected-digest", expected_digest]
+        if source_url is not None:
+            cmd += ["--source-url", source_url]
         proc = subprocess.run(cmd, input=body or "", capture_output=True, text=True,
                               cwd=cwd or self.workspace, env=self.env, check=False)
         if proc.returncode == 0:
@@ -130,6 +132,90 @@ class RepositoryProcessContact(unittest.TestCase):
         self.assertEqual(stale["error_type"], "MemoryConflict")
         proc, last = self.command("read", "observation")
         self.assertEqual(last["consequence"]["digest"], corrected["consequence"]["digest"])
+
+
+    def test_genuine_phone_git_status_receipt_is_bounded_return_not_device_attestation(self):
+        # Historical original Samsung issue #12: input fixture comes from its actual private
+        # GitHub comment, not a freshly executed handset or a new hardware claim.
+        from jm_scoped_memory_host import stable
+        source_url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"
+                      "issues/12#issuecomment-6527606601")
+        phone_return = {"state": "PASS", "consequence": {
+            "result": "PASS",
+            "git": {"exit_code": 0, "stdout": "", "stderr": ""},
+            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\n",
+                       "stderr": ""}}}
+        proc, inserted = self.command("ingest-phone-git-status", "phone_receipt",
+                                      body=stable(phone_return), source_url=source_url)
+        self.assertEqual(proc.returncode, 0, inserted)
+        self.assertEqual(inserted["consequence"]["status"], "COMMITTED_AND_READ_BACK")
+        self.assertEqual(inserted["consequence"]["source_contact"],
+                         "REFERENCE_ONLY_LOCAL_HOST_DID_NOT_FETCH_PHONE")
+        proc, read = self.command("read", "phone_receipt", harness="second-process")
+        self.assertEqual(proc.returncode, 0, read)
+        record = json.loads(read["consequence"]["body"])
+        self.assertEqual(record["source_url"], source_url)
+        self.assertEqual(record["reported_phone_branch"], "feat/jm-phone-commander-v0-1-20261028")
+        self.assertTrue(record["reported_clean_tracked_files"])
+        self.assertEqual(record["source_authentication"], "NOT_PERFORMED_BY_LOCAL_HOST")
+        self.assertNotIn("stdout", record)
+        original_digest = read["consequence"]["digest"]
+        # The observation remains source-linked and immutable. Corrections belong
+        # in a distinct interpretation note, never in the original receipt.
+        proc, created = self.command("write", "phone_interpretation",
+                                     body=json.dumps({"source_note": "phone_receipt",
+                                                      "source_digest": original_digest,
+                                                      "interpretation": "Original phone source branch still present"}),
+                                     mode="create")
+        self.assertEqual(proc.returncode, 0, created)
+        interpreted_digest = created["consequence"]["digest"]
+        proc, updated = self.command("write", "phone_interpretation",
+                                     body="Updated interpretation: phone source branch is behind current main",
+                                     mode="correct", expected_digest=interpreted_digest)
+        self.assertEqual(proc.returncode, 0, updated)
+        proc, stale = self.command("write", "phone_interpretation",
+                                   body="outdated interpretation",
+                                   mode="correct", expected_digest=interpreted_digest)
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(stale["error_type"], "MemoryConflict")
+        proc, final = self.command("read", "phone_interpretation")
+        self.assertEqual(final["consequence"]["revision"], 2)
+        self.assertEqual(final["consequence"]["previous"], interpreted_digest)
+        proc, preserved = self.command("read", "phone_receipt")
+        self.assertEqual(preserved["consequence"]["digest"], original_digest)
+        self.assertEqual(json.loads(preserved["consequence"]["body"])["source_url"], source_url)
+        proc, held = self.command("ingest-phone-git-status", "phone_receipt",
+                                  body=stable(phone_return), source_url=source_url,
+                                  mode="correct", expected_digest=original_digest)
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(held["status"], "HOLD")
+
+    def test_phone_receipt_intake_refuses_spoofed_or_failed_source(self):
+        from jm_scoped_memory_host import stable
+        good_url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"
+                    "issues/12#issuecomment-6527606601")
+        good = {"state": "PASS", "consequence": {
+            "result": "PASS",
+            "git": {"exit_code": 0, "stdout": "", "stderr": ""},
+            "branch": {"exit_code": 0, "stdout": "feat/jm-phone-commander-v0-1-20261028\n", "stderr": ""}}}
+        for changed, url in [
+            (good, "https://evil.example.com/receipt"),
+            ({"state": "HOLD", "reason": "NOT_RUN"}, good_url),
+            ({"state": "PASS", "consequence": {"result": "PASS", "git": {
+                "exit_code": 1, "stdout": "", "stderr": ""}, "branch": good["consequence"]["branch"]}}, good_url),
+            ({"state": "PASS", "consequence": {"result": "PASS", "git": good["consequence"]["git"],
+                "branch": {"exit_code": 0, "stdout": "branch; rm -rf /\n", "stderr": ""}}}, good_url),
+        ]:
+            proc, held = self.command("ingest-phone-git-status", "bad_receipt",
+                                      body=stable(changed), source_url=url)
+            self.assertEqual(proc.returncode, 2, held)
+            self.assertEqual(held["status"], "HOLD")
+        proc, held = self.command("ingest-phone-git-status", "bad_receipt",
+                                  body=stable(good), source_url=good_url, mode="update")
+        self.assertEqual(proc.returncode, 2)
+        self.assertEqual(held["status"], "HOLD")
+        proc, keys = self.command("list")
+        self.assertEqual(keys["consequence"]["note_keys"], [])
 
     def test_corruption_is_hold_not_auto_repair(self):
         proc, result = self.command("write", "drift", body="original")

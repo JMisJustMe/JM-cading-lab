@@ -102,8 +102,49 @@ def original_jm_session(workspace, query):
     return envelope
 
 
+
+def bounded_phone_git_status_receipt(payload, source_url):
+    """Untrusted external receipt -> privacy-minimised JM source reference, never attestation."""
+    source_pattern = (r"https://github\.com/JMisJustMe/JM-ai-studio-surface/"
+                      r"issues/[1-9][0-9]*#issuecomment-[1-9][0-9]*")
+    if not isinstance(source_url, str) or re.fullmatch(source_pattern, source_url) is None:
+        raise ValueError("HOLD: private original Phone Commander issue-comment URL required")
+    if not isinstance(payload, dict) or payload.get("state") != "PASS":
+        raise ValueError("HOLD: source receipt does not report PASS")
+    consequence = payload.get("consequence")
+    if not isinstance(consequence, dict) or consequence.get("result") != "PASS":
+        raise ValueError("HOLD: Phone Commander consequence not PASS")
+    git = consequence.get("git")
+    branch = consequence.get("branch")
+    if not isinstance(git, dict) or not isinstance(branch, dict):
+        raise ValueError("HOLD: missing original Phone Commander git-status output")
+    if any(type(part.get("exit_code")) is not int or part["exit_code"] != 0
+           or not isinstance(part.get("stdout"), str)
+           or not isinstance(part.get("stderr"), str)
+           or part["stderr"] != "" for part in (git, branch)):
+        raise ValueError("HOLD: device command error or unbounded output")
+    raw_branch = branch["stdout"].strip()
+    if not re.fullmatch(r"[a-zA-Z0-9_./-]{1,120}", raw_branch):
+        raise ValueError("HOLD: branch data is not an inert bounded identifier")
+    if len(git["stdout"].encode("utf-8")) > 4096:
+        raise ValueError("HOLD: git-status output too large")
+    summary = {
+        "schema": "JM.PhoneReceiptReference/0.1",
+        "source_url": source_url,
+        "source_command": "git-status",
+        "source_receipt_sha256": hashlib.sha256(stable(payload).encode("utf-8")).hexdigest(),
+        "source_authentication": "NOT_PERFORMED_BY_LOCAL_HOST",
+        "record_class": "EXTERNAL_DEVICE_RETURN_REFERENCE_NOT_NEW_PHONE_DING",
+        "reported_result": "PASS",
+        "reported_phone_branch": raw_branch,
+        "reported_clean_tracked_files": git["stdout"] == "",
+        "raw_receipt_custody": "ORIGINAL_PRIVATE_GITHUB_COMMENT_NOT_REPRODUCED",
+    }
+    return stable(summary)
+
+
 async def action(memory, args, body):
-    if args.action == "write":
+    if args.action in ("write", "ingest-phone-git-status"):
         committed = await memory.write(args.name, body, mode=args.mode,
                                        expected_digest=args.expected_digest)
         returned = await memory.read(args.name)
@@ -111,9 +152,12 @@ async def action(memory, args, body):
                 or returned["revision"] != committed["revision"]
                 or returned["body"] != body):
             raise MemoryIntegrity("write/readback consequence mismatch")
-        return {"action": "write", "status": "COMMITTED_AND_READ_BACK",
-                "note": args.name, "revision": returned["revision"], "digest": returned["digest"],
-                "scope": committed["scope"]}
+        consequence = {"action": args.action, "status": "COMMITTED_AND_READ_BACK",
+                       "note": args.name, "revision": returned["revision"], "digest": returned["digest"],
+                       "scope": committed["scope"]}
+        if args.action == "ingest-phone-git-status":
+            consequence["source_contact"] = "REFERENCE_ONLY_LOCAL_HOST_DID_NOT_FETCH_PHONE"
+        return consequence
     if args.action == "read":
         result = await memory.read(args.name)
         return {"action": "read", "status": "RETURNED", "note": args.name,
@@ -127,30 +171,41 @@ async def action(memory, args, body):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("write", "read", "list"))
+    parser.add_argument("action", choices=("write", "read", "list", "ingest-phone-git-status"))
     parser.add_argument("--name", help="note key, required for read and write")
     parser.add_argument("--mode", choices=("create", "update", "correct"), default="create")
     parser.add_argument("--expected-digest", help="exact current note digest for correct mode")
+    parser.add_argument("--source-url", help="existing private Phone Commander issue-comment URL; ingestion only")
     parser.add_argument("--harness", default="repository-cli",
                         help="telemetry label ONLY, not proof of a live provider")
     parser.add_argument("--query", default="coding runtime",
                         help="query routed through the original JM adapter")
     args = parser.parse_args()
     try:
-        if args.action in ("write", "read") and not args.name:
-            raise ValueError("name required for read/write")
-        if args.action != "write" and args.expected_digest is not None:
+        if args.action in ("write", "read", "ingest-phone-git-status") and not args.name:
+            raise ValueError("name required for read/write/intake")
+        if args.action not in ("write", "ingest-phone-git-status") and args.expected_digest is not None:
             raise ValueError("expected-digest requires a write action")
+        if args.action != "ingest-phone-git-status" and args.source_url is not None:
+            raise ValueError("source-url is only for phone receipt ingestion")
+        if args.action == "ingest-phone-git-status" and args.mode != "create":
+            raise ValueError("phone source observations are create-only; correct a separate interpretation note")
         if not re.fullmatch(r"[a-z0-9_-]{1,40}", args.harness):
             raise ValueError("invalid harness label")
         if args.action != "write" and not sys.stdin.isatty():
             # Deliberately never consume stdin for read/list.
             pass
         body = None
-        if args.action == "write":
+        if args.action in ("write", "ingest-phone-git-status"):
             body = sys.stdin.buffer.read(8193).decode("utf-8", "strict")
             if not (0 < len(body.encode("utf-8")) <= 8192):
-                raise ValueError("write requires 1..8192 bytes of UTF-8 via stdin")
+                raise ValueError("write/intake requires 1..8192 bytes of UTF-8 via stdin")
+            if args.action == "ingest-phone-git-status":
+                try:
+                    parsed = json.loads(body)
+                except ValueError as exc:
+                    raise ValueError("HOLD: malformed original Phone Commander receipt") from exc
+                body = bounded_phone_git_status_receipt(parsed, args.source_url)
         workspace = git_workspace()
         os.umask(0o077)
         owner = local_owner()

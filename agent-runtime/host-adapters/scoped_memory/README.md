@@ -150,3 +150,33 @@ phone sensor ingestion, live provider contact, or a new sovereign body.
 The only changed test obligations are current-digest success, stale-digest refusal,
 read-after-correction on another process, malformed/missing digest refusal, and inherited
 scoped-memory/host-adapter CI. No owner-phone or proven source test needs repeating.
+
+
+## Physical Phone Commander receipt → scoped-memory reference (31 Oct 2026 candidate)
+
+The **existing** POSIX repository-process host now has an opt-in
+`ingest-phone-git-status` action. The input is the exact JSON consequence
+already returned through the original private JM Phone Commander issue mailbox.
+It preserves *a minimal reference* (original issue-comment URL, SHA-256 of the
+provided receipt JSON, reported clean-tracked-file status and the inert branch
+identifier) in the existing host-scoped note store. The raw private receipt
+is **not copied** into this store, and the unchanged original issue remains
+the custody source. The local host **does not fetch GitHub** or authenticate
+that the input came from the phone, so the stored record is clearly marked
+`NOT_PERFORMED_BY_LOCAL_HOST`, never a new device DING.
+
+Read-only custody input example from already-proven private issue #12:
+
+```sh
+printf '%s' '{"state":"PASS","consequence":{"result":"PASS","git":{"exit_code":0,"stdout":"","stderr":""},"branch":{"exit_code":0,"stdout":"feat/jm-phone-commander-v0-1-20261028\n","stderr":""}}}' | \\
+  python3 agent-runtime/host-adapters/scoped_memory/jm_scoped_memory_host.py \\
+    ingest-phone-git-status --name phone_receipt \\
+    --source-url 'https://github.com/JMisJustMe/JM-ai-studio-surface/issues/12#issuecomment-6527606601'
+```
+
+The original phone remains **untouched**. A subsequent correction of a SEPARATE interpretation
+note (leaving the original receipt note unchanged) uses existing `write --mode correct --expected-digest SHA256` and exact
+readback. An imported reference never becomes autonomous learning, verified
+phone attestation, cloud memory sync, or direct sensor observation. No owner
+retest is needed for this bounded host-source change. Run only the inherited
+scoped-memory and host adapter CI; no second bridge or owner-facing door.

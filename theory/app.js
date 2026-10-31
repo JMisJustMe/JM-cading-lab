@@ -274,6 +274,13 @@ function renderDistricts() {
 }
 
 function boot() {
+  // An Estate House deep link is a search request, never evidence that a body is complete.
+  // The Theory Wing retains sole authority for result selection, reader routes and source grades.
+  if (!new URLSearchParams(location.hash.replace(/^#/, '')).has('body')) {
+    state.query = (new URLSearchParams(location.search).get('find') || '').slice(0, 200);
+    const search = $('#search');
+    if (search) search.value = state.query;
+  }
   renderFilters();
   renderList();
   renderFeatures();
@@ -284,6 +291,7 @@ function boot() {
 
   const id = new URLSearchParams(location.hash.replace(/^#/, '')).get('body');
   if (id) openRecord(id, true);
+  else if (state.query) setView('library', false);
 }
 
 async function ungzip(bytes) {

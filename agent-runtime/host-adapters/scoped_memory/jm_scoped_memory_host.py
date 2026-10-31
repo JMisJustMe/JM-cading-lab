@@ -118,6 +118,7 @@ async def action(memory, args, body):
         result = await memory.read(args.name)
         return {"action": "read", "status": "RETURNED", "note": args.name,
                 "body": result["body"], "revision": result["revision"], "digest": result["digest"],
+                "previous": result["previous"],
                 "scope": result["scope"]}
     if args.action == "list":
         return {"action": "list", "status": "RETURNED", "note_keys": await memory.list_keys()}

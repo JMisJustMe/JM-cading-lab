@@ -2,17 +2,45 @@
   "name": "JM Theory Multihub Public Payload",
   "version": "v0.4-project-source-census-public",
   "parts": [
-    {"file":"part-01.txt","chars":7500,"sha256":"58d57836b67ffbc218ce08f0876c36e390709bf0df746f96c21e3218f0aaa973"},
-    {"file":"part-02.txt","chars":7500,"sha256":"9fb2d151d985dfdbe00927c70a64067affe08310d7f84232de80b61f919272fd"},
-    {"file":"part-03.txt","chars":7500,"sha256":"2b3ed74d830d4f16735d610d1daf6505bb173c24edb780d0032f724c7ec315fd"},
-    {"file":"part-04.txt","chars":7500,"sha256":"6ef9f85b85be58a8b9337f58feb285fc241965b536b7ada3211eb5b91901bb07"},
-    {"file":"part-05.txt","chars":7500,"sha256":"2782eee0d6314ba32ab42f0364420cd079211b3b2fe90509e593331388d467c7"},
-    {"file":"part-06.txt","chars":7500,"sha256":"0732e42ddf0fe6c9839b2d6d618bfa2f89fd5c3343c33ac465e763e0b6dbdff4"},
-    {"file":"part-07.txt","chars":5428,"sha256":"1fb9bb4f9ea3445b2709f32910160b33e020ab9a36dc918bdc67eefca39bf536"}
+    {
+      "file": "part-01.txt",
+      "chars": 7328,
+      "sha256": "81a7788aa746c6f51402d1fd59a5287d7a08191562b097650c83bdd9343ebcb8"
+    },
+    {
+      "file": "part-02.txt",
+      "chars": 7328,
+      "sha256": "db9d83b8d5f558e2159949a09a69d9b786d78d96b9b6bac84fa5359d17867288"
+    },
+    {
+      "file": "part-03.txt",
+      "chars": 7328,
+      "sha256": "92b81f483a9efb60765af2c731886011cc1d00821bc14b35f623be5bada6e936"
+    },
+    {
+      "file": "part-04.txt",
+      "chars": 7328,
+      "sha256": "fad0ad60fbac3d0b74d2196e38c9cf12568b30b0e4064c2d24260ddf4f395871"
+    },
+    {
+      "file": "part-05.txt",
+      "chars": 7328,
+      "sha256": "ef29e952251dbcb3e77a0057073d2f8d4d84124d446df102f6c52db8c7bc1037"
+    },
+    {
+      "file": "part-06.txt",
+      "chars": 7328,
+      "sha256": "2f4e96e2a4b24f9e5a90a87ee51554eceb41fd0a64c980a4ce2d0fdd493fc4b2"
+    },
+    {
+      "file": "part-07.txt",
+      "chars": 7324,
+      "sha256": "136acf130963303c25b467e658994d9533a97f3285c5c15963ad9638b62d6b72"
+    }
   ],
-  "joined_base64_chars": 50428,
-  "decoded_json_bytes": 386039,
-  "decoded_json_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5",
+  "joined_base64_chars": 51292,
+  "decoded_json_bytes": 388809,
+  "decoded_json_sha256": "3fd3b234123b70d374141a71b339e3a8deeaa03b506f78a1412b93768a5237bb",
   "readable_routes": 297,
   "districts": 19,
   "boundary": "Compact public route payload; full owner-controlled source corpora and Zionfolders remain preserved separately."

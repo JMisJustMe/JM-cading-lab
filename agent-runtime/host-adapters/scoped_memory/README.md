@@ -168,7 +168,7 @@ that the input came from the phone, so the stored record is clearly marked
 Read-only custody input example from already-proven private issue #12:
 
 ```sh
-printf '%s' '{"state":"PASS","consequence":{"result":"PASS","git":{"exit_code":0,"stdout":"","stderr":""},"branch":{"exit_code":0,"stdout":"feat/jm-phone-commander-v0-1-20261028\\n","stderr":""}}}' | \\
+printf '%s' '{"state":"PASS","consequence":{"result":"PASS","git":{"exit_code":0,"stdout":"","stderr":""},"branch":{"exit_code":0,"stdout":"feat/jm-phone-commander-v0-1-20261028\n","stderr":""}}}' | \\
   python3 agent-runtime/host-adapters/scoped_memory/jm_scoped_memory_host.py \\
     ingest-phone-git-status --name phone_receipt \\
     --source-url 'https://github.com/JMisJustMe/JM-ai-studio-surface/issues/12#issuecomment-6527606601'

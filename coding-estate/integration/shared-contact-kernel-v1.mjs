@@ -19,7 +19,7 @@ function JMSharedContactKernel(input) {
     shock:input.shock ? { ...input.shock } : null,
   };
   const at = (x,y,cx,cy,r) => Number.isFinite(x) && Number.isFinite(y) && Math.hypot(x-cx,y-cy)<r;
-  const gate = s => Array.isArray(s?.earned) && settings.stations.every(p => s.earned.includes(p.id));
+  const earnedGate = s => Array.isArray(s?.earned) && settings.stations.every(p => s.earned.includes(p.id));
   function validate(state) {
     const e=state?.earned, r=state?.receipts;
     if(!Array.isArray(e)||e.length>settings.stations.length ||
@@ -30,10 +30,12 @@ function JMSharedContactKernel(input) {
          v.y!==settings.stations.find(s=>s.id===e[i])?.y) ||
        !Number.isInteger(state.shocks)||state.shocks<0||state.shocks>(settings.shock?1:0) ||
        (state.shocks===1&&!e.includes(settings.shock?.requires)) ||
-       (Object.prototype.hasOwnProperty.call(state,'routeOpen')&& state.routeOpen!==gate(state)))
+       (Object.prototype.hasOwnProperty.call(state,'routeOpen')&& state.routeOpen!==earnedGate(state)))
       throw Error('JM_CONTACT_INVARIANT_HOLD');
     return true;
   }
+  // Public eligibility uses the same typed receipt/invariant checks as transitions.
+  function gate(state) { validate(state); return earnedGate(state); }
   function claim(state,actor) {
     validate(state);
     const s=settings.stations.find(s=>!state.earned.includes(s.id)&&at(actor?.x,actor?.y,s.x,s.y,settings.radius));
@@ -41,7 +43,7 @@ function JMSharedContactKernel(input) {
     const next=structuredClone(state);
     next.earned.push(s.id);
     next.receipts.push({kind:settings.receiptKind,id:s.id,x:s.x,y:s.y,order:next.earned.length});
-    if(Object.prototype.hasOwnProperty.call(next,'routeOpen'))next.routeOpen=gate(next);
+    if(Object.prototype.hasOwnProperty.call(next,'routeOpen'))next.routeOpen=earnedGate(next);
     validate(next);
     return {changed:true,state:next,event:{kind:'CONTACT_EARNED',id:s.id,order:next.earned.length,
       gate:gate(next),location:{x:s.x,y:s.y},source:'JM_SHARED_CONTACT_KERNEL_v1'}};

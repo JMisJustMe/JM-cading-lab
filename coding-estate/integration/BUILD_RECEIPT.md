@@ -30,3 +30,11 @@ The first repository pass correctly rejected two documentation assertions: one i
 ## External gate
 
 Privacy remains **NOT CLOSED** because the repository currently reports public visibility. This technical Ding does not falsely mark that administrative gate green.
+
+## 31 October 2026 — original M002 CP9 public eligibility consequence
+
+Existing PR405 parent85bd8bfb22a7801f6344b3f4f45ba2af78d793d4; original source-derived Shared Mechanisms kernel, not an independent THEOGRAPHY authority. Reproduced public gate({earned:['A','B'],receipts:[],shocks:0,routeOpen:true}) returningtrue while original validate() rejects that same state. This could expose eligibility from inconsistent host state.
+
+Original shared-contact-kernel-v1.mjs now separates the internal earned-set predicate (used while constructing/validating a transition) from public gate(), which runs the existing typed receipt/invariant checks first. Valid claim/shock/reentry and recipient identities remain; no new engine or persistent store. This is data consistency, not cryptographic proof that a human physically earned contact.
+
+Existing mission002-cp9-multi-recipient.mjs gains20 differential assertions: missing/tampered receipts, inconsistent routeOpen, foreign FIVE//FLIP receipt kind, and valid/invalid eligibility with immutable state across game/comic/book/music/cartoon outputs. Local69 checks PASS; exact new function SHA2567d18c7ff357c97b931b882f13fd3058ce4291108d59d78685db63a7bc5d17433. Existing AILatheo native-route workflow explicitly invokes this exact-source test; browser/CI result pending. Private CP7/CP8 inline game copies retain their prior source/proof and are not silently upgraded or represented as this new function. No full-game, finished-media, physical-device, merge or deployment claim.

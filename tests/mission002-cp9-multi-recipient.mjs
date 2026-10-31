@@ -7,7 +7,7 @@ const ok=(x,m)=>{assert.ok(x,m);checks++};
 const eq=(x,y,m)=>{assert.deepEqual(x,y,m);checks++};
 const hold=(fn,m)=>{assert.throws(fn,new RegExp(m));checks++};
 const digest=createHash('sha256').update(JMSharedContactKernel.toString()).digest('hex');
-eq(digest,'2f4a313e3bae43f78c1cb910a8199b13ec4eb2afd5030a40b5414dfeb68418d0','EXACT_RUNTIME_FUNCTION_HASH');
+eq(digest,'7d18c7ff357c97b931b882f13fd3058ce4291108d59d78685db63a7bc5d17433','EXACT_RUNTIME_FUNCTION_HASH');
 const config=(stations,receiptKind='CURRENT_EARNED')=>({stations,receiptKind,radius:58,
  shock:{x:510,y:480,radius:56,requires:'A'}});
 const k=JMSharedContactKernel(config([{id:'A',x:255,y:480},{id:'B',x:765,y:480}]));
@@ -72,6 +72,21 @@ eq(all.artifact.beats.length,4,'MULTI_BEAT_OUTPUT');
 hold(()=>k.replay([{kind:'fabricate',x:255,y:480}],'comic'),'JM_CONTACT_ACTION_HOLD');
 hold(()=>k.replay([], 'undefined-medium'),'JM_CONTACT_MEDIUM_OR_SEQUENCE_HOLD');
 hold(()=>JMSharedContactKernel(config([{id:'A',x:1,y:1},{id:'A',x:2,y:2}])),'JM_CONTACT_CONFIG_HOLD');
+// Direct host eligibility must not accept an earned-ID list without its receipts.
+const bare={...structuredClone(full.state),receipts:[]};
+hold(()=>k.gate(bare),'JM_CONTACT_INVARIANT_HOLD');
+hold(()=>k.gate(tamper),'JM_CONTACT_INVARIANT_HOLD');
+hold(()=>k.gate(forge),'JM_CONTACT_INVARIANT_HOLD');
+const fiveForged=structuredClone(fiveState);fiveForged.receipts[0].kind='CURRENT_EARNED';
+hold(()=>five.gate(fiveForged),'JM_CONTACT_INVARIANT_HOLD');
+eq(fiveState.receipts[0].kind,'EARNED_BY_PLAYER_CONTACT','FOREIGN_RECEIPT_REJECTION_PRESERVES_FIVEFLIP');
+for(const medium of ['game','comic','book','music','cartoon']){
+ const valid=k.replay(actions,medium),snapshot=structuredClone(valid.state);
+ const bad=structuredClone(valid.state);bad.receipts[0].x+=1;
+ hold(()=>k.gate(bad),'JM_CONTACT_INVARIANT_HOLD');
+ ok(k.gate(valid.state),'VALID_RECIPIENT_STILL_OPENS_'+medium);
+ eq(valid.state,snapshot,'ELIGIBILITY_DOES_NOT_MUTATE_'+medium);
+}
 const proof={schema:'jm.m002.cp9.multi-recipient-real-source/1',status:'PASS',checks,
  functionSha256:digest,realSource:'coding-estate/integration/shared-contact-kernel-v1.mjs',
  recipients:['GameForge opt-in source grammar','FIVE//FLIP opt-in source grammar',

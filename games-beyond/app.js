@@ -58,8 +58,42 @@ function renderRecent(){const bodies=recent.map(findBody).filter(Boolean).slice(
 async function stats(){$('mountedStat').textContent=pack?.bodies.length||0;$('editedStat').textContent=(await all('edits')).length;$('receiptStat').textContent=(await all('receipts')).length}
 function renderAll(){renderFilters();renderRooms();renderRecent();stats();if(selected&&findBody(selected))editBody(selected)}
 function view(name,focus=true){$$('.view').forEach(x=>x.hidden=x.dataset.view!==name);$$('.nav button').forEach(x=>{const on=x.dataset.view===name;x.classList.toggle('active',on);x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});if(focus){const h=document.querySelector(`.view[data-view="${name}"] h1,.view[data-view="${name}"] h2`);if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}scrollTo({top:0,behavior:document.documentElement.classList.contains('reduced-motion')?'auto':'smooth'})}
+// Host-only navigation assistance for SHA-verified frozen JMStudios originals.
+// Resolve their historical relative redirects against their OWN embedded room map.
+// Never mutate source HTML, storage, exports, or invent a missing target.
+function wireOriginalEmbeddedRooms(doc,b){
+ const match=b.html.match(/const ROOMS = (\[[\s\S]*?\]);\s*function b64ToUtf8/);
+ const win=doc.defaultView;
+ if(!match||typeof win?.openRoom!=='function')return 'embedded navigation unavailable';
+ const rooms=JSON.parse(match[1]),byPath=new Map(rooms.map(r=>[r.path,r]));
+ const originalOpen=win.openRoom;
+ win.openRoom=function(id){
+  try{
+   let room=rooms.find(r=>r.id===id),seen=new Set(),hops=0;
+   if(!room)throw Error('room missing');
+   while(true){
+    if(seen.has(room.id))throw Error('redirect cycle');
+    seen.add(room.id);
+    const html=new TextDecoder().decode(Uint8Array.from(atob(room.html_b64),c=>c.charCodeAt(0)));
+    const redirect=html.length<1024&&html.match(/<script>\s*location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*<\/script>/i);
+    if(!redirect)break;
+    if(!/^[A-Za-z0-9_.-]+\.html$/.test(redirect[1]))throw Error('unsupported redirect');
+    const path=room.path.slice(0,room.path.lastIndexOf('/')+1)+redirect[1];
+    room=byPath.get(path);if(!room)throw Error('embedded target missing');
+    hops++;
+   }
+   originalOpen.call(win,room.id);
+   if(hops)doc.getElementById('viewerTitle').textContent+=` · ${hops} historical redirects resolved locally`;
+  }catch(error){
+   doc.getElementById('viewerTitle').textContent='Navigation HOLD: '+error.message;
+   doc.getElementById('roomFrame').srcdoc='';
+   doc.getElementById('viewerWrap').style.display='block';
+  }
+ };
+ return 'historical redirects resolve inside the original embedded room map (host assistance)';
+}
 function runtimeLayer(doc,b){const notes=[];if(!doc.documentElement.lang){doc.documentElement.lang='en';notes.push('language declared')}if(!doc.title.trim()){doc.title=`${b.name} ${b.version||''}`;notes.push('title supplied')}const style=doc.createElement('style');style.dataset.jmAccessibility='runtime';style.textContent='*:focus-visible{outline:3px solid #fff36b!important;outline-offset:3px!important}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}button,input,select,textarea,a,[role=button]{min-height:44px}';doc.head?.append(style);let unnamed=0;doc.querySelectorAll('button,[role=button],a').forEach((x,i)=>{if(!(x.getAttribute('aria-label')||x.getAttribute('aria-labelledby')||x.textContent||x.title||'').trim()){x.setAttribute('aria-label',`Control ${i+1} in ${b.name}`);unnamed++}});if(unnamed)notes.push(`${unnamed} controls named`);let canvases=0;doc.querySelectorAll('canvas').forEach((x,i)=>{if(!x.getAttribute('aria-label')&&!x.getAttribute('aria-labelledby')){x.setAttribute('role','img');x.setAttribute('aria-label',`${b.name} interactive canvas ${i+1}`);canvases++}});if(canvases)notes.push(`${canvases} canvases named`);doc.querySelectorAll('iframe').forEach((x,i)=>{if(!x.title)x.title=`Embedded content ${i+1} in ${b.name}`});return notes}
-async function openBody(id,override=null){const b=findBody(id);if(!b)return toast('Room unavailable',true);recent=[id,...recent.filter(x=>x!==id)].slice(0,8);localStorage.setItem('jm-gb-recent-v05',JSON.stringify(recent));renderRecent();selected=id;lastFocus=document.activeElement;$('dialogTitle').textContent=`${b.name} ${b.version||''}`;$('dialogMeta').textContent=`${b.category||'Room'} · ${b.stage||'MOUNTED'} · exact source in wrapper`;$('bodySummary').textContent='Runtime assistance is applied only in this opening. Stored source remains unchanged.';$('bodyFrame').title=`${b.name} ${b.version||''} mounted body`;$('bodyFrame').srcdoc=override??b.html;$('bodyDialog').showModal();$('bodyFrame').onload=()=>{try{const notes=runtimeLayer($('bodyFrame').contentDocument,b);$('bodySummary').textContent=notes.length?`Runtime assistance: ${notes.join('; ')}. Stored source remains unchanged.`:'No runtime repair was required by this limited host scanner.'}catch{}};await receipt('BODY_OPENED_ACCESSIBLE_WRAPPER',b.name,{id,edited:!!b.edited})}
+async function openBody(id,override=null){const b=findBody(id);if(!b)return toast('Room unavailable',true);recent=[id,...recent.filter(x=>x!==id)].slice(0,8);localStorage.setItem('jm-gb-recent-v05',JSON.stringify(recent));renderRecent();selected=id;lastFocus=document.activeElement;$('dialogTitle').textContent=`${b.name} ${b.version||''}`;$('dialogMeta').textContent=`${b.category||'Room'} · ${b.stage||'MOUNTED'} · exact source in wrapper`;$('bodySummary').textContent='Runtime assistance is applied only in this opening. Stored source remains unchanged.';$('bodyFrame').title=`${b.name} ${b.version||''} mounted body`;$('bodyFrame').srcdoc=override??b.html;$('bodyDialog').showModal();$('bodyFrame').onload=async()=>{try{const doc=$('bodyFrame').contentDocument;const notes=runtimeLayer(doc,b);if(!override&&await isOriginalJMStudios(b))notes.push(wireOriginalEmbeddedRooms(doc,b));$('bodySummary').textContent=notes.length?`Runtime assistance: ${notes.join('; ')}. Stored source remains unchanged.`:'No runtime repair was required by this limited host scanner.'}catch{}};await receipt('BODY_OPENED_ACCESSIBLE_WRAPPER',b.name,{id,edited:!!b.edited})}
 function closeBody(){$('bodyDialog').close();$('bodyFrame').srcdoc='';lastFocus?.focus?.()}
 function separateBody(){const b=findBody(selected);if(!b)return;const url=URL.createObjectURL(new Blob([$('bodyFrame').srcdoc||b.html],{type:'text/html'})),a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.click();setTimeout(()=>URL.revokeObjectURL(url),120000);receipt('BODY_OPENED_SEPARATE',b.name,{id:b.id})}
 
@@ -183,8 +217,8 @@ async function exportBody(id){const b=findBody(id);if(!b)return;download((b.sour
 function audit(b){const html=b.html||'',issues=[],add=(code,severity,message,count=1)=>issues.push({code,severity,message,count});if(!/<html\b[^>]*\blang\s*=/i.test(html))add('HTML_LANG','moderate','Language not declared');if(!/<title\b[^>]*>\s*[^<]+/i.test(html))add('DOCUMENT_TITLE','serious','Title missing');if(!/<main\b|role\s*=\s*["']main["']/i.test(html))add('MAIN_LANDMARK','moderate','Main landmark not detected');if(!/<h1\b/i.test(html))add('H1','moderate','H1 not detected');const alt=(html.match(/<img\b[^>]*>/gi)||[]).filter(x=>! /\balt\s*=/i.test(x)).length;if(alt)add('IMAGE_ALT','serious','Images missing alt',alt);const frames=(html.match(/<iframe\b[^>]*>/gi)||[]).filter(x=>! /\btitle\s*=/i.test(x)).length;if(frames)add('IFRAME_TITLE','serious','Frames missing titles',frames);const canvas=(html.match(/<canvas\b[^>]*>/gi)||[]).filter(x=>! /(aria-label|aria-labelledby|role)\s*=/i.test(x)).length;if(canvas)add('CANVAS_NAME','serious','Canvases missing names',canvas);if(/@keyframes|animation\s*:|transition\s*:/i.test(html)&&! /prefers-reduced-motion/i.test(html))add('REDUCED_MOTION','moderate','Motion without reduced-motion rule');if(/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(html))add('ZOOM_RESTRICTION','serious','Viewport restricts zoom');const serious=issues.filter(x=>x.severity==='serious').reduce((n,x)=>n+x.count,0),moderate=issues.filter(x=>x.severity==='moderate').reduce((n,x)=>n+x.count,0);return{id:b.id,name:b.name,version:b.version,grade:serious===0&&moderate<=1?'A':serious<=2&&moderate<=4?'B':'C',issueCount:issues.reduce((n,x)=>n+x.count,0),issues,bytes:new Blob([html]).size}}
 async function runAudit(open=true){if(!pack)return;const results=pack.bodies.map(b=>{const a=audit(b);b.accessibilityAudit=a;return a});lastAudit={schema:'JM.AccessibilitySweep/0.5-runtime',checkedAt:NOW(),bodyCount:results.length,claimBoundary:'Automated static preflight and runtime assistance; not a WCAG certification.',results};await receipt('ACCESSIBILITY_SWEEP','Games&Beyond',{bodyCount:results.length,grades:results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{})});renderAudit();renderRooms();if(open)view('access');toast(`${results.length}-body accessibility sweep complete`)}
 function renderAudit(){if(!lastAudit)return;const grades=lastAudit.results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{});$('a11ySummary').textContent=`Static preflight: A ${grades.A||0} · B ${grades.B||0} · C ${grades.C||0}. Runtime help remains separate from stored source.`;$('a11yList').innerHTML=lastAudit.results.map(a=>`<article class="auditCard"><div style="display:flex;align-items:center;gap:9px"><span class="grade ${a.grade}">${a.grade}</span><div><b>${esc(a.name)} · ${esc(a.version||'')}</b><span>${a.issueCount} detected items · ${bytes(a.bytes)}</span></div></div>${a.issues.length?`<details><summary>Review items</summary><ul>${a.issues.map(x=>`<li><strong>${esc(x.severity.toUpperCase())}</strong> · ${esc(x.message)}${x.count>1?' × '+x.count:''}</li>`).join('')}</ul></details>`:'<p>No issue in this limited rule set.</p>'}</article>`).join('')}
-async function proof(){const results=[];for(const b of pack.bodies)results.push({id:b.id,name:b.name,html:/<html|<!doctype/i.test(b.html),bytes:new Blob([b.html]).size,digest:await hash(b.html),edited:!!b.edited});const built=manifest.builtInBodyCount||manifest.bodyCount,full=manifest.fullTargetCount||built,pass=results.length>=built&&results.every(x=>x.html),fullMount=results.length===full,report={schema:'JM.GamesBeyond.PublicProof/0.5',checkedAt:NOW(),pass,fullMount,bodyCount:results.length,builtInExpected:built,fullTarget:full,accessibilityAudit:!!lastAudit,results};$('proofBox').textContent=JSON.stringify(report,null,2);await receipt(fullMount?'FULL_23_BODY_HOUSE_PROOF':'BUILT_IN_HOUSE_PROOF',pass?'DING':'BUGG',{pass,fullMount,bodyCount:results.length,fullTarget:full});view('proof');toast(pass?(fullMount?'23-body full House proof DING':`${results.length}-body built-in proof DING`):'Proof found a gap',!pass)}
-async function exportHouse(){download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
+async function proof(){const results=[];for(const b of pack.bodies)results.push({id:b.id,name:b.name,html:/<html|<!doctype/i.test(b.html),bytes:new Blob([b.html]).size,digest:await hash(b.html),edited:!!b.edited});const built=manifest.builtInBodyCount||manifest.bodyCount,full=manifest.fullTargetCount||built,pass=results.length>=built&&results.every(x=>x.html),fullMount=results.length===full,report={schema:'JM.GamesBeyond.PublicProof/0.5',checkedAt:NOW(),pass,fullMount,bodyCount:results.length,builtInExpected:built,fullTarget:full,accessibilityAudit:!!lastAudit,results};$('proofBox').textContent=JSON.stringify(report,null,2);await receipt(fullMount?'FULL_HOUSE_PROOF':'BUILT_IN_HOUSE_PROOF',pass?'DING':'BUGG',{pass,fullMount,bodyCount:results.length,fullTarget:full});view('proof');toast(pass?(fullMount?`${full}-body full House proof DING`:`${results.length}-body built-in proof DING`):'Proof found a gap',!pass)}
+async function exportHouse(){const originals=pack.bodies.filter(b=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b.id));const verifiedPair=originals.length===2&&(await Promise.all(originals.map(isOriginalJMStudios))).every(Boolean);download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',source_custody:verifiedPair?{original_lineage_zip_file:JMSTUDIOS_LINEAGE}:undefined,exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
 async function importHouse(file){
  try{
   const incoming=JSON.parse(await file.text());
@@ -198,7 +232,8 @@ async function importHouse(file){
     typeof b?.html==='string'&&/<html|<!doctype/i.test(b.html));
   if(protectedHTML&&!exactPair)throw Error('JMStudios original-source identity requires verified lineage pair');
   if(exactPair){
-   const ids=incoming.bodies.map(b=>b?.id);
+   const fullBackup=incoming.schema==='JM.GamesBeyondHouse/0.5-public-export';
+   const ids=incoming.bodies.filter(b=>!fullBackup||Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b?.id)).map(b=>b?.id);
    if(ids.length!==2||new Set(ids).size!==2||!ids.every(id=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,id)))
      throw Error('JMStudios lineage pair identity mismatch');
   }
@@ -210,8 +245,9 @@ async function importHouse(file){
    }
    if(seen.has(item.id))throw Error('Duplicate imported identity: '+item.id);
    seen.add(item.id);
-   const isOriginal=exactPair&&await isOriginalJMStudios(item);
-   if(exactPair&&!isOriginal)throw Error('JMStudios exact-source verification HOLD: '+item.id);
+   const protectedIdentity=Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,item.id);
+   const isOriginal=exactPair&&protectedIdentity&&await isOriginalJMStudios(item);
+   if(exactPair&&protectedIdentity&&!isOriginal)throw Error('JMStudios exact-source verification HOLD: '+item.id);
    const previous=findBody(item.id);
    if(previous?.edited&&!await isOriginalJMStudios(previous))
      throw Error('Existing local creator revision held from replacement: '+item.id);
@@ -219,7 +255,7 @@ async function importHouse(file){
    staged.push(replacement);
    if(previous)updated++;else added++;
   }
-  if(exactPair&&staged.length!==2)throw Error('JMStudios full pair not verified');
+  if(exactPair&&staged.filter(b=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b.id)).length!==2)throw Error('JMStudios full pair not verified');
   if(!staged.length)throw Error('No valid source bodies to import');
   // One IndexedDB transaction: no half-import and no in-memory crown before commit.
   await commitHouseImport(staged);
@@ -229,7 +265,7 @@ async function importHouse(file){
    else{pack.bodies.push(item);protectedBodies.set(item.id,structuredClone(item))}
    if(!item.edited)protectedBodies.set(item.id,structuredClone(item));
   }
-  const full=manifest.fullTargetCount||23,done=pack.bodies.length>=full;
+  const full=manifest.fullTargetCount||manifest.builtInBodyCount||manifest.bodyCount,done=pack.bodies.length>=full;
   $('status').textContent=done?`${full}/${full} FULL HOUSE`:`${pack.bodies.length} MOUNTED · ${full} FULL`;
   $('status').className='status '+(done?'ok':'');
   await receipt(done?'ECO_ESTATE_FULL_HOUSE_IMPORTED':'HOUSE_BACKUP_IMPORTED','Games&Beyond',{incoming:incoming.bodies.length,added,updated,mounted:pack.bodies.length,fullTarget:full,verifiedOriginals:exactPair?2:0});

@@ -4,10 +4,10 @@
   "version": "0.5",
   "authority": "Theodore Benjamin Scott / JM",
   "keeper_line": "Preserve the body. Improve the contact. Never rename adaptation as original source.",
-  "status": "ACCESSIBLE_21_BUILT_IN_23_FULL_IMPORT",
-  "publicBuiltInCount": 21,
-  "fullHouseCount": 23,
-  "claimBoundary": "Twenty-one bodies are directly mounted from public payload/files. The two exact JMStudios roles become mounted after importing the supplied Eco/Estate v0.4 full-house JSON. Accessibility preflight/runtime assistance is not a WCAG certification.",
+  "status": "ACCESSIBLE_22_BUILT_IN_24_FULL_IMPORT",
+  "publicBuiltInCount": 22,
+  "fullHouseCount": 24,
+  "claimBoundary": "Twenty-two bodies are directly mounted from public payload/files, including the RouteOS platform room. The two exact private JMStudios originals complete the 24-body local House after verified import. This mounted scope is distinct from the wider 71-entry catalogue. Accessibility preflight/runtime assistance is not a WCAG certification.",
   "laws": [
     "REGISTERED does not mean MOUNTED",
     "MOUNTED does not mean MERGED",
@@ -227,6 +227,18 @@
       "mounted": true
     },
     {
+      "id": "routeos-platform",
+      "name": "RouteOS",
+      "version": "v103 → v108A.5 Recovered Package Authority",
+      "category": "Gaming Systems & Console Platforms",
+      "role": "JM gaming platform, console OS, cartridge ecosystem and First-Party SDK",
+      "stage": "GOVERNING FLAGSHIP ROOM + PRIVATE FULL KEEPER RECOVERED",
+      "path": "routeos/index.html",
+      "sourceStatus": "Original v108A.5 MAX10 package physically recovered and independently revalidated. Full source remains owner-private; public room carries evidence and navigation only. Phone field contact remains a separate proof lane.",
+      "delivery": "PUBLIC_EXACT_FILE_MOUNTED",
+      "mounted": true
+    },
+    {
       "id": "jmstudios-source-rebegin",
       "name": "JMStudios",
       "version": "B0.8.2 Original Source Patch Merge",
@@ -317,5 +329,12 @@
       ],
       "law": "MESH NOT MERGE; EDIT CONTACT IS NOT DEPLOYMENT; NO DING NO CLAIM"
     }
+  },
+  "current_mount_authority": {
+    "source": "games-beyond/payload-manifest.json",
+    "built_in": 22,
+    "full_target": 24,
+    "private_exact_imports": 2,
+    "boundary": "CP09 fields below are preserved historical proof, not current mount totals."
   }
 }

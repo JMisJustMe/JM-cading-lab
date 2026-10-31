@@ -254,3 +254,63 @@ test('@source-boundary fake lineage cannot crown altered JMStudios HTML', async 
   await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`);
   expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.filter(x => x.id.startsWith('jmstudios-')).length)).toBe(0);
 });
+
+// Current mount totals are derived from the manifest. CP09 remains historical.
+test('@boot registry and runtime agree without rewriting historical contact', async ({ page }) => {
+  await openHouse(page);
+  const registry = await (await page.request.get('registry.json')).json();
+  const manifest = await (await page.request.get('payload-manifest.json')).json();
+  expect(registry.publicBuiltInCount).toBe(manifest.builtInBodyCount);
+  expect(registry.fullHouseCount).toBe(manifest.fullTargetCount);
+  expect(registry.registered_bodies.filter(b => b.mounted).map(b => b.id).sort())
+    .toEqual([...manifest.bodyIdsBuiltIn].sort());
+  expect(registry.registered_bodies.filter(b => !b.mounted).map(b => b.id).sort())
+    .toEqual(manifest.fullImportAdds.map(b => b.id).sort());
+  expect(registry.cp09_source_edit_contact.mounted_registry_bodies).toBe(21);
+  await page.locator('.nav [data-view="proof"]').click();
+  await page.locator('#runProof').click();
+  await expect(page.locator('#proofBox')).toContainText('builtInExpected');
+  const proof = JSON.parse(await page.locator('#proofBox').textContent());
+  expect(proof.bodyCount).toBe(manifest.builtInBodyCount);
+  expect(proof.fullTarget).toBe(manifest.fullTargetCount);
+});
+
+// Synthetic exact-source specimens ONLY inside an intercepted test app.js.
+// Production pins and all private originals remain unchanged; this earns backup
+// lifecycle proof, not authentic-JMStudios gameplay or private-source proof.
+test('@source-boundary verified pair survives full backup into a fresh browser context', async ({ page, browser }) => {
+  test.setTimeout(90_000);
+  const { readFileSync } = await import('node:fs');
+  const { createHash } = await import('node:crypto');
+  const ids = ['jmstudios-source-rebegin','jmstudios-actual-crown'];
+  const bodies = ids.map((id,index) => {
+    const html = `<!doctype html><html><head><title>Fixture ${index}</title></head><body><main>Private-lifecycle fixture ${index}</main></body></html>`;
+    return { id, name:'Synthetic lifecycle fixture '+index, html,
+      hash:createHash('sha256').update(html).digest('hex'), size:Buffer.byteLength(html),
+      originalSourceIntegrity:'PASS_EXACT_SHA256',
+      sourceTransport:'RECOVERED_FROM_EXISTING_JM_LINEAGE_NOT_NEW_CREATION' };
+  });
+  let app = readFileSync(new URL('../app.js',import.meta.url),'utf8');
+  app = app.replace('b033ab12aee459b6a388732a2b3ab7952c21d035d0fb0cd741f1db36da01406f',bodies[0].hash)
+    .replace('27c877edbf044862bab22d8273595d6baaafc93d894cff89c88b9c50e1fda896',bodies[1].hash);
+  const intercept = p => p.route('**/app.js*',route=>route.fulfill({contentType:'application/javascript',body:app}));
+  await intercept(page);
+  await openHouse(page);
+  const incoming = {source_custody:{original_lineage_zip_file:'JM_STUDIOS_B0_8_CROWN_CHAIN_UNIQUE_LINEAGE_v1_0.zip'},bodies};
+  await page.locator('#importFile').setInputFiles({name:'synthetic-pair.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(incoming))});
+  await expect(page.locator('#status')).toHaveText('24/24 FULL HOUSE');
+  await page.locator('.nav [data-view="proof"]').click();
+  const downloadWait=page.waitForEvent('download');await page.locator('#exportHouse').click();
+  const download=await downloadWait,backup=JSON.parse(readFileSync(await download.path(),'utf8'));
+  expect(backup.bodies).toHaveLength(24);
+  expect(backup.source_custody.original_lineage_zip_file).toBe(incoming.source_custody.original_lineage_zip_file);
+  const context=await browser.newContext({serviceWorkers:'block'});
+  try {
+    const fresh=await context.newPage();await intercept(fresh);await openHouse(fresh);
+    await fresh.locator('#importFile').setInputFiles({name:'synthetic-full-backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
+    await expect(fresh.locator('#status')).toHaveText('24/24 FULL HOUSE');
+    await fresh.reload();await expect(fresh.locator('#status')).toHaveText('24 MOUNTED · 24 FULL');
+    const restored=await fresh.evaluate(()=>window.GamesBeyond.pack.bodies.filter(b=>b.id.startsWith('jmstudios-')).map(b=>({id:b.id,html:b.html,hash:b.hash,edited:b.edited})));
+    expect(restored.sort((a,b)=>a.id.localeCompare(b.id))).toEqual(bodies.map(b=>({id:b.id,html:b.html,hash:b.hash,edited:false})).sort((a,b)=>a.id.localeCompare(b.id)));
+  } finally {await context.close();}
+});

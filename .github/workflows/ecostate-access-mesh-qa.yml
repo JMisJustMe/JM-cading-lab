@@ -182,7 +182,7 @@ jobs:
                   if(audit.count<90||!audit.unique||audit.appsBranches!==2||audit.holds.length||
                       audit.sourceEdits<10||audit.sourceLinksRendered!==audit.sourceEdits||!audit.sourceSafe||
                       !audit.directEditable||!audit.ownerRouteProtected||!audit.appNotMisrepresented||
-                      audit.gameEditors!==21||audit.exactGames!==6||!audit.gameEditorsSafe||!audit.exactGameFilesSafe||
+                      audit.gameEditors!==JSON.parse(await (await page.request.get('http://127.0.0.1:4178/games-beyond/payload-manifest.json')).text()).builtInBodyCount||audit.exactGames!==6||!audit.gameEditorsSafe||!audit.exactGameFilesSafe||
                       !audit.unmountedProtected||!audit.playformBoundary||
                       audit.appSourcesCount!==4||!audit.appSourcesSafe||!audit.appVersionBoundary||!audit.workroomsSourceOnly||audit.sourceCards!==4||
                       !audit.member||!audit.coder||!audit.song||!audit.theory){

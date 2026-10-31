@@ -28,6 +28,8 @@ jobs:
         run: npm install
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Continuous original-body source quality sweep
+        run: node tests/jm-game-quality-sweep.mjs
       - name: Boot and registry gate
         run: npx playwright test --project=mobile-chromium --grep '@boot'
       - name: Mounted room opens
@@ -42,6 +44,8 @@ jobs:
         run: npx playwright test --project=mobile-chromium --grep '@workbench'
       - name: Responsive gate
         run: npx playwright test --project=desktop-chromium --grep '@responsive'
+      - name: Original-game quality contact — portrait + desktop
+        run: npx playwright test tests/jm-contact-quality.spec.mjs --project=mobile-chromium --project=desktop-chromium
       - name: Upload Playwright evidence on failure
         if: failure()
         uses: actions/upload-artifact@v4

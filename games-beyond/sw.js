@@ -1,7 +1,7 @@
-const CACHE='games-beyond-v0-9-whole-estate-current-r2';
+const CACHE='games-beyond-v0-9-whole-estate-current-r3';
 const MODULES=['catalogue-v0-6-style.js','catalogue-v0-6-data-1.js','catalogue-v0-6-data-2a.js','catalogue-v0-6-data-2b.js','catalogue-v0-6-data-3a.js','catalogue-v0-6-data-3b.js','catalogue-v0-6-core-data-1.js','catalogue-v0-6-core-data-2.js','catalogue-v0-6-core-loader.js','routeos-achievement-hall-v0-7.js','routeos-v0-7-label.js','routeos-runtime-launch-v0-8.js','whole-estate-current-catalogue-v1.js'];
 const CORE=['./','index.html','app.js',...MODULES,'routeos/index.html','routeos/runtime/index.html','lzma-d-min.js','manifest.webmanifest','payload-manifest.json','registry.json','accessibility-report-v0-5.json','GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt','all-games.html','WHOLE_GAMES_ESTATE_RECONCILIATION_2026-09-20.md','bodies/futarized-v1-2.html','bodies/fight-clash-v0-4.html','bodies/aiming-run-v0-1a.html','bodies/drag-aim-loop-kernel-v0-9-9.html','bodies/loopit-glyphplay-gameforge-boundary-rejoin-node.html','bodies/playform-v0-1.html'];
-const INJECTION=MODULES.map(src=>`<script src="${src}?v=0.9.0-whole-estate-current-r1"></script>`).join('');
+const INJECTION=MODULES.map(src=>`<script src="${src}?v=${encodeURIComponent(CACHE)}"></script>`).join('');
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})()));
 async function networkFirst(request){try{const response=await fetch(request);const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy));return response}catch{return(await caches.match(request))||(await caches.match('./'))}}

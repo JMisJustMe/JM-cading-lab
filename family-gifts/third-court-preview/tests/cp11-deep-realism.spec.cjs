@@ -435,6 +435,22 @@ assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,false,
  'CP35 resume restores live game after shortcut');
 console.log('PASS CP35 focused-control keyboard isolation and inherited P shortcut '+width+'px');
 
+// CP38: focused controls must not invoke the separately registered C / Q play-call listeners.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.locator('#pauseButton').focus();
+await page.keyboard.press('c');
+await page.keyboard.press('q');
+const cp38Focused=await page.evaluate(()=>({cutCalls:JM_THIRD_COURT.status().cutCalls,screenCalls:JM_THIRD_COURT.status().screenCalls}));
+assert.deepEqual(cp38Focused,{cutCalls:0,screenCalls:0},
+  'CP38 focused visible button must retain C/Q without triggering play calls');
+await page.evaluate(()=>document.activeElement.blur());
+await page.keyboard.press('c');
+await page.keyboard.press('q');
+const cp38Gameplay=await page.evaluate(()=>({cutCalls:JM_THIRD_COURT.status().cutCalls,screenCalls:JM_THIRD_COURT.status().screenCalls}));
+assert.deepEqual(cp38Gameplay,{cutCalls:1,screenCalls:1},
+  'CP38 unfocused C/Q still call CUT and SCREEN in live possession');
+console.log('PASS CP38 focused C/Q isolation and inherited gameplay play-calls '+width+'px');
+
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

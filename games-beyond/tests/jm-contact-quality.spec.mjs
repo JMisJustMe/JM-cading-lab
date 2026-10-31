@@ -59,6 +59,41 @@ test('@jm-contact Fight Clash never keeps held UI after browser focus loss', asy
   expect(errors).toEqual([]);
 });
 
+test('@jm-contact Fight Clash rapid pause and resume preserves a single live simulation loop', async ({ page }) => {
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  // Observe the real browser scheduler; execute every original game callback.
+  await page.addInitScript(()=>{
+    const schedule=window.requestAnimationFrame.bind(window);
+    const pending=new Set();
+    window.__jmFightFrames={peak:0,pending:()=>pending.size};
+    window.requestAnimationFrame=callback=>{
+      const id=schedule(time=>{pending.delete(id);callback(time)});
+      pending.add(id);window.__jmFightFrames.peak=Math.max(window.__jmFightFrames.peak,pending.size);
+      return id;
+    };
+  });
+  await page.goto('./bodies/fight-clash-v0-4.html');
+  await page.locator('#introBoxing').click();
+  if(await page.locator('#startBtn').isVisible()) await page.locator('#startBtn').click();
+  else await page.locator('#game').click({position:{x:40,y:40}});
+  const scheduler=await page.locator('#pauseBtn').evaluate(button=>{
+    for(let i=0;i<20;i++){button.click();button.click()}
+    return {peak:window.__jmFightFrames.peak,pending:window.__jmFightFrames.pending()};
+  });
+  expect(scheduler).toEqual({peak:1,pending:1});
+  await page.locator('#pauseBtn').click();
+  await expect(page.locator('#pauseBtn')).toHaveText('RESUME');
+  await expect.poll(()=>page.evaluate(()=>window.__jmFightFrames.pending())).toBe(0);
+  const pausedTime=await page.locator('#timer').textContent();
+  await page.waitForTimeout(450);
+  await expect(page.locator('#timer')).toHaveText(pausedTime);
+  await page.locator('#pauseBtn').click();
+  await expect(page.locator('#timer')).not.toHaveText(pausedTime);
+  expect(await page.evaluate(()=>window.__jmFightFrames.peak)).toBe(1);
+  expect(errors).toEqual([]);
+  await test.info().attach('fight-clash-single-loop.json',{body:JSON.stringify(scheduler),contentType:'application/json'});
+});
+
 test('@jm-contact FUTARIZED 44px actions survive short portrait viewport', async ({ page }) => {
   await page.setViewportSize({width:390,height:700});
   const errors = [];

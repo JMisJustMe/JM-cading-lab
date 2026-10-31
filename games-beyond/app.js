@@ -22,6 +22,44 @@ async function isOriginalJMStudios(b){
    b.sourceTransport==='RECOVERED_FROM_EXISTING_JM_LINEAGE_NOT_NEW_CREATION'&&
    new Blob([b.html]).size===b.size&&await hash(b.html)===expected);
 }
+// Adapt only an exact source-verified original JMStudios launcher. Never edit its
+// frozen HTML. Relative filenames inside six historical srcdoc redirect rooms
+// are resolved to ORIGINAL embedded room sources via the launcher openRoom().
+function adaptOriginalJMStudiosHistoricalRoutes(doc){
+ const runtime=doc?.defaultView;
+ if(!runtime||typeof runtime.openRoom!=='function')return 0;
+ const script=[...doc.scripts].find(s=>s.textContent.includes('const ROOMS = '));
+ if(!script)return 0;
+ const source=script.textContent,marker='const ROOMS = ',start=source.indexOf(marker)+marker.length,end=source.indexOf('];',start);
+ if(start<marker.length||end<0)return 0;
+ let rooms;
+ try{rooms=JSON.parse(source.slice(start,end+1))}catch{return 0}
+ if(!Array.isArray(rooms)||rooms.length!==13)return 0;
+ const byId=new Map(rooms.map(room=>[room.id,room]));
+ const byPath=new Map(rooms.map(room=>[room.path?.split('/').pop(),room]));
+ const historic=/^room_0(?:07|08|09|10|11|12)$/;
+ function destination(initial){
+  let id=initial;const seen=new Set();
+  while(historic.test(id)){
+   if(seen.has(id))return null;seen.add(id);
+   const item=byId.get(id);if(!item?.html_b64)return null;
+   const match=atob(item.html_b64).match(/location\.href\s*=\s*['"]([^'"]+)['"]/);
+   if(!match||/[\\?#]/.test(match[1])||match[1].includes('..'))return null;
+   const next=byPath.get(match[1]);if(!next)return null;id=next.id;
+  }
+  return byId.has(id)?id:null;
+ }
+ const planned=[...doc.querySelectorAll('[data-room]')].filter(button=>historic.test(button.dataset.room))
+  .map(button=>({button,id:destination(button.dataset.room)}));
+ if(planned.length!==6||planned.some(x=>!x.id||historic.test(x.id)))return 0;
+ for(const item of planned){
+  item.button.addEventListener('click',e=>{
+   e.preventDefault();e.stopImmediatePropagation();runtime.openRoom(item.id);
+  },true);
+  item.button.dataset.originalHistoricalTarget=item.id;
+ }
+ return planned.length;
+}
 async function commitHouseImport(items){
  return new Promise((resolve,reject)=>{
    const tx=db.transaction('edits','readwrite');
@@ -59,7 +97,7 @@ async function stats(){$('mountedStat').textContent=pack?.bodies.length||0;$('ed
 function renderAll(){renderFilters();renderRooms();renderRecent();stats();if(selected&&findBody(selected))editBody(selected)}
 function view(name,focus=true){$$('.view').forEach(x=>x.hidden=x.dataset.view!==name);$$('.nav button').forEach(x=>{const on=x.dataset.view===name;x.classList.toggle('active',on);x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});if(focus){const h=document.querySelector(`.view[data-view="${name}"] h1,.view[data-view="${name}"] h2`);if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}scrollTo({top:0,behavior:document.documentElement.classList.contains('reduced-motion')?'auto':'smooth'})}
 function runtimeLayer(doc,b){const notes=[];if(!doc.documentElement.lang){doc.documentElement.lang='en';notes.push('language declared')}if(!doc.title.trim()){doc.title=`${b.name} ${b.version||''}`;notes.push('title supplied')}const style=doc.createElement('style');style.dataset.jmAccessibility='runtime';style.textContent='*:focus-visible{outline:3px solid #fff36b!important;outline-offset:3px!important}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}button,input,select,textarea,a,[role=button]{min-height:44px}';doc.head?.append(style);let unnamed=0;doc.querySelectorAll('button,[role=button],a').forEach((x,i)=>{if(!(x.getAttribute('aria-label')||x.getAttribute('aria-labelledby')||x.textContent||x.title||'').trim()){x.setAttribute('aria-label',`Control ${i+1} in ${b.name}`);unnamed++}});if(unnamed)notes.push(`${unnamed} controls named`);let canvases=0;doc.querySelectorAll('canvas').forEach((x,i)=>{if(!x.getAttribute('aria-label')&&!x.getAttribute('aria-labelledby')){x.setAttribute('role','img');x.setAttribute('aria-label',`${b.name} interactive canvas ${i+1}`);canvases++}});if(canvases)notes.push(`${canvases} canvases named`);doc.querySelectorAll('iframe').forEach((x,i)=>{if(!x.title)x.title=`Embedded content ${i+1} in ${b.name}`});return notes}
-async function openBody(id,override=null){const b=findBody(id);if(!b)return toast('Room unavailable',true);recent=[id,...recent.filter(x=>x!==id)].slice(0,8);localStorage.setItem('jm-gb-recent-v05',JSON.stringify(recent));renderRecent();selected=id;lastFocus=document.activeElement;$('dialogTitle').textContent=`${b.name} ${b.version||''}`;$('dialogMeta').textContent=`${b.category||'Room'} · ${b.stage||'MOUNTED'} · exact source in wrapper`;$('bodySummary').textContent='Runtime assistance is applied only in this opening. Stored source remains unchanged.';$('bodyFrame').title=`${b.name} ${b.version||''} mounted body`;$('bodyFrame').srcdoc=override??b.html;$('bodyDialog').showModal();$('bodyFrame').onload=()=>{try{const notes=runtimeLayer($('bodyFrame').contentDocument,b);$('bodySummary').textContent=notes.length?`Runtime assistance: ${notes.join('; ')}. Stored source remains unchanged.`:'No runtime repair was required by this limited host scanner.'}catch{}};await receipt('BODY_OPENED_ACCESSIBLE_WRAPPER',b.name,{id,edited:!!b.edited})}
+async function openBody(id,override=null){const b=findBody(id);if(!b)return toast('Room unavailable',true);recent=[id,...recent.filter(x=>x!==id)].slice(0,8);localStorage.setItem('jm-gb-recent-v05',JSON.stringify(recent));renderRecent();selected=id;lastFocus=document.activeElement;$('dialogTitle').textContent=`${b.name} ${b.version||''}`;$('dialogMeta').textContent=`${b.category||'Room'} · ${b.stage||'MOUNTED'} · exact source in wrapper`;$('bodySummary').textContent='Runtime assistance is applied only in this opening. Stored source remains unchanged.';$('bodyFrame').title=`${b.name} ${b.version||''} mounted body`;$('bodyFrame').srcdoc=override??b.html;$('bodyDialog').showModal();$('bodyFrame').onload=async()=>{try{const doc=$('bodyFrame').contentDocument,notes=runtimeLayer(doc,b);if(override===null&&await isOriginalJMStudios(b)){const routed=adaptOriginalJMStudiosHistoricalRoutes(doc);notes.push(routed===6?'Six historical JMStudios redirects resolve to their exact embedded target rooms':'JMStudios historical redirect routing HOLD')} $('bodySummary').textContent=notes.length?`Runtime assistance: ${notes.join('; ')}. Stored source remains unchanged.`:'No runtime repair was required by this limited host scanner.'}catch{}};await receipt('BODY_OPENED_ACCESSIBLE_WRAPPER',b.name,{id,edited:!!b.edited})}
 function closeBody(){$('bodyDialog').close();$('bodyFrame').srcdoc='';lastFocus?.focus?.()}
 function separateBody(){const b=findBody(selected);if(!b)return;const url=URL.createObjectURL(new Blob([$('bodyFrame').srcdoc||b.html],{type:'text/html'})),a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.click();setTimeout(()=>URL.revokeObjectURL(url),120000);receipt('BODY_OPENED_SEPARATE',b.name,{id:b.id})}
 

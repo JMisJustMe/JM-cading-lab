@@ -24,7 +24,7 @@ class Hold(Exception):
     pass
 
 
-def file_bytes(root, relative):
+def file_bytes(root, relative, *, with_identity=False):
     if not isinstance(relative, str) or not relative or len(relative) > 512:
         raise Hold("INVALID_RELATIVE_PATH")
     if relative.startswith(("/", "~")) or "\\" in relative or "\x00" in relative:
@@ -65,7 +65,8 @@ def file_bytes(root, relative):
         raise Hold("SOURCE_NOT_READABLE")
     if len(data) > MAX_BYTES or len(data) != after.st_size or st.st_size != after.st_size:
         raise Hold("SOURCE_CHANGED_OR_OVERSIZED")
-    return data
+    identity = (opened.st_dev, opened.st_ino)
+    return (data, identity) if with_identity else data
 
 
 def dropbox_content_hash(data):
@@ -95,8 +96,12 @@ def compare(roots, arguments):
     right_root = Path(roots["recovery"]).expanduser().resolve(strict=True)
     if left_root == right_root:
         raise Hold("INDEPENDENT_ROOTS_REQUIRED")
-    left = file_bytes(roots["library"], arguments.get("library_file"))
-    right = file_bytes(roots["recovery"], arguments.get("recovery_file"))
+    left, left_identity = file_bytes(roots["library"], arguments.get("library_file"), with_identity=True)
+    right, right_identity = file_bytes(roots["recovery"], arguments.get("recovery_file"), with_identity=True)
+    # Different root names do not make a hard link or overlapping-root alias
+    # an independent file object. Provider independence still needs host proof.
+    if left_identity == right_identity:
+        raise Hold("INDEPENDENT_FILE_OBJECTS_REQUIRED")
     fmt = arguments.get("format", "any")
     # JSON-named files must be parsed even if the caller omits format or
     # explicitly requests "any". Identical poisoned bytes are not a Ding.
@@ -170,7 +175,10 @@ def dispatch(request, roots):
         return {"jsonrpc": "2.0", "id": request.get("id") if isinstance(request, dict) else None,
                 "error": {"code": -32600, "message": "Invalid Request"}}
     method = request.get("method")
-    if method and method.startswith("notifications/"):
+    if not isinstance(method, str) or not method:
+        return {"jsonrpc": "2.0", "id": request.get("id"),
+                "error": {"code": -32600, "message": "Invalid Request"}}
+    if method.startswith("notifications/"):
         return None
     ident = request.get("id")
     if method == "initialize":

@@ -3,6 +3,7 @@
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -120,6 +121,35 @@ class StorageMCPTests(unittest.TestCase):
     def test_not_same_root(self):
         with self.assertRaises(m.Hold):
             m.compare({"library": str(self.a), "recovery": str(self.a)}, self.args)
+
+    def test_hard_link_is_not_independent_recovery(self):
+        (self.b / "item.json").unlink()
+        os.link(self.a / "item.json", self.b / "item.json")
+        with self.assertRaisesRegex(m.Hold, "INDEPENDENT_FILE_OBJECTS_REQUIRED"):
+            m.compare(self.roots, self.args)
+
+    def test_overlapping_roots_same_file_is_not_recovery(self):
+        roots = {"library": self.tmp.name, "recovery": str(self.a)}
+        args = dict(self.args, library_file="library/item.json")
+        with self.assertRaisesRegex(m.Hold, "INDEPENDENT_FILE_OBJECTS_REQUIRED"):
+            m.compare(roots, args)
+
+    def test_malformed_method_does_not_crash_dispatch(self):
+        for method in (None, 17, True, [], {}, ""):
+            with self.subTest(method=method):
+                result = m.dispatch({"jsonrpc":"2.0", "id":7, "method":method}, self.roots)
+                self.assertEqual(result["error"]["code"], -32600)
+
+    def test_stdio_recovers_after_malformed_method(self):
+        messages = [{"jsonrpc":"2.0","id":1,"method":17},
+                    {"jsonrpc":"2.0","id":2,"method":"ping"}]
+        cp = subprocess.run([sys.executable, str(SCRIPT)],
+                            input="\n".join(map(json.dumps, messages))+"\n",
+                            text=True, capture_output=True, timeout=10, check=True)
+        replies = [json.loads(line) for line in cp.stdout.splitlines()]
+        self.assertEqual(replies[0]["error"]["code"], -32600)
+        self.assertEqual(replies[1], {"jsonrpc":"2.0","id":2,"result":{}})
+        self.assertEqual(cp.stderr, "")
 
     def test_large_file_hold(self):
         with (self.b / "item.json").open("wb") as f:

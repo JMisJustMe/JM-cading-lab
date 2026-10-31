@@ -299,10 +299,16 @@ test('@source-boundary verified pair survives full backup into a fresh browser c
   const incoming = {source_custody:{original_lineage_zip_file:'JM_STUDIOS_B0_8_CROWN_CHAIN_UNIQUE_LINEAGE_v1_0.zip'},bodies};
   await page.locator('#importFile').setInputFiles({name:'synthetic-pair.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(incoming))});
   await expect(page.locator('#status')).toHaveText('24/24 FULL HOUSE');
+  await expect(page.locator('#editedStat')).toHaveText('0');
   await page.locator('.nav [data-view="proof"]').click();
   const downloadWait=page.waitForEvent('download');await page.locator('#exportHouse').click();
   const download=await downloadWait,backup=JSON.parse(readFileSync(await download.path(),'utf8'));
   expect(backup.bodies).toHaveLength(24);
+  // One real creator revision must stay a revision; pristine backup rows must not.
+  const revised=backup.bodies.find(b=>b.id==='gameforge');
+  revised.html+='<!-- synthetic creator revision -->';
+  revised.hash=createHash('sha256').update(revised.html).digest('hex');
+  revised.size=Buffer.byteLength(revised.html);revised.edited=true;
   expect(backup.source_custody.original_lineage_zip_file).toBe(incoming.source_custody.original_lineage_zip_file);
   const context=await browser.newContext({serviceWorkers:'block'});
   try {
@@ -310,6 +316,8 @@ test('@source-boundary verified pair survives full backup into a fresh browser c
     await fresh.locator('#importFile').setInputFiles({name:'synthetic-full-backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
     await expect(fresh.locator('#status')).toHaveText('24/24 FULL HOUSE');
     await fresh.reload();await expect(fresh.locator('#status')).toHaveText('24 MOUNTED · 24 FULL');
+    await expect(fresh.locator('#editedStat')).toHaveText('1');
+    expect(await fresh.evaluate(()=>window.GamesBeyond.pack.bodies.filter(b=>b.edited).map(b=>b.id))).toEqual(['gameforge']);
     const restored=await fresh.evaluate(()=>window.GamesBeyond.pack.bodies.filter(b=>b.id.startsWith('jmstudios-')).map(b=>({id:b.id,html:b.html,hash:b.hash,edited:b.edited})));
     expect(restored.sort((a,b)=>a.id.localeCompare(b.id))).toEqual(bodies.map(b=>({id:b.id,html:b.html,hash:b.hash,edited:false})).sort((a,b)=>a.id.localeCompare(b.id)));
   } finally {await context.close();}

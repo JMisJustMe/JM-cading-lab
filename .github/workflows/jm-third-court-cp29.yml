@@ -1,0 +1,35 @@
+name: JM THIRD COURT CP29 — Original Analog Contact
+on:
+  pull_request:
+    paths:
+      - 'family-gifts/third-court-preview/cp12-gamepad-contact-candidate.html'
+      - 'family-gifts/third-court-preview/tests/cp29-native-gamepad-contact.spec.cjs'
+      - '.github/workflows/jm-third-court-cp29.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-third-court-gamepad:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source and spec syntax
+        run: node --check family-gifts/third-court-preview/tests/cp29-native-gamepad-contact.spec.cjs
+      - name: Install browser harness
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve exact JM source
+        run: |
+          python3 -m http.server 4198 --bind 127.0.0.1 >/tmp/jm-third-court-cp29.log 2>&1 &
+          for i in $(seq 1 25); do
+            curl -fsS http://127.0.0.1:4198/family-gifts/third-court-preview/cp12-gamepad-contact-candidate.html >/dev/null && exit 0
+            sleep 1
+          done
+          exit 1
+      - name: Real basketball 3v3 gamepad and keyboard contact — portrait and desktop
+        run: node family-gifts/third-court-preview/tests/cp29-native-gamepad-contact.spec.cjs

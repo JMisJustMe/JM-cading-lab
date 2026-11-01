@@ -35,13 +35,13 @@ assert(activeRestored.state.pot===game.state.pot,'Restored pot changed');
 // Invalid data must not be admitted as a playable hand; normal saves still restore.
 for(const [property,corruption] of [
   ['value',999],
-  ['rank','A'],
-  ['suit','clubs'],
+  ['rank',card=>card.rank==='A'?'K':'A'],
+  ['suit',card=>card.suit==='clubs'?'hearts':'clubs'],
   ['symbol','?']
 ]){
   const forged=JSON.parse(JSON.stringify(activeSaved));
   const card=forged.state.players.player.hole[0];
-  card[property]=corruption;
+  card[property]=typeof corruption==='function'?corruption(card):corruption;
   assert(new P.PukaGame(forged).state===null,
     'Saved hand admitted a noncanonical card '+property);
 }
@@ -49,6 +49,18 @@ const missingMetadata=JSON.parse(JSON.stringify(activeSaved));
 delete missingMetadata.state.players.player.hole[0].value;
 assert(new P.PukaGame(missingMetadata).state===null,'Saved hand admitted missing canonical card metadata');
 
+
+// A valid 52-card set can still be illegally distributed across table positions.
+for(const [label,change] of [
+  ['three player hole cards',s=>s.players.player.hole.push(s.players.ai.hole.pop())],
+  ['three House hole cards',s=>s.players.ai.hole.push(s.players.player.hole.pop())],
+  ['preflop with a dealt board',s=>s.board.push(s.deck.pop(),s.deck.pop(),s.deck.pop())],
+  ['flop label without flop cards',s=>{s.street='flop';}]
+]){
+  const forged=JSON.parse(JSON.stringify(activeSaved));
+  change(forged.state);
+  assert(new P.PukaGame(forged).state===null,'Saved hand admitted illegal card distribution: '+label);
+}
 
 let guard=0;
 while(!game.state.ended&&guard++<40){

@@ -52,3 +52,14 @@ test('@boot denied IndexedDB reports a visible fail-closed House state', async (
   await expect(page.locator('#loadText')).toContainText('Local edit database unavailable');
   await expect(page.locator('#enterBtn')).toBeDisabled();
 });
+
+test('@boot slow service-worker registration cannot block original House payload', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'serviceWorker', {
+      configurable: true,
+      value: { register() { return new Promise(() => {}); } }
+    });
+  });
+  await expectHouseBoot(page);
+  await expect(page.locator('#mountedStat')).toHaveText('22');
+});

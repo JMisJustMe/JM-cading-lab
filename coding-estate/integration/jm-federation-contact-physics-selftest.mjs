@@ -44,7 +44,7 @@ e.reset();assert.equal(e.stats().pairs,0);
 assert(Object.isFrozen(e));
 // CP56: bad contact data must fail before the shared organ mutates either
 // fighter. Keep the original 250 valid COMBOUND parity fixtures above intact.
-assert.equal(e.version,'1.0.2');
+assert.equal(e.version,'1.0.3');
 let invalidContacts=0;
 for(const [name,mutate,modelOverride] of [
  ['zero-mass',a=>{a.mass=0}],
@@ -63,6 +63,27 @@ for(const [name,mutate,modelOverride] of [
  assert.deepEqual(b,beforeB,name+' B unchanged');
  assert.equal(e.stats().pairs,beforePairs,name+' no phantom contact');
  invalidContacts++;
+}
+// CP57: invalid authored restitution/release tuning previously could
+// separate both fighters and only then introduce NaN velocities/impulses.
+// Reject every malformed tuning case atomically without losing CP56 parity.
+let invalidTunings=0;
+for(const [name,override] of [
+ ['nan-scale',{contact_restitution_scale:NaN}],
+ ['infinite-add',{contact_restitution_add:Infinity}],
+ ['inverted-bounds',{contact_restitution_min:1.5,contact_restitution_max:.5}],
+ ['negative-release-cap',{contact_release_cap:-1}],
+ ['nan-release-factor',{contact_release_factor:NaN}],
+ ['negative-scale',{contact_restitution_scale:-1}]
+]){
+ const a={key:'ZIPP',x:0,y:0,r:1,mass:1,vx:1,vy:0,spin:0,squash:0};
+ const b={key:'BRAX',x:1.5,y:0,r:1,mass:1,vx:-1,vy:0,spin:0,squash:0};
+ const beforeA=structuredClone(a),beforeB=structuredClone(b),beforePairs=e.stats().pairs;
+ assert.throws(()=>e.solvePair(a,b,{fighters:model.fighters,rules:{...rules,...override}}),/JM_PHYSICS_INVALID_TUNING/,name);
+ assert.deepEqual(a,beforeA,name+' A unchanged');
+ assert.deepEqual(b,beforeB,name+' B unchanged');
+ assert.equal(e.stats().pairs,beforePairs,name+' no phantom contact');
+ invalidTunings++;
 }
 // Explicit zero is authored tuning, not an absent default. Existing native
 // GameCoding/GameCore service dispatch must observe that exact physical result.
@@ -106,5 +127,5 @@ for(const [name,tuning,expected] of [
  assert.equal(pair.left.vx,1,'recipient initial state remains unchanged');
  recipientContacts++;
 }
-console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,
+console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,invalidContacts,invalidTunings,
  outcome:'PASS',claim:'pair geometry and impulse only; original COMBOUND art, abilities, walls, AI remain outside scope'},null,2));

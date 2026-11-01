@@ -42,6 +42,8 @@ jobs:
         run: npx playwright test --project=mobile-chromium --grep '@workbench'
       - name: Responsive gate
         run: npx playwright test --project=desktop-chromium --grep '@responsive'
+      - name: Fight Clash single-loop regression
+        run: npx playwright test tests/fight-clash-single-loop.spec.mjs --project=mobile-chromium
       - name: Upload Playwright evidence on failure
         if: failure()
         uses: actions/upload-artifact@v4

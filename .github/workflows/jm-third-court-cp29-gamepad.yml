@@ -1,5 +1,12 @@
 name: JM THIRD COURT CP29 — Native Controller Real Game
 on:
+  push:
+    branches:
+      - 'feat/jm-third-court-native-controller-cp29-20261030'
+    paths:
+      - 'family-gifts/third-court-preview/cp11-ball-contact-candidate.html'
+      - 'games-beyond/tests/jm-third-court-cp29.spec.mjs'
+      - '.github/workflows/jm-third-court-cp29-gamepad.yml'
   pull_request:
     paths:
       - 'family-gifts/third-court-preview/cp11-ball-contact-candidate.html'

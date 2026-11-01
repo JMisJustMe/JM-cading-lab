@@ -167,10 +167,16 @@
     if(!s||typeof s!=='object'||!['preflop','flop','turn','river'].includes(s.street))return false;
     if(!s.players?.player||!s.players?.ai||!Array.isArray(s.deck)||!Array.isArray(s.board))return false;
     if(!Array.isArray(s.players.player.hole)||!Array.isArray(s.players.ai.hole))return false;
+    // Valid cards must also occupy legal table positions on restore.
+    if(s.players.player.hole.length!==2||s.players.ai.hole.length!==2)return false;
+    if(s.board.length!=={preflop:0,flop:3,turn:4,river:5}[s.street])return false;
     const cards=[...s.deck,...s.board,...s.players.player.hole,...s.players.ai.hole];
     if(cards.length!==52)return false;
-    const canonical=new Set(makeDeck().map(c=>c.id)),ids=cards.map(c=>c?.id);
-    return ids.every(id=>canonical.has(id))&&new Set(ids).size===52;
+    const canonical=new Map(makeDeck().map(c=>[c.id,c])),ids=cards.map(c=>c?.id);
+    return new Set(ids).size===52&&cards.every(c=>{
+      const actual=canonical.get(c?.id);
+      return !!actual&&c.rank===actual.rank&&c.suit===actual.suit&&c.symbol===actual.symbol&&c.value===actual.value;
+    });
   }
 
   class TraceBox{

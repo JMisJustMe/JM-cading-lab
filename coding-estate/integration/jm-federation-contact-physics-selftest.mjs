@@ -44,7 +44,7 @@ e.reset();assert.equal(e.stats().pairs,0);
 assert(Object.isFrozen(e));
 // CP56: bad contact data must fail before the shared organ mutates either
 // fighter. Keep the original 250 valid COMBOUND parity fixtures above intact.
-assert.equal(e.version,'1.0.4');
+assert.equal(e.version,'1.0.5');
 let invalidContacts=0;
 for(const [name,mutate,modelOverride] of [
  ['zero-mass',a=>{a.mass=0}],
@@ -104,6 +104,32 @@ for(const [name,mutate] of [
  assert.deepEqual(e.stats(),beforeStats,name+' no phantom telemetry');
  unsafeDerived++;
 }
+// CP59: finite gameplay impulses can overflow stats cent-rounding or sum.
+// Keep the physics unchanged while diagnostics remain JSON-safe and truthful.
+let telemetrySafety=0;
+e.reset();
+const extremePair=()=>[
+ {key:'ZIPP',x:0,y:0,r:1,mass:1,vx:5e306,vy:0,spin:0,squash:0},
+ {key:'BRAX',x:1.5,y:0,r:1,mass:1,vx:-5e306,vy:0,spin:0,squash:0}
+];
+const firstExtreme=extremePair();
+const extremeResult=e.solvePair(...firstExtreme,model);
+assert(Number.isFinite(extremeResult.impulse),'finite physical impulse');
+assert(firstExtreme.every(u=>['x','y','vx','vy','spin','squash'].every(k=>Number.isFinite(u[k]))),'finite actual fighter state');
+telemetrySafety++;
+assert(Number.isFinite(e.stats().totalImpulse),'large finite total must not round to Infinity');
+assert.equal(e.stats().totalImpulseSaturated,false,'first valid impulse is not saturated');
+assert(!JSON.stringify(e.stats()).includes('null'),'telemetry must survive JSON');
+telemetrySafety++;
+for(let i=0;i<30;i++){const next=extremePair();e.solvePair(...next,model);}
+assert.equal(e.stats().totalImpulse,Number.MAX_VALUE,'diagnostic sum saturates explicitly');
+assert.equal(e.stats().totalImpulseSaturated,true,'saturation must be visible');
+assert.equal(e.stats().impulses,31,'real contacts remain counted');
+telemetrySafety++;
+e.reset();
+assert.equal(e.stats().totalImpulse,0,'reset clears accumulated impulse');
+assert.equal(e.stats().totalImpulseSaturated,false,'reset clears saturation flag');
+telemetrySafety++;
 // Explicit zero is authored tuning, not an absent default. Existing native
 // GameCoding/GameCore service dispatch must observe that exact physical result.
 const gameSource=`entity Arena {
@@ -146,5 +172,5 @@ for(const [name,tuning,expected] of [
  assert.equal(pair.left.vx,1,'recipient initial state remains unchanged');
  recipientContacts++;
 }
-console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,invalidContacts,invalidTunings,unsafeDerived,
+console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,invalidContacts,invalidTunings,unsafeDerived,telemetrySafety,
  outcome:'PASS',claim:'pair geometry and impulse only; original COMBOUND art, abilities, walls, AI remain outside scope'},null,2));

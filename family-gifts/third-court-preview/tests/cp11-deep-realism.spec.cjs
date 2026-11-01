@@ -158,6 +158,299 @@ const baseline=await context.newPage();
 await baseline.goto('http://127.0.0.1:4198/family-gifts/third-court-preview/index.html');
 await baseline.click('#playQuick');await baseline.waitForTimeout(250);
 await baseline.screenshot({path:'artifacts/jm-third-court-visual-proof/cp06-'+width+'.png'});await baseline.close();
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+// CP22: a hidden tab may lose keyup/pointer release without a window blur.
+// Pausing must clear held input before an independent resume.
+await page.evaluate(()=>{
+ window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true,cancelable:true}));
+ Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+ document.dispatchEvent(new Event('visibilitychange'));
+ delete document.hidden;
+});
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'hidden tab pauses the running match');
+const hiddenY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+await page.click('#resumeBtn');await page.waitForTimeout(650);
+const resumedY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+assert(Math.abs(resumedY-hiddenY)<6,'missing keyup must not leave the player walking after tab resume');
+console.log('PASS CP22 hidden-tab held-input release '+width+'px');
+// CP23: a lost pointerup must not leave the shoot control visually held or fire a shot after resuming.
+const beforeLostShot=(await page.evaluate(()=>JM_THIRD_COURT.status())).shotReport;
+await page.locator('#shoot').hover();
+await page.mouse.down();
+assert(await page.locator('#shoot').evaluate(el=>el.classList.contains('held')),'shoot control registers a real held pointer');
+await page.evaluate(()=>{
+ Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+ document.dispatchEvent(new Event('visibilitychange'));
+ delete document.hidden;
+});
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'lost pointer event pauses match');
+assert(!(await page.locator('#shoot').evaluate(el=>el.classList.contains('held'))),'hidden tab clears shoot held styling');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'hidden tab closes held shot meter');
+await page.mouse.up();
+await page.click('#resumeBtn');
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).shotReport,beforeLostShot,'late pointerup does not shoot after resuming');
+console.log('PASS CP23 lost-pointer shoot cancellation '+width+'px');
+// CP24: a cancelled touch or unrelated pointer must never release a live shot.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+const beforeCancel=await page.evaluate(()=>JM_THIRD_COURT.status());
+await page.locator('#shoot').hover();await page.mouse.down();await page.waitForTimeout(450);
+await page.evaluate(()=>document.querySelector('#shoot').dispatchEvent(new PointerEvent('pointerup',{pointerId:999,bubbles:true})));
+assert(await page.locator('#shoot').evaluate(el=>el.classList.contains('held')),'unrelated pointer cannot release the shoot hold');
+await page.evaluate(()=>document.querySelector('#shoot').dispatchEvent(new PointerEvent('pointercancel',{pointerId:1,bubbles:true})));
+assert(!(await page.locator('#shoot').evaluate(el=>el.classList.contains('held'))),'cancelled pointer clears shoot hold');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'cancelled pointer hides shot meter');
+await page.mouse.up();
+const afterCancel=await page.evaluate(()=>JM_THIRD_COURT.status());
+assert.equal(afterCancel.shots,beforeCancel.shots,'cancelled touch must not count as a shot');
+assert.equal(afterCancel.shotReport,beforeCancel.shotReport,'cancelled touch must not report a shot');
+console.log('PASS CP24 pointercancel and pointer identity '+width+'px');
+// CP25: a second finger or unrelated capture-loss event must not hijack live joystick/guard input.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+const joyBox=await page.locator('#joy').boundingBox();
+assert(joyBox,'joystick remains in the actual playable layout');
+await page.mouse.move(joyBox.x+joyBox.width*.72,joyBox.y+joyBox.height*.50);await page.mouse.down();
+const liveJoy=await page.locator('#joyKnob').evaluate(el=>el.style.transform);
+assert.notEqual(liveJoy,'translate(0px, 0px)','live joystick responds to the initiating pointer');
+await page.evaluate(()=>{
+ const joy=document.querySelector('#joy');
+ joy.dispatchEvent(new PointerEvent('pointerdown',{pointerId:999,bubbles:true,cancelable:true}));
+ joy.dispatchEvent(new PointerEvent('lostpointercapture',{pointerId:999,bubbles:true}));
+ joy.dispatchEvent(new PointerEvent('pointerup',{pointerId:999,bubbles:true}));
+});
+assert.equal(await page.locator('#joyKnob').evaluate(el=>el.style.transform),liveJoy,'unrelated joystick pointer cannot seize or release active movement');
+await page.mouse.up();
+assert.equal(await page.locator('#joyKnob').evaluate(el=>el.style.transform),'translate(0px, 0px)','own joystick pointer release returns neutral');
+await page.locator('#guardBtn').hover();await page.mouse.down();
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'guard holds for its initiating pointer');
+await page.evaluate(()=>{
+ const guard=document.querySelector('#guardBtn');
+ guard.dispatchEvent(new PointerEvent('pointerdown',{pointerId:999,bubbles:true,cancelable:true}));
+ guard.dispatchEvent(new PointerEvent('pointerup',{pointerId:999,bubbles:true}));
+ guard.dispatchEvent(new PointerEvent('lostpointercapture',{pointerId:999,bubbles:true}));
+});
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'unrelated pointer cannot release guard');
+await page.mouse.up();
+assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'own guard release clears guard');
+console.log('PASS CP25 multi-pointer joystick and guard ownership '+width+'px');
+// CP29: SHOOT is owned by its initiating input; an unrelated touch or Space release cannot fire early.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.keyboard.down('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'Space begins keyboard-owned charge');
+await page.locator('#shoot').hover();await page.mouse.down();await page.mouse.up();
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'unrelated touch release cannot end keyboard-owned shot');
+await page.keyboard.up('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'own Space release ends keyboard charge');
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.locator('#shoot').hover();await page.mouse.down();
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'touch begins pointer-owned charge');
+await page.keyboard.down('Space');await page.keyboard.up('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),'unrelated Space release cannot end touch-owned shot');
+await page.mouse.up();
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'own touch release ends pointer charge');
+console.log('PASS CP29 keyboard/touch SHOOT ownership '+width+'px');
+
+ // CP26: manual pause, new-match and paused-key transitions must not carry held input into play.
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ const cp26Shots=(await page.evaluate(()=>JM_THIRD_COURT.status())).shots;
+ await page.locator('#shoot').hover();await page.mouse.down();
+ assert(await page.locator('#shoot').evaluate(el=>el.classList.contains('held')),'manual pause test begins with real held SHOOT');
+ await page.evaluate(()=>document.querySelector('#pauseButton').click());
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'manual pause opens the existing pause state');
+ assert(!(await page.locator('#shoot').evaluate(el=>el.classList.contains('held'))),'manual pause cancels SHOOT held styling');
+ assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display==='none'),'manual pause closes shot meter');
+ await page.mouse.up();await page.click('#resumeBtn');
+ assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).shots,cp26Shots,'late release after manual pause cannot shoot');
+ await page.evaluate(()=>document.querySelector('#pauseButton').click());
+ await page.keyboard.down('ArrowUp');
+ const cp26PausedY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+ await page.click('#resumeBtn');await page.waitForTimeout(500);
+ assert(Math.abs((await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y-cp26PausedY)<6,'keyboard input received during pause must not move after resume');
+ await page.keyboard.up('ArrowUp');
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ const cp26JoyBox=await page.locator('#joy').boundingBox();
+ await page.mouse.move(cp26JoyBox.x+cp26JoyBox.width*.72,cp26JoyBox.y+cp26JoyBox.height*.5);await page.mouse.down();
+ assert.notEqual(await page.locator('#joyKnob').evaluate(el=>el.style.transform),'translate(0px, 0px)','restart test starts with live joystick');
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ assert.equal(await page.locator('#joyKnob').evaluate(el=>el.style.transform),'translate(0px, 0px)','new match clears joystick visual and pointer');
+ await page.mouse.up();
+ const cp26RestartY=(await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y;
+ await page.waitForTimeout(450);
+ assert(Math.abs((await page.evaluate(()=>JM_THIRD_COURT.status())).athletes[0].y-cp26RestartY)<6,'late joystick release cannot move the new match');
+ await page.locator('#guardBtn').hover();await page.mouse.down();
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'restart test starts with real held guard');
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'new match cancels previous guard');
+ await page.mouse.up();
+ console.log('PASS CP26 manual pause, paused keys and new-match input reset '+width+'px');
+
+ // CP27: keyboard and touch are independent guard owners; releasing one must not cancel the other.
+ await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+ await page.keyboard.down('g');
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'G key engages guard');
+ await page.locator('#guardBtn').hover();await page.mouse.down();
+ await page.keyboard.up('g');
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'G release must not cancel held touch guard');
+ await page.mouse.up();
+ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'last touch guard release clears guard');
+ await page.keyboard.down('g');
+ await page.locator('#guardBtn').hover();await page.mouse.down();
+ await page.mouse.up();
+ assert((await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'touch release must not cancel held G guard');
+ await page.keyboard.up('g');
+ assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).guardHeld,'last G release clears guard');
+ console.log('PASS CP27 independent keyboard and touch guard ownership '+width+'px');
+
+// CP33: a paused game must not let a new touch seize the joystick, SHOOT or GUARD.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.evaluate(()=>document.querySelector('#pauseButton').click());
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,'CP33 begins from a genuinely paused match');
+const cp33PausedInputs=await page.evaluate(()=>{
+  // Deliver late pointerdown to the controls directly, as may occur across an interrupted touch route.
+  // Stub capture only for these synthetic pointer IDs; real-pointer CP24–CP29 tests run above unchanged.
+  for(const id of ['joy','shoot','guardBtn']){
+    const el=document.getElementById(id),capture=el.setPointerCapture;
+    el.setPointerCapture=()=>{};
+    try{el.dispatchEvent(new PointerEvent('pointerdown',{pointerId:777,clientX:240,clientY:310,bubbles:true,cancelable:true}))}
+    finally{el.setPointerCapture=capture}
+  }
+  return {knob:document.getElementById('joyKnob').style.transform,
+    shootHeld:document.getElementById('shoot').classList.contains('held'),
+    guardHeld:JM_THIRD_COURT.status().guardHeld};
+});
+assert.equal(cp33PausedInputs.knob,'translate(0px, 0px)','CP33 paused touch cannot move the joystick');
+assert.equal(cp33PausedInputs.shootHeld,false,'CP33 paused touch cannot seize SHOOT');
+assert.equal(cp33PausedInputs.guardHeld,false,'CP33 paused touch cannot engage GUARD');
+await page.click('#resumeBtn');
+await page.keyboard.down('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),
+  'CP33 live keyboard SHOOT still charges after ignored paused touch');
+await page.keyboard.up('Space');
+console.log('PASS CP33 paused-touch control ownership and live resume '+width+'px');
+
+// CP31: real browser cold-reload and owner-editable JSON recovery of local match history.
+await page.evaluate(()=>JM_THIRD_COURT.stop());
+const cp31Before=await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+}));
+assert(cp31Before.best.matches>=1,'completed match writes local best to browser storage');
+assert.equal(cp31Before.history.length,1,'completed match persists a structured receipt');
+assert.equal(cp31Before.history[0].score.length,2,'persisted receipt keeps both sides of the match');
+await page.reload();
+assert.match(await page.locator('#bestText').textContent(),new RegExp(cp31Before.best.matches+' MATCHES'),'cold reload restores existing record');
+const downloadPromise=page.waitForEvent('download');
+await page.click('#exportHistory');
+const historyDownload=await downloadPromise;
+assert.equal(historyDownload.suggestedFilename(),'JM_THIRD_COURT_match_receipt.json','owner can export history after cold reload');
+const cp31Backup=JSON.stringify({schema:'jm.thirdcourt.birthday/1',owner:'JM / TB Scott',records:cp31Before.history,localBest:cp31Before.best});
+await page.locator('#historyFile').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{"schema":"other"}')});
+await page.waitForFunction(()=>document.querySelector('#historyStatus').textContent.startsWith('RESTORE REJECTED'));
+assert.equal((await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches')))).length,1,'invalid restore cannot replace valid history');
+await page.evaluate(()=>{localStorage.removeItem('jm.thirdcourt.birthday.cp01.record');localStorage.removeItem('jm.thirdcourt.birthday.cp01.matches')});
+await page.reload();
+assert.equal(await page.evaluate(()=>localStorage.getItem('jm.thirdcourt.birthday.cp01.matches')),null,'cold reset has no match history');
+page.once('dialog',dialog=>dialog.accept());
+await page.locator('#historyFile').setInputFiles({name:'JM_THIRD_COURT_match_receipt.json',mimeType:'application/json',buffer:Buffer.from(cp31Backup)});
+await page.waitForFunction(()=>document.querySelector('#historyStatus').textContent.startsWith('RESTORED'));
+const cp31Restored=await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+}));
+assert.deepEqual(cp31Restored,cp31Before,'imported local history and record exactly match exported state');
+await page.reload();
+assert.deepEqual(await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+})),cp31Before,'restored history survives independent second cold reload');
+console.log('PASS CP31 persisted match receipt, export, invalid import rejection, exact restore and cold reload '+width+'px');
+
+// CP32: denied browser-storage reads must fail clearly without changing existing history.
+await page.evaluate(()=>{
+ const original=Storage.prototype.getItem;
+ window.__cp32OriginalGetItem=original;
+ Storage.prototype.getItem=function(key){
+  if(key==='jm.thirdcourt.birthday.cp01.matches')throw new DOMException('Storage unavailable','SecurityError');
+  return original.call(this,key);
+ };
+});
+page.once('dialog',dialog=>dialog.accept());
+await page.locator('#historyFile').setInputFiles({name:'JM_THIRD_COURT_match_receipt.json',mimeType:'application/json',buffer:Buffer.from(cp31Backup)});
+await page.waitForFunction(()=>document.querySelector('#historyStatus').textContent.startsWith('RESTORE FAILED'));
+await page.evaluate(()=>{Storage.prototype.getItem=window.__cp32OriginalGetItem;delete window.__cp32OriginalGetItem});
+await page.reload();
+assert.deepEqual(await page.evaluate(()=>({
+ best:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.record')),
+ history:JSON.parse(localStorage.getItem('jm.thirdcourt.birthday.cp01.matches'))
+})),cp31Before,'storage-denied restore leaves original records unchanged across cold reload');
+console.log('PASS CP32 denied-storage restore preserves owner records '+width+'px');
+
+
+
+// CP34: native keyboard activation of visible menus must coexist with gameplay Space shooting.
+await page.locator('#howBtn').focus();
+await page.keyboard.press('Space');
+assert(!(await page.locator('#helpScreen').evaluate(el=>el.classList.contains('hidden'))),
+  'CP34 Space activates the focused HOW TO PLAY menu button');
+await page.locator('#helpBack').focus();
+await page.keyboard.press('Space');
+assert(!(await page.locator('#menuScreen').evaluate(el=>el.classList.contains('hidden'))),
+  'CP34 Space activates the focused menu BACK button');
+await page.locator('#playQuick').focus();
+await page.keyboard.press('Space');
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).active,
+  'CP34 Space starts the match from the focused menu button');
+await page.keyboard.down('Space');
+assert(await page.locator('#shotMeter').evaluate(el=>getComputedStyle(el).display!=='none'),
+  'CP34 Space still charges gameplay SHOOT after the start button becomes hidden');
+await page.keyboard.up('Space');
+await page.locator('#pauseButton').focus();
+await page.keyboard.press('Space');
+assert((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,
+  'CP34 Space activates focused in-game PAUSE without charging a shot');
+await page.locator('#resumeBtn').focus();
+await page.keyboard.press('Space');
+assert(!(await page.evaluate(()=>JM_THIRD_COURT.status())).paused,
+  'CP34 Space activates focused RESUME');
+console.log('PASS CP34 keyboard menu, focused buttons and inherited shooting '+width+'px');
+
+// CP35 focused-control isolation: native control keys are not stolen by gameplay.
+await page.locator('#pauseButton').focus();
+const cp35ArrowPrevented=await page.evaluate(()=>{
+ const button=document.querySelector('#pauseButton');
+ const event=new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true,cancelable:true});
+ button.dispatchEvent(event);
+ button.dispatchEvent(new KeyboardEvent('keyup',{key:'ArrowUp',bubbles:true}));
+ return event.defaultPrevented;
+});
+assert.equal(cp35ArrowPrevented,false,'CP35 focused visible button retains native ArrowUp');
+await page.keyboard.press('p');
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,false,
+ 'CP35 P while a visible button has focus must not pause the live game');
+await page.evaluate(()=>document.activeElement.blur());
+await page.keyboard.press('p');
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,true,
+ 'CP35 P still pauses gameplay without visible control focus');
+await page.locator('#resumeBtn').click();
+assert.equal((await page.evaluate(()=>JM_THIRD_COURT.status())).paused,false,
+ 'CP35 resume restores live game after shortcut');
+console.log('PASS CP35 focused-control keyboard isolation and inherited P shortcut '+width+'px');
+
+// CP38: focused controls must not invoke the separately registered C / Q play-call listeners.
+await page.evaluate(()=>JM_THIRD_COURT.start('quick'));
+await page.locator('#pauseButton').focus();
+await page.keyboard.press('c');
+await page.keyboard.press('q');
+const cp38Focused=await page.evaluate(()=>({cutCalls:JM_THIRD_COURT.status().cutCalls,screenCalls:JM_THIRD_COURT.status().screenCalls}));
+assert.deepEqual(cp38Focused,{cutCalls:0,screenCalls:0},
+  'CP38 focused visible button must retain C/Q without triggering play calls');
+await page.evaluate(()=>document.activeElement.blur());
+await page.keyboard.press('c');
+await page.keyboard.press('q');
+const cp38Gameplay=await page.evaluate(()=>({cutCalls:JM_THIRD_COURT.status().cutCalls,screenCalls:JM_THIRD_COURT.status().screenCalls}));
+assert.deepEqual(cp38Gameplay,{cutCalls:1,screenCalls:1},
+  'CP38 unfocused C/Q still call CUT and SCREEN in live possession');
+console.log('PASS CP38 focused C/Q isolation and inherited gameplay play-calls '+width+'px');
+
 console.log('PASS CP11 real runtime '+width+'px: 3v3, play-calls, defensive state, camera fallback and pause/resume');
 await context.close()}
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

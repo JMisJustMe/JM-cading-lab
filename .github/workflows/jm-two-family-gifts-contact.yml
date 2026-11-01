@@ -53,3 +53,52 @@ jobs:
           path: artifacts/jm-third-court-visual-proof/*.png
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Package original THIRD COURT source and regression for independent recovery
+        if: success()
+        env:
+          JM_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          base = Path('artifacts/jm-third-court-source-recovery')
+          base.mkdir(parents=True, exist_ok=True)
+          sources = {
+              'third-court-current.html': Path('family-gifts/third-court-preview/cp11-ball-contact-candidate.html'),
+              'cp11-deep-realism.spec.cjs': Path('family-gifts/third-court-preview/tests/cp11-deep-realism.spec.cjs'),
+          }
+          inventory = {}
+          for name, source in sources.items():
+              content = source.read_bytes()
+              (base / name).write_bytes(content)
+              inventory[name] = {'bytes': len(content), 'sha256': hashlib.sha256(content).hexdigest(), 'repository_path': str(source)}
+          manifest = {
+              'schema': 'jm.thirdcourt.source-test-recovery/1',
+              'identity': 'THIRD COURT — existing JM original',
+              'repository': 'JMisJustMe/JM-cading-lab',
+              'candidate_head': os.environ['JM_HEAD_SHA'],
+              'tested_checkout': os.environ['GITHUB_SHA'],
+              'files': inventory,
+              'authority': 'Draft development candidate only; does not supersede originals or prove deployment.',
+          }
+          (base / 'source-identity.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          (base / 'READ_FIRST.txt').write_text(
+              'THIRD COURT original source/test recovery. Verify SHA-256 values in source-identity.json.\n'
+              'Edit third-court-current.html offline; preserve the untouched original and manifest.\n'
+              'The Playwright test is included as source; executing it requires its existing test environment.\n'
+              'This ZIP is an external recovery carrier, not a production deployment or human acceptance.\n',
+              encoding='utf-8',
+          )
+          for name, record in inventory.items():
+              assert hashlib.sha256((base / name).read_bytes()).hexdigest() == record['sha256']
+          print('THIRD COURT exact source/test recovery verified:', json.dumps(inventory, sort_keys=True))
+          PY
+      - name: Preserve downloadable THIRD COURT source and test recovery ZIP
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-third-court-source-test-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/jm-third-court-source-recovery/
+          if-no-files-found: error
+          retention-days: 14

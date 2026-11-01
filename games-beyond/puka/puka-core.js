@@ -169,8 +169,11 @@
     if(!Array.isArray(s.players.player.hole)||!Array.isArray(s.players.ai.hole))return false;
     const cards=[...s.deck,...s.board,...s.players.player.hole,...s.players.ai.hole];
     if(cards.length!==52)return false;
-    const canonical=new Set(makeDeck().map(c=>c.id)),ids=cards.map(c=>c?.id);
-    return ids.every(id=>canonical.has(id))&&new Set(ids).size===52;
+    const canonical=new Map(makeDeck().map(c=>[c.id,c])),ids=cards.map(c=>c?.id);
+    return new Set(ids).size===52&&cards.every(c=>{
+      const actual=canonical.get(c?.id);
+      return !!actual&&c.rank===actual.rank&&c.suit===actual.suit&&c.symbol===actual.symbol&&c.value===actual.value;
+    });
   }
 
   class TraceBox{

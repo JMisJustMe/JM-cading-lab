@@ -31,6 +31,25 @@ assert(activeRestored.state&&activeRestored.state.handNo===game.state.handNo,'Ac
 assert(activeRestored.state.players.player.hole.map(c=>c.id).join('|')===game.state.players.player.hole.map(c=>c.id).join('|'),'Restored private cards changed');
 assert(activeRestored.state.pot===game.state.pot,'Restored pot changed');
 
+// A saved card's id cannot override its canonical rank/value/suit/symbol.
+// Invalid data must not be admitted as a playable hand; normal saves still restore.
+for(const [property,corruption] of [
+  ['value',999],
+  ['rank','A'],
+  ['suit','clubs'],
+  ['symbol','?']
+]){
+  const forged=JSON.parse(JSON.stringify(activeSaved));
+  const card=forged.state.players.player.hole[0];
+  card[property]=corruption;
+  assert(new P.PukaGame(forged).state===null,
+    'Saved hand admitted a noncanonical card '+property);
+}
+const missingMetadata=JSON.parse(JSON.stringify(activeSaved));
+delete missingMetadata.state.players.player.hole[0].value;
+assert(new P.PukaGame(missingMetadata).state===null,'Saved hand admitted missing canonical card metadata');
+
+
 let guard=0;
 while(!game.state.ended&&guard++<40){
   assert(game.state.turn==='player','Control did not return to player');

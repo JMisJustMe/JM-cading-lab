@@ -33,3 +33,68 @@ jobs:
           name: jm-thirdcourt-cp29-original-game-errors
           path: games-beyond/test-results/
           if-no-files-found: ignore
+
+      - name: Preserve exact CP36 descendant source, test and native test environment
+        if: success()
+        env:
+          JM_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          base = root / 'artifacts/jm-third-court-cp36-source-recovery'
+          base.mkdir(parents=True, exist_ok=True)
+          paths = [
+              'family-gifts/third-court-preview/cp11-ball-contact-candidate.html',
+              'games-beyond/tests/jm-third-court-cp29.spec.mjs',
+              'games-beyond/package.json',
+              'games-beyond/playwright.config.mjs',
+              'family-gifts/third-court-preview/CP29_NATIVE_CONTROLLER_CONTACT.md',
+          ]
+          expected_blobs = {
+              paths[0]: '50547d4268464bafe6124522ec95204a2e6f1785',
+              paths[1]: 'ff4ea2fca2810a9983d98af870df0459ff44949a',
+          }
+          inventory = {}
+          for rel in paths:
+              source = root / rel
+              data = source.read_bytes()
+              target = base / rel
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+              blob = subprocess.check_output(['git','hash-object',str(source)],cwd=root,text=True).strip()
+              if rel in expected_blobs:
+                  assert blob == expected_blobs[rel], f'CP36 source changed without renewed scope: {rel}'
+              digest = hashlib.sha256(data).hexdigest()
+              assert hashlib.sha256(target.read_bytes()).hexdigest() == digest
+              inventory[rel] = {'bytes':len(data),'sha256':digest,'git_blob_sha1':blob}
+          manifest = {
+              'schema':'jm.thirdcourt.cp36.source-test-recovery/1',
+              'identity':'THIRD COURT — original JM birthday basketball, CP36 stacked descendant',
+              'repository':'JMisJustMe/JM-cading-lab',
+              'parent_draft_pr':625,
+              'descendant_draft_pr':661,
+              'candidate_head':os.environ['JM_HEAD_SHA'],
+              'tested_checkout':os.environ['GITHUB_SHA'],
+              'files':inventory,
+              'boundary':'Original parent CP11 and CP36 descendant remain separate draft/unmerged pointers; CI is not owner-device acceptance, external AI Studio import or deployment.',
+          }
+          (base/'source-identity.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          (base/'READ_FIRST.txt').write_text(
+              'THIRD COURT CP36 — original JM stacked descendant, not the CP11 parent archive.\n'
+              'Verify source-identity.json SHA-256 and Git blob IDs before editing.\n'
+              'Game: family-gifts/third-court-preview/cp11-ball-contact-candidate.html\n'
+              'From games-beyond install dependencies with npm install, then run npx playwright install chromium; npx playwright test tests/jm-third-court-cp29.spec.mjs --project=mobile-chromium --project=desktop-chromium.\n'
+              'Retain parent PR #625, draft PR #661, exact historical carriers, and original Library IDs. This archive does not prove deployment or physical controller.\n',
+              encoding='utf-8')
+          print('CP36 exact source/test/environment archive verified:',json.dumps(inventory,sort_keys=True))
+          PY
+      - name: Upload CP36 descendant exact editable source and tests
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-third-court-cp36-source-test-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/jm-third-court-cp36-source-recovery/
+          if-no-files-found: error
+          retention-days: 14

@@ -42,6 +42,28 @@ assert.equal(e.stats().pairs,contacts);
 assert.throws(()=>e.solvePair({},{},{}),/JM_PHYSICS_INVALID_MODEL/);
 e.reset();assert.equal(e.stats().pairs,0);
 assert(Object.isFrozen(e));
+// CP56: bad contact data must fail before the shared organ mutates either
+// fighter. Keep the original 250 valid COMBOUND parity fixtures above intact.
+assert.equal(e.version,'1.0.2');
+let invalidContacts=0;
+for(const [name,mutate,modelOverride] of [
+ ['zero-mass',a=>{a.mass=0}],
+ ['nan-velocity',a=>{a.vx=NaN}],
+ ['unknown-fighter',a=>{a.key='MISSING'}],
+ ['missing-spin',a=>{delete a.spin}],
+ ['negative-restitution',a=>{}, {fighters:{ZIPP:{restitution:-1},BRAX:{restitution:.94}},rules}]
+]){
+ const a={key:'ZIPP',x:0,y:0,r:1,mass:1,vx:1,vy:0,spin:0,squash:0};
+ const b={key:'BRAX',x:1.5,y:0,r:1,mass:1,vx:-1,vy:0,spin:0,squash:0};
+ mutate(a);
+ const beforeA=structuredClone(a),beforeB=structuredClone(b);
+ const beforePairs=e.stats().pairs;
+ assert.throws(()=>e.solvePair(a,b,modelOverride||model),/JM_PHYSICS_INVALID_CONTACT/,name);
+ assert.deepEqual(a,beforeA,name+' A unchanged');
+ assert.deepEqual(b,beforeB,name+' B unchanged');
+ assert.equal(e.stats().pairs,beforePairs,name+' no phantom contact');
+ invalidContacts++;
+}
 // Explicit zero is authored tuning, not an absent default. Existing native
 // GameCoding/GameCore service dispatch must observe that exact physical result.
 const gameSource=`entity Arena {

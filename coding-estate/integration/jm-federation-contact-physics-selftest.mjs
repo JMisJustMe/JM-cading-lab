@@ -146,5 +146,5 @@ for(const [name,tuning,expected] of [
  assert.equal(pair.left.vx,1,'recipient initial state remains unchanged');
  recipientContacts++;
 }
-console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,invalidContacts,invalidTunings,
+console.log(JSON.stringify({schema:'jm.game-engine.contact-physics-proof/1.0',fixtures:250,contacts,recipientContacts,invalidContacts,invalidTunings,unsafeDerived,
  outcome:'PASS',claim:'pair geometry and impulse only; original COMBOUND art, abilities, walls, AI remain outside scope'},null,2));

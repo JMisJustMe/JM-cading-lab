@@ -44,7 +44,7 @@ e.reset();assert.equal(e.stats().pairs,0);
 assert(Object.isFrozen(e));
 // CP56: bad contact data must fail before the shared organ mutates either
 // fighter. Keep the original 250 valid COMBOUND parity fixtures above intact.
-assert.equal(e.version,'1.0.3');
+assert.equal(e.version,'1.0.4');
 let invalidContacts=0;
 for(const [name,mutate,modelOverride] of [
  ['zero-mass',a=>{a.mass=0}],
@@ -84,6 +84,25 @@ for(const [name,override] of [
  assert.deepEqual(b,beforeB,name+' B unchanged');
  assert.equal(e.stats().pairs,beforePairs,name+' no phantom contact');
  invalidTunings++;
+}
+// CP58: finite inputs can overflow derived impulses or relative velocity.
+// The original in-place solver corrupted both units before discovering this.
+// Verify atomic rejection and no phantom telemetry, including receding motion.
+let unsafeDerived=0;
+for(const [name,mutate] of [
+ ['subnormal-mass',(a,b)=>{a.mass=Number.MIN_VALUE}],
+ ['overflowing-approach',(a,b)=>{a.vx=Number.MAX_VALUE}],
+ ['overflowing-recession',(a,b)=>{a.vx=-Number.MAX_VALUE;b.vx=Number.MAX_VALUE}]
+]){
+ const a={key:'ZIPP',x:0,y:0,r:1,mass:1,vx:1,vy:0,spin:0,squash:0};
+ const b={key:'BRAX',x:1.5,y:0,r:1,mass:1,vx:-1,vy:0,spin:0,squash:0};
+ mutate(a,b);
+ const beforeA=structuredClone(a),beforeB=structuredClone(b),beforeStats=e.stats();
+ assert.throws(()=>e.solvePair(a,b,model),/JM_PHYSICS_UNSAFE_CONTACT/,name);
+ assert.deepEqual(a,beforeA,name+' A unchanged');
+ assert.deepEqual(b,beforeB,name+' B unchanged');
+ assert.deepEqual(e.stats(),beforeStats,name+' no phantom telemetry');
+ unsafeDerived++;
 }
 // Explicit zero is authored tuning, not an absent default. Existing native
 // GameCoding/GameCore service dispatch must observe that exact physical result.

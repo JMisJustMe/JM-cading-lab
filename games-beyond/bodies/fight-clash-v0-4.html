@@ -240,7 +240,7 @@ function resize(){const oldL=arena.ropeLeft,oldR=arena.ropeRight,oldT=arena.rope
 window.addEventListener('resize',resize,{passive:true});
 
 function start(){if(game.over){freshGame(game.mode)}game.running=true;document.body.classList.add('in-fight');game.paused=false;game.roundOver=false;game.startedAt=performance.now();flash('FIGHT!','First contact decides the route.');RouteOS.queueRuntime('runPreview',{mode:game.mode,law:game.activeLaw});if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}}
-function pause(){game.paused=!game.paused;$('pauseBtn').textContent=game.paused?'RESUME':'PAUSE';if(!game.paused){last=performance.now();raf=requestAnimationFrame(loop)}}
+function pause(){game.paused=!game.paused;$('pauseBtn').textContent=game.paused?'RESUME':'PAUSE';if(!game.paused&&!raf){last=performance.now();raf=requestAnimationFrame(loop)}}
 function reset(){document.body.classList.remove('in-fight');freshGame(game.mode);flash('RESET','New route ready.');}
 function setMode(mode){document.body.classList.remove('in-fight');document.querySelectorAll('.modeBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));freshGame(mode);$('intro').classList.remove('show');flash(mode==='boxing'?'FIRST BELL':mode==='ringout'?'ROPEBREAK':'CHAMELEON',mode==='chameleon'?'The law changes every eight seconds.':'New rules mounted.');}
 

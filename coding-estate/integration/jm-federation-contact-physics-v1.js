@@ -4,6 +4,7 @@ Authority: extracted from COMBOUND Original v3.8 / JM Game Engine D2 runtime fed
 Scope: true unit-pair impulse/separation/restitution, NOT character abilities,
 scoring, obstacles, or the entire collision semantics. This body is re-entrant:
 there is no global game state or DOM dependency. Units are updated by reference.
+v1.0.4: derived overflow rejects atomically; normal contact remains formula-identical.
 v1.0.3: malformed restitution/release tuning rejects before position/velocity mutation.
 v1.0.2: invalid unit/roster data rejects before any position/velocity mutation.
 v1.0.1: explicit zero restitution tuning is preserved; only absent/null values
@@ -12,7 +13,7 @@ Recipient proof is in the existing selftest via real GameCoding/GameCore calls;
 this does not promote any full game, private source or physical-device release.
 */
 (function(root){'use strict';
- const VERSION='1.0.3';
+ const VERSION='1.0.4';
  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
  let pairCount=0, impulseCount=0, totalImpulse=0;
  function solvePair(a,b,model){
@@ -40,24 +41,32 @@ this does not promote any full game, private source or physical-device release.
       scale<0||restitutionMin<0||restitutionMax<restitutionMin||
       releaseFactor<0||releaseCap<0)
      throw Error('JM_PHYSICS_INVALID_TUNING');
-   const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),min=a.r+b.r;
+   // Copy-on-write: do not expose a half-applied collision on overflow.
+   const nextA={...a},nextB={...b};
+   const dx=nextB.x-nextA.x,dy=nextB.y-nextA.y,d=Math.hypot(dx,dy),min=a.r+b.r;
    if(d>=min||d===0)return null;
    const nx=dx/d,ny=dy/d,over=min-d,invA=1/a.mass,invB=1/b.mass,sum=invA+invB;
-   a.x-=nx*over*(invA/sum);a.y-=ny*over*(invA/sum);
-   b.x+=nx*over*(invB/sum);b.y+=ny*over*(invB/sum);
-   const rvx=b.vx-a.vx,rvy=b.vy-a.vy,vel=rvx*nx+rvy*ny;
+   nextA.x-=nx*over*(invA/sum);nextA.y-=ny*over*(invA/sum);
+   nextB.x+=nx*over*(invB/sum);nextB.y+=ny*over*(invB/sum);
+   const rvx=nextB.vx-nextA.vx,rvy=nextB.vy-nextA.vy,vel=rvx*nx+rvy*ny;
    let j=0;
    if(vel<0){
      const ra=fighters[a.key].restitution,rb=fighters[b.key].restitution;
      const e=clamp(Math.sqrt(ra*rb)*scale+add,restitutionMin,restitutionMax);
      j=-(1+e)*vel/sum;
-     a.vx-=j*nx*invA;a.vy-=j*ny*invA;b.vx+=j*nx*invB;b.vy+=j*ny*invB;
+     nextA.vx-=j*nx*invA;nextA.vy-=j*ny*invA;nextB.vx+=j*nx*invB;nextB.vy+=j*ny*invB;
      const release=clamp((-vel)*releaseFactor,0,releaseCap);
-     a.vx-=release*nx*(invA/sum);a.vy-=release*ny*(invA/sum);
-     b.vx+=release*nx*(invB/sum);b.vy+=release*ny*(invB/sum);
-     a.spin-=j*.0028;b.spin+=j*.0028;a.squash=b.squash=.36;
-     impulseCount++;totalImpulse+=j;
+     nextA.vx-=release*nx*(invA/sum);nextA.vy-=release*ny*(invA/sum);
+     nextB.vx+=release*nx*(invB/sum);nextB.vy+=release*ny*(invB/sum);
+     nextA.spin-=j*.0028;nextB.spin+=j*.0028;nextA.squash=nextB.squash=.36;
+     // Telemetry commits only after the finite-result gate.
    }
+   const fieldsToCommit=['x','y','vx','vy','spin','squash'];
+   if(!Number.isFinite(vel)||!Number.isFinite(over)||!Number.isFinite(j)||
+      fieldsToCommit.some(k=>!Number.isFinite(nextA[k])||!Number.isFinite(nextB[k])))
+     throw Error('JM_PHYSICS_UNSAFE_CONTACT');
+   for(const k of fieldsToCommit){a[k]=nextA[k];b[k]=nextB[k];}
+   if(vel<0){impulseCount++;totalImpulse+=j;}
    pairCount++;
    return {contact:true,normalSpeed:vel,impulse:j,overlap:over};
  }

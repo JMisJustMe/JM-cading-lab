@@ -4,18 +4,28 @@ Authority: extracted from COMBOUND Original v3.8 / JM Game Engine D2 runtime fed
 Scope: true unit-pair impulse/separation/restitution, NOT character abilities,
 scoring, obstacles, or the entire collision semantics. This body is re-entrant:
 there is no global game state or DOM dependency. Units are updated by reference.
+v1.0.2: invalid unit/roster data rejects before any position/velocity mutation.
 v1.0.1: explicit zero restitution tuning is preserved; only absent/null values
 use inherited defaults. Existing nonzero COMBOUND formula parity is retained.
 Recipient proof is in the existing selftest via real GameCoding/GameCore calls;
 this does not promote any full game, private source or physical-device release.
 */
 (function(root){'use strict';
- const VERSION='1.0.1';
+ const VERSION='1.0.2';
  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
  let pairCount=0, impulseCount=0, totalImpulse=0;
  function solvePair(a,b,model){
    if(!a||!b||!model?.fighters||!model?.rules)throw Error('JM_PHYSICS_INVALID_MODEL');
    const rules=model.rules,fighters=model.fighters;
+   // Fail closed before changing either fighter: malformed contact must not
+   // leave half-separated positions or NaN velocities in the original game.
+   const fields=['x','y','vx','vy','r','mass','spin','squash'];
+   if(fields.some(k=>!Number.isFinite(a[k])||!Number.isFinite(b[k])) ||
+      a.mass<=0||b.mass<=0||a.r<0||b.r<0 ||
+      !fighters[a.key]||!fighters[b.key] ||
+      !Number.isFinite(fighters[a.key].restitution)||!Number.isFinite(fighters[b.key].restitution)||
+      fighters[a.key].restitution<0||fighters[b.key].restitution<0)
+     throw Error('JM_PHYSICS_INVALID_CONTACT');
    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),min=a.r+b.r;
    if(d>=min||d===0)return null;
    const nx=dx/d,ny=dy/d,over=min-d,invA=1/a.mass,invB=1/b.mass,sum=invA+invB;

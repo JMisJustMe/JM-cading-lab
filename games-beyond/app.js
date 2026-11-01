@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), $=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity';
+const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity';
 // Browser preference storage must never prevent opening the House.
 // Keep in-memory navigation available if storage is blocked or malformed.
 const storageRead=key=>{try{return localStorage.getItem(key)}catch{return null}};

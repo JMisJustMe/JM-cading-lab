@@ -82,8 +82,20 @@ def main() -> None:
 
     if not args.verify_only:
         out = Path(args.output)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_bytes(source)
+        if out.is_symlink():
+            die(f"refusing to write through output symlink: {out}")
+        if out.exists():
+            if not out.is_file() or out.read_bytes() != source:
+                die(f"refusing to overwrite modified output: {out}; choose another --output path")
+        else:
+            out.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                with out.open("xb") as f:
+                    f.write(source)
+            except FileExistsError:
+                die(f"output appeared during recovery; refusing overwrite: {out}")
+            if out.read_bytes() != source:
+                die(f"output readback mismatch: {out}")
 
     print("GLYPHPLAY_BASELINE_PROOF_PASS")
     print(f"carrier_objects={len(rows)} base64_bytes={len(joined)} gzip_bytes={len(packed)} source_bytes={len(source)}")

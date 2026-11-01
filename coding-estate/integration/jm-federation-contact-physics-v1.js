@@ -4,6 +4,7 @@ Authority: extracted from COMBOUND Original v3.8 / JM Game Engine D2 runtime fed
 Scope: true unit-pair impulse/separation/restitution, NOT character abilities,
 scoring, obstacles, or the entire collision semantics. This body is re-entrant:
 there is no global game state or DOM dependency. Units are updated by reference.
+v1.0.5: finite gameplay impulses no longer overflow diagnostic totals or JSON export.
 v1.0.4: derived overflow rejects atomically; normal contact remains formula-identical.
 v1.0.3: malformed restitution/release tuning rejects before position/velocity mutation.
 v1.0.2: invalid unit/roster data rejects before any position/velocity mutation.
@@ -13,9 +14,9 @@ Recipient proof is in the existing selftest via real GameCoding/GameCore calls;
 this does not promote any full game, private source or physical-device release.
 */
 (function(root){'use strict';
- const VERSION='1.0.4';
+ const VERSION='1.0.5';
  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
- let pairCount=0, impulseCount=0, totalImpulse=0;
+ let pairCount=0, impulseCount=0, totalImpulse=0, totalImpulseSaturated=false;
  function solvePair(a,b,model){
    if(!a||!b||!model?.fighters||!model?.rules)throw Error('JM_PHYSICS_INVALID_MODEL');
    const rules=model.rules,fighters=model.fighters;
@@ -66,11 +67,17 @@ this does not promote any full game, private source or physical-device release.
       fieldsToCommit.some(k=>!Number.isFinite(nextA[k])||!Number.isFinite(nextB[k])))
      throw Error('JM_PHYSICS_UNSAFE_CONTACT');
    for(const k of fieldsToCommit){a[k]=nextA[k];b[k]=nextB[k];}
-   if(vel<0){impulseCount++;totalImpulse+=j;}
+   if(vel<0){
+     impulseCount++;
+     // Telemetry must not turn a valid finite collision into Infinity/JSON null.
+     // Saturate only the diagnostic sum; never alter the actual impulse or units.
+     if(totalImpulse>Number.MAX_VALUE-j){totalImpulse=Number.MAX_VALUE;totalImpulseSaturated=true;}
+     else totalImpulse+=j;
+   }
    pairCount++;
    return {contact:true,normalSpeed:vel,impulse:j,overlap:over};
  }
- function stats(){return {version:VERSION,source:'COMBOUND Original v3.8 collision physical-contact formula',pairs:pairCount,impulses:impulseCount,totalImpulse:Math.round(totalImpulse*100)/100,identity:'JM.GameEngine.Federation.ContactPhysics/1.0',scope:'POSITION_IMPULSE_ONLY'};}
- function reset(){pairCount=0;impulseCount=0;totalImpulse=0;}
+ function stats(){return {version:VERSION,source:'COMBOUND Original v3.8 collision physical-contact formula',pairs:pairCount,impulses:impulseCount,totalImpulse:totalImpulse>Number.MAX_VALUE/100?totalImpulse:Math.round(totalImpulse*100)/100,totalImpulseSaturated,identity:'JM.GameEngine.Federation.ContactPhysics/1.0',scope:'POSITION_IMPULSE_ONLY'};}
+ function reset(){pairCount=0;impulseCount=0;totalImpulse=0;totalImpulseSaturated=false;}
  root.JM_FEDERATION_PHYSICS=Object.freeze({version:VERSION,solvePair,stats,reset});
 })(typeof globalThis!=='undefined'?globalThis:this);

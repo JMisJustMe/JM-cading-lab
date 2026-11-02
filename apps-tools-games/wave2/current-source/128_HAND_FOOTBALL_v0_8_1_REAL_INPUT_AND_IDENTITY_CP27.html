@@ -183,7 +183,26 @@ function lock(){let vv=visualViewport,w=vv?vv.width:innerWidth,h=vv?vv.height:in
 
 // JM 128 HAND v0.8 — personification and match-shape descendant. Parent v0.7.4 mechanics remain ancestry.
 const JM128_V08={role:'playmaker',shape:'wide',names:{hand:'MAKO',ally:'AYA',keeper:'BRASS',def:'LATCH'},stats:{matches:0,wins:0}};
-try{Object.assign(JM128_V08,JSON.parse(localStorage.getItem('jm128.v08')||'null')||{})}catch(_e){}
+try{
+ const saved=JSON.parse(localStorage.getItem('jm128.v08')||'null');
+ if(saved&&typeof saved==='object'&&!Array.isArray(saved)){
+  if(['playmaker','finisher','presser','shield'].includes(saved.role))JM128_V08.role=saved.role;
+  if(['wide','tight','break'].includes(saved.shape))JM128_V08.shape=saved.shape;
+  if(saved.names&&typeof saved.names==='object'&&!Array.isArray(saved.names)){
+   for(const key of ['hand','ally','keeper','def']){
+    const name=saved.names[key];
+    if(typeof name==='string'&&name.trim()&&name.length<=32)JM128_V08.names[key]=name.trim();
+   }
+  }
+  if(saved.stats&&typeof saved.stats==='object'&&!Array.isArray(saved.stats)){
+   for(const key of ['matches','wins']){
+    const count=saved.stats[key];
+    if(Number.isSafeInteger(count)&&count>=0)JM128_V08.stats[key]=count;
+   }
+   JM128_V08.stats.wins=Math.min(JM128_V08.stats.wins,JM128_V08.stats.matches);
+  }
+ }
+}catch(_e){}
 let JM128_gateOpen=true;
 function JM128_save(){try{localStorage.setItem('jm128.v08',JSON.stringify(JM128_V08))}catch(_e){}}
 function JM128_applyShape(){const S={wide:{h:[.23,.58],a:[.38,.25],k:[.77,.49],d:[.64,.72]},tight:{h:[.28,.55],a:[.39,.43],k:[.75,.49],d:[.60,.58]},break:{h:[.24,.66],a:[.45,.32],k:[.78,.47],d:[.66,.40]}}[JM128_V08.shape]||null;if(!S)return;Object.assign(hand,{x:W*S.h[0],y:H*S.h[1]});Object.assign(ally,{x:W*S.a[0],y:H*S.a[1]});Object.assign(keeper,{x:W*S.k[0],y:H*S.k[1]});Object.assign(def,{x:W*S.d[0],y:H*S.d[1]});clampAll();setRoute((JM128_V08.shape==='wide'?'WIDE WING':JM128_V08.shape==='tight'?'TIGHT BOX':'BREAK LANE')+' · '+JM128_V08.role.toUpperCase(),true)}

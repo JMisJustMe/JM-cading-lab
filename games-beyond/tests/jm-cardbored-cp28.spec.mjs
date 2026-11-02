@@ -58,10 +58,25 @@ test('@cardbored-cp28 genuine House + Pressure Board selection changes native co
  expect(after.round).toMatch(/1\s*\/\s*12/);
  expect(errors).toEqual([]);
 });
-test('@cardbored-cp28 physical button still dispatches original card and target click',async({page})=>{
+test('@cardbored-cp28 touch places an original GOER on a genuinely legal board slot',async({page})=>{
  const errors=await boot(page);
- const {index:available,chosen:state}=await selectAnActuallyLegalOpening(page,'touch');
- expect(state.selectedCard).toBe(available);
+ let found=null;
+ // A shuffled House opening can legally offer only non-GOER actions.
+ // Those have legal resolver targets but no board-slot target to tap.
+ for(let deal=0;deal<8&&!found;deal++){
+   const start=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
+   for(let i=0;i<start.hand.length;i++){
+     if(start.hand[i].kind!=='GOER'||start.hand[i].cost>start.energy)continue;
+     await page.locator('#hand [data-card]').nth(i).click();
+     const chosen=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
+     if(chosen.selectedCard===i&&chosen.legal.length&&await page.locator('.slot.legal').count()){
+       found={index:i,chosen};break;
+     }
+   }
+   if(!found){await page.reload();await expect(page.locator('#playerRow .slot')).toHaveCount(3)}
+ }
+ expect(found,'Eight genuine shuffled deals offered no tappable GOER placement').not.toBeNull();
+ expect(found.chosen.selectedCard).toBe(found.index);
  await page.locator('.slot.legal').first().click();
  const chosen=await page.evaluate(()=>window.JM_CARDBORED_CP28.state);
  expect(chosen.selectedTarget).not.toBeNull();

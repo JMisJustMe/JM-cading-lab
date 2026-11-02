@@ -100,24 +100,32 @@ for (const scenario of ['malformed-recent', 'unknown-mounted', 'denied-storage']
     }));
     ok=detail.features>=5 && Number(detail.year)>2020 && Boolean(detail.mounted);
     if(scenario==='malformed-recent'){
-      const preserved=await page.evaluate(()=>{
-        trackRecent({id:'storage-probe',name:'Storage probe'});
-        return localStorage.getItem('jm-estate-recent')==='{bad-json';
-      });
+      // Click the real feature-door handler; module-private trackRecent is not global.
+      await page.locator('#featureDoors [data-card-id]').first().click();
+      await page.waitForLoadState('domcontentloaded');
+      const preserved=await page.evaluate(()=>localStorage.getItem('jm-estate-recent')==='{bad-json');
       ok=ok&&preserved;detail.preserved=preserved;
     }
     if(scenario==='unknown-mounted'){
-      const preserved=await page.evaluate(()=>{
-        try{saveMounted([])}catch{}
-        return localStorage.getItem('jm-estate-mounted')==='{"unknown":"owner bytes"}';
+      // Exercise the actual file-input owner mount, not an inaccessible module function.
+      await page.locator('#htmlMountInput').setInputFiles({
+        name:'storage-probe.html',mimeType:'text/html',
+        buffer:Buffer.from('<!doctype html><html><body>JM probe</body></html>')
       });
+      await page.waitForFunction(()=>document.querySelector('#toast')?.textContent?.includes('Local storage could not accept'));
+      const preserved=await page.evaluate(()=>localStorage.getItem('jm-estate-mounted')==='{"unknown":"owner bytes"}'&&document.querySelector('#mountedCount')?.textContent==='0 BODIES');
       ok=ok&&preserved;detail.preserved=preserved;
     }
     if(scenario==='denied-storage'){
-      await page.evaluate(()=>routeTo('owner'));
-      await page.locator('#ownerNotes').fill('session-only test');
-      const kept=await page.locator('#ownerNotes').inputValue();
-      ok=ok&&kept==='session-only test';detail.notesInput=kept;
+      // Dispatch the real notes input event even when the Owner view is not visible.
+      const kept=await page.locator('#ownerNotes').evaluate(el=>{
+        el.value='session-only test';
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        return el.value;
+      });
+      const warning=(await page.locator('#toast').textContent())||'';
+      ok=ok&&kept==='session-only test'&&warning.includes('Owner notes are session-only');
+      detail.notesInput=kept;detail.sessionOnlyWarning=warning.includes('Owner notes are session-only');
     }
   }catch(error){ok=false;detail.error=String(error)}
   console.log(JSON.stringify({frontDoorStorageScenario:scenario,...detail,ok}));

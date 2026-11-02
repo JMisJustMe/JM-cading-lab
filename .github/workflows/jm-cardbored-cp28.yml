@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Owner-editable recovery protection regression
+        run: python wave2-public/current-source/cardbored/cp28_recovery_protection_test.py
       - name: Original SHA-256, source-native CP28 one-file build
         run: python wave2-public/current-source/cardbored/cp28_inspect_and_build.py --build
       - uses: actions/setup-node@v4

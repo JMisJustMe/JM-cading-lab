@@ -7,6 +7,11 @@ on:
     paths:
       - 'apps-tools-games/jm-portable-body/kicshift-v0.1/**'
       - '.github/workflows/jm-portable-kicshift.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps-tools-games/jm-portable-body/kicshift-v0.1/**'
+      - '.github/workflows/jm-portable-kicshift.yml'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +32,8 @@ jobs:
           node-version: 22
       - name: Install independent dependencies
         run: npm install --no-audit --no-fund
+      - name: Test existing simulation reset and held-control release
+        run: node --experimental-strip-types --test tests/control-release.test.mjs
       - name: Build outside Lovable
         run: npm run build
       - name: Record carrier contents
@@ -50,6 +57,7 @@ jobs:
             apps-tools-games/jm-portable-body/kicshift-v0.1/src
           if-no-files-found: error
       - name: Mount canonical Estate carrier route
+        if: github.event_name != 'pull_request'
         working-directory: .
         run: |
           rm -rf games-beyond/kicshift

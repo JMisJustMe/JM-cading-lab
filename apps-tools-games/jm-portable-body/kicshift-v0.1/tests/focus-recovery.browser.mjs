@@ -63,7 +63,7 @@ try {
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   assert.ok(clear(await read()), "touch-owned movement survived app blur");
   const neutralKnob = await joystick.locator("div").last().getAttribute("style");
-  assert.match(neutralKnob || "", /\\+ 0px/,
+  assert.match(neutralKnob || "", /\+ 0px/,
     "joystick visual knob was not returned to the centre");
   await cdp.send("Input.dispatchTouchEvent", {
     type: "touchMove", touchPoints: [point(13, x0 + 52, y0 - 40)],

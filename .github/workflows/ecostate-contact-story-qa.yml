@@ -5,6 +5,7 @@ on:
       - 'ecostate-contact-v4.css'
       - 'ecostate-contact-v4.js'
       - 'tests/ecostate-contact-v4.spec.mjs'
+      - 'tests/money-menu-scope-freshness.spec.mjs'
       - '.github/workflows/ecostate-contact-story-qa.yml'
       - 'index.html'
       - 'games-beyond/index.html'
@@ -50,6 +51,8 @@ jobs:
           exit 1
       - name: Prove 11 surfaces x 2 viewports
         run: node tests/ecostate-contact-v4.spec.mjs
+      - name: Prove Money Menu enquiry receipt freshness
+        run: node tests/money-menu-scope-freshness.spec.mjs
       - name: Upload contact-story visual receipts
         if: always()
         uses: actions/upload-artifact@v4

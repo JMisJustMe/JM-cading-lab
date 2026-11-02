@@ -21,6 +21,8 @@ jobs:
           node-version: '22'
       - name: Exact reconstruction and authority proof
         run: python wave2/pressurepoint-breakline-v0-3/tools/verify_pressurepoint_breakline_v0_3.py | tee /tmp/proof.txt
+      - name: Owner-editable source reentry without git
+        run: python wave2/pressurepoint-breakline-v0-3/tools/test_owner_reentry.py
       - name: JavaScript syntax proof
         shell: bash
         run: |

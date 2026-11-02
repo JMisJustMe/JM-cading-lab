@@ -13,3 +13,18 @@ The existing current-head Android software-carrier receipt records source exactn
 Publication proves exact current-source carriage, current-head identity, software-carrier receipt alignment and static JavaScript syntax only. It does **not** manufacture stable-final gameplay, physical owner-device proof, physical Final Ding, or a final APK crown.
 
 **Restore before rebuild. Latest useful/current keeper first. No Ding, no claim.**
+
+
+## November owner-source reentry (draft; original v0.3 unchanged)
+
+From a checkout or downloaded copy of this existing `wave2/pressurepoint-breakline-v0-3` directory, use **Python 3 standard library only** (Git is no longer required for carrier hash verification):
+
+```sh
+python wave2/pressurepoint-breakline-v0-3/tools/verify_pressurepoint_breakline_v0_3.py --output PRESSUREPOINT_BREAKLINE_v0_3_PRESSURE_HOUSES_CONSEQUENCE_FIELDS.html
+```
+
+Run from the repository root, or change the script path appropriately. The existing three `source-carriage` parts, `PUBLICATION_MANIFEST.json`, `PUBLICATION_RECEIPT.md`, and Android receipt must accompany the script. The command checks each carrier's Git-format blob SHA-1 **using Python**, validates the original 49,092-byte HTML SHA-256, and independently reads back the output.
+
+An identical output is left untouched; an edited, symlinked, or non-file output is refused, never overwritten. To recover the preserved original alongside your edits, supply a **different** `--output` filename. The original no-argument temporary reconstruction remains supported for existing CI and consumers.
+
+This is source access and reversible owner editing, **not** owner-device gameplay acceptance, private Drive/Dropbox cold custody, a new v0.3 gameplay descendant, or permission to retire the original. The v0.2 parent remains separate. Physical owner-device Ding remains OPEN.

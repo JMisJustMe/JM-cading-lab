@@ -21,7 +21,15 @@ if(f.size>2000000)throw new Error('Backup exceeds 2 MB limit.');const doc=JSON.p
 const keys=Object.keys(doc.saves);if(!keys.length||keys.some(k=>!KEYS.includes(k)))throw new Error('Unexpected backup content.');
 for(const k of keys){const v=doc.saves[k];if(!v||typeof v!=='object'||Array.isArray(v))throw new Error('Invalid saved state.');}
 if(!confirm('Replace this device’s Rim Route progress with the imported save?'))return;
-for(const k of keys)localStorage.setItem(k,JSON.stringify(doc.saves[k]));
+const replacements=keys.map(k=>[k,JSON.stringify(doc.saves[k])]);
+const previous=new Map(keys.map(k=>[k,localStorage.getItem(k)]));
+const touched=[];
+try{
+for(const [k,value] of replacements){touched.push(k);localStorage.setItem(k,value);}
+}catch{
+let restored=true;
+for(const k of touched.reverse()){try{const old=previous.get(k);if(old===null)localStorage.removeItem(k);else localStorage.setItem(k,old);}catch{restored=false;}}
+throw new Error(restored?'Import failed; existing progress restored.':'Import failed and some previous progress could not be restored.');}
 $('#saveStatus').textContent=`Restored ${keys.length} game save section(s). Open the game to resume.`;
 }catch(err){$('#saveStatus').textContent=err.message;}finally{e.target.value=''}});
 if(!window.JMAndroidBridge&&'serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});

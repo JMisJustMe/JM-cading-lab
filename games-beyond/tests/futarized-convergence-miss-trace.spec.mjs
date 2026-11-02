@@ -1,54 +1,65 @@
 import { test, expect } from '@playwright/test';
 const GAME='./bodies/futarized-v1-2.html';
 
-// Isolated Stage 4 contact only; this does NOT award earned-stage or physical-device proof.
-test('@boot FUTARIZED miss records the module actually primed before reset', async ({page})=>{
+// The original game intentionally encapsulates state in an IIFE. Use its EXISTING
+// read/write QA contact, not inaccessible global bindings. Isolated Stage 4 only.
+test('@boot FUTARIZED wrong-link feedback retains the primed module before reset', async ({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(GAME);
+  await page.waitForFunction(()=>!!window.__FUTARIZED_QA__);
   const result=await page.evaluate(()=>{
+    const {convergence,blend,sideOn}=window.__FUTARIZED_QA__;
     convergence.active=true;convergence.step=0;convergence.stability=70;
     convergence.sequence=[{module:'AIM',side:'RIGHT'},{module:'CARD',side:'TOP'}];
-    blend.selectedModule='TUG';
-    sideOn('LEFT');
-    return {receipt:bodyReceipts.find(x=>x.kind==='STAGE4-MISS'),
-      status:document.querySelector('#blendStatus').textContent,
-      selectedModule:blend.selectedModule,stability:convergence.stability,step:convergence.step};
+    blend.selectedModule='TUG';sideOn('LEFT');
+    return {status:document.querySelector('#blendStatus').textContent,
+      selectedModule:blend.selectedModule,stability:convergence.stability,
+      step:convergence.step,trace:document.querySelector('#traceList').textContent};
   });
-  expect(result.receipt.received).toEqual({module:'TUG',side:'LEFT'});
-  expect(result.receipt.expected).toEqual({module:'AIM',side:'RIGHT'});
   expect(result.status).toContain('Received TUG → LEFT; needed AIM → RIGHT');
   expect(result.selectedModule).toBeNull();
   expect(result.stability).toBe(52);
   expect(result.step).toBe(0);
+  expect(result.trace).toContain('STAGE4-MISS');
   expect(errors).toEqual([]);
 });
 
-test('@boot FUTARIZED miss distinguishes no primed module from wrong side', async ({page})=>{
+test('@boot FUTARIZED distinguishes unprimed from wrong-side contact', async ({page})=>{
   await page.goto(GAME);
+  await page.waitForFunction(()=>!!window.__FUTARIZED_QA__);
   const results=await page.evaluate(()=>{
+    const {convergence,blend,sideOn}=window.__FUTARIZED_QA__;
     convergence.active=true;convergence.step=0;convergence.stability=70;
     convergence.sequence=[{module:'AIM',side:'RIGHT'},{module:'CARD',side:'TOP'}];
     blend.selectedModule=null;sideOn('LEFT');
-    const none={received:bodyReceipts[0].received,status:document.querySelector('#blendStatus').textContent};
+    const none=document.querySelector('#blendStatus').textContent;
     blend.selectedModule='AIM';sideOn('LEFT');
-    return {none,wrongSide:bodyReceipts[0].received,stability:convergence.stability};
+    return {none,wrongSide:document.querySelector('#blendStatus').textContent,
+      stability:convergence.stability};
   });
-  expect(results.none.received).toEqual({module:null,side:'LEFT'});
-  expect(results.none.status).toContain('Received NONE → LEFT');
-  expect(results.wrongSide).toEqual({module:'AIM',side:'LEFT'});
+  expect(results.none).toContain('Received NONE → LEFT; needed AIM → RIGHT');
+  expect(results.wrongSide).toContain('Received AIM → LEFT; needed AIM → RIGHT');
   expect(results.stability).toBe(34);
 });
 
-test('@boot FUTARIZED correct link still advances without miss receipt', async ({page})=>{
+test('@boot FUTARIZED correct link still advances without false miss', async ({page})=>{
   await page.goto(GAME);
+  await page.waitForFunction(()=>!!window.__FUTARIZED_QA__);
   const result=await page.evaluate(()=>{
+    const {convergence,blend,sideOn}=window.__FUTARIZED_QA__;
     convergence.active=true;convergence.step=0;convergence.score=0;convergence.stability=70;
     convergence.sequence=[{module:'AIM',side:'RIGHT'},{module:'CARD',side:'TOP'}];
-    blend.selectedModule='AIM';const before=bodyReceipts.filter(x=>x.kind==='STAGE4-MISS').length;
-    sideOn('RIGHT');
+    blend.selectedModule='AIM';sideOn('RIGHT');
     return {step:convergence.step,score:convergence.score,stability:convergence.stability,
-      selectedModule:blend.selectedModule,latest:bodyReceipts[0].kind,
-      missesAdded:bodyReceipts.filter(x=>x.kind==='STAGE4-MISS').length-before};
+      selectedModule:blend.selectedModule,
+      prompt:document.querySelector('#convergencePrompt').textContent,
+      trace:document.querySelector('#traceList').textContent};
   });
-  expect(result).toEqual({step:1,score:1,stability:77,selectedModule:null,latest:'STAGE4-LINK',missesAdded:0});
+  expect(result.step).toBe(1);
+  expect(result.score).toBe(1);
+  expect(result.stability).toBe(77);
+  expect(result.selectedModule).toBeNull();
+  expect(result.prompt).toContain('LINK 2/5');
+  expect(result.trace).toContain('STAGE4-LINK');
+  expect(result.trace).not.toContain('STAGE4-MISS');
 });

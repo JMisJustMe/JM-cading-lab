@@ -114,6 +114,7 @@ for (const scenario of ['malformed-recent', 'unknown-mounted', 'denied-storage']
       ok=ok&&preserved;detail.preserved=preserved;
     }
     if(scenario==='denied-storage'){
+      await page.evaluate(()=>routeTo('owner'));
       await page.locator('#ownerNotes').fill('session-only test');
       const kept=await page.locator('#ownerNotes').inputValue();
       ok=ok&&kept==='session-only test';detail.notesInput=kept;

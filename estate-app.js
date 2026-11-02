@@ -67,6 +67,7 @@ const HOUSES = [
 
 // A damaged or denied device store must not prevent the public Estate from booting.
 // Read-only fallback never repairs, deletes, or overwrites unknown owner bytes.
+const ownerStorageHolds = [];
 const validFavourite = value => typeof value === 'string';
 const validRecent = value => value && typeof value === 'object' && typeof value.id === 'string' && typeof value.name === 'string';
 const validMounted = value => validRecent(value) && typeof value.content === 'string' && Number.isFinite(value.bytes) && value.bytes >= 0 && typeof value.at === 'string';
@@ -77,6 +78,7 @@ function readStoredList(key, validItem) {
     const value = JSON.parse(raw);
     if (Array.isArray(value) && value.every(validItem)) return value;
   } catch (_) {}
+  ownerStorageHolds.push(key);
   return [];
 }
 function writeStoredList(key, value, validItem) {
@@ -329,7 +331,8 @@ function wireEvents(){
 async function init(){
   $('#year').textContent=new Date().getFullYear();
   renderFeatureDoors();renderContinue();renderFilters();renderDirectory();renderLibrary();renderCommand();renderOwner();wireEvents();registerPWA();updateNetwork();
-  $('#storageSupport').textContent='Device-only storage is used when available; unknown saved bytes are preserved. Larger bodies should use Games & Beyond IndexedDB mounting.';
+  const heldOwnerKeys=ownerStorageHolds.map(key=>key.replace('jm-estate-','')).join(', ');
+  $('#storageSupport').textContent=heldOwnerKeys?`OWNER STORAGE HOLD (${heldOwnerKeys}): saved bytes are protected, not shown or overwritten. Recover them before changing this shelf.`:'Device-only storage is used when available; unknown saved bytes are preserved. Larger bodies should use Games & Beyond IndexedDB mounting.';
   routeTo(location.hash.slice(1)||'estate',false);
   await loadRegistries();applyEstateHeadPublicAuthority();
   $('#liveRouteCount').textContent=state.data.estate.routes.length;$('#gameBodyCount').textContent=state.data.games.length;

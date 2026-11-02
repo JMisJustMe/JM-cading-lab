@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MAX_TIME, SHARD_GOAL, forcePublish, useHud } from "./hudStore";
-import { game, input, player, resetRun } from "./world";
+import { game, input, player, releaseControls, resetRun } from "./world";
 
 function Joystick() {
   const base = useRef<HTMLDivElement>(null);
@@ -146,11 +146,23 @@ export function HUD() {
       apply();
       if (k === " " || k === "j") input.kicDown = false;
     };
+    const clearKeys = () => {
+      keys.clear();
+      releaseControls();
+    };
+    const onVisibility = () => {
+      if (document.hidden) clearKeys();
+    };
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
+    window.addEventListener("blur", clearKeys);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", clearKeys);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearKeys();
     };
   }, []);
 

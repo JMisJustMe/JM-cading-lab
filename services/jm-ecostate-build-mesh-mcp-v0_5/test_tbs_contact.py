@@ -1,6 +1,6 @@
 import unittest
 from tbs_contact import assess_transition, KINDS
-from server import HANDLERS, TOOLS
+from server import HANDLERS, TOOLS, CROSS_CLIENT_TOOLS, CROSS_CLIENT_HANDLERS
 
 class TBSTests(unittest.TestCase):
     def setUp(self):
@@ -19,6 +19,12 @@ class TBSTests(unittest.TestCase):
         self.assertIs(schema["annotations"]["readOnlyHint"], True)
         self.assertIs(schema["annotations"]["destructiveHint"], False)
         self.assertIs(HANDLERS["assess_tbs_relationship"](self.base)["allowed"], False)
+    def test_preserves_cross_client_tools(self):
+        names = [tool['name'] for tool in TOOLS]
+        self.assertEqual(len(names), len(set(names)))
+        self.assertTrue(set(CROSS_CLIENT_HANDLERS).issubset(HANDLERS))
+        self.assertTrue({tool['name'] for tool in CROSS_CLIENT_TOOLS}.issubset(set(names)))
+        self.assertEqual(len(names), len(HANDLERS))
     def test_source_hold(self):
         self.assertEqual(assess_transition({**self.base, "sourceProof": None})["state"], "SOURCE_HOLD")
     def test_authority_hold(self):

@@ -11,6 +11,7 @@ from difflib import SequenceMatcher
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
+from tbs_contact import assess_transition
 from cross_client import TOOLS as CROSS_CLIENT_TOOLS, HANDLERS as CROSS_CLIENT_HANDLERS
 
 VERSION = "0.8.6"
@@ -1197,6 +1198,7 @@ def build_mesh_status(args):
     }
 
 TOOLS = [
+    {"name":"assess_tbs_relationship","description":"Read-only BRAIDGE/TBS candidate assessment; claims are not independently authenticated and no transfer is authorized.","inputSchema":{"type":"object","properties":{"sourceId":{"type":"string"},"fromBody":{"type":"string"},"toBody":{"type":"string"},"kind":{"type":"string","enum":["transfer","extension","branch","return","breakaway"]},"traceId":{"type":"string"},"sourceProof":{"type":"object"},"authority":{"type":"object"}},"required":["sourceId","fromBody","toBody","kind","traceId"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"search_builds","description":"Search the hosted current layer and the public-safe Navigator donor without treating discovery as proof.","inputSchema":{"type":"object","properties":{"query":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":25}},"required":["query"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"recover_build","description":"Recover current candidates plus public Navigator contact for a JM build.","inputSchema":{"type":"object","properties":{"name":{"type":"string"},"query":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":25}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"resolve_current_head","description":"Resolve a build to CURRENT_DECLARED, CURRENT_CANDIDATE, CONFLICT_OPEN, SNAPSHOT_ONLY or ABSENCE_NOT_PROVEN.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
@@ -1217,6 +1219,7 @@ TOOLS = [
     {"name":"prepare_operation_gate","description":"Create a deterministic PLAN_ONLY operation capsule for a future host-authorized action; performs no write or deploy.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"action_type":{"type":"string"},"intended_change":{"type":"string"},"donors":{"type":"array","maxItems":8,"items":{"type":"string"}}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
 ]
 HANDLERS = {
+    "assess_tbs_relationship": assess_transition,
     "search_builds": search_builds,
     "recover_build": recover_build,
     "resolve_current_head": resolve_current_head,

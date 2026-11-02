@@ -9,7 +9,7 @@ async function fillCandidate(page) {
   await page.locator('#loop').fill('choose → act → respond → adapt → repeat');
 }
 
-test('PLAYFORM structural validation never promotes text-only proposal to gameplay DING', async ({ page }) => {
+test('@boot PLAYFORM structural validation never promotes text-only proposal to gameplay DING', async ({ page }) => {
   const errors = [];
   page.on('pageerror', err => errors.push(err.message));
   await page.goto(PAGE);
@@ -23,7 +23,7 @@ test('PLAYFORM structural validation never promotes text-only proposal to gamepl
   expect(errors).toEqual([]);
 });
 
-test('PLAYFORM keeps editing and validation usable when browser storage is denied', async ({ page }) => {
+test('@boot PLAYFORM keeps editing and validation usable when browser storage is denied', async ({ page }) => {
   const errors = [];
   page.on('pageerror', err => errors.push(err.message));
   await page.addInitScript(() => {
@@ -40,7 +40,7 @@ test('PLAYFORM keeps editing and validation usable when browser storage is denie
   expect(errors).toEqual([]);
 });
 
-test('PLAYFORM preserves corrupted existing receipts instead of silently overwriting', async ({ page }) => {
+test('@boot PLAYFORM preserves corrupted existing receipts instead of silently overwriting', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('jm-playform-v01-receipts', '{invalid-json'));
   await page.goto(PAGE);
   await fillCandidate(page);

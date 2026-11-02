@@ -42,6 +42,46 @@ try {
   await page.keyboard.up("w");
   await page.keyboard.up("j");
 
+  // Real Chromium mobile touch sequence: hold joystick, interrupt without
+  // touchEnd, send a late move, then start a fresh touch on the same joystick.
+  const joystick = page.locator('[aria-label="Move"]');
+  const bounds = await joystick.boundingBox();
+  assert.ok(bounds, "the original mobile joystick is missing");
+  const x0 = bounds.x + bounds.width / 2;
+  const y0 = bounds.y + bounds.height / 2;
+  const cdp = await page.context().newCDPSession(page);
+  const point = (id, x, y) => ({ id, x, y, radiusX: 2, radiusY: 2, force: 1 });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchStart", touchPoints: [point(13, x0, y0)],
+  });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchMove", touchPoints: [point(13, x0 + 40, y0 - 30)],
+  });
+  state = await read();
+  assert.ok(state.moveX > 0.4 && state.moveY < -0.3,
+    "mobile touch move did not reach the existing joystick input");
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  assert.ok(clear(await read()), "touch-owned movement survived app blur");
+  const neutralKnob = await joystick.locator("div").last().getAttribute("style");
+  assert.match(neutralKnob || "", /\\+ 0px/,
+    "joystick visual knob was not returned to the centre");
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchMove", touchPoints: [point(13, x0 + 52, y0 - 40)],
+  });
+  assert.ok(clear(await read()), "late move revived an interrupted pointer");
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchStart", touchPoints: [point(14, x0, y0)],
+  });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchMove", touchPoints: [point(14, x0 - 37, y0 + 25)],
+  });
+  state = await read();
+  assert.ok(state.moveX < -0.3 && state.moveY > 0.2,
+    "fresh touch could not claim the joystick after interrupted ownership");
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  assert.ok(clear(await read()), "touch end did not release the joystick");
+
   // Hidden-tab route independently clears held game inputs and aiming.
   await page.evaluate(async () => {
     const { input } = await import("/src/game/world.ts");

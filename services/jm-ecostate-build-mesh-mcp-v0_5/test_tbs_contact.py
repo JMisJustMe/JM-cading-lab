@@ -1,5 +1,6 @@
 import unittest
 from tbs_contact import assess_transition, KINDS
+from server import HANDLERS, TOOLS
 
 class TBSTests(unittest.TestCase):
     def setUp(self):
@@ -12,6 +13,12 @@ class TBSTests(unittest.TestCase):
             result = assess_transition(x)
             self.assertEqual(result["state"], "PLAN_ONLY")
             self.assertIs(result["allowed"], False)
+    def test_mcp_registration(self):
+        self.assertIs(HANDLERS["assess_tbs_relationship"], assess_transition)
+        schema = next(t for t in TOOLS if t["name"] == "assess_tbs_relationship")
+        self.assertIs(schema["annotations"]["readOnlyHint"], True)
+        self.assertIs(schema["annotations"]["destructiveHint"], False)
+        self.assertIs(HANDLERS["assess_tbs_relationship"](self.base)["allowed"], False)
     def test_source_hold(self):
         self.assertEqual(assess_transition({**self.base, "sourceProof": None})["state"], "SOURCE_HOLD")
     def test_authority_hold(self):

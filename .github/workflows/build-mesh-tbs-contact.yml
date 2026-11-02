@@ -1,0 +1,23 @@
+name: JM Build Mesh TBS contact checks
+on:
+  pull_request:
+    branches:
+      - build-mesh-native-mcp-v0-5
+    paths:
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/tbs_contact.py'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/test_tbs_contact.py'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/server.py'
+      - '.github/workflows/build-mesh-tbs-contact.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s services/jm-ecostate-build-mesh-mcp-v0_5 -p 'test_tbs_contact.py' -v

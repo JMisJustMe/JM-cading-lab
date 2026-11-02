@@ -22,7 +22,19 @@ def main() -> None:
     m = json.loads(MANIFEST.read_text(encoding="utf-8"))
     chunks = []
     for e in m["canonical_parts"]:
-        p = ROOT / e["name"]
+        name = e["name"]
+        # Source carriage must remain within its original carrier directory,
+        # not an absolute path, traversal, alias or linked external file.
+        if not isinstance(name, str):
+            fail("invalid carrier part name")
+        from pathlib import PurePosixPath
+        part = PurePosixPath(name)
+        if (part.is_absolute() or len(part.parts) != 2 or part.parts[0] != "carrier"
+                or part.parts[1] in ("", ".", "..") or str(part) != name):
+            fail(f"carrier part outside canonical directory: {name}")
+        p = ROOT / name
+        if p.is_symlink() or not p.is_file():
+            fail(f"missing or linked carrier part: {name}")
         b = p.read_bytes()
         if len(b) != e["size"]: fail(f"size mismatch {e['name']}")
         if sha256(b) != e["sha256"]: fail(f"sha256 mismatch {e['name']}")

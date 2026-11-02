@@ -2,6 +2,21 @@
 from pathlib import Path
 from hashlib import sha256
 import base64,lzma,sys
+def safe_write_candidate(output, candidate):
+    """Keep owner edits, foreign outputs and symlink targets untouched."""
+    payload=candidate.encode('utf8')
+    if output.is_symlink():
+        raise FileExistsError(f'CP28 HOLD: symlink output not overwritten: {output}')
+    if output.exists():
+        if not output.is_file() or output.read_bytes()!=payload:
+            raise FileExistsError(f'CP28 HOLD: owner-edited output differs; choose --output PATH: {output}')
+        return 'EXISTING_IDENTICAL'
+    with output.open('xb') as stream:  # exclusive create; never follow a late symlink
+        stream.write(payload)
+    if output.read_bytes()!=payload:
+        raise IOError(f'CP28 HOLD: new output readback mismatch: {output}')
+    return 'CREATED_VERIFIED'
+
 folder=Path(__file__).resolve().parent
 parts=sorted(folder.glob('cardBORED_v0_5_HOUSE_DECKS_PRESSURE_BOARDS.lzma.b64.part*.txt'))
 assert len(parts)==3
@@ -25,5 +40,10 @@ if '--build' in sys.argv:
  assert "window.JM_CARDBORED_V05" in candidate, 'v0.5 original missing'
  assert "function combat()" in candidate and "function applyCard(" in candidate, 'native game authority lost'
  output=folder/'CP28_cardBORED_NATIVE_CONTACT.html'
- output.write_text(candidate,encoding='utf8')
- print("CP28_BUILT",str(output),len(candidate),sha256(candidate.encode('utf8')).hexdigest())
+ if '--output' in sys.argv:
+  at=sys.argv.index('--output')
+  if at+1>=len(sys.argv) or sys.argv[at+1].startswith('--'):
+   raise ValueError('CP28 --output requires a destination path')
+  output=Path(sys.argv[at+1])
+ state=safe_write_candidate(output,candidate)
+ print("CP28_BUILT",str(output),len(candidate.encode('utf8')),sha256(candidate.encode('utf8')).hexdigest(),state)

@@ -4,6 +4,7 @@ on:
     paths:
       - 'services/jm-ecostate-build-mesh-mcp-v0_5/tbs_contact.py'
       - 'services/jm-ecostate-build-mesh-mcp-v0_5/test_tbs_contact.py'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/server.py'
       - '.github/workflows/build-mesh-tbs-contact.yml'
   workflow_dispatch:
 permissions:

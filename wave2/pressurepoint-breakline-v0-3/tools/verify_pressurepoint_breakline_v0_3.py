@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import base64,gzip,hashlib,json,subprocess,sys,tempfile
+import argparse,base64,gzip,hashlib,json,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 M=json.loads((ROOT/'PUBLICATION_MANIFEST.json').read_text(encoding='utf-8'))
 
@@ -8,7 +8,8 @@ def die(msg):
     raise SystemExit('FAIL: '+msg)
 
 def git_blob(path):
-    return subprocess.check_output(['git','hash-object',str(path)],text=True).strip()
+    data=path.read_bytes()
+    return hashlib.sha1(b'blob '+str(len(data)).encode('ascii')+b'\0'+data).hexdigest()
 parts=M['transport']['parts']
 if [p['order'] for p in parts] != list(range(1,len(parts)+1)): die('carrier order')
 if len(parts)!=3: die('carrier count')
@@ -58,7 +59,28 @@ for k,v in checks:
 joined='\n'.join(M['claim_boundary'])+'\n'+(ROOT/'PUBLICATION_RECEIPT.md').read_text(encoding='utf-8')
 for phrase in ['Physical owner-device Ding remains OPEN','does **not** manufacture']:
     if phrase not in joined: die('claim boundary '+phrase)
-with tempfile.NamedTemporaryFile(suffix='.html',delete=False) as tf:
-    tf.write(raw); out=Path(tf.name)
+parser=argparse.ArgumentParser(description='Verify and recover the exact existing PRESSUREPOINT v0.3 source.')
+parser.add_argument('--output',type=Path,help='Owner-chosen HTML path; existing modified files are never overwritten.')
+args=parser.parse_args()
 print('PASS exact source',a['bytes'],a['sha256'])
-print('RECONSTRUCTED',out)
+if args.output is None:
+    # Preserve the original one-command temporary reconstruction behaviour.
+    with tempfile.NamedTemporaryFile(suffix='.html',delete=False) as tf:
+        tf.write(raw); out=Path(tf.name)
+    if out.read_bytes()!=raw: die('temporary source readback')
+    print('RECONSTRUCTED',out)
+else:
+    out=args.output
+    if out.is_symlink(): die('output symlink refused')
+    if out.exists():
+        if not out.is_file() or out.read_bytes()!=raw: die('owner-edited or non-file output refused')
+        print('ALREADY EXACT',out)
+    else:
+        try:
+            # Exclusive creation also refuses a symlink or file appearing during the check.
+            with out.open('xb') as fh:
+                fh.write(raw)
+        except FileExistsError:
+            die('output appeared during recovery; not overwritten')
+        if out.read_bytes()!=raw: die('recovered source readback')
+        print('RECONSTRUCTED',out)

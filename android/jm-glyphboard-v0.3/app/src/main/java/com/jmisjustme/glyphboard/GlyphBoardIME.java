@@ -1,6 +1,7 @@
 package com.jmisjustme.glyphboard;
 
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.graphics.Color;
 import android.inputmethodservice.InputMethodService;
 import android.view.Gravity;
@@ -94,10 +95,7 @@ public final class GlyphBoardIME extends InputMethodService {
         addWeighted(row, globe, 0.7f);
 
         Button back = smallButton("⌫");
-        back.setOnClickListener(v -> {
-            InputConnection ic = getCurrentInputConnection();
-            if (ic != null) ic.deleteSurroundingText(1, 0);
-        });
+        back.setOnClickListener(v -> deletePreviousCodePoint());
         addWeighted(row, back, 0.7f);
 
         Button space = smallButton("SPACE");
@@ -196,6 +194,17 @@ public final class GlyphBoardIME extends InputMethodService {
     private void commitRaw(String text) {
         InputConnection ic = getCurrentInputConnection();
         if (ic != null) ic.commitText(text, 1);
+    }
+
+    // Prefer full Unicode code-point deletion (Android 7+). API 23 still needs
+    // a surrogate-aware UTF-16 fallback so JM glyphs are not split on backspace.
+    private void deletePreviousCodePoint() {
+        InputConnection ic = getCurrentInputConnection();
+        if (ic == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                && ic.deleteSurroundingTextInCodePoints(1, 0)) return;
+        CharSequence before = ic.getTextBeforeCursor(2, 0);
+        ic.deleteSurroundingText(UnicodeBackspace.codeUnitsBeforeCursor(before), 0);
     }
 
     private void sendEnter() {

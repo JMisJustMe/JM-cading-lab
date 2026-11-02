@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { parseQuadze } from './quadze-native-adapter.mjs';
 import { loadFederatedRegistry } from './registry-loader.mjs';
 import { loadRecovered53Profiles } from './profile-evidence.mjs';
 import { compileNativeV1_1, NATIVE_ADAPTERS_V1_1 } from './native-adapters-v1-1.mjs';
@@ -20,6 +21,26 @@ assert.equal(quadze.ok, true, JSON.stringify(quadze, null, 2));
 assert.equal(quadze.compiled.receipt.ding, true);
 assert.equal(quadze.parsed.ast.bodies.length, 2);
 assert.equal(quadze.parsed.ast.routes.length, 3);
+
+// Mini-QUADZE Tier-0: reject malformed numeric source instead of silently truncating it.
+const numericFixture = 'body Alpha { local_time: -2 routes: [Pulse] }\nroute Pulse { cost: 1 apply: increment_state }\nglyph Echo { window: [5..12] latency: 1 hysteresis: 3 }\npolicy rejected: dingandreceipt';
+const numericValid = parseQuadze(numericFixture);
+assert.equal(numericValid.ok, true, JSON.stringify(numericValid.diagnostics));
+assert.equal(numericValid.ast.bodies[0].localTime, -2);
+assert.equal(numericValid.ast.routes[0].cost, 1);
+for (const [from, to] of [
+  ['cost: 1', 'cost: 1.5'],
+  ['cost: 1', 'cost: 1xyz'],
+  ['cost: 1', 'cost: 9007199254740993'],
+  ['local_time: -2', 'local_time: -2.5'],
+  ['latency: 1', 'latency: 1.5'],
+  ['hysteresis: 3', 'hysteresis: 3.5']
+]) {
+  const rejected = parseQuadze(numericFixture.replace(from, to));
+  assert.equal(rejected.ok, false, `${from} -> ${to} must not silently change native meaning`);
+  assert.equal(rejected.diagnostics[0].code, 'QUADZE_PARSE_FAIL');
+}
+
 
 const report = await runEqualisation({ write: true });
 assert.equal(report.summary.registered, 100);

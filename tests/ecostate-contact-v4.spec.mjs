@@ -75,5 +75,54 @@ console.log(JSON.stringify({reducedMotion:true,...reducedState,ok:reducedState.c
 if(!(reducedState.contact==='v4'&&reducedState.story&&reducedState.veil&&!reducedState.overflow))failed=true;
 await reduced.close();
 
+// November front-door regression: browser storage may be malformed or denied.
+// These are public-shell boot and owner-byte preservation checks, not device custody proof.
+for (const scenario of ['malformed-recent', 'unknown-mounted', 'denied-storage']) {
+  const context=await browser.newContext({viewport:{width:390,height:844}});
+  await context.addInitScript(kind=>{
+    if(kind==='malformed-recent') localStorage.setItem('jm-estate-recent','{bad-json');
+    if(kind==='unknown-mounted') localStorage.setItem('jm-estate-mounted','{"unknown":"owner bytes"}');
+    if(kind==='denied-storage'){
+      for(const method of ['getItem','setItem','removeItem']){
+        Storage.prototype[method]=()=>{throw new Error('Device storage denied')};
+      }
+    }
+  },scenario);
+  const page=await context.newPage();
+  let ok=true,detail={};
+  try{
+    await page.goto('http://127.0.0.1:4175/',{waitUntil:'domcontentloaded',timeout:30000});
+    await page.waitForSelector('#featureDoors .door-card',{timeout:10000});
+    detail=await page.evaluate(()=>({
+      features:document.querySelectorAll('#featureDoors .door-card').length,
+      year:document.querySelector('#year')?.textContent,
+      mounted:document.querySelector('#mountedCount')?.textContent
+    }));
+    ok=detail.features>=5 && Number(detail.year)>2020 && Boolean(detail.mounted);
+    if(scenario==='malformed-recent'){
+      const preserved=await page.evaluate(()=>{
+        trackRecent({id:'storage-probe',name:'Storage probe'});
+        return localStorage.getItem('jm-estate-recent')==='{bad-json';
+      });
+      ok=ok&&preserved;detail.preserved=preserved;
+    }
+    if(scenario==='unknown-mounted'){
+      const preserved=await page.evaluate(()=>{
+        try{saveMounted([])}catch{}
+        return localStorage.getItem('jm-estate-mounted')==='{"unknown":"owner bytes"}';
+      });
+      ok=ok&&preserved;detail.preserved=preserved;
+    }
+    if(scenario==='denied-storage'){
+      await page.locator('#ownerNotes').fill('session-only test');
+      const kept=await page.locator('#ownerNotes').inputValue();
+      ok=ok&&kept==='session-only test';detail.notesInput=kept;
+    }
+  }catch(error){ok=false;detail.error=String(error)}
+  console.log(JSON.stringify({frontDoorStorageScenario:scenario,...detail,ok}));
+  if(!ok)failed=true;
+  await context.close();
+}
+
 await browser.close();
 if(failed)process.exit(1);

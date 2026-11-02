@@ -156,3 +156,46 @@ test('@128hand-cp27 alternative phone landscape keeps actions accessible',async(
   }
   expect(errors).toEqual([]);
 });
+
+test('@128hand-cp27 malformed saved squad fails closed and the original match still runs',async({page})=>{
+  const errors=[];
+  page.on('pageerror',e=>errors.push(String(e)));
+  page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+  await page.goto(door);
+  await page.evaluate(()=>localStorage.setItem('jm128.v08',JSON.stringify({
+    role:'unrecognized',shape:'unknown',names:null,stats:null
+  })));
+  await page.reload();
+  await expect(page.locator('#jm128Gate')).toBeVisible();
+  const saved=await page.evaluate(()=>window.__JM128_V08__.state);
+  expect(saved.role).toBe('playmaker');
+  expect(saved.shape).toBe('wide');
+  expect(saved.names).toEqual({hand:'MAKO',ally:'AYA',keeper:'BRASS',def:'LATCH'});
+  expect(saved.stats).toEqual({matches:0,wins:0});
+  await page.locator('#jm128Start').click();
+  await expect.poll(()=>page.evaluate(()=>window.__JM128_CP27__.contact.live)).toBe(true);
+  await page.waitForTimeout(120);
+  expect(errors).toEqual([]);
+});
+test('@128hand-cp27 valid owner names survive; forged stats and broken JSON cannot corrupt restore',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto(door);
+  await page.evaluate(()=>localStorage.setItem('jm128.v08',JSON.stringify({
+    role:'shield',shape:'break',
+    names:{hand:'MAKO PRIME',ally:'',keeper:123,def:' LATCH II '},
+    stats:{matches:4,wins:99}
+  })));
+  await page.reload();
+  const saved=await page.evaluate(()=>window.__JM128_V08__.state);
+  expect(saved.role).toBe('shield');
+  expect(saved.shape).toBe('break');
+  expect(saved.names).toEqual({hand:'MAKO PRIME',ally:'AYA',keeper:'BRASS',def:'LATCH II'});
+  expect(saved.stats).toEqual({matches:4,wins:4});
+  await page.evaluate(()=>localStorage.setItem('jm128.v08','{broken-json'));
+  await page.reload();
+  const fallback=await page.evaluate(()=>window.__JM128_V08__.state);
+  expect(fallback.role).toBe('playmaker');
+  expect(fallback.names.hand).toBe('MAKO');
+  expect(fallback.stats).toEqual({matches:0,wins:0});
+  expect(errors).toEqual([]);
+});

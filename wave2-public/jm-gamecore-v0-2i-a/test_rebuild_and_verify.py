@@ -94,6 +94,47 @@ class RebuildSafety(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(outside.read_bytes(), b"keep owner file")
 
+    def test_manifest_cannot_read_carrier_outside_original_directory(self):
+        external = self.root.parent / "borrowed.b64"
+        external.write_bytes((self.root / "carrier" / "part001.b64").read_bytes())
+        self.manifest["canonical_parts"][0]["name"] = "../borrowed.b64"
+        self.save_manifest()
+        result = self.run_restore("--write")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("outside canonical directory", result.stderr + result.stdout)
+        self.assertFalse((self.root / "gamecore.html").exists())
+
+    def test_manifest_cannot_use_absolute_source_part(self):
+        part = self.root / "carrier" / "part001.b64"
+        self.manifest["canonical_parts"][0]["name"] = str(part)
+        self.save_manifest()
+        result = self.run_restore("--write")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("outside canonical directory", result.stderr + result.stdout)
+        self.assertFalse((self.root / "gamecore.html").exists())
+
+    def test_manifest_cannot_use_aliased_source_part(self):
+        self.manifest["canonical_parts"][0]["name"] = "carrier/./part001.b64"
+        self.save_manifest()
+        result = self.run_restore("--write")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("outside canonical directory", result.stderr + result.stdout)
+        self.assertFalse((self.root / "gamecore.html").exists())
+
+    def test_symlinked_carrier_part_rejected(self):
+        source = self.root / "carrier" / "part001.b64"
+        alias = self.root / "carrier" / "alias.b64"
+        try:
+            alias.symlink_to(source)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks not supported here")
+        self.manifest["canonical_parts"][0]["name"] = "carrier/alias.b64"
+        self.save_manifest()
+        result = self.run_restore("--write")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("linked carrier part", result.stderr + result.stdout)
+        self.assertFalse((self.root / "gamecore.html").exists())
+
     def test_tampered_carrier_rejected_before_write(self):
         (self.root / "carrier" / "part001.b64").write_bytes(b"bad")
         result = self.run_restore("--write")

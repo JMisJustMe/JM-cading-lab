@@ -21,5 +21,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Verify safe owner-edit recovery and readback
+        run: python -m unittest discover -s wave2-public/jm-gamecore-v0-2i-a -p "test_rebuild_and_verify.py" -v
       - name: Reconstruct exact source and enforce boundary
         run: python wave2-public/jm-gamecore-v0-2i-a/rebuild_and_verify.py

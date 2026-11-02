@@ -96,9 +96,11 @@ for (const scenario of ['malformed-recent', 'unknown-mounted', 'denied-storage']
     detail=await page.evaluate(()=>({
       features:document.querySelectorAll('#featureDoors .door-card').length,
       year:document.querySelector('#year')?.textContent,
-      mounted:document.querySelector('#mountedCount')?.textContent
+      mounted:document.querySelector('#mountedCount')?.textContent,
+      storageHold:document.querySelector('#storageSupport')?.textContent||''
     }));
-    ok=detail.features>=5 && Number(detail.year)>2020 && Boolean(detail.mounted);
+    const expectedHold=scenario==='malformed-recent'?'recent':scenario==='unknown-mounted'?'mounted':'favourites';
+    ok=detail.features>=5 && Number(detail.year)>2020 && Boolean(detail.mounted) && detail.storageHold.includes('OWNER STORAGE HOLD') && detail.storageHold.includes(expectedHold);
     if(scenario==='malformed-recent'){
       // Click the real feature-door handler; module-private trackRecent is not global.
       await page.locator('#featureDoors [data-card-id]').first().click();

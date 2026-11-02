@@ -63,3 +63,31 @@ test('@boot slow service-worker registration cannot block original House payload
   await expectHouseBoot(page);
   await expect(page.locator('#mountedStat')).toHaveText('22');
 });
+
+
+test('@boot Play Now links remain usable when local House database is denied', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'indexedDB', {
+      configurable: true,
+      get() { throw new DOMException('IndexedDB denied for testing', 'SecurityError'); }
+    });
+  });
+  await page.goto('./', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#status')).toHaveText('HOUSE BUGG', { timeout: 10_000 });
+  const links = [
+    ['kicshift', 'kicshift/', /KICSHIFT — JM Portable Body/],
+    ['bonewake', 'bonewake/00_OPEN_FIRST.html', /Humanimals: Bonewake Arena/],
+    ['puka', 'puka/00_OPEN_FIRST.html', /PUKA v0\.17A/]
+  ];
+  for (const [name, path, title] of links) {
+    const link = page.locator('[data-play-now="' + name + '"]');
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('href', path);
+    await Promise.all([
+      page.waitForURL(url => url.pathname.endsWith('/games-beyond/' + path), { timeout: 20_000 }),
+      link.click()
+    ]);
+    await expect(page).toHaveTitle(title);
+    await page.goto('./', { waitUntil: 'domcontentloaded' });
+  }
+});

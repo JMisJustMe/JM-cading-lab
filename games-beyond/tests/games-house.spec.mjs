@@ -348,7 +348,7 @@ test('@boot controlled House navigation preserves modern Catalogue without obsol
   await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, {timeout:45_000});
   await expect(page.locator('.hero p')).toContainText('Mounted Rooms follow the verified payload manifest');
   await expect(page.getByRole('tab',{name:'CATALOGUE'})).toBeVisible();
-  await expect(page.locator('#view-catalogue-current iframe')).toHaveAttribute('src', /all-games\\.html/);
+  await expect(page.locator('#view-catalogue-current iframe')).toHaveAttribute('src', /all-games\.html/);
   await expect(page.locator('#catalogueStat')).toHaveCount(0);
   await page.getByRole('tab',{name:'CATALOGUE'}).click();
   await expect(page.locator('#view-catalogue-current')).toBeVisible();

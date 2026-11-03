@@ -208,8 +208,8 @@ jobs:
           bytes[styles.css]='6144'
           sha[runtime-core.mjs]='fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'
           bytes[runtime-core.mjs]='7130'
-          sha[app.mjs]='3be85ecfe3631371af79b275831fda95f82123dcce4c572e7b214184bcc91669'
-          bytes[app.mjs]='8029'
+          sha[app.mjs]='c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6'
+          bytes[app.mjs]='7842'
 
           passed=0
           for attempt in $(seq 1 60); do
@@ -267,7 +267,7 @@ jobs:
               'index.html':{'bytes':4962,'sha256':'634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147'},
               'styles.css':{'bytes':6144,'sha256':'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15'},
               'runtime-core.mjs':{'bytes':7130,'sha256':'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'},
-              'app.mjs':{'bytes':7034,'sha256':'3be85ecfe3631371af79b275831fda95f82123dcce4c572e7b214184bcc91669'}
+              'app.mjs':{'bytes':7842,'sha256':'c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6'}
             },
             'boundary':'Public executable runtime proof only. No owner Windows/Edge proof transfer, OS reboot, cross-device persistence, external-model contact, unrestricted actuation or AGI/general-intelligence claim.'
           }

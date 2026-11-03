@@ -53,6 +53,7 @@ class RegistryContract(unittest.TestCase):
         self.assertIn('getAssets().open("jm_estate_doors.json")', code)
         self.assertIn('policy.optBoolean("copy_sources")', code)
         self.assertIn('policy.optBoolean("auto_host")', code)
+        self.assertIn('"repository-location".equals(entry.optString("verified"))', code)
         self.assertIn('setNegativeButton("Cancel",null)', code)
         self.assertIn('new Intent(Intent.ACTION_VIEW,parsed)', code)
 

@@ -9,7 +9,7 @@ State: REVIEW CANDIDATE. No merge or public deployment claimed.
 - Concurrent main CP02: three protected-source-game lineages retained in public-safe mode.
 - Independently sourced Base44 game apps: five app identities, two of them distinct Mythic Clash builds.
 - Additional archive/source contacts: four entries including Reali-T Clash and Drag & Aim Loop Kernel.
-- **139 public-safe catalogue records**, not 135 individually finished games. **Two distinct private family-only creations** remain in separate owner-only custody and are deliberately absent from the public catalogue content and player buttons. Their source bodies are not to be published, merged into a public website, or replaced.
+- **142 public-safe catalogue records**, not 135 individually finished games. **Two distinct private family-only creations** remain in separate owner-only custody and are deliberately absent from the public catalogue content and player buttons. Their source bodies are not to be published, merged into a public website, or replaced.
 - Earlier 137 figure was **all-source accounting before privacy exclusions and new CP07 source recovery**, not the publishable catalogue number. 71+54 historical originals remain independently recoverable in source/owner history; removal of two from the public representation is an explicit privacy correction, not loss of custody.
 
 ## Exact independently checked public game or proof routes
@@ -79,6 +79,28 @@ They each have specific gameplay engine-branch semantics, but share the *same pu
 **CP10 count:** CP07 139 public-safe + 3 source-proven first-party cartridge/proof lines = **142 public-safe catalogue records**, plus two separately preserved private family identities (144 names for owner-level accounting, not unique perfected games). The linked-route record count rises from 19 to **22 entries**, but three share one RouteOS console URL; linked records are **not** unique host URLs or completed touch-game acceptance. No original game HTML, original game JS, language compiler, package or master manifest changed.
 
 **Site reciprocity:** The independent published Wix Games & Beyond page currently provides a Games Bodies rail and EMBED_CHAMBER text but no actual individually mapped player links. It is a separate website entrance requiring native Wix source-contact and owner review before publication. Two existing Wix game-house drafts are not equivalent to public deployments.
+
+## CP11 · stronger owner source seats and metadata-first inventory
+
+**Actual current-game Library source contact** found and mapped more recent source candidates without changing or republishing those original full-body files:
+- Fracture Circuit v0.26.3 Raised Floor Self-Test (156,191 B); distinct from protected v0.25 Android signed source/software head.
+- BATROL // THE BETWEEN v1.7.2 Raised Floor Self-Test (77,854 B), preserved v1.7.1 keeper independent.
+- Dead Reckon v2.1A Raised Floor Self-Test (233,093 B), compared with older public House player and v2.1 original.
+- Fight Clash: Chameleon v0.8A Raised Floor Self-Test (85,198 B), old public player v0.4 separate.
+- GRIPFORM v0.7 THEOGAMY Contact Field playable (101,632 B), source recovery not public final release.
+- FIELDWEAVE v0.8 Cinematic Contact (155,773 B), ancestor v0.7 preserved.
+- WORDSHIFT two independent v0.3 game-descendant files: Route Flow (59,408 B) and VISUALANG Conjoined Play (99,924 B), historical 0.1/0.2 originals retained.
+- Untitled Field Branch v0.9 frozen (336,782 B), title/canonical identity still HOLD; v0.8 kept.
+- FTR First-Person v0.5.2 Raised Floor Self-Test (54,590 B), older public v0.5.1 carrier remains distinct.
+- JM The Vale separate Hollow Bloom v0.2, Vale Reforged v0.1 and VISGUIDE Ember Kite v0.3 authored scene sources; their scene identities are not assumed to be three independent game crowns.
+
+**16 exact game-source seat notes** now render on the same public game catalogue, in addition to the existing **14 independent coding/engine lineage notes**. Exact source names and bounded version claims are visible; inaccessible owner-private files are not offered as false HTTP links.
+
+**Code-render verification:** the actual A–Z inline JavaScript was evaluated against a minimal document test interface. It rendered **142/142** entries, **95 game/descendant** lane items, **17 proof/cartridge** lane items, **22 public player/cartridge/House-linked records**. The PUBLIC DOORS filter produced **22 cards** and 16 source-head panels appeared, with **zero family-private names** in rendered output. Inline JavaScript parsed cleanly and GitHub source readback matched exactly. The 22 linked records include three cartridges sharing one RouteOS bay URL and eight manifest-backed House routes without individual player-interaction Ding.
+
+**Games Library metadata scope:** a six-page recursive enumeration of `/JM Estate/Games` observed 956 files and 192 directory entries, including 169 HTML files and original homebrew-language file extensions. This is a scoped Games-shelf metadata inventory, **not** a complete `Games & Playable Systems`, Zionfolder, all-device, Drive or whole-estate full-file proof. A larger Games & Playable Systems recursive pass exceeded tool limits; continue there section by section without inventing full coverage.
+
+**Secondary sources:** connected GitHub install search identified five owner's repositories; the three other private/alternate coding repositories presently surfaced only an inherited Fight Clash carrier and coding UI fragments, not new public games. Published Wix game page remains a separate venue with presentation rail but without mapped individual playable-game links. Do not claim these are automatically synchronized or linked.
 
 ## Exact gates / remaining work
 - 139 public-safe records here represent names/families/proofs/descendants/prototypes/source HOLDS. No single unique finished-games count crowned.

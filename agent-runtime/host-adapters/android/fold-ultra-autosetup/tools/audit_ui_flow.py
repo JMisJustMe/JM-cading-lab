@@ -140,10 +140,10 @@ def main():
     has("JM Ecostate", "estate_existing_website_visible")
     adb("shell", "input", "keyevent", "4")
     time.sleep(.4)
-    # Return to root and verify a previously unknown category remains on HOLD.
+    # Theories is now populated: verify the original destination appears, without opening it.
     tap("JM ESTATE / My existing creations", "estate_reopen_touch")
     tap("My Theories", "estate_theories_touch")
-    has("HOLD / No verified destinations registered yet.", "estate_unverified_hold")
+    has("JM Theory Estate", "estate_verified_theory_visible")
     adb("shell", "input", "keyevent", "4")
     time.sleep(.4)
     RECEIPTS.append({"check":"cp03_estate_native_touch", "result":"PASS",

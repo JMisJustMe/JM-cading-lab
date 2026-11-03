@@ -154,6 +154,7 @@ jobs:
                     const gameEditors=items.filter(x=>x.group==='Games'&&x.editorRoute);
                     const exactGames=items.filter(x=>x.group==='Games'&&x.sourceFile);
                     const unmounted=items.filter(x=>x.group==='Games'&&x.id.startsWith('Games:jmstudios-'));
+                     const privateImport=unmounted.filter(x=>x.privateImportContact);
                     const playform=items.find(x=>x.id==='Games:playform');
                     const apps=items.filter(x=>x.group==='Apps & tools');
                     const appSources=apps.flatMap(x=>x.sourceContacts||[]);
@@ -169,6 +170,12 @@ jobs:
                       gameEditorsSafe:gameEditors.every(x=>x.editorRoute==='http://127.0.0.1:4178/games-beyond/?jm-edit='+encodeURIComponent(x.id.slice(6))&&!x.editorRoute.includes('..')),
                       exactGameFilesSafe:exactGames.every(x=>/^games-beyond\/bodies\/[a-z0-9-]+\.html$/.test(x.sourceFile)),
                       unmountedProtected:unmounted.length===2&&unmounted.every(x=>!x.editorRoute&&!x.ownerEdit),
+                       privateImportSafe:privateImport.length===2&&privateImport.every(x=>
+                         x.privateImportContact.houseRoute==='http://127.0.0.1:4178/games-beyond/'&&
+                         x.privateImportContact.afterImportEditorRoute==='http://127.0.0.1:4178/games-beyond/?jm-edit='+encodeURIComponent(x.id.slice(6))&&
+                         x.privateImportContact.boundary.includes('owner-held')&&
+                         !x.sourceFile&&!x.ownerEdit&&!x.editorRoute)&&
+                         document.querySelectorAll('#bodyList a.private-after-import').length===2,
                       playformBoundary:playform?.sourceNote?.includes('frozen original source protected'),
                       appSourcesCount:appSources.length,
                       appSourcesSafe:appSources.every(x=>x.ownerEdit==='https://github.com/JMisJustMe/JM-cading-lab/edit/main/'+x.path.split('/').map(encodeURIComponent).join('/')&&!x.path.includes('..')),
@@ -183,7 +190,7 @@ jobs:
                       audit.sourceEdits<10||audit.sourceLinksRendered!==audit.sourceEdits||!audit.sourceSafe||
                       !audit.directEditable||!audit.ownerRouteProtected||!audit.appNotMisrepresented||
                       audit.gameEditors!==JSON.parse(await (await page.request.get('http://127.0.0.1:4178/games-beyond/payload-manifest.json')).text()).builtInBodyCount||audit.exactGames!==6||!audit.gameEditorsSafe||!audit.exactGameFilesSafe||
-                      !audit.unmountedProtected||!audit.playformBoundary||
+                      !audit.unmountedProtected||!audit.privateImportSafe||!audit.playformBoundary||
                       audit.appSourcesCount!==4||!audit.appSourcesSafe||!audit.appVersionBoundary||!audit.workroomsSourceOnly||audit.sourceCards!==4||
                       !audit.member||!audit.coder||!audit.song||!audit.theory){
                     throw new Error(vp.name+' sovereign body projection gate failed: '+JSON.stringify(audit));

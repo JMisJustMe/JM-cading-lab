@@ -78,4 +78,6 @@ test('current Games House offline HTML excludes mismatched legacy catalogue engi
  const html=await resp.text();
  assert.match(html,/Current rooms/);
  assert.doesNotMatch(html,/catalogue-v0-6-core-loader\.js/);
+ assert.match(html,/whole-estate-current-catalogue-v1\.js/);
+ assert.match(html,/routeos-achievement-hall-v0-7\.js/);
 });

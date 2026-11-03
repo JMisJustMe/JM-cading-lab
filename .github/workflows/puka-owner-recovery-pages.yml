@@ -37,10 +37,17 @@ jobs:
           grep -Fq 'puka-pattern-window-v01.js' games-beyond/puka/00_OPEN_FIRST.html
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+      - name: Stage public site without private family gifts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _public_site
+          rsync -a --exclude='.git/' --exclude='_public_site/' --exclude='family-gifts/' ./ _public_site/
+          test ! -e _public_site/family-gifts
       - name: Upload current Estate for recovery carrier
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _public_site
       - name: Deploy PUKA recovery carrier
         id: deployment
         uses: actions/deploy-pages@v4

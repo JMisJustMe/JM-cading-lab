@@ -131,3 +131,15 @@ Proof hierarchy: public source commit → real rendered browser entrance → mou
 - **Remaining proof boundaries:** GitHub historical-source cleanup; owner-device touch/gameplay, newer version acceptance, individual app/creative-work completeness, and separate One-Keeper storage recovery. Public access is not completion of every original body.
 
 No protected private source text, personal identifiers, or live owner-private recovery URLs are included in this public checkpoint.
+
+
+## 3 November 2026 — CP08 · Native owner-private cloud recovery ZIPs verified
+
+The existing owner-private Drive recovery has now been converted from an encoded emergency document into **two ordinary downloadable ZIPs** at the same pre-existing owner-only folder, with **no new public route or custody authority created**.
+
+- Native source ZIP: 907,504 bytes, 31 original Git-source files plus ZIP manifest, exact SHA-256 match across GroundZeroJM, the private encoded Drive recovery and an independent downloaded binary Drive copy; ZIP CRC and **31/31 file-level source SHA-256/Git blob identities PASS**.
+- Separate retired source-test ZIP: 2 preserved historical CI definitions, downloaded private cloud ZIP and **2/2 original source hashes PASS**.
+- Both recovered cloud ZIPs: `shared=false`, one owner permission, existing private family-gift folder. Direct ZIP restore is now the preferred device route; earlier encoded document remains the emergency fallback. Private filenames and recovery addresses intentionally do not appear in this public register.
+- **Still open:** OneDrive's *separate* stale local-to-cloud sync; GitHub *historical* public commits/PR references and any caches (older protected commit still publicly readable); full Fold8 touchscreen and current-best app/game gameplay acceptance. No claim that deleting current `main` source made historical Git objects private.
+
+Scope is proven private file custody and public Estate continuity, **not** full confidential Git-history erasure or completion of every creation.

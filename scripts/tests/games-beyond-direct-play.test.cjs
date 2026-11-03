@@ -48,3 +48,9 @@ test('host shows game dialog before inserting exact srcdoc',()=>{
  assert.match(opened,/runtimeLayer\(doc,b\)/);
  assert.match(opened,/await receipt\('BODY_OPENED_ACCESSIBLE_WRAPPER'/);
 });
+
+test('House dialog assigns dedicated flexible third row to the exact game iframe',()=>{
+ const html=fs.readFileSync('games-beyond/index.html','utf8');
+ assert.match(html,/\.bodyDialog\{[^}]*grid-template-rows:auto auto minmax\(0,1fr\)/);
+ assert.match(html,/\.bodyFrame\{[^}]*min-height:0/);
+});

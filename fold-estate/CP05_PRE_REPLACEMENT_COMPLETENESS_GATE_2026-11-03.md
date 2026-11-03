@@ -23,3 +23,7 @@ Owner accepts uninstall/reinstall and possible loss of existing app-local data, 
 
 ## Safe release rule
 No claim of completeness from green CI alone. No guarantee of never needing future updates; aim for feature-complete owner-approved baseline with future updates reserved for genuine changes/fixes. CP03 PR #708 remains draft and unmerged; no uninstall or replacement until gates close.
+
+## CP06 code-presence audit (not behavioral proof)
+Read current native MainActivity.java on release branch: onSaveInstanceState, onConfigurationChanged, onNewIntent, onActivityResult, ACTION_SEND, ACTION_OPEN_DOCUMENT, ACTION_CREATE_DOCUMENT, SessionDeck, Return Point, cloudReturnImport all present as source tokens. This is **source presence only**, not device execution or verified feature acceptance. The literal token `workfield` is absent; this alone does not prove the unfolded workspace feature absent. Do not mark inherited feature checkboxes passed until functional tests.
+Nine sections now have at least one entry, but broad content coverage remains incomplete. CI estate-registry PASS on current latest commit; native-carrier pending at inspection.

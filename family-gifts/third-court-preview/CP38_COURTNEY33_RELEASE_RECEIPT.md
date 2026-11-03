@@ -83,3 +83,41 @@ No wholesale 33-feature-complete certification; 33 targets audited with status a
 - Local exact-final delta tests: **31/31 scoped real Chrome checks PASS** (phone + desktop, controlled Cup wins/losses/progress, Court IQ, local save persistence), **6/6 targeted actual shot-at-buzzer real Chrome checks PASS**. The Cup championship tests used deliberate controlled score/time fast-forward and must never be called fully played championships.
 - Screenshots: `C:\Users\theod\Downloads\JM_CP38_BIRTHDAY_MENU_PROOF.png`, `JM_CP38_GAMEPLAY_PROOF.png`, `JM_CP38_NATURAL_FINAL_PROOF.png`. Local test scripts: `JM_CP38_BROWSER_PROOF.py`, `JM_CP38_BUZZER_PROOF.py`, `JM_CP38_PUBLIC_BROWSER_PROOF.py`, `JM_CP38_PUBLIC_BYTE_PARITY.py`, `JM_CP38_NATURAL_60SEC_PROOF.py`.
 - Admission: code/rendering/browser playable **DING**, inherited proof **DONG**, buzzer/release delta **GONG**. Distinct final HOLD: physical Samsung Fold CP38 contact, actual physical controller, owner gameplay enjoyment, 33/33 exhaustive new-feature certification, and final gift acceptance. Original main birthday entrypoint deliberately unchanged.
+
+
+---
+
+## BIAT → FLAZ — COURTNEY 33 BIRTHDAY GIFT
+
+**Gift designation date:** 2026-11-03, JM explicit instruction; brother Courtney's **33rd birthday**.
+**State:** **FLAZ: gift-selected, source frozen, and playable direct-public birthday edition**. Owner has selected this CP38 as his brother's game gift. This is not a claim of Courtney's acceptance, owner device performance sign-off, or 33/33 feature completion.
+
+### Gift exactly as frozen (NO additional game generation)
+
+**Title:** THIRD COURT · COURTNEY 33 · Birthday Court
+
+**Actual playable gift address (not source-code browser):**
+https://jmisjustme.github.io/JM-cading-lab/family-gifts/third-court-preview/cp38-courtney33-candidate.html
+
+**Canonical published source:** `main:family-gifts/third-court-preview/cp38-courtney33-candidate.html`
+
+**Editable source and proof history:** `feat/jm-third-court-cp37-crown-circuit-20261103:family-gifts/third-court-preview/cp38-courtney33-candidate.html`
+
+**Exact Git blob in both branches:** `63933a7d936d232760800f5fe31ede7e4402bee6`.
+
+**Current HTTP/source QA renewed on 2026-11-03, after user gift-freeze instruction:** GroundZeroJM Chrome HTTP 200 `text/html; charset=utf-8`, public and local HTML **142,900 bytes**, identical SHA256 `2428896c0300a55049e806ffdbb362d3facc311f313824a665101d92651a51da`, `EXACT_MATCH True`, `PLAYABLE True`, no page JS exceptions. Existing 31/31 local Chrome, 6/6 buzzer-shot Chrome, 19/19 published live Chrome, and one naturally timed completed 60-second basketball match evidence retained above; do not conflate with physical handset or human-controller proof.
+
+### The bring-it-all-together gift
+
+In one preserved descendant of THIRD COURT: original six athletes; actual original 3v3 basketball, scoring, defence, live ball, passing/cuts/screens; three live rival strategies and earned three-round Crown Circuit; shot chart and Court IQ based on recorded gameplay; birthday dedication and personal 6 ↔ 9 motif; real earned championship message; mobile controls, alternative native/broadcast/classic rendering where supported; client-local saves and history export/restore.
+
+**One game body, multiple legitimate access routes.** Freeze this exact file and existing direct-public link for the birthday. Do not rebuild, rename the authoritative game body, replace its working URL, generate extra full-game copies, or merge another branch merely to give a gift link. Source-code links are NOT playable gift links.
+
+### Custody and evidence holds
+
+- **Published older original CP06.1** remains at `main:family-gifts/third-court-preview/index.html` (blob `349e752e20af3612171718651c33f1644b612421`).
+- Advanced CP36 and CP37 remain independent historical development bodies with their own proof.
+- The file used by the active gift is the public CP38 Pages route above. Do not send GitHub `blob/` source URL as birthday play link.
+- User-approved gift designation is established by explicit BIAT → FLAZ instruction; **recipient reaction, direct owner Fold8 CP38 playtest, real physical controller and sustained balance review remain unknown**. No unsupported DING.
+
+**FLAZ RETURN:** Existing game and original custodians protected. Public gift link independently accessible and matching source. No extra HTML body created. All future CP39+ improvements are separate follow-on work; do not silently modify the frozen CP38 gift.

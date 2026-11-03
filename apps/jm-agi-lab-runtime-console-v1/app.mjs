@@ -30,6 +30,10 @@ function saveState(){
     return false;
   }
 }
+function storageAvailable(){
+  try{const key='__jm_storage_probe__';localStorage.setItem(key,'1');localStorage.removeItem(key);return true;}
+  catch(e){return false;}
+}
 function safeJson(key){
   try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null;}catch(e){return null;}
 }
@@ -116,7 +120,8 @@ el('consequenceBtn').addEventListener('click',function(){
 });
 el('settleBtn').addEventListener('click',function(){
   if(settleTimer) return;
-  state=applyCommand(state,{type:'ARM_SETTLE'});saveState();render();
+  if(!storageAvailable()){toast('HOLD · LOCAL STORAGE UNAVAILABLE');return;}
+  state=applyCommand(state,{type:'ARM_SETTLE'});if(!saveState()){render();toast('HOLD · SETTLE NOT PERSISTED');return;}render();
   settleTimer=setInterval(function(){
     try{
       state=applyCommand(state,{type:'TICK_SETTLE'});
@@ -131,6 +136,7 @@ el('settleBtn').addEventListener('click',function(){
 });
 el('armReloadBtn').addEventListener('click',function(){
   try{
+    if(!storageAvailable()) throw new Error('local storage unavailable');
     const priorProbe=localStorage.getItem(PROBE);
     const token=(globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('token-'+Date.now());
     const challenge=makeReloadChallenge(state,{token,loadId,priorProbe,now:Date.now()});

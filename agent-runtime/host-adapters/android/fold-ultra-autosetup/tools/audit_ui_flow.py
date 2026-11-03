@@ -47,7 +47,11 @@ def has(fragment:str,label:str)->None:
     nodes=dump("check_"+label)
     if not match(nodes,fragment):
         capture("FAIL_"+label)
-        raise AssertionError(f"Missing live UI text {fragment!r} during {label}")
+        visible=[n.get("text","") for n in nodes if n.get("text","")]
+        (OUT/f"FAIL_{label}_visible.json").write_text(json.dumps({
+            "expected":fragment,"visible_text":visible[:120]
+        },indent=2),encoding="utf-8")
+        raise AssertionError(f"Missing live UI text {fragment!r} during {label}; visible={visible[:18]!r}")
     RECEIPTS.append({"check":label,"result":"PASS","evidence":fragment})
 
 

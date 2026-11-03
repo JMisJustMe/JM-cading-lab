@@ -69,3 +69,13 @@ test('shared visual shell and source custody paths are in mandatory precache',()
    assert.ok(source.includes(path),path);
  assert.match(source,/CORE\.push\(\.\.\.SHARED\)/);
 });
+
+test('current Games House offline HTML excludes mismatched legacy catalogue engine',async()=>{
+ const x=harness();
+ await x.put('games-beyond-v0-9-test',x.origin,'<html><body><div id="view-rooms">Current rooms</div></body></html>','text/html');
+ const resp=await vm.runInContext('houseDocument',x.context)(new Request(x.origin+'?jm-play=cardbored'));
+ assert.equal(resp.status,200);
+ const html=await resp.text();
+ assert.match(html,/Current rooms/);
+ assert.doesNotMatch(html,/catalogue-v0-6-core-loader\.js/);
+});

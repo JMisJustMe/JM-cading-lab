@@ -38,6 +38,33 @@ Four individually classified additional source leads, each added to the A–Z wi
 
 This adds four original-source-aware rows without replacing any pre-existing game or code and increases public-safe A–Z to **139 records**. The two separately protected family-only creations remain excluded from public catalogue source. The game source-label evidence is now specific on **11 relevant rows**.
 
+## CP08 · mounted-game route contact and strongest source seat
+
+**Independent real-browser test:** Existing GitHub Pages Games & Beyond House on 3 Nov 2026 opened `?jm-play=fourfold-arena`. The host completed **22 mounted bodies** with an exact ORIGINAL FOURFOLD v0.17 iframe, live canvas, idle game field, mode/arena buttons and no visible page errors. This proves an older **mounted** FOURFOLD player; it does not make v0.17 the latest original or certify the stronger v0.31 candidate. The two JMStudios private full-house additions are outside this 22-mount proof; full intended count 24 after local import.
+
+**Exact static source manifest** `games-beyond/payload-manifest.json` confirms nine original game-body IDs re-used as A–Z direct-play buttons (only filled where public row lacks a stronger verified standalone link):
+- FOURFOLD Arena → `./?jm-play=fourfold-arena`
+- T-Boys / Core Clash → `./?jm-play=tboys-core-clash`
+- JM Rim Route → `./?jm-play=rim-route`
+- CREWBOUND Arena → `./?jm-play=crewbound-arena`
+- JM House Siege → `./?jm-play=house-siege`
+- JM Western Sniper PvP → `./?jm-play=western-sniper`
+- Dead Reckon → `./?jm-play=dead-reckon`
+- cardBORED → `./?jm-play=cardbored`
+- COMBOUND (inherited mounted House snapshot) → `./?jm-play=combound`
+
+Five native/creator rooms linked from the original coding section via manifest-proven IDs: `gameforge`, `glyphplay`, `glyphforge`, `game-native-core`, `gamecore`. Original direct GameCore v0.2I-A and PLAYFORM/RouteOS source links remain. **Eight other mounted game routes have not had individual browser gameplay tests.** This is a launch-location connection, not a new shipped game or full device Ding.
+
+**Six accurate newer owner-source statuses surfaced separately from the mounted older public players:**
+1. FOURFOLD v0.31 final campaign (1,544,930 B; SHA256 `bbebba851ec1c19630c0274719621e83514756a636de96cb6f0e480b427e5431`), FLAZ/source+scope PASS, v0.31 owner acceptance HOLD; owner-tested v0.22.1 is protected.
+2. REBOUND//RIOT CP45 (1,635,573 B; SHA256 `832be3e50a5f751e09aa281bbd1d3c81af9f548e307ab873eb447425a513b0b5`), limited owner-laptop battle enjoyment/acceptance, no public original CP45 game link proved.
+3. COMBOUND CB-ORIGINAL v3.7.11 CP17 (1,277,449 B; SHA256 `3b5b791c15ea82e6e240b55d690b6e034bbc6f61ce0143c6a9fb0156326ce242`), modified renderer and 24-source creature parity smoke, owner/canonical promotion HOLD. Separate v3.8 GameCore comparison variant remains independent; do not rank version numbers across separate heads.
+4. COMBOUND CB-THREE-FORMS FPS: Library v6.5 creature-doctrines candidate (691,315 B), while **v5.7 is the owner-accepted two-thumb aim/move/FIRE floor** and the later owner experience is HOLD.
+5. COMBOUND CB-THREE-FORMS third-person Action: separate gameplay identity in the **same v6.5 source carrier** as FPS, not an automatically distinct duplicate source.
+6. COMBOUND CB-STORY Hollow Gate v1.5 (553,986 B) is preserved separately; no unassisted owner campaign accepted as final.
+
+**Validation:** Current A–Z original 70 + November 53 + concurrent 3 + Base44 5 + earlier 4 + CP07 4 = **139 public-safe visible entries**, private family gifts excluded. All original source-array literals remain unchanged across CP08. Embedded JavaScript parses cleanly, modified file readback exact. Owner source filenames/provenance are **descriptive only**; a local Library path is not a public HTTP player or editable GitHub body.
+
 ## Exact gates / remaining work
 - 139 public-safe records here represent names/families/proofs/descendants/prototypes/source HOLDS. No single unique finished-games count crowned.
 - Some game families have advanced significantly beyond their public demo; verify each strongest keeper and independent source before changing current/public labels.

@@ -1261,6 +1261,20 @@ public final class MainActivity extends Activity {
       new AlertDialog.Builder(this).setTitle("JM Fold Ultra")
         .setMessage("You're already inside your original JM app.")
         .setPositiveButton("Return",null).show();
+    }else if(!pkg.isEmpty()&&"source-apk-manifest".equals(entry.optString("verified"))){
+      if(!pkg.matches("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)+")){
+        Toast.makeText(this,"HOLD / Invalid app package",Toast.LENGTH_LONG).show();return;
+      }
+      new AlertDialog.Builder(this).setTitle("Open existing JM app?")
+        .setMessage(label+"\\n"+pkg+"\\n\\nOnly an already installed app can open. No installation or files copied.")
+        .setNegativeButton("Cancel",null)
+        .setPositiveButton("Open",(d,w)->{
+          try{
+            Intent launch=getPackageManager().getLaunchIntentForPackage(pkg);
+            if(launch==null){Toast.makeText(this,"HOLD / App not installed or launch unavailable",Toast.LENGTH_LONG).show();return;}
+            startActivity(launch);
+          }catch(Exception e){Toast.makeText(this,"HOLD / App launch unavailable",Toast.LENGTH_LONG).show();}
+        }).show();
     }else{
       new AlertDialog.Builder(this).setTitle("HOLD / "+label)
         .setMessage("The original app or project is preserved. A verified launch route is still required.")

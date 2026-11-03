@@ -36,3 +36,9 @@ Project: Existing JM Games House (`games-beyond/`)
 
 ## Keeper law
 Recover before rebuild. Preserve the original source. Improve the common contact layer. Inherit proven evidence, retest only the changed contact surface. No Ding, no claim.
+
+## Mainline reconciliation / no replacement
+- The Estate's active mainline separately landed `a5a604b` (CP30 House viewport/direct-play): 3-row layout with overflow and minimum-height guards, and a `showModal()`-before-`srcdoc` route that lets game canvases measure their real viewport at first rendering.
+- This branch inherited those improvements unchanged while integrating the original artwork and opening-copy accessibility. Do not revert or duplicate the authoritative mainline fix.
+- The mainline also carries unrelated protected coding/contact-governance changes; those were preserved intact during integration. No force-push or overwrite of other work.
+- Combined-branch retest after inheriting mainline CP30 and direct-play changes: **12/12 PASS** across the mobile and desktop Chrome profiles, including the 22-door sweep. These 12 are rechecks of the updated code and are not additive to the earlier 44 unique test executions.

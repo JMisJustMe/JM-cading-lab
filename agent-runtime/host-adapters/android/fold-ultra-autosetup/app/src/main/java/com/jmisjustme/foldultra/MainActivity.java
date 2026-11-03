@@ -348,6 +348,7 @@ public final class MainActivity extends Activity {
     btn(page,"CREATIVE INTAKE / Owner-selected media →",false,()->{tab=10;render();});
     btn(page,"LIVING CONTACT / Scoped receipts →",false,()->{tab=11;render();});
     btn(page,"JM COMPANIONS / Connected app doors →",false,()->{tab=12;render();});
+    btn(page,"JM ESTATE / My existing creations →",true,()->estateRoom());
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
     btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }
@@ -1190,6 +1191,80 @@ public final class MainActivity extends Activity {
     if(i==null){Toast.makeText(this,"HOLD · App unavailable: "+pkg,1).show();return;}start(i);
   }
   void url(String u){start(new Intent(Intent.ACTION_VIEW,Uri.parse(u)));}
+
+  // CP03 / additive owner-visible estate routes. Does not alter ProjectShelf or app data.
+  void estateRoom(){
+    try{
+      java.io.InputStream input=getAssets().open("jm_estate_doors.json");
+      java.io.ByteArrayOutputStream bytes=new java.io.ByteArrayOutputStream();
+      byte[] buffer=new byte[4096];int n;
+      while((n=input.read(buffer))!=-1)bytes.write(buffer,0,n);
+      input.close();
+      JSONObject registry=new JSONObject(bytes.toString("UTF-8"));
+      JSONObject policy=registry.getJSONObject("policy");
+      if(!"JM.FoldEstateDoors/0.1".equals(registry.optString("schema"))||
+          !policy.optBoolean("owner_confirmation")||policy.optBoolean("copy_sources")||
+          policy.optBoolean("auto_host"))throw new IllegalStateException("Registry policy mismatch");
+      new AlertDialog.Builder(this).setTitle("JM ESTATE / Existing destinations")
+        .setItems(new String[]{"My Websites","My Coding","My Apps","My Games","My Theories",
+          "My Music","My Creations","My Connections","My Tools"},(dialog,index)->estateSection(registry,index))
+        .setNegativeButton("Return to JM",null).show();
+    }catch(Exception ex){
+      new AlertDialog.Builder(this).setTitle("HOLD / Estate registry unavailable")
+        .setMessage("The original JM app remains usable. No destination was launched.")
+        .setPositiveButton("Return",null).show();
+    }
+  }
+  void estateSection(JSONObject registry,int index){
+    try{
+      org.json.JSONArray sections=registry.getJSONArray("sections");
+      JSONObject section=sections.getJSONObject(index);
+      org.json.JSONArray entries=section.getJSONArray("entries");
+      if(entries.length()==0){
+        new AlertDialog.Builder(this).setTitle(section.optString("label"))
+          .setMessage("HOLD / No verified destinations registered yet.")
+          .setPositiveButton("Back to Estate",(d,w)->estateRoom()).show();
+        return;
+      }
+      String[] names=new String[entries.length()];
+      for(int i=0;i<entries.length();i++){
+        JSONObject entry=entries.getJSONObject(i);
+        names[i]=entry.optString("label")+" · "+(entry.has("url")?"LINK":entry.has("package")?"APP":"HOLD");
+      }
+      new AlertDialog.Builder(this).setTitle(section.optString("label"))
+        .setItems(names,(d,i)->estateEntry(entries.optJSONObject(i)))
+        .setNegativeButton("Back",(d,w)->estateRoom()).show();
+    }catch(Exception e){Toast.makeText(this,"HOLD / Registry section unreadable",Toast.LENGTH_LONG).show();}
+  }
+  void estateEntry(JSONObject entry){
+    if(entry==null)return;
+    String label=entry.optString("label","JM destination");
+    String destination=entry.optString("url","");
+    String pkg=entry.optString("package","");
+    if(!destination.isEmpty()){
+      Uri parsed=Uri.parse(destination);
+      if(!"https".equals(parsed.getScheme())||parsed.getHost()==null||
+          parsed.getUserInfo()!=null){
+        Toast.makeText(this,"HOLD / Invalid HTTPS destination",Toast.LENGTH_LONG).show();return;
+      }
+      new AlertDialog.Builder(this).setTitle("Open existing JM destination?")
+        .setMessage(label+"\\n"+parsed.getHost()+"\\n\\nExternal application or browser handles authentication. No JM files are copied.")
+        .setNegativeButton("Cancel",null)
+        .setPositiveButton("Open",(d,w)->{
+          try{startActivity(new Intent(Intent.ACTION_VIEW,parsed));}
+          catch(Exception e){Toast.makeText(this,"HOLD / Destination unavailable",Toast.LENGTH_LONG).show();}
+        }).show();
+    }else if(!pkg.isEmpty()&&"com.jmisjustme.foldultra".equals(pkg)){
+      new AlertDialog.Builder(this).setTitle("JM Fold Ultra")
+        .setMessage("You're already inside your original JM app.")
+        .setPositiveButton("Return",null).show();
+    }else{
+      new AlertDialog.Builder(this).setTitle("HOLD / "+label)
+        .setMessage("The original app or project is preserved. A verified launch route is still required.")
+        .setPositiveButton("Return",null).show();
+    }
+  }
+
   void pin(){
     ShortcutManager m=getSystemService(ShortcutManager.class);
     if(m==null||!m.isRequestPinShortcutSupported()){

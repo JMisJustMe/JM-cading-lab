@@ -40,6 +40,14 @@ class RegistryContract(unittest.TestCase):
         with REGISTRY.open(encoding="utf-8") as f:
             self.assertEqual(validate(json.load(f)), 16)
 
+    def test_all_nine_sections_have_recovered_entries(self):
+        with REGISTRY.open(encoding="utf-8") as f:
+            data = json.load(f)
+        self.assertEqual(len(data["sections"]), 9)
+        for section in data["sections"]:
+            with self.subTest(section=section["id"]):
+                self.assertGreater(len(section["entries"]), 0)
+
     def test_bundled_android_asset_matches_registry(self):
         bundled = ROOT / "agent-runtime" / "host-adapters" / "android" / "fold-ultra-autosetup" / "app" / "src" / "main" / "assets" / "jm_estate_doors.json"
         self.assertEqual(REGISTRY.read_bytes(), bundled.read_bytes())

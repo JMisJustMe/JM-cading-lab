@@ -64,6 +64,16 @@ class RegistryContract(unittest.TestCase):
         self.assertIn('"repository-location".equals(entry.optString("verified"))', code)
         self.assertIn('setNegativeButton("Cancel",null)', code)
         self.assertIn('new Intent(Intent.ACTION_VIEW,parsed)', code)
+        self.assertIn('"source-apk-manifest".equals(entry.optString("verified"))', code)
+        self.assertIn('getLaunchIntentForPackage(pkg)', code)
+
+    def test_theoc_original_apk_package(self):
+        with REGISTRY.open(encoding="utf-8") as f:
+            data = json.load(f)
+        entries = data["sections"][2]["entries"]
+        theoc = next(entry for entry in entries if entry["id"] == "theoc")
+        self.assertEqual(theoc["package"], "com.jm.theocnative.deviceapp")
+        self.assertEqual(theoc["verified"], "source-apk-manifest")
 
     def test_reject_insecure_destination(self):
         with REGISTRY.open(encoding="utf-8") as f:

@@ -72,6 +72,22 @@
           "kind": "repository",
           "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/main/docs/JM_WEB_ESTATE_v1_2_DEPLOYMENT_RECEIPT.md",
           "verified": "repository-location"
+        },
+        {
+          "id": "jm-web-source",
+          "label": "JM.WEB source estate",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/docs",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-native-coding-bodies",
+          "label": "JM coding and runtime sources",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/agent-runtime",
+          "verified": "repository-location",
+          "access": "public"
         }
       ]
     },
@@ -204,6 +220,38 @@
           "kind": "website",
           "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
           "verified": "repository-location"
+        },
+        {
+          "id": "jm-gameforge-original",
+          "label": "GameForge original source authority",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-glyphforge-original",
+          "label": "GlyphForge original source authority",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/glyphforge-v68.2",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-liveforge-original",
+          "label": "LiveForge original app",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/liveforge-engine-v0.1",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-routeos-original",
+          "label": "RouteOS original estate shelf",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a",
+          "verified": "repository-location",
+          "access": "public"
         }
       ]
     }

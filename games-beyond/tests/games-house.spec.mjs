@@ -5,9 +5,11 @@ import { test, expect } from '@playwright/test';
 // Private JMStudios HTML and original hashes are NEVER copied into tests.
 test('@jmstudios host preserves original control wiring while suppressing orphan duplicate click listener', () => {
   const code=readFileSync(new URL('../app.js',import.meta.url),'utf8');
-  const match=code.match(/function repairOriginalNestedRoomHtml\(html\)\{[\s\S]*?\n\}/);
-  expect(match).not.toBeNull();
-  const repair=new Function(match[0]+'; return repairOriginalNestedRoomHtml;')();
+  const start=code.indexOf('function repairOriginalNestedRoomHtml(html){');
+  const end=code.indexOf('\nfunction wireOriginalEmbeddedRooms(',start);
+  expect(start).toBeGreaterThan(-1);
+  expect(end).toBeGreaterThan(start);
+  const repair=new Function(code.slice(start,end)+'; return repairOriginalNestedRoomHtml;')();
   const orphan=`document.addEventListener('click',e=>{
   const room=e.target.closest&&e.target.closest('[data-room]');
   if(room){e.preventDefault();openRoom(room.getAttribute('data-room'));return}

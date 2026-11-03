@@ -50,7 +50,7 @@
     }
   },
   "boundary": "Executable runtime-carrier manufacture only. It does not supersede JM AGI Lab v1.4.4, transfer its owner Windows Edge Ding, prove OS reboot or cross-device persistence, contact an external model, perform unrestricted actuation, or claim AGI/human-level intelligence.",
-  "verification_state": "CURRENT_LOCAL_PASS_PUBLIC_DEPLOYMENT_STALE",
+  "verification_state": "CURRENT_LOCAL_AND_PUBLIC_RUNTIME_PASS_OWNER_UPDATED_FOLD_RECHECK_OPEN",
   "verification": {
     "workflow_run_id": "37218952585",
     "proof_job_id": "111485167550",
@@ -100,11 +100,31 @@
     "node_distinct_process": "PASS",
     "blocked_storage": "PASS",
     "browser_errors": 0,
-    "public_deployment": "LIVE_ROUTE_200_BUT_OLD_APP_MJS",
-    "owner_phone": "NOT_CHECKED",
-    "public_app_mjs_sha256": "7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb",
-    "public_app_mjs_bytes": 7034,
+    "public_deployment": "PASS_EXACT_BYTES_BOTH_PUBLIC_ROUTES",
+    "owner_phone": "PRIOR_VERSION_SCREENSHOT_PASS_UPDATED_VERSION_NOT_RECHECKED",
+    "public_app_mjs_sha256": "c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6",
+    "public_app_mjs_bytes": 7842,
     "current_app_mjs_sha256": "c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6",
-    "hash_method": "Git committed blobs, not Windows CRLF-translated working tree"
+    "hash_method": "Git committed blobs, not Windows CRLF-translated working tree",
+    "public_routes": [
+      "https://jmisjustme.github.io/JM-cading-lab/apps/jm-agi-lab-runtime-console-v1/",
+      "https://jmisjustme-estate.pages.dev/apps/jm-agi-lab-runtime-console-v1/"
+    ],
+    "public_live_contact": "PASS_REVISION_1_STATE_WRITTEN_ZERO_ERRORS_BOTH",
+    "deployment_workflows": [
+      {
+        "run": 41725759785,
+        "state": "SUCCESS"
+      },
+      {
+        "run": 41725747499,
+        "state": "SUCCESS"
+      },
+      {
+        "run": 41725760011,
+        "state": "SUCCESS"
+      }
+    ],
+    "release_receipt": "CP14_PUBLIC_RELEASE_RECEIPT_2026-11-03.md"
   }
 }

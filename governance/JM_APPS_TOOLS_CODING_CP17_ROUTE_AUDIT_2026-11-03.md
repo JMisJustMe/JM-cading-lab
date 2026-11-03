@@ -33,3 +33,9 @@ Human Scale registry: 21 strengthening-programme working descendants; 5 recovere
 - **JM Estate Librarian**: GitHub authority receipt identifies v2.1 Archive Lantern candidate as Library-retrievable, while Apps House shows v2.0 QUADZE. This Library search did not independently locate v2.1 by name. Keep version and direct-source gates OPEN; do not substitute v2.0 or manufacture a public direct route.
 - **TraceBox / RouteBox**: v5.7R is a reconstructed source-sync candidate, not recovered original v5.7. Apps House label clarified CP20. Preserve v5.2 historical identity.
 - Integrated Estate deployment runs `41729107938` and `41729405688` completed SUCCESS. Subsequent CP20/CP21 publication must be checked independently.
+
+## CP22 — Exact Library bytes independently verified (2026-11-03)
+
+- Zionfolder OS v1.1.1 Library file `file_0000000076a07246b0f011322053c593`: freshly materialized raw HTML, 182,692 bytes, SHA-256 `ef0192a67f7c503dfbaba348d3b5e1f5e4b14732d279012a5f2ec63653b21db4`. **PASS exact historical audit hash.** No public owner-body exposure.
+- JM Estate Librarian v2.1 Archive Lantern Embodiment Candidate Library file `file_00000000c6a481f4b905eeb1e3924942`: exact named raw HTML located and materialized, 31,041 bytes, SHA-256 `0e0b5ec57bda6cbdf55f8727e4e5a1542232034908ec7381494dd2ab6ee05ffd`. **PASS file identity and raw byte capture**, but no historical expected hash recorded in recovery receipt, so no historical hash-parity claim. Existing v2.0 remains separate. No public exposure or APK/runtime claim.
+- CP21's earlier Librarian Library search HOLD is superseded for **file location only** by this CP22 exact-file recovery. Contact organ, runtime and owner acceptance remain OPEN.

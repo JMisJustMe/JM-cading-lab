@@ -1242,6 +1242,9 @@ public final class MainActivity extends Activity {
     String destination=entry.optString("url","");
     String pkg=entry.optString("package","");
     if(!destination.isEmpty()){
+      if(!"repository-location".equals(entry.optString("verified"))){
+        Toast.makeText(this,"HOLD / Destination provenance unverified",Toast.LENGTH_LONG).show();return;
+      }
       Uri parsed=Uri.parse(destination);
       if(!"https".equals(parsed.getScheme())||parsed.getHost()==null||
           parsed.getUserInfo()!=null){

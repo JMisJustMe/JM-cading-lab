@@ -1,72 +1,38 @@
-# JM Games & Beyond · Whole-Estate + Native Coding Contact CP03
-
+# Games & Beyond · Game and Native-Coding Reconciliation · CP06
 Date: 3 November 2026
-Authority: JM / original source owners; `games-beyond/all-games.html` is the established game catalogue, not the games' original source holder.
-Status: ADDITIVE CATALOGUE / VERIFIED PUBLIC-DOOR CONTACT / SOURCE-HOLD — NOT GAMEPLAY CROWN
+Source: JM / existing game-specific A–Z public catalogue and independently sovereign game source houses.
+State: REVIEW CANDIDATE. No merge or public deployment claimed.
 
-## Source continuity
-- September historical array `R`: 71 entries, preserved unchanged from the 3-Nov reconciliation.
-- Earlier `JM_AZ_20261103` extension: 54 entries, unchanged.
-- Existing additional external Base44 contacts `JM_EXTERNAL_GAME_CONTACT_CP02_20261103`: 5 entries, unchanged.
-- Concurrent main-branch CP02 (preserved exactly): 3 added rows — RIFT RELAY (HOLD), FTR First-Person v0.5.1 (proof), ROUTEBREAK: Crown Relay v1.0.0 (distinct carrier).
-- This pass `JM_FURTHER_SOURCE_CONTACT_CP03_20261103`: 4 source-aware rows.
-- Sum: **137 named catalogue records**, NOT 134 standalone released games. The 66-item game donor census and 23-executable rail are historical overlapping source sets, not additive.
-- Do not infer that every privately owned build has been exhaustively counted; /JM Estate/Games and /JM Estate/Games & Playable Systems contain additional folders to inspect and resolve.
+## Public-safe accounting
+- Historical September source: 70 public-safe visible records; one protected family-only row withheld from this public carrier.
+- November addition: 53 public-safe visible records; one separately protected family-only row withheld.
+- Concurrent main CP02: three protected-source-game lineages retained in public-safe mode.
+- Independently sourced Base44 game apps: five app identities, two of them distinct Mythic Clash builds.
+- Additional archive/source contacts: four entries including Reali-T Clash and Drag & Aim Loop Kernel.
+- **135 public-safe catalogue records**, not 135 individually finished games. **Two distinct private family-only creations** remain in separate owner-only custody and are deliberately absent from the public catalogue content and player buttons. Their source bodies are not to be published, merged into a public website, or replaced.
+- Earlier 137 figure was **all-source accounting before private exclusions**, not the publishable catalogue number. 71+54 historical originals remain independently recoverable in source/owner history; removal of two from the public representation is an explicit privacy correction, not loss of custody.
 
-## Verified existing public-access routes (3-Nov real page content read)
-1. `games-beyond/bonewake/` => Humanimals Bonewake v1.12; previously in 125.
-2. `games-beyond/kicshift/` => KICSHIFT v1.0; previously in 125.
-3. `games-beyond/puka/` => PUKA v0.17A; previously in 125.
-4. `games-beyond/bodies/aiming-run-v0-1a.html` => Aiming Run v0.1A **proof body**, newly linked to catalogue.
-5. `games-beyond/bodies/fight-clash-v0-4.html` => Fight Clash: Chameleon v0.4 **historical playable**, newly linked.
-6. `games-beyond/bodies/futarized-v1-2.html` => FUTARIZED v1.2 **historical playable**; NOT a claim that current v3.3 is publicly deployed.
-7. `games-beyond/bodies/drag-aim-loop-kernel-v0-9-9.html` => Original Drag & Aim v0.9.9 **mechanic loop, not sovereign game**, newly catalogued.
-8. `games-beyond/bodies/playform-v0-1.html` => PLAYFORM v0.1 **engine/framework**, page content read; not a game count.
-9. `games-beyond/bodies/source_vault/OPEN_FIRST_JMGAMECORE_v0_2I_A_CORRECTED_THREE_GAME_INTEGRATION.html` => Original JM GameCore v0.2I-A three-game integration showing T-Boys, Catching Run and Aiming Run; playable engine/integration, not a newly crowned separate game.
+## Exact independently checked public game or proof routes
+- Existing Estate carriers: KICSHIFT v1.0, Humanimals Bonewake Arena v1.12, PUKA v0.17A.
+- Existing Games & Beyond bodies: Aiming Run v0.1A (mechanic/game proof), Fight Clash Chameleon v0.4 (historical game), FUTARIZED v1.2 (historical game; current v3.3 is not thereby publicly proved), Drag & Aim v0.9.9 (mechanic proof).
+- Existing GitHub Pages carriers: FTR First-Person v0.5.1 (proof), ROUTEBREAK Crown Relay v1.0.0 (game), 128 Hand Football v0.8 (standalone source with canvas and two-hand PASS/SHOOT/TACKLE/DEFEND game controls).
+- The existing RouteOS public cartridge runtime v0.8.2 is a **game platform/engine**, not another game title. Existing PLAYFORM v0.1 and JM GameCore v0.2I-A three-game integration are correctly marked as original JM software/engine bodies.
+- The 128 Hand Football exact source file was inspected (HTML title, embedded JS, canvas, PASS/SHOOT/TACKLE/DEFEND buttons, start-game state). This is **source plus live page contact**, not a verified physical owner-device game-feel test.
+- Public showcase has eight historical game cards whose buttons now point to named filtered entries in Games & Beyond rather than an undifferentiated home.
 
-Proof boundary: **browser/page content observed**; no owner touch, comparative game-feel, original source hashes, native Android or runtime automation claim from this particular contact. A published historic carrier does not upgrade current development-source authority.
+## Original coding and provenance
+- Seven previously established game-to-source relationships retained: FOURFOLD owner-forge .jmbody, T-Boys native HTML + TRIAD Forge contact, Aiming Run via GameCore, REBOUND//RIOT CP45 HTML keeper, COMBOUND four distinct playable experiences, LG Mana Manor source lineage, and LightLites lineage.
+- Eighth source-specific note: 128 Hand Football original v0.8 canvas/movement/two-hand input game body.
+- Original coding families: JM.WEB (.jmw), JM.PY (.jmpy), Game-CODING, Cading/Theo, JM GameCore, JM GAME NATIVE CORE, GameForge, GlyphPlay, GlyphForge, PLAYFORM, RouteOS, JM Game Engine Army. Do not claim a particular compiler powered a particular game without its source/receipt evidence.
+- No original game code added to or replaced in this repository. All public links point to existing original web-player carriers, not GitHub code viewers.
 
-## CP03 cross-host player-door repair
-The CP02 main-branch source had three owner-relevant GitHub HTML carriers whose relative links resolved to missing paths on the Estate host. They were changed in the catalogue draft to the **exact confirmed live GitHub Pages HTML routes**, not a repo code-page:
-- THIRD COURT CP38 candidate: https://jmisjustme.github.io/JM-cading-lab/family-gifts/third-court-preview/cp38-courtney33-candidate.html
-- FTR First-Person v0.5.1: https://jmisjustme.github.io/JM-cading-lab/estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1/index.html
-- ROUTEBREAK Crown Relay v1.0.0: https://jmisjustme.github.io/JM-cading-lab/estate-publication/apps-tools-games/games/routebreak-crown-relay-v1.0.0/index.html
+## Exact gates / remaining work
+- 135 public-safe records here represent names/families/proofs/descendants/prototypes/source HOLDS. No single unique finished-games count crowned.
+- Some game families have advanced significantly beyond their public demo; verify each strongest keeper and independent source before changing current/public labels.
+- Confirm owner-device controls, player input, rules and restart/save separately from HTML page loading.
+- Complete cross-house recursive comparison with Games, Games & Playable Systems, Game Engines, GameForge, game original homebrew languages and alternate sites.
+- **Public exposure review:** historical repository contains some separately protected family-only source/publication carriers. A catalogue exclusion does *not* revoke an existing hosting URL, and ordinary GitHub file deletion does not erase historical commits. Owner-only originals exist independently in unshared Drive, but exact byte/version custody for every historic public Git blob remains to be verified before a responsible takedown. Do not declare privacy closeout.
+- GitHub candidate is deliberately unmerged until the user-directed preview/review and branch checks finish. No native mobile, APK or owner-acceptance Ding claimed.
 
-These web pages loaded recognizable game interfaces in the 3 Nov browser content checks. A reachable interface does not certify touch gameplay/owner acceptance. Original HTML/game source and alternate historical routes remain preserved.
-
-## Native coding and engine house connections
-- Source-backed game creation stack: GameForge, GlyphPlay, GlyphForge, PLAYFORM, JM GameCore, JM GAME NATIVE CORE, Kading Game Estate, JM Game Engine Army and JMStudios game workshop.
-- Homegrown coding bodies: Game-CODING, JM.WEB (`.jmw`), JM.PY (`.jmpy`), Cading / Theo, RouteOS / RouteCore, Quadze, compilation and tracing.
-- In-house source: `/JM Estate/Game Engines`, `/JM Estate/Game Mechanics`, `/JM Estate/GameForge`, `/JM Estate/MEGALITH`, `/JM Estate/Shared Mechanics`; prior `00_GAMES_AND_CODING_RELATION_MAP_v1_0.md` and `JM_GAME_ENGINE_ARMY_CURRENT_AUTHORITY_POINTER_v2_0.md` establish relationships without source takeover.
-- Exact independently evidenced integration: JM GameCore v0.2I-A T-Boys + Catching Run + Aiming Run. Other game-to-JM-code edges are **not** automatically inferred for every game title.
-- Native first: preserve authored original .jmw/.jmpy/native bodies, correct source hash and independent runtime semantics; browser/JS/HTML and device carriers are *ports*, never replacements. No source bodies or binaries moved into a public repo.
-
-## Other website homes
-- Existing published Wix `Jmisjustme Living Es`; its Games & Beyond section remains a presentation rather than 134 individually verified players.
-- Existing `Jm Game House` and `Jm Games Beyond` Wix **drafts**; preserve role; do not publish or delete.
-- Historical independent `jmisjustme.xo.je` is observed suspended; original website package remains preserved.
-- GitHub Pages/source rail, existing Estate hosted Games House and current game-showcase are separate routing/carriage faces. Do not collapse into one authority.
-
-## CP04 source-attested per-game coding lineage (additive display only)
-The same A–Z now shows a distinct `OWNER CODING / SOURCE` note on seven individually evidence-backed game rows:
-- FOURFOLD Arena — original Owner Forge `.jmbody` v0.21/0.21.1 carriers, not falsely attributed to JM.WEB.
-- T-Boys / Core Clash — JM-native HTML and TRIAD Forge CP07 tested GameForge combat/replay integration.
-- Aiming Run — explicit JM GameCore v0.2I-A integration with T-Boys and Catching Run.
-- REBOUND//RIOT — original CP45 standalone owner-played HTML and protected file fingerprint.
-- COMBOUND — distinct Original / FPS / Action / Hollow Gate gameplay families, not multiple versions of one simple skin.
-- Let's Go / LG — original Mana Manor authoring timeline source plus fuller historical sources.
-- LightLites / LL — original preserved module/build-pack source lineage, runtime/public status remains gated.
-
-This is a **source relationship field**, not a statement that all games are powered by one particular JM language or that private code has been republished. The 71+54 historical rows and the 3+5+4 additions are unmodified by CP04.
-
-## Open work
-- Compare the entire 137-row reconciled catalogue with nested games homes and historical creation ledgers; first-order catalogue row count does NOT close missing-game audit.
-- For every game, locate owner-original keeper; identify its actual coding/engine build dependencies from files/receipts; record usable local/private owner path even if public link is HOLD.
-- Match strongest owner-accepted game candidate independently of a historic public carrier; attach direct play URLs only after real page contact.
-- Historical `THIRD COURT` GitHub source and earlier receipts exist but external public route returns 404 in this pass. **No fake birthday-game link**.
-- Public release and owner-phone play/feel tests remain separate from catalogue bookkeeping.
-- Never retire, overwrite or mass-copy originals to build a menu. Keep one hot authority, one independent recovery route, many doors.
-
-## Checkpoint
 BIAT → DISCOVER → IDENTIFY → CONNECT → IMPROVE → VERIFY → FLAZ
-Gate: 71 + 54 + 3 + 5 + 4 = 137; four new source contacts; historic playable links identified; original coding/engines are visible in the same game catalogue. Source/script readback passed; mobile owner proof and release remain open.
+**Keeper:** COUNT THE GAME ONCE. KEEP EVERY PLAYABLE FORM IT EARNED. CONNECT THE WHOLE LINE. PRIVATE IS NOT PUBLIC. NO DING, NO CLAIM.

@@ -26,3 +26,10 @@ Human Scale registry: 21 strengthening-programme working descendants; 5 recovere
 6. Recheck public deployment of CP16/CP17 source changes, then browser/touch only for changed behaviours.
 
 **DING:** AGI console public exact-byte, live browser contact and Fold owner acceptance. **DONG:** other historical receipts preserved. **GONG:** remaining per-body current proof open. No whole-estate completion claim.
+
+## CP21 — Library exact-body recovery (2026-11-03)
+
+- **JM Zionfolder OS v1.1.1**: original Library HTML `jm-zionfolder-os-v1_1_1.html` independently located via Library search, 182,692 bytes, matching the historical physical-audit receipt size. Library file ID `file_0000000076a07246b0f011322053c593`. **Hash not freshly computed in this pass**; historical audit SHA-256 `ef0192a67f7c503dfbaba348d3b5e1f5e4b14732d279012a5f2ec63653b21db4` is a comparison target, not fresh proof. Do not publish this private raw owner body. Frozen ZIP remains unverified.
+- **JM Estate Librarian**: GitHub authority receipt identifies v2.1 Archive Lantern candidate as Library-retrievable, while Apps House shows v2.0 QUADZE. This Library search did not independently locate v2.1 by name. Keep version and direct-source gates OPEN; do not substitute v2.0 or manufacture a public direct route.
+- **TraceBox / RouteBox**: v5.7R is a reconstructed source-sync candidate, not recovered original v5.7. Apps House label clarified CP20. Preserve v5.2 historical identity.
+- Integrated Estate deployment runs `41729107938` and `41729405688` completed SUCCESS. Subsequent CP20/CP21 publication must be checked independently.

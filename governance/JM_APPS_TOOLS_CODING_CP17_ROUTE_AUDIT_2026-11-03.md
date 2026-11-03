@@ -107,3 +107,16 @@ Zionfolder synthetic damaged-state replay (null file list, orphan app, mismatche
 - **GroundZeroJM offline local-file Chromium:** 9/9 PASS. Both owner candidates opened directly using `file://` on Windows; storage, reload and browser restart persisted test project/items and decisions with zero pageerrors. Storage on Android `content://` or Fold8 is **not** inferred from this Windows result.
 - **Custody and privacy:** owner-only tested handoff ZIP `JM_CP35_APPS_TOOLS_OWNER_RECOVERY_2026-11-03.zip`, SHA-256 `f489b77ce52701d769890596c059fe82aaa0286e69f154e96c8cefee72764da8`, created as current-conversation deliverable (not committed to public repo). Includes only the two bounded descendants and manifests/tests; no owner original copied into the ZIP. No real user files, authoritative app bodies or published live homes changed; no duplication retirement/storage saving claimed.
 - **GONG remaining gates:** owner physical Fold8 touch/browser-origin acceptance is NOT TESTED; public/private app-home promotion is NOT authorised. Browser/Windows-offline functional **PASS** is distinct from whole-Estate completion, native APK proof or owner acceptance.
+
+## CP37 — exact owner-candidate real-origin acceptance (3 Nov 2026)
+
+GroundZeroJM, authorised local Windows Chrome, synthetic test fixtures only. Two exact private CP37 owner candidates reconstituted independently and SHA-256 matched against the existing private owner handoff ZIP manifest:
+
+- Zionfolder OS v1.1.1 CP37: 185,524 bytes; SHA-256 6baa37b19ca38750b4b393de6d01a849d85d0ab3e02abc0087cc54dba1a03719.
+- JM Estate Librarian v2.1 CP37: 33,454 bytes; SHA-256 c6a1e2c8d8d3846799fc99b4a4e5d92824ef9ff0c69e83916204ad0b63a4e08e.
+
+CP37 exact-candidate live-origin Chrome Playwright replay **47/47 PASS, zero failures, exit 0** at ephemeral localhost HTTP with temporary persistent browser profiles. Both applications preserved working state and saved decisions across complete browser process close/reopen. Zionfolder native vault export/clear/import and slot/receipt recovery; Librarian three-file duplicate evidence, Keep decision, checkpoint recovery and mobile/desktop layouts; invalid imports rejected without replacing active test data; no page errors. Separate changed-import/HTML-encoding synthetic Chromium delta suite **68/68 PASS**. Not a Fold physical proof.
+
+Owner ZIP `JM_APPS_TOOLS_CP37_OWNER_HANDOFF_2026-11-03.zip` independently verified: 58,267 bytes, SHA-256 c880bff4520da68af12bc684754810bd0a590b3349ff6269c20027ee86cc76cb. ZIP CRC and SHA-256 of each contained member matched `JM_CP37_MANIFEST.json`. Contents limited to two isolated candidates, delta receipt, manifest and instructions. No original frozen files included; no private sources published in this repository.
+
+**Boundary:** CP37 origin-specific Chrome persistence COMPLETE, original frozen Library hashes unchanged. Physical Fold8 contact, owner visual/touch acceptance and installation/promotion to existing canonical app homes remain OPEN. GroundZeroJM reported no ADB-connected Android device. Do not declare a Fold DING, public deployment, new APK or universal Estate FLAZ.

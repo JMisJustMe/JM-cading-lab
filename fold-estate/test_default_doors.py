@@ -31,6 +31,9 @@ def validate(data):
                 assert parsed.scheme == "https" and parsed.hostname
                 assert not parsed.username and not parsed.password
                 assert entry.get("verified") == "repository-location"
+            if "package" in entry:
+                assert entry.get("verified") in ("source-package", "source-apk-manifest")
+                assert entry["package"].count(".") >= 1
             if entry.get("status", "").startswith("HOLD"):
                 assert "url" not in entry and "package" not in entry
     return len(seen)
@@ -74,6 +77,14 @@ class RegistryContract(unittest.TestCase):
         theoc = next(entry for entry in entries if entry["id"] == "theoc")
         self.assertEqual(theoc["package"], "com.jm.theocnative.deviceapp")
         self.assertEqual(theoc["verified"], "source-apk-manifest")
+
+    def test_reject_unverified_android_package(self):
+        with REGISTRY.open(encoding="utf-8") as f:
+            data = json.load(f)
+        theoc = next(e for e in data["sections"][2]["entries"] if e["id"] == "theoc")
+        theoc["verified"] = "screenshot-only"
+        with self.assertRaises(AssertionError):
+            validate(data)
 
     def test_reject_insecure_destination(self):
         with REGISTRY.open(encoding="utf-8") as f:

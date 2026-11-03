@@ -36,6 +36,8 @@ const TOOL_CATEGORIES=new Set(["Coding & Proof","Builders, Recovery & Delivery",
 
 const q=document.querySelector("#q"),category=document.querySelector("#category"),grid=document.querySelector("#grid"),chips=document.querySelector("#chips"),count=document.querySelector("#count"),heading=document.querySelector("#heading");
 [...new Set(APPS.map(a=>a[2]))].sort().forEach(c=>category.add(new Option(c,c)));
+// Public showcase deep links search the existing register without creating duplicate cards.
+const initialSearch=new URLSearchParams(location.search).get("q");if(initialSearch)q.value=initialSearch.slice(0,120);
 chips.innerHTML=FILTERS.map(([v,l])=>`<button class="chip ${v===status?'on':''}" data-v="${v}">${l}</button>`).join("");
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
 function statusOK(a){return status==="all"||(status==="tools"&&TOOL_CATEGORIES.has(a[2]))||(status==="full"&&["full_current","full_alt"].includes(a[3]))||a[3]===status}

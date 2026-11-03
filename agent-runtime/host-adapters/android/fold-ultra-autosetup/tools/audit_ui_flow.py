@@ -132,6 +132,23 @@ def main():
     assert p.get("ready")=="true",("Entry did not persist ready",p.get("ready"))
     RECEIPTS.append({"check":"owner_entry_persisted","result":"PASS"})
 
+    # CP03: exercise the actual estate door on the disposable emulator.
+    # Keep external destinations unopened; prove the owner can navigate and HOLD stays visible.
+    tap("JM ESTATE / My existing creations", "estate_entry_touch")
+    has("JM ESTATE / Existing destinations", "estate_categories_visible")
+    tap("My Websites", "estate_websites_touch")
+    has("JM Ecostate", "estate_existing_website_visible")
+    adb("shell", "input", "keyevent", "4")
+    time.sleep(.4)
+    # Return to root and verify a previously unknown category remains on HOLD.
+    tap("JM ESTATE / My existing creations", "estate_reopen_touch")
+    tap("My Theories", "estate_theories_touch")
+    has("HOLD / No verified destinations registered yet.", "estate_unverified_hold")
+    adb("shell", "input", "keyevent", "4")
+    time.sleep(.4)
+    RECEIPTS.append({"check":"cp03_estate_native_touch", "result":"PASS",
+                     "scope":"generic emulator, no external link opened"})
+
     # One-touch resume uses the real UI and previously USB-committed session.
     tap("RESUME PROJECT","resume_project_touch")
     has("JM / SESSION CONTACT","actual_session_room")

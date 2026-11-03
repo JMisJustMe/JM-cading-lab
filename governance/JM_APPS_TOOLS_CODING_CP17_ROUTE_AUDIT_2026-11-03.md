@@ -39,3 +39,11 @@ Human Scale registry: 21 strengthening-programme working descendants; 5 recovere
 - Zionfolder OS v1.1.1 Library file `file_0000000076a07246b0f011322053c593`: freshly materialized raw HTML, 182,692 bytes, SHA-256 `ef0192a67f7c503dfbaba348d3b5e1f5e4b14732d279012a5f2ec63653b21db4`. **PASS exact historical audit hash.** No public owner-body exposure.
 - JM Estate Librarian v2.1 Archive Lantern Embodiment Candidate Library file `file_00000000c6a481f4b905eeb1e3924942`: exact named raw HTML located and materialized, 31,041 bytes, SHA-256 `0e0b5ec57bda6cbdf55f8727e4e5a1542232034908ec7381494dd2ab6ee05ffd`. **PASS file identity and raw byte capture**, but no historical expected hash recorded in recovery receipt, so no historical hash-parity claim. Existing v2.0 remains separate. No public exposure or APK/runtime claim.
 - CP21's earlier Librarian Library search HOLD is superseded for **file location only** by this CP22 exact-file recovery. Contact organ, runtime and owner acceptance remain OPEN.
+
+## CP23 — Original-body syntax and browser smoke test (2026-11-03)
+
+Raw Library originals independently SHA-256 verified against recorded CP22 values. Parsed scripts: Librarian v2.1 has 2 inline JS blocks; Zionfolder v1.1.1 has 1. All 3 pass `node --check`; no external script src or HTTP hyperlink found in either raw HTML. Headless Chromium DOM-content smoke at 390×844 touch/mobile and 1152×768 desktop via `page.set_content` (direct file:// navigation blocked by sandbox administrator):
+
+- Librarian v2.1: page title loaded; no pageerror at either viewport; document scrollWidth 390/1152 respectively. No interaction/persistence acceptance claimed.
+- Zionfolder OS v1.1.1: page title loaded and no horizontal overflow at either viewport; **runtime pageerror `repairGaps is not defined` at both viewports**. This is a newly observed runtime defect despite earlier syntax PASS. Preserve original frozen HTML; investigate clean descendant fix, do not edit original in place or claim current runtime PASS.
+- Browser test used injected HTML and is not equivalent to native `file://` load, service-worker behaviour, owner-device contact, or full workflow acceptance.

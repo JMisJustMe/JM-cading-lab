@@ -1,0 +1,46 @@
+{
+  "schema": "JM.EstateWebsiteRouteReconciliation/CP02",
+  "date": "2026-11-03",
+  "scope": "Existing GitHub source; no Cloudflare connector or replacement website",
+  "source_repo": "JMisJustMe/JM-cading-lab",
+  "source_tree_paths": 3026,
+  "counts": {
+    "game_catalogue_before": 125,
+    "game_catalogue_after": 128,
+    "game_carrier_links_before": 3,
+    "game_carrier_links_after": 9,
+    "apps_rooms_unchanged": 45
+  },
+  "connections": [
+    "THIRD COURT CP38 candidate",
+    "FUTARIZED v1.2 standalone public playable carrier; v3.1 landing's two destination HTML files are absent in GitHub main tree",
+    "Fight Clash Chameleon v0.4 historical carrier",
+    "Aiming Run v0.1A body",
+    "FTR First-Person v0.5.1 carrier",
+    "ROUTEBREAK Crown Relay v1.0.0 carrier",
+    "Rift Relay HOLD: no fabricated player link",
+    "Apps House Tools-only filter",
+    "Access Mesh games, tools and comic-reader links"
+  ],
+  "boundaries": [
+    "Candidate is not final release",
+    "Public FUTARIZED v1.2 and Fight Clash v0.4 carriers do not supersede newer current heads",
+    "No game loop/family counted as separately finished game",
+    "No private-source publication",
+    "Live hosting propagation and physical touch QA not proven"
+  ],
+  "preserved": [
+    "71 original catalogue rows",
+    "54 earlier November additions",
+    "45 Apps House rooms",
+    "Visual Story reader",
+    "Books House",
+    "Original source/FLaZ custody"
+  ],
+  "critical_door_audit": {
+    "path": "estate-publication/apps-tools-games/games/futarized-v3.1/index.html",
+    "finding": "Two linked HTML parts are not present in the inspected GitHub source tree; do not route directly to this landing as a working GitHub Pages player",
+    "repair": "Existing standalone games-beyond/bodies/futarized-v1-2.html verified present and self-contained",
+    "next": "Reconstruct/mount v3.1 parts from original source-carriage or recover newer v3.3 only after separate test"
+  }
+}

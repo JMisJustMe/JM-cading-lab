@@ -175,7 +175,16 @@
     {
       "id": "tools",
       "label": "My Tools",
-      "entries": []
+      "entries": [
+        {
+          "id": "jm-android-forge",
+          "label": "JM Android Forge",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-android-forge/",
+          "access": "public",
+          "verified": "repository-location"
+        }
+      ]
     }
   ]
 }

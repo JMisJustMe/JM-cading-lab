@@ -47,3 +47,7 @@ Raw Library originals independently SHA-256 verified against recorded CP22 value
 - Librarian v2.1: page title loaded; no pageerror at either viewport; document scrollWidth 390/1152 respectively. No interaction/persistence acceptance claimed.
 - Zionfolder OS v1.1.1: page title loaded and no horizontal overflow at either viewport; **runtime pageerror `repairGaps is not defined` at both viewports**. This is a newly observed runtime defect despite earlier syntax PASS. Preserve original frozen HTML; investigate clean descendant fix, do not edit original in place or claim current runtime PASS.
 - Browser test used injected HTML and is not equivalent to native `file://` load, service-worker behaviour, owner-device contact, or full workflow acceptance.
+
+## CP24 — Zionfolder runtime repair candidate (2026-11-03)
+
+Original v1.1.1 frozen HTML remains SHA-256 `ef0192a67f7c503dfbaba348d3b5e1f5e4b14732d279012a5f2ec63653b21db4`. Static source tracing identified exactly two invocations of undefined `repairGaps()` in command and script dispatch; existing `runBodyRepair()` is defined. An **isolated local descendant candidate**, not published, replaces only those two call sites with `runBodyRepair()`. Candidate SHA-256 `570df2bef09084e9a5f80d64e401906c1c1367ad533de1437c0b8edbe4cd190d`; embedded JavaScript `node --check` PASS. Browser runtime/repair behaviour acceptance OPEN (local Playwright browser binary unavailable). No canonical owner-body mutation, deployment, or completion claim.

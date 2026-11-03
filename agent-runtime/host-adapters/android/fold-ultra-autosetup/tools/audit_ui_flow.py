@@ -45,6 +45,15 @@ def match(nodes,fragment:str):
 
 def has(fragment:str,label:str)->None:
     nodes=dump("check_"+label)
+    # Stage headers may be above the fold after a real button tap. Inspect
+    # the same screen after one upward-content reveal before calling it missing.
+    if not match(nodes,fragment) and label in (
+        "priority","paired_fields","galaxy_discovery","owner_entry",
+        "priority_pixel_anr_old_stage_guard","paired_fields_pixel_anr_old_stage_guard",
+        "galaxy_discovery_pixel_anr_old_stage_guard","owner_entry_pixel_anr_old_stage_guard"
+    ):
+        swipe("down")
+        nodes=dump("check_"+label+"_after_scroll_to_header")
     if not match(nodes,fragment):
         capture("FAIL_"+label)
         visible=[n.get("text","") for n in nodes if n.get("text","")]

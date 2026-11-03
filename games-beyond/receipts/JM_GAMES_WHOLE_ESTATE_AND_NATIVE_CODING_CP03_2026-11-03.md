@@ -47,6 +47,18 @@ These web pages loaded recognizable game interfaces in the 3 Nov browser content
 - Historical independent `jmisjustme.xo.je` is observed suspended; original website package remains preserved.
 - GitHub Pages/source rail, existing Estate hosted Games House and current game-showcase are separate routing/carriage faces. Do not collapse into one authority.
 
+## CP04 source-attested per-game coding lineage (additive display only)
+The same A–Z now shows a distinct `OWNER CODING / SOURCE` note on seven individually evidence-backed game rows:
+- FOURFOLD Arena — original Owner Forge `.jmbody` v0.21/0.21.1 carriers, not falsely attributed to JM.WEB.
+- T-Boys / Core Clash — JM-native HTML and TRIAD Forge CP07 tested GameForge combat/replay integration.
+- Aiming Run — explicit JM GameCore v0.2I-A integration with T-Boys and Catching Run.
+- REBOUND//RIOT — original CP45 standalone owner-played HTML and protected file fingerprint.
+- COMBOUND — distinct Original / FPS / Action / Hollow Gate gameplay families, not multiple versions of one simple skin.
+- Let's Go / LG — original Mana Manor authoring timeline source plus fuller historical sources.
+- LightLites / LL — original preserved module/build-pack source lineage, runtime/public status remains gated.
+
+This is a **source relationship field**, not a statement that all games are powered by one particular JM language or that private code has been republished. The 71+54 historical rows and the 3+5+4 additions are unmodified by CP04.
+
 ## Open work
 - Compare the entire 137-row reconciled catalogue with nested games homes and historical creation ledgers; first-order catalogue row count does NOT close missing-game audit.
 - For every game, locate owner-original keeper; identify its actual coding/engine build dependencies from files/receipts; record usable local/private owner path even if public link is HOLD.

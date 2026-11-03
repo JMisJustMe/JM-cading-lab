@@ -1,0 +1,259 @@
+{
+  "schema": "JM.FoldEstateDoors/0.1",
+  "policy": {
+    "owner_confirmation": true,
+    "copy_sources": false,
+    "auto_host": false,
+    "private_auth": "external-app",
+    "unverified_route": "HOLD"
+  },
+  "sections": [
+    {
+      "id": "websites",
+      "label": "My Websites",
+      "entries": [
+        {
+          "id": "jm-ecostate",
+          "label": "JM Ecostate",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/",
+          "access": "public",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "coding",
+      "label": "My Coding",
+      "entries": [
+        {
+          "id": "cading-lab",
+          "label": "JM-cading-lab",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab",
+          "access": "public",
+          "verified": "repository-location"
+        },
+        {
+          "id": "cloud-contact",
+          "label": "JM Cloud Contact",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud",
+          "access": "public",
+          "verified": "repository-location"
+        },
+        {
+          "id": "ai-studio-surface",
+          "label": "JM AI Studio Surface",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-surface",
+          "access": "private",
+          "verified": "repository-location"
+        },
+        {
+          "id": "continuation",
+          "label": "JM Continuation",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-continuation",
+          "access": "private",
+          "verified": "repository-location"
+        },
+        {
+          "id": "ai-react",
+          "label": "JM AI Studio React Descendant",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-react-descendant",
+          "access": "private",
+          "verified": "repository-location"
+        },
+        {
+          "id": "jm-web-original-evidence",
+          "label": "JM.WEB original source & deployment receipts",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/main/docs/JM_WEB_ESTATE_v1_2_DEPLOYMENT_RECEIPT.md",
+          "verified": "repository-location"
+        },
+        {
+          "id": "jm-web-source",
+          "label": "JM.WEB source estate",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/docs",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-native-coding-bodies",
+          "label": "JM coding and runtime sources",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/agent-runtime",
+          "verified": "repository-location",
+          "access": "public"
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "label": "My Apps",
+      "entries": [
+        {
+          "id": "fold-ultra",
+          "label": "JM Fold Ultra",
+          "kind": "android",
+          "package": "com.jmisjustme.foldultra",
+          "verified": "source-package"
+        },
+        {
+          "id": "ailatheo",
+          "label": "AILatheo",
+          "kind": "website",
+          "verified": "repository-location",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/ailatheo/"
+        },
+        {
+          "id": "rim",
+          "label": "JM Rim Ro",
+          "kind": "android",
+          "verified": "screenshot-only",
+          "status": "HOLD_PACKAGE"
+        },
+        {
+          "id": "theoc",
+          "label": "JM TheoC",
+          "kind": "android",
+          "verified": "source-apk-manifest",
+          "package": "com.jm.theocnative.deviceapp"
+        }
+      ]
+    },
+    {
+      "id": "games",
+      "label": "My Games",
+      "entries": [
+        {
+          "id": "jm-games-beyond",
+          "label": "JM Games & Beyond",
+          "kind": "catalogue",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "access": "public",
+          "verified": "repository-location"
+        },
+        {
+          "id": "rim-route-original",
+          "label": "JM Rim Route (verified original)",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/family-gifts/rim-route/",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "theories",
+      "label": "My Theories",
+      "entries": [
+        {
+          "id": "jm-theory-estate",
+          "label": "JM Theory Estate",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+          "access": "public",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "label": "My Music",
+      "entries": [
+        {
+          "id": "jm-lyrics-music-house",
+          "label": "JM Lyrics & Music House",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/lyrics/",
+          "access": "public",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "creations",
+      "label": "My Creations",
+      "entries": [
+        {
+          "id": "jm-nongame-apps-house",
+          "label": "JM Non-Game Apps House",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
+          "access": "public",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "connections",
+      "label": "My Connections",
+      "entries": [
+        {
+          "id": "jm-estate-live-registry",
+          "label": "JM Estate Live Registry",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-estate-live-registry/",
+          "access": "public",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "label": "My Tools",
+      "entries": [
+        {
+          "id": "jm-android-forge",
+          "label": "JM Android Forge",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-android-forge/",
+          "access": "public",
+          "verified": "repository-location"
+        },
+        {
+          "id": "jm-html-apps-house",
+          "label": "JM HTML Apps House",
+          "kind": "website",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
+          "verified": "repository-location"
+        },
+        {
+          "id": "jm-gameforge-original",
+          "label": "GameForge original source authority",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-glyphforge-original",
+          "label": "GlyphForge original source authority",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/glyphforge-v68.2",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-liveforge-original",
+          "label": "LiveForge original app",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/liveforge-engine-v0.1",
+          "verified": "repository-location",
+          "access": "public"
+        },
+        {
+          "id": "jm-routeos-original",
+          "label": "RouteOS original estate shelf",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a",
+          "verified": "repository-location",
+          "access": "public"
+        }
+      ]
+    }
+  ]
+}

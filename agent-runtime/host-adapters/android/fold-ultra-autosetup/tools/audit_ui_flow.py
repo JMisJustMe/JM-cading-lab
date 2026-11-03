@@ -45,9 +45,22 @@ def match(nodes,fragment:str):
 
 def has(fragment:str,label:str)->None:
     nodes=dump("check_"+label)
+    # Stage headers may be above the fold after a real button tap. Inspect
+    # the same screen after one upward-content reveal before calling it missing.
+    if not match(nodes,fragment) and label in (
+        "priority","paired_fields","galaxy_discovery","owner_entry",
+        "priority_pixel_anr_old_stage_guard","paired_fields_pixel_anr_old_stage_guard",
+        "galaxy_discovery_pixel_anr_old_stage_guard","owner_entry_pixel_anr_old_stage_guard"
+    ):
+        swipe("down")
+        nodes=dump("check_"+label+"_after_scroll_to_header")
     if not match(nodes,fragment):
         capture("FAIL_"+label)
-        raise AssertionError(f"Missing live UI text {fragment!r} during {label}")
+        visible=[n.get("text","") for n in nodes if n.get("text","")]
+        (OUT/f"FAIL_{label}_visible.json").write_text(json.dumps({
+            "expected":fragment,"visible_text":visible[:120]
+        },indent=2),encoding="utf-8")
+        raise AssertionError(f"Missing live UI text {fragment!r} during {label}; visible={visible[:18]!r}")
     RECEIPTS.append({"check":label,"result":"PASS","evidence":fragment})
 
 
@@ -131,6 +144,23 @@ def main():
     p=pref_values()
     assert p.get("ready")=="true",("Entry did not persist ready",p.get("ready"))
     RECEIPTS.append({"check":"owner_entry_persisted","result":"PASS"})
+
+    # CP03: exercise the actual estate door on the disposable emulator.
+    # Keep external destinations unopened; prove the owner can navigate and HOLD stays visible.
+    tap("JM ESTATE / My existing creations", "estate_entry_touch")
+    has("JM ESTATE / Existing destinations", "estate_categories_visible")
+    tap("My Websites", "estate_websites_touch")
+    has("JM Ecostate", "estate_existing_website_visible")
+    adb("shell", "input", "keyevent", "4")
+    time.sleep(.4)
+    # Theories is now populated: verify the original destination appears, without opening it.
+    tap("JM ESTATE / My existing creations", "estate_reopen_touch")
+    tap("My Theories", "estate_theories_touch")
+    has("JM Theory Estate", "estate_verified_theory_visible")
+    adb("shell", "input", "keyevent", "4")
+    time.sleep(.4)
+    RECEIPTS.append({"check":"cp03_estate_native_touch", "result":"PASS",
+                     "scope":"generic emulator, no external link opened"})
 
     # One-touch resume uses the real UI and previously USB-committed session.
     tap("RESUME PROJECT","resume_project_touch")

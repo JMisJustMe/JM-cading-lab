@@ -26,6 +26,14 @@ Status: ADDITIVE CATALOGUE / VERIFIED PUBLIC-DOOR CONTACT / SOURCE-HOLD — NOT 
 
 Proof boundary: **browser/page content observed**; no owner touch, comparative game-feel, original source hashes, native Android or runtime automation claim from this particular contact. A published historic carrier does not upgrade current development-source authority.
 
+## CP03 cross-host player-door repair
+The CP02 main-branch source had three owner-relevant GitHub HTML carriers whose relative links resolved to missing paths on the Estate host. They were changed in the catalogue draft to the **exact confirmed live GitHub Pages HTML routes**, not a repo code-page:
+- THIRD COURT CP38 candidate: https://jmisjustme.github.io/JM-cading-lab/family-gifts/third-court-preview/cp38-courtney33-candidate.html
+- FTR First-Person v0.5.1: https://jmisjustme.github.io/JM-cading-lab/estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1/index.html
+- ROUTEBREAK Crown Relay v1.0.0: https://jmisjustme.github.io/JM-cading-lab/estate-publication/apps-tools-games/games/routebreak-crown-relay-v1.0.0/index.html
+
+These web pages loaded recognizable game interfaces in the 3 Nov browser content checks. A reachable interface does not certify touch gameplay/owner acceptance. Original HTML/game source and alternate historical routes remain preserved.
+
 ## Native coding and engine house connections
 - Source-backed game creation stack: GameForge, GlyphPlay, GlyphForge, PLAYFORM, JM GameCore, JM GAME NATIVE CORE, Kading Game Estate, JM Game Engine Army and JMStudios game workshop.
 - Homegrown coding bodies: Game-CODING, JM.WEB (`.jmw`), JM.PY (`.jmpy`), Cading / Theo, RouteOS / RouteCore, Quadze, compilation and tracing.

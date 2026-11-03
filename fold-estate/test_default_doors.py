@@ -38,7 +38,7 @@ def validate(data):
 class RegistryContract(unittest.TestCase):
     def test_seed(self):
         with REGISTRY.open(encoding="utf-8") as f:
-            self.assertEqual(validate(json.load(f)), 11)
+            self.assertEqual(validate(json.load(f)), 12)
 
     def test_bundled_android_asset_matches_registry(self):
         bundled = ROOT / "agent-runtime" / "host-adapters" / "android" / "fold-ultra-autosetup" / "app" / "src" / "main" / "assets" / "jm_estate_doors.json"

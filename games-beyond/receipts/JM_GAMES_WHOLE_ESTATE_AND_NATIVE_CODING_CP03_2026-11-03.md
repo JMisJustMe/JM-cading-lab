@@ -8,8 +8,9 @@ Status: ADDITIVE CATALOGUE / VERIFIED PUBLIC-DOOR CONTACT / SOURCE-HOLD — NOT 
 - September historical array `R`: 71 entries, preserved unchanged from the 3-Nov reconciliation.
 - Earlier `JM_AZ_20261103` extension: 54 entries, unchanged.
 - Existing additional external Base44 contacts `JM_EXTERNAL_GAME_CONTACT_CP02_20261103`: 5 entries, unchanged.
+- Concurrent main-branch CP02 (preserved exactly): 3 added rows — RIFT RELAY (HOLD), FTR First-Person v0.5.1 (proof), ROUTEBREAK: Crown Relay v1.0.0 (distinct carrier).
 - This pass `JM_FURTHER_SOURCE_CONTACT_CP03_20261103`: 4 source-aware rows.
-- Sum: **134 named catalogue records**, NOT 134 standalone released games. The 66-item game donor census and 23-executable rail are historical overlapping source sets, not additive.
+- Sum: **137 named catalogue records**, NOT 134 standalone released games. The 66-item game donor census and 23-executable rail are historical overlapping source sets, not additive.
 - Do not infer that every privately owned build has been exhaustively counted; /JM Estate/Games and /JM Estate/Games & Playable Systems contain additional folders to inspect and resolve.
 
 ## Verified existing public-access routes (3-Nov real page content read)
@@ -39,7 +40,7 @@ Proof boundary: **browser/page content observed**; no owner touch, comparative g
 - GitHub Pages/source rail, existing Estate hosted Games House and current game-showcase are separate routing/carriage faces. Do not collapse into one authority.
 
 ## Open work
-- Compare the entire 134-row draft with nested games homes and historical creation ledgers; first-order catalogue row count does NOT close missing-game audit.
+- Compare the entire 137-row reconciled catalogue with nested games homes and historical creation ledgers; first-order catalogue row count does NOT close missing-game audit.
 - For every game, locate owner-original keeper; identify its actual coding/engine build dependencies from files/receipts; record usable local/private owner path even if public link is HOLD.
 - Match strongest owner-accepted game candidate independently of a historic public carrier; attach direct play URLs only after real page contact.
 - Historical `THIRD COURT` GitHub source and earlier receipts exist but external public route returns 404 in this pass. **No fake birthday-game link**.
@@ -48,4 +49,4 @@ Proof boundary: **browser/page content observed**; no owner touch, comparative g
 
 ## Checkpoint
 BIAT → DISCOVER → IDENTIFY → CONNECT → IMPROVE → VERIFY → FLAZ
-Gate: 71 + 54 + 5 + 4 = 134; four new source contacts; historic playable links identified; original coding/engines are visible in the same game catalogue. Source/script readback passed; mobile owner proof and release remain open.
+Gate: 71 + 54 + 3 + 5 + 4 = 137; four new source contacts; historic playable links identified; original coding/engines are visible in the same game catalogue. Source/script readback passed; mobile owner proof and release remain open.

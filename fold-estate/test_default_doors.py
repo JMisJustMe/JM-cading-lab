@@ -40,6 +40,22 @@ class RegistryContract(unittest.TestCase):
         with REGISTRY.open(encoding="utf-8") as f:
             self.assertEqual(validate(json.load(f)), 9)
 
+    def test_bundled_android_asset_matches_registry(self):
+        bundled = ROOT / "agent-runtime" / "host-adapters" / "android" / "fold-ultra-autosetup" / "app" / "src" / "main" / "assets" / "jm_estate_doors.json"
+        self.assertEqual(REGISTRY.read_bytes(), bundled.read_bytes())
+
+    def test_native_route_and_policy_guards(self):
+        native = ROOT / "agent-runtime" / "host-adapters" / "android" / "fold-ultra-autosetup" / "app" / "src" / "main" / "java" / "com" / "jmisjustme" / "foldultra" / "MainActivity.java"
+        code = native.read_text(encoding="utf-8")
+        self.assertIn('void estateRoom()', code)
+        self.assertIn('void estateSection(JSONObject registry,int index)', code)
+        self.assertIn('void estateEntry(JSONObject entry)', code)
+        self.assertIn('getAssets().open("jm_estate_doors.json")', code)
+        self.assertIn('policy.optBoolean("copy_sources")', code)
+        self.assertIn('policy.optBoolean("auto_host")', code)
+        self.assertIn('setNegativeButton("Cancel",null)', code)
+        self.assertIn('new Intent(Intent.ACTION_VIEW,parsed)', code)
+
     def test_reject_insecure_destination(self):
         with REGISTRY.open(encoding="utf-8") as f:
             data = json.load(f)

@@ -1,0 +1,40 @@
+{
+  "schema": "JM.EstateWebsiteRouteReconciliation/CP02",
+  "date": "2026-11-03",
+  "scope": "Existing GitHub source; no Cloudflare connector or replacement website",
+  "source_repo": "JMisJustMe/JM-cading-lab",
+  "source_tree_paths": 3026,
+  "counts": {
+    "game_catalogue_before": 125,
+    "game_catalogue_after": 128,
+    "game_carrier_links_before": 3,
+    "game_carrier_links_after": 9,
+    "apps_rooms_unchanged": 45
+  },
+  "connections": [
+    "THIRD COURT CP38 candidate",
+    "FUTARIZED v3.1 older two-part public carrier",
+    "Fight Clash Chameleon v0.4 historical carrier",
+    "Aiming Run v0.1A body",
+    "FTR First-Person v0.5.1 carrier",
+    "ROUTEBREAK Crown Relay v1.0.0 carrier",
+    "Rift Relay HOLD: no fabricated player link",
+    "Apps House Tools-only filter",
+    "Access Mesh games, tools and comic-reader links"
+  ],
+  "boundaries": [
+    "Candidate is not final release",
+    "Older public carriers do not supersede newer current heads",
+    "No game loop/family counted as separately finished game",
+    "No private-source publication",
+    "Live hosting propagation and physical touch QA not proven"
+  ],
+  "preserved": [
+    "71 original catalogue rows",
+    "54 earlier November additions",
+    "45 Apps House rooms",
+    "Visual Story reader",
+    "Books House",
+    "Original source/FLaZ custody"
+  ]
+}

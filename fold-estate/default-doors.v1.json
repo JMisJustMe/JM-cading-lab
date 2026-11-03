@@ -1,0 +1,127 @@
+{
+  "schema": "JM.FoldEstateDoors/0.1",
+  "policy": {
+    "owner_confirmation": true,
+    "copy_sources": false,
+    "auto_host": false,
+    "private_auth": "external-app",
+    "unverified_route": "HOLD"
+  },
+  "sections": [
+    {
+      "id": "websites",
+      "label": "My Websites",
+      "entries": []
+    },
+    {
+      "id": "coding",
+      "label": "My Coding",
+      "entries": [
+        {
+          "id": "cading-lab",
+          "label": "JM-cading-lab",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab",
+          "access": "public",
+          "verified": "repository-location"
+        },
+        {
+          "id": "cloud-contact",
+          "label": "JM Cloud Contact",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud",
+          "access": "public",
+          "verified": "repository-location"
+        },
+        {
+          "id": "ai-studio-surface",
+          "label": "JM AI Studio Surface",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-surface",
+          "access": "private",
+          "verified": "repository-location"
+        },
+        {
+          "id": "continuation",
+          "label": "JM Continuation",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-continuation",
+          "access": "private",
+          "verified": "repository-location"
+        },
+        {
+          "id": "ai-react",
+          "label": "JM AI Studio React Descendant",
+          "kind": "repository",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-react-descendant",
+          "access": "private",
+          "verified": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "label": "My Apps",
+      "entries": [
+        {
+          "id": "fold-ultra",
+          "label": "JM Fold Ultra",
+          "kind": "android",
+          "package": "com.jmisjustme.foldultra",
+          "verified": "source-package"
+        },
+        {
+          "id": "ailatheo",
+          "label": "AILatheo",
+          "kind": "android",
+          "verified": "screenshot-only",
+          "status": "HOLD_PACKAGE"
+        },
+        {
+          "id": "rim",
+          "label": "JM Rim Ro",
+          "kind": "android",
+          "verified": "screenshot-only",
+          "status": "HOLD_PACKAGE"
+        },
+        {
+          "id": "theoc",
+          "label": "JM TheoC",
+          "kind": "android",
+          "verified": "screenshot-only",
+          "status": "HOLD_PACKAGE"
+        }
+      ]
+    },
+    {
+      "id": "games",
+      "label": "My Games",
+      "entries": []
+    },
+    {
+      "id": "theories",
+      "label": "My Theories",
+      "entries": []
+    },
+    {
+      "id": "music",
+      "label": "My Music",
+      "entries": []
+    },
+    {
+      "id": "creations",
+      "label": "My Creations",
+      "entries": []
+    },
+    {
+      "id": "connections",
+      "label": "My Connections",
+      "entries": []
+    },
+    {
+      "id": "tools",
+      "label": "My Tools",
+      "entries": []
+    }
+  ]
+}

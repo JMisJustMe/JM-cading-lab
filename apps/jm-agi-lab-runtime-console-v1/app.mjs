@@ -22,7 +22,13 @@ function loadState(){
 }
 function saveState(){
   state.updatedAt=Date.now();
-  localStorage.setItem(STORE,JSON.stringify(state));
+  try{
+    localStorage.setItem(STORE,JSON.stringify(state));
+    return true;
+  }catch(e){
+    el('storageState').textContent='HOLD · LOCAL STORAGE UNAVAILABLE';
+    return false;
+  }
 }
 function safeJson(key){
   try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null;}catch(e){return null;}
@@ -87,7 +93,10 @@ function render(){
 }
 function toast(text){
   el('storageState').textContent=text;
-  setTimeout(function(){el('storageState').textContent='LOCAL · READY';},1800);
+  setTimeout(function(){
+    try{localStorage.setItem('__jm_storage_probe__','1');localStorage.removeItem('__jm_storage_probe__');el('storageState').textContent='LOCAL · READY';}
+    catch(e){el('storageState').textContent='HOLD · LOCAL STORAGE UNAVAILABLE';}
+  },1800);
 }
 
 el('contactBtn').addEventListener('click',function(){

@@ -71,3 +71,15 @@ Status: NEW/IMPROVED means source changed in CP38 or CP37; INHERITED means previ
 DING: local changed functionality browser proof **PASS**. DONG: unchanged ancestor proof **INHERITED**. GONG: targeted buzzer delta **6/6 PASS**.
 Main source/published exact parity **TO VERIFY after Pages completes**. Human owner Samsung Fold play and gift approval **HOLD**.
 No wholesale 33-feature-complete certification; 33 targets audited with status above.
+
+
+## FINAL FOLLOW-ON — live publication and natural gameplay DING
+- Final candidate source Git blob `63933a7d936d232760800f5fe31ede7e4402bee6`, exact source match on development branch and main publication branch.
+- GitHub Pages deployment on main commit `a39c7343c4d3435228c1fbefb92ebd8993e32e7e`: **SUCCESS** workflow https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41656950783
+- Two-family original game/browser workflow: **SUCCESS** https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41656950779 ; source-route guard **SUCCESS** https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41656950959 .
+- Independent direct HTTPS public readback from GroundZeroJM Chrome browser: HTTP **200**, `text/html; charset=utf-8`, **142,900 exact bytes**. Both authorized local final source and HTTP public response SHA-256 = `2428896c0300a55049e806ffdbb362d3facc311f313824a665101d92651a51da`. **EXACT BYTE MATCH PASS**.
+- Exact final public source initialized a six-athlete game with zero fatal browser JS errors in independent Chrome browser run.
+- **One naturally timed 60-second Final Minute completed on the actual public CP38 site, without time fast-forward** in GroundZeroJM real Chrome (390x844), final score **JM 3–2 rivals**, zero page JS errors. Court IQ reported genuine **1/2 shots (50%)**, 1 rebound, 7 turnovers and matched the real finished scoreboard. This is browser automation exercising natural time with real input, NOT owner/physical Samsung proof.
+- Local exact-final delta tests: **31/31 scoped real Chrome checks PASS** (phone + desktop, controlled Cup wins/losses/progress, Court IQ, local save persistence), **6/6 targeted actual shot-at-buzzer real Chrome checks PASS**. The Cup championship tests used deliberate controlled score/time fast-forward and must never be called fully played championships.
+- Screenshots: `C:\Users\theod\Downloads\JM_CP38_BIRTHDAY_MENU_PROOF.png`, `JM_CP38_GAMEPLAY_PROOF.png`, `JM_CP38_NATURAL_FINAL_PROOF.png`. Local test scripts: `JM_CP38_BROWSER_PROOF.py`, `JM_CP38_BUZZER_PROOF.py`, `JM_CP38_PUBLIC_BROWSER_PROOF.py`, `JM_CP38_PUBLIC_BYTE_PARITY.py`, `JM_CP38_NATURAL_60SEC_PROOF.py`.
+- Admission: code/rendering/browser playable **DING**, inherited proof **DONG**, buzzer/release delta **GONG**. Distinct final HOLD: physical Samsung Fold CP38 contact, actual physical controller, owner gameplay enjoyment, 33/33 exhaustive new-feature certification, and final gift acceptance. Original main birthday entrypoint deliberately unchanged.

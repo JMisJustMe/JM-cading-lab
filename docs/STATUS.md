@@ -32,13 +32,13 @@ These are governed public-route totals, not a claim that the complete private Es
 - JM Comics, Cartoons & Visual Story — public moving/static visual-story access projection
 - Theodore Benjamin Scott / JM — Author & Source Creator
 - Theodore Benjamin Scott / JM — Press, Book & Collaboration Pack
-- JM Non-Game Apps House — 40-room public-safe catalogue
+- JM Non-Game Apps House — 45 registered rooms (live page observed 3 November 2026; registration is not gameplay or full-source proof)
 - Games & Beyond — sovereign Games House
 - JM Games — Current Direction Ledger
 - JM EveryBody — current canonical-native coding fabric
 - Cading Lab
 - Fresh App Lab
-- JM Theory Multihub v0.9
+- JM Theory Multihub — public v0.20.1 (observed 3 November 2026; individual theory body depths remain independently graded)
 - CAUSE MUST PASS dedicated body
 - JM BIOHOUSE — Nervous Signal Route v1.1
 - TraSta — Trace–Stance
@@ -96,3 +96,13 @@ This is an access/currentness correction, not a new sovereign-body census.
 - Theory remains routed through the current Theory House; the 26 September pairwise strengthening result is **21/21 unique bridge pairs tested** at its declared scope.
 - Cloudflare remains the canonical public Estate. GitHub Pages remains the mirror, InfinityFree remains the separately proven freestanding lineage, and the published Wix Living Estate remains a secondary/legacy surface.
 - Public projection ≠ private source custody. Exact protected source bodies remain owner-controlled until deliberately published.
+
+## 3 November 2026 — BIAT → FLAZ · original-house access and safe game linking
+
+**Status:** Bounded public-route reconciliation. This does **not** certify the entire private JM ECOSTATE complete, or transfer authority to a new host.
+
+- **Existing House nav:** PR #713 merged as `0992054131b2162948eb54b6ad47ec93ca462e59`. Existing public H01 Author, H08 JM3232 Navigator, H09 Commercial Providings/Money Menu, and H10 Archives & Recovery entries were connected to the established homepage data; original source bodies and routes were not regenerated. GitHub `estate-app.js` readback and JavaScript parsing PASS. Individual rendered browser-card assertions conflicted; owner Fold8 acceptance remains OPEN.
+- **Games catalogue:** `games-beyond/all-games.html` blob `0e0cf44151e9ac88180ca21a749a4a968bb2ca22`, commit `8a24ed71b0aff391c5c962766908de0ced884a1a`. Runtime assembly: **70 original + 53 November declared + 3 explicitly appended CP02 = 126 independent *catalogue entries*** (NOT 126 independent games). **15 linked destinations**, including seven inherited mounted-room links added on `main`, with older-game-version labels preserved. PR #712 closed only after PR-branch file blob matched `main` exactly; historical PR retained as evidence.
+- **Browser tests:** 13 existing public game/body entrances were opened in earlier scoped browser QA; six interactions demonstrated visible response. This is *not* whole-game, current-best, Android, controller or Fold8 owner-device acceptance. Current post-commit browser retry was unavailable due external browser-service funding; do not claim it passed.
+- **Privacy:** Public catalogue has no names of the three family-only gifts in the 126 assembled rows. Both GitHub Pages artifact workflows stage without the family-gift directory, and previously tested Pages paths returned 404. **Public GitHub repository source/history remains an independent privacy HOLD**. No protected original should be deleted without exact independent recovery verification and owner-governed custody. Other hosts/publication channels require their own checks.
+- **Whole-estate truth boundary:** Books, Comics/Visual Story, Apps, Theory, Lyrics, Coding, Money Menu, Access Mesh and Recovery have confirmed public entry sources. Their counts, source completeness, live-device functionality, original authority and commercial readiness each retain separate proof gates. One original keeper; many doors. Discover → Identify → Connect → Improve → Verify → FLAZ.

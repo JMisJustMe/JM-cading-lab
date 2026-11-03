@@ -432,8 +432,9 @@ jobs:
           grep -Fq 'jm-cloud-contact-server-v05.onrender.com/market' cloudflare-estate/market-lab/index.html
           grep -Fq 'One door.' cloudflare-estate/access/index.html
           grep -Fq '56 ≠ 98 ≠ 45' cloudflare-estate/books/index.html
-          grep -Fq 'I study where people meet systems.' cloudflare-estate/career/index.html
-          grep -Fq 'Return to…' cloudflare-estate/career/index.html
+          grep -Fq 'Career &amp; Collaboration' cloudflare-estate/career/index.html
+          grep -Fq 'Private employment information and recipient-specific gifts are intentionally not published here.' cloudflare-estate/career/index.html
+          grep -Fq '../apps/' cloudflare-estate/career/index.html
           grep -Fq 'FIRST WATCHABLE SCENE' cloudflare-estate/visual-story/index.html
 
           python3 - <<'PY'

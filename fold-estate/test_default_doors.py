@@ -41,7 +41,7 @@ def validate(data):
 class RegistryContract(unittest.TestCase):
     def test_seed(self):
         with REGISTRY.open(encoding="utf-8") as f:
-            self.assertEqual(validate(json.load(f)), 19)
+            self.assertEqual(validate(json.load(f)), 25)
 
     def test_all_nine_sections_have_recovered_entries(self):
         with REGISTRY.open(encoding="utf-8") as f:

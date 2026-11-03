@@ -107,12 +107,12 @@ el('contactBtn').addEventListener('click',function(){
       value:el('factValue').value,
       confidence:Number(el('confidence').value)
     });
-    saveState();render();toast('STATE WRITTEN');
+    const saved=saveState();render();toast(saved?'STATE WRITTEN':'HOLD · STATE NOT PERSISTED');
   }catch(e){toast('HOLD · '+e.message);}
 });
 el('consequenceBtn').addEventListener('click',function(){
   state=applyCommand(state,{type:'CONSEQUENCE',label:'bounded UI consequence'});
-  saveState();render();toast('CONSEQUENCE WRITTEN');
+  const saved=saveState();render();toast(saved?'CONSEQUENCE WRITTEN':'HOLD · CONSEQUENCE NOT PERSISTED');
 });
 el('settleBtn').addEventListener('click',function(){
   if(settleTimer) return;

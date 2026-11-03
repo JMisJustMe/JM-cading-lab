@@ -65,6 +65,21 @@ Five native/creator rooms linked from the original coding section via manifest-p
 
 **Validation:** Current A–Z original 70 + November 53 + concurrent 3 + Base44 5 + earlier 4 + CP07 4 = **139 public-safe visible entries**, private family gifts excluded. All original source-array literals remain unchanged across CP08. Embedded JavaScript parses cleanly, modified file readback exact. Owner source filenames/provenance are **descriptive only**; a local Library path is not a public HTTP player or editable GitHub body.
 
+## CP09–CP10 · full current public door filter and RouteOS native cartridges
+
+**CP09 usability repair:** Reclassified the Catalogue's featured flags as *Featured/Historical*, not "current best". The **PUBLIC DOORS** filter now correctly includes any entry with a verified or manifest-backed route, rather than only three old `state=public` entries. The header shows a dynamic source-backed door count. A scoped JS/DOM simulation using the actual inline A–Z script displayed all 139 CP09 records, all nine House source routes, and **19 PUBLIC DOORS** while showing no private gift text. No source arrays changed in CP09.
+
+**CP10 Source inspection:** The existing `games-beyond/routeos/runtime/index.html` contains three first-party native JM cartridge implementations, not merely names:
+- `pulse-orbit` → **Pulse Orbit v1.0**: drag and release the gold core to ricochet a pulse to a cyan target.
+- `seed-runner` → **Seed Runner v1.0**: directional traversal, collect seeds and avoid hazards.
+- `rebound-route` → **Rebound Route v0.8.5**: four-room exploration, move/aim/fire and reach gates.
+
+They each have specific gameplay engine-branch semantics, but share the *same public RouteOS cartridge bay* and original runtime source. Three new catalogue **proof/cartridge** records are added without pretending they are three separate installed apps, unique public player URLs or finished sovereign games. Each links to `routeos/runtime/index.html` with a clear "select [cartridge]" label, not a misleading direct game auto-launch. Their JM-native source relationships are explicit in the existing owner-coding field, bringing 14 source-specific notes.
+
+**CP10 count:** CP07 139 public-safe + 3 source-proven first-party cartridge/proof lines = **142 public-safe catalogue records**, plus two separately preserved private family identities (144 names for owner-level accounting, not unique perfected games). The linked-route record count rises from 19 to **22 entries**, but three share one RouteOS console URL; linked records are **not** unique host URLs or completed touch-game acceptance. No original game HTML, original game JS, language compiler, package or master manifest changed.
+
+**Site reciprocity:** The independent published Wix Games & Beyond page currently provides a Games Bodies rail and EMBED_CHAMBER text but no actual individually mapped player links. It is a separate website entrance requiring native Wix source-contact and owner review before publication. Two existing Wix game-house drafts are not equivalent to public deployments.
+
 ## Exact gates / remaining work
 - 139 public-safe records here represent names/families/proofs/descendants/prototypes/source HOLDS. No single unique finished-games count crowned.
 - Some game families have advanced significantly beyond their public demo; verify each strongest keeper and independent source before changing current/public labels.

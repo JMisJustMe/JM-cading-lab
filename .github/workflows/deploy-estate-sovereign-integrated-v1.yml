@@ -360,7 +360,7 @@ jobs:
           echo '634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html' | sha256sum -c -
           echo 'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/styles.css' | sha256sum -c -
           echo 'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs' | sha256sum -c -
-          echo '7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs' | sha256sum -c -
+          echo '3be85ecfe3631371af79b275831fda95f82123dcce4c572e7b214184bcc91669  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs' | sha256sum -c -
           grep -Fq 'Contact.<br>Change.<br>Return.' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html
           grep -Fq 'verifyReloadChallenge' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs
           grep -Fq '__JM_RUNTIME_DEBUG__' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs
@@ -659,7 +659,7 @@ jobs:
             if check_file index.html 634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147 4962 "$attempt" \
               && check_file styles.css dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15 6144 "$attempt" \
               && check_file runtime-core.mjs fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26 7130 "$attempt" \
-              && check_file app.mjs 7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb 7034 "$attempt" \
+              && check_file app.mjs 3be85ecfe3631371af79b275831fda95f82123dcce4c572e7b214184bcc91669 7034 "$attempt" \
               && grep -Fq 'Contact.<br>Change.<br>Return.' "$RUNNER_TEMP/runtime-index.html" \
               && grep -Fq 'verifyReloadChallenge' "$RUNNER_TEMP/runtime-runtime-core.mjs" \
               && grep -Fq '__JM_RUNTIME_DEBUG__' "$RUNNER_TEMP/runtime-app.mjs"; then
@@ -705,7 +705,7 @@ jobs:
               'index.html':{'bytes':4962,'sha256':'634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147'},
               'styles.css':{'bytes':6144,'sha256':'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15'},
               'runtime-core.mjs':{'bytes':7130,'sha256':'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'},
-              'app.mjs':{'bytes':7034,'sha256':'7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb'}
+              'app.mjs':{'bytes':7034,'sha256':'3be85ecfe3631371af79b275831fda95f82123dcce4c572e7b214184bcc91669'}
             },
             'boundary':'Canonical public executable runtime proof only. No owner Windows/Edge proof transfer, OS reboot, cross-device persistence, external-model contact, unrestricted actuation or AGI/general-intelligence claim.'
           }

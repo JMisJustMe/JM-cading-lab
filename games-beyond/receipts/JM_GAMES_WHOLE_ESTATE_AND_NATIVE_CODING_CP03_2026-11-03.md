@@ -102,6 +102,32 @@ They each have specific gameplay engine-branch semantics, but share the *same pu
 
 **Secondary sources:** connected GitHub install search identified five owner's repositories; the three other private/alternate coding repositories presently surfaced only an inherited Fight Clash carrier and coding UI fragments, not new public games. Published Wix game page remains a separate venue with presentation rail but without mapped individual playable-game links. Do not claim these are automatically synchronized or linked.
 
+## CP12–CP14 · REAL WORKING FUTARIZED REPAIR / ORIGINAL KINETICS DONOR / FULL LINK PATH GATE
+
+### Source distinctions — CP12
+The original `games-beyond/registry.json` records mounted House body `combound` as **JM Combound v0.7, a Loops & Reusable Organs kinetic-combo donor**. The catalogue now gives this historical source its own proof entry, `JM Combound Kinetics — v0.7 House Donor`, with the exact working `?jm-play=combound` House route. The contemporary **COMBOUND Original** catalogue entry no longer misuses the donor as its modern playable URL. The modern CB-ORIGINAL, FPS, Action and Story sources retain their independent custody and distinct working-candidate statuses. This correction adds one *source/loop* record but no false modern game.
+
+### FUTARIZED v3.1 — exact missing HTML repaired, original files restored CP13
+**Before repair:** GitHub Pages v3.1 landing returned HTTP 200 but both Part I and Part II game links returned HTTP 404. Repository `main` had a publication manifest with claimed source members but no actual Part I/II HTML files.
+
+**Recovered authority:** `/JM Estate/Games & Playable Systems/FUTARIZED/Lineage/FUTARIZED_v3_1_COMBAT_FLOW/`. Both original full HTML files independently read from owner Library; original **byte counts and SHA-256** matched the existing published publication manifest exactly:
+- `FUTARIZED_PART_I_LIVING_REFIT.html` — 75,586 bytes — `0084b1a1f3c0a496117375ad3881de89ba3b7b1fd2f62d090d07af0adeb54ec8`.
+- `FUTARIZED_PART_II_FUTARIAN_FIELD.html` — 41,017 bytes — `2917d0762b8921f585c5472c052fbac7c406a39989a31f5846e0734d796fad95`.
+- Existing `index.html` from the same owner v3.1 source package — 3,436 bytes, SHA256 `8c5da09aa55e89f002fd052eb6b78afb602cc3306f367c1f868cda128313d161` — remains unchanged.
+
+**Actual repair:** Added the **two exact missing original files** to this existing GitHub PR branch at `estate-publication/apps-tools-games/games/futarized-v3.1/`. Their names match the original landing's two relative hrefs, and their byte-for-byte GitHub readbacks passed. NO regenerated game, new compiler, new front door or alternative source body introduced. The newer v3.3 source/Android head in the Library remains independent, is NOT automatically publicly available, and this change does not crown v3.1 as v3.3.
+
+**Runtime test:** Original files materialized temporarily for offline QA, independently hashed with native SHA-256. System Chromium ran the original source by `page.set_content()` at **1280×720** and **390×844**. Landing + Part I + Part II = **6/6 page load/render samples** with **zero observed page-level JS exceptions** and **zero horizontal overflow**. Part I "ENTER THE LIVING BODY" entered the native/source recovery gameplay surface at both viewports; Part II "ENTER FUTARIAN FIELD" entered its native player field at both viewports; actual 2D canvases displayed nonzero pixels. This is **source/initial gameplay contact only**, NOT full playthrough, network-hosted deployment, localStorage/restart persistence, Samsung Fold physical device acceptance or current v3.3 gameplay. Local HTTP navigation was blocked by this environment, so the two page parts were loaded separately from the original matching source—not one complete end-to-end click from landing. The next live-host integration test depends on actual publication after review.
+
+**A–Z source route:** FUTARIZED's visible existing game entry points to the fixed, original **v3.1 TWO-PART landing** after release; a second independent **historical v1.2 PLAY** button remains in the same record (not a new counted game). `FUTARIZED` retains its newer preserved v3.3 owner source head label and an explicit review-only publication gate. An initial review-branch runtime-order bug was detected during JS execution and FIXED before this checkpoint (the route constant was moved before referencing it); actual A–Z code execution now passes.
+
+### Link reconciliation and source integrity — CP14
+**143 public-safe catalogue records** (142 prior + one proven historic kinetic donor). In actual A–Z JS evaluation, **22 linked record doors** remain. The complete GitHub review-branch recursive file tree confirms **22/22 link targets exist**, correctly resolving directory indexes, old House `?jm-play=...` query routes and the shared RouteOS cartridge bay; URL existence is not individual gameplay acceptance. The 22 includes 3 first-party cartridges within one RouteOS runtime, not three individually hosted games. Source notes: **17** newer owner-source seats, **15** original coding/donor relationships. The 70 September/public and 53 November/public record sources, and other existing source arrays are unchanged. The two separately protected family-only creations are excluded from this public candidate; past public GitHub publication URLs still require independent take-down and Git-history/privacy review.
+
+**External app caveat:** Base44 lists five distinct user-owned app identities; the published-URL endpoint reported `App not found` on all five tested IDs. Those remain **source-accounted, public play link HOLD**; do not invent published URL, payment, account or game readiness.
+
+**Publication gate:** PR remains unmerged review candidate. HTTP 404s on the current live v3.1 page will remain until the restored two missing HTML files actually deploy; only a new post-deployment browser click can certify the live fix. Exact source kept. No full source overwrite, no release crown, no owner-device contact claim.
+
 ## Exact gates / remaining work
 - 139 public-safe records here represent names/families/proofs/descendants/prototypes/source HOLDS. No single unique finished-games count crowned.
 - Some game families have advanced significantly beyond their public demo; verify each strongest keeper and independent source before changing current/public labels.

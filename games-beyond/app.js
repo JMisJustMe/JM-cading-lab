@@ -68,6 +68,22 @@ function view(name,focus=true){$$('.view').forEach(x=>x.hidden=x.dataset.view!==
 // Host-only navigation assistance for SHA-verified frozen JMStudios originals.
 // Resolve their historical relative redirects against their OWN embedded room map.
 // Never mutate source HTML, storage, exports, or invent a missing target.
+// CP18 host-only repair: the B0.8 embedded room's duplicate document click
+// listener is outside its IIFE and calls out-of-scope openRoom/openCrossRoute.
+// The original's internal button listeners already work. Never edit saved HTML.
+function repairOriginalNestedRoomHtml(html){
+ if(typeof html!=='string'||!html.includes('function wireDynamicRoomButtons()')||
+    !html.includes('function openRoom(id,fromPop)'))return html;
+ const orphan=`document.addEventListener('click',e=>{
+  const room=e.target.closest&&e.target.closest('[data-room]');
+  if(room){e.preventDefault();openRoom(room.getAttribute('data-room'));return}
+  const cross=e.target.closest&&e.target.closest('[data-cross]');
+  if(cross){e.preventDefault();openCrossRoute(cross.getAttribute('data-cross'));return}
+});`;
+ const pos=html.indexOf(orphan);
+ if(pos<0||html.indexOf(orphan,pos+orphan.length)>=0)return html;
+ return html.replace(orphan,'/* JM host-only: orphan duplicate click listener suppressed; original controls remain wired */');
+}
 function wireOriginalEmbeddedRooms(doc,b){
  const match=b.html.match(/const ROOMS = (\[[\s\S]*?\]);\s*function b64ToUtf8/);
  const win=doc.defaultView;
@@ -90,6 +106,15 @@ function wireOriginalEmbeddedRooms(doc,b){
     hops++;
    }
    originalOpen.call(win,room.id);
+   // Apply only to the in-memory nested iframe, never the stored source or export.
+   if(room.id==='room_013'){
+    const frame=doc.getElementById('roomFrame');
+    const clean=repairOriginalNestedRoomHtml(frame?.srcdoc);
+    if(frame&&clean!==frame.srcdoc){
+     frame.srcdoc=clean;
+     doc.getElementById('viewerTitle').textContent+=' · nested click-scope repaired in host';
+    }
+   }
    if(hops)doc.getElementById('viewerTitle').textContent+=` · ${hops} historical redirects resolved locally`;
   }catch(error){
    doc.getElementById('viewerTitle').textContent='Navigation HOLD: '+error.message;

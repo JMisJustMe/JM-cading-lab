@@ -1,0 +1,18 @@
+name: JM Fold Ultra CP03 Estate Registry Contracts
+on:
+  pull_request:
+    paths:
+      - 'fold-estate/**'
+      - 'agent-runtime/host-adapters/android/fold-ultra-autosetup/app/src/main/assets/jm_estate_doors.json'
+      - 'agent-runtime/host-adapters/android/fold-ultra-autosetup/app/src/main/java/com/jmisjustme/foldultra/MainActivity.java'
+      - '.github/workflows/jm-fold-ultra-cp03-estate.yml'
+  workflow_dispatch:
+jobs:
+  estate-registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run CP03 original registry contracts
+        run: python3 -m unittest discover -s fold-estate -p 'test_*.py' -v

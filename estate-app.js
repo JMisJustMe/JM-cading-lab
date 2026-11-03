@@ -51,6 +51,7 @@ const FALLBACK = {
 };
 
 const HOUSES = [
+  {id:'author-house',name:'Author & Source Creator',kind:'Author',state:'LIVE PUBLIC AUTHOR HOUSE',accent:'#e2b7fc',path:'./author/',summary:'Existing author and creator source authority for books, music, games, code and theory; source identity stays separate from the Estate front door.',proof:'The /author/ route opened successfully. Public author page is not a claim that all private manuscripts are released.'},
   {id:'games-house',name:'Games & Beyond',kind:'Games',state:'LIVE EDITABLE HOUSE',accent:'#ffd166',path:'./games-beyond/',summary:'Every playable game, engine, reusable loop, benchmark and recovery body enters through one phone-first house.',proof:'Existing PWA host and registry are live.'},
   {id:'coding-house',name:'Cading & Coding Estate',kind:'Coding',state:'LIVE WORKBENCH',accent:'#72ecff',path:'./coding-estate/everybody/',summary:'JM coding bodies remain sovereign while parsers, IR, runtimes, adapters and targets connect through the EveryBody fabric.',proof:'100 current canonical-native specifications are registered; historical recovered-source evidence remains separately labelled.'},
   {id:'tools-house',name:'Apps & Tools',kind:'Tools',state:'LIVE LAB + EXPANDING',accent:'#7ff0a6',path:'./fresh-app-lab/',summary:'Working utilities, creator tools, app proofs, operating surfaces and future product rooms.',proof:'Fresh App Lab public room is live.'},
@@ -60,6 +61,7 @@ const HOUSES = [
   {id:'studio-house',name:'Studios: Music, Lyrics & Creation',kind:'Studios',state:'LIVE PUBLIC HOUSE',accent:'#ff7896',path:'./lyrics/',summary:'LyricStudio, music, performance and language bodies connect through the current public Lyrics & Music House.',proof:'Current public creative route is live; private source remains owner-controlled.'},
   {id:'books-house',name:'Books & Written Bodies',kind:'Books',state:'45/45 ROUTED · STAGE 07 LOCAL LOCK',accent:'#f1c879',path:'./books/',summary:'Written bodies, Bookcase routes and publication lineages are accessible without confusing readable routes with finished books.',proof:'56 primary written bodies · 98 Bookcase routes · 45/45 GREEN connection routes.'},
   {id:'visual-story-house',name:'Comics, Cartoons & Visual Story',kind:'Visual',state:'8/8 ROUTED · PRODUCTION FORWARD',accent:'#ff8aa8',path:'./visual-story/',summary:'Comics, Visual Story Studio, Sketchions, WORDWALK and current produced-medium frontiers share one public access door.',proof:'FTR 32/32 issues · 704/704 functional pages · First Watchable Scene remains open.'},
+  {id:'navigator-house',name:'JM3232 Navigator & Stringline',kind:'Infrastructure',state:'LIVE PUBLIC NAVIGATOR',accent:'#8eaddb',path:'./navigator/',summary:'Existing JM3232 browser and governed Estate navigation; different RouteOS generations and runtime authorities remain independent.',proof:'Public Navigator v1.5.2 entrance opened. An Internet browser route does not demonstrate a native operating-system kernel.'},
   {id:'access-mesh',name:'Current Access Mesh',kind:'Access',state:'CURRENT PUBLIC MESH',accent:'#78efbd',path:'./access/',summary:'One public routing surface across current Games, Apps, Coding, Theory, Books, Visual Story, Music, Markets, Work and Recovery doors.',proof:'Access layer only; source authorities remain sovereign.'},
   {id:'recovery-house',name:'Archives & Recovery Gate',kind:'Recovery',state:'LIVE PUBLIC RECOVERY INTAKE',accent:'#ffa872',path:'./recovery/',summary:'Existing Recovery Gate for loose sources, protected ancestors, unmatched versions and verification-before-mount; registered does not mean recovered.',proof:'Public intake route was fetched successfully. Recovery closure and private source access remain separate.'},
   {id:'library-house',name:'Living Library',kind:'Library',state:'PUBLIC INDEX LIVE',accent:'#ffad42',route:'library',summary:'Searchable estate memory and registry reading now, followed by deliberately connected private retrieval bodies.',proof:'Current registries searchable in this site.'},
@@ -151,7 +153,7 @@ function getAllItems(){
 const slug = value => normalise(value).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 function renderFeatureDoors(){
-  const selected=['access-mesh','games-house','tools-house','coding-house','theory-house','books-house','visual-story-house','studio-house','market-house','providings-house','recovery-house'].map(id=>HOUSES.find(h=>h.id===id));
+  const selected=['access-mesh','author-house','games-house','tools-house','coding-house','navigator-house','theory-house','books-house','visual-story-house','studio-house','market-house','providings-house','recovery-house'].map(id=>HOUSES.find(h=>h.id===id));
   $('#featureDoors').innerHTML=selected.map(h=>`<a class="door-card" href="${h.path||'#'}" data-card-id="${h.id}" style="--accent:${h.accent}"><span class="door-state">${escapeHTML(h.state)}</span><h3>${escapeHTML(h.name)}</h3><p>${escapeHTML(h.summary)}</p><div class="door-foot"><span>Open house</span><span>↗</span></div></a>`).join('');
   $$('#featureDoors [data-card-id]').forEach(el=>el.addEventListener('click',event=>{const item=HOUSES.find(x=>x.id===el.dataset.cardId);if(!item.path){event.preventDefault();openItem(item)}else trackRecent(item)}));
 }
@@ -176,7 +178,7 @@ function renderDirectory(){
     const text=[item.name,item.kind,item.state,item.summary,item.role,item.proof,item.room,item.version].join(' ').toLowerCase();
     return favPass&&kindPass&&(!q||text.includes(q));
   });
-  const groupOrder=['Access','Games','Coding','Tools','Markets','Providings','Theory','Books','Visual','Studios','Library','Recovery','Estate','Owner'];
+  const groupOrder=['Access','Author','Games','Coding','Tools','Markets','Providings','Theory','Books','Visual','Studios','Library','Recovery','Infrastructure','Estate','Owner'];
   const groups=groupOrder.map(kind=>[kind,items.filter(i=>i.kind===kind)]).filter(([,arr])=>arr.length);
   $('#houseDirectory').innerHTML=groups.length?groups.map(([kind,arr])=>`<section class="directory-group"><header><h2>${kind}</h2><span>${arr.length} ${arr.length===1?'BODY':'BODIES'}</span></header><div class="directory-grid">${arr.map(bodyRow).join('')}</div></section>`).join(''):`<div class="empty-state"><strong>No matching body.</strong><p>Try another search or filter. Nothing has been silently invented to fill the gap.</p></div>`;
   bindItemControls($('#houseDirectory'));

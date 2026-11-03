@@ -1248,7 +1248,7 @@ public final class MainActivity extends Activity {
         Toast.makeText(this,"HOLD / Invalid HTTPS destination",Toast.LENGTH_LONG).show();return;
       }
       new AlertDialog.Builder(this).setTitle("Open existing JM destination?")
-        .setMessage(label+"\\n"+parsed.getHost()+"\\n\\nExternal application or browser handles authentication. No JM files are copied.")
+        .setMessage(label+"\n"+parsed.getHost()+"\n\nExternal application or browser handles authentication. No JM files are copied.")
         .setNegativeButton("Cancel",null)
         .setPositiveButton("Open",(d,w)->{
           try{startActivity(new Intent(Intent.ACTION_VIEW,parsed));}

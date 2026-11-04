@@ -23,6 +23,21 @@ section{margin:28px 0}.head{display:flex;align-items:end;justify-content:space-b
 #jmUseNow .row{grid-template-columns:1.25fr 1fr}
 #jmUseNow .row span{display:block}
 @media(max-width:850px){#jmUseNow .row{grid-template-columns:1fr}#jmUseNow .use-actions{justify-content:flex-start}}
+
+/* CP09 Quick Return reuses existing JM Games House local history and source links. */
+#jmQuickReturn .jm-return-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#jmQuickReturn .jm-return-panel{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:16px;min-width:0}
+#jmQuickReturn h3{margin:0 0 12px;font-size:1.15rem}
+#jmQuickReturn .jm-return-items{display:grid;gap:8px}
+#jmQuickReturn .jm-return-item{min-height:44px;display:flex;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;overflow-wrap:anywhere}
+#jmQuickReturn .jm-return-item:hover,#jmQuickReturn .jm-return-item:focus-visible{border-color:var(--cyan)}
+#jmQuickReturn .jm-return-empty,#jmQuickReturn .jm-return-note{color:var(--muted);font-size:.88rem}
+#jmQuickReturn .jm-return-clear,.jm-pin-btn{min-height:44px;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--panel2);color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+#jmQuickReturn .jm-return-clear{margin-top:10px}
+#jmQuickReturn .jm-return-clear:disabled{opacity:.5;cursor:default}
+.jm-pin-btn[aria-pressed="true"]{border-color:var(--mint);background:rgba(120,239,189,.12);color:var(--mint)}
+.jm-pin-btn:focus-visible,#jmQuickReturn button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+@media(max-width:680px){#jmQuickReturn .jm-return-grid{grid-template-columns:1fr}}
 </style></head><body data-ecostate-surface="access">
 <div class="top"><div class="bar"><a class="brand" href="../">JMISJUSTME / ECOSTATE</a><div class="spacer"></div><nav class="nav"><a href="../access/">Access Mesh</a><a href="../api-hub/">JM APIs</a><a href="../api-hub/visual/">K.O CO Visual House</a><a href="../author/">Author</a><a href="../">Estate</a></nav></div></div><main>
 <section class="hero"><div class="eyebrow">Current access layer · 29 September 2026</div><h1>One door.<br>Every current route.</h1>
@@ -30,6 +45,14 @@ section{margin:28px 0}.head{display:flex;align-items:end;justify-content:space-b
 <p><a class="btn primary" href="../navigator/estate-integration/#bodyContact" aria-label="Search all source-registered sovereign JM bodies">Search registered JM bodies · existing Estate integration</a></p>
 <div class="keeper">ACCESS DUPLICATE ≠ AUTHORITY DUPLICATE. ONE PROFESSIONAL FRONT DOOR. MANY SOVEREIGN BODIES.</div></section>
 <div class="stats"><div class="stat"><b>6 / 6</b><small>ECOSTATE operating lanes PASS</small></div><div class="stat"><b>21 / 21</b><small>Theory bridge pairs tested</small></div><div class="stat"><b>32 / 32</b><small>FTR functional comic issues</small></div><div class="stat"><b>704 / 704</b><small>FTR functional comic pages</small></div></div>
+<section id="jmQuickReturn" aria-labelledby="jmQuickReturnTitle">
+<div class="head"><div><div class="eyebrow">Your Estate · continue using it</div><h2 id="jmQuickReturnTitle">Pick up and get creating</h2><p>Recent JM Games House openings and doors you choose to pin — using your originals, not stored copies.</p></div></div>
+<div class="jm-return-grid">
+<div class="jm-return-panel"><h3>Recently opened in Games &amp; Beyond</h3><div id="jmRecentGameDoors" class="jm-return-items" aria-live="polite"><p class="jm-return-empty">Checking the existing Games House history on this browser…</p></div></div>
+<div class="jm-return-panel"><h3>My pinned doors</h3><div id="jmPinnedDoorList" class="jm-return-items" aria-live="polite"><p class="jm-return-empty">Pin a creation below to keep its original door close by.</p></div><button id="jmClearPinnedDoors" type="button" class="jm-return-clear" disabled>Clear my pins</button><p id="jmPinsStatus" class="jm-return-note" role="status">Only on this browser. No account sync or copy of your creations.</p></div>
+</div>
+<p class="jm-return-note">“Recent” means a body was opened in the existing Games House; it is not a saved-game restore. This panel never changes your game history or private files.</p>
+</section>
 <section><div class="head"><div><div class="eyebrow">Primary doors</div><h2>Enter by what you want to do</h2></div></div>
 <div class="grid">
 <article class="card"><span class="tag">Browser / AI access</span><h3>JM Browser Contact CP01</h3><p>Test real browser Worker and IndexedDB contact in 32 cycles, inspect website-permission limits, and copy a scoped evidence receipt. Independent of existing MCP and Android routes.</p><div class="state">NEW ADDITIVE CONTACT ADAPTER · HOST PROOF OPEN</div><div class="foot"><a class="btn primary" href="./browser-contact.html">Open Browser Contact</a></div></article>
@@ -46,22 +69,22 @@ section{margin:28px 0}.head{display:flex;align-items:end;justify-content:space-b
 </div></section>
 <section id="jmUseNow" aria-labelledby="jmUseNowTitle"><div class="head"><div><div class="eyebrow">Use the originals now · direct entry CP08</div><h2 id="jmUseNowTitle">Play, create, read — no extra launcher</h2><p>Enter an already mounted JM body directly through its own Games&Beyond runtime, or open the existing independent creator rooms. These are pointers, not copies. A mounted body is not a guarantee of physical Fold8 acceptance.</p></div></div>
 <h3 class="use-subtitle">Play from your Games House</h3><div class="mini">
-<article class="row" data-jm-use-entry="tboys-core-clash"><div><strong>T-Boys Core Clash</strong><span>Tactical crew clash · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=tboys-core-clash">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=tboys-core-clash">Edit in Games House</a></div></article>
-<article class="row" data-jm-use-entry="fourfold-arena"><div><strong>FOURFOLD Arena</strong><span>Living-body competitive arena · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fourfold-arena">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=fourfold-arena">Edit in Games House</a></div></article>
-<article class="row" data-jm-use-entry="rim-route"><div><strong>JM Rim Route</strong><span>Portrait basketball and dribble contact · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=rim-route">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=rim-route">Edit in Games House</a></div></article>
-<article class="row" data-jm-use-entry="fight-clash"><div><strong>Fight Clash Chameleon</strong><span>Open-ring fighting body · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fight-clash">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=fight-clash">Edit in Games House</a></div></article>
-<article class="row" data-jm-use-entry="futarized"><div><strong>FUTARIZED</strong><span>Game-of-Game playable manual · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=futarized">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=futarized">Edit in Games House</a></div></article>
+<article class="row" data-jm-use-entry="tboys-core-clash"><div><strong>T-Boys Core Clash</strong><span>Tactical crew clash · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=tboys-core-clash">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=tboys-core-clash">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:tboys-core-clash" aria-label="Pin tboys-core-clash to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-entry="fourfold-arena"><div><strong>FOURFOLD Arena</strong><span>Living-body competitive arena · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fourfold-arena">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=fourfold-arena">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:fourfold-arena" aria-label="Pin fourfold-arena to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-entry="rim-route"><div><strong>JM Rim Route</strong><span>Portrait basketball and dribble contact · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=rim-route">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=rim-route">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:rim-route" aria-label="Pin rim-route to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-entry="fight-clash"><div><strong>Fight Clash Chameleon</strong><span>Open-ring fighting body · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fight-clash">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=fight-clash">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:fight-clash" aria-label="Pin fight-clash to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-entry="futarized"><div><strong>FUTARIZED</strong><span>Game-of-Game playable manual · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=futarized">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=futarized">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:futarized" aria-label="Pin futarized to my doors" aria-pressed="false">☆ Pin</button></div></article>
 </div>
 <h3 class="use-subtitle">Create in your existing engines</h3><div class="mini">
-<article class="row" data-jm-use-entry="gameforge"><div><strong>GameForge</strong><span>Original JM game production forge · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=gameforge">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=gameforge">Edit in Games House</a></div></article>
-<article class="row" data-jm-use-entry="glyphforge"><div><strong>GlyphForge</strong><span>Original JM project-body/playtest bridge · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=glyphforge">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=glyphforge">Edit in Games House</a></div></article>
+<article class="row" data-jm-use-entry="gameforge"><div><strong>GameForge</strong><span>Original JM game production forge · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=gameforge">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=gameforge">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:gameforge" aria-label="Pin gameforge to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-entry="glyphforge"><div><strong>GlyphForge</strong><span>Original JM project-body/playtest bridge · mounted public version</span></div><div class="use-actions"><a class="btn primary" data-jm-launch="play" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=glyphforge">Open mounted body</a><a class="btn" data-jm-launch="edit" href="https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=glyphforge">Edit in Games House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="game:glyphforge" aria-label="Pin glyphforge to my doors" aria-pressed="false">☆ Pin</button></div></article>
 </div>
 <h3 class="use-subtitle">More original experiences</h3><div class="mini">
-<article class="row" data-jm-use-contact="openbox"><div><strong>JM OPENBOX</strong><span>Existing original code-in, app-out browser editor · source remains separate</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/">Open code editor</a></div></article>
-<article class="row" data-jm-use-contact="workshop"><div><strong>JM Coding Workshop</strong><span>Independent JM.WEB-built workshop and language entrances</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/coding-estate/workshop/">Open workshop</a></div></article>
-<article class="row" data-jm-use-contact="agi-console"><div><strong>JM AGI Lab Runtime Contact Console</strong><span>Bounded executable contact console, not an AGI capability claim</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/apps/jm-agi-lab-runtime-console-v1/">Open console</a></div></article>
-<article class="row" data-jm-use-contact="music"><div><strong>JM Lyrics & Music House</strong><span>Public music route; private LyricStudio original remains owner-controlled</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/lyrics/">Open Music House</a></div></article>
-<article class="row" data-jm-use-contact="ftr-issue01"><div><strong>FTR Comic — Issue 01</strong><span>Existing published comic reader; not the private visual master</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/visual-story/ftr-the-massive-push/issue-01/">Read issue</a></div></article>
+<article class="row" data-jm-use-contact="openbox"><div><strong>JM OPENBOX</strong><span>Existing original code-in, app-out browser editor · source remains separate</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/">Open code editor</a><button class="jm-pin-btn" type="button" data-jm-pin-id="room:openbox" aria-label="Pin openbox to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-contact="workshop"><div><strong>JM Coding Workshop</strong><span>Independent JM.WEB-built workshop and language entrances</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/coding-estate/workshop/">Open workshop</a><button class="jm-pin-btn" type="button" data-jm-pin-id="room:workshop" aria-label="Pin workshop to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-contact="agi-console"><div><strong>JM AGI Lab Runtime Contact Console</strong><span>Bounded executable contact console, not an AGI capability claim</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/apps/jm-agi-lab-runtime-console-v1/">Open console</a><button class="jm-pin-btn" type="button" data-jm-pin-id="room:agi-console" aria-label="Pin agi-console to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-contact="music"><div><strong>JM Lyrics & Music House</strong><span>Public music route; private LyricStudio original remains owner-controlled</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/lyrics/">Open Music House</a><button class="jm-pin-btn" type="button" data-jm-pin-id="room:music" aria-label="Pin music to my doors" aria-pressed="false">☆ Pin</button></div></article>
+<article class="row" data-jm-use-contact="ftr-issue01"><div><strong>FTR Comic — Issue 01</strong><span>Existing published comic reader; not the private visual master</span></div><div class="use-actions"><a class="btn primary" href="https://jmisjustme-estate.pages.dev/visual-story/ftr-the-massive-push/issue-01/">Read issue</a><button class="jm-pin-btn" type="button" data-jm-pin-id="room:ftr-issue01" aria-label="Pin ftr-issue01 to my doors" aria-pressed="false">☆ Pin</button></div></article>
 </div>
 <div class="boundary"><b>Truth boundary:</b> seven game/engine buttons use existing mounted body IDs and the House&#39;s current deep-link logic. Two private JMStudios originals are not mounted publicly and have no quick-launch links. The Lyrics House is a public entry, not an assertion that private LyricStudio versions are published. No direct URL saves GitHub source, proves gameplay quality, or transfers original custody.</div>
 </section>
@@ -100,4 +123,77 @@ section{margin:28px 0}.head{display:flex;align-items:end;justify-content:space-b
 <div class="row"><div><strong>GitHub — source / version / recovery corridor</strong><span>Public source and proof route. GitHub carries source; it does not become the website identity.</span></div><a class="btn" href="https://github.com/JMisJustMe/JM-cading-lab">Open source repository</a></div>
 </div></section>
 <section><div class="boundary"><b>Truth boundary:</b> finished infrastructure does not mean every comic, cartoon, book edition or future theory inquiry is finished. Current production systems and routing can be complete while individual creative descendants remain deliberately alive. Contact debt does not become build debt.</div></section>
-</main><footer><strong>JM Current Access Mesh</strong><br>Public projection / routing layer · source bodies remain sovereign · 27 September 2026</footer><script defer src="../ecostate-interaction-v1.js"></script><script defer src="../ecostate-personality-v2.js"></script><script defer src="../ecostate-authored-v3.js"></script><script defer src="../ecostate-contact-v4.js"></script></body></html>
+</main><footer><strong>JM Current Access Mesh</strong><br>Public projection / routing layer · source bodies remain sovereign · 27 September 2026</footer><script defer src="../ecostate-interaction-v1.js"></script><script defer src="../ecostate-personality-v2.js"></script><script defer src="../ecostate-authored-v3.js"></script><script defer src="../ecostate-contact-v4.js"></script><script id="jmQuickReturnScript">
+(function(){
+'use strict';
+const PIN_KEY='jm-access-owner-pins-v1',RECENT_KEY='jm-gb-recent-v05';
+const pinList=document.getElementById('jmPinnedDoorList'),recentList=document.getElementById('jmRecentGameDoors');
+const clearButton=document.getElementById('jmClearPinnedDoors'),status=document.getElementById('jmPinsStatus');
+if(!pinList||!recentList||!clearButton||!status)return;
+const cards=new Map();
+for(const button of document.querySelectorAll('#jmUseNow button[data-jm-pin-id]')){
+ const row=button.closest('[data-jm-use-entry],[data-jm-use-contact]');
+ const a=row?.querySelector('a[data-jm-launch="play"]')||row?.querySelector('a.btn.primary');
+ const name=row?.querySelector('strong')?.textContent?.trim();
+ const id=button.dataset.jmPinId;
+ if(!a||!name||!id||!/^(game|room):[a-z0-9-]{1,90}$/.test(id))continue;
+ const url=new URL(a.href,location.href);
+ if(url.protocol!=='https:'||!['jmisjustme-estate.pages.dev','jmisjustme.github.io'].includes(url.hostname))continue;
+ cards.set(id,{id,name,url:url.href,button});
+}
+function getArray(key){
+ try{const value=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(value)?value:[];}catch{return[];}
+}
+let saved=getArray(PIN_KEY).filter(x=>typeof x==='string'&&cards.has(x));
+let pins=[...new Set(saved)].slice(0,12);
+let storageWritable=true;
+function remember(){
+ try{localStorage.setItem(PIN_KEY,JSON.stringify(pins));status.textContent='Saved on this browser only; no account sync or copies.';}
+ catch{storageWritable=false;status.textContent='Browser storage unavailable. Pins work for this open page only.';}
+}
+function message(text){const p=document.createElement('p');p.className='jm-return-empty';p.textContent=text;return p;}
+function link(label,url){const a=document.createElement('a');a.className='jm-return-item';a.href=url;a.textContent=label;return a;}
+function renderPins(){
+ pinList.replaceChildren();
+ if(!pins.length)pinList.append(message('Pin a game or studio in “Use Now” below.'));
+ else for(const id of pins){const item=cards.get(id);if(item)pinList.append(link(item.name,item.url));}
+ clearButton.disabled=!pins.length;
+ for(const item of cards.values()){
+  const on=pins.includes(item.id);
+  item.button.setAttribute('aria-pressed',String(on));
+  item.button.textContent=on?'★ Pinned':'☆ Pin';
+ }
+}
+for(const item of cards.values())item.button.addEventListener('click',()=>{
+ pins=pins.includes(item.id)?pins.filter(x=>x!==item.id):[item.id,...pins].slice(0,12);
+ remember();renderPins();
+});
+clearButton.addEventListener('click',()=>{pins=[];remember();renderPins();});
+renderPins();
+async function renderRecent(){
+ const history=[...new Set(getArray(RECENT_KEY).filter(x=>typeof x==='string'&&/^[a-z0-9-]{1,80}$/.test(x)))];
+ const mounted=new Map();
+ try{
+  const response=await fetch('../games-beyond/registry.json',{cache:'default'});
+  if(!response.ok)throw Error('Registry unavailable');
+  const data=await response.json();
+  for(const b of data.registered_bodies||[]){
+   if(b?.mounted===true&&typeof b.id==='string'&&/^[a-z0-9-]{1,80}$/.test(b.id)&&typeof b.name==='string')
+    mounted.set(b.id,b.name);
+  }
+ }catch{
+  for(const [id,item] of cards)if(id.startsWith('game:'))mounted.set(id.slice(5),item.name);
+ }
+ const recent=history.filter(id=>mounted.has(id)).slice(0,3);
+ recentList.replaceChildren();
+ if(!recent.length){recentList.append(message('No recent public game openings found here. Choose Play in “Use Now” to start.'));return;}
+ for(const id of recent){
+  const a=link(mounted.get(id),'../games-beyond/?jm-play='+encodeURIComponent(id));
+  a.setAttribute('aria-label','Open '+mounted.get(id)+' again in Games & Beyond');
+  recentList.append(a);
+ }
+}
+renderRecent();
+})();
+</script>
+</body></html>

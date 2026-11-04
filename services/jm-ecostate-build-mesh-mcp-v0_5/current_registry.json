@@ -1,8 +1,8 @@
 {
   "schema": "JM.CareerCurrentProjectRegistry/0.24",
-  "date": "2026-10-06",
+  "date": "2026-11-04",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 RECURSIVE-CAPABILITY-GROWTH-PROTOCOL-v1.0 INTEGRATION · CYCLE016 HEAD PRESERVED · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.6 CP04 LLM2_v2.1 SOURCE RECONCILIATION · CYCLE016 HEAD PRESERVED · AUTHORITY-TIER-PRECEDENCE PRESERVED",
   "boundary": "This hosted snapshot preserves authority-tier precedence while integrating JM Recursive Capability Growth & Return Protocol v1.0 by reference across current JM LLM, AI/agent and OS/runtime control-plane seats. The relation governs growth/proof workflow only: merge=false, proof_transfer=false and canonical_reference=true. JM LLM Core v1.16 Cycle 016 remains the current capability authority; stronger private exact evidence can still outrank hosted summaries.",
   "records": [
     {
@@ -160,18 +160,23 @@
     },
     {
       "id": "llm2-v2",
-      "title": "JM LLM #2 v2.0 — Unified Executable Program Edition",
-      "date": "29 Sep 2026",
+      "title": "JM LLM #2 v2.1 — Maximal Earned Direct-Content Edition",
+      "date": "04 Nov 2026",
       "category": "ai software",
       "tags": [
         "LLM2",
-        "program head",
-        "execution"
+        "learned direct content",
+        "current v2.1"
       ],
-      "status": "FLAZ COMPLETE · PACKAGE-PROVEN · ZIONFOLDERED",
-      "summary": "Nine current capabilities compile through one ProgramHead architecture into one bounded universal action program/interpreter, removing the v1.9 mode-router split from the success path.",
-      "proof": "Executable-program acquisition 46/46 PASS; full integration 23/23 PASS; deterministic program-bank reacquisition matched exactly.",
-      "boundary": "Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction.",
+      "status": "FLAZ COMPLETE · FROZEN · LOCKED · ANCHORED · PACKAGE-PROVEN · MAXIMAL-EARNED · ZIONFOLDERED",
+      "summary": "Owner-frozen v2.1 supersedes the bounded v2.0 ProgramHead current seat with a learned direct-content decoder. Exact v2.1 original release and 23/23 matrix earned; older v2.0 source remains protected ancestry.",
+      "proof": "Owner Library 00_CURRENT_POINTER and RELEASE_MANIFEST prove the frozen v2.1 source; archive SHA-256 28016904da6a44dabc6e49688090452fde98e7da73541a5daa2003c8c51d38b0; learned bank SHA-256 133cf26f1dfc106133bf183fb4ddcd0ffa4a8d7280628863ad35c667af50af21; acquisition 46/46 and matrix 23/23 PASS. Fresh bounded local original runtime contact receipted separately.",
+      "boundary": "Bounded learned direct-content execution, not unrestricted autonomous reasoning or arbitrary language capability. v2.0 remains a frozen fixed-ISA ancestor; v2.2 experiments were not promoted (best held-out 22/23). No private source or model weights are hosted here.",
+      "head_version": "2.1.0",
+      "prior_frozen_head": "JM LLM #2 v2.0 — Unified Executable Program Edition",
+      "owner_archive_sha256": "28016904da6a44dabc6e49688090452fde98e7da73541a5daa2003c8c51d38b0",
+      "learned_bank_sha256": "133cf26f1dfc106133bf183fb4ddcd0ffa4a8d7280628863ad35c667af50af21",
+      "unpromoted_v2_2": true,
       "relations": [
         {
           "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",

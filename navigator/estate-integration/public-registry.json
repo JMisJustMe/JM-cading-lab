@@ -88,6 +88,62 @@
       "state": "PUBLIC_LIVE_PROVEN_V0_5_1"
     },
     {
+      "id": "access-mesh",
+      "name": "JM Current Access Mesh",
+      "role": "EXISTING_CROSS_ESTATE_ACCESS_SEARCH_AND_SOURCE_CONTACT",
+      "url": "https://jmisjustme-estate.pages.dev/access/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "games-beyond",
+      "name": "JM Games & Beyond",
+      "role": "EXISTING_GAMES_PLAY_AND_LOCAL_CREATOR_ENTRY",
+      "url": "https://jmisjustme-estate.pages.dev/games-beyond/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "books",
+      "name": "JM Books & Written Bodies",
+      "role": "EXISTING_BOOK_AND_WRITING_PROJECTION_NOT_PRIVATE_MANUSCRIPT",
+      "url": "https://jmisjustme-estate.pages.dev/books/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "visual-story",
+      "name": "JM Visual Story & Comics",
+      "role": "EXISTING_COMICS_AND_VISUAL_STORY_PUBLIC_PROJECTION",
+      "url": "https://jmisjustme-estate.pages.dev/visual-story/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "market-lab",
+      "name": "JM Market Ecosystem Lab",
+      "role": "EXISTING_PUBLIC_MARKET_LAB_ROUTE_NOT_COMMERCIAL_EXECUTION_PROOF",
+      "url": "https://jmisjustme-estate.pages.dev/market-lab/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "rukquss",
+      "name": "RUKQUSS — Independent Business Gateway",
+      "role": "INDEPENDENT_BUSINESS_DOMAIN_NOT_ESTATE_SOURCE_REPLACEMENT",
+      "url": "https://rukquss.com/",
+      "state": "INDEPENDENT_HOST_HTTP200_RUKQUSS_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "jm-website-001",
+      "name": "JM WEBSITE 001 — Original JM.WEB Creation",
+      "role": "INDEPENDENT_JM_WEB_AUTHORED_WEBSITE_NOT_CANONICAL_ESTATE_REPLACEMENT",
+      "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/",
+      "state": "INDEPENDENT_GITHUB_PAGES_HTTP200_JMWEB_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "jm-openbox",
+      "name": "JM OPENBOX — Original Code In, App Out",
+      "role": "ORIGINAL_SEPARATE_CODE_APP_CREATOR_SOURCE_NOT_MERGED",
+      "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
+      "state": "INDEPENDENT_GITHUB_PAGES_HTTP200_OPENBOX_TITLE_VERIFIED_2026_11_04"
+    },
+    {
       "id": "freestanding-website",
       "name": "JMISJUSTME Independent Website v1.5 H1",
       "role": "FREESTANDING_SOVEREIGN_WEBSITE_HEAD",
@@ -100,6 +156,55 @@
       "role": "SOURCE_VERSION_RECOVERY_CORRIDOR",
       "url": "https://github.com/JMisJustMe/JM-cading-lab",
       "state": "PUBLIC_SOURCE_CORRIDOR"
+    },
+    {
+      "id": "jm-coding-workshop",
+      "name": "JM Coding Workshop — Original JM.WEB Website",
+      "role": "EXISTING_INDEPENDENT_JMWEB_WORKSHOP_PUBLIC_ROUTE_NOT_SOURCE_REPLACEMENT",
+      "url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+      "state": "GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "wix-living-estate",
+      "name": "JMISJUSTME Living Estate — Original Wix Home",
+      "role": "INDEPENDENT_PUBLISHED_WIX_WEBSITE_NOT_CANONICAL_ESTATE_REPLACEMENT",
+      "url": "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es",
+      "state": "PUBLISHED_WIX_ACCOUNT_AND_GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "api-hub",
+      "name": "JM API House — Existing API Bodies",
+      "role": "EXISTING_PUBLIC_API_HOUSE_CONTACT_NOT_PRIVATE_API_WRITE_AUTHORITY",
+      "url": "https://jmisjustme-estate.pages.dev/api-hub/",
+      "state": "GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_NO_OVERFLOW_2026_11_04"
+    },
+    {
+      "id": "ko-co-visual",
+      "name": "JM K.O CO — Visual Estate House",
+      "role": "EXISTING_PUBLIC_KO_CO_VISUAL_HOUSE_NOT_PRIVATE_ASSET_ORIGINAL",
+      "url": "https://jmisjustme-estate.pages.dev/api-hub/visual/",
+      "state": "GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_NO_OVERFLOW_2026_11_04"
+    },
+    {
+      "id": "author-home",
+      "name": "JM — About the Author",
+      "role": "PUBLIC_AUTHOR_CREATOR_PROJECTION_NOT_OWNER_PRIVATE_PROFILE",
+      "url": "https://jmisjustme-estate.pages.dev/author/",
+      "state": "GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_NO_OVERFLOW_2026_11_04"
+    },
+    {
+      "id": "coding-everybody",
+      "name": "JM EveryBody — Sovereign Coding Workbench",
+      "role": "EXISTING_PUBLIC_SOVEREIGN_CODING_WORKBENCH_NOT_SOURCE_MERGER",
+      "url": "https://jmisjustme-estate.pages.dev/coding-estate/everybody/",
+      "state": "GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_NO_OVERFLOW_2026_11_04"
+    },
+    {
+      "id": "money-menu",
+      "name": "JM Money Menu — Public Contact Carrier",
+      "role": "EXISTING_PUBLIC_COMMERCIAL_CONTACT_CARRIER_NOT_PAYMENT_OR_FULFILMENT_PROOF",
+      "url": "https://jmisjustme-estate.pages.dev/money-menu/",
+      "state": "GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_NO_OVERFLOW_2026_11_04"
     }
   ],
   "services": [
@@ -241,5 +346,42 @@
     ],
     "non_equivalence": "A connection or mesh is not automatically a merger. Deliberate merger is permitted with appropriate authority, proof and recovery.",
     "proof_boundary": "Public registry lists relationship permissions, not owner-write capability, live functional mergers or proven receiver execution."
+  },
+  "candidate_route_addendum": {
+    "schema": "JM.Estate.ExistingHomesRouteAddendum/1",
+    "date": "2026-11-04",
+    "change": "LINK_POINTERS_ONLY",
+    "added_route_ids": [
+      "access-mesh",
+      "games-beyond",
+      "books",
+      "visual-story",
+      "market-lab",
+      "rukquss",
+      "jm-website-001",
+      "jm-openbox",
+      "jm-coding-workshop",
+      "wix-living-estate",
+      "api-hub",
+      "ko-co-visual",
+      "author-home",
+      "coding-everybody",
+      "money-menu"
+    ],
+    "new_files_published": 0,
+    "original_body_replacements": 0,
+    "private_owner_source_exposed": false,
+    "nonblocking_holds": [
+      "InfinityFree .xo.je and .rf.gd returned generic 843-byte pages rather than identifiable homepage content; do not reclassify those as verified accessible website content",
+      "No per-link physical Samsung Fold8 browser acceptance claimed",
+      "Five other account-listed Wix sites are Wix Draft, without published URL; not declared as public existing-home routes or replacements"
+    ],
+    "proof_scope": "Target hosts returned HTTP 200 and the stated content identity markers in direct GroundZeroJM checks; source-branch registration is not proof of canonical Cloudflare deployment; existing 10 original records retain their roles and proof. Two further source contacts: Workshop path in the existing Access Mesh and exact original GitHub source; published Wix owner-account readback. Neither is promoted to independent browser acceptance. GroundZeroJM independently used actual Chrome headless at 390x844 to HTTP200 read the original Workshop and the published Wix Living Estate with matching expected identities. This supports live destination contact, not device-owner physical touch or candidate registry production deployment. Five more EXISTING top-level department entrances recovered directly from unchanged Access Mesh source and independently loaded with GroundZeroJM real Chrome headless 390x844: API House, K.O CO Visual House, Author, EveryBody Coding, and Money Menu each returned HTTP200, correct title identity and no horizontal overflow. Commercial link is not payment/fulfilment proof; API public contact is not private API write.",
+    "parent_live_proof_version": "v1.1-live-proven",
+    "release_note": "This additive source branch does not supersede the live proof version; new pointers remain source-candidate until separately deployed and verified.",
+    "resolved_holds": [
+      "Existing Workshop live content was previously unverified; GroundZeroJM Chrome headless 390x844 now returned HTTP 200 with expected JM CODING WORKSHOP title and distinct original body identity",
+      "Existing Wix Living Estate live content was previously unverified; GroundZeroJM Chrome headless 390x844 now returned HTTP 200 with Home | Jmisjustme Living Es title and GAMES, THEORY, CADING, APPS, LYRICS, AUTHOR, PROVIDINGS body markers; existing published Wix owner-account status independently confirmed"
+    ]
   }
 }

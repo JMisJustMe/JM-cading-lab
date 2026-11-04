@@ -6,6 +6,8 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'navigator/estate-integration/public-registry.json'
+      - 'governance/estate-integration/verify_existing_homes_cp02.py'
       - 'apps/index.html'
       - 'games-beyond/app.js'
       - 'games-beyond/registry.json'
@@ -28,6 +30,8 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'navigator/estate-integration/public-registry.json'
+      - 'governance/estate-integration/verify_existing_homes_cp02.py'
       - 'apps/index.html'
       - 'games-beyond/app.js'
       - 'games-beyond/registry.json'
@@ -103,6 +107,8 @@ jobs:
           grep -Fq 'https://jmisjustme-estate.pages.dev/books/' sitemap.xml
           grep -Fq 'https://jmisjustme-estate.pages.dev/visual-story/' sitemap.xml
           grep -Fq 'https://jmisjustme-estate.pages.dev/market-lab/' sitemap.xml
+      - name: CP02 governed existing-homes pointer differential
+        run: python3 governance/estate-integration/verify_existing_homes_cp02.py
       - name: Install browser proof runtime
         run: |
           npm install --no-save playwright@1.54.1

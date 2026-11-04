@@ -568,6 +568,40 @@
           "canonical_reference": true
         }
       ]
+    },
+    {
+      "id": "jm-megalith-cp37",
+      "title": "JM MEGALITH CP37 — In-House Creator Studio / Fracture Circuit",
+      "date": "4 Nov 2026",
+      "category": "game creation software",
+      "tags": [
+        "MEGALITH",
+        "Fracture Circuit",
+        "Creator Studio",
+        "owner-hosted",
+        "Fold8",
+        "gameplay",
+        "character authoring",
+        "world authoring"
+      ],
+      "status": "CURRENT FOLD8 SERVED CP37 · EXACT HTTP/FILE PARITY PASS · PRIOR CHROME QA SEPARATE · CP38 NOT CROWNED",
+      "summary": "Owner-operated JM MEGALITH Creator Studio and playable Fracture Circuit are served through the existing Fold8 localhost:8137 origin. The current served CP37 Donor Contact body is a later distinct exact source from the previously Chrome-tested CP37 QA transfer. World, Embodiment and GameCore editors remain separately owned; CP38 is a candidate, not the currently served website.",
+      "proof": "4 Nov physical Fold8 Termux: original current Downloads JM_MEGALITH_CP37_CREATOR_DONOR_CONTACT_CANDIDATE.html SHA-256 19ce35080786851d799c62c7d1db7be35a160b44a0e43941412cbb8ba35d03a5 exactly equals bytes actively served at http://127.0.0.1:8137/. GroundZeroJM prior CP37 QA transfer SHA-256 18aee9b6c76c9af320e46b3726ab32f032c1dc3bc721dc27cf007a79a3049a85 passed Chrome touch-emulation edit/save/play/reopen, JSON export/import and exported CAST at 390x844 and 850x650; this was a DIFFERENT source revision and its test coverage is not automatically transferred to served CP37. Earlier CP36R 38/38 native checks stay inherited only at their original scope. CP38 standalone candidate a33822123c73499156ca9b86ac46ef3373584d9bf351ed2e2781909c3b2fbb2b is present both on Fold8 and GroundZeroJM, not served as CP37.",
+      "boundary": "SOURCE PARITY of the current Fold8-served CP37 is proved, not full current-revision functional browser QA or physical Samsung Internet finger-touch/FPS. The exact private 00_CURRENT_POINTER current-release authority was not independently re-read in this registry patch; do not equate a served candidate with universal Estate source authority. Character/world source-to-live-game injection beyond bounded CP38 synthetic GLB QA remains unproven; no private assets or model source published, original studios unchanged. CP38R UI repair is separately tested on GroundZeroJM, not automatically the currently served site.",
+      "relations": [
+        {
+          "relation": "PRESERVES_SEPARATE_GAME_FEDERATION",
+          "target": "JM MEGALITH CP30 original 10-engine federation",
+          "merge": false,
+          "proof_transfer": false
+        },
+        {
+          "relation": "CONTACTS_INDEPENDENT_AUTHORING",
+          "target": "PlayZone World Studio; JM Embodiment Authoring Bridge v2.0; JM GameCore Proof Studio",
+          "merge": false,
+          "proof_transfer": false
+        }
+      ]
     }
   ]
 }

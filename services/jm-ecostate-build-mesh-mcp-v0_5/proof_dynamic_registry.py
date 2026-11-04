@@ -2,6 +2,7 @@
 import hashlib
 import importlib.util
 import json
+from datetime import date
 import pathlib
 import sys
 import tempfile
@@ -24,11 +25,18 @@ assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
 assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.24"
-assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-06"
+assert server.CURRENT_REGISTRY_DATE == parsed["date"]
+date.fromisoformat(parsed["date"])
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
-assert len(server.CURRENT) == 22
+assert len(server.CURRENT) == len(parsed["records"]) and len(server.CURRENT) >= 24
 assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
+megalith = next(x for x in server.CURRENT if x["id"] == "jm-megalith-cp37")
+assert "CURRENT FOLD8 SERVED CP37" in megalith["status"]
+assert "19ce35080786851d799c62c7d1db7be35a160b44a0e43941412cbb8ba35d03a5" in megalith["proof"]
+assert "18aee9b6c76c9af320e46b3726ab32f032c1dc3bc721dc27cf007a79a3049a85" in megalith["proof"]
+assert "not automatically transferred" in megalith["proof"]
+assert "CP38" in megalith["boundary"] and "not" in megalith["boundary"].lower()
 
 protocol_target_ids = [
     "ecostate-build-mesh-v102","llm-core-v1","llm2-v2","agi-v144",
@@ -277,7 +285,7 @@ assert positive["git_blob_sha"] == git_blob_digest(json.dumps(synthetic, separat
 assert positive["current_head_authority"] == "NOT_ASSERTED"
 assert positive["independent_gemini_github_fetch"] == "NOT_PROVEN"
 assert positive["mutation_performed"] is False
-assert len(server.CURRENT) == 22
+assert len(server.CURRENT) == len(parsed["records"])
 
 with patch.object(server.urllib.request, "urlopen", return_value=io.BytesIO(b"tampered")):
     tampered = server.get_game_reentry_hints({})

@@ -37,7 +37,7 @@ def main():
     by_id={r["id"]:r for r in routes}
     require(d["schema"]=="JM.Estate.PublicNervousSystem/1", "Existing bridge schema changed")
     require(d["canonical_root"]==EXPECTED_ORIGINAL["estate"], "Canonical Estate route changed")
-    require(d["version"]=="v1.2-existing-homes-candidate", "Candidate version missing")
+    require(d["version"]=="v1.1-live-proven", "Inherited live proof version was rewritten")
     require(len(routes)==18 and len(by_id)==len(routes), "Missing/duplicated route identities")
     require(set(by_id)==set(EXPECTED_ORIGINAL)|set(EXPECTED_NEW), "Unexpected source or route")
     for key,url in {**EXPECTED_ORIGINAL,**EXPECTED_NEW}.items():
@@ -58,6 +58,7 @@ def main():
     require(p["contains_private_owner_data"] is False and p["contains_owner_write_endpoint"] is False and p["contains_mutable_owner_state"] is False, "Original privacy boundary broken")
     a=d["candidate_route_addendum"]
     require(a["schema"]=="JM.Estate.ExistingHomesRouteAddendum/1", "Unscoped source addendum")
+    require(a.get("parent_live_proof_version")==d["version"], "Candidate addendum cannot replace proved parent")
     require(a["new_files_published"]==0 and a["original_body_replacements"]==0, "Unexpected publication or replacement")
     require(a["private_owner_source_exposed"] is False, "Private source exposure")
     require(set(a["added_route_ids"])==set(EXPECTED_NEW), "Inconsistent source addendum")

@@ -1,0 +1,159 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM API v1.1 — Sovereign Existing-API Reconciliation / Scoped Contact Entrance",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM API v1.1 — guarded contact entrance over independent existing API bodies",
+    "body_type": "append-forward public-safe REST/HTTP adapter and OpenAPI contract, NOT a new cloud owner or general proxy",
+    "intended_destination": "JMisJustMe/JM-cading-lab source review PR #727; existing Cloudflare Pages Estate when separately authorized, local Node/Termux carrier",
+    "body_path": "jm-api/core.mjs"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 727,
+    "head_branch": "feature/jm-api-v1-1-reconcile-20261104",
+    "base_branch": "main",
+    "owner_instruction": "Do that now: reconcile existing APIs, continue their shared access through one entrance, reuse originals and prove the changed boundary.",
+    "detected_new_boundaries": [
+      "functions/api/jm"
+    ],
+    "original_authorities_unchanged": true,
+    "merge_authorized": false,
+    "deployment_authorized": false,
+    "chronological_note": "Initial source candidate was committed before this same-PR prospective intake document; original build-entry gate correctly failed. This declaration authorizes bounded continued PR development/review and tests, not a fabricated claim of prior preflight."
+  },
+  "foundation": {
+    "recovery_decision": "Reuse original JM API v1 locally tested ancestor and original Estate API contracts; add only a bounded public contact/directory layer, no second owner storage or private proxy.",
+    "recovered_sources": [
+      "JM_API_V1_OWNER_PACK_2026-11-04.zip — first original local candidate, preserved as frozen ancestor",
+      "functions/api/estate-contact.js — protected Cloud Contact relay",
+      "functions/api/owner/vault.js — owner-key/R2 private custody",
+      "functions/api/ailatheo.js — creator-entitlement provider",
+      "agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py — owner-local Termux adapter",
+      "JM ECOSTATE Build Mesh Native MCP v0.8.6 — directly contacted, public-safe read only",
+      "JM MCP Workshop and JM Live Experience CP07 — independently connected MCP tool bodies",
+      "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md",
+      "JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md"
+    ],
+    "selected_donors": [
+      {
+        "name": "JM API v1 ancestor",
+        "role": "public-safe REST status/plan/OpenAPI source"
+      },
+      {
+        "name": "JM Cloud Contact existing relay",
+        "role": "fixed recipient + bearer/receipt authority retained by original"
+      },
+      {
+        "name": "JM Build Mesh and Workshop",
+        "role": "discovery and recipe authority retained by originals"
+      },
+      {
+        "name": "JM Phone Commander",
+        "role": "existing localhost security pattern, no remote execution inheritance"
+      }
+    ],
+    "historical_not_authority": [
+      "JM Studios API",
+      "SHIMS Reading Backend",
+      "JM Sovereign Agent Gateway"
+    ],
+    "source_rule": "RECOVER_BEFORE_REBUILD; CONTACT_BEFORE_CROWN; DONOR_PROOF_NOT_RECIPIENT_PROOF; ACCESS_NOT_AUTHORITY"
+  },
+  "exact_stack": {
+    "core": "jm-api/core.mjs",
+    "local_host": "jm-api/server.mjs — Node.js 22+, 127.0.0.1 only",
+    "web_adapter": "functions/api/jm/[[path]].js — existing Cloudflare Pages, no new project",
+    "tests": [
+      "tests/jm-api-v1.test.mjs",
+      "tests/jm-api-http.test.mjs",
+      "tests/jm-api-reconciliation.test.mjs"
+    ],
+    "CI": ".github/workflows/jm-api-v1-1-qa.yml",
+    "language": "JavaScript ESM, Node native HTTP/Fetch API, OpenAPI 3.1 and Cloudflare Pages function",
+    "upstream": "ONLY fixed anonymous GET https://jm-cloud-contact-server-v05.onrender.com/ready, redirects rejected",
+    "governance": [
+      "scripts/jm_build_entry_gate.py",
+      "registry/build-routes/JM_BUILD_ROUTE_MANIFEST_CONTRACT_v0.1.json"
+    ],
+    "untouched": [
+      "original estate pages and deployment workflow",
+      "existing original API implementations",
+      "owner private files and tokens",
+      "Cloudflare R2 bindings",
+      "phone private localhost server"
+    ]
+  },
+  "true_gaps": {
+    "state": "RECOVERED_AND_SCOPED_TO_EXISTING_ESTATES_CONTACT_SURFACE",
+    "gap": "Existing APIs each have independent entrances/authority; first JM API v1 candidate catalogues only four bodies and lacks accurate history, owner-vault, AILatheo, phone scope and live fixed-read boundary.",
+    "why_existing_sources_insufficient": "No existing single public-safe API route in canonical source had the full seven-body map and nine guarded plans. Explicit source/route separation was needed instead of rebuilding protected APIs.",
+    "new_capability_creation_authorized": false,
+    "new_storage_or_host_required": false,
+    "new_private_gateway_required": false,
+    "contact_adapter_reconciliation_required": true,
+    "mutation_authority_added": false
+  },
+  "proof_lanes": {
+    "source": {
+      "state": "PASS_AT_LOCAL_BOUNDED_SCOPE",
+      "evidence": "Source core Git blob 841b088c870f32098acd659e8722c10487d36a0c read back from branch and matched locally generated source."
+    },
+    "local_node": {
+      "state": "PASS",
+      "evidence": "28/28 core/Pages adapter + 5/5 actual localhost HTTP + 14/14 reconciliation/security tests = 47/47 local; branch JM API v1.1 QA GitHub Actions run 41746700852 success."
+    },
+    "build_entry": {
+      "state": "PRIOR_FAIL_CLOSED_CORRECTLY",
+      "evidence": "JM Build Route/Intake run 41746700812 demanded same-PR manifest; this narrowly scoped prospective document is the correction, retest required."
+    },
+    "production": {
+      "state": "HOLD",
+      "criterion": "Owner-approved merge and actual deployed Pages readback against intended source version."
+    },
+    "upstream_live": {
+      "state": "HOLD",
+      "criterion": "Actual target readiness HTTP observation distinct from local mocked fixture; no authenticated workspace proof inferred."
+    },
+    "owner_device": {
+      "state": "HOLD",
+      "criterion": "Actual Fold8 Termux/browser run, no localhost listener publicisation."
+    }
+  },
+  "host_and_surfaces": {
+    "local_node": "PASS at synthetic and actual loopback HTTP only",
+    "github_branch": "Draft PR #727; original production not changed",
+    "cloudflare_pages": "SOURCE_ONLY_NOT_DEPLOYED",
+    "owner_fold8": "NOT_TESTED_BY_THIS_RECIPIENT",
+    "owner_vault": "PRIVATE_AUTHORITY_UNTOUCHED",
+    "AILatheo": "BILLING_AUTHORITY_UNTOUCHED"
+  },
+  "escalation": {
+    "failure_route": "HOLD -> inspect exact API/CI/manifest failure -> correct scoped same PR -> retest differences; never bypass gate or rebuild original services.",
+    "manual_user_contact": "Only for live merge/deployment, provider credentials, real owner-device acceptance or newly privileged operations.",
+    "forbidden": [
+      "Auto-merge/deploy",
+      "arbitrary proxy",
+      "private bearer/header forwarding",
+      "public phone listener",
+      "billing mutations",
+      "new storage duplication",
+      "false live Ding"
+    ]
+  },
+  "state": {
+    "route": "AUTHORIZED_SCOPED_SOURCE_RECONCILIATION_AND_CI_RETEST_ONLY",
+    "build_authorized_by_manifest": true,
+    "authorization_scope": "Continue same draft PR and run source/runtime/CI acceptance; no production deployment, new private capability, original API mutation or owner-device operation.",
+    "merge_authorized": false,
+    "crown": "NOT_EARNED",
+    "live": "HOLD"
+  },
+  "next_route": {
+    "step": "Rerun native Build Entry + manifest validator and JM API QA on exact final PR head; inspect status. Keep DRAFT until separately authorised live deployment and readback.",
+    "close_condition": "Source/CI gate checks success and true bounded FLAZ receipt. No claim of live production or physical device without independently observed evidence."
+  },
+  "manifest_proof": {
+    "result": "Evidence-based same-PR bounded route; manifest authorises continuation but does not retroactively pass preflight or confer live/device/protected service proof."
+  }
+}

@@ -31,7 +31,7 @@ assert(html.includes('data-jm-foundations="cp03"')); // CP02 registered source r
 assert(html.includes("OWNER_METADATA_UNVERIFIED"),'owner imports cannot crown source');
 assert(html.includes('safeSourceURL'), 'owner links require security boundary');
 assert(!html.includes('X-JM-Owner-Key:'));
-assert(!html.includes('fetch('),'offline visual catalogue must not proxy original services');
+assert(html.includes("const root='https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/'")&&html.includes("credentials:'omit'")&&html.includes("foundationSync').addEventListener('click'")&&!html.includes('setInterval('),'source contact must be fixed, opt-in, anonymous and never a general API proxy');
 const sourceHash=crypto.createHash('sha256').update(html).digest('hex');
 console.log('PASS JM K.O CO CP02: 113 source records, 52 laws, 15 canonical theory titles, 23 unchanged API bodies, 5 shelves, source-projection equivalence');
 console.log('CP02 source SHA256='+sourceHash);

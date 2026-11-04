@@ -24,7 +24,7 @@ assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
 assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.24"
-assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-06"
+assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-11-04"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
 assert len(server.CURRENT) == 22

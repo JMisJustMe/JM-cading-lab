@@ -304,7 +304,7 @@ jobs:
           set -euo pipefail
           test -s cloudflare-estate/index.html
           test -s cloudflare-estate/api-hub/index.html
-          grep -Fq "JM API HOUSE" cloudflare-estate/api-hub/index.html
+          grep -Fq 'data-jm-api-house="v1"' cloudflare-estate/api-hub/index.html
           test -s cloudflare-estate/estate-return-route.js
           grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/career/index.html

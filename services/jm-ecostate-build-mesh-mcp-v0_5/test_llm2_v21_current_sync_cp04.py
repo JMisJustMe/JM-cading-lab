@@ -40,7 +40,7 @@ print(json.dumps({
   "record_id_retained":r["id"],
   "current_head":head["current_head"],
   "exact_sha256":server.CURRENT_REGISTRY_SHA256,
-  "scoped_gates":20,
+  "scoped_gates":19,
   "hosted_production":"NOT_CLAIMED_UNTIL_RENDER_DEPLOY_AND_MCP_READBACK",
   "private_model_source_published":False
 },indent=2))

@@ -134,3 +134,5 @@ jobs:
             } finally {await browser.close()}
           })().catch(error=>{console.error('CP11_WORKROOM_HOLD',error);process.exitCode=1});
           NODE
+      - name: CP04 non-destructive shared packet bus restore — mobile, desktop and fault injection
+        run: node estate-publication/apps-tools-convergence/test-bus-import-cp04.mjs

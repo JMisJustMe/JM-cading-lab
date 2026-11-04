@@ -47,8 +47,9 @@ test('JM Studios historical source now has protected B2/B4 readback, not public 
  assert.match(x.scope,/Library sources recovered/);
   assert(x.guide.includes('B2.0 API-layer'));assert(x.guide.includes('B4.0 controlled-intake'));
 });
-test('no unverified phone endpoint exposed',()=>{
+test('protected original Phone Commander local runtime proof retains no public access',()=>{
  const phone=records.find(x=>x.id==='phone-commander');assert.equal(phone.group,'local');assert.equal(phone.open,null);assert.equal(phone.source.includes('jm_phone_commander.py'),true);
+ assert(phone.scope.includes('127.0.0.1:8765'));assert(phone.scope.includes('authenticated HTTP 200'));assert(phone.scope.includes('unauthenticated 401'));assert(phone.scope.includes('browser Origin 403'));
 });
 test('private TIWIN live URLs not published',()=>{
  assert(!html.includes('tiwin-private-stage-cp09.onrender.com'));

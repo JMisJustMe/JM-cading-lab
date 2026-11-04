@@ -91,10 +91,12 @@
       ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
     ],
     "additional_QA": "tests/jm-api-hub.test.mjs",
-    "visual_house": "api-hub/visual/index.html · CP02 same canonical visual door, self-contained offline projection",
+    "visual_house": "api-hub/visual/index.html · living canonical CP03 descendant; CP02 frozen owner source retained, same public door",
     "foundation_catalog": "api-hub/visual/foundation-catalog.json · one authoritative source-grade machine register, exact embedded HTML projection",
     "foundation_QA": "tests/jm-koco-foundations-cp02.test.mjs",
-    "open_first": "api-hub/visual/CP02_OPEN_FIRST.md"
+    "open_first": "api-hub/visual/CP02_OPEN_FIRST.md",
+    "visual_cp03_QA": "tests/jm-koco-foundations-cp03.test.mjs",
+    "visual_cp03_open_first": "api-hub/visual/CP03_OPEN_FIRST.md"
   },
   "true_gaps": {
     "state": "RECOVERED_AND_SCOPED_TO_EXISTING_ESTATES_CONTACT_SURFACE",
@@ -104,7 +106,8 @@
     "new_storage_or_host_required": false,
     "new_private_gateway_required": false,
     "contact_adapter_reconciliation_required": true,
-    "mutation_authority_added": false
+    "mutation_authority_added": false,
+    "consequence": "CP03 repairs owner-facing one-click source contact, no-overwrite guards, original file choice and source-exact related record display. Existing source/receipt remains distinct."
   },
   "proof_lanes": {
     "source": {
@@ -139,6 +142,17 @@
       "state": "PASS_LOCAL_AND_OWNER_WINDOWS_CHROME",
       "details": "113 indexed records (62 laws/governance, 21 theories, 10 mechanisms, 9 coding, 11 proof); 52 source law entries (42 LAW +10 PNH); 40/40 local Chromium checks; exact 115120 bytes SHA256 815b7f4e1d67f7d91394c57242b35c23e79a0737015970bccccee02b91e16083; Windows Chrome readback 18 first-page law cards, 5 shelves, 113 index, API and LAW deep links; GitHub QA source-equivalence test added.",
       "source_boundary": "No 297-census completion claim, no physical Fold8 proof, no original Shared Mechanisms or OPENBOX alteration."
+    },
+    "visual_cp03": {
+      "state": "LOCAL_SOURCE_AND_SIMULATED_BROWSER_PASS_PENDING_GITHUB_RUN",
+      "evidence": "CP03 local Chromium 30/30 source-contact and adversarial checks PASS. Owner GroundZeroJM copy of original Shared Mechanisms v1.3 bytes SHA-256 342d4b27aa3e6e90d17685fdbfba2c525b848eff1526c581e97d3d15a2eb9142 matches original Library.",
+      "source_sha256": "ca63a8bbf6fb55c9db28279bca764bc21078f53bd0affc7beab72a63f8d32335",
+      "source_bytes": 124019,
+      "new_boundary": "Explicit owner-only fixed Github read of main or source-review branch; contact-only additive ID suggestions. No auto update, no private proxy, no old source overwrite, no secret forwarding, no device listener.",
+      "open_original": "Exact filename/size/SHA chooser in browser; local file door only in file:// context for independently copied owner original",
+      "version_relation": "CP03 inherits CP02 113-record original manifest without changing its 52 laws or source-grade census",
+      "physical_fold8": "HOLD; local 390px mobile simulator is not a physical Samsung device",
+      "merge_and_live": "HOLD until GitHub review/merge and hosted readback of actual changed body"
     }
   },
   "host_and_surfaces": {
@@ -175,7 +189,7 @@
     "deployment_authorized": "Public-safe source-to-existing GitHub Actions Estate carrier; no private rights."
   },
   "next_route": {
-    "step": "Continue same branch/PR evidence and CI; do not bypass blocked merge safety. After authorized release, test existing /api-hub/visual/ live and owner Fold8 browser.",
+    "step": "Read back exact CP03 source and GitHub CI, native GroundZeroJM Chrome file:// and exact original link. Preserve PR and existing deployment authority; release only through authorized review. Fold8 remains physical-only gate.",
     "close_condition": "Source/CI gate checks success and true bounded FLAZ receipt. No claim of live production or physical device without independently observed evidence."
   },
   "manifest_proof": {

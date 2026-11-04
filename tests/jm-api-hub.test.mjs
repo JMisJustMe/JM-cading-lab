@@ -79,4 +79,19 @@ test('Estate original hosting and owner APIs remain separately referenced',()=>{
  assert(records.some(x=>x.id==='ailatheo'&&x.open.includes('action=status')));
  assert(records.some(x=>x.id==='cloud-contact'&&x.open.includes('/ready')));
 });
+test('six original health/protocol routes use independently observed live addresses',()=>{
+ const expected={
+  'app-commons-mcp':'/healthz',
+  'app-commons-oauth':'/health',
+  'federation-receipt':'/mcp',
+  'federation-oauth':'/health',
+  'unique-bodies-cp08':'/health',
+  'unique-bodies-cp09':'/health'
+ };
+ for(const [id,ending] of Object.entries(expected)){
+  const target=records.find(x=>x.id===id);
+  assert(target, 'missing service: '+id);
+  assert(target.open.endsWith(ending), 'incorrect direct API route: '+id);
+ }
+});
 console.log('JM API House: '+checks.length+'/'+checks.length+' PASS');

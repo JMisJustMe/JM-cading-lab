@@ -1,9 +1,9 @@
 {
   "schema": "JM.CareerCurrentProjectRegistry/0.24",
-  "date": "2026-10-06",
+  "date": "2026-11-04",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 RECURSIVE-CAPABILITY-GROWTH-PROTOCOL-v1.0 INTEGRATION · CYCLE016 HEAD PRESERVED · AUTHORITY-TIER-PRECEDENCE PRESERVED",
-  "boundary": "This hosted snapshot preserves authority-tier precedence while integrating JM Recursive Capability Growth & Return Protocol v1.0 by reference across current JM LLM, AI/agent and OS/runtime control-plane seats. The relation governs growth/proof workflow only: merge=false, proof_transfer=false and canonical_reference=true. JM LLM Core v1.16 Cycle 016 remains the current capability authority; stronger private exact evidence can still outrank hosted summaries.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 RECURSIVE-CAPABILITY-GROWTH-PROTOCOL-v1.0 INTEGRATION · CYCLE016 HEAD PRESERVED · AUTHORITY-TIER-PRECEDENCE PRESERVED · CP04 VERIFIED ORIGINAL AI CONTACT",
+  "boundary": "This hosted snapshot preserves authority-tier precedence while integrating JM Recursive Capability Growth & Return Protocol v1.0 by reference across current JM LLM, AI/agent and OS/runtime control-plane seats. The relation governs growth/proof workflow only: merge=false, proof_transfer=false and canonical_reference=true. JM LLM Core v1.16 Cycle 016 remains the current capability authority; stronger private exact evidence can still outrank hosted summaries. Current JM LLM #2 v2.1 and JM Learn v11.3 override obsolete hosted descriptors only at their own verified authority scopes; CP04 connector is not itself an AI.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
@@ -160,18 +160,19 @@
     },
     {
       "id": "llm2-v2",
-      "title": "JM LLM #2 v2.0 — Unified Executable Program Edition",
-      "date": "29 Sep 2026",
+      "title": "JM LLM #2 v2.1 — Maximal Earned Direct-Content Edition",
+      "date": "4 Nov 2026",
       "category": "ai software",
       "tags": [
         "LLM2",
-        "program head",
-        "execution"
+        "learned direct content",
+        "bounded program execution",
+        "separate original"
       ],
-      "status": "FLAZ COMPLETE · PACKAGE-PROVEN · ZIONFOLDERED",
-      "summary": "Nine current capabilities compile through one ProgramHead architecture into one bounded universal action program/interpreter, removing the v1.9 mode-router split from the success path.",
-      "proof": "Executable-program acquisition 46/46 PASS; full integration 23/23 PASS; deterministic program-bank reacquisition matched exactly.",
-      "boundary": "Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction.",
+      "status": "FLAZ COMPLETE · FROZEN · PACKAGE-PROVEN · ZIONFOLDERED",
+      "summary": "Current privately pinned v2.1 successor to the independently preserved v2.0 Unified Executable Program Edition; bounded learned direct-content decoding and original weights-backed output. Private models and bank remain in Zionfolder; Build Mesh only displays safe source authority metadata.",
+      "proof": "Direct current pointer and exact ZIP SHA-256 28016904da6a44dabc6e49688090452fde98e7da73541a5daa2003c8c51d38b0; acquisition 46/46 PASS; integration matrix 23/23 PASS; 4 Nov original v2.1 weights-backed output and original Core v1.16 selector-aware return verified; independent receiver/Teo and learning-provider contacts separately receipted.",
+      "boundary": "Bounded earned direct-content and fixed operation families; not unrestricted generation, AGI, or v2.2. Experimental v2.2 held-out best 22/23 remains below advancement gate. Historical v2.0 remains independent and frozen; private weights/source unpublished.",
       "relations": [
         {
           "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
@@ -179,6 +180,55 @@
           "merge": false,
           "proof_transfer": false,
           "canonical_reference": true
+        }
+      ]
+    },
+    {
+      "id": "jm-learn-v113",
+      "title": "JM Learn v11.3 — Knowledge Mesh Contact",
+      "date": "4 Oct 2026",
+      "category": "learning software",
+      "tags": [
+        "JM Learn",
+        "Knowledge Mesh",
+        "General Runtime Branch",
+        "privacy"
+      ],
+      "status": "ACTIVE GENERAL RUNTIME BRANCH · BUILT · BROWSER-RUNTIME TESTED · LIBRARY-SEATED",
+      "summary": "Current General Runtime head, distinct from protected v10.9 Family Proof head. Original learner engine discovers, contacts and caps knowledge donors via versioned contract; independent original kept in Zionfolder.",
+      "proof": "Original HTML SHA-256 0008509ae59667253a600d49ebc7765bdcdfd2a58823f4354985f69858f67b34; 4 Nov 2026 Windows Chrome actual page + AGI v1.4.5 provider contact 13/13 PASS; provider answered and one bounded claim seated UNVERIFIED/CAPPED. Original v11.3 test receipt and current-pointer provenance preserved.",
+      "boundary": "No learner competency transfer; source relevance is not learner proof. Physical Fold8/Oppo owner acceptance and wider production donor mounts remain separate; v10.9 Family Proof branch stays independently authoritative.",
+      "relations": [
+        {
+          "relation": "PRESERVES_INDEPENDENT_FAMILY_PROOF_BRANCH",
+          "target": "JM Learn v10.9 Content Flood FLAZ",
+          "merge": false,
+          "proof_transfer": false
+        }
+      ]
+    },
+    {
+      "id": "jm-ai-collective-cp04",
+      "title": "JM AI Collective CP04 — Bounded Original Federation & Knowledge Contact",
+      "date": "4 Nov 2026",
+      "category": "AI integration infrastructure",
+      "tags": [
+        "AILatheo",
+        "Teo OS",
+        "JM LLM",
+        "JM Learn",
+        "source-preserving federation"
+      ],
+      "status": "LOCAL ORIGINAL CONTACT DING · REAL WINDOWS BROWSER 13/13 PASS · OWNER FOLD8 OPEN",
+      "summary": "A thin optional connector joining independently protected original JM LLM #2 v2.1, JM LLM Core v1.16, original AILatheo/Teo OS receiver and JM Learn/AGI provider routes; no AI bodies merged or private models published.",
+      "proof": "CP03 original native pair returned exactly; CP04 original public AILatheo/Teo OS receiver consumed pinned native receipt with 14-body coding pass, HOLD→CARRY re-entry and 2/2 tamper rejection on GroundZeroJM. Original JM Learn v11.3 and AGI Lab v1.4.5 provider mounted byte-for-byte; Windows Chrome discovery, provider response and layout 13/13 PASS.",
+      "boundary": "Not a new AI, proof transfer, general deliberation, or AGI. Private model/weights absent from hosted carrier; owner Fold8 physical touch and any unrestricted cross-device live native-service admission remain OPEN.",
+      "relations": [
+        {
+          "relation": "COORDINATES_WITHOUT_MERGE",
+          "target": "JM LLM Core v1.16; JM LLM #2 v2.1; JM Learn v11.3; AILatheo; Teo OS",
+          "merge": false,
+          "proof_transfer": false
         }
       ]
     },

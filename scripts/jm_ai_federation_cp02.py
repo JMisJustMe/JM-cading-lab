@@ -82,7 +82,7 @@ def run_ailatheo(root,raw):
         if x.get('ding')!='AILATHEO_UNIFIED_CIRCUIT_DING' or x.get('coding_spine',{}).get('executed')!=14:
             raise ValueError('AILATHEO_ORIGINAL_CONTACT_HOLD')
         rod=x.get('rod',{})
-        if rod.get('claim_ceiling')!='REENTRY_CHANGE' or not {'TraceBox','Contact Field'}.issubset(set(rod.get('trace',{}).get('carry',[]))):
+        if rod.get('claim_ceiling')!='REENTRY_CHANGE' or not {'TraceBox','Interactors Interacting'}.issubset(set(rod.get('trace',{}).get('carry',[]))):
             raise ValueError('ROD_GROUNDED_CONTACT_HOLD')
     return {'status':'PASS','office':'AILatheo / ROD','coding_spine':14,'opportunity_ceiling':a['rod']['claim_ceiling'],
             'relation_carry':a['rod']['trace']['carry'],'reentry':'PASS','identity_separate':True}

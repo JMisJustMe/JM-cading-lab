@@ -304,6 +304,8 @@ jobs:
           set -euo pipefail
           test -s cloudflare-estate/index.html
           test -s cloudflare-estate/api-hub/index.html
+          test -s cloudflare-estate/api-hub/visual/index.html
+          grep -Fq 'data-jm-koco-house="v2"' cloudflare-estate/api-hub/visual/index.html
           grep -Fq 'data-jm-api-house="v1"' cloudflare-estate/api-hub/index.html
           test -s cloudflare-estate/estate-return-route.js
           grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js

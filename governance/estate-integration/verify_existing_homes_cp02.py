@@ -42,6 +42,45 @@ def require(cond, message):
     if not cond:
         raise AssertionError(message)
 
+def verify_original_body_contacts():
+    """CP05: confirm source-qualified contact doors and private/original role boundaries."""
+    from re import findall
+    html = Path("access/index.html").read_text(encoding="utf-8")
+    marker = '<section id="jmOriginalBodyContacts"'
+    require(html.count(marker) == 1, "Missing or repeated original-body contact section")
+    section = html.split(marker, 1)[1].split("</section>", 1)[0]
+    source_audit = "https://github.com/JMisJustMe/JM-cading-lab/blob/main/governance/JM_APPS_TOOLS_CODING_CP17_ROUTE_AUDIT_2026-11-03.md"
+    expected = [
+        ("https://github.com/JMisJustMe/JM-cading-lab/blob/main/bodymesh/00_OPEN_FIRST.md", "Read BodyMesh source guide"),
+        ("https://github.com/JMisJustMe/JM-cading-lab/blob/main/onegame/v0.3/00_OPEN_FIRST.md", "Read OneGame entry"),
+        ("../coding-estate/everybody/", "Open public coding workbench"),
+        (source_audit, "Read Zionfolder custody audit"),
+        (source_audit, "Read Librarian CP37 audit"),
+    ]
+    contacts = findall(r'<a class="btn" href="([^"]+)">([^<]+)</a>', section)
+    require(contacts == expected and section.count('<div class="row">') == 5,
+            "Source-qualified original-body contacts changed or acquired unreviewed routes")
+    require(all(contacts[i][0] != contacts[j][0] or i == j or {i,j} == {3,4}
+                for i in range(5) for j in range(i + 1, 5)),
+            "Unexpected shared link between independent bodies")
+    repo_prefix = "https://github.com/JMisJustMe/JM-cading-lab/blob/main/"
+    for url, _ in contacts:
+        if url.startswith(repo_prefix):
+            relative = url[len(repo_prefix):]
+            require(".." not in Path(relative).parts and Path(relative).is_file(),
+                    "Public source contact missing or escaped the repository: " + relative)
+        else:
+            require(url == "../coding-estate/everybody/" and
+                    Path("coding-estate/everybody/index.html").is_file(),
+                    "Public coding-workbench contact missing")
+    for marker in ("source record is not an installed app", "private owner html",
+                   "this link does not launch it", "not the private application",
+                   "does not imply public application deployment"):
+        require(marker in section.lower(), "Contact/proof boundary lost: " + marker)
+    require("libfile_" not in section and "file:/// " not in section and "data:text/html" not in section,
+            "Private payload or local file reference leaked into public body contacts")
+
+
 def main():
     d=json.loads(REG.read_text(encoding="utf-8"))
     routes=d["routes"]
@@ -81,6 +120,7 @@ def main():
     require(any("generic 843-byte" in h for h in a["nonblocking_holds"]), "InfinityFree unverified access not preserved")
     require(len(a["resolved_holds"])==2, "New Chrome proof resolution not recorded")
     require(any("Five other account-listed Wix sites" in h for h in a["nonblocking_holds"]), "Wix drafts must not be represented as public live routes")
+    verify_original_body_contacts()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

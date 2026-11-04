@@ -53,8 +53,8 @@ def main():
     for key in EXPECTED_NEW:
         require("HTTP200" in by_id[key]["state"], "Bounded live source evidence missing: "+key)
         require("PRIVATE" not in by_id[key]["url"], "Private route leaked: "+key)
-    require("SOURCE_CONNECTED_ACCESS_MESH_LINK_PRESENT" in by_id["jm-coding-workshop"]["state"], "Workshop source proof boundary lost")
-    require("PUBLISHED_WIX_ACCOUNT_CONFIRMED" in by_id["wix-living-estate"]["state"], "Wix account proof boundary lost")
+    require("GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_VERIFIED" in by_id["jm-coding-workshop"]["state"], "Workshop source proof boundary lost")
+    require("PUBLISHED_WIX_ACCOUNT_AND_GZJM_CHROME_HEADLESS_390X844_HTTP200_TITLE_IDENTITY_VERIFIED" in by_id["wix-living-estate"]["state"], "Wix account proof boundary lost")
     require("INDEPENDENT" in by_id["wix-living-estate"]["role"], "Wix separate sovereign home lost")
     require("INDEPENDENT" in by_id["rukquss"]["role"], "RUKQUSS business sovereignty lost")
     require("INDEPENDENT" in by_id["jm-website-001"]["role"], "JM.WEB sovereignty lost")
@@ -70,6 +70,8 @@ def main():
     require(a["private_owner_source_exposed"] is False, "Private source exposure")
     require(set(a["added_route_ids"])==set(EXPECTED_NEW)|set(EXPECTED_CONNECTED), "Inconsistent source addendum")
     require(any("generic 843-byte" in h for h in a["nonblocking_holds"]), "InfinityFree unverified access not preserved")
-    print("JM EXISTING HOMES CP02 PASS — 10 unchanged original routes + 8 HTTP-confirmed pointers + 2 bounded source/account contacts; private-source boundary PASS")
+    require(len(a["resolved_holds"])==2, "New Chrome proof resolution not recorded")
+    require(any("Five other account-listed Wix sites" in h for h in a["nonblocking_holds"]), "Wix drafts must not be represented as public live routes")
+    print("JM EXISTING HOMES CP02 PASS — 10 unchanged original routes + 8 prior HTTP-confirmed pointers + 2 additional Chrome HTTP200 contact proofs; private-source boundary PASS")
 if __name__=="__main__":
     main()

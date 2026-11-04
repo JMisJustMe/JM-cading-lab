@@ -70,7 +70,7 @@ function installPortableControls(){
   const busImport=document.createElement('button');
   busImport.type='button';
   busImport.textContent='IMPORT BUS';
-  busImport.setAttribute('aria-label','Merge an exported packet bus, preserving existing packets');
+  busImport.setAttribute('aria-label','Import Bus — merge exported packets while preserving existing saved packets');
   const busPicker=document.createElement('input');
   busPicker.type='file';busPicker.accept='application/json,.json';busPicker.hidden=true;
   busImport.onclick=()=>busPicker.click();

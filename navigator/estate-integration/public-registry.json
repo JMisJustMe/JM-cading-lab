@@ -1,6 +1,6 @@
 {
   "schema": "JM.Estate.PublicNervousSystem/1",
-  "version": "v1.2-existing-homes-candidate",
+  "version": "v1.1-live-proven",
   "status": "LIVE_PROVEN_CANONICAL_ESTATE_AND_NAVIGATOR_MCP_CONNECTED",
   "canonical_root": "https://jmisjustme-estate.pages.dev/",
   "registry_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json",
@@ -319,6 +319,8 @@
       "InfinityFree .xo.je and .rf.gd returned generic 843-byte pages rather than identifiable homepage content; do not reclassify those as verified accessible website content",
       "No per-link physical Samsung Fold8 browser acceptance claimed"
     ],
-    "proof_scope": "Target hosts returned HTTP 200 and the stated content identity markers in direct GroundZeroJM checks; source-branch registration is not proof of canonical Cloudflare deployment; existing 10 original records retain their roles and proof."
+    "proof_scope": "Target hosts returned HTTP 200 and the stated content identity markers in direct GroundZeroJM checks; source-branch registration is not proof of canonical Cloudflare deployment; existing 10 original records retain their roles and proof.",
+    "parent_live_proof_version": "v1.1-live-proven",
+    "release_note": "This additive source branch does not supersede the live proof version; new pointers remain source-candidate until separately deployed and verified."
   }
 }

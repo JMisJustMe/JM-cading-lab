@@ -568,6 +568,40 @@
           "canonical_reference": true
         }
       ]
+    },
+    {
+      "id": "jm-megalith-cp37",
+      "title": "JM MEGALITH CP37 — In-House Creator Studio / Fracture Circuit",
+      "date": "4 Nov 2026",
+      "category": "game creation software",
+      "tags": [
+        "MEGALITH",
+        "Fracture Circuit",
+        "Creator Studio",
+        "owner-hosted",
+        "Fold8",
+        "gameplay",
+        "character authoring",
+        "world authoring"
+      ],
+      "status": "CURRENT OWNER-HOSTED CP37 · BOUNDED CHROME QA PASS · CP38 CANDIDATE NOT CROWNED",
+      "summary": "Owner-controlled CP37 Creator Studio runs alongside the original playable Fracture Circuit on the existing Fold8 localhost route. Supports source/design editing, save/reopen, generated play, project JSON export/import, and offline HTML game export. Independent World, Embodiment and GameCore studios remain distinct connected authoring bodies.",
+      "proof": "CP37 source parent SHA-256 18aee9b6c76c9af320e46b3726ab32f032c1dc3bc721dc27cf007a79a3049a85, independently pinned by the GroundZeroJM Chrome QA transfer script. Chrome with simulated touch 390x844 and 850x650 passed draft persistence, validated source, edit/save/play/reopen, independent same-name projects, JSON export/reimport and actual offline exported CAST. CP36R ancestor 38/38 native runtime tests and original-editor SHA returns remain inherited, not new CP37 device proof.",
+      "boundary": "Owner-private/local browser origin only; do not represent localhost:8137 as an Internet site. Physical Samsung Internet finger-touch and device FPS for CP37 not independently accepted. Original world/character authoring formats do not yet constitute a verified general world/character-to-live-game asset-import bridge. CP38 CHARACTER_TRANSFER_CANDIDATE is a separate unpromoted development artifact; no CP38 proof or current-head claim. No original protected JM body replaced.",
+      "relations": [
+        {
+          "relation": "PRESERVES_SEPARATE_GAME_FEDERATION",
+          "target": "JM MEGALITH CP30 original 10-engine federation",
+          "merge": false,
+          "proof_transfer": false
+        },
+        {
+          "relation": "CONTACTS_INDEPENDENT_AUTHORING",
+          "target": "PlayZone World Studio; JM Embodiment Authoring Bridge v2.0; JM GameCore Proof Studio",
+          "merge": false,
+          "proof_transfer": false
+        }
+      ]
     }
   ]
 }

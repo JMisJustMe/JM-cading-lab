@@ -40,10 +40,23 @@ try{
     };
   });
   page.on('pageerror',err=>console.log('JM BROWSER JS ERROR',String(err).slice(0,400)));
-  await page.goto('about:blank');
+  // The approved original browser deliberately runs its first-boot owner-device
+  // continuity test, reloading once to check recovery. about:blank discards the
+  // adapted carrier during that reload and is not a valid host-origin proof.
+  // Fulfil only the exact canonical route with this in-memory, hash-verified UI;
+  // all other network requests stay blocked. This changes TEST SEATING only.
+  const carrierOrigin='https://jmisjustme-estate.pages.dev/navigator/';
   await page.route('**/*',route=>route.abort());
-  await page.setContent(html,{waitUntil:'domcontentloaded',timeout:120000});
-  await page.waitForSelector('#searchForm',{timeout:30000});
+  await page.route(carrierOrigin,route=>route.fulfill({
+    status:200,contentType:'text/html',body:html
+  }));
+  await page.goto(carrierOrigin,{waitUntil:'domcontentloaded',timeout:120000});
+  await page.waitForFunction(
+    () => location.hash.startsWith('#jm-ac-result=') && !!document.querySelector('#searchForm'),
+    null,{timeout:35000}
+  );
+  assert.equal(await page.evaluate(() => typeof window.JM3232_CHATGPT_BRIDGE?.internet),
+    'function','ChatGPT host adapter missing after original continuity return');
   await page.locator('#searchInput').fill('OpenAI documentation');
   await page.locator('#scopeSelect').evaluate(el=>{el.value='web';el.dispatchEvent(new Event('change',{bubbles:true}));});
   await page.locator('#searchForm').evaluate(form=>form.requestSubmit());

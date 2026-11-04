@@ -52,3 +52,64 @@ test('CREWBOUND CP01 rematch starts clean and original v0.5 is not altered by te
   await expect(page.locator('#turn')).toHaveText('GO 0');
   await expect(page.locator('#commit')).toBeDisabled();
 });
+
+test('CP02 game displays six exclusive fighters with distinct painted canvas portraits',async({page})=>{
+  const errors=[];page.on('pageerror',err=>errors.push(String(err)));
+  await page.goto(PATH);
+  const cast=await page.evaluate(()=>({
+    names:[...document.querySelectorAll('#roster .unit b')].map(n=>n.textContent),
+    total:Object.keys(window.JM_CREWBOUND_321_SIM.ROSTER).length,
+    portraitPixels:[...document.querySelectorAll('#roster .unit canvas')].map(c=>{
+      const pix=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+      let visible=0;for(let i=3;i<pix.length;i+=4)if(pix[i]>20)visible++;
+      return visible;
+    }),
+    model:window.JM_CREWBOUND_321_SIM.CAST_SCHEMA
+  }));
+  expect(cast.names).toEqual(['Kepler','Ironvale','Solace','Locke','Aster','Nox']);
+  expect(cast.total).toBe(12);
+  expect(cast.model).toBe('JM.CREWBOUND.CP02.UNIQUE_CAST/1');
+  expect(cast.portraitPixels.every(n=>n>180)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('CP02 exclusive HTML gallery renders twelve distinct named pilots, filter and silhouette modes',async({page})=>{
+  const errors=[];page.on('pageerror',err=>errors.push(String(err)));
+  await page.goto('./crewbound-321/cast.html');
+  await expect(page.locator('.card')).toHaveCount(12);
+  const names=await page.locator('.card h3').allTextContents();
+  expect(new Set(names).size).toBe(12);
+  expect(names).not.toContain('ZIPP');expect(names).not.toContain('BRAX');
+  const before=await page.locator('.card canvas').first().evaluate(c=>{
+    const data=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    let colors=new Set();for(let i=0;i<data.length;i+=48)if(data[i+3]>0)colors.add(data[i]+','+data[i+1]+','+data[i+2]);
+    return colors.size;
+  });
+  expect(before).toBeGreaterThan(3);
+  await page.locator('#sil').click();
+  await expect(page.locator('#sil')).toHaveAttribute('aria-pressed','true');
+  const after=await page.locator('.card canvas').first().evaluate(c=>{
+    const data=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    let colors=new Set();for(let i=0;i<data.length;i+=48)if(data[i+3]>0)colors.add(data[i]+','+data[i+1]+','+data[i+2]);
+    return colors.size;
+  });
+  expect(after).toBe(1);
+  await page.locator('#home').click();
+  await expect(page.locator('#playerCast .card')).toHaveCount(6);
+  await expect(page.locator('#enemyCast')).toBeHidden();
+  await page.locator('#rivals').click();
+  await expect(page.locator('#enemyCast .card')).toHaveCount(6);
+  await expect(page.locator('#playerCast')).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
+test('CP02 Fold-friendly roster keeps touch button identity across live frames',async({page})=>{
+  await page.goto(PATH);
+  await page.locator('#roster .unit').first().evaluate(b=>b.dataset.ownerTestId='preserved');
+  await page.waitForTimeout(800);
+  expect(await page.locator('#roster .unit').first().getAttribute('data-owner-test-id')).toBe('preserved');
+  await page.locator('#roster .unit').first().click();
+  await expect(page.locator('#pair')).toHaveText('1 / 2 READY');
+  await page.waitForTimeout(450);
+  await expect(page.locator('#roster .unit').first()).toHaveAttribute('aria-pressed','true');
+});

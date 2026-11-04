@@ -1,6 +1,6 @@
-# CREWBOUND — 3 + 2 + 1 · CP01 Living Orders
+# CREWBOUND — 3 + 2 + 1 · CP02 Exclusive Cast / Living Orders
 
-**Status:** independently playable **experimental descendant**, pending actual browser/Fold8 touch acceptance. **Not** a replacement for CREWBOUND Arena v0.5, COMBOUND, REBOUND//RIOT or the public 22/24 Games & Beyond House.
+**Status:** independently playable **experimental descendant** with a twelve-character exclusive CP02 cast, pending actual browser/Fold8 touch acceptance. **Not** a replacement for CREWBOUND Arena v0.5, COMBOUND, REBOUND//RIOT or the public 22/24 Games & Beyond House.
 
 ## Recovered source and ownership
 - Original public CREWBOUND v0.5: `games-beyond` exact compressed payload, registered as `crewbound-arena`. Uncompressed pack SHA-256 verified against original payload manifest before extracting its source in a temporary Termux reference.
@@ -31,3 +31,14 @@
 
 ## Next polish after verified playable build
 Character-specific attack/defence animation, full arena selection including floor substitutions, richer yard action timing/cooldowns, improved rival tactical predictions, unique CREWBOUND silhouettes, better TraceBox history and physical Fold8 folded/unfolded play. Preserve both true originality and identifiable character lineage. No Ding, No Claim.
+
+
+## CP02 exclusive-character review
+The user-directed visual split from COMBOUND now has its own design authority: [CP02_UNIQUE_CAST_AUTHORITY.md](./CP02_UNIQUE_CAST_AUTHORITY.md).
+
+- **Quick playable HTML:** [CREWBOUND 3+2+1](./index.html)
+- **Direct interactive HTML character gallery:** [All 12 original pilots](./cast.html)
+- The twelve humanlike sports/tactical combatants have different silhouettes, costumes, gear and display names. A silhouette-only comparison mode verifies more than recolouring.
+- Original CREWBOUND donor metadata stays in `roster.js` and remains verifiably tied to its historical SHA-256; new art and display characters live in `cast.js` and `art.js`.
+- Existing `?jm-play=crewbound-arena` link and COMBOUND game are unchanged.
+- Native and browser acceptance tests must be re-run against CP02; Fold8 owner visual and real touch acceptance are distinct gates.

@@ -10,8 +10,9 @@ const plan=(g,ids,action="COMBO",x=340,y=400)=>{
 };
 test("source identity stays the exact pre-existing CREWBOUND v0.5",()=>{
  assert.equal(ORIGINAL_BODY_SHA256,"5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7");
- assert.equal(Object.keys(ROSTER).length,8);
- assert.equal(ROSTER.BRAX.hp,1760);assert.equal(ROSTER.GROVE.mass,2.12);
+ assert.equal(Object.keys(ROSTER).length,12);
+ assert.equal(ROSTER.IRONVALE.hp,1760);assert.equal(ROSTER.LOCKE.mass,2.12);
+ assert.equal(ROSTER.IRONVALE.archetype,"BRAX");assert.equal(ROSTER.LOCKE.archetype,"GROVE");
 });
 test("both sides begin with distinct 3-floor 2-yard 1-flex roles",()=>{
  const g=make();for(const side of ["player","enemy"]){
@@ -21,7 +22,7 @@ test("both sides begin with distinct 3-floor 2-yard 1-flex roles",()=>{
 });
 test("each fighter retains a distinct CP01 proposed movement speed",()=>{
  const values=Object.values(ROSTER).map(x=>x.cp01_proposed_speed);
- assert.equal(new Set(values).size,8);assert.ok(Math.min(...values)>0);
+ assert.equal(new Set(values).size,12);assert.ok(Math.min(...values)>0);
 });
 test("one selected character cannot commit a go",()=>{
  const g=make();g.choose(g.floor("player")[0].id);g.setTarget(340,200);
@@ -88,9 +89,9 @@ test("on-field contact can damage opponents and emit receipts",()=>{
  const old=foe.hp;g.step(.016);
  assert.ok(foe.hp<old);assert.ok(g.log.some(x=>x.type==="CONTACT"));
 });
-test("roster uses exact original power, HP, mass and signature fields",()=>{
+test("new cast traces inherited source combat stats and independent signature names",()=>{
  for(const x of Object.values(ROSTER)){
-  assert.ok(x.hp>=1000&&x.hp<=2000);
+  assert.ok(x.hp>=1000&&x.hp<=2200);
   assert.ok(x.mass>.5&&x.power>.5);
   assert.ok(x.signature_name&&x.shape&&x.ability_effect&&x.palette.length===3);
  }
@@ -99,4 +100,30 @@ test("a fresh game does not inherit prior transient orders",()=>{
  const g=make();plan(g,g.floor("player").slice(0,2).map(u=>u.id));
  const fresh=make();assert.equal(fresh.turn,0);assert.equal(fresh.resolve,0);
  assert.equal(fresh.units.filter(u=>u.order!==null).length,0);
+});
+
+test("CP02 has twelve independent, uniquely named crew members and silhouettes",()=>{
+ const names=Object.values(ROSTER).map(f=>f.name);
+ const silhouettes=Object.values(ROSTER).map(f=>f.silhouette);
+ assert.equal(new Set(names).size,12);assert.equal(new Set(silhouettes).size,12);
+ assert.ok(names.every(n=>!["Zipp","Brax","Mira","Vexa","Grove","Orbi","Knot","Skip"].includes(n)));
+ assert.equal(new Set(CREWS.player.concat(CREWS.enemy)).size,12);
+});
+test("each cast identity recovers a named original donor without sharing original appearance",()=>{
+ const original=require("./roster.js");
+ for(const f of Object.values(ROSTER)){
+  const donor=original.fighters[f.archetype];
+  assert.ok(donor);assert.equal(f.mass,donor.mass);
+  assert.equal(f.power,donor.power);
+  assert.equal(f.source_name,donor.name);
+  assert.equal(f.source_signature,donor.signature_name);
+  assert.notDeepEqual(f.palette,donor.palette);
+  assert.ok(f.maneuver&&f.role&&f.kit&&f.defense&&f.attack);
+ }
+});
+test("the two squads have different complete identities, not mirror duplicates",()=>{
+ const g=make();
+ assert.deepEqual(g.team("player").map(x=>x.name),["Kepler","Ironvale","Solace","Locke","Aster","Nox"]);
+ assert.deepEqual(g.team("enemy").map(x=>x.name),["Static","Latch","Ember","Wrought","Vivid","Dasher"]);
+ assert.equal(new Set(g.units.map(x=>x.key)).size,12);
 });

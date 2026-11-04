@@ -21,8 +21,8 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:
 .fieldHelp{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);text-align:center;border:1px solid #ffffff40;border-radius:12px;padding:7px 12px;background:#061b2fdb;font-size:.68rem;white-space:nowrap;max-width:94%}
 .sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:7px;margin:13px 0 6px;font-size:.73rem;font-weight:950;letter-spacing:.04em}
 .rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.unit{background:#10253a;border:1px solid var(--line);border-radius:11px;min-height:67px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;padding:7px 3px}
-.unit.active{background:#102e3a;border-color:var(--aqua)}.unit.selected{outline:3px solid var(--gold);outline-offset:-3px}.unit.undone{opacity:.46}.unit .face{font-size:1.25rem;text-shadow:0 0 16px var(--glow)}.unit b{font-size:.77rem}.unit small{font-size:.58rem;white-space:nowrap;color:#d2e0ed}.unit .hp{height:4px;width:82%;border-radius:8px;background:#33475c;overflow:hidden}.unit .hp i{display:block;height:100%;background:var(--glow);width:var(--hp)}
+.unit{background:#10253a;border:1px solid var(--line);border-radius:11px;min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;padding:7px 3px}
+.unit.active{background:#102e3a;border-color:var(--aqua)}.unit.selected{outline:3px solid var(--gold);outline-offset:-3px}.unit.undone{opacity:.46}.unit .portrait{width:100%;height:70px;max-width:84px;object-fit:contain;filter:drop-shadow(0 0 8px var(--glow));flex-shrink:0}.unit b{font-size:.77rem}.unit small{font-size:.58rem;white-space:nowrap;color:#d2e0ed}.unit .hp{height:4px;width:82%;border-radius:8px;background:#33475c;overflow:hidden}.unit .hp i{display:block;height:100%;background:var(--glow);width:var(--hp)}
 .controls{border:1px solid var(--line);background:#0a1d2c;border-radius:16px;padding:10px;margin-top:9px}
 .modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 .modes button{padding:9px 1px;border:1px solid var(--line);border-radius:9px;background:#183043;font-size:.64rem;font-weight:850}
@@ -44,10 +44,10 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 <body>
 <main>
 <header class="top">
-  <div><div class="tag">JM CREWBOUND · ORIGINAL v0.5 PRESERVED</div><h1>CREWBOUND <span>3 + 2 + 1</span></h1></div>
+  <div><div class="tag">JM CREWBOUND · ORIGINAL v0.5 PRESERVED · EXCLUSIVE CAST</div><h1>CREWBOUND <span>3 + 2 + 1</span></h1></div>
   <button id="reset" style="border:1px solid var(--line);border-radius:12px;padding:11px;background:#17293c">REMATCH</button>
 </header>
-<p class="sub">CP01 playable descendant · two orders per go · both crews move in real time · distinct speeds and defences · yard assists and flex deployment.</p>
+<p class="sub"><a href="./cast.html" style="font-weight:900;color:#9ef8ff">MEET THE 12 EXCLUSIVE CREWBOUND FIGHTERS</a> · CP02 unique-cast playable descendant · two orders per go · both crews move in real time · distinct speeds and defences · yard assists and flex deployment.</p>
 <div class="score"><div><strong>YOUR CREW</strong><span class="n" id="myhp">—</span></div><div class="center"><div id="turn">GO 0</div><div id="phase">PLANNING</div></div><div><strong>RIVAL CREW</strong><span class="n" id="theirhp">—</span></div></div>
 <div class="layout">
 <section class="board">
@@ -71,19 +71,19 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   </div>
   <div class="actions"><button id="dice" title="Optional risk modifier, never required">🎲 ROLL</button><button class="primary" id="commit" disabled>COMMIT PAIR</button><button id="pause">Ⅱ PAUSE</button></div>
 </section>
-<section class="receipts" aria-live="polite"><strong>CONTACT / ROUTE TRACE</strong><p id="log">Original fighters. New tactical rules. Choose two crew members.</p></section>
+<section class="receipts" aria-live="polite"><strong>CONTACT / ROUTE TRACE</strong><p id="log">New combat pilots. Choose two fighters.</p></section>
 <div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Tap two character cards, choose COMBO, ATTACK, GUARD, MOVE or DEPLOY, then tap or flick a destination on the field. Press COMMIT PAIR. Two rival orders resolve at the same time. All floor fighters continue moving and defending even between your orders. Yard characters can shield and assist; the flex character can deploy as a fourth floor fighter. Dice is optional.</p></details></div>
 </div>
 </div>
-<p class="footer">A separate CP01 work-in-progress, not an overwrite of CREWBOUND v0.5 or COMBOUND. Fighter name, silhouette, HP, mass, power, palette and signatures are inherited from the verified original PrimeBody source. New mobility and 3+2+1 rules are proposed descendant behaviour. Browser gameplay and Fold touch remain separate acceptance gates.</p>
+<p class="footer">A separate CP02 work-in-progress, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
 </main>
-<script src="./roster.js"></script><script src="./sim.js"></script>
+<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./sim.js"></script>
 <script>
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
 let game=new Game(321),paused=false,last=performance.now(),startPointer=null,rerenderAt=0;
-const FACE={dart:"➤",brick:"▣",wisp:"◉",shard:"◆",guardian:"♜",star:"✹",twin:"∞",split:"↯"};
+const Art=window.JM_CREWBOUND_321_ART;
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
  const r=canvas.getBoundingClientRect();
@@ -101,19 +101,27 @@ canvas.addEventListener("pointerup",ev=>{
  startPointer=null;updateUI();
 });
 function makeRoster(){
- const root=$("roster");
- root.innerHTML="";
- for(const u of game.team("player")){
-  const f=ROSTER[u.key],b=document.createElement("button");
-  b.className="unit"+(u.role==="floor"?" active":"")+(game.selected.includes(u.id)?" selected":"")+(u.alive?"":" undone");
-  b.style.setProperty("--glow",f.palette[0]);b.style.setProperty("--hp",(100*u.hp/u.maxHp).toFixed(1)+"%");
-  b.setAttribute("aria-pressed",game.selected.includes(u.id));
-  b.setAttribute("aria-label",u.name+", "+u.role+", "+Math.round(u.hp)+" health, "+f.movement_word+", "+f.signature_name);
-  const face=document.createElement("span");face.className="face";face.textContent=FACE[f.shape]||"●";
-  const name=document.createElement("b");name.textContent=u.name;
-  const role=document.createElement("small");role.textContent=u.role.toUpperCase()+" · "+f.movement_word;
-  const hp=document.createElement("div");hp.className="hp";const fill=document.createElement("i");hp.append(fill);
-  b.append(face,name,role,hp);b.addEventListener("click",()=>{game.choose(u.id);updateUI()});root.append(b);
+ const root=$("roster"),living=game.team("player");
+ for(const stale of [...root.children])if(!living.some(u=>u.id===stale.dataset.unitId))stale.remove();
+ for(const u of living){
+  const f=ROSTER[u.key];
+  let button=[...root.children].find(x=>x.dataset.unitId===u.id);
+  if(!button){
+   button=document.createElement("button");button.dataset.unitId=u.id;
+   const face=document.createElement("canvas");face.className="portrait";face.width=94;face.height=90;
+   face.setAttribute("aria-hidden","true");Art.draw(face.getContext("2d"),f,47,51,62,0,u.team);
+   const name=document.createElement("b");name.textContent=u.name;
+   const role=document.createElement("small");role.textContent=u.role.toUpperCase()+" · "+f.role;
+   const hp=document.createElement("div");hp.className="hp";hp.append(document.createElement("i"));
+   button.append(face,name,role,hp);button.addEventListener("click",()=>{game.choose(u.id);updateUI()});
+   root.append(button);
+  }
+  button.className="unit"+(u.role==="floor"?" active":"")+(game.selected.includes(u.id)?" selected":"")+(u.alive?"":" undone");
+  button.style.setProperty("--glow",f.palette[0]);
+  button.style.setProperty("--hp",(100*u.hp/u.maxHp).toFixed(1)+"%");
+  button.querySelector("small").textContent=u.role.toUpperCase()+" · "+f.role;
+  button.setAttribute("aria-pressed",game.selected.includes(u.id));
+  button.setAttribute("aria-label",u.name+", "+u.role+", "+Math.round(u.hp)+" health, "+f.role+", "+f.signature_name);
  }
 }
 function updateUI(){
@@ -145,27 +153,14 @@ $("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME
 $("reset").onclick=()=>{game=new Game(Math.floor(performance.now())>>>0);paused=false;$("pause").textContent="Ⅱ PAUSE";updateUI()};
 function drawFighter(u){
  const f=ROSTER[u.key],col=f.palette[0];
- ctx.save();ctx.translate(u.x,u.y);ctx.shadowBlur=18;ctx.shadowColor=col;
- if(u.selected){ctx.strokeStyle="#fff39a";ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke()}
- ctx.fillStyle=f.palette[1];ctx.strokeStyle=col;ctx.lineWidth=3;
- const shape=f.shape;
- ctx.beginPath();
- if(shape==="brick")rounded(-16,-16,32,32,7);
- else if(shape==="dart"){ctx.moveTo(0,-22);ctx.lineTo(20,17);ctx.lineTo(0,8);ctx.lineTo(-20,17);ctx.closePath()}
- else if(shape==="guardian"){for(let k=0;k<8;k++){const a=k*Math.PI/4;ctx.lineTo(Math.cos(a)*20,Math.sin(a)*20)}ctx.closePath()}
- else if(shape==="star"){for(let k=0;k<16;k++){const a=k*Math.PI/8;ctx.lineTo(Math.cos(a)*(k%2?10:21),Math.sin(a)*(k%2?10:21))}ctx.closePath()}
- else if(shape==="twin"){ctx.ellipse(-8,0,12,16,0,0,Math.PI*2);ctx.ellipse(8,0,12,16,0,0,Math.PI*2)}
- else if(shape==="shard"){ctx.moveTo(0,-22);ctx.lineTo(19,-8);ctx.lineTo(13,18);ctx.lineTo(-13,18);ctx.lineTo(-19,-8);ctx.closePath()}
- else ctx.arc(0,0,17,0,Math.PI*2);
- ctx.fill();ctx.stroke();ctx.shadowBlur=0;
- ctx.fillStyle="#f5ffff";ctx.beginPath();ctx.arc(-6,-3,3,0,Math.PI*2);ctx.arc(6,-3,3,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#051529";ctx.beginPath();ctx.arc(-5,-3,1.5,0,Math.PI*2);ctx.arc(7,-3,1.5,0,Math.PI*2);ctx.fill();
- if(u.shield>0){ctx.strokeStyle="#c0f9ff";ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,27,0,Math.PI*2);ctx.stroke()}
- if(u.hitFlash>0){ctx.strokeStyle="#fff";ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,23,0,Math.PI*2);ctx.stroke()}
- ctx.restore();
- ctx.fillStyle="#001018";ctx.fillRect(u.x-25,u.y-37,50,5);
- ctx.fillStyle=u.team==="player"?"#4efad0":"#ff708f";ctx.fillRect(u.x-25,u.y-37,50*clamp01(u.hp/u.maxHp),5);
- ctx.fillStyle="#fff";ctx.font="bold 13px system-ui";ctx.textAlign="center";ctx.fillText(u.name,u.x,u.y+33);
+ if(u.selected){ctx.save();ctx.strokeStyle="#fff2a8";ctx.lineWidth=4;ctx.beginPath();ctx.arc(u.x,u.y,45,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ Art.draw(ctx,f,u.x,u.y,72,game.time,u.team);
+ if(u.shield>0){ctx.save();ctx.strokeStyle="#b2f7ff";ctx.lineWidth=3;ctx.beginPath();ctx.arc(u.x,u.y,42,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ if(u.hitFlash>0){ctx.save();ctx.strokeStyle="#ffffff";ctx.lineWidth=5;ctx.beginPath();ctx.arc(u.x,u.y,44,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ ctx.fillStyle="#07121d";ctx.fillRect(u.x-30,u.y-63,60,6);
+ ctx.fillStyle=u.team==="player"?"#4efad0":"#ff708f";ctx.fillRect(u.x-30,u.y-63,60*clamp01(u.hp/u.maxHp),6);
+ ctx.fillStyle="#fff";ctx.font="bold 15px system-ui";ctx.textAlign="center";
+ ctx.fillText(u.name.toUpperCase(),u.x,u.y+49);
 }
 function clamp01(v){return Math.max(0,Math.min(1,v))}
 function paint(){

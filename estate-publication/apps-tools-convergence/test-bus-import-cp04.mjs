@@ -53,7 +53,7 @@ async function browser(){
     page.on('pageerror',e=>errors.push(String(e)));
     const res=await page.goto(host+'/estate-publication/apps-tools-convergence/'+env+'/index.html',{waitUntil:'domcontentloaded'});
     assert.equal(res.status(),200);
-    await page.getByRole('button',{name:'IMPORT BUS'}).waitFor();
+    await page.getByRole('button',{name:/^Import Bus/i}).waitFor();
     const stateValue='CP04 PRESERVE '+env+' '+viewport.width;
     await page.locator('[data-field]').first().fill(stateValue);
     const original=await page.evaluate(({env})=>window.JMAppsToolsSpine.emit('cp04.synthetic','JM '+env,{value:'original'},{environment:env}),{env});

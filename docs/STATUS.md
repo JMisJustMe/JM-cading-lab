@@ -143,3 +143,16 @@ The existing owner-private Drive recovery has now been converted from an encoded
 - **Still open:** OneDrive's *separate* stale local-to-cloud sync; GitHub *historical* public commits/PR references and any caches (older protected commit still publicly readable); full Fold8 touchscreen and current-best app/game gameplay acceptance. No claim that deleting current `main` source made historical Git objects private.
 
 Scope is proven private file custody and public Estate continuity, **not** full confidential Git-history erasure or completion of every creation.
+
+
+## 4 November 2026 — CP10 · BIAT → FLAZ protected source recurrence guard
+
+**Source-authority improvement (not a claim of historical privacy erasure):**
+
+- **Public game independence:** `.gitignore` was narrowed in commit `6de3424204373f95802d0cfe7b0ed9a1b1e2d836`, so newly authored assets of the separately-authoritative existing Rim Route public game can be tracked. Untracked owner-private family bodies and two retired private CI definitions remain ignored. Git `check-ignore` independently verified 1 allowed public asset scenario and 3 denied protected scenarios.
+- **Original deploy rail strengthened:** Existing `.github/workflows/deploy-pages.yml` received a small guarded checkout check in commit `ff8c8a14a219dc923ce8becdfe0f7ee7369db9de`. The check refuses deployment when the two scoped protected-source folders or either retired private CI definition is present in the public checkout. Source readback PASS and three synthetic local shell cases PASS (clean site allowed, private folder blocked, private workflow blocked). The prior Pages staging exclusion and existing public game deployment stages remain unchanged. Hosted workflow was queued/running at checkpoint, so a completed hosted deployment PASS was not yet asserted.
+- **Private custody already proven:** The original 31-file Git source keeper and two separate original CI definitions remain verified in existing owner-only native Google Drive ZIPs and independent laptop/phone recovery. This CP10 did not regenerate or overwrite those originals, private receipts or game bodies.
+- **Historical confidentiality remains HOLD:** Older public Git commits and PR/cache references may still expose the previously published protected material; current `main` cleanup, a narrow ignore rule and Pages exclusions cannot remove old commit history. GitHub's official procedure requires a separately coordinated history rewrite, branch/PR/clone impact review and possibly GitHub Support cached-reference cleanup. No force-push, branch mass closure or cache-purge claim was made.
+- **Separate HOLDs:** Microsoft OneDrive's distinct cloud sync issue persists despite the verified owner-only Google Drive source backup. Full owner-device gameplay and individual E-State creation acceptance, plus One-Keeper storage-quota reconciliation, remain independent work.
+
+**FLAZ at this scoped boundary:** Original source guard corrected and independently tested; every unproven higher acceptance gate stays explicitly marked. One keeper per distinct original, multiple verified doors.

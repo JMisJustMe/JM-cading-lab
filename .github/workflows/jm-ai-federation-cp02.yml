@@ -5,6 +5,8 @@ on:
       - "scripts/jm_ai_federation_cp02.py"
       - "tests/test_jm_ai_federation_cp02.py"
       - ".github/workflows/jm-ai-federation-cp02.yml"
+      - "scripts/verify_jm_ai_authority_delta_cp04.py"
+      - "registry/JM_AI_CURRENT_AUTHORITY_DELTA_CP04_2026-11-04.json"
   workflow_dispatch:
 jobs:
   receiver-contact:
@@ -46,6 +48,8 @@ jobs:
             registry/rod-bodies-v0-1.json
             ai-federation/jm-ai-lab-v2.0/00_OPEN_FIRST_JM_AI_LAB_v2_0_FULL_COMPLETE.html
             apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs
+      - name: CP04 owner current-head reconciliation (host drift must remain visible)
+        run: python scripts/verify_jm_ai_authority_delta_cp04.py
       - name: Truth boundary
         run: |
           echo "Receiver contact only: original private LLM archives not in GitHub runner"

@@ -164,6 +164,62 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP08_DIRECT_USE_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP09 Quick Return recents and local-only pinned doors (phone and Fold landscape)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const size of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport:size});
+                const page=await context.newPage();
+                page.setDefaultTimeout(20000);
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                await page.evaluate(()=>{
+                  localStorage.setItem('jm-gb-recent-v05',JSON.stringify(['fight-clash','fourfold-arena','not-mounted-private']));
+                  localStorage.setItem('jm-access-owner-pins-v1',JSON.stringify(['game:fourfold-arena','not-allowed:external']));
+                });
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelectorAll('#jmRecentGameDoors a').length===2,{timeout:20000});
+                const recent=await page.locator('#jmRecentGameDoors a').allTextContents();
+                if(!recent[0].includes('Fight Clash')||!recent[1].includes('FOURFOLD'))throw Error('Existing Games House recent order/body names lost: '+JSON.stringify(recent));
+                if(await page.locator('#jmPinnedDoorList a').count()!==1)throw Error('Unknown pin was not discarded');
+                const first=page.locator('[data-jm-pin-id="game:fourfold-arena"]');
+                if(await first.getAttribute('aria-pressed')!=='true')throw Error('Existing original pin did not restore');
+                const pin=page.locator('[data-jm-pin-id="game:tboys-core-clash"]');
+                await pin.click();
+                if(await pin.getAttribute('aria-pressed')!=='true')throw Error('Pin button state not reflected');
+                let stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-access-owner-pins-v1')));
+                if(JSON.stringify(stored)!==JSON.stringify(['game:tboys-core-clash','game:fourfold-arena']))throw Error('Owner pin IDs not persisted safely: '+JSON.stringify(stored));
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelectorAll('#jmRecentGameDoors a').length===2);
+                if(await page.locator('#jmPinnedDoorList a').count()!==2)throw Error('Pinned original links missing after reload');
+                await page.locator('[data-jm-pin-id="room:openbox"]').click();
+                if(await page.locator('#jmPinnedDoorList a').count()!==3)throw Error('Existing OPENBOX door did not pin');
+                if(await page.locator('[data-jm-pin-id="room:openbox"]').getAttribute('aria-pressed')!=='true')throw Error('Pinned OPENBOX state missing');
+                const hrefs=await page.locator('#jmPinnedDoorList a').evaluateAll(nodes=>nodes.map(n=>n.href));
+                if(!hrefs.every(url=>url.startsWith('https://jmisjustme-estate.pages.dev/')||url.startsWith('https://jmisjustme.github.io/')))throw Error('Unapproved pinned URL');
+                if((await pin.boundingBox())?.height<44)throw Error('Pin tap target below 44px');
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+                if(overflow)throw Error('Quick Return causes horizontal overflow at '+size.width);
+                await page.locator('#jmClearPinnedDoors').click();
+                stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-access-owner-pins-v1')));
+                if(stored.length||await page.locator('#jmPinnedDoorList a').count())throw Error('Clear pins did not clear');
+                const history=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-gb-recent-v05')));
+                if(history.join('|')!=='fight-clash|fourfold-arena|not-mounted-private')throw Error('Owner pins changed the Games House history');
+                if(errors.length)throw Error('Browser runtime errors '+errors.join('|'));
+                await context.close();passed++;
+              }
+              if(passed!==2)throw Error('Quick Return needs both viewports');
+              console.log('CP09 QUICK RETURN PASS: 2/2 phone and Fold-landscape; original Games House recents; owner pin/reload/clear; 44px touch; no source/history replacement');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP09_QUICK_RETURN_HOLD',e);process.exitCode=1});
+          NODE
       - name: Eight-contact phone and desktop proof
         shell: bash
         run: |

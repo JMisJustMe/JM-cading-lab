@@ -168,6 +168,46 @@ def verify_direct_use_cp08():
     print("CP08 DIRECT USE PASS — 7/7 manifest-mounted bodies · 14 exact play/edit pointers · 5/5 independent public rooms · no private JMStudios body or fake download")
 
 
+def verify_quick_return_cp09():
+    """Pin only known public originals; read existing Games House history, don't fork it."""
+    from re import findall
+    html = Path("access/index.html").read_text(encoding="utf-8")
+    require(html.count('<section id="jmQuickReturn"') == 1, "Quick Return section missing or repeated")
+    require(html.count('<script id="jmQuickReturnScript">') == 1, "Owner-local Quick Return script missing or repeated")
+    section = html.split('<section id="jmQuickReturn"', 1)[1].split("</section>", 1)[0]
+    require("Recently opened in Games &amp; Beyond" in section and "My pinned doors" in section,
+            "Source-exact owner utility headings changed")
+    require('id="jmRecentGameDoors"' in section and 'id="jmPinnedDoorList"' in section,
+            "Recents or pins presentation lost")
+    pins = findall(r'<button class="jm-pin-btn"[^>]*data-jm-pin-id="([^"]+)"', html)
+    expected = [
+        "game:tboys-core-clash", "game:fourfold-arena", "game:rim-route",
+        "game:fight-clash", "game:futarized", "game:gameforge", "game:glyphforge",
+        "room:openbox", "room:workshop", "room:agi-console", "room:music", "room:ftr-issue01",
+    ]
+    require(pins == expected, "Original Quick Return pin identities changed")
+    require(len(pins) == len(set(pins)), "Duplicate pin identity")
+    script = html.split('<script id="jmQuickReturnScript">', 1)[1].split("</script>", 1)[0]
+    require("RECENT_KEY='jm-gb-recent-v05'" in script,
+            "Quick Return no longer reuses the original Games House recent key")
+    require("PIN_KEY='jm-access-owner-pins-v1'" in script,
+            "Local pin store identity changed")
+    require("localStorage.setItem(RECENT_KEY" not in script and
+            "localStorage.removeItem(RECENT_KEY" not in script,
+            "Quick Return unexpectedly writes/erases original Games House history")
+    require("localStorage.setItem(PIN_KEY,JSON.stringify(pins))" in script,
+            "Pin state no longer local owner-managed IDs")
+    require("cards.has(x)" in script and "encodeURIComponent(id)" in script,
+            "Unknown stored pin/recent route not restricted to known public originals")
+    require("response=await fetch('../games-beyond/registry.json'" in script,
+            "Recent game names no longer come from current Games House authority")
+    require("['jmisjustme-estate.pages.dev','jmisjustme.github.io']" in script,
+            "Pin destination origin whitelist unexpectedly modified")
+    require("min-height:44px" in html and "#jmQuickReturn .jm-return-grid" in html,
+            "Fold phone touch and layout repair dropped")
+    print("CP09 QUICK RETURN — 12/12 known pin doors, inherited Games House recents, local-only owner pins, source boundary PASS")
+
+
 def main():
     d=json.loads(REG.read_text(encoding="utf-8"))
     routes=d["routes"]
@@ -210,6 +250,7 @@ def main():
     verify_original_body_contacts()
     verify_wix_door_pairs()
     verify_direct_use_cp08()
+    verify_quick_return_cp09()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

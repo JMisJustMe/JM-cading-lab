@@ -110,7 +110,7 @@ jobs:
                 const target=await separate.newPage();target.on('dialog',d=>d.accept());
                 await target.goto(url,{waitUntil:'domcontentloaded'});
                 await target.locator('#continuityStatus').waitFor();
-                await target.locator('.toolbar input[type=file]').setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
+                await target.locator('.toolbar input[type=file]').first().setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
                 await target.waitForFunction(id=>window.JMAppsToolsSpine.read().some(x=>x.id===id),id,{timeout:12000});
                 if((await target.locator('#room [data-field]').first().inputValue())!==value)throw Error('Fresh browser import lost creator field '+env);
                 await target.reload({waitUntil:'domcontentloaded'});

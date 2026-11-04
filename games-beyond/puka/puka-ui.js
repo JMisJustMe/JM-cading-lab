@@ -203,6 +203,125 @@
     renderTrace();wireTableActions();
   }
 
+
+  // CP26 · Native PUKA input organ. All routes use this game's live PukaGame,
+  // its current legal actions, its original evidence and its real save path.
+  const decisionInput={selected:0,raiseIndex:0,padIndex:null,padRef:null,padDown:new Set(),padFrame:0};
+  function currentChoices(){return game.snapshot().legal;}
+  function actFromInput(kind,source='keyboard'){
+    const fresh=game.snapshot();
+    if(!fresh.state||fresh.state.ended||fresh.state.turn!=='player'||!fresh.legal.includes(kind))return false;
+    if(kind==='raise'){
+      raiseOpen=!raiseOpen;decisionInput.raiseIndex=0;render();return true;
+    }
+    raiseOpen=false;
+    game.playerAction(kind);save();render();return true;
+  }
+  function raiseFromInput(i){
+    const fresh=game.snapshot();
+    if(!raiseOpen||!fresh.legal.includes('raise')||!fresh.raiseOptions.length)return false;
+    const ix=Math.max(0,Math.min(fresh.raiseOptions.length-1,i));
+    const target=fresh.raiseOptions[ix].target; // Existing PUKA raise authority.
+    raiseOpen=false;game.playerAction('raise',target);save();render();return true;
+  }
+  function dealFromInput(){
+    const fresh=game.snapshot();
+    if(!fresh.state||fresh.state.ended){deal();return true}
+    return false;
+  }
+  function renderPadSelection(){
+    const options=$$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]');
+    options.forEach(b=>b.classList.remove('jm-pad-selected'));
+    if(!options.length)return;
+    decisionInput.selected=((decisionInput.selected%options.length)+options.length)%options.length;
+    if(decisionInput.padIndex!==null)options[decisionInput.selected].classList.add('jm-pad-selected');
+  }
+  function choosePadAction(){
+    if(raiseOpen){const opts=game.snapshot().raiseOptions;return opts.length?raiseFromInput(decisionInput.raiseIndex):false}
+    const options=$$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]');
+    if(!options.length)return dealFromInput();
+    decisionInput.selected%=options.length;
+    const btn=options[decisionInput.selected];
+    if(btn.hasAttribute('data-next-hand'))return dealFromInput();
+    if(btn.hasAttribute('data-open-raise'))return actFromInput('raise','gamepad');
+    return actFromInput(btn.dataset.action,'gamepad');
+  }
+  function padMove(dir){
+    if(raiseOpen){
+      const n=game.snapshot().raiseOptions.length;
+      if(n)decisionInput.raiseIndex=(decisionInput.raiseIndex+dir+n)%n;
+      const opts=$$('#raiseTray [data-raise-to]');
+      opts.forEach((b,i)=>b.classList.toggle('jm-pad-selected',i===decisionInput.raiseIndex));
+      return;
+    }
+    const n=$$('#actions [data-action],#actions [data-open-raise],#actions [data-next-hand]').length;
+    if(n){decisionInput.selected=(decisionInput.selected+dir+n)%n;renderPadSelection()}
+  }
+  function padInput(button){
+    if(button==='left'){padMove(-1);return}
+    if(button==='right'){padMove(1);return}
+    if(button==='a'){choosePadAction();return}
+    if(button==='b'){if(raiseOpen){raiseOpen=false;render()}else actFromInput('fold','gamepad');return}
+    if(button==='x'){const legal=currentChoices();actFromInput(legal.includes('check')?'check':'call','gamepad');return}
+    if(button==='y'){actFromInput('raise','gamepad');return}
+    if(button==='lb'){padMove(-1);return}
+    if(button==='rb'){padMove(1);return}
+    if(button==='start'){if(!dealFromInput())openEvidence();return}
+  }
+  const inputTyping=e=>e.target?.closest?.('input,textarea,select,[contenteditable="true"]');
+  window.addEventListener('keydown',e=>{
+    if(e.repeat||e.altKey||e.ctrlKey||e.metaKey||inputTyping(e))return;
+    const k=e.key.toLowerCase();
+    const relevant=['f','c','r','n','e','escape','1','2','3','4'].includes(k);
+    if(!relevant)return;
+    if(k==='escape'&&!raiseOpen)return;
+    e.preventDefault();
+    if(k==='n'){dealFromInput();return}
+    if(k==='f'){actFromInput('fold');return}
+    if(k==='c'){const legal=currentChoices();actFromInput(legal.includes('check')?'check':'call');return}
+    if(k==='r'){actFromInput('raise');return}
+    if(k==='e'){openEvidence();return}
+    if(k==='escape'){raiseOpen=false;render();return}
+    if(raiseOpen)raiseFromInput(Number(k)-1);
+  });
+  function readGamepad(){
+    // The connection event can precede browser getGamepads() enumeration;
+    // keep the exact connected Gamepad until the real disconnect event arrives.
+    const indexed=navigator.getGamepads?.()[decisionInput.padIndex]||null;
+    const pad=indexed?.connected?indexed:decisionInput.padRef;
+    if(!pad||!pad.connected){stopGamepad();return}
+    if(document.hidden){decisionInput.padDown.clear();decisionInput.padFrame=requestAnimationFrame(readGamepad);return}
+    const down=new Set();
+    const buttonMap={0:'a',1:'b',2:'x',3:'y',4:'lb',5:'rb',9:'start',14:'left',15:'right'};
+    for(const [i,label] of Object.entries(buttonMap))if(pad.buttons[+i]?.pressed)down.add(label);
+    if(pad.axes?.[0]<-.72)down.add('left');
+    if(pad.axes?.[0]>.72)down.add('right');
+    for(const name of ['left','right','lb','rb','a','b','x','y','start'])
+      if(down.has(name)&&!decisionInput.padDown.has(name))padInput(name);
+    decisionInput.padDown=down;
+    decisionInput.padFrame=requestAnimationFrame(readGamepad);
+  }
+  function stopGamepad(){
+    cancelAnimationFrame(decisionInput.padFrame);decisionInput.padFrame=0;
+    decisionInput.padIndex=null;decisionInput.padRef=null;decisionInput.padDown.clear();
+    $$('.jm-pad-selected').forEach(b=>b.classList.remove('jm-pad-selected'));
+    const guide=$('#pukaInputGuide');if(guide)guide.dataset.controller='off';
+  }
+  function startGamepad(index,pad){
+    stopGamepad();decisionInput.padIndex=index;decisionInput.padRef=pad||null;decisionInput.selected=0;
+    const guide=$('#pukaInputGuide');if(guide)guide.dataset.controller='on';
+    renderPadSelection();decisionInput.padFrame=requestAnimationFrame(readGamepad);
+  }
+  window.addEventListener('gamepadconnected',e=>startGamepad(e.gamepad.index,e.gamepad));
+  window.addEventListener('gamepaddisconnected',e=>{
+    if(e.gamepad.index===decisionInput.padIndex)stopGamepad();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden)decisionInput.padDown.clear();
+  });
+  const existingPad=Array.from(navigator.getGamepads?.()||[]).find(p=>p?.connected);
+  if(existingPad)startGamepad(existingPad.index,existingPad);
+
   $('#dealBtn').onclick=deal;
   $$('[data-mode]').forEach(b=>b.onclick=()=>{game.setMode(b.dataset.mode);save();render();});
   $('#autoMode').onclick=()=>{game.setMode('auto');save();render();};

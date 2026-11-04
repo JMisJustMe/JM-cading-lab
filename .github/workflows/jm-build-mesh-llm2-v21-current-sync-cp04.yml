@@ -1,0 +1,24 @@
+name: JM Build Mesh v0.8.6 CP04 LLM2 Current-Head Sync
+on:
+  pull_request:
+    paths:
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/test_llm2_v21_current_sync_cp04.py"
+      - ".github/workflows/jm-build-mesh-llm2-v21-current-sync-cp04.yml"
+  workflow_dispatch:
+jobs:
+  current-source-preflight:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Original v0.8.6 syntax
+        run: python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/server.py services/jm-ecostate-build-mesh-mcp-v0_5/test_llm2_v21_current_sync_cp04.py
+      - name: Exact current loaded registry and v2.1 resolution
+        run: python services/jm-ecostate-build-mesh-mcp-v0_5/test_llm2_v21_current_sync_cp04.py
+      - name: Claim boundary
+        run: echo "SOURCE ONLY; Render current head NOT LIVE until separate deployment and readback"

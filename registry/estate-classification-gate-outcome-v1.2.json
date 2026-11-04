@@ -2,36 +2,10 @@
   "schema": "JM.EstateClassificationGateOutcome/1.2",
   "status": "completed",
   "conclusion": "success",
-  "run_id": "41861358912",
-  "head_sha": "db4c6caef38a980bf5594775e3b6a835b4189c3f",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41861358912",
-  "updated_at": "2026-11-04T15:47:28Z",
-  "recorded_at_utc": "2026-11-04T15:47:40Z",
-  "steps": [
-    {
-      "job": "Prove current seats, versions, plurality and recovery truth",
-      "name": "Set up job",
-      "conclusion": "success"
-    },
-    {
-      "job": "Prove current seats, versions, plurality and recovery truth",
-      "name": "Run actions/checkout@v6",
-      "conclusion": "success"
-    },
-    {
-      "job": "Prove current seats, versions, plurality and recovery truth",
-      "name": "Run the single classification authority verifier",
-      "conclusion": "success"
-    },
-    {
-      "job": "Prove current seats, versions, plurality and recovery truth",
-      "name": "Post Run actions/checkout@v6",
-      "conclusion": "success"
-    },
-    {
-      "job": "Prove current seats, versions, plurality and recovery truth",
-      "name": "Complete job",
-      "conclusion": "success"
-    }
-  ]
+  "run_id": "41862206623",
+  "head_sha": "e45e703d6009409ecb8e615a64d75514edd54c74",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/41862206623",
+  "updated_at": "2026-11-04T16:15:15Z",
+  "recorded_at_utc": "2026-11-04T16:15:31Z",
+  "steps": []
 }

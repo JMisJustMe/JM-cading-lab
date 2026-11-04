@@ -27,6 +27,10 @@ EXPECTED_NEW = {
     "jm-website-001": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/",
     "jm-openbox": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
 }
+EXPECTED_CONNECTED = {
+    "jm-coding-workshop": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+    "wix-living-estate": "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es",
+}
 def require(cond, message):
     if not cond:
         raise AssertionError(message)
@@ -38,9 +42,9 @@ def main():
     require(d["schema"]=="JM.Estate.PublicNervousSystem/1", "Existing bridge schema changed")
     require(d["canonical_root"]==EXPECTED_ORIGINAL["estate"], "Canonical Estate route changed")
     require(d["version"]=="v1.1-live-proven", "Inherited live proof version was rewritten")
-    require(len(routes)==18 and len(by_id)==len(routes), "Missing/duplicated route identities")
-    require(set(by_id)==set(EXPECTED_ORIGINAL)|set(EXPECTED_NEW), "Unexpected source or route")
-    for key,url in {**EXPECTED_ORIGINAL,**EXPECTED_NEW}.items():
+    require(len(routes)==20 and len(by_id)==len(routes), "Missing/duplicated route identities")
+    require(set(by_id)==set(EXPECTED_ORIGINAL)|set(EXPECTED_NEW)|set(EXPECTED_CONNECTED), "Unexpected source or route")
+    for key,url in {**EXPECTED_ORIGINAL,**EXPECTED_NEW,**EXPECTED_CONNECTED}.items():
         row=by_id[key]
         require(row.get("url")==url, "Route identity drift: "+key)
         require(row.get("role") and row.get("name"), "Route lacks purpose: "+key)
@@ -49,6 +53,9 @@ def main():
     for key in EXPECTED_NEW:
         require("HTTP200" in by_id[key]["state"], "Bounded live source evidence missing: "+key)
         require("PRIVATE" not in by_id[key]["url"], "Private route leaked: "+key)
+    require("SOURCE_CONNECTED_ACCESS_MESH_LINK_PRESENT" in by_id["jm-coding-workshop"]["state"], "Workshop source proof boundary lost")
+    require("PUBLISHED_WIX_ACCOUNT_CONFIRMED" in by_id["wix-living-estate"]["state"], "Wix account proof boundary lost")
+    require("INDEPENDENT" in by_id["wix-living-estate"]["role"], "Wix separate sovereign home lost")
     require("INDEPENDENT" in by_id["rukquss"]["role"], "RUKQUSS business sovereignty lost")
     require("INDEPENDENT" in by_id["jm-website-001"]["role"], "JM.WEB sovereignty lost")
     require("NOT_MERGED" in by_id["jm-openbox"]["role"], "OPENBOX original sovereignty lost")
@@ -61,8 +68,8 @@ def main():
     require(a.get("parent_live_proof_version")==d["version"], "Candidate addendum cannot replace proved parent")
     require(a["new_files_published"]==0 and a["original_body_replacements"]==0, "Unexpected publication or replacement")
     require(a["private_owner_source_exposed"] is False, "Private source exposure")
-    require(set(a["added_route_ids"])==set(EXPECTED_NEW), "Inconsistent source addendum")
+    require(set(a["added_route_ids"])==set(EXPECTED_NEW)|set(EXPECTED_CONNECTED), "Inconsistent source addendum")
     require(any("generic 843-byte" in h for h in a["nonblocking_holds"]), "InfinityFree unverified access not preserved")
-    print("JM EXISTING HOMES CP02 PASS — 10 unchanged original routes + 8 grounded add-on pointers; private-source boundary PASS")
+    print("JM EXISTING HOMES CP02 PASS — 10 unchanged original routes + 8 HTTP-confirmed pointers + 2 bounded source/account contacts; private-source boundary PASS")
 if __name__=="__main__":
     main()

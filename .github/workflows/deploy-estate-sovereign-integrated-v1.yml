@@ -19,6 +19,7 @@ on:
       - "404.html"
       - "assets/ecostate-v3/**"
       - "access/**"
+      - "api-hub/**"
       - "apps/**"
       - "author/**"
       - "books/**"
@@ -140,7 +141,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in access apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab mmzg-runtime-v0.6 navigator recent recovery shims-reader theory visual-story; do
+          for dir in access api-hub apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab mmzg-runtime-v0.6 navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -233,6 +234,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /access/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /api-hub/*
+            Cache-Control: no-store, no-cache, must-revalidate
           /apps/*
             Cache-Control: no-store, no-cache, must-revalidate
           /books/*
@@ -268,6 +271,8 @@ jobs:
           /navigator/ /navigator/index.html 200
           /access /access/index.html 200
           /access/ /access/index.html 200
+          /api-hub /api-hub/index.html 200
+          /api-hub/ /api-hub/index.html 200
           /apps /apps/index.html 200
           /apps/ /apps/index.html 200
           /books /books/index.html 200
@@ -298,6 +303,12 @@ jobs:
         run: |
           set -euo pipefail
           test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/api-hub/index.html
+          test -s cloudflare-estate/api-hub/visual/index.html
+          test -s cloudflare-estate/api-hub/visual/foundation-catalog.json
+          grep -Fq 'data-jm-foundations="cp03"' cloudflare-estate/api-hub/visual/index.html
+          grep -Fq 'data-jm-koco-house="v2"' cloudflare-estate/api-hub/visual/index.html
+          grep -Fq 'data-jm-api-house="v1"' cloudflare-estate/api-hub/index.html
           test -s cloudflare-estate/estate-return-route.js
           grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/career/index.html

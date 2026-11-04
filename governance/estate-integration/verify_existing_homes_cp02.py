@@ -117,6 +117,57 @@ def verify_wix_door_pairs():
     print("CP06 WIX THE DOORS — 9/9 sourced navigation pairs PASS; placeholders marked HOLD; original authority unchanged")
 
 
+def verify_direct_use_cp08():
+    """CP08: link only to existing public-mounted exact game/creator bodies."""
+    from re import findall
+    html = Path("access/index.html").read_text(encoding="utf-8")
+    marker = '<section id="jmUseNow"'
+    require(html.count(marker) == 1, "Direct-use section missing or repeated")
+    section = html.split(marker, 1)[1].split("</section>", 1)[0]
+    manifest = json.loads(Path("games-beyond/payload-manifest.json").read_text(encoding="utf-8"))
+    exact_ids = manifest["bodyIdsBuiltIn"]
+    names = [
+        "tboys-core-clash",
+        "fourfold-arena",
+        "rim-route",
+        "fight-clash",
+        "futarized",
+        "gameforge",
+        "glyphforge",
+    ]
+    found = findall(r'data-jm-use-entry="([^"]+)"', section)
+    require(found == names, "Direct-use game ID order or entry count drift")
+    require(len(exact_ids) == len(set(exact_ids)), "Games House manifest ID collision")
+    require(all(item in exact_ids for item in names), "Not all direct-use game entries are publicly mounted")
+    base = "https://jmisjustme-estate.pages.dev/games-beyond/"
+    for item in names:
+        require(section.count('data-jm-use-entry="' + item + '"') == 1, "Repeated mounted original: " + item)
+        play = 'data-jm-launch="play" href="' + base + '?jm-play=' + item + '"'
+        edit = 'data-jm-launch="edit" href="' + base + '?jm-edit=' + item + '"'
+        require(section.count(play) == 1 and section.count(edit) == 1,
+                "Direct play or existing editor contact changed for " + item)
+    contacts = {
+        "openbox": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
+        "workshop": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+        "agi-console": "https://jmisjustme-estate.pages.dev/apps/jm-agi-lab-runtime-console-v1/",
+        "music": "https://jmisjustme-estate.pages.dev/lyrics/",
+        "ftr-issue01": "https://jmisjustme-estate.pages.dev/visual-story/ftr-the-massive-push/issue-01/",
+    }
+    require(findall(r'data-jm-use-contact="([^"]+)"', section) == list(contacts),
+            "Independent public creator/reader contact list changed")
+    for key,url in contacts.items():
+        require(section.count('data-jm-use-contact="' + key + '"') == 1 and
+                ('href="' + url + '"') in section, "Original source contact changed: " + key)
+    require("jmstudios-source-rebegin" not in section and
+            "jmstudios-actual-crown" not in section and
+            "example.com/download" not in section, "Unproven or private body quick-launched")
+    require("physical Fold8 acceptance" in section and "not mounted publicly" in section,
+            "Device/private mount boundary disappeared")
+    require("#jmUseNow .use-actions a{display:inline-flex" in html and "min-height:44px" in html,
+            "Fold touch button threshold disappeared")
+    print("CP08 DIRECT USE PASS — 7/7 manifest-mounted bodies · 14 exact play/edit pointers · 5/5 independent public rooms · no private JMStudios body or fake download")
+
+
 def main():
     d=json.loads(REG.read_text(encoding="utf-8"))
     routes=d["routes"]
@@ -158,6 +209,7 @@ def main():
     require(any("Five other account-listed Wix sites" in h for h in a["nonblocking_holds"]), "Wix drafts must not be represented as public live routes")
     verify_original_body_contacts()
     verify_wix_door_pairs()
+    verify_direct_use_cp08()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

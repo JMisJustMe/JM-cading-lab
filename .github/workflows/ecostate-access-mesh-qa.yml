@@ -118,6 +118,52 @@ jobs:
           python3 -m http.server 4178 >/tmp/jm-access-mesh-http.log 2>&1 &
           for i in {1..20}; do curl -fsS http://127.0.0.1:4178/access/ >/dev/null && exit 0; sleep 1; done
           exit 1
+      - name: CP08 direct-use buttons contact original game and editor (phone and desktop)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const origin='http://127.0.0.1:4178';
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let pass=0;
+            try{
+              const cases=[
+                {width:390,height:844,id:'fourfold-arena',action:'play'},
+                {width:1366,height:900,id:'fight-clash',action:'play'},
+                {width:390,height:844,id:'gameforge',action:'edit'},
+              ];
+              for(const target of cases){
+                const page=await browser.newPage({viewport:{width:target.width,height:target.height}});
+                try{
+                  page.setDefaultTimeout(90000);
+                  const errors=[];
+                  page.on('pageerror',e=>errors.push(String(e)));
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const button=page.locator('[data-jm-use-entry="'+target.id+'"] a[data-jm-launch="'+target.action+'"]');
+                  if(await button.count()!==1)throw Error('Original direct-use button missing: '+target.id);
+                  await button.click();
+                  const expected='?jm-'+target.action+'='+target.id;
+                  await page.waitForURL(url=>url.pathname==='/games-beyond/'&&url.search===expected,{timeout:15000});
+                  if(target.action==='play'){
+                    await page.waitForFunction(id=>document.querySelector('#status')?.dataset.directPlay===id &&
+                      document.querySelector('#bodyDialog')?.open,target.id,{timeout:90000});
+                    const exact=await page.locator('#bodyFrame').getAttribute('srcdoc');
+                    if(!exact||!/<html|<!doctype/i.test(exact))throw Error('Original mounted HTML not opened: '+target.id);
+                  }else{
+                    await page.waitForFunction(id=>window.GamesBeyond?.activeEditorBodyId===id &&
+                      document.querySelector('#source')?.value.includes('<html'),target.id,{timeout:90000});
+                    if(await page.locator('#workspace').isHidden())throw Error('Existing editor not entered');
+                  }
+                  if(errors.length)throw Error('Original runtime page errors: '+errors.join('|'));
+                  await page.close();pass++;
+                }catch(e){throw Error('CP08 '+target.width+'x'+target.height+' '+target.id+' '+target.action+': '+e);}
+              }
+              if(pass!==3)throw Error('Not all original-use contacts completed');
+              console.log('CP08 DIRECT USE BROWSER PASS: 2 mounted originals open in inherited Games House + 1 original GameForge editor; phone/desktop; no copied bodies');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP08_DIRECT_USE_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
       - name: Eight-contact phone and desktop proof
         shell: bash
         run: |

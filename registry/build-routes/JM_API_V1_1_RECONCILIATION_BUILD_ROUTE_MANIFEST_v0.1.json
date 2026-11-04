@@ -18,9 +18,10 @@
       "functions/api/jm"
     ],
     "original_authorities_unchanged": true,
-    "merge_authorized": false,
-    "deployment_authorized": false,
-    "chronological_note": "Initial source candidate was committed before this same-PR prospective intake document; original build-entry gate correctly failed. This declaration authorizes bounded continued PR development/review and tests, not a fabricated claim of prior preflight."
+    "merge_authorized": true,
+    "deployment_authorized": "Existing Estate GitHub Actions pipeline only, public-safe /api-hub/ and unchanged original API authorities. No Cloudflare in-chat connector and no new hosting.",
+    "chronological_note": "Initial source candidate was committed before this same-PR prospective intake document; original build-entry gate correctly failed. This declaration authorizes bounded continued PR development/review and tests, not a fabricated claim of prior preflight.",
+    "owner_release_instruction": "2026-11-04: Now do everything that remains. All APIs should be openable individually or together; user explicitly rejects unreliable Cloudflare in-chat controls and requests an alternative."
   },
   "foundation": {
     "recovery_decision": "Reuse original JM API v1 locally tested ancestor and original Estate API contracts; add only a bounded public contact/directory layer, no second owner storage or private proxy.",
@@ -82,7 +83,14 @@
       "owner private files and tokens",
       "Cloudflare R2 bindings",
       "phone private localhost server"
-    ]
+    ],
+    "access_html": "api-hub/index.html — 22 independent publicly safe body pages within one file using ?api=id",
+    "estate_mount": [
+      "index.html",
+      "access/index.html",
+      ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
+    ],
+    "additional_QA": "tests/jm-api-hub.test.mjs"
   },
   "true_gaps": {
     "state": "RECOVERED_AND_SCOPED_TO_EXISTING_ESTATES_CONTACT_SURFACE",
@@ -108,8 +116,8 @@
       "evidence": "JM Build Route/Intake run 41746700812 demanded same-PR manifest; this narrowly scoped prospective document is the correction, retest required."
     },
     "production": {
-      "state": "HOLD",
-      "criterion": "Owner-approved merge and actual deployed Pages readback against intended source version."
+      "state": "RELEASE_AUTHORIZED_NOT_YET_PROVEN",
+      "criterion": "Merge public-safe PR only after exact final CI, then original GitHub Actions deployment and real hosted body readback; remote MCP/private routes not green solely because listed."
     },
     "upstream_live": {
       "state": "HOLD",
@@ -118,15 +126,20 @@
     "owner_device": {
       "state": "HOLD",
       "criterion": "Actual Fold8 Termux/browser run, no localhost listener publicisation."
+    },
+    "public_hub": {
+      "state": "PASS_GITHUB_CI_AND_OWNER_LAPTOP_CHROME",
+      "evidence": "GitHub JM API v1.1 QA and access tests PASS at PR head b1a0c817c966f7860be5cb11d04dbbd2df84dac7; actual Chrome DOM on GroundZeroJM read 22 rendered tiles, Phone Commander detail opened; on-device HTML SHA256 7C853EB828C0392592869958A8C09B217C50CEAF080A221E0A3D8563B0FD3CFA; Fold8 not independently tested."
     }
   },
   "host_and_surfaces": {
     "local_node": "PASS at synthetic and actual loopback HTTP only",
-    "github_branch": "Draft PR #727; original production not changed",
+    "github_branch": "Draft PR #727; public safe HTML and inherited API source; latest CI checks passed before release authorization change.",
     "cloudflare_pages": "SOURCE_ONLY_NOT_DEPLOYED",
     "owner_fold8": "NOT_TESTED_BY_THIS_RECIPIENT",
     "owner_vault": "PRIVATE_AUTHORITY_UNTOUCHED",
-    "AILatheo": "BILLING_AUTHORITY_UNTOUCHED"
+    "AILatheo": "BILLING_AUTHORITY_UNTOUCHED",
+    "local_windows": "PASS on GroundZeroJM: Chrome source-open 22 body cards and separate phone detail, independent real device copy"
   },
   "escalation": {
     "failure_route": "HOLD -> inspect exact API/CI/manifest failure -> correct scoped same PR -> retest differences; never bypass gate or rebuild original services.",
@@ -144,13 +157,14 @@
   "state": {
     "route": "AUTHORIZED_SCOPED_SOURCE_RECONCILIATION_AND_CI_RETEST_ONLY",
     "build_authorized_by_manifest": true,
-    "authorization_scope": "Continue same draft PR and run source/runtime/CI acceptance; no production deployment, new private capability, original API mutation or owner-device operation.",
-    "merge_authorized": false,
-    "crown": "NOT_EARNED",
-    "live": "HOLD"
+    "authorization_scope": "User explicitly authorizes closing remaining API openability, including source PR release through existing GitHub Actions; private service authentication, new hosts and device security remain unchanged.",
+    "merge_authorized": true,
+    "crown": "LOCAL_AND_SOURCE_PASS; LIVE_SITE_UNVERIFIED_UNTIL_AFTER_DEPLOY",
+    "live": "HOLD",
+    "deployment_authorized": "Public-safe source-to-existing GitHub Actions Estate carrier; no private rights."
   },
   "next_route": {
-    "step": "Rerun native Build Entry + manifest validator and JM API QA on exact final PR head; inspect status. Keep DRAFT until separately authorised live deployment and readback.",
+    "step": "With new same-PR manifest readback and CI green: mark PR ready, merge to main, observe existing GitHub Actions Estate publish, verify live /api-hub/ exact source and original service contacts. If deploy fails, hold and repair original workflow without in-chat Cloudflare dependency.",
     "close_condition": "Source/CI gate checks success and true bounded FLAZ receipt. No claim of live production or physical device without independently observed evidence."
   },
   "manifest_proof": {

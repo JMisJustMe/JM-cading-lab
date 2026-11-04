@@ -26,3 +26,12 @@ The browser tests exercise the public edition at 320, 390, 768 and 1152 pixels, 
 
 DISCOVER → IDENTIFY → CONNECT → IMPROVE → VERIFY.
 Preserve one canonical public door for WEBSITE 001 across future lawful improvements. No original source or frozen ancestor was overwritten.
+
+## CP07 · JM.PY independent build contribution (4 November 2026)
+
+- Source authority: `website_proof.jmpy` importing `site_metrics.jmpy`.
+- Run `python build_jm_py_proof.py --lang-home /path/to/original/JM_LANGUAGES_v1` after recovering the original verified compiler (SHA-256 9ef387ca...).
+- Result: generated `jm-py-proof.html` and `jm-py-proof.json` are **output carriers**. Their counts and language lists come from the executed JM.PY interpreter, not handwritten HTML.
+- The existing JM.WEB page links to the new proof room using an originally compiled `.jmw` LINK, retaining compiler source-line provenance.
+- This carrier is JavaScript-free, but still uses HTML and CSS; it does not replace a browser.
+- Frozen originals remain independent; no compiler bundled or overwritten. No hosting migration.

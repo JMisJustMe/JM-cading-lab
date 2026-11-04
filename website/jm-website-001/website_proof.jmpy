@@ -1,0 +1,6 @@
+JM.PY 1.0
+import "site_metrics.jmpy" as metrics
+let langs = metrics.bodies()
+let areas = metrics.sections()
+let report = {"website": "JM WEBSITE 001", "language": "JM.PY 1.0", "authoring_bodies": langs, "body_count": metrics.body_total(), "sections": areas, "section_count": metrics.section_total(), "proof": "Original JM.PY source produced this website data", "runtime": "JM.PY interpreter", "output": "Browser-compatible HTML from an independent build adapter"}
+print report

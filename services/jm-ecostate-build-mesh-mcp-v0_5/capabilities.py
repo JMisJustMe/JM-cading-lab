@@ -58,7 +58,7 @@ CAPABILITY_PROFILES = [
         "domain":"AI integration / separate participants",
         "capabilities":["original bounded LLM source handoff","AILatheo 14-body receiver contact","Teo OS trace and re-entry","HOLD-to-CARRY evidence gating","AGI provider discovery","JM Learn donor response and claim capping"],
         "donor_roles":["nonmerging original interface","contact trace and return envelope","source authority projection"],
-        "open_frontiers":["Fold8 physical owner acceptance","authorized production end-to-end transport","unrestricted general deliberation not claimed"]
+        "open_frontiers":["authenticated phone-to-private-model inference and returned native receipt","authorized production end-to-end transport","unrestricted general deliberation not claimed"]
     },
     {
         "id":"agi-v144",

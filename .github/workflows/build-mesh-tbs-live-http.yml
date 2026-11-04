@@ -1,0 +1,59 @@
+name: JM Build Mesh TBS live HTTP proof
+on:
+  pull_request:
+    branches:
+      - build-mesh-native-mcp-v0-5
+    paths:
+      - '.github/workflows/build-mesh-tbs-live-http.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test live MCP JSON-RPC transport and read-only TBS contract
+        env:
+          MCP_URL: https://jm-ecostate-build-mesh-mcp.onrender.com/mcp
+        run: |
+          python - <<'PY'
+          import json,os,urllib.request
+          url=os.environ['MCP_URL']
+          def rpc(method,params=None):
+              body=json.dumps({'jsonrpc':'2.0','id':1,'method':method,'params':params or {}}).encode()
+              req=urllib.request.Request(url,data=body,method='POST',headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream','MCP-Protocol-Version':'2025-03-26'})
+              with urllib.request.urlopen(req,timeout=30) as response:
+                  assert response.status==200,response.status
+                  result=json.load(response)
+              assert 'error' not in result,result.get('error')
+              return result['result']
+          listing=rpc('tools/list')['tools']
+          names=[t['name'] for t in listing]
+          assert len(names)==len(set(names)),'duplicate tool names'
+          assert 'assess_tbs_relationship' in names,'TBS not exposed'
+          for old in ['search_builds','recover_build','build_mesh_status','prepare_operation_gate']:
+              assert old in names,old+' missing'
+          base={'sourceId':'jm:braidge','fromBody':'A','toBody':'B','kind':'branch','traceId':'trace:1','sourceProof':{'sourceId':'jm:braidge','verified':True},'authority':{'granted':True,'sourceId':'jm:braidge','fromBody':'A','toBody':'B','kind':'branch','receiptId':'receipt:1'}}
+          def assess(args):
+              response=rpc('tools/call',{'name':'assess_tbs_relationship','arguments':args})
+              assert response.get('isError') is False,response
+              return response['structuredContent']
+          for kind in ['transfer','extension','branch','return','breakaway']:
+              candidate={**base,'kind':kind,'authority':{**base['authority'],'kind':kind}}
+              outcome=assess(candidate)
+              assert outcome['state']=='PLAN_ONLY',(kind,outcome)
+              assert outcome['allowed'] is False,(kind,outcome)
+              assert outcome['eligibleForReview'] is True,(kind,outcome)
+          hold=assess({**base,'authority':None})
+          assert hold['state']=='AUTHORITY_HOLD',hold
+          assert hold['allowed'] is False,hold
+          status=rpc('tools/call',{'name':'build_mesh_status','arguments':{'probe_navigator':False}})
+          assert status.get('isError') is False,status
+          assert status['structuredContent']['version']=='0.8.6',status
+          print(json.dumps({'LIVE_HTTP':'PASS','tool_count':len(names),'tbs_present':True,'five_kinds':'PLAN_ONLY and allowed=false','authority_hold':'PASS','existing_status':'PASS'}))
+          PY

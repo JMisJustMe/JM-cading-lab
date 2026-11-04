@@ -24,7 +24,7 @@ test('CREWBOUND CP01 touch selects two, taps target, commits opposed concurrent 
   await expect(page.locator('#turn')).toHaveText('GO 1');
   const info=await page.evaluate(()=>({
     pr:game.log.filter(r=>r.type==='ORDER'&&r.side==='player').length,
-    enemy:game.log.filter(r=>r.type==='ORDER'&&r.side==='enemy').length,
+    enemy:game.log.filter(r=>(r.type==='ORDER'||r.type==='YARD_INTERVENTION')&&r.side==='enemy').length,
     both:game.log.some(r=>r.type==='SIMULTANEOUS_PAIR_COMMIT'),
     resolving:game.resolve>0
   }));

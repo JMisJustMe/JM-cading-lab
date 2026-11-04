@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'jm-api/**'
+      - 'api-hub/**'
+      - 'index.html'
+      - 'access/index.html'
+      - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
       - 'functions/api/jm/**'
       - 'tests/jm-api-*.test.mjs'
       - '.github/workflows/jm-api-v1-1-qa.yml'
@@ -23,3 +27,4 @@ jobs:
           node tests/jm-api-v1.test.mjs
           node tests/jm-api-http.test.mjs
           node tests/jm-api-reconciliation.test.mjs
+          node tests/jm-api-hub.test.mjs

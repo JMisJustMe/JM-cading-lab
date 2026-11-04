@@ -1,0 +1,180 @@
+{
+  "schema": "JM.OperatedHost.CloudContactLocalProof/1",
+  "checkpoint": "CP03",
+  "observedAt": "2026-10-28T07:01:00.095Z",
+  "node": "v24.22.1",
+  "platform": "linux",
+  "harnessSha256": "7380cb1f6798006593c37d2b3601c7e607a9f3b7d6643fedbcd0bc7bbf8b5771",
+  "supervisorSha256": "f95291f2ca859777d5de2340591a5f188da3723221e6b442bd5ee8f33e981a9a",
+  "scope": "RECOVERED_V0_5_0_GENUINE_SERVER_LOCAL_SUPERVISION",
+  "sourceAuthority": "Recovered frozen v0.5.0 bytes match standalone source and successor-package manifest; latest hosted v0.5.1 authority is not asserted.",
+  "parent": "dd8abf50a05d777df2384ad6aaa957b2208c677e",
+  "checks": [
+    {
+      "name": "recovered_package_integrity",
+      "pass": true,
+      "detail": {
+        "files": 11,
+        "manifestSha256": "cad827d910b03fdfbaabe6abfecfecf57d1ca48fa61beedcef3f1d0e5be02e37",
+        "serverSha256": "25d44a24a7d9addf8793f0e4394bb569066b19e181e67aefc20cac5cd618db4d"
+      }
+    },
+    {
+      "name": "genuine_server_ready",
+      "pass": true,
+      "detail": {
+        "version": "0.5.0",
+        "profiles": 1,
+        "receiptSigning": true,
+        "turnConfigured": false
+      }
+    },
+    {
+      "name": "inherited_server_api_profile_qa",
+      "pass": true,
+      "detail": {
+        "passed": 27,
+        "failed": 0,
+        "checks": [
+          {
+            "name": "health",
+            "pass": true
+          },
+          {
+            "name": "meta-v5-plus-compat",
+            "pass": true
+          },
+          {
+            "name": "ready-profile-signing",
+            "pass": true
+          },
+          {
+            "name": "profile-list",
+            "pass": true
+          },
+          {
+            "name": "profile-control-served",
+            "pass": true
+          },
+          {
+            "name": "profile-runner-served",
+            "pass": true
+          },
+          {
+            "name": "path-traversal-denied",
+            "pass": true
+          },
+          {
+            "name": "create-phone-laptop-space",
+            "pass": true
+          },
+          {
+            "name": "wrong-member-token-rejected",
+            "pass": true
+          },
+          {
+            "name": "capability-denied-command",
+            "pass": true
+          },
+          {
+            "name": "member-events-phone-laptop",
+            "pass": true
+          },
+          {
+            "name": "event-request-dedupe",
+            "pass": true
+          },
+          {
+            "name": "ice-config-member-scoped",
+            "pass": true
+          },
+          {
+            "name": "signal-offer-phone-to-laptop",
+            "pass": true
+          },
+          {
+            "name": "signal-answer-laptop-to-phone",
+            "pass": true
+          },
+          {
+            "name": "autorun-command-queue-poll-ack",
+            "pass": true
+          },
+          {
+            "name": "full-reciprocal-trace-events",
+            "pass": true
+          },
+          {
+            "name": "autorun-command-result",
+            "pass": true
+          },
+          {
+            "name": "deep-space-has-completed-command",
+            "pass": true
+          },
+          {
+            "name": "member-cold-rejoin-rotates-token",
+            "pass": true
+          },
+          {
+            "name": "close-space",
+            "pass": true
+          },
+          {
+            "name": "closed-space-rejects-new-event",
+            "pass": true
+          },
+          {
+            "name": "closed-space-rejects-rejoin",
+            "pass": true
+          },
+          {
+            "name": "signed-receipt-hmac-and-ecdsa",
+            "pass": true
+          },
+          {
+            "name": "raw-secrets-not-in-admin-space",
+            "pass": true
+          },
+          {
+            "name": "v4-compatibility-list",
+            "pass": true
+          },
+          {
+            "name": "v3-compatibility-list",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "unexpected_exit_restarted_with_exact_state_and_signing_identity",
+      "pass": true
+    },
+    {
+      "name": "cold_supervisor_reentry_preserves_exact_state_and_signing_identity",
+      "pass": true
+    },
+    {
+      "name": "quiesced_copy_restoration_in_distinct_directory",
+      "pass": true
+    },
+    {
+      "name": "recovered_source_unchanged",
+      "pass": true
+    }
+  ],
+  "passed": 7,
+  "failed": 0,
+  "boundaries": [
+    "LOCAL_LOOPBACK_ONLY",
+    "DISPOSABLE_CREDENTIALS_AND_STATE",
+    "NO_PUBLIC_DEPLOYMENT",
+    "NO_OWNER_DEVICE_OR_ACTUAL_WEBRTC_PROOF",
+    "NO_RENDER_SHUTDOWN_OR_PROVIDER_FAILOVER",
+    "NO_DURABLE_REMOTE_OR_ENCRYPTED_BACKUP_SERVICE",
+    "NO_PRODUCTION_MIGRATION",
+    "CP02_SOURCE_PROMOTION_REMAINS_OPEN",
+    "LATEST_HOSTED_SOURCE_NOT_RECONCILED"
+  ]
+}

@@ -1,0 +1,32 @@
+name: JM CP11 Distinct Filesystem Encrypted Checkpoint Custody
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/external-device-custody*'
+      - '.github/workflows/jm-cloud-contact-cp11-independent-filesystem.yml'
+      - 'docs/JM_CLOUD_CONTACT_CP11_EXTERNAL_DEVICE_CUSTODY.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-device-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Demand genuinely separate mounted filesystem, not two folders
+        run: |
+          node -e "const fs=require('node:fs');const a=fs.statSync('/tmp').dev,b=fs.statSync('/dev/shm').dev;if(a===b)throw Error('CP11_DIFFERENT_FILESYSTEM_UNAVAILABLE');console.log(JSON.stringify({sourceDevice:a,targetDevice:b,different:true}))"
+      - name: Check owner-device adapter and six refusal/readback tests
+        run: |
+          node --check agent-runtime/host-adapters/jm-operated-host/external-device-custody.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/external-device-custody.test.mjs
+      - name: Verify inherited file and market PostgreSQL safety gate test suites
+        run: |
+          node --test agent-runtime/host-adapters/jm-operated-host/coordinated-checkpoint.test.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/market-postgres-cold.test.mjs

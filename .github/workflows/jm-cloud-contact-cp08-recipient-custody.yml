@@ -1,0 +1,46 @@
+name: JM CP08 Recipient-Key Custody and Cross-Platform Recovery
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/recipient-custody.mjs'
+      - 'agent-runtime/host-adapters/jm-operated-host/recipient-custody.test.mjs'
+      - 'docs/JM_CLOUD_CONTACT_CP08_RECIPIENT_KEY_CUSTODY.md'
+      - '.github/workflows/jm-cloud-contact-cp08-recipient-custody.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recipient-private-key-separation:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+        node: ['22', '24']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Check out original JM source, no deployment credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up compatible Node runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Static safety and JS syntax
+        run: |
+          node --check agent-runtime/host-adapters/jm-operated-host/recipient-custody.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/whole-state-cold.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/recipient-custody.test.mjs
+      - name: Test original CP06 state and CP08 independently pinned X25519 recipient custody
+        run: |
+          node --test \
+            agent-runtime/host-adapters/jm-operated-host/whole-state-cold.test.mjs \
+            agent-runtime/host-adapters/jm-operated-host/recipient-custody.test.mjs
+      - name: Verify no real private keys in repository diff
+        env:
+          JM_CUSTODY_SCOPE: PUBLIC_SYNTHETIC_TEST_KEY_ONLY
+        run: |
+          test "$JM_CUSTODY_SCOPE" = 'PUBLIC_SYNTHETIC_TEST_KEY_ONLY'
+          grep -Fq 'CP08_TRUSTED_RECIPIENT_PIN_REQUIRED' agent-runtime/host-adapters/jm-operated-host/recipient-custody.mjs
+          grep -Fq 'CP08_EXTERNAL_DATABASE_HOLD' agent-runtime/host-adapters/jm-operated-host/recipient-custody.mjs

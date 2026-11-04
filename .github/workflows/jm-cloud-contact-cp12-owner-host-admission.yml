@@ -1,0 +1,48 @@
+name: JM CP12 Independent Host Loopback Admission
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/independent-host-*.mjs'
+      - 'docs/JM_CLOUD_CONTACT_CP12_INDEPENDENT_HOST_ADMISSION.md'
+      - '.github/workflows/jm-cloud-contact-cp12-owner-host-admission.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  owner-host-admission-with-real-donor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: .jm-cp12-donor
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Demand exact authentic donor and install runtime dependency
+        run: |
+          test "$(git -C .jm-cp12-donor rev-parse HEAD)" = 0921217d95285bcb21cda7a995d02f7ec0725810
+          npm install --prefix .jm-cp12-donor --omit=dev --ignore-scripts --no-audit --no-fund
+      - name: Validate owner-host preflight and refusal tests
+        run: |
+          node --check agent-runtime/host-adapters/jm-operated-host/independent-host-admission.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/independent-host-admission.test.mjs
+      - name: Run actual original Cloud Contact software from private secret-file custody on loopback
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/independent-host-integration-v051.mjs \
+            "$GITHUB_WORKSPACE/.jm-cp12-donor" \
+            "$RUNNER_TEMP/JM_CP12_ISOLATED_LOOPBACK_ADMISSION.json"
+      - name: Keep only public-safe admission evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP12_ISOLATED_OWNER_HOST_ADMISSION_PROOF
+          path: ${{ runner.temp }}/JM_CP12_ISOLATED_LOOPBACK_ADMISSION.json
+          if-no-files-found: error
+          retention-days: 14

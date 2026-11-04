@@ -1,0 +1,52 @@
+name: JM CP05 Hosted Cloud Contact Encrypted Recovery
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/hosted-recovery-v051.mjs'
+      - 'docs/JM_CLOUD_CONTACT_CP05_HOSTED_RECOVERY.md'
+      - '.github/workflows/jm-cloud-contact-cp05-hosted-encrypted-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-hosted-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out JM adapter source (PR review only)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check out exact public hosted donor source, not latest branch
+        uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: .jm-cp05-hosted-donor
+          persist-credentials: false
+      - name: Prove pinned donor and installed dependency boundary
+        run: |
+          test "$(git -C .jm-cp05-hosted-donor rev-parse HEAD)" = '0921217d95285bcb21cda7a995d02f7ec0725810'
+          node --check agent-runtime/host-adapters/jm-operated-host/hosted-recovery-v051.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/cold-backup.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/supervisor.mjs
+          npm install --prefix .jm-cp05-hosted-donor --omit=dev --ignore-scripts --no-audit --no-fund
+      - name: Test original CP04 encrypted bundle
+        run: node --test agent-runtime/host-adapters/jm-operated-host/cold-backup.test.mjs
+      - name: Execute actual v0.5.1-hosted source through JM supervisor and encrypted recovery
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/hosted-recovery-v051.mjs \
+            "$GITHUB_WORKSPACE/.jm-cp05-hosted-donor" \
+            "$RUNNER_TEMP/JM_CP05_HOSTED_ENCRYPTED_RECOVERY_RECEIPT.json"
+      - name: Upload bounded evidence, never private state or keys
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP05_HOSTED_ENCRYPTED_RECOVERY_RECEIPT
+          path: ${{ runner.temp }}/JM_CP05_HOSTED_ENCRYPTED_RECOVERY_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 14

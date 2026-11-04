@@ -1,0 +1,24 @@
+name: JM CP14 — Public HTTPS Readiness Contact (no credentials)
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/public-readiness-contact*'
+      - '.github/workflows/jm-cloud-contact-cp14-public-contact.yml'
+      - 'docs/JM_CLOUD_CONTACT_CP14_PUBLIC_READINESS.md'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  independent-real-https-readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout only the draft source; do not deploy
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Hardened refusal tests (network mocked)
+        run: node --test agent-runtime/host-adapters/jm-operated-host/public-readiness-contact.test.mjs
+      - name: Independent real public HTTPS GET contact, no authentication and no writes
+        run: node agent-runtime/host-adapters/jm-operated-host/public-readiness-contact.mjs

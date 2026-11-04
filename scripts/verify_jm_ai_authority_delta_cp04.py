@@ -29,4 +29,4 @@ assert bd["model_identity_merged"] is False
 s = (ROOT / "scripts/jm_ai_federation_cp02.py").read_text(encoding="utf-8")
 assert cur["archive_sha256"] in s
 assert x["existing_contact"]["receiver_pr"] == 729
-print("JM CP04 AI CURRENT-AUTHORITY DELTA VALIDATOR: 17/17 PASS; HOSTED SYNC DRIFT OPEN")
+print("JM CP04 AI CURRENT-AUTHORITY DELTA VALIDATOR: 18/18 PASS; HOSTED SYNC DRIFT OPEN")

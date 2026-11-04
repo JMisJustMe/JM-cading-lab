@@ -1,0 +1,395 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 \u2014 AUTOMATIC INTAKE",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM CREWBOUND 3+2+1 CP01 Living Orders",
+    "body_type": "Additive, source-preserving tactical game descendant",
+    "intended_destination": "Existing Games&Beyond source family; draft PR until browser proof",
+    "body_path": "games-beyond/crewbound-321"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 735,
+    "head_branch": "jm/crewbound-321-cp01",
+    "intake_generated": true,
+    "authority_rule": "This intake records repository evidence; it does not elevate recovery candidates into source/donor authority."
+  },
+  "foundation": {
+    "estate_recovery": {
+      "state": "PASS",
+      "query_terms": [
+        "crewbound",
+        "cp01",
+        "living",
+        "orders",
+        "additive",
+        "source",
+        "preserving",
+        "tactical",
+        "game",
+        "descendant",
+        "games",
+        "beyond",
+        "combound",
+        "primebody",
+        "signature"
+      ],
+      "candidate_count": 25,
+      "route_manifest_candidates": [
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_GAME_ORIGINAL_SOURCE_VAULT_RECOVERY_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM GameCore v0.2I-A and JM Drag Aim v0.9.8.2 historical source ancestors",
+          "score": 5,
+          "matched_terms": [
+            "source",
+            "preserving",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_HISTORICAL_5_DELIVERY_COMPANIONS_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM GameCore v0.2I-A, JM3232 Unified Browser v1.0, JM AI Lab v2.0",
+          "score": 5,
+          "matched_terms": [
+            "source",
+            "game",
+            "descendant",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_GONG_CP04_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "GONG CP04 \u2014 evidence-scoped retest governance",
+          "score": 4,
+          "matched_terms": [
+            "cp01",
+            "additive",
+            "source",
+            "descendant"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_API_V1_1_RECONCILIATION_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM API v1.1 \u2014 guarded contact entrance over independent existing API bodies",
+          "score": 3,
+          "matched_terms": [
+            "living",
+            "source",
+            "descendant"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM ChatGPT Host Adapter v0.1.1 \u2014 Recovery-First Graft",
+          "score": 2,
+          "matched_terms": [
+            "source",
+            "game"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_GONG_CP03_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM GONG CP03 \u2014 GitHub Change-Scope Advisory Projection",
+          "score": 2,
+          "matched_terms": [
+            "cp01",
+            "additive"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_ANDROID_CODEX_HOST_ADAPTERS_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Sovereign Agent Android + Codex Host Adapters v0.1",
+          "score": 1,
+          "matched_terms": [
+            "source"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Build Laws \u00b7 Preferences \u00b7 Governance \u2014 Running Standard v1.0",
+          "score": 1,
+          "matched_terms": [
+            "source"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_ESTATE_LIVE_REGISTRY_APP_v0.2_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Estate Live Registry App v0.2 \u2014 Native Circulation",
+          "score": 1,
+          "matched_terms": [
+            "game"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_HOST_ADAPTER_CONFORMANCE_v1.0_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Host Adapter Conformance \u2014 Universal Plug Tester v1.0",
+          "score": 1,
+          "matched_terms": [
+            "source"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        }
+      ],
+      "tracked_body_candidates": [
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/bodies/source_vault/OPEN_FIRST_JMGAMECORE_v0_2I_A_CORRECTED_THREE_GAME_INTEGRATION.html",
+          "score": 4,
+          "matched_terms": [
+            "source",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/bodies/source_vault/drag-aim-level-proof-loop-v0-9-8-2.html",
+          "score": 4,
+          "matched_terms": [
+            "source",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/bodies/source_vault/manifest.webmanifest",
+          "score": 4,
+          "matched_terms": [
+            "source",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/bodies/source_vault/service-worker.js",
+          "score": 4,
+          "matched_terms": [
+            "source",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/generation-packs/JM_ADVANCED_GENERATOR_PLAYABLE_SOURCE_RECEIPT_v0_2.md",
+          "score": 4,
+          "matched_terms": [
+            "source",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/puka/puka-living-table-v10.js",
+          "score": 4,
+          "matched_terms": [
+            "living",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/puka/puka-living-table.test.js",
+          "score": 4,
+          "matched_terms": [
+            "living",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/tests/crewbound-321.spec.mjs",
+          "score": 4,
+          "matched_terms": [
+            "crewbound",
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/BUILD_RECEIPT_v0_1A.md",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/CURRENT_BEST_PUBLIC_REFRESH_2026-09-13.md",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/CURRENT_GAMES_WORKING_SET.md",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/CURRENT_GAME_INVENTORY_2026-07-19.md",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/DEPLOY_v0_2.txt",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/GAMES_BEYOND_v0_6_BUILD_REPORT.md",
+          "score": 3,
+          "matched_terms": [
+            "game",
+            "games",
+            "beyond"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        }
+      ],
+      "candidate_rule": "Candidates are evidence for recovery/search only. They are not donor, authority, reuse or crown claims until explicitly resolved."
+    },
+    "recovery_decision": "Recover and preserve existing CREWBOUND Arena v0.5 and COMBOUND separate identity. Reuse exact authored eight-character PrimeBody attributes. No existing verified 3+2+1 simultaneous two-orders-per-side mode found; author only an independent descendant, not a replacement of the original 22-body payload. User specifically approved this new Crewbound direction in the current discussion.",
+    "selected_donors": [
+      "games-beyond/payload-manifest.json \u2014 compressed exact v0.5 CREWBOUND game body; verified uncompressed source SHA-256",
+      "games-beyond/registry.json \u2014 original 22-body mounted House authority and separate COMBOUND identity",
+      "games-beyond/crewbound-321/roster.js \u2014 source-exact eight fighter metadata, derived only from original PrimeBody"
+    ]
+  },
+  "exact_stack": {
+    "state": "RESOLVED",
+    "declared_stack": [
+      "JM CREWBOUND PrimeBody TokenBody v0.5, exact game source SHA-256 5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7",
+      "JM Games&Beyond v0.5 living browser carrier; reusable original fighter identities and ability mechanics",
+      "Portable HTML Canvas, touch Pointer Events and pure JavaScript simulation on the existing game website",
+      "Existing JM Build Intake/Execution governance; native Samsung Fold8 Termux Node test runtime"
+    ],
+    "rule": "Declare actual JM coding bodies, building bodies/apps/tools, runtime/host and relevant surfaces; do not fill for ceremony."
+  },
+  "true_gaps": {
+    "state": "RESOLVED",
+    "remaining_capability_gap": "The original v0.5 is sequential single-actor pull/release; it does not provide the user-directed three-floor/two-yard/one-flex six-body roster, simultaneous two-character pair orders, concurrent rival movement, support interventions, new mobility or optional dice. Those are the only new rules authorized in CP01.",
+    "new_capability_creation_authorized": true,
+    "authorization_rule": "Build execution authorization is separate from new-capability creation authorization. New capability creation must be explicitly requested after the gap survives recovery."
+  },
+  "proof_lanes": {
+    "estate_recovery_scan": {
+      "state": "PASS",
+      "meaning": "Current tracked Estate and Build Route Manifests were searched using the recorded query terms."
+    },
+    "stack_selection": {
+      "state": "PASS"
+    },
+    "gap_test": {
+      "state": "PASS"
+    },
+    "runtime_or_contact": {
+      "state": "NOT_CLAIMED"
+    }
+  },
+  "host_and_surfaces": {
+    "requested_surfaces": [
+      "Fold8 touch-first HTML Canvas as an additional separate experimental game URL, never replace existing Crewbound",
+      "GitHub draft PR; existing Games&Beyond QA Playwright browser gate"
+    ],
+    "state": "RESOLVED"
+  },
+  "escalation": {
+    "manual_user_contact": "Only when native built-ins/evidence are insufficient or target contact itself must be proven.",
+    "failure_route": "FAIL LOCAL -> CONTAIN -> TRACE -> RECOVER -> CORRECT RESPONSIBLE ORGAN FORWARD -> RETEST AFFECTED GATE"
+  },
+  "state": {
+    "route": "AUTHORIZED_TO_BUILD",
+    "build_authorized_by_manifest": true,
+    "runtime": "NOT CLAIMED",
+    "contact": "NOT CLAIMED",
+    "crown": "NOT EARNED"
+  },
+  "next_route": {
+    "step": "Proceed with the declared stack and gap through JM Default Execution Body; native built-ins remain authoritative."
+  },
+  "manifest_proof": {
+    "result": "ROUTE AUTHORIZATION PASS \u2014 Estate recovery evidence was recorded and the stack/gap route was explicitly resolved. This is not runtime/contact/crown proof."
+  }
+}

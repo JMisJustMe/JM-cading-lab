@@ -54,9 +54,9 @@ CAPABILITY_PROFILES = [
     {
         "id":"jm-ai-collective-cp04",
         "name":"JM AI Collective CP04 — Original Receiver & Provider Contact",
-        "source":"exact_original_native_pair + cp04_groundzero_receiver + cp04_original_windows_browser",
+        "source":"exact_original_native_pair + cp04_groundzero_receiver + cp04_original_windows_browser + cp08_phone_tool_relay_original_receiver",
         "domain":"AI integration / separate participants",
-        "capabilities":["original bounded LLM source handoff","AILatheo 14-body receiver contact","Teo OS trace and re-entry","HOLD-to-CARRY evidence gating","AGI provider discovery","JM Learn donor response and claim capping"],
+        "capabilities":["original bounded LLM source handoff","AILatheo 14-body receiver contact","Teo OS trace and re-entry","HOLD-to-CARRY evidence gating","AGI provider discovery","JM Learn donor response and claim capping","bounded Fold8/Oppo original-agent request response and receipt via authenticated tool relay"],
         "donor_roles":["nonmerging original interface","contact trace and return envelope","source authority projection"],
         "open_frontiers":["authenticated phone-to-private-model inference and returned native receipt","authorized production end-to-end transport","unrestricted general deliberation not claimed"]
     },

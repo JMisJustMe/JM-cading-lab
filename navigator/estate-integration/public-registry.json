@@ -1,6 +1,6 @@
 {
   "schema": "JM.Estate.PublicNervousSystem/1",
-  "version": "v1.1-live-proven",
+  "version": "v1.2-existing-homes-candidate",
   "status": "LIVE_PROVEN_CANONICAL_ESTATE_AND_NAVIGATOR_MCP_CONNECTED",
   "canonical_root": "https://jmisjustme-estate.pages.dev/",
   "registry_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json",
@@ -86,6 +86,62 @@
       "role": "PUBLIC_CAREER_UX_FRONT_DOOR",
       "url": "https://jmisjustme-estate.pages.dev/career/",
       "state": "PUBLIC_LIVE_PROVEN_V0_5_1"
+    },
+    {
+      "id": "access-mesh",
+      "name": "JM Current Access Mesh",
+      "role": "EXISTING_CROSS_ESTATE_ACCESS_SEARCH_AND_SOURCE_CONTACT",
+      "url": "https://jmisjustme-estate.pages.dev/access/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "games-beyond",
+      "name": "JM Games & Beyond",
+      "role": "EXISTING_GAMES_PLAY_AND_LOCAL_CREATOR_ENTRY",
+      "url": "https://jmisjustme-estate.pages.dev/games-beyond/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "books",
+      "name": "JM Books & Written Bodies",
+      "role": "EXISTING_BOOK_AND_WRITING_PROJECTION_NOT_PRIVATE_MANUSCRIPT",
+      "url": "https://jmisjustme-estate.pages.dev/books/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "visual-story",
+      "name": "JM Visual Story & Comics",
+      "role": "EXISTING_COMICS_AND_VISUAL_STORY_PUBLIC_PROJECTION",
+      "url": "https://jmisjustme-estate.pages.dev/visual-story/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "market-lab",
+      "name": "JM Market Ecosystem Lab",
+      "role": "EXISTING_PUBLIC_MARKET_LAB_ROUTE_NOT_COMMERCIAL_EXECUTION_PROOF",
+      "url": "https://jmisjustme-estate.pages.dev/market-lab/",
+      "state": "EXISTING_PUBLIC_ROUTE_HTTP200_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "rukquss",
+      "name": "RUKQUSS — Independent Business Gateway",
+      "role": "INDEPENDENT_BUSINESS_DOMAIN_NOT_ESTATE_SOURCE_REPLACEMENT",
+      "url": "https://rukquss.com/",
+      "state": "INDEPENDENT_HOST_HTTP200_RUKQUSS_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "jm-website-001",
+      "name": "JM WEBSITE 001 — Original JM.WEB Creation",
+      "role": "INDEPENDENT_JM_WEB_AUTHORED_WEBSITE_NOT_CANONICAL_ESTATE_REPLACEMENT",
+      "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/",
+      "state": "INDEPENDENT_GITHUB_PAGES_HTTP200_JMWEB_CONTENT_IDENTITY_VERIFIED_2026_11_04"
+    },
+    {
+      "id": "jm-openbox",
+      "name": "JM OPENBOX — Original Code In, App Out",
+      "role": "ORIGINAL_SEPARATE_CODE_APP_CREATOR_SOURCE_NOT_MERGED",
+      "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
+      "state": "INDEPENDENT_GITHUB_PAGES_HTTP200_OPENBOX_TITLE_VERIFIED_2026_11_04"
     },
     {
       "id": "freestanding-website",
@@ -241,5 +297,28 @@
     ],
     "non_equivalence": "A connection or mesh is not automatically a merger. Deliberate merger is permitted with appropriate authority, proof and recovery.",
     "proof_boundary": "Public registry lists relationship permissions, not owner-write capability, live functional mergers or proven receiver execution."
+  },
+  "candidate_route_addendum": {
+    "schema": "JM.Estate.ExistingHomesRouteAddendum/1",
+    "date": "2026-11-04",
+    "change": "LINK_POINTERS_ONLY",
+    "added_route_ids": [
+      "access-mesh",
+      "games-beyond",
+      "books",
+      "visual-story",
+      "market-lab",
+      "rukquss",
+      "jm-website-001",
+      "jm-openbox"
+    ],
+    "new_files_published": 0,
+    "original_body_replacements": 0,
+    "private_owner_source_exposed": false,
+    "nonblocking_holds": [
+      "InfinityFree .xo.je and .rf.gd returned generic 843-byte pages rather than identifiable homepage content; do not reclassify those as verified accessible website content",
+      "No per-link physical Samsung Fold8 browser acceptance claimed"
+    ],
+    "proof_scope": "Target hosts returned HTTP 200 and the stated content identity markers in direct GroundZeroJM checks; source-branch registration is not proof of canonical Cloudflare deployment; existing 10 original records retain their roles and proof."
   }
 }

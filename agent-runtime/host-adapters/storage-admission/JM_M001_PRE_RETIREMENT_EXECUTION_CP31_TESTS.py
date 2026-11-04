@@ -1,4 +1,5 @@
-import copy, hashlib, json, os, sys, tempfile, unittest, zipfile
+import copy, hashlib, json, os, stat, sys, tempfile, unittest, zipfile
+from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -88,6 +89,171 @@ class CP31Tests(unittest.TestCase):
  def test_cli_refuses_overwrite(self):
   p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
   rc=cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(p)]);self.assertEqual(rc,4)
+ def test_cli_write_once_verified_and_private(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'receipt.json'
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),3)
+  receipt=json.loads(dest.read_text())
+  self.assertEqual(receipt['native_mutations'],0)
+  self.assertEqual(receipt['retirement_authorised_count'],0)
+  self.assertEqual(receipt['records'][0]['decision'],'HOLD_NO_MUTATION')
+  self.assertEqual(stat.S_IMODE(dest.stat().st_mode),0o600)
+  before=dest.read_bytes()
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertEqual(dest.read_bytes(),before)
+ def test_cli_directory_entry_fsync_before_success(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'durable-receipt.json'
+  real_fsync=os.fsync
+  modes=[]
+  def inspect_fsync(fd):
+   modes.append(stat.S_IFMT(os.fstat(fd).st_mode))
+   return real_fsync(fd)
+  with mock.patch.object(cp31.os,'fsync',side_effect=inspect_fsync):
+   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),3)
+  self.assertIn(stat.S_IFREG,modes,'Receipt bytes must be fsynced')
+  self.assertIn(stat.S_IFDIR,modes,'New directory entry must be fsynced')
+  self.assertEqual(json.loads(dest.read_text())['native_mutations'],0)
+ def test_cli_directory_sync_failure_is_hold_and_retains_file(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'unsynced-receipt.json'
+  with mock.patch.object(cp31,'_sync_report_parent',side_effect=OSError('SYNTHETIC_DIRECTORY_SYNC_FAILED')):
+   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertTrue(dest.is_file(),'Retain suspect evidence for owner-led recovery')
+  self.assertEqual(json.loads(dest.read_text())['native_mutations'],0)
+ def test_cli_symlink_parent_directory_refused(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  link=self.d/'linked-dir'
+  try:os.symlink(self.d,link,target_is_directory=True)
+  except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
+  dest=link/'untrusted-receipt.json'
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertFalse((self.d/'untrusted-receipt.json').exists(),'Refuse a symlink parent BEFORE creating bytes')
+ def test_parent_retarget_cannot_redirect_fsync_or_readback(self):
+  # A parent pathname swap must not redirect the success proof to another directory.
+  stable=self.d/'stable';stable.mkdir()
+  moved=self.d/'moved'
+  dest=stable/'anchored-receipt.json'
+  original_sync=cp31._sync_report_parent
+  payload='{"decision":"HOLD_NO_MUTATION"}\\n'
+  def swap_parent(path,parent_fd):
+   os.rename(stable,moved)
+   stable.mkdir()
+   (stable/'anchored-receipt.json').write_bytes(b'FORGED_DIFFERENT_RECEIPT')
+   original_sync(path,parent_fd)
+  with mock.patch.object(cp31,'_sync_report_parent',side_effect=swap_parent):
+   with self.assertRaisesRegex(ValueError,'REPORT_OUTPUT_PATH_PARENT_CHANGED'):
+    cp31.write_once_verified(dest,payload)
+  # The original durable bytes are retained for owner recovery; a forged
+  # replacement at the requested path must NEVER receive success.
+  self.assertEqual((moved/'anchored-receipt.json').read_bytes(),payload.encode('utf-8'))
+  self.assertEqual((stable/'anchored-receipt.json').read_bytes(),b'FORGED_DIFFERENT_RECEIPT')
+ def test_intermediate_symlink_directory_refused_before_creation(self):
+  real=self.d/'real';real.mkdir()
+  intermediate=self.d/'intermediate'
+  try:os.symlink(real,intermediate,target_is_directory=True)
+  except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
+  dest=intermediate/'new-receipt.json'
+  with self.assertRaises(OSError):
+   cp31.write_once_verified(dest,'{"decision":"HOLD_NO_MUTATION"}')
+  self.assertFalse((real/'new-receipt.json').exists())
+ def test_requested_filename_replaced_after_anchored_readback_is_hold(self):
+  dest=self.d/'replaced-receipt.json'
+  payload='{"decision":"HOLD_NO_MUTATION"}'
+  original_read=cp31._read_report_exact
+  def swap_entry(path,written_stat,parent_fd):
+   value=original_read(path,written_stat,parent_fd)
+   dest.unlink()
+   dest.write_bytes(b'FORGED_REPLACEMENT')
+   return value
+  with mock.patch.object(cp31,'_read_report_exact',side_effect=swap_entry):
+   with self.assertRaisesRegex(ValueError,'REPORT_OUTPUT_PATH_ENTRY_CHANGED'):
+    cp31.write_once_verified(dest,payload)
+  self.assertEqual(dest.read_bytes(),b'FORGED_REPLACEMENT')
+ def test_requested_filename_removed_after_anchored_readback_is_hold(self):
+  dest=self.d/'vanished-receipt.json'
+  original_read=cp31._read_report_exact
+  def unlink_entry(path,written_stat,parent_fd):
+   value=original_read(path,written_stat,parent_fd)
+   dest.unlink()
+   return value
+  with mock.patch.object(cp31,'_read_report_exact',side_effect=unlink_entry):
+   with self.assertRaises(FileNotFoundError):
+    cp31.write_once_verified(dest,'{"decision":"HOLD_NO_MUTATION"}')
+  self.assertFalse(dest.exists())
+ def test_unsupported_directory_anchor_refuses_before_creation(self):
+  dest=self.d/'unwritten-receipt.json'
+  with mock.patch.object(cp31,'_open_report_parent',side_effect=ValueError('REPORT_DIRECTORY_SYNC_UNSUPPORTED')):
+   with self.assertRaisesRegex(ValueError,'REPORT_DIRECTORY_SYNC_UNSUPPORTED'):
+    cp31.write_once_verified(dest,'{"decision":"HOLD_NO_MUTATION"}')
+  self.assertFalse(dest.exists())
+ def test_cli_readback_corruption_is_not_success(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  dest=self.d/'untrusted-receipt.json'
+  with mock.patch.object(cp31,'_read_report_exact',return_value=b'corrupted'):
+   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(dest)]),4)
+  self.assertTrue(dest.is_file(),'Keep abnormal bytes for investigation, not silent deletion')
+  self.assertEqual(json.loads(dest.read_text())['native_mutations'],0)
+ def test_cli_refuses_symlink_receipt_without_mutation(self):
+  p=self.d/'review.json';p.write_text(json.dumps({'records':[self.row]}))
+  original=self.d/'protected.json';original.write_text('DO NOT REPLACE')
+  link=self.d/'link.json'
+  try:os.symlink(original,link)
+  except (OSError,NotImplementedError):self.skipTest('symlinks unavailable')
+  self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13),'--output',str(link)]),4)
+  self.assertEqual(original.read_text(),'DO NOT REPLACE')
+ def test_cp13_shortened_evidence_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records']=[]
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_CARDINALITY_MISMATCH'):self.check()
+ def test_cp13_extra_evidence_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'].append(copy.deepcopy(gate['records'][0]))
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_CARDINALITY_MISMATCH'):self.check()
+ def test_cp13_native_identity_substitution_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'][0]['root_native_id']='libfile_'+'9'*32
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check()
+ def test_cp13_label_substitution_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'][0]['label']='DIFFERENT_ORIGINAL'
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check()
+ def test_cp13_reordered_evidence_fails_closed(self):
+  other=copy.deepcopy(self.row);other['root_native_id']='libfile_'+'4'*32
+  rows=[self.row,other]
+  gate=cp31.load_cp13(CP13).run({'records':rows},DONOR,now=self.now)
+  gate['records'].reverse()
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check(rows)
+ def test_cp13_house_identity_substitution_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'][0]['house_native_id']='libfile_'+'9'*32
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check()
+ def test_cp13_row_schema_substitution_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['records'][0]['schema']='untrusted.schema'
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=cp31.load_cp13(CP13).SCHEMA,run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_RECORD_IDENTITY_OR_ORDER_MISMATCH'):self.check()
+ def test_cp13_false_summary_count_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['record_count']=2
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_SUMMARY_OR_READ_ONLY_CONTRACT_MISMATCH'):self.check()
+ def test_cp13_forged_mutation_claim_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['native_mutations']=1
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_SUMMARY_OR_READ_ONLY_CONTRACT_MISMATCH'):self.check()
+ def test_cp13_review_ready_count_mismatch_fails_closed(self):
+  gate=cp31.load_cp13(CP13).run({'records':[self.row]},DONOR,now=self.now)
+  gate['review_ready_count']+=1
+  with mock.patch.object(cp31,'load_cp13',return_value=mock.Mock(SCHEMA=gate['schema'],run=mock.Mock(return_value=gate))):
+   with self.assertRaisesRegex(ValueError,'CP13_SUMMARY_OR_READ_ONLY_CONTRACT_MISMATCH'):self.check()
  def test_cli_refuses_bad_input(self):
   p=self.d/'invalid.json';p.write_text('"not an inventory"')
   self.assertEqual(cp31.main(['--input',str(p),'--donor',str(DONOR),'--cp13',str(CP13)]),4)

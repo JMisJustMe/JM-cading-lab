@@ -156,6 +156,20 @@
       "role": "SOURCE_VERSION_RECOVERY_CORRIDOR",
       "url": "https://github.com/JMisJustMe/JM-cading-lab",
       "state": "PUBLIC_SOURCE_CORRIDOR"
+    },
+    {
+      "id": "jm-coding-workshop",
+      "name": "JM Coding Workshop — Original JM.WEB Website",
+      "role": "EXISTING_INDEPENDENT_JMWEB_WORKSHOP_PUBLIC_ROUTE_NOT_SOURCE_REPLACEMENT",
+      "url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+      "state": "SOURCE_CONNECTED_ACCESS_MESH_LINK_PRESENT_LIVE_CONTENT_RECHECK_HOLD_2026_11_04"
+    },
+    {
+      "id": "wix-living-estate",
+      "name": "JMISJUSTME Living Estate — Original Wix Home",
+      "role": "INDEPENDENT_PUBLISHED_WIX_WEBSITE_NOT_CANONICAL_ESTATE_REPLACEMENT",
+      "url": "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es",
+      "state": "PUBLISHED_WIX_ACCOUNT_CONFIRMED_CONTENT_BROWSE_HOLD_2026_11_04"
     }
   ],
   "services": [
@@ -310,16 +324,20 @@
       "market-lab",
       "rukquss",
       "jm-website-001",
-      "jm-openbox"
+      "jm-openbox",
+      "jm-coding-workshop",
+      "wix-living-estate"
     ],
     "new_files_published": 0,
     "original_body_replacements": 0,
     "private_owner_source_exposed": false,
     "nonblocking_holds": [
       "InfinityFree .xo.je and .rf.gd returned generic 843-byte pages rather than identifiable homepage content; do not reclassify those as verified accessible website content",
-      "No per-link physical Samsung Fold8 browser acceptance claimed"
+      "No per-link physical Samsung Fold8 browser acceptance claimed",
+      "Coding Workshop route exists in original Access Mesh and source repository; independent current public browser content acceptance was not possible in this contact",
+      "Wix account confirms JMISJUSTME Living Estate is Published, site ID 7724b482-0a61-41bb-8d78-cb6587d6e3e7; no independent live browser content proof claimed"
     ],
-    "proof_scope": "Target hosts returned HTTP 200 and the stated content identity markers in direct GroundZeroJM checks; source-branch registration is not proof of canonical Cloudflare deployment; existing 10 original records retain their roles and proof.",
+    "proof_scope": "Target hosts returned HTTP 200 and the stated content identity markers in direct GroundZeroJM checks; source-branch registration is not proof of canonical Cloudflare deployment; existing 10 original records retain their roles and proof. Two further source contacts: Workshop path in the existing Access Mesh and exact original GitHub source; published Wix owner-account readback. Neither is promoted to independent browser acceptance.",
     "parent_live_proof_version": "v1.1-live-proven",
     "release_note": "This additive source branch does not supersede the live proof version; new pointers remain source-candidate until separately deployed and verified."
   }

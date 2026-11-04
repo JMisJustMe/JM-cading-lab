@@ -8,6 +8,7 @@ const html=fs.readFileSync(path.join(root,'api-hub/index.html'),'utf8');
 const rootHtml=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const access=fs.readFileSync(path.join(root,'access/index.html'),'utf8');
 const workflow=fs.readFileSync(path.join(root,'.github/workflows/deploy-estate-sovereign-integrated-v1.yml'),'utf8');
+assert(html.includes('data-jm-api-house="v1"'), 'API House HTML identity marker');
 const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert(script, 'API House must contain a self-sufficient script');
 const fakeDocument=()=>{const elements=new Map();return {getElementById(id){

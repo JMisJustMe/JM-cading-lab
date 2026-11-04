@@ -32,6 +32,15 @@ test('every body has name, type, role, guide and authorization scope',()=>{
 test('all external opening routes are HTTPS or deliberately null',()=>{
  for(const x of records){if(x.open)assert.match(x.open,/^https:\/\//);if(x.source)assert.match(x.source,/^https:\/\//);if(x.protocol)assert.match(x.protocol,/^https:\/\//);if(x.dashboard)assert.match(x.dashboard,/^https:\/\/dashboard\.render\.com\/web\/srv-/);}
 });
+test('original Android Forge browser workroom opens without promoting local APK API',()=>{
+ const forge=records.find(x=>x.id==='android-forge');assert(forge);
+ assert.equal(forge.group,'local');
+ assert.equal(forge.open,'https://jmisjustme.github.io/JM-cading-lab/apps/jm-android-forge/');
+ assert.match(forge.source,/apps\\/jm-android-forge\\/index\\.html$/);
+ assert.match(forge.scope,/local|authorised host/i);
+ const page=boot('?api=android-forge').document.getElementById('detail').innerHTML;
+ assert(page.includes(forge.open));
+});
 test('no unverified phone endpoint exposed',()=>{
  const phone=records.find(x=>x.id==='phone-commander');assert.equal(phone.group,'local');assert.equal(phone.open,null);assert.equal(phone.source.includes('jm_phone_commander.py'),true);
 });

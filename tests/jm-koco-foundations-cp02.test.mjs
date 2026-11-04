@@ -27,7 +27,7 @@ const api=JSON.parse(apiMatch[1]);assert.equal(api.length,23);
 for(const x of catalog.records){if(x.path)assert(/^https:\/\//.test(x.path));assert(x.title&&x.role&&x.category&&x.state&&x.source_ref);}
 for(const id of ['home','apis','connect','estate'])assert(html.includes('id="screen-'+id+'"'));
 for(const id of ['foundationSearch','foundationMore','foundationAddForm','foundationImport','foundationExport'])assert(html.includes('id="'+id+'"'));
-assert(html.includes('data-jm-foundations="cp02"'));
+assert(html.includes('data-jm-foundations="cp03"')); // CP02 registered source remains unchanged behind its CP03 living-door descendant
 assert(html.includes("OWNER_METADATA_UNVERIFIED"),'owner imports cannot crown source');
 assert(html.includes('safeSourceURL'), 'owner links require security boundary');
 assert(!html.includes('X-JM-Owner-Key:'));

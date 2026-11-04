@@ -58,6 +58,41 @@
     window.dispatchEvent(new Event('jm:bus-imported'));
     return rows.length;
   };
+  // CP04: import an exported bus as an additive, independently validated contact.
+  // The legacy importBus overwrite API remains unchanged for historical callers.
+  // A same-ID/different-byte collision is a hold, never a silent replacement.
+  const mergeBus=(obj)=>{
+    if(!Array.isArray(obj)&&obj?.schema!=='jm.apps.tools.bus/1.0')
+      throw new Error('PACKET_BUS_SCHEMA_HOLD');
+    const incoming=Array.isArray(obj)?obj:obj.packets;
+    validatePackets(incoming);
+    const existing=read();
+    const identities=new Map(existing.map(p=>[p.id,JSON.stringify(p)]));
+    for(const p of incoming){
+      const prior=identities.get(p.id);
+      if(prior!==undefined&&prior!==JSON.stringify(p))
+        throw new Error('PACKET_BUS_ID_COLLISION_HOLD');
+    }
+    const additions=incoming.filter(p=>!identities.has(p.id));
+    const merged=[...existing,...additions];
+    validatePackets(merged);
+    const before=localStorage.getItem(BUS_KEY);
+    try{
+      write(merged);
+      if(JSON.stringify(read())!==JSON.stringify(merged))
+        throw new Error('PACKET_BUS_IMPORT_READBACK_HOLD');
+    }catch(error){
+      try{
+        if(before===null)localStorage.removeItem(BUS_KEY);
+        else localStorage.setItem(BUS_KEY,before);
+      }catch(rollbackError){
+        throw new Error('PACKET_BUS_IMPORT_ROLLBACK_HOLD: '+rollbackError.message);
+      }
+      throw error;
+    }
+    window.dispatchEvent(new Event('jm:bus-imported'));
+    return {incoming:incoming.length,preserved:existing.length,added:additions.length,total:merged.length};
+  };
   const download=(name,data)=>{
     const blob=new Blob([typeof data==='string'?data:JSON.stringify(data,null,2)],{type:'application/json'});
     const a=document.createElement('a');
@@ -111,5 +146,5 @@
   };
   const readFile=async(file)=>JSON.parse(await file.text());
   const receipt=(source,action,status='ok',details={})=>emit('estate.receipt',source,{action,status,details},{class:'quiet-trace'});
-  window.JMAppsToolsSpine={BUS_KEY,read,send,packet,emit,clear,exportBus,importBus,download,loadState,saveState,exportEnvironment,importEnvironment,readFile,receipt,uid,now};
+  window.JMAppsToolsSpine={BUS_KEY,read,send,packet,emit,clear,exportBus,importBus,mergeBus,download,loadState,saveState,exportEnvironment,importEnvironment,readFile,receipt,uid,now};
 })();

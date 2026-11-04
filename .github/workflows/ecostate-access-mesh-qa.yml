@@ -147,7 +147,7 @@ jobs:
                   await page.waitForURL(url=>url.pathname==='/games-beyond/'&&url.search===expected,{timeout:15000});
                   if(target.action==='play'){
                     await page.waitForFunction(id=>document.querySelector('#status')?.dataset.directPlay===id &&
-                      document.querySelector('#bodyDialog')?.open,id,{timeout:90000});
+                      document.querySelector('#bodyDialog')?.open,target.id,{timeout:90000});
                     const exact=await page.locator('#bodyFrame').getAttribute('srcdoc');
                     if(!exact||!/<html|<!doctype/i.test(exact))throw Error('Original mounted HTML not opened: '+target.id);
                   }else{

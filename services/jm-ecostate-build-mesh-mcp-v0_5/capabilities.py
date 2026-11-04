@@ -35,12 +35,30 @@ CAPABILITY_PROFILES = [
     },
     {
         "id":"llm2-v2",
-        "name":"JM LLM #2 v2.0 — Unified Executable Program Edition",
-        "source":"current_project_registry",
+        "name":"JM LLM #2 v2.1 — Maximal Earned Direct-Content Edition",
+        "source":"private_verified_current_v2_1_2026_11_04 + external_current_registry_v0_24",
         "domain":"AI / executable program",
-        "capabilities":["program emission","action interpreter","task shaping","bounded program compilation","deterministic reacquisition","unified action program"],
-        "donor_roles":["program-head architecture","bounded action interpreter","task compiler"],
-        "open_frontiers":["broader program induction","non-fixed ISA expansion"]
+        "capabilities":["program emission","action interpreter","task shaping","bounded program compilation","deterministic reacquisition","unified action program","earned learned direct-content decoding","bounded weights-backed marker/instruction output"],
+        "donor_roles":["program-head architecture","bounded action interpreter","task compiler","earned learned direct-content donor"],
+        "open_frontiers":["broader program induction","non-fixed ISA expansion","operation-free instruction-to-capability routing beyond v2.2 held-out 22/23"]
+    },
+    {
+        "id":"jm-learn-v113",
+        "name":"JM Learn v11.3 — Knowledge Mesh Contact",
+        "source":"private_current_pointer_v11_3 + cp04_real_windows_chrome_original_provider",
+        "domain":"Learning / knowledge mesh",
+        "capabilities":["knowledge donor discovery","BroadcastChannel peer contact","versioned provider query/response","bounded donor evidence seating","unverified claim capping","residual knowledge-gap routing"],
+        "donor_roles":["knowledge mesh consumer","competence-evidence custody","donor contact and receipt"],
+        "open_frontiers":["owner physical Fold8/Oppo contact","production provider deployment","verified learner competence"]
+    },
+    {
+        "id":"jm-ai-collective-cp04",
+        "name":"JM AI Collective CP04 — Original Receiver & Provider Contact",
+        "source":"exact_original_native_pair + cp04_groundzero_receiver + cp04_original_windows_browser",
+        "domain":"AI integration / separate participants",
+        "capabilities":["original bounded LLM source handoff","AILatheo 14-body receiver contact","Teo OS trace and re-entry","HOLD-to-CARRY evidence gating","AGI provider discovery","JM Learn donor response and claim capping"],
+        "donor_roles":["nonmerging original interface","contact trace and return envelope","source authority projection"],
+        "open_frontiers":["Fold8 physical owner acceptance","authorized production end-to-end transport","unrestricted general deliberation not claimed"]
     },
     {
         "id":"agi-v144",

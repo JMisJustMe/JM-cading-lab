@@ -19,7 +19,7 @@ function unit(){
  const state='{"rooms":{"gem":{"source":"KEEP"}},"active":"gem"}';
  const original=[pkt('original')];const t=memory({[BUS]:JSON.stringify(original),[ENV]:state});
  const result=t.api.mergeBus({schema:'jm.apps.tools.bus/1.0',packets:[pkt('fresh')]});
- assert.equal(result.added,1);assert.deepEqual(t.api.read().map(p=>p.id),['original','fresh']);
+ assert.equal(result.added,1);assert.deepEqual(Array.from(t.api.read(),p=>p.id),['original','fresh']);
  assert.equal(t.map.get(ENV),state,'import bus must not modify the workroom');
  const after=t.map.get(BUS);
  assert.equal(t.api.mergeBus({schema:'jm.apps.tools.bus/1.0',packets:[pkt('fresh')]}).added,0);

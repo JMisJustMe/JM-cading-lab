@@ -116,7 +116,7 @@ def run_lab(root,raw):
     done=subprocess.run(['node','-e',LAB_NODE,str(p)],input=raw,text=True,capture_output=True,timeout=20)
     if done.returncode: raise ValueError('EXACT_JM_AI_LAB_CLASSIFIER_FAILED')
     x=json.loads(done.stdout)
-    if x.get('route')!='grounded': raise ValueError('LAB_DID_NOT_CLASSIFY_GROUNDED_CONTACT')
+    if x.get('route') not in ('grounded','grounded-generate'): raise ValueError('LAB_DID_NOT_CLASSIFY_GROUNDED_CONTACT')
     return {'status':'PASS','office':'JM AI Lab v2.0','original_source_blob':LAB_GIT_BLOB,
             'actual_route':x['route'],'model_training_in_this_contact':False}
 

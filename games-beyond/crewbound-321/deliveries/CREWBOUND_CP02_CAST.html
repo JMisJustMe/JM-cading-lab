@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- JM CP02 portable export. PROVENANCE {"schema":"JM.CREWBOUND.CP02.HTML_DELIVERY_ROLE/1","entry":"cast.html","source_sha256":"c55a24b86d7081a591b81a53171420d2276b310f27c2dd221976d50d94d48a5f","scripts_sha256":{"roster.js":"18cf4bb929bbbea83cbdcb3b2c0932d197d94a76808b15fe897b7a3a230ae8f1","cast.js":"b4975b166a1ec6be7cf11033cd99939a606920e197fcd2174e96efae6167ca51","art.js":"75b6bf9d38c6700ba5f8e4690e6d31749dbcda53fd3da1a8e0dc7c691f2a5aae"},"git_home":"JMisJustMe/JM-cading-lab/games-beyond/crewbound-321","authority":"export only, not a new keeper or modified v0.5"} -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081624">
+<title>CREWBOUND | Twelve Original Fighters — CP02</title>
+<style>
+*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:radial-gradient(ellipse at top,#1a4653 0,#081624 52%);color:#effaff;font-family:system-ui,Arial,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:16px 12px 42px}
+a{color:#8ff3ff}nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+nav a{text-decoration:none;font-size:.78rem;font-weight:850;letter-spacing:.01em}
+.tag{color:#ffd383;font-size:.64rem;font-weight:950;letter-spacing:.13em}
+h1{font-size:clamp(1.65rem,6vw,3rem);line-height:1.04;margin:5px 0 8px;letter-spacing:-.04em}h1 span{color:#79eafb}
+p{color:#b3cbd8;font-size:.81rem;line-height:1.6;margin:7px 0}
+.hero{padding:16px;border:1px solid #377183;border-radius:20px;background:#102a38c9}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 6px}
+button{font:inherit;cursor:pointer;min-height:44px;touch-action:manipulation}
+.tools button{border-radius:10px;border:1px solid #4b687b;background:#122e40;color:#f0fcff;padding:8px 12px;font-size:.76rem;font-weight:900}
+.tools button[aria-pressed=true]{border-color:#80f4fa;background:#1a5770}
+h2{margin:22px 0 10px;font-size:1.1rem;letter-spacing:.07em}
+.grid[hidden],h2[hidden]{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{position:relative;background:linear-gradient(165deg,#19374c,#101e31 67%);border:1px solid #446479;border-radius:18px;padding:10px;min-width:0}
+.card.rival{background:linear-gradient(165deg,#422837,#101b30 65%);border-color:#69475f}
+.card .label{font-size:.55rem;letter-spacing:.11em;color:#9dcfe0;font-weight:900}
+.card .heroPortrait{display:block;width:100%;max-width:210px;aspect-ratio:1;object-fit:contain;margin:4px auto 0;filter:drop-shadow(0 0 12px var(--glow))}
+.card h3{font-size:1.12rem;margin:0 0 2px;font-weight:950;letter-spacing:.02em}
+.card .role{font-size:.69rem;color:#b9d1e3;font-weight:650;min-height:2em}
+.card .move{margin:7px 0;padding:7px;border-radius:8px;background:#071625;border:1px solid #355265;font-size:.65rem;line-height:1.5}
+.card .move b{color:var(--glow)}
+.card .personal{margin:6px 0 0;font-size:.7rem;color:#ccdce8;font-style:italic}
+.card .kit{font-size:.62rem;color:#9cc1cd;line-height:1.4;margin-top:6px}
+.card .source{font-size:.57rem;color:#6f93a5;line-height:1.4;margin-top:5px}
+footer{font-size:.73rem;color:#b7cfda;margin-top:26px;border-top:1px solid #426174;padding-top:14px;line-height:1.6}
+.btn{display:inline-flex;justify-content:center;align-items:center;padding:10px 12px;border:1px solid #4de8ef;border-radius:12px;background:#12516b;font-weight:900;text-decoration:none}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*,*:after,*:before{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+<nav><a href="./CREWBOUND_CP02_PLAY.html">‹ PLAY 3+2+1</a><span class="tag">JM CREWBOUND / CP02 CAST</span></nav>
+<header class="hero">
+<div class="tag">NOT COMBOUND. NOT THE OLD CREWBOUND CREATURE ROSTER.</div>
+<h1>TWELVE <span>NEW FIGHTERS.</span></h1>
+<p>Fresh combat pilots with distinct silhouettes, roles, personalities, kit, movement paths and fighting techniques. Their battle maths inherit the original protected CREWBOUND PrimeBody as a donor — their identities and costumes are exclusive to this new 3+2+1 descendant.</p>
+<div class="tools" role="group" aria-label="Cast viewing modes">
+<button id="all" aria-pressed="true">ALL 12</button>
+<button id="home" aria-pressed="false">YOUR 6</button>
+<button id="rivals" aria-pressed="false">RIVAL 6</button>
+<button id="sil" aria-pressed="false" title="Compare silhouette shapes without costume colours">SILHOUETTE TEST</button>
+</div>
+<a class="btn" href="./CREWBOUND_CP02_PLAY.html">🎮 PLAY THE NEW GAME</a>
+</header>
+<div id="catalogue">
+<h2>SHIFT CREW — YOUR SIX</h2><section class="grid" id="playerCast" aria-label="Player-exclusive characters"></section>
+<h2>COUNTER CREW — SIX RIVALS</h2><section class="grid" id="enemyCast" aria-label="Rival-exclusive characters"></section>
+</div>
+<footer>
+<b>Source custody:</b> Original CREWBOUND v0.5 preserved. Original COMBOUND preserved. This cast is an independent CP02 proposal with original artwork expressed entirely as local canvas drawing code. Names, costumes and movement profiles are new; the inherited original donor archetypes are disclosed for proof, not displayed as the playable cast.
+</footer>
+</main>
+<script>
+/* Authored Crewbound v0.5 PrimeBody attributes, not COMBOUND or replacement. */
+(function(root){const data={"source_schema":"JM.CREWBOUND.GAME_SOURCE/0.5","source_sha256":"5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7","rule_status":"SOURCE_EXACT_BASELINE_PROPERTIES_PLUS_NEW_DESCENDANT_MOBILITY","fighters":{"ZIPP":{"key":"ZIPP","name":"Zipp","hp":1050,"radius":38,"mass":0.68,"power":0.96,"palette":["#62f2ff","#1575ff","#eaffff"],"shape":"dart","passive":"SURGE","movement_word":"RICOCHET","signature_name":"LIGHTNING LAP","ability_effect":"Each wall charges SURGE. The next enemy contact gains +28% damage per wall, up to four charges.","ability_trigger":"Hit a wall before striking an enemy.","cp01_proposed_speed":205},"BRAX":{"key":"BRAX","name":"Brax","hp":1760,"radius":56,"mass":1.92,"power":1.48,"palette":["#ffb34d","#b44721","#fff1b3"],"shape":"brick","passive":"WEIGHT WORD","movement_word":"WEIGHT","signature_name":"FAULTLINE","ability_effect":"WEIGHT WORD deals 55% bonus damage and adds a second shove after the normal collision.","ability_trigger":"Strike an enemy while moving above heavy-impact speed.","cp01_proposed_speed":96},"MIRA":{"key":"MIRA","name":"Mira","hp":1260,"radius":43,"mass":0.88,"power":0.84,"palette":["#ff8ee9","#813dca","#fff0ff"],"shape":"wisp","passive":"ECHO PASS","movement_word":"RELAY","signature_name":"MIRROR ROUTE","ability_effect":"ECHO PASS accelerates that ally and loads 36% bonus damage onto its next enemy hit. A missed relay gifts a softer echo to the nearest ally.","ability_trigger":"Touch an ally during Mira’s route.","cp01_proposed_speed":157},"VEXA":{"key":"VEXA","name":"Vexa","hp":1160,"radius":41,"mass":0.84,"power":1.12,"palette":["#c879ff","#4e2b91","#a9fff0"],"shape":"shard","passive":"OPEN MARK","movement_word":"MARK","signature_name":"HUNTLINE","ability_effect":"OPEN MARK exposes the target. The next allied hit claims the mark for 50% bonus damage.","ability_trigger":"Hit an unmarked enemy.","cp01_proposed_speed":171},"GROVE":{"key":"GROVE","name":"Grove","hp":1940,"radius":57,"mass":2.12,"power":1.06,"palette":["#9dea65","#3d7531","#fff19c"],"shape":"guardian","passive":"ROOT HOLD","movement_word":"ROOT","signature_name":"FORTRESS ROOT","ability_effect":"ROOT HOLD cuts incoming damage by 32%, deadens the attacker’s momentum and creates a protective shield aura on settle.","ability_trigger":"Receive an enemy hit or finish a route alive.","cp01_proposed_speed":89},"ORBI":{"key":"ORBI","name":"Orbi","hp":1240,"radius":45,"mass":1.02,"power":1.08,"palette":["#ff73be","#6724a8","#ffd86c"],"shape":"star","passive":"NOVA RING","movement_word":"PULSE","signature_name":"SUPERNOVA","ability_effect":"NOVA RING damages every nearby enemy for 48% of the primary hit. Compression and tension enlarge the blast.","ability_trigger":"Land the first enemy hit of Orbi’s route.","cp01_proposed_speed":143},"KNOT":{"key":"KNOT","name":"Knot","hp":1450,"radius":48,"mass":1.18,"power":0.98,"palette":["#49e2b4","#176c6f","#e9ff8b"],"shape":"twin","passive":"TENSION","movement_word":"TENSION","signature_name":"WEBLOCK","ability_effect":"TENSION BIND steals 32% of the target’s movement. On settle, Knot leaves a field that weakens enemy launches for four turns.","ability_trigger":"Strike an enemy or finish a route alive.","cp01_proposed_speed":119},"SKIP":{"key":"SKIP","name":"Skip","hp":1080,"radius":39,"mass":0.64,"power":0.86,"palette":["#7ca7ff","#4044b8","#fffb9f"],"shape":"split","passive":"SIDE DOOR","movement_word":"SIDE DOOR","signature_name":"BACKDOOR","ability_effect":"SIDE DOOR rotates the rebound by about 30° and adds speed, creating a route ordinary reflection cannot reach.","ability_trigger":"Touch the first wall of the route.","cp01_proposed_speed":215}},"relationships":[{"a":"MIRA","b":"ZIPP","name":"RELAY SURGE"},{"a":"BRAX","b":"ORBI","name":"PRESSURE COLLAPSE"},{"a":"KNOT","b":"BRAX","name":"TRAP & SHOVE"},{"a":"SKIP","b":"VEXA","name":"SIDE-DOOR HUNT"},{"a":"GROVE","b":"MIRA","name":"GUARDED ECHO"},{"a":"KNOT","b":"ORBI","name":"TENSION NOVA"},{"a":"ZIPP","b":"VEXA","name":"CHASE & CLAIM"},{"a":"GROVE","b":"BRAX","name":"SHARED WEIGHT"}]};if(typeof module==="object"&&module.exports)module.exports=data;root.JM_CREWBOUND_321_ROSTER=data;})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script>
+<script>
+/* CREWBOUND CP02 — 12 independent crew identities and authored silhouettes.
+   New names/appearances: NOT COMBOUND's creature roster.
+   Rules and archived source stats inherited by explicit donor reference only.
+   New moves/visuals are candidate CP02 body, not retroactively the v0.5 PrimeBody. */
+(function(root){
+"use strict";
+const donor=root.JM_CREWBOUND_321_ROSTER||(typeof require==="function"?require("./roster.js"):null);
+if(!donor?.fighters)throw Error("CREWBOUND v0.5 PrimeBody donor unavailable");
+const identity=[
+ // YOUR CREW · high-contrast athletic / equipment-based silhouettes
+ {id:"KEPLER",from:"ZIPP",name:"Kepler",role:"Skyline skater",silhouette:"glider",colors:["#3de7ff","#163d88","#ffc975"],speed:210,maneuver:"bank",defense:"Slip Roll",attack:"Rail Dash",signature:"BLUE COMET",personality:"Bold, fast-reading scout",kit:"Wing fins / pulse skates",short:"SKATE"},
+ {id:"IRONVALE",from:"BRAX",name:"Ironvale",role:"Anchor bruiser",silhouette:"anvil",colors:["#ffb767","#643628","#fce6b0"],speed:91,maneuver:"charge",defense:"Brace Plate",attack:"Earthstamp",signature:"CRASH ANCHOR",personality:"Immovable team protector",kit:"Hydraulic gauntlets / shoulder plates",short:"BRACE"},
+ {id:"SOLACE",from:"MIRA",name:"Solace",role:"Relay choreographer",silhouette:"ribbon",colors:["#f5a1cf","#733a7d","#84ead6"],speed:159,maneuver:"weave",defense:"Crossfade",attack:"Ribbon Relay",signature:"AFTERIMAGE",personality:"Calculates moving partnerships",kit:"Twin signal ribbons / long coat",short:"WEAVE"},
+ {id:"LOCKE",from:"GROVE",name:"Locke",role:"Gate captain",silhouette:"sentinel",colors:["#9acaf5","#304873","#f6dc85"],speed:94,maneuver:"anchor",defense:"Hold Wall",attack:"Shield Shunt",signature:"IRON GATE",personality:"Methodical, protects the vulnerable",kit:"Full-length tower shield / visor",short:"HOLD"},
+ {id:"ASTER",from:"ORBI",name:"Aster",role:"Pulse aerialist",silhouette:"astral",colors:["#f9dd74","#5a4179","#ff9376"],speed:146,maneuver:"orbit",defense:"Halo Guard",attack:"Arc Pulse",signature:"SOLAR CHOIR",personality:"Theatrical aerial tactician",kit:"Orbit hoops / split-flight cape",short:"ORBIT"},
+ {id:"NOX",from:"VEXA",name:"Nox",role:"Stealth line-reader",silhouette:"marksman",colors:["#b89aff","#30335d","#9df0f2"],speed:175,maneuver:"sidestep",defense:"Nightstep",attack:"Markline",signature:"HIDDEN VECTOR",personality:"Quiet, precision-minded navigator",kit:"Angular rangefinder / trailing scarf",short:"MARK"},
+ // RIVAL CREW · distinct individual silhouettes, not mirrored recolours
+ {id:"STATIC",from:"SKIP",name:"Static",role:"Phase acrobat",silhouette:"jester",colors:["#ff747b","#753040","#fcdb83"],speed:219,maneuver:"zigzag",defense:"Sidecut",attack:"Backdoor Feint",signature:"GLITCH LEAP",personality:"Unpredictable gap-hunter",kit:"Split-jacket / twin spring boots",short:"SHIFT"},
+ {id:"LATCH",from:"KNOT",name:"Latch",role:"Bind specialist",silhouette:"grappler",colors:["#a8d981","#41566a","#e5aacb"],speed:125,maneuver:"lure",defense:"Catch Net",attack:"Chain Snare",signature:"CROSSHATCH",personality:"Relentless trap architect",kit:"Mechanical spool / hook lance",short:"SNARE"},
+ {id:"EMBER",from:"ORBI",name:"Ember",role:"Blast percussionist",silhouette:"drummer",colors:["#ff986a","#863a48","#ffe2ab"],speed:141,maneuver:"pulse",defense:"Heat Veil",attack:"Impact Beat",signature:"FIRE CIRCLE",personality:"Aggressive rhythmic striker",kit:"Resonance drums / heat visor",short:"BEAT"},
+ {id:"WROUGHT",from:"GROVE",name:"Wrought",role:"Siege wall",silhouette:"juggernaut",colors:["#c5d4dc","#4a4b60","#ff8580"],speed:82,maneuver:"anchor",defense:"Stone Skin",attack:"Ramlock",signature:"IRON PROCESSION",personality:"Slow, relentless frontline wall",kit:"Reinforced crawler suit / ram collar",short:"RAM"},
+ {id:"VIVID",from:"VEXA",name:"Vivid",role:"Laser fencer",silhouette:"lancer",colors:["#fc83cc","#663c79","#97edc3"],speed:169,maneuver:"fence",defense:"Parry Arc",attack:"Laser Draw",signature:"BRIGHT CUT",personality:"Daring long-range duelist",kit:"Thin energy lance / pointed helmet",short:"PARRY"},
+ {id:"DASHER",from:"ZIPP",name:"Dasher",role:"Low-gravity rider",silhouette:"rider",colors:["#66f2cb","#27677a","#ffb26e"],speed:199,maneuver:"drift",defense:"Burnout",attack:"Skid Sweep",signature:"CORKSCREW RUN",personality:"Smooth, momentum-led trick rider",kit:"Single glide wheel / asymmetrical armour",short:"DRIFT"}
+];
+const fighters={};
+for(const entry of identity){
+ const base=donor.fighters[entry.from];if(!base)throw Error("Missing donor "+entry.from);
+ const {id,from,...change}=entry;
+ fighters[id]={...base,...change,key:id,archetype:from,source_name:base.name,source_signature:base.signature_name,
+   source_ability_effect:base.ability_effect,name:entry.name,
+   cp01_proposed_speed:entry.speed,signature_name:entry.signature,
+   movement_word:entry.short,palette:[...entry.colors],
+   hp:Math.round(base.hp*(id==="WROUGHT"?1.05:id==="DASHER"?.96:1)),
+   // Fine visual distinctions are not a claim that inherited mechanic donor changed.
+   new_art_authority:"CREWBOUND_CP02_UNIQUE_CAST"};
+}
+const crews={player:identity.slice(0,6).map(x=>x.id),enemy:identity.slice(6).map(x=>x.id)};
+const api={schema:"JM.CREWBOUND.CP02.UNIQUE_CAST/1",fighters,crews,identity:identity.map(x=>({...x})),
+ source_sha256:donor.source_sha256, source_character_count:Object.keys(donor.fighters).length,
+ source_separation:"CREWBOUND roster is independent of COMBOUND; no donor source files overwritten"};
+if(typeof module==="object"&&module.exports)module.exports=api;
+root.JM_CREWBOUND_321_CAST=api;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script>
+<script>
+/* CREWBOUND CP02 — original twelve-character canvas costume system.
+   Fighter silhouettes are crew-scale humanoid/pilot silhouettes, NOT COMBOUND creatures.
+   No external artwork, image assets or font dependencies. */
+(function(root){
+"use strict";
+function draw(ctx,f,x=0,y=0,size=68,time=0,team="player"){
+ if(!f)return;
+ const [primary,dark,accent]=f.palette,who=f.silhouette,scale=size/72;
+ ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+ const bob=Math.sin(time*2+(f.cp01_proposed_speed||100)/16)*1.5;
+ ctx.translate(0,bob);
+ function stroke(color="#081421",w=3){ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineJoin="round";ctx.lineCap="round"}
+ function path(pts,fill,outline="#081421",w=2.6){
+  ctx.beginPath();pts.forEach(([xx,yy],i)=>i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy));ctx.closePath();
+  ctx.fillStyle=fill;ctx.fill();if(outline){stroke(outline,w);ctx.stroke()}
+ }
+ function ell(x,y,rx,ry,fill,outline="#081421",w=2){
+  ctx.beginPath();ctx.ellipse(x,y,Math.max(.01,rx),Math.max(.01,ry),0,0,Math.PI*2);
+  if(fill){ctx.fillStyle=fill;ctx.fill()}if(outline){stroke(outline,w);ctx.stroke()}
+ }
+ function line(pts,color=accent,w=3){
+  ctx.beginPath();pts.forEach(([xx,yy],i)=>i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy));
+  stroke(color,w);ctx.stroke();
+ }
+ function rect(x,y,w,h,fill,r=3){
+  ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();stroke(dark,1.8);ctx.stroke();
+ }
+ ctx.shadowColor=primary;ctx.shadowBlur=10;
+ ell(0,32,24,5,"#06111c88",null);
+ // Motion/readable equipment behind the character: unique to the cast identity.
+ switch(who){
+  case "glider":
+   path([[-10,-13],[-42,-27],[-33,2],[-13,11]],accent);
+   path([[10,-13],[42,-27],[33,2],[13,11]],primary);
+   line([[-33,-20],[-20,-11],[-14,2]],dark,3);line([[33,-20],[20,-11],[14,2]],dark,3);
+   break;
+  case "anvil":
+   rect(-37,-13,21,29,dark,7);rect(17,-13,21,29,dark,7);
+   path([[-38,-15],[-24,-34],[-8,-21]],accent);
+   path([[38,-15],[24,-34],[8,-21]],accent);
+   break;
+  case "ribbon":
+   line([[-13,-13],[-31,-27],[-38,-9],[-25,15],[-42,25]],primary,7);
+   line([[13,-12],[29,-32],[43,-11],[29,12],[43,31]],accent,5);
+   break;
+  case "sentinel":
+   path([[-30,-19],[-18,-34],[-8,-12],[-14,28],[-31,17]],primary);
+   path([[16,-14],[43,-15],[40,28],[18,27]],dark);
+   break;
+  case "astral":
+   ell(0,-3,37,32,null,accent,4);
+   ell(0,-3,32,38,null,primary,2);
+   ell(-32,-14,5,5,accent,null);ell(31,11,4,4,primary,null);
+   break;
+  case "marksman":
+   path([[-6,-18],[-26,-36],[-33,33],[-8,16]],dark);
+   path([[6,-18],[26,-30],[31,21],[10,15]],primary);
+   break;
+  case "jester":
+   path([[-12,-15],[-34,-40],[-24,-5]],primary);
+   path([[12,-15],[38,-38],[22,-3]],accent);
+   line([[-35,18],[-22,4],[-41,-4]],accent,5);
+   break;
+  case "grappler":
+   ell(-32,9,11,13,null,primary,4);ell(-32,9,5,6,dark,null);
+   line([[-25,6],[-40,-13],[-15,-24],[27,-10]],accent,3.5);
+   break;
+  case "drummer":
+   ell(-27,11,14,14,primary,accent,4);ell(27,11,14,14,primary,accent,4);
+   ell(-27,11,5,5,dark,null);ell(27,11,5,5,dark,null);
+   line([[-27,-8],[-37,-30]],accent,4);line([[27,-8],[39,-28]],accent,4);
+   break;
+  case "juggernaut":
+   path([[-41,-27],[-16,-30],[-21,19],[-39,21]],dark);
+   path([[41,-27],[16,-30],[21,19],[39,21]],dark);
+   rect(-30,-33,60,18,primary,6);
+   break;
+  case "lancer":
+   line([[20,26],[35,-9],[38,-42]],accent,5);
+   path([[38,-53],[49,-30],[30,-30]],primary);
+   path([[-15,-13],[-34,3],[-15,12]],dark);
+   break;
+  case "rider":
+   ell(0,31,17,12,dark,primary,5);
+   ell(0,31,7,7,accent,null);
+   path([[-18,-4],[-38,14],[-27,23],[-12,11]],accent);
+   break;
+ }
+ // Articulated legs. Each character is visibly a person/pilot, not a COMBOUND symbol.
+ const stride=who==="rider"?9:who==="juggernaut"?17:13;
+ path([[-13,14],[-2,15],[-6,32],[-20,35],[-23,30]],dark);
+ path([[2,15],[13,14],[22,30],[20,35],[6,32]],dark);
+ rect(-25,29,20,8,who==="anvil"?accent:primary,3);
+ rect(6,29,21,8,who==="juggernaut"?accent:primary,3);
+ // Main humanoid costume/chest.
+ const thick=who==="anvil"||who==="juggernaut"?24:who==="sentinel"?20:17;
+ path([[-thick,-21],[thick,-21],[thick-2,18],[0,24],[-thick+2,18]],dark);
+ path([[-thick+4,-18],[thick-4,-18],[thick-5,12],[0,18],[-thick+5,12]],primary);
+ line([[-8,-16],[0,-7],[8,-16]],accent,3);
+ if(who==="sentinel"||who==="juggernaut")rect(-10,0,20,12,accent,3);
+ if(who==="astral"||who==="drummer")ell(0,0,9,8,accent,dark,2);
+ if(who==="ribbon")line([[-14,-10],[9,10],[-7,17]],accent,5);
+ if(who==="lancer")rect(-3,-5,6,20,accent,2);
+ if(who==="marksman")line([[-15,-10],[16,13]],accent,4);
+ if(who==="jester")path([[-10,-10],[4,-17],[13,3],[-3,13]],accent);
+ if(who==="grappler")ell(0,1,9,8,accent,dark,3);
+ if(who==="glider")path([[-10,0],[0,-12],[10,0],[0,12]],accent);
+ if(who==="rider")line([[-12,12],[16,-8]],accent,5);
+ // Individual shoulders and arms.
+ ctx.shadowBlur=0;
+ const arm=who==="anvil"||who==="juggernaut"?11:who==="grappler"?9:7;
+ rect(-thick-arm+5,-14,arm+3,22,dark,4);rect(thick-7,-14,arm+3,22,dark,4);
+ ell(-thick-1,13,arm*.62,7,accent,dark,2);ell(thick+1,13,arm*.62,7,accent,dark,2);
+ // Head and signature headwear. Helmet proportions vary per costume.
+ const headSize=who==="juggernaut"?15:who==="anvil"?15:who==="jester"?11:13;
+ ell(0,-29,headSize,16,dark,accent,2.8);
+ switch(who){
+  case "glider":path([[-18,-39],[0,-56],[18,-39],[11,-28],[-11,-28]],primary);break;
+  case "anvil":rect(-17,-40,34,9,accent,4);rect(-11,-54,22,9,primary,2);break;
+  case "ribbon":line([[-12,-37],[-23,-45],[-31,-35]],primary,5);break;
+  case "sentinel":rect(-16,-44,32,12,primary,2);rect(-6,-51,12,8,accent,2);break;
+  case "astral":ell(0,-49,22,7,null,accent,4);ell(0,-51,4,4,primary,null);break;
+  case "marksman":path([[-18,-32],[-19,-47],[0,-57],[19,-47],[17,-32]],primary);break;
+  case "jester":path([[-13,-42],[-19,-56],[-3,-46],[5,-57],[16,-42]],primary);break;
+  case "grappler":rect(-18,-43,36,11,accent,4);break;
+  case "drummer":ell(0,-43,15,8,primary,dark,2);break;
+  case "juggernaut":rect(-20,-41,40,22,primary,5);rect(-16,-52,32,11,dark,4);break;
+  case "lancer":path([[-15,-39],[-4,-55],[11,-48],[18,-30]],primary);break;
+  case "rider":path([[-18,-44],[20,-44],[27,-33],[8,-29],[-18,-31]],primary);break;
+ }
+ // Eye visor distinguishes tactical characters and avoids reuse of creature-face shapes.
+ rect(-11,-34,22,8,who==="jester"?accent:"#071829",4);
+ line([[-9,-30],[8,-30]],accent,2.2);
+ if(who==="marksman")ell(10,-30,5,5,accent,dark,2);
+ if(who==="lancer")line([[12,-29],[24,-32]],accent,2);
+ if(who==="glider")line([[16,-45],[27,-54]],accent,3);
+ ctx.restore();
+}
+const api={draw};
+if(typeof module==="object"&&module.exports)module.exports=api;
+root.JM_CREWBOUND_321_ART=api;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script>
+<script>
+"use strict";
+const source=window.JM_CREWBOUND_321_CAST,art=window.JM_CREWBOUND_321_ART,root=document.getElementById("catalogue");
+let showing="all",silhouettes=false;
+function render(){
+ for(const [side,keys] of [["player",source.crews.player],["enemy",source.crews.enemy]]){
+  const container=document.getElementById(side+"Cast");container.innerHTML="";
+  const heading=container.previousElementSibling;
+  const visible=showing==="all"||showing==="home"&&side==="player"||showing==="rivals"&&side==="enemy";
+  container.hidden=!visible;heading.hidden=!visible;
+  for(const key of keys){
+   const f=source.fighters[key],card=document.createElement("article");card.className="card"+(side==="enemy"?" rival":"");
+   card.style.setProperty("--glow",f.palette[0]);
+   const label=document.createElement("div");label.className="label";label.textContent=side==="player"?"SHIFT CREW / FIELD SPECIALIST":"COUNTER CREW / RIVAL SPECIALIST";
+   const canvas=document.createElement("canvas");canvas.className="heroPortrait";canvas.width=240;canvas.height=240;
+   canvas.setAttribute("role","img");canvas.setAttribute("aria-label",f.name+" unique "+f.silhouette+" character illustration");
+   const c=canvas.getContext("2d");art.draw(c,f,120,151,145,0,side);
+   if(silhouettes){c.save();c.globalCompositeOperation="source-in";c.fillStyle="#010713";c.fillRect(0,0,240,240);c.restore()}
+   const name=document.createElement("h3");name.textContent=f.name.toUpperCase();
+   const role=document.createElement("div");role.className="role";role.textContent=f.role;
+   const move=document.createElement("div");move.className="move";
+   const one=document.createElement("b");one.textContent="MOVE "+f.maneuver.toUpperCase();
+   move.append(one,document.createElement("br"),"DEFEND "+f.defense,document.createElement("br"),"ATTACK "+f.attack,document.createElement("br"),"SIGNATURE "+f.signature_name);
+   const personal=document.createElement("div");personal.className="personal";personal.textContent=f.personality;
+   const kit=document.createElement("div");kit.className="kit";kit.textContent="EQUIPMENT: "+f.kit;
+   const donor=document.createElement("div");donor.className="source";donor.textContent="Donor archetype: "+f.source_name+" (mechanics only)";
+   card.append(label,canvas,name,role,move,personal,kit,donor);container.append(card);
+  }
+ }
+ for(const [id,yes] of [["all",showing==="all"],["home",showing==="home"],["rivals",showing==="rivals"],["sil",silhouettes]])
+  document.getElementById(id).setAttribute("aria-pressed",String(yes));
+}
+for(const [id,value] of [["all","all"],["home","home"],["rivals","rivals"]])document.getElementById(id).onclick=()=>{showing=value;render()};
+document.getElementById("sil").onclick=()=>{silhouettes=!silhouettes;render()};
+render();
+</script>
+</body>
+</html>

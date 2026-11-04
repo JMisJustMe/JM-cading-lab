@@ -305,6 +305,8 @@ jobs:
           test -s cloudflare-estate/index.html
           test -s cloudflare-estate/api-hub/index.html
           test -s cloudflare-estate/api-hub/visual/index.html
+          test -s cloudflare-estate/api-hub/visual/foundation-catalog.json
+          grep -Fq 'data-jm-foundations="cp02"' cloudflare-estate/api-hub/visual/index.html
           grep -Fq 'data-jm-koco-house="v2"' cloudflare-estate/api-hub/visual/index.html
           grep -Fq 'data-jm-api-house="v1"' cloudflare-estate/api-hub/index.html
           test -s cloudflare-estate/estate-return-route.js

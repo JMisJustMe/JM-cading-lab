@@ -61,6 +61,34 @@ for(const [vpName,viewport] of viewports){
   await page.close();
 }
 
+// Lyrics House mobile Estate return proof: real route, not a CSS-only assertion.
+// This checks the existing House and the existing link, not LyricStudio v0.5.1.
+for(const width of [320,390,760,761,1440]){
+  const page=await browser.newPage({viewport:{width,height:844}});
+  await page.goto('http://127.0.0.1:4175/lyrics/',{waitUntil:'domcontentloaded'});
+  const estate=page.locator('header nav a[href="../"]').first();
+  const result=await estate.evaluate(link=>{
+    const box=link.getBoundingClientRect();
+    const css=getComputedStyle(link);
+    return {
+      text:link.textContent.trim(),
+      target:new URL(link.href).pathname,
+      visible:css.display!=='none'&&css.visibility!=='hidden'&&box.width>0&&box.height>0,
+      inViewport:box.left>=-1&&box.right<=innerWidth+1,
+      overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1
+    };
+  });
+  let navigated=false;
+  if(width===390){
+    await estate.click();
+    navigated=new URL(page.url()).pathname==='/';
+  }
+  const ok=result.text==='Estate'&&result.target==='/'&&result.visible&&result.inViewport&&!result.overflow&&(width!==390||navigated);
+  console.log(JSON.stringify({check:'lyrics-estate-return',width,...result,navigated,ok}));
+  if(!ok)failed=true;
+  await page.close();
+}
+
 // Reduced-motion proof: no animated transition dependence.
 const reduced=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
 await reduced.goto('http://127.0.0.1:4175/',{waitUntil:'domcontentloaded'});

@@ -34,3 +34,31 @@ POST /plan accepts JSON with operation and optional subject, max 2048 UTF-8 byte
 The companion tests comprise 28 original/expanded contract tests, 5 actual localhost HTTP tests, 14 reconciled service/gate tests. This candidate is approved for SOURCE/LOCAL_CONTACT only when these same source bytes pass; not a deployed/owner-device crown.
 
 The Pages candidate lives at functions/api/jm/[[path]].js; it MUST be reviewed as a draft PR in the existing source repository. Original services/registries/credentials stay untouched. Public deployment, live Pages routing, owner Fold8 and separate service write/readback remain OPEN gates. Preserve v1 ZIP as ancestor and do not treat an unmerged branch as installed production.
+
+
+## CP04 live contact and Python client check — 4 November 2026
+
+Post-merge evidence supersedes the earlier *candidate-only* release-gate status above; the older text remains as historical context.
+
+- PR [#727](https://github.com/JMisJustMe/JM-cading-lab/pull/727) merged at 02:46 UTC on 2026-11-04.
+- Existing GitHub Pages /api-hub/ and /api-hub/visual/ were both HTTP 200 from the authorised Samsung SM-F976B Termux connection.
+- The existing Estate JM API returned HTTP 200 with parseable public JSON on root, health, meta, services, lineage, capabilities and openapi.json. Health reported schema JM.API/1.1, state HANDLER_RESPONDING; OpenAPI reported 3.1.0.
+- On that same device the default Python-urllib/3.13 user-agent received HTTP 403 at the public health endpoint, but a Python urllib request identifying itself as JM-API-Client/1.0 received HTTP 200 with valid JSON. This is a client/network access distinction, not proof that private services are reachable.
+
+Python 3 public read-only example (no secret required):
+
+```python
+import json
+from urllib.request import Request, urlopen
+
+url = "https://jmisjustme-estate.pages.dev/api/jm/v1/health"
+req = Request(url, headers={
+    "User-Agent": "JM-API-Client/1.0",
+    "Accept": "application/json",
+})
+with urlopen(req, timeout=12) as response:
+    data = json.load(response)
+    print(data["schema"], data["state"])
+```
+
+The User-Agent names this client truthfully; it is not a privileged credential and gives no bypass of service authorization. A successful public health GET does **not** test remote upstreams, private storage, write effects, logged-in owner routes, UI tap acceptance or every indexed historical API. Protected operations continue through their original controlled services.

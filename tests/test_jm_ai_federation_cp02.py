@@ -61,7 +61,7 @@ def run():
     assert all(x['status']=='PASS' for x in o['receivers'].values()),o
     assert o['receivers']['ailatheo_rod']['coding_spine']==14,o
     assert o['receivers']['teo_os']['trace_readback'],o
-    assert o['receivers']['jm_ai_lab_v2']['actual_route']=='grounded',o
+    assert o['receivers']['jm_ai_lab_v2']['actual_route']=='grounded-generate',o
     assert o['receivers']['jm_agi_lab']['distinct_node_processes'],o
     assert all(o['receivers']['jm_agi_lab']['readback_checks'].values()),o
     print(json.dumps({'schema':'JM.IntelligenceFederation.CP02.CI/1',

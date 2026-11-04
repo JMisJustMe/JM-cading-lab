@@ -90,7 +90,11 @@
       "access/index.html",
       ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
     ],
-    "additional_QA": "tests/jm-api-hub.test.mjs"
+    "additional_QA": "tests/jm-api-hub.test.mjs",
+    "visual_house": "api-hub/visual/index.html · CP02 same canonical visual door, self-contained offline projection",
+    "foundation_catalog": "api-hub/visual/foundation-catalog.json · one authoritative source-grade machine register, exact embedded HTML projection",
+    "foundation_QA": "tests/jm-koco-foundations-cp02.test.mjs",
+    "open_first": "api-hub/visual/CP02_OPEN_FIRST.md"
   },
   "true_gaps": {
     "state": "RECOVERED_AND_SCOPED_TO_EXISTING_ESTATES_CONTACT_SURFACE",
@@ -130,6 +134,11 @@
     "public_hub": {
       "state": "PASS_GITHUB_CI_AND_OWNER_LAPTOP_CHROME",
       "evidence": "GitHub JM API v1.1 QA and access tests PASS at PR head b1a0c817c966f7860be5cb11d04dbbd2df84dac7; actual Chrome DOM on GroundZeroJM read 22 rendered tiles, Phone Commander detail opened; on-device HTML SHA256 7C853EB828C0392592869958A8C09B217C50CEAF080A221E0A3D8563B0FD3CFA; Fold8 not independently tested."
+    },
+    "visual_cp02": {
+      "state": "PASS_LOCAL_AND_OWNER_WINDOWS_CHROME",
+      "details": "113 indexed records (62 laws/governance, 21 theories, 10 mechanisms, 9 coding, 11 proof); 52 source law entries (42 LAW +10 PNH); 40/40 local Chromium checks; exact 115120 bytes SHA256 815b7f4e1d67f7d91394c57242b35c23e79a0737015970bccccee02b91e16083; Windows Chrome readback 18 first-page law cards, 5 shelves, 113 index, API and LAW deep links; GitHub QA source-equivalence test added.",
+      "source_boundary": "No 297-census completion claim, no physical Fold8 proof, no original Shared Mechanisms or OPENBOX alteration."
     }
   },
   "host_and_surfaces": {
@@ -139,7 +148,9 @@
     "owner_fold8": "NOT_TESTED_BY_THIS_RECIPIENT",
     "owner_vault": "PRIVATE_AUTHORITY_UNTOUCHED",
     "AILatheo": "BILLING_AUTHORITY_UNTOUCHED",
-    "local_windows": "PASS on GroundZeroJM: Chrome source-open 22 body cards and separate phone detail, independent real device copy"
+    "local_windows": "PASS on GroundZeroJM: Chrome source-open 22 body cards and separate phone detail, independent real device copy",
+    "owner_windows": "PASS: owner-stored HTML exact hash readback and actual Windows Chrome DOM check",
+    "public_visual_cp02": "SOURCE_REVIEW_ONLY — No live deployment claim until approved merge, deploy and web readback."
   },
   "escalation": {
     "failure_route": "HOLD -> inspect exact API/CI/manifest failure -> correct scoped same PR -> retest differences; never bypass gate or rebuild original services.",
@@ -159,12 +170,12 @@
     "build_authorized_by_manifest": true,
     "authorization_scope": "User explicitly authorizes closing remaining API openability, including source PR release through existing GitHub Actions; private service authentication, new hosts and device security remain unchanged.",
     "merge_authorized": true,
-    "crown": "LOCAL_AND_SOURCE_PASS; LIVE_SITE_UNVERIFIED_UNTIL_AFTER_DEPLOY",
-    "live": "HOLD",
+    "crown": "CP02_OWNER_WINDOWS_CHROME_AND_LOCAL_BROWSER_PASS; PRODUCTION_NOT_CROWNED",
+    "live": "HOLD: original PR unmerged, no live visual CP02 readback",
     "deployment_authorized": "Public-safe source-to-existing GitHub Actions Estate carrier; no private rights."
   },
   "next_route": {
-    "step": "With new same-PR manifest readback and CI green: mark PR ready, merge to main, observe existing GitHub Actions Estate publish, verify live /api-hub/ exact source and original service contacts. If deploy fails, hold and repair original workflow without in-chat Cloudflare dependency.",
+    "step": "Continue same branch/PR evidence and CI; do not bypass blocked merge safety. After authorized release, test existing /api-hub/visual/ live and owner Fold8 browser.",
     "close_condition": "Source/CI gate checks success and true bounded FLAZ receipt. No claim of live production or physical device without independently observed evidence."
   },
   "manifest_proof": {

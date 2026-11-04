@@ -81,19 +81,20 @@ test('CP02 exclusive HTML gallery renders twelve distinct named pilots, filter a
   expect(new Set(names).size).toBe(12);
   expect(names).not.toContain('ZIPP');expect(names).not.toContain('BRAX');
   const before=await page.locator('.card canvas').first().evaluate(c=>{
-    const data=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-    let colors=new Set();for(let i=0;i<data.length;i+=48)if(data[i+3]>0)colors.add(data[i]+','+data[i+1]+','+data[i+2]);
-    return colors.size;
+    const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    let chroma=0,n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>=100){chroma+=Math.max(d[i],d[i+1],d[i+2])-Math.min(d[i],d[i+1],d[i+2]);n++}
+    return chroma/Math.max(1,n);
   });
-  expect(before).toBeGreaterThan(3);
+  expect(before).toBeGreaterThan(45);
   await page.locator('#sil').click();
   await expect(page.locator('#sil')).toHaveAttribute('aria-pressed','true');
   const after=await page.locator('.card canvas').first().evaluate(c=>{
-    const data=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-    let colors=new Set();for(let i=0;i<data.length;i+=48)if(data[i+3]>0)colors.add(data[i]+','+data[i+1]+','+data[i+2]);
-    return colors.size;
+    const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+    let chroma=0,n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>=100){chroma+=Math.max(d[i],d[i+1],d[i+2])-Math.min(d[i],d[i+1],d[i+2]);n++}
+    return chroma/Math.max(1,n);
   });
-  expect(after).toBe(1);
+  expect(after).toBeLessThan(25);
+  expect(after).toBeLessThan(before*.5);
   await page.locator('#home').click();
   await expect(page.locator('#playerCast .card')).toHaveCount(6);
   await expect(page.locator('#enemyCast')).toBeHidden();

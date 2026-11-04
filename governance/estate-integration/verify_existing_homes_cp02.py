@@ -90,15 +90,15 @@ def verify_wix_door_pairs():
     section = html.split(marker, 1)[1].split("</section>", 1)[0]
     wix = "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es/"
     expected = [
-        ("games", wix + "games-beyond", "../games-beyond/"),
-        ("theory", wix + "theory-library", "../theory/"),
-        ("coding", wix + "cading-coding", "../coding-estate/everybody/"),
-        ("apps", wix + "apps-tools", "../apps/"),
-        ("lyrics", wix + "lyrics-music", "../lyrics/"),
-        ("author", wix + "author-profile", "../author/"),
-        ("providings", wix + "inquiry-services-page", "../money-menu/"),
-        ("books", wix + "books-pubs", "../books/"),
-        ("library", wix + "living-library", "../navigator/estate-integration/"),
+        ("games", wix + "games-beyond", "https://jmisjustme-estate.pages.dev/games-beyond/"),
+        ("theory", wix + "theory-library", "https://jmisjustme-estate.pages.dev/theory/"),
+        ("coding", wix + "cading-coding", "https://jmisjustme-estate.pages.dev/coding-estate/everybody/"),
+        ("apps", wix + "apps-tools", "https://jmisjustme-estate.pages.dev/apps/"),
+        ("lyrics", wix + "lyrics-music", "https://jmisjustme-estate.pages.dev/lyrics/"),
+        ("author", wix + "author-profile", "https://jmisjustme-estate.pages.dev/author/"),
+        ("providings", wix + "inquiry-services-page", "https://jmisjustme-estate.pages.dev/money-menu/"),
+        ("books", wix + "books-pubs", "https://jmisjustme-estate.pages.dev/books/"),
+        ("library", wix + "living-library", "https://jmisjustme-estate.pages.dev/navigator/estate-integration/"),
     ]
     pattern = (r'<article class="row" data-jm-wix-door="([^"]+)">.*?'
                r'<a class="btn" href="([^"]+)" target="_blank" rel="noopener noreferrer">Open Wix room</a>'
@@ -107,8 +107,8 @@ def verify_wix_door_pairs():
     actual = findall(pattern, section, flags=DOTALL)
     require(actual == expected, "Wix pairs changed, original rooms replaced or unsupported link introduced")
     require(section.count('data-jm-wix-door=') == 9, "Wix connection count drift")
-    require(all(url.startswith("../") and ".." not in url[3:] for _,_,url in expected),
-            "Unscoped cross-estate navigation or traversal")
+    require(all(url.startswith("https://jmisjustme-estate.pages.dev/") for _,_,url in expected),
+            "Original JM authority URL is not the verified canonical public origin")
     require("example.com/download" not in section, "Placeholder downloads exposed as real originals")
     require("remain unchanged until separately repaired in the Wix editor" in section,
             "Wix editing boundary missing")

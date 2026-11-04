@@ -1,0 +1,38 @@
+name: JM Intelligence Federation CP02 Original Receiver Contact
+on:
+  pull_request:
+    paths:
+      - "scripts/jm_ai_federation_cp02.py"
+      - "tests/test_jm_ai_federation_cp02.py"
+      - ".github/workflows/jm-ai-federation-cp02.yml"
+  workflow_dispatch:
+jobs:
+  receiver-contact:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax of new adapter (originals untouched)
+        run: python -m py_compile scripts/jm_ai_federation_cp02.py tests/test_jm_ai_federation_cp02.py
+      - name: Existing AILatheo and ROD proof boundaries
+        run: |
+          python scripts/jm_relational_opportunity.py --self-test
+          python scripts/jm_ailatheo_unified_circuit.py --self-test
+          python scripts/jm_teo_os_recovered_runtime.py --json
+      - name: Exact existing AI Lab source classifier
+        run: node scripts/jm_ai_lab_exact_cross_contact.js
+      - name: Original AGI Lab runtime and new CP02 receiving contact
+        run: python tests/test_jm_ai_federation_cp02.py
+      - name: Adaptive ECOSTATE inherited execution governance regression
+        run: python scripts/jm_build_execution.py --self-test
+      - name: Truth boundary
+        run: |
+          echo "Receiver contact only: original private LLM archives not in GitHub runner"
+          echo "No model-source copy, public model weights, auto-deploy, production pointer mutation or new phone claim"

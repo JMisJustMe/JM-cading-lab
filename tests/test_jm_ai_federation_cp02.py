@@ -55,7 +55,7 @@ def run():
         o=cp.run(a)
     assert o['state']=='HOLD',o
     assert o['original_sender_executed_in_this_run'] is False,o
-    assert o['receiver_contact']=='PASS',o
+    assert o.get('receiver_contact')=='PASS',json.dumps(o,indent=2)
     assert o['hold_reason']=='UPSTREAM_RECEIPT_ONLY_NOT_FRESH_ORIGINAL_RUNTIME_REPROOF',o
     assert set(o['receivers'])=={'ailatheo_rod','teo_os','jm_ai_lab_v2','jm_agi_lab'},o
     assert all(x['status']=='PASS' for x in o['receivers'].values()),o

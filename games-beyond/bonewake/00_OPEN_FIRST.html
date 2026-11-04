@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="theme-color" content="#061820" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -60,7 +60,7 @@
 
   <section class="boardWrap">
     <div class="boardShell">
-      <canvas id="game" width="720" height="920" aria-label="Bonewake Arena interactive board"></canvas>
+      <canvas id="game" width="720" height="920" tabindex="0" aria-label="Bonewake Arena interactive board. Touch or mouse to pull the active Dropwake. On keyboard: hold and release Space for Bone Reel, Enter to aim, arrows to adjust, Enter to launch, arrows or A and D for Reflex, Q for Deep Call, E for Breathgate."></canvas>
       <div class="boardTop">
         <div class="coreBar" id="coreBar"><div class="coreFill" id="coreFill"></div><div class="coreLabel">ENEMY CORE</div></div>
         <div class="boardMiniGroup">
@@ -97,6 +97,8 @@
     <button class="reflex right" id="rightBtn">RIGHT REFLEX →</button>
   </section>
 
+  <div class="keyboardCoach" aria-label="Laptop game controls">KEYBOARD · SPACE hold / release Bone Reel · ENTER aim / Wakeflick · ARROWS aim · A / D Reflex · Q / E Instincts</div>
+
   <section class="ancientRow">
     <div class="ancientStatus">
       <small>ANCIENT WAKE · UNIQUE BOARD AWAKENINGS</small>
@@ -128,6 +130,7 @@
       <div class="infoBox"><b>Instinct Calls</b>Deep Call pulls active bodies toward the Core. Breathgate bends the whole field sideways. The reel can prime one of them for a stronger use.</div>
       <div class="infoBox"><b>Sleepfall</b>The turn sleeps only when the main Dropwake and every Echo Wake have drained. Board awakening persists across wakes until the Core breaks.</div>
       <div class="infoBox"><b>Fingerprint</b>Conditions shape the answer; they do not dictate it. Moment Leader movement language changes how a body survives contact. Woken specimens keep a memory response across Sleepfall, so later wakes inherit an altered room.</div>
+      <div class="infoBox"><b>Laptop play</b>Hold/release Space for the Bone Reel. Press Enter to prepare Wakeflick, arrows to aim and vary charge, Enter to launch. During a live Wake, hold A/D or left/right arrows to pull the Reflex Arms, release to flick; Q fires Deep Call, E fires Breathgate. This uses the same original gameplay as touch.</div>
       <div class="infoBox"><b>Estate Standard</b>Same canonical public door. Phone-first + purpose-built landscape. Recoverable room memory on this device. PWA-capable carrier. Exact Bonewake source remains sovereign; shared Estate organs are inherited without flattening its identity.</div>
     </div>
   </details>

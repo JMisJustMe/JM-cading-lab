@@ -1,0 +1,37 @@
+name: JM Build Mesh Native Engine Admission (unpublished)
+on:
+  push:
+    branches:
+      - integration/jm-build-mesh-engine-admission-20261030
+  pull_request:
+    paths:
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/**'
+      - 'coding-estate/**'
+      - 'navigator/estate-integration/**'
+      - 'tests/jm-engine-*'
+      - '.github/workflows/jm-build-mesh-engine-admission.yml'
+jobs:
+  host-086-native-jm-nonregression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exercise original JM native engine and stdio MCP
+        run: |
+          node tests/jm-engine-federation.mjs
+          node tests/jm-engine-federation-mcp-stdio.mjs
+      - name: Execute preserved 0.8.6 host / real native contact / owner rejection
+        run: python -m unittest discover -s tests -p 'test_jm_build_mesh_engine_admission.py' -v
+      - name: Compile original hosted server and additive owner gate
+        run: |
+          python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/server.py
+          python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/cross_client.py
+          python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/engine_admission.py

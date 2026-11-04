@@ -21,6 +21,17 @@ jobs:
       - name: Checkout JM Estate
         uses: actions/checkout@v4
 
+      - name: Guard owner-private source from public checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          for protected in family-gifts/third-court-preview family-gifts/scripture-companion .github/workflows/jm-two-family-gifts-contact.yml .github/workflows/jm-scripture-companion-v161-qa.yml; do
+            if test -e "$protected" || test -L "$protected"; then
+              echo "::error::Protected owner-private material is present in public checkout: $protected"
+              exit 1
+            fi
+          done
+
       - name: Run JM Multi-Carrier Registry
         run: python tools/jm_carrier_registry.py --registry carrier-control/registry.json
 

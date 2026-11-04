@@ -139,3 +139,11 @@ Owner ZIP `JM_APPS_TOOLS_CP37_OWNER_HANDOFF_2026-11-03.zip` independently verifi
 - Termux sent Android URL open requests to a test probe, but no in-browser probe receipt returned. Therefore the device's actual browser DOM, UI/touch behaviour and Fold8 owner approval are **NOT VERIFIED**. The phone terminal's file/HTTP proof is separate from browser/touch acceptance.
 - Laptop installed Chrome already passed an exact-CP37 localhost-origin **47/47 PASS** including persistence across complete browser close/reopen; isolated CP37 mobile/desktop change regression **68/68 PASS**. These do not replace physical Fold8 acceptance.
 - No private source committed publicly, no canonical original replaced, no APK claim, no quota savings claim. The last hold is owner-visual/touch acceptance and deliberate promotion decision.
+
+## CP37 FLAZ — independent Zionfolder custody (2026-11-03)
+
+After BIAT reconciliation, the owner ZIP and two candidate HTML delivery files were independently materialized from **current ChatGPT Library root files**, not presumed from chat links. Each byte count and full SHA-256 matched the CP37 owner package manifest; ZIP CRC and all five member hashes passed. The complete owner ZIP remains the one existing 58,267-byte keeper at its original Library path, avoiding duplicate full-source uploads.
+
+FLAZ checkpoint receipt `JM_APPS_TOOLS_CP37_BIAT_FLAZ_CUSTODY_2026-11-03.md` was deposited at existing `/Zionfolder/JM Estate/Apps & Tools/Governance/` (not a new home). It is 5,739 bytes, SHA-256 `19a3cd529a2e8538821c57501200e4f99f83f152fb9f2ca5b6081ea60d9fa547`. The exact saved Library object was independently re-materialized and verified **byte-for-byte identical**. F/L/A/Z checkpoint custody PASS.
+
+**Status separation:** This FLAZ freezes source custody and scoped Chrome/Fold8 *file delivery* evidence only. Android 17 Samsung SM-F976B Terminal/Termux exact-file hash and loopback HTTP transport passed, but the Fold8 browser did not return a test receipt; UI/touch/owner acceptance and production promotion remain HOLD. No public owner source deployment, canonical overwrite, storage retirement or APK claim.

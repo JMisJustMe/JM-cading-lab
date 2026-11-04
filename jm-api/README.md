@@ -73,3 +73,8 @@ Recovered original protected ChatGPT Library home `/JMStudio (WIP)/`, not an inv
 - Both standalone original HTML scripts passed Node `--check` and Chromium DOM load at 390px and 1280px with no observed JS page errors in these bounded tests. These are neither physical Fold8 tap tests nor private server deployment tests.
 
 The archive/source-discovery hold for the historical Studio API-stage prototypes is resolved. **Current Node/Python server health, authorized service writes, and first real B4.1 intake remain HOLD.** Creator sources remain private, and the original Library packages are unmodified.
+
+
+## CP05 Fold8 original Phone Commander local contact — 4 November 2026
+
+Authorised Samsung SM-F976B Termux connection recovered an existing original checkout `~/JM_WORKSPACE/JM-cading-lab/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py`. Started its original `serve --port 8765` command in a separate remote terminal session. Actual bound source uses `ThreadingHTTPServer(("127.0.0.1", port))`. Private token was created under `~/.config/jm-phone-commander/local-token` with owner-only `0600` permissions and was **never displayed, exported or committed**. With a locally loaded private token, `GET http://127.0.0.1:8765/status` returned HTTP 200 and state PASS. Without authorization 401; with browser Origin 403. This proves actual local authenticated service contact during the test, not off-device API reachability, boot persistence, remote operation approval, or public HTML access. Do not publish the local token or try to call the endpoint from a public web origin.

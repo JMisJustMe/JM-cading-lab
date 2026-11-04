@@ -1,0 +1,17 @@
+family Visualang
+
+surface Website001 {
+  body JMContactDoor {
+    label "JM WEBSITE 001 - Visualang Contact"
+    state visited = false
+
+    route reveal {
+      set visited = true
+      output "Visualang executed an original JM route"
+      trace "A native JM source action changed state"
+      ding
+    }
+
+    contact press -> reveal
+  }
+}

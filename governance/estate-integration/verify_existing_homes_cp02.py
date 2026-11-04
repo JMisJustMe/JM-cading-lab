@@ -81,6 +81,42 @@ def verify_original_body_contacts():
             "Private payload or local file reference leaked into public body contacts")
 
 
+def verify_wix_door_pairs():
+    """CP06: source-qualified Wix presentation -> original JM House pointers only."""
+    from re import DOTALL, findall
+    html = Path("access/index.html").read_text(encoding="utf-8")
+    marker = '<section id="jmWixDoors"'
+    require(html.count(marker) == 1, "Wix original-door section missing or repeated")
+    section = html.split(marker, 1)[1].split("</section>", 1)[0]
+    wix = "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es/"
+    expected = [
+        ("games", wix + "games-beyond", "../games-beyond/"),
+        ("theory", wix + "theory-library", "../theory/"),
+        ("coding", wix + "cading-coding", "../coding-estate/everybody/"),
+        ("apps", wix + "apps-tools", "../apps/"),
+        ("lyrics", wix + "lyrics-music", "../lyrics/"),
+        ("author", wix + "author-profile", "../author/"),
+        ("providings", wix + "inquiry-services-page", "../money-menu/"),
+        ("books", wix + "books-pubs", "../books/"),
+        ("library", wix + "living-library", "../navigator/estate-integration/"),
+    ]
+    pattern = (r'<article class="row" data-jm-wix-door="([^"]+)">.*?'
+               r'<a class="btn" href="([^"]+)" target="_blank" rel="noopener noreferrer">Open Wix room</a>'
+               r'<a class="btn primary" href="([^"]+)">Open original JM house</a>'
+               r'</div></article>')
+    actual = findall(pattern, section, flags=DOTALL)
+    require(actual == expected, "Wix pairs changed, original rooms replaced or unsupported link introduced")
+    require(section.count('data-jm-wix-door=') == 9, "Wix connection count drift")
+    require(all(url.startswith("../") and ".." not in url[3:] for _,_,url in expected),
+            "Unscoped cross-estate navigation or traversal")
+    require("example.com/download" not in section, "Placeholder downloads exposed as real originals")
+    require("remain unchanged until separately repaired in the Wix editor" in section,
+            "Wix editing boundary missing")
+    require(".doorlinks .btn{display:inline-flex" in html and "min-height:44px" in html,
+            "Fold touch target style missing")
+    print("CP06 WIX THE DOORS — 9/9 sourced navigation pairs PASS; placeholders marked HOLD; original authority unchanged")
+
+
 def main():
     d=json.loads(REG.read_text(encoding="utf-8"))
     routes=d["routes"]
@@ -121,6 +157,7 @@ def main():
     require(len(a["resolved_holds"])==2, "New Chrome proof resolution not recorded")
     require(any("Five other account-listed Wix sites" in h for h in a["nonblocking_holds"]), "Wix drafts must not be represented as public live routes")
     verify_original_body_contacts()
+    verify_wix_door_pairs()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

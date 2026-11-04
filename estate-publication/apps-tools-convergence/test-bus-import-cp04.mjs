@@ -44,7 +44,7 @@ function unit(){
 async function browser(){
  const host=process.env.JM_CP04_BASE||'http://127.0.0.1:4178';
  const envs=['evidence-governance','creation-publication','contact-practice','route-ftr'];
- const b=await chromium.launch({headless:true});let passed=0;
+ const b=await chromium.launch({headless:true,...(process.env.JM_CP04_CHROME_CHANNEL?{channel:process.env.JM_CP04_CHROME_CHANNEL}:{})});let passed=0;
  try{
   for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
    for(const env of envs){

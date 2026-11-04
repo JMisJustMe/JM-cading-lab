@@ -1,0 +1,127 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Owner Vault CP20 — Existing Vault Export to Independent Offline Exact-Source Recovery",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Owner Vault CP20 offline lineage recovery companion",
+    "body_type": "bounded standalone offline reader/extractor over the EXISTING Owner Vault CP19 source-complete export, not a new vault or sovereign source body",
+    "intended_destination": "tools/owner-vault-lineage-recover.mjs as a portable local-file reader of the original JM.OwnerVault/0.1.LineageExport; original Owner Room and API unchanged in sovereignty",
+    "body_path": "tools/owner-vault-lineage-recover.mjs"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 601,
+    "head_branch": "fix/owner-vault-cp09-custody-convergence-20261028",
+    "owner_instruction": "Continue next JM ECOSTATE improvement, specifically independently cold-recover saved Owner Vault lineage packets without chat or live Vault dependency.",
+    "detected_new_boundaries": [
+      "tools/owner-vault-lineage-recover.mjs"
+    ],
+    "source_authority": [
+      "Existing original Owner Vault API functions/api/owner/vault.js, CP19 source-complete owner-authenticated export",
+      "Existing original Owner Room estate-owner-vault.js and bundled estate-app.js explicit export",
+      "Existing owner-vault FakeR2 adversarial test court tools/test-owner-vault-v0.1.mjs",
+      "Existing Python apply-owner-vault-v0.1.py graft was inspected and deliberately not reused for offline extraction because it modifies the live Estate UI",
+      "JM Build Entry Policy v0.1.1 and JM Build Route Manifest Contract v0.1"
+    ],
+    "source_rule": "EXISTING_VAULT_READER_ONLY__NO_ALTERNATE_VAULT__NO_REMOTE_MUTATION",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "recovered_sources": [
+      "Exact CP19 exported packet schema and contents from the original Owner Vault",
+      "Existing private HTTP source download/Owner Room local restore; neither tests no-network extraction of a saved multi-version packet",
+      "Existing JMM001 source admission and Estate source-route governance mechanisms retained"
+    ],
+    "actual_gap": "An owner-saved CP19 JSON containing all verified original HTML cannot yet be independently validated and reconstructed from only the saved file when R2/the browser/ChatGPT are unavailable.",
+    "donor_boundary": "The original Vault is the authority; CP20 reads a frozen exported packet as a recipient utility, not a new creation, archive backend or reminted source identity.",
+    "no_double_storage": "No new cloud source objects, scheduled archives, providers, passwords, repeat backups or replacement doors are created."
+  },
+  "exact_stack": {
+    "source": "functions/api/owner/vault.js exportBodyLineage",
+    "existing_owner_ui": [
+      "estate-owner-vault.js",
+      "estate-app.js"
+    ],
+    "offline_recipient": "tools/owner-vault-lineage-recover.mjs",
+    "source_regression": "tools/test-owner-vault-v0.1.mjs",
+    "CI": ".github/workflows/test-owner-vault-v0-1.yml",
+    "governance": [
+      "scripts/jm_build_entry_gate.py",
+      "registry/build-routes/JM_BUILD_ROUTE_MANIFEST_CONTRACT_v0.1.json"
+    ],
+    "host_technology": [
+      "Node.js standard library fs, path, crypto, url, no additional package or network",
+      "Original SHA256 and UTF-8 body lengths and original UUID file seats"
+    ],
+    "unchanged": [
+      "Original R2 source/index",
+      "Owner R2 credentials",
+      "Immutable prior versions",
+      "Estate deployment and service worker",
+      "Existing user-local files"
+    ]
+  },
+  "true_gaps": {
+    "state": "RECOVERED_AND_SCOPED_TO_EXISTING_VAULT_OFFLINE_RECIPIENT",
+    "new_vault_required": false,
+    "new_cloud_host_required": false,
+    "new_sovereign_body_required": false,
+    "additional_standalone_source_reader_required": true,
+    "gap": "Downloaded source-complete JSON can be edited in a text editor but could not reconstruct exact original HTML and ancestor metadata on a second machine without the Vault service. The narrow offline file reader verifies and materializes bytes.",
+    "why_existing_tools_insufficient": "The original Python Vault graft modifies estate-app.js and sw.js, and the original UI only restores from live R2. Neither provides a no-network file-based CLI recovery from a saved lineage JSON."
+  },
+  "proof_lanes": {
+    "source_recovery": {
+      "state": "PASS_SYNTHETIC_CI",
+      "evidence": "GitHub Actions Vault source suite on commit 5a18f4e90fe479f934ef7514a0d087ea242a312b completed successfully; isolated process copied only offline utility and JSON, recovered three exact HTML ancestors with matching hashes, rejected nine altered packets and EEXIST; no owner R2 data."
+    },
+    "native_build_entry": {
+      "state": "NEEDS_RERUN_WITH_THIS_MANIFEST",
+      "evidence": "Actual GitHub build entry run 40790225733 failed closed, detecting new executable path without a same-PR prospective manifest. This manifest supplies the recovered foundation and narrow route. No gate disabled."
+    },
+    "downstream_workflow": {
+      "state": "NEEDS_FINAL_HEAD_CI",
+      "criterion": "Native source Vault suite and full JM Build Route PASS on exact manifest + utility head."
+    },
+    "independent_owner_device": {
+      "state": "HOLD",
+      "criterion": "Owner-saved JSON used on separate real device without original browser or cloud, real file readback and owner acceptance."
+    },
+    "offsite_custody": {
+      "state": "HOLD",
+      "criterion": "Packet actually saved to independently durable owner-held medium with verified offline readback and restore."
+    },
+    "live_private_cloud": {
+      "state": "HOLD",
+      "criterion": "Authenticated real-R2 data with explicit owner permission and deployment not inferred from synthetic tests."
+    }
+  },
+  "host_and_surfaces": {
+    "target": "Offline Node.js 22+ CLI reading a saved, original-source JM Vault export JSON",
+    "contact_status": "ACTUAL_GITHUB_CI_SYNTHETIC_OFFLINE_COLD_RECOVERY",
+    "public_body": false,
+    "private_vault_data_access": false,
+    "owner_device_tested": false,
+    "production_deployed": false
+  },
+  "escalation": {
+    "failure_route": "FAIL LOCAL/CI → TRACE EXACT SOURCE OR PACKET → HOLD ORIGINALS → CORRECT SAME EXISTING VAULT RECIPIENT → RETEST",
+    "manual_user_contact": "Only if a real owner-stored packet, private R2 authorization, separate machine or offsite medium must be tested.",
+    "forbidden": "No silent overwrite, no API import or original ID replacement, no public source leak, no delete of existing originals, no claimed offsite recovery from CI."
+  },
+  "state": {
+    "route": "AUTHORIZED_BOUNDED_OFFLINE_SOURCE_READ_RECONSTRUCTION_ONLY",
+    "build_authorized_by_manifest": true,
+    "authorization_scope": "CP20 copy of the existing Vault's explicit exported source lineage and local no-overwrite reconstruction; no new live service",
+    "crown": "NOT EARNED",
+    "private_provider": "HOLD",
+    "production": "HOLD"
+  },
+  "next_route": {
+    "step": "Commit prospective manifest in same PR; rerun native Build Entry / manifest validator / Vault source CI; inspect attributable failures; keep draft and live owner-data gates HOLD.",
+    "close_condition": "Current PR exact full workflows success; independent new-session offline synthetic bytes restored and exact GitHub readback; real owner/offsite proof remains HOLD."
+  },
+  "manifest_proof": {
+    "result": "Scoped donor recovery and true gap evidenced by original GitHub source and failing build-route receipt 40790225733; synthetic isolated offline restoration PASS in existing Owner Vault CI, no real-owner or offsite claim."
+  }
+}

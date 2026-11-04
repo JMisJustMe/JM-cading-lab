@@ -1,19 +1,20 @@
 {
   "schema": "jm.build-route-manifest/0.1",
-  "manifest": "JM Owner Vault CP32 — Native external provider-readiness route without unreliable in-chat plugins",
+  "manifest": "JM Owner Vault CP20/CP32 — integrate original cold-recovery and provider-native readiness into one release candidate",
   "instantiation_mode": "prospective-live-route",
   "created_for": {
-    "body": "Existing JM Owner Vault Cloudflare readiness rail; portable bounded classifier",
-    "body_type": "one scoped Python standard-library classifier of existing read-only Cloudflare project/bucket/anonymous status receipts, not a new Vault, hosting system, login, deployment pipeline or source identity",
+    "body": "Existing JM Owner Vault source custody, native offline recovery and external provider-readiness integrated release route",
+    "body_type": "Integration ONLY of already recovered original Vault CP20 and CP32 external no-chat utilities; no new app, host, second R2, backend or source identity",
     "intended_destination": "Extend original .github/workflows/check-owner-vault-cloudflare.yml; use tools/owner_vault_provider_readiness.py for offline and GitHub Actions checks",
     "body_path": "tools/owner_vault_provider_readiness.py"
   },
   "authority": {
     "repository": "JMisJustMe/JM-cading-lab",
-    "work_pr": 641,
-    "head_branch": "fix/owner-vault-readiness-external-20261030",
+    "work_pr": 645,
+    "head_branch": "feat/owner-vault-release-integrated-20261030",
     "owner_instruction": "Stop depending on unreliable in-chat Cloudflare and similar plugin connections; preserve Cloudflare provider infrastructure and operate through existing JM-controlled external source/workflows.",
     "detected_new_boundaries": [
+      "tools/owner-vault-lineage-recover.mjs",
       "tools/owner_vault_provider_readiness.py"
     ],
     "source_authority": [
@@ -25,7 +26,12 @@
       "JM Build Route Manifest Contract and active Build Entry Gate"
     ],
     "source_rule": "ONE ORIGINAL PROVIDER_NATIVE_READINESS_WORKFLOW__NO_CHAT_DEPENDENCY__NO_HOST_MUTATION",
-    "merge_forbidden_at_body_level": true
+    "merge_forbidden_at_body_level": true,
+    "inherited_source_prs": [
+      601,
+      621,
+      641
+    ]
   },
   "foundation": {
     "recovered_sources": [
@@ -34,7 +40,7 @@
       "Main-only historical registry/owner-vault-cloudflare-readiness-v0.1.json dated 18 August 2026; stale and cannot represent today's state",
       "Original Vault public anonymous status API contract; not authenticated owner-byte proof"
     ],
-    "actual_gap": "Current readiness rail writes an inspection snapshot back into main with broad contents:write; stale dated data can be mistaken for current proof, and an absent provider credential or function runtime cannot be diagnosed independently from current source without in-chat Cloudflare plugin. Its evaluator was embedded in a workflow and not portable/testable on its own.",
+    "actual_gap": "Current readiness rail writes an inspection snapshot back into main with broad contents:write; stale dated data can be mistaken for current proof, and an absent provider credential or function runtime cannot be diagnosed independently from current source without in-chat Cloudflare plugin. Its evaluator was embedded in a workflow and not portable/testable on its own. New integration PR #645 contains BOTH pre-existing new executable paths, requiring same-PR admission instead of falsely transferring source PR manifests into independent release authority.",
     "donor_boundary": "Original workflow remains sole entry/authority. Python standard-library evaluator is a small subordinate companion for offline fixture test and run-specific sanitized result; not a replacement Cloudflare integration.",
     "no_double_storage": "No second R2 bucket, Cloudflare project, copies of owner data, permanent CI artifact or repo-pushed report. Existing historical registry receipt left untouched."
   },
@@ -61,7 +67,8 @@
       "Original owner credentials and live binding settings",
       "Protected Owner Vault PR #601 and #621, no merge or deploy",
       "No file deletion or storage-retirement permission"
-    ]
+    ],
+    "original_native_recovery": "tools/owner-vault-lineage-recover.mjs, inherited unchanged from PR #601 through PR #621"
   },
   "true_gaps": {
     "state": "RECOVERED_AND_SCOPED_TO_ORIGINAL_PROVIDER_READINESS_RAIL",
@@ -70,7 +77,8 @@
     "new_sovereign_app_required": false,
     "scoped_offline_evaluator_required": true,
     "gap": "Existing workflow contains a nonportable inline classifier and writes stale GitHub main receipt. Need independently testable read-only classification with run-specific sanitized output, without in-chat plugin access.",
-    "why_existing_tools_insufficient": "Original GH Actions workflow did API fetch but did not compare expected bucket mapping, secret type, function runtime and anonymous live status together, and permanently overwrote main with the current result. Source reusable Python avoids a second workflow/backend and enables isolated synthetic test."
+    "why_existing_tools_insufficient": "Original GH Actions workflow did API fetch but did not compare expected bucket mapping, secret type, function runtime and anonymous live status together, and permanently overwrote main with the current result. Source reusable Python avoids a second workflow/backend and enables isolated synthetic test.",
+    "integration_scope": "This candidate aggregates two already-authorised descendant utility paths; the same-PR build-entry gate must admit both without changing the original native route/runner. Production release is NOT authorised by this manifest."
   },
   "proof_lanes": {
     "source": {
@@ -78,12 +86,13 @@
       "evidence": "Exact first branch head 8585497c01a1b9704423f85cbc3649a81757bf7a; GitHub Actions Inspect JM Owner Vault Cloudflare Readiness run #40978520272 succeeded on PR #641, executing Python syntax and 15 offline hostile fixtures without provider credentials."
     },
     "build_entry": {
-      "state": "HELD_UNTIL_MANIFEST_AND_EXACT_FINAL_CI",
-      "evidence": "Run #40978520293 failed closed: legitimate new tools/owner_vault_provider_readiness.py executable boundary had no same-PR prospective manifest. This manifested scoped donor route corrects the omission; gate unchanged."
+      "state": "NEEDS_EXACT_HEAD_645_CI",
+      "evidence": "Native run #40983720793 correctly refused new paths from #601 and #641 without PR #645 scoped authority, even though both ancestor PRs had their own manifests. This amended existing manifest accounts for both; no new governance file or gate bypass."
     },
     "provider": {
       "state": "NOT_EXECUTED",
-      "criterion": "Owner-approved manual workflow_dispatch of original external GitHub Actions readiness rail with verified GitHub CI secrets; read-only Cloudflare GET; HOLD when invalid/missing. Not a release."
+      "criterion": "Owner-approved manual workflow_dispatch of original external GitHub Actions readiness rail with verified GitHub CI secrets; read-only Cloudflare GET; HOLD when invalid/missing. Not a release.",
+      "evidence": "Real external GitHub Actions on GroundZeroJM invoked independently, #40983538666; project 200 and live 200, R2 binding and owner-key present, but admin bucket GET 403. HOLD; no private owner bytes accessed."
     },
     "live_owner_auth": {
       "state": "HOLD",
@@ -114,13 +123,13 @@
   "state": {
     "route": "AUTHORIZED_SCOPED_EXISTING_WORKFLOW_READONLY_PROVIDER_REENTRY_CHECK_ONLY",
     "build_authorized_by_manifest": true,
-    "authorization_scope": "Offline executable classifier + original workflow READ-ONLY GET and CI run summary; no release, provider mutation, owner-key action or source-data copy",
+    "authorization_scope": "Existing original two executable companion routes only; integration review and CI, not production release, provider configuration, private R2 data mutation or originals deletion.",
     "crown": "NOT EARNED",
     "provider_live": "HOLD",
     "production": "HOLD"
   },
   "next_route": {
-    "step": "Commit prospective same-PR manifest, rerun native JM Build Entry + manifest validator and external readiness offline fixture test at exact final head; inspect red tests without weakening security.",
+    "step": "Run complete exact-HEAD PR #645 main-source CI; if PASS preserve DRAFT while provider R2 administrative 403 and authenticated owner native-source continuity remain unproven.",
     "close_condition": "All affected source/route CI pass on exact PR head; retain draft until manual live provider inspection and separate owner/release authority."
   },
   "manifest_proof": {

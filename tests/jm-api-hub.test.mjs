@@ -24,13 +24,13 @@ const {ctx,document}=boot();
 const records=vm.runInContext('items.map(x=>({...x}))',ctx);
 const checks=[];
 function test(name,run){run();checks.push(name);console.log('PASS',name);}
-test('22 independent known-body doors',()=>assert.equal(records.length,22));
+test('23 independently identified doors match original Visual House',()=>assert.equal(records.length,23));
 test('independent IDs are unique',()=>assert.equal(new Set(records.map(x=>x.id)).size,records.length));
 test('every body has name, type, role, guide and authorization scope',()=>{
  for(const x of records)assert(x.name&&x.type&&x.role&&x.scope&&x.guide,x.id);
 });
 test('all external opening routes are HTTPS or deliberately null',()=>{
- for(const x of records){if(x.open)assert.match(x.open,/^https:\/\//);if(x.source)assert.match(x.source,/^https:\/\//);if(x.protocol)assert.match(x.protocol,/^https:\/\//);}
+ for(const x of records){if(x.open)assert.match(x.open,/^https:\/\//);if(x.source)assert.match(x.source,/^https:\/\//);if(x.protocol)assert.match(x.protocol,/^https:\/\//);if(x.dashboard)assert.match(x.dashboard,/^https:\/\/dashboard\.render\.com\/web\/srv-/);}
 });
 test('no unverified phone endpoint exposed',()=>{
  const phone=records.find(x=>x.id==='phone-commander');assert.equal(phone.group,'local');assert.equal(phone.open,null);assert.equal(phone.source.includes('jm_phone_commander.py'),true);
@@ -38,6 +38,22 @@ test('no unverified phone endpoint exposed',()=>{
 test('private TIWIN live URLs not published',()=>{
  assert(!html.includes('tiwin-private-stage-cp09.onrender.com'));
  assert(!html.includes('tiwin-private-s2-contact.onrender.com'));
+});
+test('TIWIN CP09 and S2 are separate owner-only doors without public service URLs',()=>{
+ const stage=records.find(x=>x.id==='tiwin-stage'),s2=records.find(x=>x.id==='tiwin-s2');
+ assert(stage&&s2);assert.notEqual(stage.dashboard,s2.dashboard);
+ for(const x of [stage,s2]){
+  assert.equal(x.open,null);assert.equal(x.group,'local');
+  assert.match(x.scope,/authenticated dashboard|Owner-only/i);
+  const detail=boot('?api='+x.id).document.getElementById('detail').innerHTML;
+  assert(detail.includes(x.dashboard));assert(detail.includes('Open owner dashboard'));
+  assert(document.getElementById('cards').innerHTML.includes(x.dashboard));
+ }
+});
+test('released JM API opens public health only and does not claim private runtime',()=>{
+ const api=records.find(x=>x.id==='jm-api-v1');
+ assert.equal(api.open,'https://jmisjustme-estate.pages.dev/api/jm/v1/health');
+ assert.match(api.scope,/private methods.*untested/i);
 });
 test('no stored credentials, tokens, auth cookies or state persistence',()=>{
  assert(!html.includes('localStorage'));assert(!html.includes('sessionStorage'));

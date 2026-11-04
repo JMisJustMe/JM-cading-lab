@@ -32,8 +32,24 @@ test('every body has name, type, role, guide and authorization scope',()=>{
 test('all external opening routes are HTTPS or deliberately null',()=>{
  for(const x of records){if(x.open)assert.match(x.open,/^https:\/\//);if(x.source)assert.match(x.source,/^https:\/\//);if(x.protocol)assert.match(x.protocol,/^https:\/\//);if(x.dashboard)assert.match(x.dashboard,/^https:\/\/dashboard\.render\.com\/web\/srv-/);}
 });
-test('no unverified phone endpoint exposed',()=>{
+test('original Android Forge browser workroom opens without promoting local APK API',()=>{
+ const forge=records.find(x=>x.id==='android-forge');assert(forge);
+ assert.equal(forge.group,'local');
+ assert.equal(forge.open,'https://jmisjustme.github.io/JM-cading-lab/apps/jm-android-forge/');
+  assert(forge.source.endsWith('/apps/jm-android-forge/index.html'));
+ assert.match(forge.scope,/local|authorised host/i);
+ const page=boot('?api=android-forge').document.getElementById('detail').innerHTML;
+ assert(page.includes(forge.open));
+});
+test('JM Studios historical source now has protected B2/B4 readback, not public backend',()=>{
+ const x=records.find(x=>x.id==='studio-api');assert(x);
+ assert.equal(x.group,'history');assert.equal(x.open,null);assert.equal(x.source,null);
+ assert.match(x.scope,/Library sources recovered/);
+  assert(x.guide.includes('B2.0 API-layer'));assert(x.guide.includes('B4.0 controlled-intake'));
+});
+test('protected original Phone Commander local runtime proof retains no public access',()=>{
  const phone=records.find(x=>x.id==='phone-commander');assert.equal(phone.group,'local');assert.equal(phone.open,null);assert.equal(phone.source.includes('jm_phone_commander.py'),true);
+ assert(phone.scope.includes('127.0.0.1:8765'));assert(phone.scope.includes('authenticated HTTP 200'));assert(phone.scope.includes('unauthenticated 401'));assert(phone.scope.includes('browser Origin 403'));
 });
 test('private TIWIN live URLs not published',()=>{
  assert(!html.includes('tiwin-private-stage-cp09.onrender.com'));

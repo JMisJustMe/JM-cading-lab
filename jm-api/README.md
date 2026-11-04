@@ -62,3 +62,19 @@ with urlopen(req, timeout=12) as response:
 ```
 
 The User-Agent names this client truthfully; it is not a privileged credential and gives no bypass of service authorization. A successful public health GET does **not** test remote upstreams, private storage, write effects, logged-in owner routes, UI tap acceptance or every indexed historical API. Protected operations continue through their original controlled services.
+
+
+## CP05 archival API-stage provenance — 4 November 2026
+
+Recovered original protected ChatGPT Library home `/JMStudio (WIP)/`, not an invented public GitHub backend.
+
+- `JM_STUDIOS_GIFTDROP_B2_0_API_LAYER_COMPLETE_INTAKE_GATE_RUNNER_ONLY.zip`: original SHA-256 `fb2cdb5a119887fc0eb2acceeabbf1d53b9de0e3f38b2cf332179e23c09df13a`; ZIP CRC PASS; 7 files; exact 4,271,093-byte standalone HTML. Original `B1_COMPLETE_API_STAGE_DATA.json` records B1.1–B1.9 receiver, room registry, adapters, teaching, proof and import/export contracts plus B2.0 intake gate.
+- `JM_STUDIOS_GIFTDROP_B4_0_FINAL_HANDOFF_CONTROLLED_INTAKE_READY_RUNNER_ONLY.zip`: SHA-256 `afa3c3313aa6ef4914f5f21e8c6db28b10a3a7b1e7b00813898612e2f8759549`; ZIP CRC PASS; 7 files; exact 4,282,909-byte standalone B4 HTML. Preserves later guarded intake workflow; distinct from B2.
+- Both standalone original HTML scripts passed Node `--check` and Chromium DOM load at 390px and 1280px with no observed JS page errors in these bounded tests. These are neither physical Fold8 tap tests nor private server deployment tests.
+
+The archive/source-discovery hold for the historical Studio API-stage prototypes is resolved. **Current Node/Python server health, authorized service writes, and first real B4.1 intake remain HOLD.** Creator sources remain private, and the original Library packages are unmodified.
+
+
+## CP05 Fold8 original Phone Commander local contact — 4 November 2026
+
+Authorised Samsung SM-F976B Termux connection recovered an existing original checkout `~/JM_WORKSPACE/JM-cading-lab/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py`. Started its original `serve --port 8765` command in a separate remote terminal session. Actual bound source uses `ThreadingHTTPServer(("127.0.0.1", port))`. Private token was created under `~/.config/jm-phone-commander/local-token` with owner-only `0600` permissions and was **never displayed, exported or committed**. With a locally loaded private token, `GET http://127.0.0.1:8765/status` returned HTTP 200 and state PASS. Without authorization 401; with browser Origin 403. This proves actual local authenticated service contact during the test, not off-device API reachability, boot persistence, remote operation approval, or public HTML access. Do not publish the local token or try to call the endpoint from a public web origin.

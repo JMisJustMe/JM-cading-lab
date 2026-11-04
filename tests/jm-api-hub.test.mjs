@@ -41,6 +41,12 @@ test('original Android Forge browser workroom opens without promoting local APK 
  const page=boot('?api=android-forge').document.getElementById('detail').innerHTML;
  assert(page.includes(forge.open));
 });
+test('JM Studios historical source now has protected B2/B4 readback, not public backend',()=>{
+ const x=records.find(x=>x.id==='studio-api');assert(x);
+ assert.equal(x.group,'history');assert.equal(x.open,null);assert.equal(x.source,null);
+ assert.match(x.scope,/Library sources recovered/);
+ assert.match(x.guide,/B2\\.0 API-layer/);assert.match(x.guide,/B4\\.0 controlled-intake/);
+});
 test('no unverified phone endpoint exposed',()=>{
  const phone=records.find(x=>x.id==='phone-commander');assert.equal(phone.group,'local');assert.equal(phone.open,null);assert.equal(phone.source.includes('jm_phone_commander.py'),true);
 });

@@ -11,7 +11,7 @@ const workflow=fs.readFileSync(path.join(root,'.github/workflows/deploy-estate-s
 const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert(script, 'API House must contain a self-sufficient script');
 const fakeDocument=()=>{const elements=new Map();return {getElementById(id){
- if(!elements.has(id))elements.set(id,{id,innerHTML:'',value:'',style:{},addEventListener(){}});
+ if(!elements.has(id))elements.set(id,{id,innerHTML:'',value:id==='filter'?'all':'',style:{},addEventListener(){}});
  return elements.get(id);
 },title:''};};
 const boot=(query='')=>{

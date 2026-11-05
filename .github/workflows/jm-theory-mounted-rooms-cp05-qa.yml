@@ -47,6 +47,33 @@ jobs:
             git commit -m 'CP05: inherit existing Q1 Theory healthy-source quarantine adapter'
             git push origin HEAD:jm/theory-chatrooms-repair-cp05-20261105
           fi
+          # Record the actual post-application bytes after the exact duplicate-async fix.
+          node --check theory/chat-graft-v3.js
+          node --check theory/chat-graft-v4.js
+          node --check theory/full-body-recovery-v5.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          path=Path('registry/theory-runtime-quarantine-q1-source-receipt.json')
+          receipt=json.loads(path.read_text(encoding='utf-8'))
+          assert receipt['status']=='SOURCE_TRANSFORMATION_PASS_LIVE_PROOF_PENDING'
+          for filename in ('theory/chat-graft-v3.js','theory/chat-graft-v4.js','theory/full-body-recovery-v5.js'):
+              contents=Path(filename).read_bytes()
+              receipt['after'][filename]['bytes']=len(contents)
+              receipt['after'][filename]['sha256']=hashlib.sha256(contents).hexdigest()
+              assert b'async async function' not in contents
+          receipt['checks']['post_application_async_prefixes_corrected']=True
+          path.write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          print('Q1 ACTUAL BYTES READBACK — three JS syntactic repairs SHA-256 resigned, untouched source fields preserved')
+          PY
+          if ! git diff --quiet -- registry/theory-runtime-quarantine-q1-source-receipt.json; then
+            git config user.name 'JM ECOSTATE Source Recovery'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add registry/theory-runtime-quarantine-q1-source-receipt.json
+            git diff --cached --check
+            git commit -m 'CP05: correct original Q1 receipt to exact verified source bytes'
+            git push origin HEAD:jm/theory-chatrooms-repair-cp05-20261105
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

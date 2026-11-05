@@ -201,6 +201,65 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP08_DIRECT_USE_BROWSER_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP13 five live-mounted game doors and owner-local pin proof (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const origin='http://127.0.0.1:4178',ids=[
+            'crewbound-arena','house-siege','western-sniper','dead-reckon','cardbored'
+          ];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let opened=0;
+            try{
+              for(const [i,id] of ids.entries()){
+                const viewport=i%2===0?{width:390,height:844}:{width:850,height:650};
+                const page=await browser.newPage({viewport});
+                try{
+                  page.setDefaultTimeout(90000);
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const row=page.locator('[data-jm-use-entry="'+id+'"]');
+                  if(await row.count()!==1)throw Error('Original game missing in Use Now: '+id);
+                  const play=row.locator('a[data-jm-launch="play"]');
+                  const edit=row.locator('a[data-jm-launch="edit"]');
+                  if(await play.count()!==1||await edit.count()!==1)throw Error('Play/Edit original pointers incomplete: '+id);
+                  const expected='?jm-play='+id;
+                  await play.click();
+                  await page.waitForURL(url=>url.pathname==='/games-beyond/'&&url.search===expected,{timeout:20000});
+                  await page.waitForFunction(x=>
+                    document.querySelector('#status')?.dataset.directPlay===x &&
+                    document.querySelector('#bodyDialog')?.open,id,{timeout:90000});
+                  const source=await page.locator('#bodyFrame').getAttribute('srcdoc');
+                  if(!source||source.length<1000||!/<html|<!doctype/i.test(source))
+                    throw Error('Public original game HTML did not mount: '+id);
+                  await page.close();opened++;
+                }catch(e){throw Error('CP13 '+viewport.width+'x'+viewport.height+' '+id+': '+e);}
+              }
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport});
+                const page=await context.newPage();
+                try{
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const key='game:crewbound-arena';
+                  const btn=page.locator('[data-jm-pin-id="'+key+'"]');
+                  if(await btn.count()!==1)throw Error('New pin control missing');
+                  await btn.click();
+                  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-access-owner-pins-v1')||'[]'));
+                  if(!saved.includes(key))throw Error('New public game pin not stored as owner-local ID');
+                  await page.reload({waitUntil:'domcontentloaded'});
+                  const pinned=page.locator('#jmPinnedDoorList a[href$="?jm-play=crewbound-arena"]');
+                  if(await pinned.count()!==1)throw Error('Original pinned route not recovered after reload');
+                  const bbox=await btn.boundingBox();
+                  if(!bbox||bbox.height<44)throw Error('New pin tap target below 44px');
+                  await context.close();
+                }catch(e){throw Error('CP13 pin '+viewport.width+'x'+viewport.height+': '+e);}
+              }
+              if(opened!==5)throw Error('All five original bodies must open');
+              console.log('CP13 LIVE-MOUNTED ORIGINALS PASS: 5/5 launched with exact HTML; 2/2 phone/Fold pin and reload; original Games House used, no copies');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP13_ORIGINAL_USE_GONG_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP09 Quick Return recents and local-only pinned doors (phone and Fold landscape)
         shell: bash
         run: |

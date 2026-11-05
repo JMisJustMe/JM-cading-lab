@@ -31,7 +31,34 @@ function lineage(r){if(!r?.b)return;let e=document.getElementById('reader'),key=
 function openRoom(r){if(!r?.b)return;chosen=r;if(typeof setView==='function')setView('library',false);if(typeof openRecord==='function')openRecord(r.b);setTimeout(()=>lineage(r),0)}
 function bind(){document.getElementById('roomSearch')?.addEventListener('input',e=>{q=e.target.value.toLowerCase();render()});document.addEventListener('click',e=>{let f=e.target.closest('[data-room-filter]');if(f){e.preventDefault();filter=f.dataset.roomFilter;render();return}let s=e.target.closest('[data-room-select]');if(s){e.preventDefault();detail(R.find(r=>r.i===s.dataset.roomSelect));return}let o=e.target.closest('[data-room-open]');if(o){e.preventDefault();openRoom(R.find(r=>r.i===o.dataset.roomOpen))}},true)}
 function rerender(){if(typeof renderList==='function')renderList();if(typeof renderProjects==='function')renderProjects();if(typeof renderDistricts==='function')renderDistricts();features();mark();render();detail(null)}
-function apply(){if(done)return;done=true;R=(window.JMTheoryMountedRoomsCompact||[]).map(x=>({...x}));if(R.length!==ROOM_COUNT)throw Error('room count '+R.length+' expected '+ROOM_COUNT);verify();staticCopy();rerender();bind();window.JMTheoryChatRoomRecoveryV6=Object.freeze({version:'v0.15',verifiedMasters:M.length,mountedRooms:R.length,fullBodies:FULL,censusRoutes:ROUTES})}
+function apply(){
+  if(done)return;
+  R=(window.JMTheoryMountedRoomsCompact||[]).map(x=>({...x}));
+  if(R.length!==ROOM_COUNT)throw Error('room count '+R.length+' expected '+ROOM_COUNT);
+  // BIAT: the original 42 preserved room records can mount without waiting for
+  // unrelated professional-master extraction or census verification.
+  // Those checks may certify the linked bodies; they must not hide the room doors.
+  done=true;
+  staticCopy();
+  render();
+  detail(null);
+  bind();
+  window.JMTheoryChatRoomRecoveryV6=Object.freeze({version:'v0.15-room-mount-repair',verifiedMasters:0,mountedRooms:R.length,fullBodies:null,censusRoutes:null,masterVerification:'PENDING'});
+  // FLAZ: keep the historical eight-master and 300-route proof gate intact.
+  wait().then(()=>{
+    try{
+      verify();
+      rerender();
+      window.JMTheoryChatRoomRecoveryV6=Object.freeze({version:'v0.15-room-mount-repair',verifiedMasters:M.length,mountedRooms:R.length,fullBodies:FULL,censusRoutes:ROUTES,masterVerification:'PASS'});
+    }catch(e){
+      console.error('JM theory room-body verification (rooms remain visible):',e);
+      window.JMTheoryChatRoomRecoveryV6=Object.freeze({version:'v0.15-room-mount-repair',verifiedMasters:0,mountedRooms:R.length,fullBodies:null,censusRoutes:null,masterVerification:'HOLD',error:String(e.message||e)});
+    }
+  }).catch(e=>{
+    console.error('JM theory room-body dependency HOLD (rooms remain visible):',e);
+    window.JMTheoryChatRoomRecoveryV6=Object.freeze({version:'v0.15-room-mount-repair',verifiedMasters:0,mountedRooms:R.length,fullBodies:null,censusRoutes:null,masterVerification:'HOLD',error:String(e.message||e)});
+  });
+}
 new MutationObserver(()=>{if(done){mark();if(chosen?.b&&typeof state!=='undefined'&&state.selected===chosen.b)lineage(chosen)}}).observe(document.documentElement,{subtree:true,childList:true});
-css();Promise.all([wait()]).then(apply).catch(e=>console.error('JM theory room recovery v6:',e));
+css();Promise.resolve().then(apply).catch(e=>console.error('JM theory room recovery v6:',e));
 })();

@@ -116,6 +116,7 @@ jobs:
                 await page.locator('.card[data-open]').first().click();
                 await page.waitForFunction(()=>document.querySelector('#reader')?.classList.contains('open'));
                 assert((await page.locator('#readerDoc').innerText()).length>100,'A genuine body should open as readable text');
+                await page.waitForSelector('#readerDoc .source-depth-note',{state:'attached',timeout:5000});
                 assert((await page.locator('#readerDoc').innerText()).includes('Source-depth boundary'),'Shaped standalone must carry source-depth caveat');
                 const measure=await page.evaluate(()=>({
                    overflow:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)-document.documentElement.clientWidth,

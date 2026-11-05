@@ -186,6 +186,15 @@ jobs:
                   await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
                   const base=page.locator('#jmDiscoveryLenses');
                   assert.equal(await base.count(),1,'Unique discovery section on live DOM');
+                  const jump=page.locator('.top .nav a').first();
+                  assert.equal(await jump.getAttribute('href'),'#jmDiscoveryLenses',
+                    'Phone header must jump to the existing creation finder');
+                  await jump.tap();
+                  await page.waitForFunction(()=>location.hash==='#jmDiscoveryLenses',null,{timeout:15000});
+                  await page.waitForFunction(()=>{
+                    const r=document.getElementById('jmDiscoveryLenses').getBoundingClientRect();
+                    return r.top>=0 && r.top<innerHeight*0.8;
+                  },null,{timeout:15000});
                   assert.equal(await base.locator('.card').count(),4,'Four existing House doors, no copied creations');
                   assert.equal(await base.locator('.btn.primary').count(),4,'Each house has a touch link');
                   await base.scrollIntoViewIfNeeded();

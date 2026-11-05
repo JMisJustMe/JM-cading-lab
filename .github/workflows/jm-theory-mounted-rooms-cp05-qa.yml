@@ -64,7 +64,7 @@ jobs:
                 page.on('pageerror',e=>errors.push(e.message));
                 page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
                 await page.goto(url,{waitUntil:'domcontentloaded'});
-                await page.locator('[data-view="rooms"]').first().click();
+                await page.locator('[data-view="rooms"]:visible').first().click();
                 try{
                   await page.waitForFunction(()=>window.JMTheoryChatRoomRecoveryV6?.mountedRooms===42 &&
                     document.querySelectorAll('#roomGrid [data-room-select]').length===42,

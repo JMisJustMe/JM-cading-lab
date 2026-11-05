@@ -213,7 +213,7 @@
         if(!urls.some((u)=>u.href===asset.href)) urls.push(asset);
       }
       result.declaredLocalAssets=urls.length;
-      const sample=urls.slice(0,24);
+      const sample=urls.slice(0,48);
       result.uncheckedAssetCount=Math.max(0,urls.length-sample.length);
       result.examinedAssets=await Promise.all(sample.map(async (asset)=>{
         const row={path:asset.pathname,http:null,sha256:null,bytes:null};

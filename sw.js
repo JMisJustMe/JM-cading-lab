@@ -97,9 +97,14 @@ function safeCacheResponse(response){
 async function fresh(request){
   try{
     const response = await fetch(request,{cache:'no-store'});
-    if(response && safeCacheResponse(response)){
+    if(response && response.ok){
       const cache = await caches.open(CACHE);
-      cache.put(request,response.clone()).catch(()=>{});
+      if(safeCacheResponse(response)){
+        cache.put(request,response.clone()).catch(()=>{});
+      } else {
+        await cache.delete(request);
+      }
+      return response;
     }
     const cached = await caches.match(request,{ignoreSearch:true});
     if(cached) return cached;

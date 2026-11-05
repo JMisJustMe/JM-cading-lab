@@ -1,0 +1,129 @@
+name: JM Theory 37-Body Reader CP04 — Payload and Fold Runtime QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "theory/full-bodies/all-37-v0_8_3.html"
+      - "theory/full-bodies/all-37-v0_8_1.html"
+      - "theory/data/v0_4/**"
+      - ".github/workflows/jm-theory-37-reader-cp04-qa.yml"
+  push:
+    branches: [main]
+    paths:
+      - "theory/full-bodies/all-37-v0_8_3.html"
+      - "theory/full-bodies/all-37-v0_8_1.html"
+      - "theory/data/v0_4/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  existing-reader-differential:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify existing canonical public payload without changing source
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, gzip, hashlib, json
+          base=Path("theory/data/v0_4")
+          m=json.loads((base/"MANIFEST.json").read_text())
+          assert len(m["parts"])==7
+          assert m["joined_base64_chars"]==51292
+          assert m["decoded_json_bytes"]==388809
+          assert m["decoded_json_sha256"]=="3fd3b234123b70d374141a71b339e3a8deeaa03b506f78a1412b93768a5237bb"
+          parts=[]
+          for p in m["parts"]:
+              data=(base/p["file"]).read_text().strip()
+              assert len(data)==p["chars"],p["file"]
+              assert hashlib.sha256(data.encode()).hexdigest()==p["sha256"],p["file"]
+              parts.append(data)
+          payload="".join(parts)
+          assert len(payload)==51292
+          raw=gzip.decompress(base64.b64decode(payload, validate=True))
+          assert len(raw)==388809
+          assert hashlib.sha256(raw).hexdigest()==m["decoded_json_sha256"]
+          data=json.loads(raw)
+          assert len(data["records"])==297
+          old=Path("theory/full-bodies/all-37-v0_8_1.html").read_text()
+          patched=Path("theory/full-bodies/all-37-v0_8_3.html").read_text()
+          assert "const PARTS=7,EXPECTED_B64=50428,EXPECTED_ROUTES=297,EXPECTED_FULL=37;" in old
+          assert "const CURRENT_PIN='const PARTS=7,EXPECTED_B64=51292,EXPECTED_ROUTES=297,EXPECTED_FULL=37;';" in patched
+          assert "SOURCE_DEPTH" not in repr(data)[:0]  # Nothing in protected payload is rewritten.
+          assert "3fd3b234123b70d374141a71b339e3a8deeaa03b506f78a1412b93768a5237bb" in patched
+          print("DING: seven part checksums + complete payload digest + original archival reader source preserved; 297 routes")
+          PY
+      - name: Install inherited Chromium proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve the original Estate locally
+        run: |
+          python3 -m http.server 4182 >/tmp/jm-theory-37-cp04-http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4182/theory/full-bodies/all-37-v0_8_3.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Verify 37 real entries, two viewport reading paths and fail-closed manifest guard
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          const fs=require('node:fs');
+          const {chromium}=require('playwright');
+          const url='http://127.0.0.1:4182/theory/full-bodies/all-37-v0_8_3.html?cp04=source-identity';
+          (async()=>{
+            const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+            try{
+              let passed=0;
+              for(const size of [{width:390,height:844},{width:1152,height:768}]){
+                const context=await browser.newContext({viewport:size,isMobile:size.width===390,hasTouch:true,deviceScaleFactor:1});
+                const page=await context.newPage();
+                const errors=[];
+                page.on('pageerror',e=>errors.push(e.message));
+                await page.goto(url,{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelector('#loading')?.hidden===true,{timeout:45000});
+                await page.waitForTimeout(200);
+                assert.equal(await page.locator('.card[data-open]').count(),37,'All 37 selected source routes must be rendered');
+                const initial=await page.locator('.card[data-open]').allTextContents();
+                assert.equal(initial.filter(s=>s.includes('SHAPED STANDALONE')).length,24,'Collection source-depth count');
+                assert.equal(initial.filter(s=>s.includes('FULL / CANONICAL BODY')).length,13,'Canonical source-depth count');
+                await page.locator('[data-filter="COLLECTION"]').click();
+                assert.equal(await page.locator('.card[data-open]').count(),24);
+                await page.locator('[data-filter="RECENT"]').click();
+                assert.equal(await page.locator('.card[data-open]').count(),13);
+                await page.locator('[data-filter="ALL"]').click();
+                await page.locator('.card[data-open]').first().click();
+                await page.waitForFunction(()=>document.querySelector('#reader')?.classList.contains('open'));
+                assert((await page.locator('#readerDoc').innerText()).length>100,'A genuine body should open as readable text');
+                assert((await page.locator('#readerDoc').innerText()).includes('Source-depth boundary'),'Shaped standalone must carry source-depth caveat');
+                const measure=await page.evaluate(()=>({
+                   overflow:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)-document.documentElement.clientWidth,
+                   back:document.getElementById('readerBack')?.getBoundingClientRect().height
+                }));
+                assert(measure.overflow<=1,'No horizontal overflow: '+JSON.stringify(measure));
+                assert(measure.back>=44,'Reader Back touch target should be at least 44px');
+                assert.deepEqual(errors,[],'No browser runtime errors');
+                await context.close();
+                passed++;
+              }
+              assert.equal(passed,2);
+              const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+              const page=await context.newPage();
+              const manifest=JSON.parse(fs.readFileSync('theory/data/v0_4/MANIFEST.json','utf8'));
+              manifest.joined_base64_chars=50428;
+              await page.route('**/theory/data/v0_4/MANIFEST.json*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(manifest)}));
+              await page.goto(url,{waitUntil:'domcontentloaded'});
+              await page.waitForFunction(()=>document.getElementById('error')?.textContent.includes('Current public payload identity changed'),{timeout:15000});
+              assert.equal(await page.locator('.card[data-open]').count(),0,'Tampered manifest must fail closed');
+              await context.close();
+              console.log('CP04 SOURCE DEPTH READER DING: 2/2 phone and Fold-sized fully loaded, 37 = 24 + 13, real readable body, touch/overflow and tampered-manifest fail-closed PASS');
+            }finally{await browser.close()}
+          })().catch(e=>{console.error('CP04_THEORY_READER_HOLD',e);process.exitCode=1});
+          NODE

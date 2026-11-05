@@ -117,6 +117,54 @@ def verify_wix_door_pairs():
     print("CP06 WIX THE DOORS — 9/9 sourced navigation pairs PASS; placeholders marked HOLD; original authority unchanged")
 
 
+def verify_more_original_doors_cp01():
+    """CP01 additive access-only contacts: originals remain in their existing Games House."""
+    from re import DOTALL, findall
+    html = Path("access/index.html").read_text(encoding="utf-8")
+    marker = '<section id="jmMoreOriginalDoors"'
+    require(html.count(marker) == 1, "Extra original doors section missing or duplicated")
+    section = html.split(marker, 1)[1].split("</section>", 1)[0]
+    base = "https://jmisjustme-estate.pages.dev/games-beyond/"
+    expected = [
+        ("glyphplay", base + "?jm-play=glyphplay", "Open mounted GlyphPlay"),
+        ("game-native-core", base + "?jm-play=game-native-core", "Open mounted core"),
+        ("gamecore", base + "?jm-play=gamecore", "Open mounted GameCore"),
+        ("aiming-run", base + "bodies/aiming-run-v0-1a.html", "Open original proof"),
+        ("drag-aim", base + "bodies/drag-aim-loop-kernel-v0-9-9.html", "Open original loop"),
+        ("playform", base + "bodies/playform-v0-1.html", "Open original framework"),
+        ("routeos", base + "routeos/runtime/", "Open existing console"),
+    ]
+    pattern = (r'<div class="row" data-jm-more-id="([^"]+)"><div>.*?</div>'
+               r'<div class="doorlinks"><a class="btn" href="([^"]+)">([^<]+)</a></div></div>')
+    actual = findall(pattern, section, flags=DOTALL)
+    require(actual == expected, "Original supplemental doors, order or destinations drifted")
+    require(len(set(item[0] for item in actual)) == 7, "Duplicate supplementary original seat")
+    require("data-jm-use-entry=" not in section and "data-jm-launch=" not in section and
+            "data-jm-pin-id=" not in section, "Protected CP08 quick-launch or pin contract modified")
+    manifest = json.loads(Path("games-beyond/payload-manifest.json").read_text(encoding="utf-8"))
+    registry = json.loads(Path("games-beyond/registry.json").read_text(encoding="utf-8"))
+    mounted = {row["id"] for row in registry["registered_bodies"] if row.get("mounted") is True}
+    for game_id in ("glyphplay", "game-native-core", "gamecore"):
+        require(game_id in mounted and game_id in manifest["bodyIdsBuiltIn"],
+                "New pointer is not mounted by the existing Games House: " + game_id)
+    catalogue = Path("games-beyond/all-games.html").read_text(encoding="utf-8")
+    for game_id in ("glyphplay", "game-native-core", "gamecore"):
+        require('?jm-play=' + game_id in catalogue, "Original Games catalogue entry missing: " + game_id)
+    source_paths = (
+        "games-beyond/bodies/aiming-run-v0-1a.html",
+        "games-beyond/bodies/drag-aim-loop-kernel-v0-9-9.html",
+        "games-beyond/bodies/playform-v0-1.html",
+        "games-beyond/routeos/runtime/index.html",
+    )
+    require(all(Path(p).is_file() for p in source_paths),
+            "Standalone historical source or RouteOS runtime path no longer exists")
+    require("not a new game release" in section and "not a new game release" in section.lower() and
+            "not new software releases" in section and "physical Fold8 finger-touch acceptance" in section and
+            "No private JMStudios body" in section, "Source, release, privacy or owner acceptance boundary lost")
+    require(".doorlinks .btn{display:inline-flex" in html and "min-height:44px" in html and
+            "@media(max-width:850px){.grid" in html, "Inherited phone touch/row layout contract lost")
+    print("CP01 EXTRA ORIGINAL DOORS — 7/7 source-backed pointers PASS; 12 inherited CP08 doors unchanged")
+
 def verify_direct_use_cp08():
     """CP08: link only to existing public-mounted exact game/creator bodies."""
     from re import findall
@@ -359,6 +407,7 @@ def main():
     verify_original_body_contacts()
     verify_wix_door_pairs()
     verify_direct_use_cp08()
+    verify_more_original_doors_cp01()
     verify_quick_return_cp09()
     verify_original_pwa_cp10()
     verify_original_service_worker_cp11()

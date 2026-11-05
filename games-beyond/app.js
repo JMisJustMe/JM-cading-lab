@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity';
+const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity-owner-html-20261105';
 // Browser preference storage must never prevent opening the House.
 // Keep in-memory navigation available if storage is blocked or malformed.
 const storageRead=key=>{try{return localStorage.getItem(key)}catch{return null}};
@@ -240,6 +240,43 @@ async function runAudit(open=true){if(!pack)return;const results=pack.bodies.map
 function renderAudit(){if(!lastAudit)return;const grades=lastAudit.results.reduce((n,x)=>(n[x.grade]=(n[x.grade]||0)+1,n),{});$('a11ySummary').textContent=`Static preflight: A ${grades.A||0} · B ${grades.B||0} · C ${grades.C||0}. Runtime help remains separate from stored source.`;$('a11yList').innerHTML=lastAudit.results.map(a=>`<article class="auditCard"><div style="display:flex;align-items:center;gap:9px"><span class="grade ${a.grade}">${a.grade}</span><div><b>${esc(a.name)} · ${esc(a.version||'')}</b><span>${a.issueCount} detected items · ${bytes(a.bytes)}</span></div></div>${a.issues.length?`<details><summary>Review items</summary><ul>${a.issues.map(x=>`<li><strong>${esc(x.severity.toUpperCase())}</strong> · ${esc(x.message)}${x.count>1?' × '+x.count:''}</li>`).join('')}</ul></details>`:'<p>No issue in this limited rule set.</p>'}</article>`).join('')}
 async function proof(){const results=[];for(const b of pack.bodies)results.push({id:b.id,name:b.name,html:/<html|<!doctype/i.test(b.html),bytes:new Blob([b.html]).size,digest:await hash(b.html),edited:!!b.edited});const built=manifest.builtInBodyCount||manifest.bodyCount,full=manifest.fullTargetCount||built,pass=results.length>=built&&results.every(x=>x.html),fullMount=results.length===full,report={schema:'JM.GamesBeyond.PublicProof/0.5',checkedAt:NOW(),pass,fullMount,bodyCount:results.length,builtInExpected:built,fullTarget:full,accessibilityAudit:!!lastAudit,results};$('proofBox').textContent=JSON.stringify(report,null,2);await receipt(fullMount?'FULL_HOUSE_PROOF':'BUILT_IN_HOUSE_PROOF',pass?'DING':'BUGG',{pass,fullMount,bodyCount:results.length,fullTarget:full});view('proof');toast(pass?(fullMount?`${full}-body full House proof DING`:`${results.length}-body built-in proof DING`):'Proof found a gap',!pass)}
 async function exportHouse(){const originals=pack.bodies.filter(b=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b.id));const verifiedPair=originals.length===2&&(await Promise.all(originals.map(isOriginalJMStudios))).every(Boolean);download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',source_custody:verifiedPair?{original_lineage_zip_file:JMSTUDIOS_LINEAGE}:undefined,exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
+// CP18: recover the original direct-HTML mounting workflow without uploading owner source.
+// The existing atomic House importer and IndexedDB remain the only mounting route.
+async function importOriginalHtml(file){
+ try{
+  if(!file||!/\.html?$/i.test(file.name))throw Error('Select an original .html game file');
+  if(file.size>32*1024*1024)throw Error('Source exceeds the 32 MB local import limit');
+  const html=await file.text();
+  if(!/(<!doctype\s+html|<html\b)/i.test(html))throw Error('Chosen file is not an HTML game body');
+  if(new TextEncoder().encode(html).length!==file.size)throw Error('Source encoding would change original bytes; import held');
+  const digest=await hash(html);
+  if(/jmstudios/i.test(file.name)||Object.values(JMSTUDIOS_ORIGINAL_HASHES).includes(digest))
+   throw Error('Protected JM Studios bodies require the original verified-pair import');
+  const knownCP17=/^JM_COMBOUND_ORIGINAL_v3_7_11_CP17_/i.test(file.name);
+  if(knownCP17&&digest!=='3b5b791c15ea82e6e240b55d690b6e034bbc6f61ce0143c6a9fb0156326ce242')
+   throw Error('COMBOUND CP17 does not match the preserved original source hash');
+  const clean=file.name.replace(/\.html?$/i,'').replace(/[^A-Za-z0-9]+/g,' ').trim();
+  const slug=clean.toLowerCase().replace(/\s+/g,'-').slice(0,43);
+  const id=knownCP17?'combound-original-v3-7-11-cp17':'owner-'+(slug||'html-game')+'-'+digest.slice(0,12);
+  const prior=findBody(id);
+  if(prior){
+   if(await hash(prior.html)!==digest)throw Error('Same local identity has different source; original held');
+   view('rooms',false);$('search').value=id;renderRooms();await openBody(id);
+   toast('Exact local HTML source already mounted; reused without copying');
+   return;
+  }
+  const name=knownCP17?'COMBOUND Original — CP17':clean.slice(0,75);
+  const item={id,name,version:knownCP17?'v3.7.11 CP17':'owner-local HTML',
+    role:'Owner-selected HTML source · local browser only · not publicly published',
+    category:'Games',stage:'OWNER LOCAL CANDIDATE',sourceName:file.name,
+    ownerSourceSha256:digest,html};
+  await importHouse({text:async()=>JSON.stringify({bodies:[item]})});
+  if(findBody(id)?.html!==html)throw Error('The existing House did not confirm source import');
+  view('rooms',false);$('search').value=id;renderRooms();await openBody(id);
+  await receipt('OWNER_HTML_ORIGINAL_MOUNTED_LOCALLY',name,{id,sha256:digest,bytes:file.size});
+  toast('Original HTML mounted locally — no public upload');
+ }catch(error){toast('HTML import HOLD: '+error.message,true)}
+}
 async function importHouse(file){
  try{
   const incoming=JSON.parse(await file.text());
@@ -298,7 +335,7 @@ async function importHouse(file){
 async function clearEdits(){if(!confirm('Clear all local edits and imported bodies?'))return;for(const x of await all('edits'))await remove('edits',x.id);location.reload()}
 async function renderReceipts(){if(!db)return;const rows=(await all('receipts')).sort((a,b)=>b.key-a.key).slice(0,100);$('receipts').innerHTML=rows.map(x=>`<div class="receipt"><b>${esc(x.type)} · ${esc(x.body)}</b><span>${esc(x.time)}\n${esc(JSON.stringify(x.extra||{}))}</span></div>`).join('')||'<div class="empty">No receipts yet.</div>'}
 function toggle(cls,id){const on=!document.documentElement.classList.contains(cls);document.documentElement.classList.toggle(cls,on);storageWrite('jm-gb-'+cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text')document.documentElement.style.setProperty('--scale',on?'1.18':'1')}
-function bind(){const nav=$$('.nav button');nav.forEach((b,i)=>{b.onclick=()=>view(b.dataset.view);b.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?nav.length-1:(i+(e.key==='ArrowRight'?1:-1)+nav.length)%nav.length;nav[j].focus();view(nav[j].dataset.view)}});$('enterBtn').onclick=()=>view('rooms');$('reloadBtn').onclick=()=>location.reload();$('search').oninput=renderRooms;$('proofQuick').onclick=$('runProof').onclick=proof;$('savePassport').onclick=()=>saveEdit(false);$('saveSource').onclick=()=>saveEdit(true);$('undoSource').onclick=undo;$('restoreBody').onclick=restore;$('exportBody').onclick=()=>exportBody(selected);$('testSource').onclick=()=>openBody(selected,$('source').value);$('exportHouse').onclick=exportHouse;$('importHouse').onclick=()=>$('importFile').click();$('importFile').onchange=e=>{if(e.target.files[0])importHouse(e.target.files[0]);e.target.value=''};$('clearEdits').onclick=clearEdits;$('closeDialog').onclick=closeBody;$('openExternal').onclick=separateBody;$('bodyDialog').addEventListener('cancel',e=>{e.preventDefault();closeBody()});$('runA11y').onclick=()=>runAudit(true);$('exportA11y').onclick=()=>lastAudit?download('GAMES_BEYOND_ACCESSIBILITY_REPORT_v0_5.json',JSON.stringify(lastAudit,null,2),'application/json'):toast('Run the audit first',true);$('contrastBtn').onclick=()=>toggle('high-contrast','contrastBtn');$('textBtn').onclick=()=>toggle('large-text','textBtn');$('motionBtn').onclick=()=>toggle('reduced-motion','motionBtn');for(const [cls,id] of [['high-contrast','contrastBtn'],['large-text','textBtn'],['reduced-motion','motionBtn']]){const on=storageRead('jm-gb-'+cls)==='true';document.documentElement.classList.toggle(cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text'&&on)document.documentElement.style.setProperty('--scale','1.18')}}
+function bind(){const nav=$$('.nav button');nav.forEach((b,i)=>{b.onclick=()=>view(b.dataset.view);b.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?nav.length-1:(i+(e.key==='ArrowRight'?1:-1)+nav.length)%nav.length;nav[j].focus();view(nav[j].dataset.view)}});$('enterBtn').onclick=()=>view('rooms');$('reloadBtn').onclick=()=>location.reload();$('search').oninput=renderRooms;$('proofQuick').onclick=$('runProof').onclick=proof;$('savePassport').onclick=()=>saveEdit(false);$('saveSource').onclick=()=>saveEdit(true);$('undoSource').onclick=undo;$('restoreBody').onclick=restore;$('exportBody').onclick=()=>exportBody(selected);$('testSource').onclick=()=>openBody(selected,$('source').value);$('exportHouse').onclick=exportHouse;$('importHouse').onclick=()=>$('importFile').click();$('importHtml').onclick=()=>$('importHtmlFile').click();$('importHtmlFile').onchange=e=>{const file=e.target.files[0];if(file)importOriginalHtml(file);e.target.value=''};$('importFile').onchange=e=>{if(e.target.files[0])importHouse(e.target.files[0]);e.target.value=''};$('clearEdits').onclick=clearEdits;$('closeDialog').onclick=closeBody;$('openExternal').onclick=separateBody;$('bodyDialog').addEventListener('cancel',e=>{e.preventDefault();closeBody()});$('runA11y').onclick=()=>runAudit(true);$('exportA11y').onclick=()=>lastAudit?download('GAMES_BEYOND_ACCESSIBILITY_REPORT_v0_5.json',JSON.stringify(lastAudit,null,2),'application/json'):toast('Run the audit first',true);$('contrastBtn').onclick=()=>toggle('high-contrast','contrastBtn');$('textBtn').onclick=()=>toggle('large-text','textBtn');$('motionBtn').onclick=()=>toggle('reduced-motion','motionBtn');for(const [cls,id] of [['high-contrast','contrastBtn'],['large-text','textBtn'],['reduced-motion','motionBtn']]){const on=storageRead('jm-gb-'+cls)==='true';document.documentElement.classList.toggle(cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text'&&on)document.documentElement.style.setProperty('--scale','1.18')}}
 window.GamesBeyond={get pack(){return pack},get activeEditorBodyId(){return selected},runProof:proof,runAccessibility:runAudit,show:view,playBody:openBody,exportHouse};
 (async()=>{bind();view('house',false);try{db=await openDB()}catch(err){console.error('Games&Beyond local database startup failure:',err);$('status').textContent='HOUSE BUGG';$('status').className='status bad';progress(100,'Local edit database unavailable: '+String(err?.message||err));toast('House cannot safely mount without its edit database.',true);return}if('serviceWorker'in navigator){try{void navigator.serviceWorker.register(`sw.js?v=${RELEASE}`).then(reg=>{try{reg.update()}catch{}}).catch(()=>{})}catch{}}try{await decodePayload()}catch(err){console.error(err);$('status').textContent='HOUSE BUGG';$('status').className='status bad';progress(100,'Load failed: '+err.message);toast('House load failed: '+err.message,true)}})();
 })();

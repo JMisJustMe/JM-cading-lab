@@ -118,6 +118,34 @@ jobs:
         run: |
           node --check sw.js
           node -e "const fs=require('node:fs'); const s=fs.readFileSync('sw.js','utf8'); if(s.includes(String.fromCharCode(92)+'n')) process.exit(21); console.log('CP11 SW syntax and original source newline PASS')"
+      - name: CP12 Cloudflare no-store public CORE preservation and private rejection
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+          const source=fs.readFileSync('sw.js','utf8');
+          const origin='http://127.0.0.1:4178',scope=origin+'/';
+          const hooks={};
+          const c={self:{location:{origin},registration:{scope},addEventListener:(name,fn)=>hooks[name]=fn},Request,Response,URL};
+          vm.createContext(c);
+          vm.runInContext(source,c);
+          const req=(path,headers)=>new Request(origin+path,{headers});
+          const res=(policy)=>new Response('SYNTHETIC',{status:200,headers:{'Cache-Control':policy}});
+          assert.equal(c.publicCacheRequest(req('/api/jm/v1/health')),false);
+          assert.equal(c.publicCacheRequest(req('/api/ailatheo')),false);
+          assert.equal(c.safeCacheResponse(res('no-store, no-cache, must-revalidate'),req('/access/index.html')),true);
+          assert.equal(c.safeCacheResponse(res('no-store'),req('/games-beyond/registry.json')),true);
+          assert.equal(c.safeCacheResponse(res('private, no-store'),req('/access/index.html')),false);
+          assert.equal(c.safeCacheResponse(res('no-store'),req('/cp12-unlisted-public.json')),false);
+          assert.equal(c.safeCacheResponse(res('no-store'),req('/access/index.html?token=SYNTHETIC')),false);
+          assert.equal(c.safeCacheResponse(res('public, max-age=60'),req('/cp12-unlisted-public.json')),true);
+          assert.equal(c.safeCacheResponse(res('public'),req('/owner/synthetic')),false);
+          assert.equal(c.safeCacheResponse(res('public'),req('/access/index.html',{Authorization:'Bearer CP12-SYNTHETIC'})),false);
+          assert.equal(typeof hooks.install,'function');
+          assert.equal(typeof hooks.activate,'function');
+          assert.equal(typeof hooks.fetch,'function');
+          console.log('CP12 Cloudflare CORE/PWA contract PASS: 10 policy cases + 3 original worker hooks, public offline CORE vs private/no-store boundary');
+          NODE
       - name: Install browser proof runtime
         run: |
           npm install --no-save playwright@1.54.1

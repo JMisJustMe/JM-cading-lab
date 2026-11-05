@@ -21,6 +21,16 @@ on:
       - "access/**"
       - "api-hub/**"
       - "apps/**"
+      # CP13: Only the eight already governed, public-safe Apps & Tools
+      # workroom bodies may trigger this existing Estate deployment.
+      - "estate-publication/apps-tools-convergence/index.html"
+      - "estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_v0_1.css"
+      - "estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js"
+      - "estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"
+      - "estate-publication/apps-tools-convergence/evidence-governance/index.html"
+      - "estate-publication/apps-tools-convergence/creation-publication/index.html"
+      - "estate-publication/apps-tools-convergence/contact-practice/index.html"
+      - "estate-publication/apps-tools-convergence/route-ftr/index.html"
       - "author/**"
       - "books/**"
       - "career/**"

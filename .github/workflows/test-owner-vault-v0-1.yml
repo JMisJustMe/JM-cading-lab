@@ -89,7 +89,8 @@ jobs:
           grep -Fq 'No existing body was removed.' estate-app.js
           grep -Fq 'Previous mounted bodies remain unchanged.' estate-app.js
           ! grep -Fq "state.mounted=[];localStorage.removeItem('jm-estate-mounted')" estate-app.js
-          grep -Fq "url.pathname.startsWith('/api/owner/')" sw.js
+          grep -Fq "path === '/api' || path.startsWith('/api/')" sw.js
+          grep -Fq "if (!publicCacheRequest(event.request)) return;" sw.js
           python3 - <<'PY'
           from pathlib import Path
           text=Path('estate-app.js').read_text()

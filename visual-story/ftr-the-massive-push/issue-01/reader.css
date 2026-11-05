@@ -6,3 +6,5 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 /* CP01 handheld overflow repair: header and hero only; artwork/page semantics untouched. */
 @media(max-width:640px){.topbar{flex-wrap:wrap}.top-actions{width:100%;justify-content:flex-end}.brand{width:100%}.hero-row{flex-wrap:wrap}.hero-row>div:first-child{min-width:0;max-width:100%}.issue-hero h1{font-size:clamp(2.15rem,10vw,3.3rem)}}
+/* CP02: tablet/Fold landscape issue-title fit; original artwork and page semantics untouched. */
+@media(min-width:641px) and (max-width:999px){.issue-hero h1{font-size:clamp(3rem,9vw,5.5rem)}}

@@ -117,6 +117,14 @@
     const nextState=assertState(obj.state);
     const incoming=validatePackets(obj.packets);
     const originalBus=read();
+    // Same native packet ID must never silently replace different content.
+    // Match mergeBus custody checks while retaining full-environment restore.
+    const existingById=new Map(originalBus.map(p=>[p.id,JSON.stringify(p)]));
+    for(const p of incoming){
+      const prior=existingById.get(p.id);
+      if(prior!==undefined&&prior!==JSON.stringify(p))
+        throw new Error('PACKET_BUS_ID_COLLISION_HOLD');
+    }
     const incomingIds=new Set(incoming.map(x=>x.id));
     const merged=[...incoming,...originalBus.filter(x=>!incomingIds.has(x.id))];
     validatePackets(merged);

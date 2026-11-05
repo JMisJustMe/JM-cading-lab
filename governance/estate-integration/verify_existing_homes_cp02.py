@@ -117,6 +117,54 @@ def verify_wix_door_pairs():
     print("CP06 WIX THE DOORS — 9/9 sourced navigation pairs PASS; placeholders marked HOLD; original authority unchanged")
 
 
+def verify_apps_original_tools_cp02():
+    """CP02 verify five original public workbench contacts; original 45-room inventory untouched."""
+    from re import DOTALL, findall
+    html = Path("apps/index.html").read_text(encoding="utf-8")
+    marker = '<section class="flagship" id="jmOriginalToolsCP02"'
+    require(html.count(marker) == 1, "Exact original tool section absent or duplicated")
+    section = html.split(marker, 1)[1].split("</section>", 1)[0]
+    expected = [
+        ("openbox", "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/", "Open original editor"),
+        ("workshop", "https://jmisjustme-estate.pages.dev/coding-estate/workshop/", "Enter original workshop"),
+        ("everybody", "https://jmisjustme-estate.pages.dev/coding-estate/everybody/", "Open existing workbench"),
+        ("visualang", "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/visualang.html", "Open original Visualang"),
+        ("jm-py-proof", "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/jm-py-proof.html", "View original JM.PY proof"),
+    ]
+    found = findall(
+        r'<div class="jm-original-tool" data-jm-tool-id="([^"]+)"><strong>.*?</strong>'
+        r'<span>.*?</span><a href="([^"]+)">([^<]+)</a></div>', section, flags=DOTALL
+    )
+    require(found == expected, "Exact public app/tool destination, order or role changed")
+    require(len({row[0] for row in found}) == 5, "Duplicate original tool identity")
+    require("45 non-game app records" in section and
+            "not a live editor" in section and
+            "Protected owner applications remain private" in section and
+            "physical Fold8 finger acceptance" in section,
+            "45-row, source-role, owner-privacy or device acceptance boundary lost")
+    require('const APP_STAT_COUNTS={"room_count":45,"full_plus_preserved":29,"routed":12,"source_needed":0,"preparation":2};' in html,
+            "Original 45-room Apps catalogue status counts drifted")
+    require(html.count('id="workrooms"') == 1 and html.count('id="grid"') == 1 and
+            html.count("const APP_SOURCE_CONTACTS=") == 1,
+            "Original Apps House cards, four workrooms or edit-source contact authority replaced")
+    require("#jmOriginalToolsCP02 .jm-original-tool a{display:flex" in html and
+            "min-height:48px" in html and "overflow-wrap:anywhere" in html,
+            "Fold-first 48px contact buttons lost")
+    original_paths = [
+        "website/jm-website-001/openbox/index.html",
+        "coding-estate/workshop/index.html",
+        "coding-estate/everybody/index.html",
+        "website/jm-website-001/visualang.html",
+        "website/jm-website-001/jm-py-proof.html",
+    ]
+    require(all(Path(path).is_file() for path in original_paths),
+            "A linked exact original tool source is no longer present")
+    require('jm-agi-lab-runtime-console-v1/' not in section and
+            "private owner payload" not in section and
+            "example.com" not in section,
+            "Protected owner source, unrelated console or placeholder introduced into CP02 links")
+    print("CP02 APPS DIRECT ORIGINAL TOOLS — 5/5 exact sourced public links PASS; unchanged 45 rooms and four workrooms")
+
 def verify_more_original_doors_cp01():
     """CP01 additive access-only contacts: originals remain in their existing Games House."""
     from re import DOTALL, findall
@@ -408,6 +456,7 @@ def main():
     verify_wix_door_pairs()
     verify_direct_use_cp08()
     verify_more_original_doors_cp01()
+    verify_apps_original_tools_cp02()
     verify_quick_return_cp09()
     verify_original_pwa_cp10()
     verify_original_service_worker_cp11()

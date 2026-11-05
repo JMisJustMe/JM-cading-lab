@@ -56,6 +56,11 @@ def replace_function(text: str, name: str, replacement: str) -> str:
         start = text.find(marker)
     if start < 0:
         raise RuntimeError(f"Function {name} not found")
+    # The first match can begin after the original async keyword.
+    # Include it in the replacement span: otherwise "async async function"
+    # passes static receipt checks but fails JavaScript syntax validation.
+    if start >= 6 and text[start - 6:start] == "async ":
+        start -= 6
 
     brace = text.find("{", start)
     if brace < 0:

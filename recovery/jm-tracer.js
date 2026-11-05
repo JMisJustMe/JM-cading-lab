@@ -33,6 +33,10 @@
       '<label class="btn" for="jm-trace-file">Inspect a file / ZIP<input type="file" id="jm-trace-file" aria-label="Choose a local file to inspect"></label>' +
       '<select id="jm-trace-house" aria-label="Choose existing public House" style="background:#06100e;border:1px solid #426758;border-radius:10px;padding:9px"><option value="apps">Apps &amp; Tools</option><option value="games">Games &amp; Beyond</option><option value="theory">Theory Wing</option><option value="recovery">Recovery Head</option></select>' +
       '<button type="button" class="btn" id="jm-trace-house-run">Trace public House</button>' +
+      '<div class="trace-actions" style="flex-basis:100%;margin:3px 0" aria-label="Compare two local file bodies">' +
+      '<label class="btn" for="jm-trace-pair-a">Select first file<input type="file" id="jm-trace-pair-a" aria-label="Select first local file"></label>' +
+      '<label class="btn" for="jm-trace-pair-b">Select second file<input type="file" id="jm-trace-pair-b" aria-label="Select second local file"></label>' +
+      '<button type="button" class="btn primary" id="jm-trace-compare">Compare both files</button></div>' +
       '<button type="button" class="btn" id="jm-trace-receipt" disabled>Export inspection receipt</button>' +
     '</div>' +
     '<span class="trace-pill" id="jm-trace-status" role="status" aria-live="polite">READY · No inspection yet</span>' +
@@ -41,12 +45,12 @@
   grid.before(root);
 
   const $ = (id) => root.querySelector('#' + id);
-  const report = {schema:'JM.ECOSTATE.BodyCarrierRouteTracer/1.0', version:'CP01', mode:'READ_ONLY',
-    preservation:'NO_FILE_WRITES_NO_UPLOAD_NO_AUTO_EXPORT', theory:null, house:null, localFile:null};
+  const report = {schema:'JM.ECOSTATE.BodyCarrierRouteTracer/1.0', version:'CP02', mode:'READ_ONLY',
+    preservation:'NO_FILE_WRITES_NO_UPLOAD_NO_AUTO_EXPORT', theory:null, house:null, localFile:null, pair:null};
   function status(message, body) {
     $('jm-trace-status').textContent = message;
     if (body !== undefined) $('jm-trace-readout').textContent = body;
-    $('jm-trace-receipt').disabled = !report.theory && !report.house && !report.localFile;
+    $('jm-trace-receipt').disabled = !report.theory && !report.house && !report.localFile && !report.pair;
   }
   function hex(bytes) {
     return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('');
@@ -237,22 +241,67 @@
     $('jm-trace-house-run').disabled=false;
   }
 
+
+  // FTR / Source Ledger: equality of bytes is NOT equality of roles, custody or authority.
+  // Observe both user-selected files in memory only; never store raw content.
+  async function comparePair() {
+    const first = $('jm-trace-pair-a').files?.[0], second = $('jm-trace-pair-b').files?.[0];
+    if (!first || !second) {
+      report.pair = null;
+      status('HOLD · Select two files', 'Choose both files independently. No file was read or changed.');
+      return;
+    }
+    $('jm-trace-compare').disabled = true;
+    report.pair = null;
+    status('COMPARING · Device-local only','Reading two selected bodies and calculating independent SHA-256 fingerprints…');
+    const observation = {kind:'TWO_FILE_BODY_COMPARISON',mode:'READ_ONLY_LOCAL',
+      first:null,second:null, sameName:null,sameBytes:null, verdict:'HOLD',
+      sourceAuthority:'NOT_ESTABLISHED', roleEquivalence:'NOT_INFERRED',
+      recoveryPath:'Keep both originals and their independent custodial routes.', 
+      boundary:'Byte identity is not evidence of redundant roles. No automatic deletion, overwrite, archive retirement or source promotion.'};
+    async function identify(file) {
+      if (file.size>268435456) throw Error('One selected file exceeds the 256 MiB per-file inspection bound.');
+      const buffer=await file.arrayBuffer();
+      return {name:file.name, bytes:file.size, sha256:await hash(buffer),
+        role:'UNDECLARED', origin:'NOT_ESTABLISHED'};
+    }
+    try {
+      observation.first=await identify(first);
+      observation.second=await identify(second);
+      observation.sameName=first.name===second.name;
+      observation.sameBytes=first.size===second.size &&
+        observation.first.sha256===observation.second.sha256;
+      observation.verdict=observation.sameBytes ? 'PASS_BYTE_IDENTICAL'
+        : 'PASS_BYTE_DIFFERENT';
+      report.pair=observation;
+      status(observation.sameBytes?'MATCH · Same bytes, independent roles':'DIFFERENT · No equivalence claim',
+        JSON.stringify(observation,null,2));
+    }catch(error){
+      observation.error=String(error.message||error);
+      report.pair=observation;
+      status('HOLD · No equality claim',JSON.stringify(observation,null,2));
+    }finally{
+      $('jm-trace-compare').disabled = false;
+    }
+  }
+
   function exportReceipt() {
-    if (!report.theory && !report.localFile && !report.house) return;
+    if (!report.theory && !report.localFile && !report.house && !report.pair) return;
     const receipt={...report, generatedAt:new Date().toISOString(),
       boundary:'Public carrier or local hash contact does not prove original authorship, device acceptance, dependency safety or other untested creations.'};
     const bytes = new Blob([JSON.stringify(receipt,null,2)], {type:'application/json'});
     const link = document.createElement('a');
     link.href=URL.createObjectURL(bytes);
-    link.download='JM_BODY_CARRIER_ROUTE_TRACE_CP01_RECEIPT.json';
+    link.download='JM_BODY_CARRIER_ROUTE_TRACE_CP02_RECEIPT.json';
     link.click();
     setTimeout(()=>URL.revokeObjectURL(link.href),1000);
   }
   $('jm-trace-theory').addEventListener('click',traceTheory);
   $('jm-trace-house-run').addEventListener('click',traceHouse);
   $('jm-trace-file').addEventListener('change',(event)=>inspect(event.target.files?.[0]));
+  $('jm-trace-compare').addEventListener('click',comparePair);
   $('jm-trace-receipt').addEventListener('click',exportReceipt);
-  window.JMBodyCarrierTracer = Object.freeze({version:'CP01',inspect,traceTheory,
+  window.JMBodyCarrierTracer = Object.freeze({version:'CP02',inspect,traceTheory,comparePair,
     traceHouse,snapshot:()=>JSON.parse(JSON.stringify(report))});
   if (location.hash==='#jm-tracer') requestAnimationFrame(()=>root.scrollIntoView({block:'start'}));
 })();

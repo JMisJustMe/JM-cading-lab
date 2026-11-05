@@ -220,6 +220,59 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP09_QUICK_RETURN_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP10 existing PWA installation identity and Continue shortcut (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const page=await browser.newPage({viewport});
+                try{
+                  page.setDefaultTimeout(20000);
+                  await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                  const manifestLink=page.locator('link[rel="manifest"]');
+                  if(await manifestLink.count()!==1 || await manifestLink.getAttribute('href')!=='../manifest.webmanifest')
+                    throw Error('Access Mesh not connected to existing original manifest');
+                  const data=await page.evaluate(async()=>{
+                    const response=await fetch(document.querySelector('link[rel="manifest"]').href);
+                    return {ok:response.ok,body:await response.json()};
+                  });
+                  if(!data.ok||data.body.start_url!=='./#estate'||data.body.scope!=='./'||data.body.display!=='standalone')
+                    throw Error('Original PWA identity/scope drift');
+                  const expected=[
+                    './games-beyond/',
+                    './coding-estate/everybody/',
+                    './#owner',
+                    './access/#jmQuickReturn'
+                  ];
+                  if(JSON.stringify(data.body.shortcuts.map(x=>x.url))!==JSON.stringify(expected))
+                    throw Error('Original three or appended Continue shortcut drift');
+                  const a=page.locator('#jmExistingAppInstall');
+                  const box=await a.boundingBox();
+                  if(!box || box.height<44)throw Error('Existing Estate app door below Fold touch target');
+                  if(await page.locator('#jmQuickReturn').count()!==1)
+                    throw Error('Existing owner Quick Return missing');
+                  await a.click();
+                  await page.waitForURL(url=>url.pathname==='/'&&url.hash==='#estate',{timeout:12000});
+                  if(await page.locator('#installButton').count()!==1)
+                    throw Error('Did not arrive at the original Estate PWA install control');
+                  if(await page.locator('link[rel="manifest"]').getAttribute('href')!=='./manifest.webmanifest')
+                    throw Error('Original PWA root manifest unexpectedly replaced');
+                  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+                  if(overflow)throw Error('Root app horizontal overflow at '+viewport.width);
+                  await page.close();
+                  passed++;
+                }catch(e){throw Error('CP10 '+viewport.width+'x'+viewport.height+' '+e);}
+              }
+              if(passed!==2)throw Error('CP10 both viewports required');
+              console.log('CP10 PWA PASS: 2/2 phone and Fold, original install app/manifest/root shortcut, installed-app identity preserved, no second site');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP10_PWA_HOLD',e);process.exitCode=1});
+          NODE
       - name: Eight-contact phone and desktop proof
         shell: bash
         run: |

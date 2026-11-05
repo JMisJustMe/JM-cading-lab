@@ -31,6 +31,8 @@
     '<div class="trace-actions">' +
       '<button type="button" class="btn primary" id="jm-trace-theory">Examine live Theory rooms</button>' +
       '<label class="btn" for="jm-trace-file">Inspect a file / ZIP<input type="file" id="jm-trace-file" aria-label="Choose a local file to inspect"></label>' +
+      '<select id="jm-trace-house" aria-label="Choose existing public House" style="background:#06100e;border:1px solid #426758;border-radius:10px;padding:9px"><option value="apps">Apps &amp; Tools</option><option value="games">Games &amp; Beyond</option><option value="theory">Theory Wing</option><option value="recovery">Recovery Head</option></select>' +
+      '<button type="button" class="btn" id="jm-trace-house-run">Trace public House</button>' +
       '<button type="button" class="btn" id="jm-trace-receipt" disabled>Export inspection receipt</button>' +
     '</div>' +
     '<span class="trace-pill" id="jm-trace-status" role="status" aria-live="polite">READY · No inspection yet</span>' +
@@ -40,11 +42,11 @@
 
   const $ = (id) => root.querySelector('#' + id);
   const report = {schema:'JM.ECOSTATE.BodyCarrierRouteTracer/1.0', version:'CP01', mode:'READ_ONLY',
-    preservation:'NO_FILE_WRITES_NO_UPLOAD_NO_AUTO_EXPORT', theory:null, localFile:null};
+    preservation:'NO_FILE_WRITES_NO_UPLOAD_NO_AUTO_EXPORT', theory:null, house:null, localFile:null};
   function status(message, body) {
     $('jm-trace-status').textContent = message;
     if (body !== undefined) $('jm-trace-readout').textContent = body;
-    $('jm-trace-receipt').disabled = !report.theory && !report.localFile;
+    $('jm-trace-receipt').disabled = !report.theory && !report.house && !report.localFile;
   }
   function hex(bytes) {
     return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('');
@@ -184,8 +186,59 @@
       $('jm-trace-theory').disabled = false;
     }
   }
+  async function traceHouse() {
+    const choice = $('jm-trace-house').value;
+    const routes = {apps:'../apps/',games:'../games-beyond/',theory:'../theory/',recovery:'./'};
+    const target = new URL(routes[choice], location.href);
+    const result = {target:target.pathname, purpose:'PUBLIC_DEPENDENCY_CONTACT',
+      mode:'READ_ONLY', originAuthority:'PUBLIC_CARRIER_ONLY', htmlHttp:null,
+      declaredLocalAssets:0, examinedAssets:[], externalAssetsSkipped:0, 
+      runtimeFunctionalProof:'NOT_TESTED', verdict:'HOLD', time:new Date().toISOString()};
+    $('jm-trace-house-run').disabled=true;
+    status('TRACING · Public House', 'Inspecting the current public HTML and its directly declared same-origin script and stylesheet carriers…');
+    try {
+      const response=await fetch(target,{cache:'no-store',credentials:'same-origin'});
+      result.htmlHttp=response.status;
+      if (!response.ok) throw Error('House page returned HTTP '+response.status);
+      const body=await response.text();
+      if (!/<!doctype html|<html\b/i.test(body)) throw Error('House response is not an HTML document.');
+      result.htmlSha256=await hash(new TextEncoder().encode(body).buffer);
+      const parsed=new DOMParser().parseFromString(body,'text/html');
+      const found=Array.from(parsed.querySelectorAll('script[src],link[rel="stylesheet"][href]'));
+      const urls=[];
+      for(const element of found) {
+        const relative=element.getAttribute('src')||element.getAttribute('href');
+        const asset=new URL(relative,target);
+        if(asset.origin!==location.origin) {result.externalAssetsSkipped++;continue;}
+        if(!urls.some((u)=>u.href===asset.href)) urls.push(asset);
+      }
+      result.declaredLocalAssets=urls.length;
+      const sample=urls.slice(0,24);
+      result.uncheckedAssetCount=Math.max(0,urls.length-sample.length);
+      result.examinedAssets=await Promise.all(sample.map(async (asset)=>{
+        const row={path:asset.pathname,http:null,sha256:null,bytes:null};
+        try{
+          const r=await fetch(asset,{cache:'no-store',credentials:'same-origin'});
+          row.http=r.status;
+          if(!r.ok) throw Error('HTTP '+r.status);
+          const bytes=await r.arrayBuffer();
+          row.bytes=bytes.byteLength;
+          if(bytes.byteLength>8388608) {row.hold='Over 8 MiB; hash not calculated';return row;}
+          row.sha256=await hash(bytes);
+        }catch(e){row.hold=String(e.message||e);}
+        return row;
+      }));
+      const failures=result.examinedAssets.filter(x=>x.http!==200||x.hold).length;
+      result.verdict=failures||result.uncheckedAssetCount?'HOLD_UNVERIFIED_OR_FAILED_ASSETS':'PASS_DECLARED_PUBLIC_CARRIER_ASSETS_ONLY';
+      result.boundary='HTTP 200 and source hashes show available carriers, not working gameplay, successful user journeys, current private sources or device acceptance.';
+    }catch(e){result.error=String(e.message||e);}
+    report.house=result;
+    status(result.verdict.startsWith('PASS')?'PASS · Carriers accessible':'HOLD · Carrier gaps',JSON.stringify(result,null,2));
+    $('jm-trace-house-run').disabled=false;
+  }
+
   function exportReceipt() {
-    if (!report.theory && !report.localFile) return;
+    if (!report.theory && !report.localFile && !report.house) return;
     const receipt={...report, generatedAt:new Date().toISOString(),
       boundary:'Public carrier or local hash contact does not prove original authorship, device acceptance, dependency safety or other untested creations.'};
     const bytes = new Blob([JSON.stringify(receipt,null,2)], {type:'application/json'});
@@ -196,9 +249,10 @@
     setTimeout(()=>URL.revokeObjectURL(link.href),1000);
   }
   $('jm-trace-theory').addEventListener('click',traceTheory);
+  $('jm-trace-house-run').addEventListener('click',traceHouse);
   $('jm-trace-file').addEventListener('change',(event)=>inspect(event.target.files?.[0]));
   $('jm-trace-receipt').addEventListener('click',exportReceipt);
   window.JMBodyCarrierTracer = Object.freeze({version:'CP01',inspect,traceTheory,
-    snapshot:()=>JSON.parse(JSON.stringify(report))});
+    traceHouse,snapshot:()=>JSON.parse(JSON.stringify(report))});
   if (location.hash==='#jm-tracer') requestAnimationFrame(()=>root.scrollIntoView({block:'start'}));
 })();

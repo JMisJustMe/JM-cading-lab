@@ -1,7 +1,9 @@
 'use strict';
 
 (() => {
-  const EXPECTED_RECOVERIES = 4;
+  const REGISTERED_RECOVERIES = 4;
+  const EXPECTED_RECOVERIES = 3;
+  const QUARANTINED_ID = 'project-words-are-data-constrainers';
   const BASELINE_FULL = 13;
   const BASELINE_ROUTES = 297;
   let payload = null;
@@ -39,13 +41,27 @@
 
   async function loadPayload() {
     const records = window.JMTheoryRecoveredBodies || [];
-    if (records.length !== EXPECTED_RECOVERIES) {
-      throw new Error(`v5 recovery module count ${records.length}, expected ${EXPECTED_RECOVERIES}`);
+    if (records.length !== REGISTERED_RECOVERIES) {
+      throw new Error(`v5 registered recovery count ${records.length}, expected ${REGISTERED_RECOVERIES}`);
     }
-    if (new Set(records.map((record) => String(record.id))).size !== EXPECTED_RECOVERIES) {
+    if (new Set(records.map((record) => String(record.id))).size !== REGISTERED_RECOVERIES) {
       throw new Error('v5 recovery modules contain duplicate ids');
     }
-    payload = { version: 'v0.14', records: await Promise.all(records.map((record) => decodeBody({ ...record }))) };
+    const quarantined = records.find((record) => String(record.id) === QUARANTINED_ID);
+    if (!quarantined) throw new Error('WORDS quarantine target is not registered');
+    const healthy = records.filter((record) => String(record.id) !== QUARANTINED_ID);
+    if (healthy.length !== EXPECTED_RECOVERIES) {
+      throw new Error(`healthy recovery count ${healthy.length}, expected ${EXPECTED_RECOVERIES}`);
+    }
+    payload = {
+      version: 'v0.14-Q1',
+      records: await Promise.all(healthy.map((record) => decodeBody({ ...record }))),
+      quarantined: {
+        id: QUARANTINED_ID,
+        title: quarantined.title,
+        state: 'CARRIER_CORRUPT_SOURCE_UNRETRIEVED'
+      }
+    };
   }
 
   async function waitForEstate() {
@@ -87,46 +103,35 @@
   function updateStaticCopy() {
     const full = fullBodyCount();
     const total = DATA.records.length;
-    document.title = `JM Theory Multihub v0.14 — ${full} Full Bodies Mounted`;
+    document.title = `JM Theory Multihub v0.14-Q1 — ${full} Full Bodies · WORDS Quarantined`;
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.content = `JM Theory Multihub v0.14 — Full-Body Recovery Pass 001, with ${full} full/canonical bodies mounted across ${total} census routes.`;
+    if (description) description.content = `JM Theory Multihub v0.14-Q1 — three proved bodies recovered, WORDS carrier preserved in quarantine, ${full} full/canonical bodies across ${total} routes before source-integrity.`;
 
     const brand = document.querySelector('.brand small');
-    if (brand) brand.textContent = `v0.14 · Full-Body Recovery Pass 001 · ${full} full/canonical bodies mounted`;
+    if (brand) brand.textContent = `v0.14-Q1 · 3 healthy recoveries · WORDS quarantined`;
     const topRoutes = document.getElementById('topRoutes');
     if (topRoutes) topRoutes.textContent = String(total);
 
     const topstats = document.querySelector('.topstats');
     if (topstats && !topstats.querySelector('.full-body-count')) {
-      topstats.insertAdjacentHTML('afterbegin', `<span class="pill full-body-count"><b id="topFullBodies">${full}</b> full bodies</span>`);
+      topstats.insertAdjacentHTML('afterbegin', `<span class="pill full-body-count"><b id="topFullBodies">${full}</b> full bodies before integrity</span>`);
     } else {
       const count = document.getElementById('topFullBodies');
       if (count) count.textContent = String(full);
     }
 
-    const headline = document.querySelector('[data-view-panel="home"] .hero-copy h1');
-    if (headline) headline.textContent = 'Recover the bodies behind the names—and mount the bodies, not merely their addresses.';
     const lead = document.getElementById('sourcePassLead');
-    if (lead) lead.textContent = `Full-Body Recovery Pass 001 has recovered four actual bodies from Library source files. WORDS ARE DATA CONSTRAINERS upgrades its existing placeholder; Hit-Window Law, Become a Probability and the Change–Continuation Spine enter as complete bodies. The mounted full/canonical count is now ${full}.`;
-    const keeper = document.querySelector('[data-view-panel="home"] .hero-copy .keeper');
-    if (keeper) keeper.textContent = 'A title is a retrieval key. A located manuscript is a body. Only explicit completion, freeze or package receipts earn the complete-body crown.';
+    if (lead) lead.textContent = `Q1 mounts three proved recovered bodies and preserves WORDS ARE DATA CONSTRAINERS as a named quarantine. Result: ${BASELINE_FULL} → ${full} full/canonical bodies before source-integrity; no synthetic seventeenth body.`;
 
     const heroProof = document.querySelector('.hero-proof');
     if (heroProof && !heroProof.querySelector('[data-v5-full]')) {
-      heroProof.insertAdjacentHTML('afterbegin', `<div class="stat" data-v5-full><strong>${full}</strong><span>full/canonical bodies mounted</span></div><div class="stat" data-v5-recovered><strong>4</strong><span>actual bodies recovered in this pass</span></div>`);
+      heroProof.insertAdjacentHTML('afterbegin', `<div class="stat" data-v5-full><strong>${full}</strong><span>full bodies before integrity</span></div><div class="stat" data-v5-recovered><strong>3</strong><span>proved bodies recovered</span></div><div class="stat" data-v5-quarantined><strong>1</strong><span>WORDS carrier quarantined</span></div>`);
     }
-    const censusStat = [...document.querySelectorAll('.hero-proof .stat')].find((stat) => stat.textContent.includes('census routes preserved'));
-    if (censusStat) censusStat.innerHTML = `<strong>${total}</strong><span>census routes mounted</span>`;
 
-    const proofTitle = document.querySelector('[data-view-panel="proof"] h2');
-    if (proofTitle) proofTitle.textContent = 'What Full-Body Recovery Pass 001 proves';
     const proofGrid = document.querySelector('[data-view-panel="proof"] .proof-grid');
     if (proofGrid && !proofGrid.querySelector('[data-v5-proof]')) {
-      proofGrid.insertAdjacentHTML('afterbegin', `<article class="card proof" data-v5-proof><h3>Four bodies—not four more names</h3><ul><li><b>WORDS ARE DATA CONSTRAINERS</b> upgraded from T1 title-level to its recovered complete professional manuscript.</li><li><b>Hit-Window Law v1.0</b> mounted from its complete OPEN_FIRST package.</li><li><b>BECOME A PROBABILITY</b> mounted from its complete polished Body-Participation package.</li><li><b>Estate-Wide Change–Continuation Spine</b> mounted from its frozen authoritative v1.0 body.</li></ul><p class="full-body-recovery-note">Result: ${BASELINE_FULL} → ${full} full/canonical bodies. Census: ${BASELINE_ROUTES} → ${total} routes. Lower-grade passages remain lower-grade; this pass does not counterfeit completion.</p></article>`);
+      proofGrid.insertAdjacentHTML('afterbegin', `<article class="card proof" data-v5-proof><h3>Three bodies mounted; one damaged carrier quarantined</h3><ul><li><b>Hit-Window Law v1.0</b> mounted from its complete OPEN_FIRST package.</li><li><b>BECOME A PROBABILITY</b> mounted from its complete polished Body-Participation package.</li><li><b>Estate-Wide Change–Continuation Spine</b> mounted from its frozen authoritative v1.0 body.</li><li><b>WORDS ARE DATA CONSTRAINERS</b> remains named and preserved, but its corrupt carrier is excluded until an exact source body is recovered.</li></ul><p class="full-body-recovery-note">Result: ${BASELINE_FULL} → ${full}. Census: ${BASELINE_ROUTES} → ${total}. Quarantine is not completion.</p></article>`);
     }
-
-    const nav37 = document.querySelector('a.nav[href*="all-37"]');
-    if (nav37) nav37.textContent = '▣  37-Body Earlier Source Library';
   }
 
   function recoveryFeature(record) {
@@ -173,10 +178,13 @@
     rerender();
     window.JMTheoryFullBodyRecoveryV5 = Object.freeze({
       version: payload.version,
+      state: 'THREE_HEALTHY_ONE_QUARANTINED',
       recovered: EXPECTED_RECOVERIES,
+      registeredRecoveries: REGISTERED_RECOVERIES,
       fullBodies: fullBodyCount(),
       censusRoutes: DATA.records.length,
-      ids: payload.records.map((record) => record.id)
+      ids: payload.records.map((record) => record.id),
+      quarantined: payload.quarantined
     });
   }
 

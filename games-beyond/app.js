@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity-owner-html-phone-contact-20261105';
+const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity-owner-html-phone-contact-cp21-20261105';
 // Browser preference storage must never prevent opening the House.
 // Keep in-memory navigation available if storage is blocked or malformed.
 const storageRead=key=>{try{return localStorage.getItem(key)}catch{return null}};
@@ -267,6 +267,30 @@ async function connectPhoneOriginal(){
   toast('Phone original contact HOLD: '+error.message+'. Use Import Original HTML (Local).',true);
  }
 }
+// CP21: optional tested HUD-polish candidate from the same owner-only bridge.
+// CP17 remains separately pinned, unmodified and available at its original button.
+async function connectPhonePolish(){
+ const original='JM_COMBOUND_ORIGINAL_v3_7_11_CP21_FOLD8_HUD_POLISH_CANDIDATE.html';
+ const expected='7f576fba7109aa5b24a7031e8e88ad578356e25f524f8bf605bc3a79c6e648e8';
+ const id='owner-jm-combound-original-v3-7-11-cp21-fold8-hud-'+expected.slice(0,12);
+ try{
+  const request=new Request('http://127.0.0.1:8877/combound-cp21.html',
+   {method:'GET',mode:'cors',cache:'no-store',targetAddressSpace:'loopback'});
+  const response=await fetch(request);
+  if(!response.ok)throw Error('Local CP21 candidate returned HTTP '+response.status);
+  const raw=await response.arrayBuffer();
+  if(raw.byteLength!==1281903)throw Error('CP21 candidate byte length mismatch');
+  if(await hash(raw)!==expected)throw Error('CP21 source hash verification HOLD');
+  const file=new File([raw],original,{type:'text/html'});
+  await importOriginalHtml(file);
+  const mounted=findBody(id);
+  if(!mounted||mounted.html!==await file.text())throw Error('House did not confirm exact CP21 candidate');
+  await receipt('OWNER_LOOPBACK_CP21_HUD_CANDIDATE_PASS',mounted.name,
+   {id,sha256:expected,bytes:raw.byteLength,ancestor:'CP17',scope:'layout-only',ownerPreview:true});
+ }catch(error){
+  toast('CP21 owner-local preview HOLD: '+error.message+'. CP17 remains available; use Import Original HTML (Local) if needed.',true);
+ }
+}
 async function importOriginalHtml(file){
  try{
   if(!file||!/\.html?$/i.test(file.name))throw Error('Select an original .html game file');
@@ -360,7 +384,7 @@ async function importHouse(file){
 async function clearEdits(){if(!confirm('Clear all local edits and imported bodies?'))return;for(const x of await all('edits'))await remove('edits',x.id);location.reload()}
 async function renderReceipts(){if(!db)return;const rows=(await all('receipts')).sort((a,b)=>b.key-a.key).slice(0,100);$('receipts').innerHTML=rows.map(x=>`<div class="receipt"><b>${esc(x.type)} · ${esc(x.body)}</b><span>${esc(x.time)}\n${esc(JSON.stringify(x.extra||{}))}</span></div>`).join('')||'<div class="empty">No receipts yet.</div>'}
 function toggle(cls,id){const on=!document.documentElement.classList.contains(cls);document.documentElement.classList.toggle(cls,on);storageWrite('jm-gb-'+cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text')document.documentElement.style.setProperty('--scale',on?'1.18':'1')}
-function bind(){const nav=$$('.nav button');nav.forEach((b,i)=>{b.onclick=()=>view(b.dataset.view);b.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?nav.length-1:(i+(e.key==='ArrowRight'?1:-1)+nav.length)%nav.length;nav[j].focus();view(nav[j].dataset.view)}});$('enterBtn').onclick=()=>view('rooms');$('reloadBtn').onclick=()=>location.reload();$('search').oninput=renderRooms;$('proofQuick').onclick=$('runProof').onclick=proof;$('savePassport').onclick=()=>saveEdit(false);$('saveSource').onclick=()=>saveEdit(true);$('undoSource').onclick=undo;$('restoreBody').onclick=restore;$('exportBody').onclick=()=>exportBody(selected);$('testSource').onclick=()=>openBody(selected,$('source').value);$('exportHouse').onclick=exportHouse;$('importHouse').onclick=()=>$('importFile').click();$('importHtml').onclick=()=>$('importHtmlFile').click();$('connectPhoneOriginal').onclick=connectPhoneOriginal;$('importHtmlFile').onchange=e=>{const file=e.target.files[0];if(file)importOriginalHtml(file);e.target.value=''};$('importFile').onchange=e=>{if(e.target.files[0])importHouse(e.target.files[0]);e.target.value=''};$('clearEdits').onclick=clearEdits;$('closeDialog').onclick=closeBody;$('openExternal').onclick=separateBody;$('bodyDialog').addEventListener('cancel',e=>{e.preventDefault();closeBody()});$('runA11y').onclick=()=>runAudit(true);$('exportA11y').onclick=()=>lastAudit?download('GAMES_BEYOND_ACCESSIBILITY_REPORT_v0_5.json',JSON.stringify(lastAudit,null,2),'application/json'):toast('Run the audit first',true);$('contrastBtn').onclick=()=>toggle('high-contrast','contrastBtn');$('textBtn').onclick=()=>toggle('large-text','textBtn');$('motionBtn').onclick=()=>toggle('reduced-motion','motionBtn');for(const [cls,id] of [['high-contrast','contrastBtn'],['large-text','textBtn'],['reduced-motion','motionBtn']]){const on=storageRead('jm-gb-'+cls)==='true';document.documentElement.classList.toggle(cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text'&&on)document.documentElement.style.setProperty('--scale','1.18')}}
+function bind(){const nav=$$('.nav button');nav.forEach((b,i)=>{b.onclick=()=>view(b.dataset.view);b.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?nav.length-1:(i+(e.key==='ArrowRight'?1:-1)+nav.length)%nav.length;nav[j].focus();view(nav[j].dataset.view)}});$('enterBtn').onclick=()=>view('rooms');$('reloadBtn').onclick=()=>location.reload();$('search').oninput=renderRooms;$('proofQuick').onclick=$('runProof').onclick=proof;$('savePassport').onclick=()=>saveEdit(false);$('saveSource').onclick=()=>saveEdit(true);$('undoSource').onclick=undo;$('restoreBody').onclick=restore;$('exportBody').onclick=()=>exportBody(selected);$('testSource').onclick=()=>openBody(selected,$('source').value);$('exportHouse').onclick=exportHouse;$('importHouse').onclick=()=>$('importFile').click();$('importHtml').onclick=()=>$('importHtmlFile').click();$('connectPhoneOriginal').onclick=connectPhoneOriginal;$('connectPhonePolish').onclick=connectPhonePolish;$('importHtmlFile').onchange=e=>{const file=e.target.files[0];if(file)importOriginalHtml(file);e.target.value=''};$('importFile').onchange=e=>{if(e.target.files[0])importHouse(e.target.files[0]);e.target.value=''};$('clearEdits').onclick=clearEdits;$('closeDialog').onclick=closeBody;$('openExternal').onclick=separateBody;$('bodyDialog').addEventListener('cancel',e=>{e.preventDefault();closeBody()});$('runA11y').onclick=()=>runAudit(true);$('exportA11y').onclick=()=>lastAudit?download('GAMES_BEYOND_ACCESSIBILITY_REPORT_v0_5.json',JSON.stringify(lastAudit,null,2),'application/json'):toast('Run the audit first',true);$('contrastBtn').onclick=()=>toggle('high-contrast','contrastBtn');$('textBtn').onclick=()=>toggle('large-text','textBtn');$('motionBtn').onclick=()=>toggle('reduced-motion','motionBtn');for(const [cls,id] of [['high-contrast','contrastBtn'],['large-text','textBtn'],['reduced-motion','motionBtn']]){const on=storageRead('jm-gb-'+cls)==='true';document.documentElement.classList.toggle(cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text'&&on)document.documentElement.style.setProperty('--scale','1.18')}}
 window.GamesBeyond={get pack(){return pack},get activeEditorBodyId(){return selected},runProof:proof,runAccessibility:runAudit,show:view,playBody:openBody,exportHouse};
 (async()=>{bind();const p=new URL(location.href).searchParams;view(p.get('jm-room')==='proof'&&!p.has('jm-play')&&!p.has('jm-edit')?'proof':'house',false);try{db=await openDB()}catch(err){console.error('Games&Beyond local database startup failure:',err);$('status').textContent='HOUSE BUGG';$('status').className='status bad';progress(100,'Local edit database unavailable: '+String(err?.message||err));toast('House cannot safely mount without its edit database.',true);return}if('serviceWorker'in navigator){try{void navigator.serviceWorker.register(`sw.js?v=${RELEASE}`).then(reg=>{try{reg.update()}catch{}}).catch(()=>{})}catch{}}try{await decodePayload()}catch(err){console.error(err);$('status').textContent='HOUSE BUGG';$('status').className='status bad';progress(100,'Load failed: '+err.message);toast('House load failed: '+err.message,true)}})();
 })();

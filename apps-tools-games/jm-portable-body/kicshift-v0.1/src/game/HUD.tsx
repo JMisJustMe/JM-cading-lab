@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MAX_TIME, SHARD_GOAL, forcePublish, useHud } from "./hudStore";
-import { game, input, player, resetRun } from "./world";
+import { game, input, player, releaseControls, resetRun } from "./world";
 
 function Joystick() {
   const base = useRef<HTMLDivElement>(null);
@@ -21,9 +21,32 @@ function Joystick() {
     input.moveY = dy / R;
   }, []);
 
+  // A phone interruption may omit pointerup/pointercancel. Clear ownership as
+  // well as simulation input, so a late move cannot reassert a stale direction.
+  const clearPointer = useCallback(() => {
+    const id = idRef.current;
+    idRef.current = null;
+    const el = base.current;
+    if (id !== null && el?.hasPointerCapture(id)) el.releasePointerCapture(id);
+    setKnob({ x: 0, y: 0 });
+    input.moveX = 0;
+    input.moveY = 0;
+  }, []);
+
+  useEffect(() => {
+    const onVisibility = () => { if (document.hidden) clearPointer(); };
+    window.addEventListener("blur", clearPointer);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("blur", clearPointer);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearPointer();
+    };
+  }, [clearPointer]);
+
   const onDown = (e: React.PointerEvent) => {
     const el = base.current;
-    if (!el) return;
+    if (!el || idRef.current !== null) return;
     e.preventDefault();
     const r = el.getBoundingClientRect();
     idRef.current = e.pointerId;
@@ -39,10 +62,7 @@ function Joystick() {
   };
   const onUp = (e: React.PointerEvent) => {
     if (idRef.current !== e.pointerId) return;
-    idRef.current = null;
-    setKnob({ x: 0, y: 0 });
-    input.moveX = 0;
-    input.moveY = 0;
+    clearPointer();
   };
 
   return (
@@ -52,6 +72,7 @@ function Joystick() {
       onPointerMove={onMove}
       onPointerUp={onUp}
       onPointerCancel={onUp}
+      onLostPointerCapture={onUp}
       className="pointer-events-auto relative h-[132px] w-[132px] touch-none rounded-full border border-cyan-300/25 bg-slate-950/45 backdrop-blur-sm"
       style={{ boxShadow: "0 0 30px rgba(95,227,255,0.15) inset" }}
       aria-label="Move"
@@ -146,11 +167,23 @@ export function HUD() {
       apply();
       if (k === " " || k === "j") input.kicDown = false;
     };
+    const clearKeys = () => {
+      keys.clear();
+      releaseControls();
+    };
+    const onVisibility = () => {
+      if (document.hidden) clearKeys();
+    };
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
+    window.addEventListener("blur", clearKeys);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", clearKeys);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearKeys();
     };
   }, []);
 

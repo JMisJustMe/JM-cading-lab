@@ -360,6 +360,20 @@ function toast(msg: string) {
   game.toastT = 2.4;
 }
 
+/** Release every held input when focus is lost or a new run begins. */
+export function releaseControls() {
+  input.moveX = 0;
+  input.moveY = 0;
+  input.aimX = 0;
+  input.aimZ = 0;
+  input.aiming = false;
+  input.kicDown = false;
+  input.prevKic = false;
+  input.dash = false;
+  input.guard = false;
+  input.shift = false;
+}
+
 export function resetRun() {
   for (const pool of enemies) for (const e of pool) e.alive = false;
   for (const p of projectiles) p.alive = false;
@@ -419,10 +433,7 @@ export function resetRun() {
     elapsed: 0,
   });
 
-  input.kicDown = false;
-  input.prevKic = false;
-  input.dash = input.guard = input.shift = false;
-  input.moveX = input.moveY = 0;
+  releaseControls();
 }
 
 function aliveCount() {

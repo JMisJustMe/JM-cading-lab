@@ -266,9 +266,40 @@ def verify_original_service_worker_cp11():
             "Two malformed original source transitions were not byte-locally repaired")
     require("event.respondWith(fresh(event.request))" in sw,
             "Original network-first / cached recovery handler changed")
-    require("if(url.pathname.startsWith('/api/owner/')||url.pathname==='/api/ailatheo') return;" in sw,
-            "Protected private API cache bypass changed")
+    require("if (!publicCacheRequest(event.request)) return;" in sw,
+            "Protected original API bypass must remain enforced by the stronger CP12 public-cache gate")
     print("CP11 SW ORIGINAL PASS — exactly repaired syntax transitions, lifecycle and protected fetch scope unchanged")
+
+
+def verify_pwa_cache_boundary_cp12():
+    """CP12: same original worker caches public content only; never API/private responses."""
+    sw = Path("sw.js").read_text(encoding="utf-8")
+    require("const CACHE='jm-web-estate-v1.4.13-ailatheo-entitlement-boundary'" in sw,
+            "Existing PWA cache identity changed")
+    require(sw.count("function publicCacheRequest(request){") == 1 and
+            sw.count("function safeCacheResponse(response){") == 1,
+            "Public cache guard missing or duplicated")
+    expected = [
+        "request.headers.has('Authorization')",
+        "url.origin !== self.location.origin",
+        "path === '/api' || path.startsWith('/api/')",
+        "path === '/owner' || path.startsWith('/owner/')",
+        "path === '/author/authuser.html'",
+        "response.headers.get('Cache-Control')",
+        "(?:private|no-store)",
+        "if (!publicCacheRequest(event.request)) return;",
+        "if (!publicCacheRequest(request) || !safeCacheResponse(response))",
+        "await cache.delete(request)",
+    ]
+    for clause in expected:
+        require(clause in sw, "Original PWA cache privacy boundary absent: " + clause)
+    require("event.respondWith(fresh(event.request))" in sw and
+            "const cached = await caches.match(request,{ignoreSearch:true})" in sw,
+            "Public offline recovery path unexpectedly removed")
+    require("if(response && response.ok)" in sw and
+            "return response;\n    }\n    const cached = await caches.match" in sw,
+            "Live 200 responses must return fresh even when private or no-store")
+    print("CP12 SAFE CACHE GATE PASS — same PWA identity, public-only offline assets, API/owner/author exclusion, protected response policy")
 
 
 def main():
@@ -316,6 +347,7 @@ def main():
     verify_quick_return_cp09()
     verify_original_pwa_cp10()
     verify_original_service_worker_cp11()
+    verify_pwa_cache_boundary_cp12()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

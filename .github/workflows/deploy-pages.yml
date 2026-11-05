@@ -138,6 +138,9 @@ jobs:
     needs: deploy
     timeout-minutes: 6
     steps:
+      # Current CP02 published CSS descendant is 12,028 bytes / SHA below.
+      # Its prefixes remain verified: frozen source 11,501 bytes and CP01 11,841 bytes.
+      # This gate checks current live delivery, not a rollback to the original styling.
       - name: Prove exact manufactured FTR comic carrier after Pages deploy
         shell: bash
         run: |
@@ -158,9 +161,9 @@ jobs:
             jb="$(wc -c < "$RUNNER_TEMP/ftr-reader.js" 2>/dev/null | tr -d ' ' || true)"
 
             if [ "$ih" = 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c' ] \
-              && [ "$ch" = 'd650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c' ] \
+              && [ "$ch" = '27a53b46b0c3e262b23f592ce6e076782d1c314093afbe466310b9b40d979477' ] \
               && [ "$jh" = 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f' ] \
-              && [ "$ib" = '4761' ] && [ "$cb" = '11501' ] && [ "$jb" = '9977' ] \
+              && [ "$ib" = '4761' ] && [ "$cb" = '12028' ] && [ "$jb" = '9977' ] \
               && grep -Fq 'BACKGROUND<br>NOISE' "$RUNNER_TEMP/ftr-index.html" \
               && grep -Fq '22 / 22' "$RUNNER_TEMP/ftr-index.html" \
               && grep -Fq 'Reader ≠ source authority.' "$RUNNER_TEMP/ftr-index.html" \
@@ -186,7 +189,7 @@ jobs:
             "host":"https://jmisjustme.github.io/JM-cading-lab",
             "route":"/visual-story/ftr-the-massive-push/issue-01/",
             "index":{"bytes":4761,"sha256":"d62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c"},
-            "css":{"bytes":11501,"sha256":"d650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c"},
+            "css":{"bytes":12028,"sha256":"27a53b46b0c3e262b23f592ce6e076782d1c314093afbe466310b9b40d979477"},
             "js":{"bytes":9977,"sha256":"f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f"},
             "boundary":"Exact public delivery of the manufactured Issue 01 webcomic carrier only; no final bespoke illustration, lettering, print finish, whole-series public publication, market or owner-device claim."
           }

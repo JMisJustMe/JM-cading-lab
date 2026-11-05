@@ -63,7 +63,16 @@ def patch_service_worker() -> bool:
 
     old_fetch = """self.addEventListener('fetch', event => {\n  if(event.request.method !== 'GET') return;\n  event.respondWith(fresh(event.request));\n});"""
     new_fetch = """self.addEventListener('fetch', event => {\n  if(event.request.method !== 'GET') return;\n  const url = new URL(event.request.url);\n  if(url.pathname.startsWith('/api/owner/')) return;\n  event.respondWith(fresh(event.request));\n});"""
-    if "url.pathname.startsWith('/api/owner/')" not in text:
+    # CP12 descendant of the original worker: every /api/ path (including
+    # /api/owner/) now bypasses the worker. Inherit this stronger safety
+    # without overwriting it with the historical one-route graft.
+    descendant_public_api_guard = (
+        "function publicCacheRequest(request){" in text
+        and "path === '/api' || path.startsWith('/api/')" in text
+        and "if (!publicCacheRequest(event.request)) return;" in text
+        and "url.origin !== self.location.origin" in text
+    )
+    if not descendant_public_api_guard and "url.pathname.startsWith('/api/owner/')" not in text:
         if old_fetch not in text:
             raise SystemExit("Owner Vault graft refused: service-worker fetch anchor changed")
         text = text.replace(old_fetch, new_fetch, 1)

@@ -155,6 +155,75 @@ jobs:
           python3 -m http.server 4178 >/tmp/jm-access-mesh-http.log 2>&1 &
           for i in {1..20}; do curl -fsS http://127.0.0.1:4178/access/ >/dev/null && exit 0; sleep 1; done
           exit 1
+      - name: CP15 four public discovery doors — touch-sized differential (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          const fs=require('node:fs');
+          const origin='http://127.0.0.1:4178';
+          const doors=[
+            {href:'../navigator/estate-integration/#bodyContact',path:'/navigator/estate-integration/',anchor:'#bodyContact'},
+            {href:'../games-beyond/all-games.html',path:'/games-beyond/all-games.html'},
+            {href:'../recent/',path:'/recent/'},
+            {href:'../recovery/',path:'/recovery/'}
+          ];
+          const source=fs.readFileSync('access/index.html','utf8');
+          const section=source.match(/<section id="jmDiscoveryLenses"[\s\S]*?<\/section>/)?.[0];
+          assert(section,'Original access page must retain exactly one public discovery section');
+          assert.equal((source.match(/id="jmDiscoveryLenses"/g)||[]).length,1,'One contact door, not a replacement page');
+          assert(!/drive\.google\.com|onedrive\.live\.com|libfile_|JM-continuation|\/Not sure yet\//i.test(section),'No owner-private custodian URL or identifier');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let total=0;
+            try{
+              for(const size of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport:size,hasTouch:true,isMobile:true,deviceScaleFactor:2});
+                const page=await context.newPage();
+                try{
+                  page.setDefaultTimeout(25000);
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const base=page.locator('#jmDiscoveryLenses');
+                  assert.equal(await base.count(),1,'Unique discovery section on live DOM');
+                  assert.equal(await base.locator('.card').count(),4,'Four existing House doors, no copied creations');
+                  assert.equal(await base.locator('.btn.primary').count(),4,'Each house has a touch link');
+                  await base.scrollIntoViewIfNeeded();
+                  const cardRects=await base.locator('.card').evaluateAll(cards=>cards.map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right}}));
+                  for(const rect of cardRects){
+                    assert(rect.left>=-2&&rect.right<=size.width+2,
+                      'Discovery card breaks '+size.width+'px viewport: '+JSON.stringify(rect));
+                  }
+                  for(const [i,door] of doors.entries()){
+                    if(i)await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                    const a=page.locator('#jmDiscoveryLenses .btn.primary').nth(i);
+                    assert.equal(await a.getAttribute('href'),door.href,'Preserve original public House destination');
+                    await a.scrollIntoViewIfNeeded();
+                    const rect=await a.boundingBox();
+                    assert(rect&&rect.height>=44,'New touch target must be at least 44px high: '+door.href);
+                    const matchingPath=url=>url.pathname===door.path||
+                      (i===1&&url.pathname==='/games-beyond/all-games');
+                    const navigation=page.waitForURL(matchingPath,{waitUntil:'domcontentloaded',timeout:15000});
+                    await a.tap();
+                    await navigation;
+                    const destination=new URL(page.url());
+                    assert(matchingPath(destination),
+                      'Original public route failed: '+door.href+' => '+page.url());
+                    if(door.anchor){
+                      assert.equal(destination.hash,door.anchor,'Direct to original named search/contact');
+                      assert.equal(await page.locator(door.anchor).count(),1,'Original anchor exists');
+                    }
+                    assert(await page.locator('body').count()===1,'Destination page did not render body');
+                    total++;
+                  }
+                  await context.close();
+                }catch(e){throw Error('CP15 '+size.width+'x'+size.height+' '+e.message)}
+              }
+              assert.equal(total,8);
+              console.log('CP15 PUBLIC DISCOVERY TOUCH PASS: 4/4 original existing houses on phone and Fold, 8/8 real taps in Chromium, min 44px controls, no private owner pointers or card overflow.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP15_PUBLIC_DISCOVERY_TOUCH_HOLD',e);process.exitCode=1});
+          NODE
       - name: CP08 direct-use buttons contact original game and editor (phone and desktop)
         shell: bash
         run: |

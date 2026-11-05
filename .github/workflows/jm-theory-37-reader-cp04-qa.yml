@@ -88,7 +88,21 @@ jobs:
                 const errors=[];
                 page.on('pageerror',e=>errors.push(e.message));
                 await page.goto(url,{waitUntil:'domcontentloaded'});
-                await page.waitForFunction(()=>document.querySelector('#loading')?.hidden===true,{timeout:45000});
+                try {
+                  await page.waitForFunction(()=>document.querySelector('#loading')?.hidden===true,null,{timeout:15000});
+                } catch (error) {
+                  const diagnostic=await page.evaluate(()=>({
+                    title:document.title,
+                    loading:document.querySelector('#loading')?{hidden:document.querySelector('#loading').hidden,className:document.querySelector('#loading').className}:null,
+                    wrapperError:document.querySelector('#error')?.innerText,
+                    readerError:document.querySelector('#loadError')?.innerText,
+                    readerStep:document.querySelector('#loadStep')?.innerText,
+                    visibleCards:document.querySelectorAll('.card[data-open]').length,
+                    bodyStart:document.body?.innerText?.slice(0,600),
+                  }));
+                  console.error('CP04_DIAGNOSTIC',JSON.stringify({viewport:size,diagnostic,pageErrors:errors}));
+                  throw error;
+                }
                 await page.waitForTimeout(200);
                 assert.equal(await page.locator('.card[data-open]').count(),37,'All 37 selected source routes must be rendered');
                 const initial=await page.locator('.card[data-open]').allTextContents();

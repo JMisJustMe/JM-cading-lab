@@ -21,6 +21,7 @@ on:
       - 'author/authuser.html'
       - 'sitemap.xml'
       - 'sw.js'
+      - 'tests/ailatheo-customer-entitlement.mjs'
       - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
       - 'estate-owner-vault.js'
       - 'functions/api/owner/vault.js'
@@ -45,6 +46,7 @@ on:
       - 'author/authuser.html'
       - 'sitemap.xml'
       - 'sw.js'
+      - 'tests/ailatheo-customer-entitlement.mjs'
       - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
       - 'estate-owner-vault.js'
       - 'functions/api/owner/vault.js'
@@ -109,6 +111,8 @@ jobs:
           grep -Fq 'https://jmisjustme-estate.pages.dev/market-lab/' sitemap.xml
       - name: CP02 governed existing-homes pointer differential
         run: python3 governance/estate-integration/verify_existing_homes_cp02.py
+      - name: CP12 original AILatheo entitlement API cache admission
+        run: node tests/ailatheo-customer-entitlement.mjs
       - name: CP11 original service worker syntax parse gate
         shell: bash
         run: |

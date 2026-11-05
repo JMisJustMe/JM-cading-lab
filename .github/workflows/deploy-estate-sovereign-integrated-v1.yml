@@ -390,22 +390,25 @@ jobs:
           test -s cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js
           echo 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html' | sha256sum -c -
           echo '05504b6a79e3fda2d06ab7dc82b6b709d38c99a857c4a17a741dfd8c542c12fd  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css' | sha256sum -c -
-          # FTR CP01 append-only descendant: keep the 4 October v1.0 source seal,
-          # but accept the independently hash-identified 340-byte handheld repair.
-          # The original FLAZ manifest is historical; its 11,501-byte seal is NOT overwritten.
+          # FTR source ancestry stays exact: frozen 11,501-byte original,
+          # inherited CP01 340-byte phone fix, plus scoped CP02 194-byte tablet fix.
+          # The original FLAZ manifest and CP01 are preserved, not overwritten.
           python3 - <<'PY'
           from pathlib import Path
           from hashlib import sha256
           path=Path('cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css')
           full=path.read_bytes()
           historical=full[:11501]
-          repaired=full[11501:]
-          assert len(full)==11841 and len(repaired)==340, (len(full),len(repaired))
+          cp01=full[11501:11841]
+          cp02=full[11841:]
+          assert len(full)==12035 and len(cp01)==340 and len(cp02)==194, (len(full),len(cp01),len(cp02))
           assert sha256(historical).hexdigest()=='d650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c', 'Frozen FTR CSS ancestry changed'
-          assert sha256(full).hexdigest()=='05504b6a79e3fda2d06ab7dc82b6b709d38c99a857c4a17a741dfd8c542c12fd', 'FTR CP01 verified handheld descendant changed'
-          assert repaired.startswith(b'\n/* CP01 handheld overflow repair:'), 'Not the acknowledged FTR repair'
-          assert b'.topbar{flex-wrap:wrap}' in repaired and b'.issue-hero h1{font-size:clamp(' in repaired
-          print('FTR CP01 CSS DESCENDANT PASS: frozen 11,501-byte original + exact 340-byte handheld-only addition')
+          assert sha256(full[:11841]).hexdigest()=='5ba19a86cedef6c3f331da848f64cc1e8ea2eba4ef9408ea905d345f735aba51', 'FTR CP01 verified handheld descendant changed'
+          assert sha256(full).hexdigest()=='05504b6a79e3fda2d06ab7dc82b6b709d38c99a857c4a17a741dfd8c542c12fd', 'FTR CP02 tablet descendant changed'
+          assert cp01.startswith(b'\n/* CP01 handheld overflow repair:'), 'Not the acknowledged FTR CP01 repair'
+          assert b'.topbar{flex-wrap:wrap}' in cp01 and b'.issue-hero h1{font-size:clamp(' in cp01
+          assert cp02.startswith(b'/* CP02: tablet/Fold landscape issue-title fit;') and b'@media(min-width:641px) and (max-width:999px)' in cp02
+          print('FTR CSS DESCENDANTS PASS: frozen 11,501-byte source + CP01 340-byte phone fix + CP02 194-byte Fold landscape fix')
           PY
           echo 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js' | sha256sum -c -
           grep -Fq 'BACKGROUND<br>NOISE' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html
@@ -654,7 +657,7 @@ jobs:
             if [ "$ih" = 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c' ] \
               && [ "$ch" = '05504b6a79e3fda2d06ab7dc82b6b709d38c99a857c4a17a741dfd8c542c12fd' ] \
               && [ "$jh" = 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f' ] \
-              && [ "$ib" = '4761' ] && [ "$cb" = '11841' ] && [ "$jb" = '9977' ] \
+              && [ "$ib" = '4761' ] && [ "$cb" = '12035' ] && [ "$jb" = '9977' ] \
               && grep -Fq 'BACKGROUND<br>NOISE' "$RUNNER_TEMP/ftr-index.html" \
               && grep -Fq '22 / 22' "$RUNNER_TEMP/ftr-index.html" \
               && grep -Fq 'Reader ≠ source authority.' "$RUNNER_TEMP/ftr-index.html" \

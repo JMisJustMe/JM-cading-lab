@@ -1,0 +1,40 @@
+name: JM UFC CP01 | Portable Capsule Proof
+on:
+  push:
+    branches:
+      - feature/jm-universal-fractal-capsules-cp01
+    paths:
+      - 'agent-runtime/universal-fractal-capsules/**'
+      - '.github/workflows/jm-ufc-cp01.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/universal-fractal-capsules/**'
+      - '.github/workflows/jm-ufc-cp01.yml'
+permissions:
+  contents: read
+jobs:
+  capsule-round-trip:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-runtime/universal-fractal-capsules
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install bounded pilot dependency
+        run: python -m pip install -r requirements.txt
+      - name: Adversarial and restoration unit checks
+        run: python -m unittest discover -s tests -v
+      - name: Verify published synthetic encrypted example
+        env:
+          JM_UFC_PASSPHRASE: PUBLIC DEMONSTRATION ONLY 2026 - NEVER USE FOR PRIVATE DATA
+        run: |
+          python jm_ufc.py verify --archive example.jmufc --receipt example.jmufc.receipt.json
+          python jm_ufc.py import --archive example.jmufc --receipt example.jmufc.receipt.json --dest restored-example
+          cmp example/chat/chat.json restored-example/chat/chat.json
+          cmp example/media/image.png restored-example/media/image.png
+          cmp example/docs/derived.docx restored-example/docs/derived.docx

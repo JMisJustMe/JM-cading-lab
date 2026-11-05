@@ -5,6 +5,7 @@ on:
       - jm/theory-runtime-q1-biat-flaz-20261105
     paths:
       - .github/workflows/jm-theory-q1-apply-once.yml
+      - governance/apply_theory_runtime_quarantine_q1.py
 permissions:
   contents: write
 jobs:

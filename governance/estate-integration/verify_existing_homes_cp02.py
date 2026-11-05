@@ -117,6 +117,56 @@ def verify_wix_door_pairs():
     print("CP06 WIX THE DOORS — 9/9 sourced navigation pairs PASS; placeholders marked HOLD; original authority unchanged")
 
 
+def verify_books_public_reading_cp03():
+    """CP03 direct original public-reading pointers; protected book source authority remains private."""
+    from re import DOTALL, findall
+    html = Path("books/index.html").read_text(encoding="utf-8")
+    marker = '<section id="jmPublicReadingCP03"'
+    require(html.count(marker) == 1, "Books public reading section missing/duplicated")
+    section = html.split(marker, 1)[1].split("</section>", 1)[0]
+    base = "https://jmisjustme-estate.pages.dev/"
+    expected = [
+        ("ftr-issue01", base + "visual-story/ftr-the-massive-push/issue-01/", "Read original public issue"),
+        ("theory-public-v1", base + "theory/publications/jm-theory-estate-public-safe-v1/", "Read public-safe publication"),
+        ("theory-depth-37", base + "theory/full-bodies/all-37-v0_8_3.html", "Open existing theory reader"),
+        ("shims-route-reader", base + "shims-reader/", "Try original public taster"),
+    ]
+    matches = findall(
+        r'<article class="card" data-jm-reading-id="([^"]+)">.*?'
+        r'<a class="btn primary" href="([^"]+)">([^<]+)</a>', section, flags=DOTALL
+    )
+    require(matches == expected, "Four public-reading IDs/paths/order/labels drifted")
+    require(len({x[0] for x in matches}) == len(expected), "Duplicate book public reading seat")
+    public_sources = (
+        "visual-story/ftr-the-massive-push/issue-01/index.html",
+        "theory/publications/jm-theory-estate-public-safe-v1/index.html",
+        "theory/full-bodies/all-37-v0_8_3.html",
+        "shims-reader/index.html",
+    )
+    require(all(Path(p).is_file() for p in public_sources), "A public reading original source went missing")
+    require("13 verified full/canonical bodies and 24 shaped standalones" in section,
+            "Theory collection depth separation lost")
+    require("not the SHIMS manuscript" in section and "dynamically loaded reader" in section,
+            "Public taster/library feature boundaries lost")
+    require("Secrets of Silence v1.3" in section and
+            "The Gatekeeper's Sixth v1.0" in section and
+            "The Seventh Pillar v2.2" in section and
+            "private 51-theory sourcebook" in section,
+            "Private source guardianship boundary lost")
+    require(not any(s in section.lower() for s in ("drive.google.com", "dropbox.com", "chatgpt.com/library", ".pdf", ".epub")),
+            "Private file delivery link accidentally entered the public Books section")
+    require("56</b><small>primary Book / Written bodies" in html and
+            "98</b><small>Liebury / Bookcase routes" in html and
+            "45 / 45</b><small>Books & Manuscripts GREEN routes connected" in html,
+            "Original Books House count scopes drifted")
+    require(html.count('id="recovered-written-families"') == 1 and
+            html.count("SOURCE VERIFIED · RELEASE NOT ASSERTED") == 2,
+            "Original protected manuscript / named-book authority altered")
+    require("#jmPublicReadingCP03 .foot .btn{display:inline-flex" in html and
+            "min-height:48px" in html and "overflow-wrap:anywhere" in html,
+            "Original Books House phone/Fold touch layout requirement lost")
+    print("CP03 BOOKS PUBLIC READING — 4/4 original source-qualified links PASS; private manuscripts and 56/98/45 authority unchanged")
+
 def verify_apps_original_tools_cp02():
     """CP02 verify five original public workbench contacts; original 45-room inventory untouched."""
     from re import DOTALL, findall
@@ -457,6 +507,7 @@ def main():
     verify_direct_use_cp08()
     verify_more_original_doors_cp01()
     verify_apps_original_tools_cp02()
+    verify_books_public_reading_cp03()
     verify_quick_return_cp09()
     verify_original_pwa_cp10()
     verify_original_service_worker_cp11()

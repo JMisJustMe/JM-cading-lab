@@ -39,7 +39,7 @@
     return record;
   }
 
-  async async function loadPayload() {
+  async function loadPayload() {
     const records = window.JMTheoryRecoveredBodies || [];
     if (records.length !== REGISTERED_RECOVERIES) {
       throw new Error(`v5 registered recovery count ${records.length}, expected ${REGISTERED_RECOVERIES}`);

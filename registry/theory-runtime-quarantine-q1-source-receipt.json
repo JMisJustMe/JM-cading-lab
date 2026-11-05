@@ -26,7 +26,8 @@
     "v5_quarantines_words": true,
     "v5_no_synthetic_17": true,
     "downstream_16": true,
-    "theovertime_receipt": true
+    "theovertime_receipt": true,
+    "post_application_async_prefixes_corrected": true
   },
   "changed_files": [
     "theory/chat-graft-v3.js",
@@ -83,18 +84,18 @@
   "after": {
     "theory/chat-graft-v3.js": {
       "path": "theory/chat-graft-v3.js",
-      "bytes": 8640,
-      "sha256": "3f7ef5e720dcf79ab1dd3e85e863a032d3ecc514ec1ec54d8398fd941f817edb"
+      "bytes": 8634,
+      "sha256": "965a6245232b8b18aa9aa6c99748a27cfa1569ef2285fa1edfaabf3ced9ab68e"
     },
     "theory/chat-graft-v4.js": {
       "path": "theory/chat-graft-v4.js",
-      "bytes": 9764,
-      "sha256": "24e3b3587ae6c9f2ebaa9122fdc9d99185c62ca0347d948ea69df1fe11a9d143"
+      "bytes": 9758,
+      "sha256": "044d85c84c04be9a195c425e23c41c1c5b0f54dfcf51496a7ac6103973b2b154"
     },
     "theory/full-body-recovery-v5.js": {
       "path": "theory/full-body-recovery-v5.js",
-      "bytes": 10234,
-      "sha256": "ef1fe15ae7be738220317fc7b5cddc0230a8353641c0f4ea3946f6137b4040c3"
+      "bytes": 10228,
+      "sha256": "90a246d826550d1c5ee7183cc1035562d1e18f1764875c551fa3a0ee9afbbbbd"
     },
     "theory/chat-room-recovery-v6.js": {
       "path": "theory/chat-room-recovery-v6.js",

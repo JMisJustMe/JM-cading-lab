@@ -1,0 +1,107 @@
+name: JM Theory Mounted Rooms CP05 — Original Runtime Differential
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'theory/chat-room-recovery-v6.js'
+      - 'theory/full-body-recovery-v5.js'
+      - 'theory/index.html'
+      - 'theory/data/chat-room-recovery/mounted-rooms.js'
+      - '.github/workflows/jm-theory-mounted-rooms-cp05-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'theory/chat-room-recovery-v6.js'
+      - 'theory/full-body-recovery-v5.js'
+      - 'theory/index.html'
+      - 'theory/data/chat-room-recovery/mounted-rooms.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-original-mounted-rooms:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inherit original native sources and check syntax
+        run: |
+          test -s theory/data/chat-room-recovery/mounted-rooms.js
+          test -s theory/chat-room-recovery-v6.js
+          test -s theory/full-body-recovery-v5.js
+          node --check theory/chat-room-recovery-v6.js
+          node --check theory/full-body-recovery-v5.js
+          node --check theory/app.js
+      - name: Install existing Chromium proof carrier
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve original Estate source locally
+        run: |
+          python3 -m http.server 4192 >/tmp/jm-theory-rooms-cp05.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4192/theory/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Prove 42 independent room cards, reading contact, and phone/Fold navigation
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          const url='http://127.0.0.1:4192/theory/?cp05=mounted-source-recovery';
+          (async()=>{
+            const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+            try{
+              for(const viewport of [{width:390,height:844},{width:1152,height:768}]){
+                const context=await browser.newContext({viewport,isMobile:viewport.width===390,hasTouch:true});
+                const page=await context.newPage();
+                const errors=[];
+                page.on('pageerror',e=>errors.push(e.message));
+                page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
+                await page.goto(url,{waitUntil:'domcontentloaded'});
+                await page.locator('[data-view="rooms"]').first().click();
+                try{
+                  await page.waitForFunction(()=>window.JMTheoryChatRoomRecoveryV6?.mountedRooms===42 &&
+                    document.querySelectorAll('#roomGrid [data-room-select]').length===42,
+                    null,{timeout:28000});
+                }catch(e){
+                  const diagnostic=await page.evaluate(()=>({
+                    records:typeof DATA!=='undefined'?DATA.records?.length:null,
+                    v3:Boolean(window.JMTheoryChatGraftV3),
+                    v4:Boolean(window.JMTheoryChatGraftV4),
+                    v5:window.JMTheoryFullBodyRecoveryV5||null,
+                    v6:window.JMTheoryChatRoomRecoveryV6||null,
+                    compactRoomCount:window.JMTheoryMountedRoomsCompact?.length,
+                    recoveredBodyCount:window.JMTheoryRecoveredBodies?.length,
+                    renderedRooms:document.querySelectorAll('#roomGrid [data-room-select]').length,
+                    gridText:document.getElementById('roomGrid')?.innerText?.slice(0,200),
+                    loading:document.getElementById('loading')?.className,
+                    error:document.getElementById('loadError')?.textContent?.slice(0,300)
+                  }));
+                  console.error('CP05_HOLD_DIAGNOSTIC',JSON.stringify({viewport,diagnostic,errors}));
+                  throw e;
+                }
+                assert.equal(await page.locator('#roomGrid [data-room-select]').count(),42);
+                await page.locator('#roomGrid [data-room-select]').first().click();
+                assert.notEqual(await page.locator('#roomReader h2').innerText(),'Select a room.');
+                assert((await page.locator('#roomReader').innerText()).includes('Boundary'));
+                await page.locator('#roomSearch').fill('Coding Becomes Cold Ding');
+                assert.equal(await page.locator('#roomGrid [data-room-select]').count(),1);
+                await page.locator('#roomSearch').fill('');
+                assert.equal(await page.locator('#roomGrid [data-room-select]').count(),42);
+                const layout=await page.evaluate(()=>({
+                  overflow:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth)-document.documentElement.clientWidth
+                }));
+                assert(layout.overflow<=1,'No horizontal overflow in original Theory Wing '+JSON.stringify(layout));
+                assert.deepEqual(errors.filter(e=>!e.includes('favicon')),[],'Existing runtime should not log errors');
+                await context.close();
+                console.log('CP05 ROOM ENTRY PASS viewport='+viewport.width+' original 42/42, select/read/search/reset/scroll');
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error('CP05_ROOM_ENTRY_HOLD',e);process.exitCode=1});
+          NODE

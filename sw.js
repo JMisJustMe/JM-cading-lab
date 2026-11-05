@@ -67,7 +67,7 @@ self.addEventListener('activate', event => {
         const cache = await caches.open(CACHE);
         for (const request of await cache.keys()) {
           const response = await cache.match(request);
-          if (!publicCacheRequest(request) || !safeCacheResponse(response)) {
+          if (!publicCacheRequest(request) || !safeCacheResponse(response,request)) {
             await cache.delete(request);
           }
         }
@@ -88,10 +88,21 @@ function publicCacheRequest(request){
   return true;
 }
 
-function safeCacheResponse(response){
-  if(!response || !response.ok) return false;
+// Offline installation deliberately includes only these source-authorised CORE files.
+// Cloudflare sends no-store on some public pages to prevent stale HTTP delivery;
+// an explicit CORE URL remains eligible for service-worker offline recovery.
+function explicitOfflineCore(request){
+  const url = new URL(request.url);
+  if(url.origin !== self.location.origin || url.search) return false;
+  return CORE.some(relative => new URL(relative,self.registration.scope).pathname === url.pathname);
+}
+
+function safeCacheResponse(response,request){
+  if(!response || !response.ok || !publicCacheRequest(request)) return false;
   const policy = response.headers.get('Cache-Control') || '';
-  return !/(?:^|[,\s])(?:private|no-store)(?:[,\s=]|$)/i.test(policy);
+  if(/(?:^|[,\s])private(?:[,\s=]|$)/i.test(policy)) return false;
+  if(/(?:^|[,\s])no-store(?:[,\s=]|$)/i.test(policy)) return explicitOfflineCore(request);
+  return true;
 }
 
 async function fresh(request){
@@ -99,7 +110,7 @@ async function fresh(request){
     const response = await fetch(request,{cache:'no-store'});
     if(response && response.ok){
       const cache = await caches.open(CACHE);
-      if(safeCacheResponse(response)){
+      if(safeCacheResponse(response,request)){
         cache.put(request,response.clone()).catch(()=>{});
       } else {
         await cache.delete(request);

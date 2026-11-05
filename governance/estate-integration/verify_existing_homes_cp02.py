@@ -277,7 +277,7 @@ def verify_pwa_cache_boundary_cp12():
     require("const CACHE='jm-web-estate-v1.4.13-ailatheo-entitlement-boundary'" in sw,
             "Existing PWA cache identity changed")
     require(sw.count("function publicCacheRequest(request){") == 1 and
-            sw.count("function safeCacheResponse(response){") == 1,
+            sw.count("function safeCacheResponse(response,request){") == 1,
             "Public cache guard missing or duplicated")
     expected = [
         "request.headers.has('Authorization')",
@@ -286,9 +286,16 @@ def verify_pwa_cache_boundary_cp12():
         "path === '/owner' || path.startsWith('/owner/')",
         "path === '/author/authuser.html'",
         "response.headers.get('Cache-Control')",
-        "(?:private|no-store)",
+        "function explicitOfflineCore(request){",
+        "if(url.origin !== self.location.origin || url.search) return false;",
+        "CORE.some(relative => new URL(relative,self.registration.scope).pathname === url.pathname)",
+        r"if(/(?:^|[,\s])private",
+        r"if(/(?:^|[,\s])no-store",
+        "if(/(?:^|[,",
+        "return explicitOfflineCore(request);",
+        "safeCacheResponse(response,request)",
         "if (!publicCacheRequest(event.request)) return;",
-        "if (!publicCacheRequest(request) || !safeCacheResponse(response))",
+        "if (!publicCacheRequest(request) || !safeCacheResponse(response,request))",
         "await cache.delete(request)",
     ]
     for clause in expected:
@@ -299,7 +306,7 @@ def verify_pwa_cache_boundary_cp12():
     require("if(response && response.ok)" in sw and
             "return response;\n    }\n    const cached = await caches.match" in sw,
             "Live 200 responses must return fresh even when private or no-store")
-    print("CP12 SAFE CACHE GATE PASS — same PWA identity, public-only offline assets, API/owner/author exclusion, protected response policy")
+    print("CP12 SAFE CACHE GATE PASS — original worker, all-API exclusion, private reject, explicit public CORE no-store offline allowance")
 
 
 def main():

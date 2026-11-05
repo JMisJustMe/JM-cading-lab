@@ -122,7 +122,14 @@ async function sign(payload,timestamp){
 
 
 const serviceWorker=await fs.readFile(new URL('../sw.js',import.meta.url),'utf8');
-assert.ok(serviceWorker.includes("url.pathname==='/api/ailatheo'"),'entitlement API must bypass service-worker cache');
+// CP12: the original worker now bypasses ALL /api/ routes, including
+// AILatheo entitlement, rather than retaining the obsolete one-route spelling.
+assert.ok(
+  serviceWorker.includes("path === '/api' || path.startsWith('/api/')") &&
+  serviceWorker.includes("if (!publicCacheRequest(event.request)) return;") &&
+  serviceWorker.includes("url.origin !== self.location.origin"),
+  'entitlement API must bypass service-worker cache using the stronger original all-API guard'
+);
 
 globalThis.fetch=originalFetch;
 console.log(JSON.stringify({

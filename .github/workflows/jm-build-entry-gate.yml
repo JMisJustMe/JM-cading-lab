@@ -137,13 +137,16 @@ jobs:
         continue-on-error: true
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
           git cat-file -e "$BASE_SHA^{commit}"
+          git cat-file -e "$PR_HEAD_SHA^{commit}"
+          # HEAD is the synthetic merge, which can contain unrelated main work.
           python3 scripts/jm_build_entry_gate.py \
             --base "$BASE_SHA" \
-            --head HEAD \
+            --head "$PR_HEAD_SHA" \
             --pr-number "$PR_NUMBER"
 
       - name: Upload automatic entry draft when route is missing

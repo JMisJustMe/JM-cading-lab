@@ -8,13 +8,68 @@
   "orientation": "any",
   "background_color": "#060910",
   "theme_color": "#070b13",
-  "categories": ["productivity", "games", "developer tools", "entertainment"],
+  "categories": [
+    "productivity",
+    "games",
+    "developer tools",
+    "entertainment"
+  ],
   "icons": [
-    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ],
   "shortcuts": [
-    {"name":"Games & Beyond","short_name":"Games","url":"./games-beyond/","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml"}]},
-    {"name":"Coding Estate","short_name":"Coding","url":"./coding-estate/everybody/","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml"}]},
-    {"name":"Owner Room","short_name":"Owner","url":"./#owner","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml"}]}
+    {
+      "name": "Games & Beyond",
+      "short_name": "Games",
+      "url": "./games-beyond/",
+      "icons": [
+        {
+          "src": "./icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Coding Estate",
+      "short_name": "Coding",
+      "url": "./coding-estate/everybody/",
+      "icons": [
+        {
+          "src": "./icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Owner Room",
+      "short_name": "Owner",
+      "url": "./#owner",
+      "icons": [
+        {
+          "src": "./icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Continue in JM ECOSTATE",
+      "short_name": "Continue",
+      "url": "./access/#jmQuickReturn",
+      "icons": [
+        {
+          "src": "./icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
   ]
 }

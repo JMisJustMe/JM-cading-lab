@@ -195,7 +195,17 @@ jobs:
                     const r=document.getElementById('jmDiscoveryLenses').getBoundingClientRect();
                     return r.top>=0 && r.top<innerHeight*0.8;
                   },null,{timeout:15000});
-                  assert.equal(await base.locator('.card').count(),4,'Four existing House doors, no copied creations');
+                  const ownerPanel=base.locator('#jmOwnerWipGames');
+                  assert.equal(await ownerPanel.count(),1,'Owner unfinished-game re-entry visible in existing discovery section');
+                  const ownerLinks=ownerPanel.locator('a.btn');
+                  assert.equal(await ownerLinks.count(),2,'Real COMBOUND owner player and existing Games House workbench');
+                  assert.equal(await ownerLinks.nth(0).getAttribute('href'),'http://127.0.0.1:8876/index.html');
+                  assert.equal(await ownerLinks.nth(1).getAttribute('href'),'https://jmisjustme.github.io/JM-cading-lab/games-beyond/?jm-room=proof');
+                  for(const link of [ownerLinks.nth(0),ownerLinks.nth(1)]){
+                    const bounds=await link.boundingBox();
+                    assert(bounds && bounds.height>=44,'Owner re-entry link must be touch-sized');
+                  }
+                  assert.equal(await base.locator('.card').count(),4,'Four existing public House doors, no copied creations');
                   assert.equal(await base.locator('.btn.primary').count(),4,'Each house has a touch link');
                   await base.scrollIntoViewIfNeeded();
                   const cardRects=await base.locator('.card').evaluateAll(cards=>cards.map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right}}));
@@ -229,6 +239,18 @@ jobs:
                 }catch(e){throw Error('CP15 '+size.width+'x'+size.height+' '+e.message)}
               }
               assert.equal(total,8);
+              for(const size of [{width:390,height:844},{width:850,height:650}]){
+                const pg=await browser.newPage({viewport:size,hasTouch:true,isMobile:true});
+                try{
+                  await pg.goto(origin+'/games-beyond/?jm-room=proof',{waitUntil:'domcontentloaded'});
+                  const proofTab=pg.locator('#view-proof');
+                  await proofTab.waitFor({state:'visible',timeout:15000});
+                  assert.equal(await pg.locator('.nav button[data-view="proof"]').getAttribute('aria-selected'),'true',
+                    'Owner game workbench opens on original proof/import tab');
+                  assert.equal(await proofTab.locator('#importHtml').count(),1,'Owner local HTML importer retained');
+                  assert.equal(await proofTab.locator('#connectPhoneOriginal').count(),1,'Owner original COMBOUND connector retained');
+                }finally{await pg.close();}
+              }
               console.log('CP15 PUBLIC DISCOVERY TOUCH PASS: 4/4 original existing houses on phone and Fold, 8/8 real taps in Chromium, min 44px controls, no private owner pointers or card overflow.');
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP15_PUBLIC_DISCOVERY_TOUCH_HOLD',e);process.exitCode=1});

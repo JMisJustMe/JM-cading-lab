@@ -201,11 +201,13 @@ jobs:
                     await a.scrollIntoViewIfNeeded();
                     const rect=await a.boundingBox();
                     assert(rect&&rect.height>=44,'New touch target must be at least 44px high: '+door.href);
+                    const matchingPath=url=>url.pathname===door.path||
+                      (i===1&&url.pathname==='/games-beyond/all-games');
+                    const navigation=page.waitForURL(matchingPath,{waitUntil:'domcontentloaded',timeout:15000});
                     await a.tap();
-                    await page.waitForLoadState('domcontentloaded');
+                    await navigation;
                     const destination=new URL(page.url());
-                    assert(destination.pathname===door.path||
-                      (i===1&&destination.pathname==='/games-beyond/all-games'),
+                    assert(matchingPath(destination),
                       'Original public route failed: '+door.href+' => '+page.url());
                     if(door.anchor){
                       assert.equal(destination.hash,door.anchor,'Direct to original named search/contact');

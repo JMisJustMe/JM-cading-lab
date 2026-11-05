@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Pseudology — Deep First Contact v0.3</title>
+<style>
+:root{color-scheme:dark;--bg:#08111d;--panel:#111f30;--pane:#172b40;--line:#31506d;--text:#eaf5fe;--muted:#a5c0d6;--blue:#72d7ef;--gold:#efd188;--green:#91dfbd;--r:19px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 8% -5%,#173450 0,transparent 37%),radial-gradient(ellipse at 99% 18%,#1b2b4a 0,transparent 32%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif}main,header,footer{max-width:1040px;margin:auto;padding:20px}header{padding-top:38px;padding-bottom:8px}h1{margin:.2em 0;line-height:1.05;font-size:clamp(2.1rem,7vw,4.3rem);letter-spacing:-.05em}h2{font-size:1.4rem;margin:0 0 12px}h3{font-size:1.04rem;margin:0 0 7px}p{margin:6px 0 12px}.muted,small{color:var(--muted)}small{font-size:.79rem}.eyebrow{color:var(--blue);text-transform:uppercase;letter-spacing:.15em;font-size:.75rem;font-weight:800}.deck{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.panel{background:linear-gradient(155deg,#112438f3,#101b2cf5);border:1px solid var(--line);border-radius:var(--r);padding:19px;margin-bottom:14px;box-shadow:0 9px 30px #0003}.card{grid-column:span 4;background:var(--pane);border:1px solid var(--line);border-radius:16px;padding:15px;min-width:0}.wide{grid-column:span 12}.half{grid-column:span 6}.pill{border:1px solid #41637b;color:#d0e7f5;border-radius:999px;padding:4px 10px;display:inline-block;font-size:.76rem;font-weight:700;margin-right:6px;margin-bottom:5px}.pill.active{border-color:var(--green);color:var(--green)}.num{font-size:2rem;color:var(--gold);line-height:1.2;font-weight:800;letter-spacing:-.03em}.detail{font-size:.84rem;color:var(--muted)}.inputgrid{display:grid;grid-template-columns:2fr 1fr;gap:12px}label{display:block;font-weight:650;font-size:.86rem;margin:0 0 4px}input[type=text],input[type=date],textarea{display:block;width:100%;background:#0a1828;color:var(--text);border:1px solid #4b6a84;border-radius:11px;padding:12px 13px;font:inherit;outline-offset:2px}textarea{font-size:.79rem;min-height:240px;resize:vertical}input[type=range]{width:100%;accent-color:#6fd4e6;min-height:27px}button{border:1px solid #4f7891;background:#203b52;color:var(--text);border-radius:12px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}button:focus-visible{outline:3px solid #91dfbd;outline-offset:3px}button.primary{background:#2d7892;color:#fff;border-color:#7fc9df}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.checkrow{display:flex;gap:10px;align-items:center;cursor:pointer}.checkrow input{width:18px;height:18px;accent-color:#77cbe2}.science{border-left:3px solid var(--blue);padding:6px 12px;margin:9px 0;background:#12283a}.symbol{border-left-color:var(--gold)}.scope{border-left-color:var(--green)}.axis{border-top:1px solid var(--line);padding:13px 0}.axis:first-of-type{border-top:0}.ends{display:flex;justify-content:space-between;gap:12px}.ends span{max-width:45%;font-size:.79rem;color:#bbd4e7}.value{color:var(--gold);font-weight:800}.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}a{color:#9cdff0}a:hover{text-decoration:none}.feature{font-weight:800;color:var(--green)}.notice{color:var(--gold)}.hairline{border:0;border-top:1px solid #2e4a64;margin:20px 0}#astroBlock[hidden]{display:none}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tabs button[aria-pressed=true]{background:#2c6578;border-color:#79d7e6}.compact{font-size:.86rem}footer{text-align:center;color:var(--muted);font-size:.8rem;padding-bottom:44px}@media(max-width:700px){header{padding-top:24px}main,header,footer{padding-left:13px;padding-right:13px}.card,.half{grid-column:span 12}.inputgrid{grid-template-columns:1fr}.notes{grid-template-columns:1fr}.panel{padding:15px}.num{font-size:1.9rem}body{font-size:15px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">JM ECOSTATE · Owner-first deep reading · v0.3</div>
+  <h1>JM Pseudology</h1>
+  <p class="muted">Three full-depth numerology routes by default · JM contextual preferences · science and sources kept distinct · astrology ready, opt-in</p>
+  <span class="pill active">Pythagorean ON</span><span class="pill active">Chaldean ON</span><span class="pill active">English Gematria ON</span><span class="pill">Astrology AVAILABLE</span>
+</header>
+<main>
+<section class="panel" aria-labelledby="intakeTitle">
+ <h2 id="intakeTitle">1 · First contact</h2>
+ <p class="muted compact">Starts with JM's existing fictional SHIMS example. Replace it to calculate a different name or phrase. No login, analytics, automatic saving, external calls, or uploads.</p>
+ <div class="inputgrid">
+  <div><label for="person">Name / word body (for the three standard routes)</label><input id="person" type="text" value="Exemplifying Exemplifier" autocomplete="off" spellcheck="false"></div>
+  <div><label for="dob">Date of birth (optional)</label><input id="dob" type="date" aria-describedby="dateNote"><small id="dateNote">Adds an optional date number; does not gate the name readings.</small></div>
+ </div>
+ <div class="controls"><button id="demo">Restore fictional example</button><button id="clear">Use a blank personal entry</button></div>
+ <p id="identityNote" class="detail" aria-live="polite">Fictional exemplar — outputs are demonstrations, not a judgment about a real person.</p>
+</section>
+<section class="panel" aria-labelledby="numbersTitle">
+ <h2 id="numbersTitle">2 · The standard three routes</h2>
+ <p class="muted compact">The three systems always calculate independently. Their symbolic meanings are not empirical personality measures. Source mappings follow historical SHIMS v4.7.</p>
+ <div class="deck" aria-live="polite">
+   <div class="card"><h3>Pythagorean</h3><div id="pythNum" class="num">—</div><div id="pythDetails" class="detail"></div></div>
+   <div class="card"><h3>Chaldean</h3><div id="chNum" class="num">—</div><div id="chDetails" class="detail"></div></div>
+   <div class="card"><h3>English Gematria · Ordinal</h3><div id="ordNum" class="num">—</div><div id="ordDetails" class="detail"></div></div>
+ </div>
+ <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--blue);font-weight:700">Show details, mirror route, letter-by-letter arithmetic</summary><div class="deck" style="margin-top:10px"><div class="card half"><h3>Gematria reverse-ordinal mirror</h3><div id="revNum" class="num">—</div><div class="detail">An internal Gematria comparison, not a fourth default system.</div></div><div class="card half"><h3>Birth-date sub-reading</h3><div id="lifeNum" class="num">Not supplied</div><div class="detail">Traditional Pythagorean date-digit reduction; optional and separate from name values.</div></div></div><pre id="letterProof" style="white-space:pre-wrap;font-size:.78rem;overflow-wrap:anywhere"></pre></details>
+ <p class="detail" id="inputWarning">Only A–Z letters are used in this historical donor's normalisation; accented and non-Latin names require a declared transliteration rule.</p>
+</section>
+<section class="panel" aria-labelledby="deepTitle">
+ <h2 id="deepTitle">3 · Deep SHIMS name and life positions</h2>
+ <p class="muted compact">Expanded using the historical SHIMS v4.7 source conventions, not a new numerology tradition. All three numeric systems remain active. These calculations are symbolic and position-sensitive—not measured character traits or predictions.</p>
+ <label class="checkrow"><input id="yVowel" type="checkbox"><span>Source option: treat the letter Y as a vowel for the vowel/consonant routes (default: no)</span></label>
+ <h3 style="margin-top:14px">Pythagorean · name positions</h3>
+ <div id="namePositions" class="deck" aria-live="polite"></div>
+ <h3 style="margin-top:18px">Pythagorean · birth-date positions and phases</h3>
+ <p class="detail">Date sections only calculate when a real valid date is supplied. Challenges and Pinnacles use SHIMS v4.7's declared month/day/year reductions, including its 11/22/33 stopping convention.</p>
+ <div id="datePositions" class="deck" aria-live="polite"></div>
+ <h3 style="margin-top:18px">Chaldean &amp; English Gematria · distinct word routes</h3>
+ <div id="wordPositions" class="deck" aria-live="polite"></div>
+ <details style="margin-top:12px"><summary style="cursor:pointer;color:var(--blue);font-weight:700">Methods, calculation boundaries and source contact</summary>
+ <div class="science scope"><strong>Calculation is not validation.</strong><p class="compact">Raw values are reproducible under disclosed letter tables, input spelling, chosen vowel convention and DOB. Meaning can differ between name positions, date positions and traditions. Agreement across number systems is a mathematical feature of those mappings, not evidence of a causal human trait.</p></div>
+ <div class="science"><strong>Source inheritance.</strong><p class="compact">Pythagorean/Chaldean/Ordinal/Reverse tables, missing numbers, Hidden Passion, and DOB challenge/pinnacle/period methods: recovered SHIMS Reality-Aligned Reading Core v4.7. Cornerstone, Capstone, First Vowel and Balance are labelled extensions using the same established tables. Personal Year/Month/Day are optional date-phase extensions with the displayed calculation. Full astrology ephemeris/natal calculations are not claimed.</p></div>
+ <div class="science symbol"><strong>Y and non-Latin spellings.</strong><p class="compact">The historical donor's vowel convention is AEIOU unless Y is explicitly selected. Only A–Z enters numeric totals. Displayed names remain as entered and any transliteration/omitted letters must be acknowledged.</p></div>
+ </details>
+</section>
+<section class="panel" aria-labelledby="contextTitle">
+ <h2 id="contextTitle">4 · JM contextual preference reflection</h2>
+ <p class="muted compact">Included from the start. Original JM questions informed by the comparative idea of preferences, not a copy of the official MBTI instrument and not a validated assessment. Midpoints are meaningful; context can change answers.</p>
+ <div id="axisList"></div>
+ <label for="situation">Situation being considered (optional)</label><input id="situation" type="text" placeholder="e.g. learning a new skill, working with others" autocomplete="off">
+</section>
+<section class="panel" aria-labelledby="astroTitle">
+ <h2 id="astroTitle">5 · Astrology: installed as an optional lens</h2>
+ <label class="checkrow"><input id="astroOpt" type="checkbox"><span>Include a date-based tropical sun-sign preview in this reading</span></label>
+ <div id="astroBlock" hidden><div class="science symbol"><strong id="sunSign">Provide a date first.</strong><p class="compact">This is a conventional approximate date-range illustration, not a calculated natal chart, a prediction or proof of a trait. Full natal interpretation requires an accurate date, birth time, birthplace and an ephemeris; cusp dates may differ by year, time and timezone.</p></div></div>
+</section>
+<section class="panel" aria-labelledby="scienceTitle">
+ <h2 id="scienceTitle">6 · Real science, existing JM theories and claim status</h2>
+ <div class="notes">
+  <div class="science"><strong>Psychology</strong><p class="compact">Big Five stays on as a research-comparison lens. Actual Big Five scores require appropriate questions and declared scoring; these JM preference sliders are exploratory, not psychometric scores.</p></div>
+  <div class="science"><strong>Brain &amp; biology</strong><p class="compact">Empirical observations and mechanisms belong here when supported. A name calculation cannot tell us somebody's brain anatomy, medical condition or genetic traits.</p></div>
+  <div class="science symbol"><strong>Symbolic meaning</strong><p class="compact">Pythagorean, Chaldean, English Gematria and optional astrology can be explored as traditions of meaning without assuming they predict behaviour scientifically.</p></div>
+  <div class="science scope"><strong>VTS / DGYAK</strong><p class="compact">Keep source, method, confidence, interpretation, unknowns, challenge and correction visible. The individual owns their self-description.</p></div>
+ </div>
+ <details><summary style="cursor:pointer;color:var(--blue);font-weight:700">Scientific and historical contact</summary><p class="compact">2025 MBTI Form M synthesis: <a href="https://doi.org/10.1002/jcad.70006">Erford et al.</a>; traditional astrology double-blind assessment: <a href="https://doi.org/10.1038/318419a0">Carlson (1985)</a>; phrenology re-evaluated empirically: <a href="https://doi.org/10.1016/j.cortex.2018.04.011">Cortex (2018)</a>. Phrenology's historical localisation idea is different from using skull bumps to read personality; the latter is unsupported.</p></details>
+ <p class="compact">Existing JM source rooms: <a href="https://jmisjustme-estate.pages.dev/theory/" rel="noopener noreferrer" target="_blank">Theory MultiHub</a> · <a href="https://jmisjustme-estate.pages.dev/access/" rel="noopener noreferrer" target="_blank">Estate Access Mesh</a>. Historical addresses—not proof of current deployment or private-source access.</p>
+</section>
+<section class="panel" aria-labelledby="lensesTitle">
+ <h2 id="lensesTitle">6 · Five ways of encountering the reading</h2>
+ <div class="tabs" id="modeTabs"></div><div id="modeExplain" class="science" role="status" style="margin-top:12px"></div>
+</section>
+<section class="panel" aria-labelledby="receiptTitle">
+ <h2 id="receiptTitle">7 · Local, explicitly exported trace</h2>
+ <p class="muted compact">A human-readable evidence boundary is attached to every route. Nothing is saved automatically. Generate this JSON only if you choose; download only when you press the export button. For personal readings, keep it private.</p>
+ <div class="controls"><button id="makeReceipt" class="primary">Generate reading receipt</button><button id="saveReceipt" disabled>Download JSON receipt</button></div>
+ <textarea id="receipt" spellcheck="false" readonly placeholder="Your optional local JSON receipt appears here after pressing Generate."></textarea>
+ <p class="detail">Working bench only. Original SHIMS v4.7 and the Pseudology index remain separate source authorities. No permanent personality type, diagnosis, fate prediction or scientific certification is generated.</p>
+</section>
+</main>
+<footer>JM PSEUDOLOGY · Recover before rebuild · Mind Matter Meshing / Brain Body Bonding · No Ding, No Claim</footer>
+<script>
+(function(){'use strict';
+const $=id=>document.getElementById(id);
+const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function mGroups(groups){const m={};groups.forEach((g,i)=>[...g].forEach(c=>{m[c]=i+1}));return m}
+const MAPS={pyth:mGroups(['AJS','BKT','CLU','DMV','ENW','FOX','GPY','HQZ','IR']),chald:mGroups(['AIJQY','BKR','CGLS','DMT','EHNX','UVW','OZ','FP']),ordinal:Object.fromEntries([...ABC].map((c,i)=>[c,i+1])),reverse:Object.fromEntries([...ABC].map((c,i)=>[c,26-i]))};
+const reduce=n=>{const path=[n];while(n>9&&![11,22,33].includes(n)){n=String(n).split('').reduce((a,c)=>a+Number(c),0);path.push(n)}return {value:n,path:path.join(' → ')}};
+function calc(s,map,yAsVowel=false){const letters=[...String(s).toUpperCase().replace(/[^A-Z]/g,'')].map(c=>({letter:c,value:map[c]}));const total=letters.reduce((a,x)=>a+x.value,0);const v=letters.filter(x=>('AEIOU'+(yAsVowel?'Y':'')).includes(x.letter)),vTotal=v.reduce((a,x)=>a+x.value,0);return {total,reduced:reduce(total),vowels:vTotal,consonants:total-vTotal,letters}}
+const axes=[{id:'energy',title:'Energy route',left:'Quiet reflection',right:'Live interaction'}, {id:'attention',title:'Attention route',left:'Immediate observed detail',right:'Patterns and possibilities'}, {id:'decision',title:'Decision route',left:'Formal consistency',right:'Personal/contextual impacts'}, {id:'action',title:'Action route',left:'Plan and sequence',right:'Adapt and explore'}];
+// Deep-donor calculation layer. Deterministic, offline; no inferred character scores.
+function digits(n){return [...String(Math.abs(Number(n)||0))].reduce((a,c)=>a+Number(c),0)}
+function words(s){return String(s||'').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'')).filter(Boolean)}
+function dateParts(dob){if(!validateDob(dob))return null;const [year,month,day]=dob.split('-').map(Number);return {year,month,day}}
+function dateDeep(dob,now=new Date()){
+ const d=dateParts(dob);if(!d)return null;
+ const month=reduce(d.month),day=reduce(d.day),year=reduce(digits(d.year));
+ const life=reduce([...dob.replace(/\D/g,'')].reduce((a,x)=>a+Number(x),0));
+ const challenges=[Math.abs(day.value-month.value),Math.abs(day.value-year.value),0,Math.abs(month.value-year.value)];
+ challenges[2]=Math.abs(challenges[0]-challenges[1]);
+ const pinnacles=[reduce(month.value+day.value),reduce(day.value+year.value)];pinnacles.push(reduce(pinnacles[0].value+pinnacles[1].value));pinnacles.push(reduce(month.value+year.value));
+ const periods=[month.value,day.value,year.value];
+ const personalYear=reduce(month.value+day.value+digits(now.getFullYear()));
+ const personalMonth=reduce(personalYear.value+(now.getMonth()+1));
+ const personalDay=reduce(personalMonth.value+now.getDate());
+ return {birth_date:dob,life_path:life,birthday:{raw:d.day,red:day},month,day,year,challenge:challenges,pinnacle:pinnacles,periods,calendar_as_of:`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`,personal_year:personalYear,personal_month:personalMonth,personal_day:personalDay};
+}
+function deepRead(name,dob,yAsVowel=false,now=new Date()){
+ const normalized=String(name||'').toUpperCase().replace(/[^A-Z]/g,''),wordList=words(name);
+ const p=normalized?calc(name,MAPS.pyth,yAsVowel):null,ch=normalized?calc(name,MAPS.chald,yAsVowel):null,ord=normalized?calc(name,MAPS.ordinal,yAsVowel):null,rev=normalized?calc(name,MAPS.reverse,yAsVowel):null;
+ const vowelChars='AEIOU'+(yAsVowel?'Y':'');
+ const num=x=>x?{raw:x,total_reduced:x.reduced.value,trace:x.reduced.path}:null;
+ const firstVowel=normalized.split('').find(c=>vowelChars.includes(c))||null;
+ const firstLetter=normalized[0]||null,lastLetter=normalized[normalized.length-1]||null;
+ const counts={};if(p)p.letters.forEach(l=>counts[l.value]=(counts[l.value]||0)+1);
+ const max=Math.max(0,...Object.values(counts));
+ const passions=max?Object.keys(counts).filter(k=>counts[k]===max).map(Number).sort((a,b)=>a-b):[];
+ const missing=p?Array.from({length:9},(_,i)=>i+1).filter(i=>!counts[i]):[];
+ const balanceLetters=wordList.map(w=>w[0].toUpperCase());
+ const balanceTotal=balanceLetters.reduce((a,l)=>a+(MAPS.pyth[l]||0),0);
+ const date=dateDeep(dob,now);
+ const nm=p?{
+  expression:{raw:p.total,reduction:p.reduced},soul_urge:{raw:p.vowels,reduction:reduce(p.vowels)},personality:{raw:p.consonants,reduction:reduce(p.consonants)},
+  cornerstone:firstLetter?{letter:firstLetter,value:MAPS.pyth[firstLetter]}:null,
+  capstone:lastLetter?{letter:lastLetter,value:MAPS.pyth[lastLetter]}:null,
+  first_vowel:firstVowel?{letter:firstVowel,value:MAPS.pyth[firstVowel]}:null,
+  balance:balanceLetters.length?{letters:balanceLetters,raw:balanceTotal,reduction:reduce(balanceTotal)}:null,
+  hidden_passions:passions,missing_values:missing,
+  maturity:date?reduce(p.reduced.value+date.life_path.value):null
+ }:null;
+ const separate=(map,whole)=>whole?{compound:whole.total,reduction:whole.reduced,words:wordList.map(w=>({word:w,total:calc(w,map,yAsVowel).total,reduction:calc(w,map,yAsVowel).reduced})),vowels:whole.vowels,consonants:whole.consonants}:null;
+ return {pythagorean:nm,date, chaldean:separate(MAPS.chald,ch),english_gematria:{ordinal:separate(MAPS.ordinal,ord),reverse:separate(MAPS.reverse,rev)}, conventions:{letters:'A-Z only',vowels_y_opt_in:yAsVowel,master_reduction:'11,22,33 preserved if encountered',date_method:'SHIMS v4.7 challenge/pinnacle/period method',cornerstone_capstone_balance:'position extensions from existing mapping',symbolic_only:true}};
+}
+function datumCard(title,main,details=''){
+ const cell=document.createElement('div');cell.className='card';
+ const h=document.createElement('h3');h.textContent=title;cell.appendChild(h);
+ const n=document.createElement('div');n.className='num';n.textContent=String(main);cell.appendChild(n);
+ if(details){const d=document.createElement('div');d.className='detail';d.textContent=details;cell.appendChild(d)}
+ return cell;
+}
+function paintCards(holder,rows){const node=$(holder);node.replaceChildren(...rows.map(row=>datumCard(...row)))}
+function renderDeep(){
+ const raw=$('person').value,dob=$('dob').value,y=$('yVowel').checked,x=deepRead(raw,dob,y);
+ const n=x.pythagorean;
+ if(!n){paintCards('namePositions',[['No name provided','—','Enter a name or word-body. No values are inferred.']]);}else{
+ const cv=a=>a?`${a.raw} → ${a.reduction.value}`:'—';
+ const letter=a=>a?`${a.letter} = ${a.value}`:'—';
+ paintCards('namePositions',[
+  ['Expression',cv(n.expression),'Full A–Z name · original Pythagorean mapping'],
+  ['Soul Urge',cv(n.soul_urge),'Vowels '+(y?'A E I O U Y':'A E I O U')],
+  ['Personality',cv(n.personality),'Consonant letters'],
+  ['Cornerstone',letter(n.cornerstone),'First mapped letter'],
+  ['Capstone',letter(n.capstone),'Last mapped letter'],
+  ['First Vowel',letter(n.first_vowel),'First mapped vowel · — if none'],
+  ['Balance',n.balance?`${n.balance.raw} → ${n.balance.reduction.value}`:'—',n.balance?`Name-parts initial letters: ${n.balance.letters.join(' + ')}`:'Not supplied'],
+  ['Hidden Passion',n.hidden_passions.join(', ')||'—','Most frequent Pythagorean mapped value(s)'],
+  ['Missing / Karmic Lesson',n.missing_values.join(', ')||'None','Absent Pythagorean values (1–9)'],
+  ['Maturity',n.maturity?`${n.maturity.path}`:'Needs birth date','Reduced Expression + reduced Life Path']]);
+ }
+ const d=x.date;
+ if(!d){paintCards('datePositions',[['Birth-date routes','Not supplied','Enter a valid date for Life Path, Birthday, Periods, Challenges, Pinnacles and personal cycles.']]);}
+ else{paintCards('datePositions',[
+  ['Life Path',d.life_path.path,'Full date YYYYMMDD digit sum'],
+  ['Birthday',`${d.birthday.raw} → ${d.birthday.red.value}`,'Day of month'],
+  ['Challenges',d.challenge.join(' · '),'|day−month| · |day−year| · |C1−C2| · |month−year|'],
+  ['Pinnacles',d.pinnacle.map(p=>p.value).join(' · '),'M+D · D+Y · P1+P2 · M+Y (each reduced)'],
+  ['Life Periods',d.periods.join(' · '),'Reduced month · day · year'],
+  ['Personal Year',d.personal_year.path,`Calendar ${d.calendar_as_of} · month + day + current-year digit sum`],
+  ['Personal Month',d.personal_month.path,'Personal Year + current calendar month'],
+  ['Personal Day',d.personal_day.path,'Personal Month + current calendar day']]);}
+ const c=x.chaldean,o=x.english_gematria;
+ if(!c){paintCards('wordPositions',[['Word-by-word routes','—','Enter a name or phrase to compare native word positions.']]);}
+ else{
+ const format=arr=>arr.map(w=>`${w.word}: ${w.total}→${w.reduction.value}`).join(' · ');
+ paintCards('wordPositions',[
+  ['Chaldean',`${c.compound} → ${c.reduction.value}`,format(c.words)],
+  ['Chaldean vowels / consonants',`${c.vowels} / ${c.consonants}`,'Separate roles, same Chaldean table'],
+  ['English Ordinal',`${o.ordinal.compound} → ${o.ordinal.reduction.value}`,format(o.ordinal.words)],
+  ['Reverse Ordinal',`${o.reverse.compound} → ${o.reverse.reduction.value}`,format(o.reverse.words)]
+ ]);}
+ return x;
+}
+const modes=[['Overview','See the person, reading methods and surrounding context before narrowing your focus.'],['Sensismell','Notice emerging signals and alternative interpretations. A sensed pattern is a prompt to investigate, not proof.'],['Underhold','Retain exact original words, context, counterexamples and existing JM source relationships.'],['Throughguide','Choose a path for further understanding and real-world checking without surrendering agency.'],['Individe','Recognise distinct selves, situations, methods, sciences and symbolic traditions without forcing them to merge.']];
+let active='Overview',lastReceipt=null;
+function init(){
+ $('axisList').innerHTML=axes.map(a=>`<div class="axis"><strong>${a.title}</strong><div class="ends"><span>${a.left}</span><span>${a.right}</span></div><input type="range" id="axis-${a.id}" aria-label="${a.title}" min="1" max="5" step="1" value="3"><div class="detail">Current reflection: <span id="axis-label-${a.id}" class="value">3 / 5 · flexible/middle</span></div></div>`).join('');
+ $('modeTabs').innerHTML=modes.map(m=>`<button type="button" data-mode="${m[0]}" aria-pressed="false">${m[0]}</button>`).join('');
+ $('modeTabs').addEventListener('click',e=>{const btn=e.target.closest('button[data-mode]');if(btn){active=btn.dataset.mode;updateMode()}});
+ for(const a of axes){$(`axis-${a.id}`).addEventListener('input',()=>{const v=Number($(`axis-${a.id}`).value);$(`axis-label-${a.id}`).textContent=`${v} / 5 · ${v===3?'flexible/middle':v<3?'leans toward '+a.left:'leans toward '+a.right}`;invalidateReceipt()})}
+ for(const id of ['person','dob','situation','astroOpt','yVowel'])$(id).addEventListener('input',render);
+ $('demo').addEventListener('click',()=>{$('person').value='Exemplifying Exemplifier';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;axes.forEach(a=>{$(`axis-${a.id}`).value=3;$(`axis-label-${a.id}`).textContent='3 / 5 · flexible/middle'});render()});
+ $('clear').addEventListener('click',()=>{$('person').value='';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;render();$('person').focus()});
+ $('makeReceipt').addEventListener('click',makeReceipt);
+ $('saveReceipt').addEventListener('click',saveReceipt);
+ updateMode();render();
+}
+function validateDob(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const [y,m,d]=s.split('-').map(Number);const t=new Date(Date.UTC(y,m-1,d));return t.getUTCFullYear()===y&&t.getUTCMonth()===m-1&&t.getUTCDate()===d}
+function sign(d){const mm=Number(d.slice(5,7)),dd=Number(d.slice(8,10));const arr=[['Capricorn',119],['Aquarius',218],['Pisces',320],['Aries',419],['Taurus',520],['Gemini',620],['Cancer',722],['Leo',822],['Virgo',922],['Libra',1022],['Scorpio',1121],['Sagittarius',1221],['Capricorn',1231]];const key=mm*100+dd;return arr.find(x=>key<=x[1])?.[0]||'Capricorn'}
+function render(){
+ invalidateReceipt();
+ const raw=$('person').value,has=raw.toUpperCase().replace(/[^A-Z]/g,'').length>0;
+ const demo=raw==='Exemplifying Exemplifier';$('identityNote').textContent=demo?'Fictional exemplar — demonstrated, not a judgment about a real person.':has?'Personal/other phrase entered locally; no automatic storage. Interpretation requires the subject’s consent.':'Enter a name or word-body to activate the three standard number routes.';
+ const displays=[['pythNum','pythDetails',MAPS.pyth],['chNum','chDetails',MAPS.chald],['ordNum','ordDetails',MAPS.ordinal]];
+ displays.forEach(([numId,dtId,map],i)=>{const c=has?calc(raw,map,$('yVowel').checked):null;$(numId).textContent=c?`${c.total} → ${c.reduced.value}`:'—';$(dtId).textContent=!c?'Waiting for an input':i===0?`Expression · vowels ${c.vowels} → ${reduce(c.vowels).value} · consonants ${c.consonants} → ${reduce(c.consonants).value}`:i===1?'Compound Chaldean total · system table 1–8':'English Ordinal A=1 through Z=26'});
+ $('revNum').textContent=has?(()=>{const c=calc(raw,MAPS.reverse);return `${c.total} → ${c.reduced.value}`})():'—';
+ const dob=$('dob').value,valid=validateDob(dob);
+ $('lifeNum').textContent=valid?(()=>{const rawValue=[...dob.replace(/\D/g,'')].reduce((a,d)=>a+Number(d),0);return `${rawValue} → ${reduce(rawValue).value}`})():'Not supplied';
+ renderDeep();
+ const trace=has?Object.entries(MAPS).map(([key,map])=>{const c=calc(raw,map,$('yVowel').checked);return key+': '+c.letters.map(x=>`${x.letter}=${x.value}`).join(' + ')+' = '+c.total+'; reduction '+c.reduced.path}).join('\n\n'):'No letters to calculate';$('letterProof').textContent=trace;
+ $('astroBlock').hidden=!$('astroOpt').checked;
+ $('sunSign').textContent=valid?`Conventional approximate tropical sign: ${sign(dob)}`:'Enter a valid birth date to show the approximate sun-sign date range.';
+ $('inputWarning').textContent=/[^A-Za-z\s]/.test(raw)?'Some entered characters do not map to A–Z and are omitted by the historical SHIMS normalisation. Check spelling/transliteration before interpreting.':'Only A–Z letters are used in this historical donor’s normalisation; accented and non-Latin names require a declared transliteration rule.';
+}
+function updateMode(){for(const btn of $('modeTabs').querySelectorAll('button'))btn.setAttribute('aria-pressed',String(btn.dataset.mode===active));$('modeExplain').textContent=modes.find(m=>m[0]===active)[1];invalidateReceipt()}
+function invalidateReceipt(){lastReceipt=null;$('saveReceipt').disabled=true;$('receipt').value='';}
+function makeReceipt(){const raw=$('person').value,dob=$('dob').value,has=raw.toUpperCase().replace(/[^A-Z]/g,'').length>0;const routes={};if(has){for(const [k,map] of Object.entries(MAPS)){const c=calc(raw,map,$('yVowel').checked);routes[k]={total:c.total,reduced:c.reduced.value,reduction_path:c.reduced.path};if(k==='pyth'){routes[k].vowels=c.vowels;routes[k].consonants=c.consonants}}}
+ const axesOut={};axes.forEach(a=>{axesOut[a.id]={value:Number($(`axis-${a.id}`).value),low:a.left,high:a.right}});
+ const valid=validateDob(dob),astro=$('astroOpt').checked;const deep=deepRead(raw,dob,$('yVowel').checked);
+ lastReceipt={schema:'JM.PSEUDOLOGY.CONTACT.v0.3',date_generated:new Date().toISOString(),demo:raw==='Exemplifying Exemplifier',subject_text:raw,source_conventions:{name_normalisation:'upper A-Z only',reduce:'digit sum; stop at 11/22/33 if reached',source_donor:'SHIMS Reality-Aligned Reading Core v4.7 methods; parent JM Pseudology v0.2 preserved unchanged'},default_three_routes:{pythagorean:routes.pyth||null,chaldean:routes.chald||null,english_gematria_ordinal:routes.ordinal||null},deep_reading:deep,gematria_optional_mirror:routes.reverse||null,optional_date_route:valid?{date:dob,digit_sum:[...dob.replace(/\D/g,'')].reduce((a,d)=>a+Number(d),0)}:null,astrology:{available:true,opted_in:astro,approx_tropical_sun_sign:astro&&valid?sign(dob):null,full_natal_chart:'NOT_CALCULATED'},jm_contextual_orientation:{context:$('situation').value,axes:axesOut,scientific_validity:'UNVALIDATED EXPLORATORY SELF-REPORT'},source_family_links:['SHIMS','JM Theory Estate 51 seats','Exemplar Family','GTKM/GTKY','MMMBBB','VTS / DGYAK'],five_perspective_active:active,claim_boundaries:['numeric calculations deterministic under disclosed conventions','symbolic interpretation is not established personality prediction','no psychometric scoring or diagnostic claim','biology/neuroscience must rely on applicable empirical evidence','not publicly published or stored unless exported by user'],privacy:'In-memory only. Receipt generated explicitly. Do not share personal information without consent.'};
+ $('receipt').value=JSON.stringify(lastReceipt,null,2);$('saveReceipt').disabled=false;
+}
+function saveReceipt(){if(!lastReceipt)return;const blob=new Blob([JSON.stringify(lastReceipt,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='JM_PSEUDOLOGY_CONTACT_RECEIPT_v0_3.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+window.JMPseudologyProbe={calc,MAPS,reduce,validateDob,sign,deepRead,dateDeep};
+init();
+})();
+</script>
+</body>
+</html>

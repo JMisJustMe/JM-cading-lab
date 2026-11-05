@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity-owner-html-20261105';
+const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity-owner-html-phone-contact-20261105';
 // Browser preference storage must never prevent opening the House.
 // Keep in-memory navigation available if storage is blocked or malformed.
 const storageRead=key=>{try{return localStorage.getItem(key)}catch{return null}};
@@ -242,6 +242,31 @@ async function proof(){const results=[];for(const b of pack.bodies)results.push(
 async function exportHouse(){const originals=pack.bodies.filter(b=>Object.hasOwn(JMSTUDIOS_ORIGINAL_HASHES,b.id));const verifiedPair=originals.length===2&&(await Promise.all(originals.map(isOriginalJMStudios))).every(Boolean);download('GAMES_BEYOND_FULL_HOUSE_v0_5_LOCAL_EXPORT.json',JSON.stringify({...pack,schema:'JM.GamesBeyondHouse/0.5-public-export',source_custody:verifiedPair?{original_lineage_zip_file:JMSTUDIOS_LINEAGE}:undefined,exportedAt:NOW(),localReceipts:await all('receipts'),accessibility:lastAudit},null,2),'application/json');await receipt('FULL_HOUSE_EXPORTED','Games&Beyond',{bodies:pack.bodies.length})}
 // CP18: recover the original direct-HTML mounting workflow without uploading owner source.
 // The existing atomic House importer and IndexedDB remain the only mounting route.
+// CP19: explicit, user-initiated contact to an existing owner-owned Fold8 source.
+// No auto-connect, private-source publication, new engine, or browser-permission bypass.
+// Chrome may require 'loopback-network' permission. File-picker fallback stays intact.
+async function connectPhoneOriginal(){
+ const original='JM_COMBOUND_ORIGINAL_v3_7_11_CP17_CREATURE_DEFINITION_ANIMATION_CANDIDATE.html';
+ const expected='3b5b791c15ea82e6e240b55d690b6e034bbc6f61ce0143c6a9fb0156326ce242';
+ try{
+  const request=new Request('http://127.0.0.1:8877/combound-cp17.html',
+   {method:'GET',mode:'cors',cache:'no-store',targetAddressSpace:'loopback'});
+  const response=await fetch(request);
+  if(!response.ok)throw Error('Local source returned HTTP '+response.status);
+  const raw=await response.arrayBuffer();
+  if(raw.byteLength!==1277449)throw Error('Original CP17 byte length mismatch');
+  if(await hash(raw)!==expected)throw Error('Original CP17 hash verification HOLD');
+  const file=new File([raw],original,{type:'text/html'});
+  await importOriginalHtml(file);
+  const mounted=findBody('combound-original-v3-7-11-cp17');
+  if(!mounted||mounted.html!==await file.text())
+   throw Error('House did not verify local CP17 import');
+  await receipt('OWNER_LOOPBACK_ORIGINAL_CONTACT_PASS',mounted.name,
+   {id:mounted.id,sha256:expected,bytes:raw.byteLength,delivery:'owner-phone-only'});
+ }catch(error){
+  toast('Phone original contact HOLD: '+error.message+'. Use Import Original HTML (Local).',true);
+ }
+}
 async function importOriginalHtml(file){
  try{
   if(!file||!/\.html?$/i.test(file.name))throw Error('Select an original .html game file');
@@ -335,7 +360,7 @@ async function importHouse(file){
 async function clearEdits(){if(!confirm('Clear all local edits and imported bodies?'))return;for(const x of await all('edits'))await remove('edits',x.id);location.reload()}
 async function renderReceipts(){if(!db)return;const rows=(await all('receipts')).sort((a,b)=>b.key-a.key).slice(0,100);$('receipts').innerHTML=rows.map(x=>`<div class="receipt"><b>${esc(x.type)} · ${esc(x.body)}</b><span>${esc(x.time)}\n${esc(JSON.stringify(x.extra||{}))}</span></div>`).join('')||'<div class="empty">No receipts yet.</div>'}
 function toggle(cls,id){const on=!document.documentElement.classList.contains(cls);document.documentElement.classList.toggle(cls,on);storageWrite('jm-gb-'+cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text')document.documentElement.style.setProperty('--scale',on?'1.18':'1')}
-function bind(){const nav=$$('.nav button');nav.forEach((b,i)=>{b.onclick=()=>view(b.dataset.view);b.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?nav.length-1:(i+(e.key==='ArrowRight'?1:-1)+nav.length)%nav.length;nav[j].focus();view(nav[j].dataset.view)}});$('enterBtn').onclick=()=>view('rooms');$('reloadBtn').onclick=()=>location.reload();$('search').oninput=renderRooms;$('proofQuick').onclick=$('runProof').onclick=proof;$('savePassport').onclick=()=>saveEdit(false);$('saveSource').onclick=()=>saveEdit(true);$('undoSource').onclick=undo;$('restoreBody').onclick=restore;$('exportBody').onclick=()=>exportBody(selected);$('testSource').onclick=()=>openBody(selected,$('source').value);$('exportHouse').onclick=exportHouse;$('importHouse').onclick=()=>$('importFile').click();$('importHtml').onclick=()=>$('importHtmlFile').click();$('importHtmlFile').onchange=e=>{const file=e.target.files[0];if(file)importOriginalHtml(file);e.target.value=''};$('importFile').onchange=e=>{if(e.target.files[0])importHouse(e.target.files[0]);e.target.value=''};$('clearEdits').onclick=clearEdits;$('closeDialog').onclick=closeBody;$('openExternal').onclick=separateBody;$('bodyDialog').addEventListener('cancel',e=>{e.preventDefault();closeBody()});$('runA11y').onclick=()=>runAudit(true);$('exportA11y').onclick=()=>lastAudit?download('GAMES_BEYOND_ACCESSIBILITY_REPORT_v0_5.json',JSON.stringify(lastAudit,null,2),'application/json'):toast('Run the audit first',true);$('contrastBtn').onclick=()=>toggle('high-contrast','contrastBtn');$('textBtn').onclick=()=>toggle('large-text','textBtn');$('motionBtn').onclick=()=>toggle('reduced-motion','motionBtn');for(const [cls,id] of [['high-contrast','contrastBtn'],['large-text','textBtn'],['reduced-motion','motionBtn']]){const on=storageRead('jm-gb-'+cls)==='true';document.documentElement.classList.toggle(cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text'&&on)document.documentElement.style.setProperty('--scale','1.18')}}
+function bind(){const nav=$$('.nav button');nav.forEach((b,i)=>{b.onclick=()=>view(b.dataset.view);b.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?nav.length-1:(i+(e.key==='ArrowRight'?1:-1)+nav.length)%nav.length;nav[j].focus();view(nav[j].dataset.view)}});$('enterBtn').onclick=()=>view('rooms');$('reloadBtn').onclick=()=>location.reload();$('search').oninput=renderRooms;$('proofQuick').onclick=$('runProof').onclick=proof;$('savePassport').onclick=()=>saveEdit(false);$('saveSource').onclick=()=>saveEdit(true);$('undoSource').onclick=undo;$('restoreBody').onclick=restore;$('exportBody').onclick=()=>exportBody(selected);$('testSource').onclick=()=>openBody(selected,$('source').value);$('exportHouse').onclick=exportHouse;$('importHouse').onclick=()=>$('importFile').click();$('importHtml').onclick=()=>$('importHtmlFile').click();$('connectPhoneOriginal').onclick=connectPhoneOriginal;$('importHtmlFile').onchange=e=>{const file=e.target.files[0];if(file)importOriginalHtml(file);e.target.value=''};$('importFile').onchange=e=>{if(e.target.files[0])importHouse(e.target.files[0]);e.target.value=''};$('clearEdits').onclick=clearEdits;$('closeDialog').onclick=closeBody;$('openExternal').onclick=separateBody;$('bodyDialog').addEventListener('cancel',e=>{e.preventDefault();closeBody()});$('runA11y').onclick=()=>runAudit(true);$('exportA11y').onclick=()=>lastAudit?download('GAMES_BEYOND_ACCESSIBILITY_REPORT_v0_5.json',JSON.stringify(lastAudit,null,2),'application/json'):toast('Run the audit first',true);$('contrastBtn').onclick=()=>toggle('high-contrast','contrastBtn');$('textBtn').onclick=()=>toggle('large-text','textBtn');$('motionBtn').onclick=()=>toggle('reduced-motion','motionBtn');for(const [cls,id] of [['high-contrast','contrastBtn'],['large-text','textBtn'],['reduced-motion','motionBtn']]){const on=storageRead('jm-gb-'+cls)==='true';document.documentElement.classList.toggle(cls,on);$(id).setAttribute('aria-pressed',on);if(cls==='large-text'&&on)document.documentElement.style.setProperty('--scale','1.18')}}
 window.GamesBeyond={get pack(){return pack},get activeEditorBodyId(){return selected},runProof:proof,runAccessibility:runAudit,show:view,playBody:openBody,exportHouse};
 (async()=>{bind();view('house',false);try{db=await openDB()}catch(err){console.error('Games&Beyond local database startup failure:',err);$('status').textContent='HOUSE BUGG';$('status').className='status bad';progress(100,'Local edit database unavailable: '+String(err?.message||err));toast('House cannot safely mount without its edit database.',true);return}if('serviceWorker'in navigator){try{void navigator.serviceWorker.register(`sw.js?v=${RELEASE}`).then(reg=>{try{reg.update()}catch{}}).catch(()=>{})}catch{}}try{await decodePayload()}catch(err){console.error(err);$('status').textContent='HOUSE BUGG';$('status').className='status bad';progress(100,'Load failed: '+err.message);toast('House load failed: '+err.message,true)}})();
 })();

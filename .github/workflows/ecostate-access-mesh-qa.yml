@@ -337,6 +337,73 @@ jobs:
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP11_ORIGINAL_SW_HOLD',e);process.exitCode=1});
           NODE
+      - name: CP12 public-only PWA cache — original API/privacy boundaries on phone and Fold
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const fs=require('node:fs'),path=require('node:path');
+          const fixtures=[
+            ['api/jm/v1/cp12-synthetic-probe.json', '{"ok":true,"synthetic":"API"}'],
+            ['owner/cp12-synthetic-probe.json', '{"ok":true,"synthetic":"OWNER"}'],
+            ['cp12-synthetic-auth.json', '{"ok":true,"synthetic":"AUTH"}'],
+          ];
+          (async()=>{
+            for(const [p,body] of fixtures){
+              if(fs.existsSync(p))throw Error('Refuse to overwrite source '+p);
+              fs.mkdirSync(path.dirname(p),{recursive:true});
+              fs.writeFileSync(p,body);
+            }
+            const browser=await chromium.launch({headless:true});
+            let count=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport});
+                const page=await context.newPage();
+                page.setDefaultTimeout(20000);
+                try{
+                  await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded'});
+                  await page.waitForFunction(async()=>{
+                    const r=await navigator.serviceWorker?.getRegistration('/');
+                    return Boolean(r?.active&&navigator.serviceWorker.controller);
+                  },null,{timeout:90000});
+                  const result=await page.evaluate(async()=>{
+                    const names=['api/jm/v1/cp12-synthetic-probe.json','owner/cp12-synthetic-probe.json'];
+                    const responses=[];
+                    for(const n of names){
+                      const r=await fetch('/'+n);
+                      responses.push({path:n,status:r.status,data:await r.json()});
+                    }
+                    const auth=await fetch('/cp12-synthetic-auth.json',{headers:{Authorization:'Bearer CP12-SYNTHETIC-ONLY'}});
+                    const authData=await auth.json();
+                    const pub=await fetch('/games-beyond/registry.json');
+                    const registrations=await navigator.serviceWorker.getRegistrations();
+                    const cache=await caches.open('jm-web-estate-v1.4.13-ailatheo-entitlement-boundary');
+                    const urls=(await cache.keys()).map(x=>new URL(x.url).pathname);
+                    return {
+                      responses,auth:{status:auth.status,data:authData},pubStatus:pub.status,urls,
+                      workerCount:registrations.filter(r=>r.scope===location.origin+'/').length
+                    };
+                  });
+                  if(result.workerCount!==1)throw Error('Original single worker identity drift');
+                  if(result.responses.some(r=>r.status!==200||!r.data?.ok)||result.auth.status!==200||!result.auth.data.ok)
+                    throw Error('Synthetic API/owner/auth GET unexpectedly blocked');
+                  if(result.pubStatus!==200)throw Error('Original public registry no longer fetches');
+                  if(result.urls.some(x=>x.startsWith('/api/')||x.startsWith('/owner/')||x==='/cp12-synthetic-auth.json'))
+                    throw Error('Protected synthetic response was stored in original PWA cache: '+JSON.stringify(result.urls.filter(x=>x.includes('cp12-'))));
+                  if(!result.urls.includes('/games-beyond/registry.json'))
+                    throw Error('Original public registry lost cached offline delivery');
+                  await context.close();count++;
+                }catch(e){throw Error('CP12 '+viewport.width+'x'+viewport.height+' '+e.message);}
+              }
+              if(count!==2)throw Error('Phone and Fold proof incomplete');
+              console.log('CP12 PUBLIC CACHE PASS 2/2 — synthetic API/owner/Authorization routes fetched but never cached; existing public registry cached; original single PWA preserved');
+            }finally{
+              await browser.close();
+              for(const [p] of fixtures)fs.rmSync(p,{force:true});
+            }
+          })().catch(e=>{console.error('CP12_CACHE_GONG_HOLD',e);process.exitCode=1});
+          NODE
       - name: Eight-contact phone and desktop proof
         shell: bash
         run: |

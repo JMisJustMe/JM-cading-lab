@@ -2,6 +2,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070b13"><meta name="description" content="Current public access mesh across JM games, apps, coding, theory, books, visual story, music, markets, work and recovery.">
 <title>JM Current Access Mesh — ECOSTATE</title>
+<link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icon.svg" type="image/svg+xml">
+<meta name="application-name" content="JM Estate"><meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="../ecostate-visual-v1.css"><link rel="stylesheet" href="../ecostate-personality-v2.css"><link rel="stylesheet" href="../ecostate-authored-v3.css"><link rel="stylesheet" href="../ecostate-contact-v4.css">
 <style>
 :root{color-scheme:dark;--bg:#060a12;--panel:#0e1725;--panel2:#121e2e;--line:#263b51;--ink:#f6fbff;--muted:#a9bac9;--cyan:#72ecff;--mint:#78efbd;--gold:#ffd166;--rose:#ff8aa8;--max:1160px}
@@ -24,6 +26,8 @@ section{margin:28px 0}.head{display:flex;align-items:end;justify-content:space-b
 #jmUseNow .row span{display:block}
 @media(max-width:850px){#jmUseNow .row{grid-template-columns:1fr}#jmUseNow .use-actions{justify-content:flex-start}}
 
+.jm-app-hint{display:inline-block;margin:8px 0;color:var(--muted);font-size:.9rem;max-width:560px}
+#jmExistingAppInstall{display:inline-flex;align-items:center;justify-content:center;min-height:48px;white-space:normal;overflow-wrap:anywhere;text-align:center}
 /* CP09 Quick Return reuses existing JM Games House local history and source links. */
 #jmQuickReturn .jm-return-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 #jmQuickReturn .jm-return-panel{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:16px;min-width:0}
@@ -46,7 +50,7 @@ section{margin:28px 0}.head{display:flex;align-items:end;justify-content:space-b
 <div class="keeper">ACCESS DUPLICATE ≠ AUTHORITY DUPLICATE. ONE PROFESSIONAL FRONT DOOR. MANY SOVEREIGN BODIES.</div></section>
 <div class="stats"><div class="stat"><b>6 / 6</b><small>ECOSTATE operating lanes PASS</small></div><div class="stat"><b>21 / 21</b><small>Theory bridge pairs tested</small></div><div class="stat"><b>32 / 32</b><small>FTR functional comic issues</small></div><div class="stat"><b>704 / 704</b><small>FTR functional comic pages</small></div></div>
 <section id="jmQuickReturn" aria-labelledby="jmQuickReturnTitle">
-<div class="head"><div><div class="eyebrow">Your Estate · continue using it</div><h2 id="jmQuickReturnTitle">Pick up and get creating</h2><p>Recent JM Games House openings and doors you choose to pin — using your originals, not stored copies.</p></div></div>
+<div class="head"><div><div class="eyebrow">Your Estate · continue using it</div><h2 id="jmQuickReturnTitle">Pick up and get creating</h2><p>Recent JM Games House openings and doors you choose to pin — using your originals, not stored copies.</p><p><a id="jmExistingAppInstall" class="btn primary" href="../#estate">Open / install your existing JM Estate app</a> <span class="jm-app-hint">Same original app and source. On a supported phone browser, open its Home screen and use the existing Install control or browser install menu.</span></p></div></div>
 <div class="jm-return-grid">
 <div class="jm-return-panel"><h3>Recently opened in Games &amp; Beyond</h3><div id="jmRecentGameDoors" class="jm-return-items" aria-live="polite"><p class="jm-return-empty">Checking the existing Games House history on this browser…</p></div></div>
 <div class="jm-return-panel"><h3>My pinned doors</h3><div id="jmPinnedDoorList" class="jm-return-items" aria-live="polite"><p class="jm-return-empty">Pin a creation below to keep its original door close by.</p></div><button id="jmClearPinnedDoors" type="button" class="jm-return-clear" disabled>Clear my pins</button><p id="jmPinsStatus" class="jm-return-note" role="status">Only on this browser. No account sync or copy of your creations.</p></div>

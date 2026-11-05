@@ -208,6 +208,48 @@ def verify_quick_return_cp09():
     print("CP09 QUICK RETURN — 12/12 known pin doors, inherited Games House recents, local-only owner pins, source boundary PASS")
 
 
+def verify_original_pwa_cp10():
+    """CP10: existing original web-app identity, one additional Continue shortcut."""
+    html = Path("access/index.html").read_text(encoding="utf-8")
+    root = Path("index.html").read_text(encoding="utf-8")
+    sw = Path("sw.js").read_text(encoding="utf-8")
+    manifest = json.loads(Path("manifest.webmanifest").read_text(encoding="utf-8"))
+    require(html.count('<link rel="manifest" href="../manifest.webmanifest">') == 1,
+            "Access Mesh lacks its original Estate PWA identity or duplicates it")
+    require(html.count('<link rel="icon" href="../icon.svg" type="image/svg+xml">') == 1,
+            "Access Mesh icon no longer links original source")
+    require(html.count('id="jmExistingAppInstall"') == 1 and
+            'id="jmExistingAppInstall" class="btn primary" href="../#estate"' in html,
+            "Install route no longer opens existing root Estate installer")
+    require("serviceWorker.register" not in html,
+            "New Access Mesh registration duplicates original root service-worker ownership")
+    require('<link rel="manifest" href="./manifest.webmanifest">' in root,
+            "Existing original root manifest lost")
+    require("navigator.serviceWorker.register('./sw.js')" in Path("estate-app.js").read_text(encoding="utf-8"),
+            "Original root installer/runtime owner lost")
+    require("'./access/index.html'" in sw and "'./manifest.webmanifest'" in sw,
+            "Original root service-worker offline carrier no longer includes PWA/Access")
+    require(manifest["name"] == "JMISJUSTME — The Owned Web Estate" and
+            manifest["short_name"] == "JM Estate" and
+            manifest["start_url"] == "./#estate" and
+            manifest["scope"] == "./" and
+            manifest["display"] == "standalone",
+            "Existing PWA identity/start/scope was replaced")
+    expected = [
+        ("Games & Beyond", "./games-beyond/"),
+        ("Coding Estate", "./coding-estate/everybody/"),
+        ("Owner Room", "./#owner"),
+        ("Continue in JM ECOSTATE", "./access/#jmQuickReturn"),
+    ]
+    require([(x["name"], x["url"]) for x in manifest["shortcuts"]] == expected,
+            "Three inherited PWA shortcuts overwritten or fourth Continue route changed")
+    require(all(x["icons"][0]["src"] == "./icon.svg" for x in manifest["shortcuts"]),
+            "Existing icon replaced with redundant payload")
+    require("Same original app and source." in html and
+            "#jmExistingAppInstall{display:inline-flex" in html and "min-height:48px" in html,
+            "Owner-facing one-app truth or Fold tap target missing")
+    print("CP10 ORIGINAL PWA PASS — original identity/scope/root install preserved + Continue shortcut + Access Mesh manifest / 48px tap link; no second app")
+
 def main():
     d=json.loads(REG.read_text(encoding="utf-8"))
     routes=d["routes"]
@@ -251,6 +293,7 @@ def main():
     verify_wix_door_pairs()
     verify_direct_use_cp08()
     verify_quick_return_cp09()
+    verify_original_pwa_cp10()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

@@ -109,6 +109,11 @@ jobs:
           grep -Fq 'https://jmisjustme-estate.pages.dev/market-lab/' sitemap.xml
       - name: CP02 governed existing-homes pointer differential
         run: python3 governance/estate-integration/verify_existing_homes_cp02.py
+      - name: CP11 original service worker syntax parse gate
+        shell: bash
+        run: |
+          node --check sw.js
+          node -e "const fs=require('node:fs'); const s=fs.readFileSync('sw.js','utf8'); if(s.includes(String.fromCharCode(92)+'n')) process.exit(21); console.log('CP11 SW syntax and original source newline PASS')"
       - name: Install browser proof runtime
         run: |
           npm install --no-save playwright@1.54.1
@@ -272,6 +277,65 @@ jobs:
               console.log('CP10 PWA PASS: 2/2 phone and Fold, original install app/manifest/root shortcut, installed-app identity preserved, no second site');
             }finally{await browser.close();}
           })().catch(e=>{console.error('CP10_PWA_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP11 original service worker registration and offline Access (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport});
+                const page=await context.newPage();
+                page.setDefaultTimeout(25000);
+                try{
+                  const root=await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded'});
+                  if(root.status()!==200)throw Error('Original root not available');
+                  await page.waitForFunction(async()=>{
+                    if(!('serviceWorker' in navigator))return false;
+                    const reg=await navigator.serviceWorker.getRegistration('/');
+                    return Boolean(reg?.active?.scriptURL.endsWith('/sw.js') &&
+                                   navigator.serviceWorker.controller);
+                  },null,{timeout:90000});
+                  const registration=await page.evaluate(async()=>{
+                    const r=await navigator.serviceWorker.getRegistration('/');
+                    return {script:r?.active?.scriptURL,scope:r?.scope,controller:navigator.serviceWorker.controller?.scriptURL};
+                  });
+                  if(registration.script!=='http://127.0.0.1:4178/sw.js' ||
+                     registration.scope!=='http://127.0.0.1:4178/' ||
+                     registration.controller!=='http://127.0.0.1:4178/sw.js')
+                    throw Error('Original single Estate service-worker identity changed: '+JSON.stringify(registration));
+                  await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller),null,{timeout:15000});
+                  const cacheReady=await page.evaluate(async()=>{
+                    const keys=await caches.keys();
+                    const name=keys.find(k=>k.startsWith('jm-web-estate-'));
+                    if(!name)return false;
+                    const cache=await caches.open(name);
+                    return Boolean(await cache.match(new URL('/access/index.html',location.href).href));
+                  });
+                  if(!cacheReady)throw Error('Original Access Mesh is not cached by the existing Estate worker');
+                  await context.setOffline(true);
+                  await page.reload({waitUntil:'domcontentloaded',timeout:20000});
+                  if(!await page.locator('title').textContent().then(x=>x.includes('JM Current Access Mesh')))
+                    throw Error('Offline Access Mesh did not recover original cached page');
+                  if(!await page.locator('#jmQuickReturn').count() ||
+                     !await page.locator('#jmWixDoors').count())
+                    throw Error('Offline Access lost current original Quick Return or Wix doors');
+                  await context.setOffline(false);
+                  await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded'});
+                  if(!await page.locator('#installButton').count())
+                    throw Error('Original Estate install button absent');
+                  await context.close();passed++;
+                }catch(e){throw Error('CP11 '+viewport.width+'x'+viewport.height+': '+e.message);}
+              }
+              if(passed!==2)throw Error('Phone/Fold proof incomplete');
+              console.log('CP11 SW LIVE BROWSER PASS 2/2: original root worker registered+controlling; cached Access page returns offline on phone and Fold; install button preserved');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP11_ORIGINAL_SW_HOLD',e);process.exitCode=1});
           NODE
       - name: Eight-contact phone and desktop proof
         shell: bash

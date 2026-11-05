@@ -250,6 +250,27 @@ def verify_original_pwa_cp10():
             "Owner-facing one-app truth or Fold tap target missing")
     print("CP10 ORIGINAL PWA PASS — original identity/scope/root install preserved + Continue shortcut + Access Mesh manifest / 48px tap link; no second app")
 
+def verify_original_service_worker_cp11():
+    """CP11: repaired original service worker stays one source, not another PWA."""
+    sw = Path("sw.js").read_text(encoding="utf-8")
+    core = sw.split("const CORE=[", 1)[1].split("];", 1)[0]
+    malformed = chr(92) + "n"
+    require(malformed not in core,
+            "Original PWA service-worker CORE list contains literal backslash-n syntax error")
+    require(sw.count("const CORE=[") == 1 and
+            sw.count("self.addEventListener('install'") == 1 and
+            sw.count("self.addEventListener('activate'") == 1 and
+            sw.count("self.addEventListener('fetch'") == 1,
+            "Original single-worker lifecycle or authority changed")
+    require("'./access/index.html',\n  './career/',\n  './career/index.html'," in sw,
+            "Two malformed original source transitions were not byte-locally repaired")
+    require("event.respondWith(fresh(event.request))" in sw,
+            "Original network-first / cached recovery handler changed")
+    require("if(url.pathname.startsWith('/api/owner/')||url.pathname==='/api/ailatheo') return;" in sw,
+            "Protected private API cache bypass changed")
+    print("CP11 SW ORIGINAL PASS — exactly repaired syntax transitions, lifecycle and protected fetch scope unchanged")
+
+
 def main():
     d=json.loads(REG.read_text(encoding="utf-8"))
     routes=d["routes"]
@@ -294,6 +315,7 @@ def main():
     verify_direct_use_cp08()
     verify_quick_return_cp09()
     verify_original_pwa_cp10()
+    verify_original_service_worker_cp11()
     print("JM EXISTING HOMES CP02 PASS — 10 unchanged originals + 8 earlier HTTP pointers + 2 original Workshop/Wix + 5 Chrome-verified department routes; private-source boundary PASS")
 if __name__=="__main__":
     main()

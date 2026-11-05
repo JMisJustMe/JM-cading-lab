@@ -1,0 +1,635 @@
+{
+  "schema": "jm.cp38.direct-native/1.0",
+  "repoModule": "coding-estate/sovereign-ten/direct/game-native.mjs",
+  "sourceSha256": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+  "passed": 130,
+  "failed": 0,
+  "cases": [
+    {
+      "label": "ice",
+      "event": "contact.low_shear_slide",
+      "eventId": "E0001",
+      "labStart": "1,1",
+      "labEnd": "3,1",
+      "pressure": 9,
+      "nativeOutcome": "low_shear_slide",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "PASS"
+    },
+    {
+      "label": "floor",
+      "event": "contact.displace",
+      "eventId": "E0001",
+      "labStart": "1,1",
+      "labEnd": "0,1",
+      "pressure": 9,
+      "nativeOutcome": "displace",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "PASS"
+    },
+    {
+      "label": "mud",
+      "event": "contact.traction_stop",
+      "eventId": "E0001",
+      "labStart": "1,2",
+      "labEnd": "1,2",
+      "pressure": 9,
+      "nativeOutcome": "traction_stop",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "MANUAL_START_HOLD"
+    },
+    {
+      "label": "boundary",
+      "event": "contact.boundary_return",
+      "eventId": "E0002",
+      "labStart": "0,1",
+      "labEnd": "0,1",
+      "pressure": 9,
+      "nativeOutcome": "boundary_return",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "PASS"
+    },
+    {
+      "label": "recovery",
+      "event": "contact.state_recovered",
+      "eventId": "E0002",
+      "labStart": "3,1",
+      "labEnd": "1,1",
+      "pressure": 0,
+      "nativeOutcome": "state_recovered",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "PASS"
+    },
+    {
+      "label": "emptyRecovery",
+      "event": "contact.recovery_unavailable",
+      "eventId": "E0001",
+      "labStart": "1,1",
+      "labEnd": "1,1",
+      "pressure": 0,
+      "nativeOutcome": "recovery_unavailable",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "PASS"
+    },
+    {
+      "label": "glassRupture",
+      "event": "contact.rupture_displace",
+      "eventId": "E0001",
+      "labStart": "4,1",
+      "labEnd": "5,1",
+      "pressure": 22,
+      "nativeOutcome": "rupture_displace",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "MANUAL_START_HOLD"
+    },
+    {
+      "label": "strataPlastic",
+      "event": "contact.plastic_deformation",
+      "eventId": "E0001",
+      "labStart": "4,2",
+      "labEnd": "4,2",
+      "pressure": 22,
+      "nativeOutcome": "plastic_deformation",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "MANUAL_START_HOLD"
+    },
+    {
+      "label": "strataElastic",
+      "event": "contact.elastic_return",
+      "eventId": "E0001",
+      "labStart": "4,2",
+      "labEnd": "4,2",
+      "pressure": 9,
+      "nativeOutcome": "elastic_return",
+      "sourceHash": "ed72ec0880af89925ab78fe0de125f47613217a3758d9a744dd08420e00c3310",
+      "replay": "MANUAL_START_HOLD"
+    }
+  ],
+  "checks": [
+    {
+      "name": "all nine genuine lab consequence kinds are routed",
+      "pass": true
+    },
+    {
+      "name": "real native GameCoding AST and JM GameCore AST parsed",
+      "pass": true
+    },
+    {
+      "name": "ice original consequence",
+      "pass": true
+    },
+    {
+      "name": "ice original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "ice host capture",
+      "pass": true
+    },
+    {
+      "name": "ice true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "ice native original identity",
+      "pass": true
+    },
+    {
+      "name": "ice real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "ice lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "ice native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "ice session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "ice tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "ice event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "ice forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "ice coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "ice deterministic original replay",
+      "pass": true
+    },
+    {
+      "name": "floor original consequence",
+      "pass": true
+    },
+    {
+      "name": "floor original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "floor host capture",
+      "pass": true
+    },
+    {
+      "name": "floor true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "floor native original identity",
+      "pass": true
+    },
+    {
+      "name": "floor real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "floor lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "floor native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "floor session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "floor tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "floor event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "floor forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "floor coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "floor deterministic original replay",
+      "pass": true
+    },
+    {
+      "name": "mud original consequence",
+      "pass": true
+    },
+    {
+      "name": "mud original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "mud host capture",
+      "pass": true
+    },
+    {
+      "name": "mud true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "mud native original identity",
+      "pass": true
+    },
+    {
+      "name": "mud real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "mud lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "mud native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "mud session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "mud tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "mud event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "mud forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "mud coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "boundary original consequence",
+      "pass": true
+    },
+    {
+      "name": "boundary original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "boundary host capture",
+      "pass": true
+    },
+    {
+      "name": "boundary true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "boundary native original identity",
+      "pass": true
+    },
+    {
+      "name": "boundary real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "boundary lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "boundary native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "boundary session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "boundary tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "boundary event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "boundary forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "boundary coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "boundary deterministic original replay",
+      "pass": true
+    },
+    {
+      "name": "recovery original consequence",
+      "pass": true
+    },
+    {
+      "name": "recovery original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "recovery host capture",
+      "pass": true
+    },
+    {
+      "name": "recovery true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "recovery native original identity",
+      "pass": true
+    },
+    {
+      "name": "recovery real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "recovery lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "recovery native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "recovery session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "recovery tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "recovery event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "recovery forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "recovery coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "recovery deterministic original replay",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery original consequence",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery host capture",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery native original identity",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "emptyRecovery deterministic original replay",
+      "pass": true
+    },
+    {
+      "name": "glassRupture original consequence",
+      "pass": true
+    },
+    {
+      "name": "glassRupture original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "glassRupture host capture",
+      "pass": true
+    },
+    {
+      "name": "glassRupture true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "glassRupture native original identity",
+      "pass": true
+    },
+    {
+      "name": "glassRupture real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "glassRupture lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "glassRupture native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "glassRupture session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "glassRupture tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "glassRupture event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "glassRupture forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "glassRupture coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic original consequence",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic host capture",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic native original identity",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "strataPlastic coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "strataElastic original consequence",
+      "pass": true
+    },
+    {
+      "name": "strataElastic original coordinate hash",
+      "pass": true
+    },
+    {
+      "name": "strataElastic host capture",
+      "pass": true
+    },
+    {
+      "name": "strataElastic true native dispatch",
+      "pass": true
+    },
+    {
+      "name": "strataElastic native original identity",
+      "pass": true
+    },
+    {
+      "name": "strataElastic real mechanic and system trace",
+      "pass": true
+    },
+    {
+      "name": "strataElastic lossless original pressure and coordinates retained",
+      "pass": true
+    },
+    {
+      "name": "strataElastic native result is independent object",
+      "pass": true
+    },
+    {
+      "name": "strataElastic session replay rejected",
+      "pass": true
+    },
+    {
+      "name": "strataElastic tampered pressure rejected",
+      "pass": true
+    },
+    {
+      "name": "strataElastic event misroute rejected",
+      "pass": true
+    },
+    {
+      "name": "strataElastic forged signature rejected",
+      "pass": true
+    },
+    {
+      "name": "strataElastic coordinate tampering rejected",
+      "pass": true
+    },
+    {
+      "name": "mutable-ledger-plus-receipt forgery after host pin rejected",
+      "pass": true
+    },
+    {
+      "name": "wrong-session receipt signature rejected",
+      "pass": true
+    },
+    {
+      "name": "missing authenticator rejected",
+      "pass": true
+    },
+    {
+      "name": "native runtime itself rejects undeclared event",
+      "pass": true
+    },
+    {
+      "name": "failed native invariant cannot commit a result or consume signed proof",
+      "pass": true
+    },
+    {
+      "name": "original records remain untouched on disk",
+      "pass": true
+    }
+  ],
+  "holds": [
+    "No external durable authentication: host session key and pinned records are in memory",
+    "No direct Fold8 physical gesture evidence",
+    "Native GameCore applies event-specific outcome, while original Contact Lab retains physics authority"
+  ]
+}

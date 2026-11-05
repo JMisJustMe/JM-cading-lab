@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Pseudoaltry — Zoomometry × Pseudoludo × Physical Contact · v0.6.0</title>
+<style>
+:root{color-scheme:dark;--bg:#08111d;--panel:#111f30;--pane:#172b40;--line:#31506d;--text:#eaf5fe;--muted:#a5c0d6;--blue:#72d7ef;--gold:#efd188;--green:#91dfbd;--r:19px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 8% -5%,#173450 0,transparent 37%),radial-gradient(ellipse at 99% 18%,#1b2b4a 0,transparent 32%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif}main,header,footer{max-width:1040px;margin:auto;padding:20px}header{padding-top:38px;padding-bottom:8px}h1{margin:.2em 0;line-height:1.05;font-size:clamp(2.1rem,7vw,4.3rem);letter-spacing:-.05em}h2{font-size:1.4rem;margin:0 0 12px}h3{font-size:1.04rem;margin:0 0 7px}p{margin:6px 0 12px}.muted,small{color:var(--muted)}small{font-size:.79rem}.eyebrow{color:var(--blue);text-transform:uppercase;letter-spacing:.15em;font-size:.75rem;font-weight:800}.deck{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.panel{background:linear-gradient(155deg,#112438f3,#101b2cf5);border:1px solid var(--line);border-radius:var(--r);padding:19px;margin-bottom:14px;box-shadow:0 9px 30px #0003}.card{grid-column:span 4;background:var(--pane);border:1px solid var(--line);border-radius:16px;padding:15px;min-width:0}.wide{grid-column:span 12}.half{grid-column:span 6}.pill{border:1px solid #41637b;color:#d0e7f5;border-radius:999px;padding:4px 10px;display:inline-block;font-size:.76rem;font-weight:700;margin-right:6px;margin-bottom:5px}.pill.active{border-color:var(--green);color:var(--green)}.num{font-size:2rem;color:var(--gold);line-height:1.2;font-weight:800;letter-spacing:-.03em}.detail{font-size:.84rem;color:var(--muted)}.inputgrid{display:grid;grid-template-columns:2fr 1fr;gap:12px}label{display:block;font-weight:650;font-size:.86rem;margin:0 0 4px}input[type=text],input[type=date],textarea{display:block;width:100%;background:#0a1828;color:var(--text);border:1px solid #4b6a84;border-radius:11px;padding:12px 13px;font:inherit;outline-offset:2px}textarea{font-size:.79rem;min-height:240px;resize:vertical}input[type=range]{width:100%;accent-color:#6fd4e6;min-height:27px}button{border:1px solid #4f7891;background:#203b52;color:var(--text);border-radius:12px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}button:focus-visible{outline:3px solid #91dfbd;outline-offset:3px}button.primary{background:#2d7892;color:#fff;border-color:#7fc9df}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}select{display:block;width:100%;background:#0a1828;color:var(--text);border:1px solid #4b6a84;border-radius:11px;padding:12px 13px;font:inherit}.checkrow{display:flex;gap:10px;align-items:center;cursor:pointer}.checkrow input{width:18px;height:18px;accent-color:#77cbe2}.science{border-left:3px solid var(--blue);padding:6px 12px;margin:9px 0;background:#12283a}.symbol{border-left-color:var(--gold)}.scope{border-left-color:var(--green)}.axis{border-top:1px solid var(--line);padding:13px 0}.axis:first-of-type{border-top:0}.ends{display:flex;justify-content:space-between;gap:12px}.ends span{max-width:45%;font-size:.79rem;color:#bbd4e7}.value{color:var(--gold);font-weight:800}.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}a{color:#9cdff0}a:hover{text-decoration:none}.feature{font-weight:800;color:var(--green)}.notice{color:var(--gold)}.hairline{border:0;border-top:1px solid #2e4a64;margin:20px 0}#astroBlock[hidden],#astroComposer[hidden]{display:none}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tabs button[aria-pressed=true]{background:#2c6578;border-color:#79d7e6}.compact{font-size:.86rem}footer{text-align:center;color:var(--muted);font-size:.8rem;padding-bottom:44px}@media(max-width:700px){header{padding-top:24px}main,header,footer{padding-left:13px;padding-right:13px}.card,.half{grid-column:span 12}.inputgrid{grid-template-columns:1fr}.notes{grid-template-columns:1fr}.panel{padding:15px}.num{font-size:1.9rem}body{font-size:15px}}
+
+/* CP04 integrated meaning + living-family route, touch-first */
+.matrix-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.matrix-summary{border-left:3px solid var(--gold);background:#17283b;padding:12px;border-radius:10px;margin-top:12px}
+.matrix-summary p{margin:4px 0 9px}.matrix-summary strong{color:var(--gold)}
+#meaningCards .card{grid-column:span 6}
+.scene-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.scene-result{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0}
+.scene-line{background:#122338;border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.scene-line strong{display:block;color:var(--blue);margin-bottom:5px}
+.scene-line p{margin:0}
+.method-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#fitOutcome{border-left:3px solid var(--green);background:#152c35;border-radius:10px;padding:12px;margin-top:10px}
+.footnote{font-size:.77rem;color:var(--muted)}
+select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+@media(max-width:700px){.matrix-head,.scene-choice,.scene-result,.method-grid{grid-template-columns:1fr}#meaningCards .card{grid-column:span 12}.scene-line{padding:10px}}
+
+/* CP05 / Pseudotry: one existing engine, two context-driven reading faces. */
+#flipDeck{border-color:#517f91;background:linear-gradient(146deg,#142c42,#101e32)}
+.flip-top{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.flip-top h2{font-size:1.5rem}
+.dual-toggle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.dual-toggle button{min-width:0;text-align:left;min-height:75px;border:1px solid #587589;background:#13293b;padding:13px 15px;border-radius:15px}
+.dual-toggle button strong{display:block;font-size:1.1rem;letter-spacing:-.02em}
+.dual-toggle button small{display:block;line-height:1.5;color:#b8d1df}
+.dual-toggle button[aria-selected="true"]{background:#21566c;border-color:#89e4ef;box-shadow:inset 0 0 0 1px #84d7e3}
+.flip-face{background:#0b1c2d;border:1px solid #35536a;border-radius:16px;padding:16px}
+.flip-face h3{font-size:1.15rem;color:var(--gold)}
+.flip-face[hidden]{display:none}
+.flip-face .controls{margin-top:13px}
+.flip-face .science{margin-top:12px}
+.flip-footer{margin-top:13px;border-top:1px solid #32516b;padding-top:13px}
+.flip-identity{display:inline-flex;align-items:center;border-radius:999px;border:1px solid #587b88;color:#b6e0e8;padding:4px 11px;font-size:.75rem;font-weight:700}
+.flip-status{border-left:3px solid var(--green);margin-top:12px;padding:9px 12px;background:#112a35;border-radius:9px}
+.flip-status p{margin:0}
+@media(max-width:530px){.dual-toggle{gap:7px}.dual-toggle button{padding:11px;min-height:92px}.dual-toggle button strong{font-size:.94rem}.flip-face{padding:12px}}
+
+/* CP06: owner-origin Pseudoaltry physical/embodied contact as a shared layer, no new app. */
+#physicalContact{border:1px solid #648a72;background:linear-gradient(148deg,#142d32,#101f31)}
+.physical-steps{border-left:4px solid var(--green);padding:12px 15px;background:#142b31;border-radius:10px;margin:10px 0}
+.physical-status{border:1px solid #567c73;background:#102b31;border-radius:11px;padding:12px;margin-top:12px;overflow-wrap:anywhere}
+.physical-status strong{color:var(--green)}
+.physical-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.physical-tools>*{min-height:44px}
+#physicalContact textarea{min-height:95px}
+#physicalContact .safety{border-left:3px solid var(--gold);padding:8px 12px;background:#302d25;border-radius:6px}
+@media print{body *{visibility:hidden!important}#physicalContact,#physicalContact *{visibility:visible!important}#physicalContact{position:absolute;left:0;top:0;width:100%;background:white!important;color:black!important;box-shadow:none!important}#physicalContact .physical-tools,#physicalContact .controls{display:none!important}#physicalContact textarea,#physicalContact select{border:1px solid black!important;color:black!important}#physicalContact strong,#physicalContact h2{color:black!important}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">JM ECOSTATE · Source-linked exploration · v0.6.0</div>
+  <h1>JM Pseudoaltry</h1>
+  <p class="muted">Zoomometry × Pseudoludo · two views of one exploration, grounded through a shared Physical Contact route · original SHIMS, Exemplar Family, and evidence checks remain intact</p>
+  <nav class="controls" aria-label="Estate return doors"><a class="pill" href="../../access/">JM Access Mesh</a><a class="pill" href="../">Theory MultiHub</a></nav>
+  <span class="pill active">Pythagorean ON</span><span class="pill active">Chaldean ON</span><span class="pill active">English Gematria ON</span><span class="pill">Astrology AVAILABLE</span>
+</header>
+<main>
+
+<section class="panel" id="flipDeck" aria-labelledby="flipTitle">
+ <div class="flip-top">
+  <div><div class="eyebrow">JM Pseudoaltry · One creation · Two sides · Real-world contact</div><h2 id="flipTitle">Turn the idea. Meet the world.</h2></div>
+  <span class="flip-identity">Side Be → Contact → Side Af</span>
+ </div>
+ <p class="compact muted">A single shared subject, scenario, source and receipt. Side A examines across scales; Side B plays with possible responses. Both can challenge each other. <strong>Neither side is a truth machine.</strong> Physical Contact below brings a real optional activity into both views.</p>
+ <div class="dual-toggle" role="tablist" aria-label="Choose an exploration side">
+  <button type="button" role="tab" id="flipA" aria-controls="zoomFace" aria-selected="true" tabindex="0"><strong>Side A · Zoomometry</strong><small>Examine · Compare · Question</small></button>
+  <button type="button" role="tab" id="flipB" aria-controls="ludoFace" aria-selected="false" tabindex="-1"><strong>Side B · Pseudoludo</strong><small>Play · Imagine · Test possibilities</small></button>
+ </div>
+ <div class="flip-face" id="zoomFace" role="tabpanel" aria-labelledby="flipA">
+  <h3>Zoomometry · What do we know, and at what scale?</h3>
+  <div class="scene-choice">
+   <div><label for="zoomScale">Change examination scale</label><select id="zoomScale"><option value="person">Individual · actions and experiences</option><option value="relation">Relationship · interaction and response</option><option value="environment">Environment · pressures and conditions</option><option value="system">System · rules, categories and evidence</option></select></div>
+   <div><label for="zoomQuestion">Investigative move</label><select id="zoomQuestion"><option value="observe">Separate observation from interpretation</option><option value="compare">Compare alternative explanations</option><option value="limits">Identify what remains unproven</option><option value="repair">Find a reversible next step</option></select></div>
+  </div>
+  <div class="flip-status" id="zoomOutcome" aria-live="polite"></div>
+  <div class="controls"><a class="pill" href="#conditionalFit">Check claim scope and evidence</a><a class="pill" href="#shimsMeaning">Explore SHIMS meanings</a><button type="button" id="zoomPlay">Flip to Pseudoludo</button></div>
+ </div>
+ <div class="flip-face" id="ludoFace" role="tabpanel" aria-labelledby="flipB" hidden>
+  <h3>Pseudoludo · What if we tried another response?</h3>
+  <p class="compact muted">The original Exemplar Family supplies the fictional scenario; switching a response here also changes the living scene below. This is a simulation, <strong>not</strong> observed human behaviour.</p>
+  <div class="scene-choice">
+   <div><label for="playResponse">Possible action in the shared family scene</label><select id="playResponse"><option value="ask">Ask and check</option><option value="assume">Assume and act</option><option value="repair">Pause, listen and repair</option></select></div>
+   <div><label for="playPerspective">Whose perspective?</label><select id="playPerspective"><option value="Younger child">Younger child</option><option value="Middle child">Middle child</option><option value="Older child">Older child</option><option value="Mother">Mother</option><option value="Father">Father</option><option value="Grandparent">Grandparent</option><option value="Neighbour">Neighbour</option></select></div>
+  </div>
+  <div class="flip-status" id="ludoOutcome" aria-live="polite"></div>
+  <div class="controls"><a class="pill" href="#exemplarLab">Open the full Exemplar Family</a><button type="button" id="ludoExamine">Flip to Zoomometry</button></div>
+ </div>
+ <div class="flip-footer compact"><strong>Pseudotry</strong> remains the inherited practical method inside Pseudoaltry: propose → try → observe what actually follows → revise. <strong>Side Be</strong> (before contact) and <strong>Side Af</strong> (after contact) are inherited JM before/after concepts, <em>not</em> replacements for Side A/B. The earlier Manifestic Theory / Practical Method pairing is preserved as a distinct ancestor. Meaningful play is not proof; any empirical conclusion still needs relevant evidence.</div>
+ <details style="margin-top:10px"><summary>Source and naming continuity</summary><p class="compact">Public title: JM Pseudoaltry, chosen 5 November 2026. Immediate predecessor: JM Pseudotry (v0.5.0). Earlier historical project name: JM Pseudology (v0.2–v0.4.1). Existing /theory/pseudology/ location is retained so prior pointers continue to work. Original SHIMS, Exemplifier Family, Whole Human Systems, Side Be/Af, and Contextual A/B Controls remain independent sources. The two new names are working methods, not established scientific disciplines.</p></details>
+</section>
+
+<section class="panel" id="physicalContact" aria-labelledby="physicalTitle">
+ <div class="flip-top"><div><div class="eyebrow">JM Pseudoaltry · Real-world contact shared by Side A and Side B</div><h2 id="physicalTitle">Physical Contact · Bring the idea into the room</h2></div><span class="flip-identity">FIELD → PRESSURE → ROUTE → COMPRESSION → TRACE</span></div>
+ <p class="compact muted">Use a simple, optional real-world activity to test what you thought might happen. <strong>Changing a fictional scenario is not doing the physical activity.</strong> This app cannot see your room, detect touch outside the screen, or verify what happened. Your report remains your report.</p>
+ <div class="scene-choice">
+  <div><label for="physicalActivity">Choose a safe, tangible contact</label><select id="physicalActivity">
+   <option value="perspective">Perspective swap · one object, two viewpoints</option>
+   <option value="route">Route test · move a token along two drawn paths</option>
+   <option value="environment">Environment contact · compare two safe positions</option>
+  </select></div>
+  <div><label for="physicalCapacity">Capacity / support (optional; not a health assessment)</label><select id="physicalCapacity">
+   <option value="available">Ready for a small, comfortable step</option>
+   <option value="simplify">Make the step smaller or ask for support</option>
+   <option value="pause">Pause / observe without physically acting</option>
+  </select></div>
+ </div>
+ <div id="physicalSteps" class="physical-steps" role="status" aria-live="polite"></div>
+ <p class="safety compact">Use only ordinary non-breakable objects on a stable surface; no strain, risky movement, electricity handling, or sharing of someone else's information. If an activity is unsuitable, skip it. Observation is not a diagnosis or scientific proof.</p>
+ <div class="scene-choice">
+  <div><label for="physicalBefore">Before · What do you expect might happen?</label><textarea id="physicalBefore" rows="3" maxlength="400" placeholder="An expectation or question, not yet evidence"></textarea></div>
+  <div><label for="physicalAfter">After · What did you personally observe?</label><textarea id="physicalAfter" rows="3" maxlength="400" placeholder="Only describe what happened if you actually tried the activity"></textarea></div>
+ </div>
+ <div class="scene-choice">
+  <div><label for="physicalState">Contact status · Owner self-report</label><select id="physicalState"><option value="not-started">Not started</option><option value="planned">Planned only</option><option value="attempted">Attempted (outcome not confirmed)</option><option value="reported-complete">I report completing the action</option><option value="parked">Parked / not appropriate</option></select></div>
+  <div><label for="physicalDifference">Difference / possible correction (optional)</label><textarea id="physicalDifference" rows="3" maxlength="400" placeholder="What differed from expectation? What would you test next?"></textarea></div>
+ </div>
+ <div id="physicalOutcome" class="physical-status" aria-live="polite"></div>
+ <label class="checkrow"><input type="checkbox" id="physicalReceiptOpt"><span>Include this voluntary physical-contact <strong>self-report</strong> in a receipt I explicitly generate (default OFF)</span></label>
+ <div class="physical-tools"><a class="pill" href="#flipDeck">Change Side A or Side B</a><a class="pill" href="#exemplarLab">Compare fictional Exemplar Family</a><button type="button" id="physicalPrint">Print a paper activity card</button><button type="button" id="physicalReset">Clear physical notes</button></div>
+ <p class="footnote">Original independent JM donors: <em>TheObserversDoor Mind/Body Physical Pass v0.3</em> (field / pressure / route / compression / trace), <em>Body Carries Participation</em>, <em>Reality Contact</em> and <em>Action Bridges</em>. This is a public-safe, non-clinical activity adaptation, not an import of personal medical or private historical details.</p>
+</section>
+<section class="panel" aria-labelledby="intakeTitle">
+ <h2 id="intakeTitle">1 · First contact</h2>
+ <p class="muted compact">Starts with JM's existing fictional SHIMS example. Replace it to calculate a different name or phrase. No login, analytics, automatic saving, external calls, or uploads.</p>
+ <div class="inputgrid">
+  <div><label for="person">Name / word body (for the three standard routes)</label><input id="person" type="text" value="Exemplifying Exemplifier" autocomplete="off" spellcheck="false"></div>
+  <div><label for="dob">Date of birth (optional)</label><input id="dob" type="date" aria-describedby="dateNote"><small id="dateNote">Adds an optional date number; does not gate the name readings.</small></div>
+ </div>
+ <div class="controls"><button id="demo">Restore fictional example</button><button id="clear">Use a blank personal entry</button></div>
+ <p id="identityNote" class="detail" aria-live="polite">Fictional exemplar — outputs are demonstrations, not a judgment about a real person.</p>
+</section>
+<section class="panel" aria-labelledby="numbersTitle">
+ <h2 id="numbersTitle">2 · The standard three routes</h2>
+ <p class="muted compact">The three systems always calculate independently. Their symbolic meanings are not empirical personality measures. Source mappings follow historical SHIMS v4.7.</p>
+ <div class="deck" aria-live="polite">
+   <div class="card"><h3>Pythagorean</h3><div id="pythNum" class="num">—</div><div id="pythDetails" class="detail"></div></div>
+   <div class="card"><h3>Chaldean</h3><div id="chNum" class="num">—</div><div id="chDetails" class="detail"></div></div>
+   <div class="card"><h3>English Gematria · Ordinal</h3><div id="ordNum" class="num">—</div><div id="ordDetails" class="detail"></div></div>
+ </div>
+ <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--blue);font-weight:700">Show details, mirror route, letter-by-letter arithmetic</summary><div class="deck" style="margin-top:10px"><div class="card half"><h3>Gematria reverse-ordinal mirror</h3><div id="revNum" class="num">—</div><div class="detail">An internal Gematria comparison, not a fourth default system.</div></div><div class="card half"><h3>Birth-date sub-reading</h3><div id="lifeNum" class="num">Not supplied</div><div class="detail">Traditional Pythagorean date-digit reduction; optional and separate from name values.</div></div></div><pre id="letterProof" style="white-space:pre-wrap;font-size:.78rem;overflow-wrap:anywhere"></pre></details>
+ <p class="detail" id="inputWarning">Only A–Z letters are used in this historical donor's normalisation; accented and non-Latin names require a declared transliteration rule.</p>
+</section>
+<section class="panel" aria-labelledby="deepTitle">
+ <h2 id="deepTitle">3 · Deep SHIMS name and life positions</h2>
+ <p class="muted compact">Expanded using the historical SHIMS v4.7 source conventions, not a new numerology tradition. All three numeric systems remain active. These calculations are symbolic and position-sensitive—not measured character traits or predictions.</p>
+ <label class="checkrow"><input id="yVowel" type="checkbox"><span>Source option: treat the letter Y as a vowel for the vowel/consonant routes (default: no)</span></label>
+ <h3 style="margin-top:14px">Pythagorean · name positions</h3>
+ <div id="namePositions" class="deck" aria-live="polite"></div>
+ <h3 style="margin-top:18px">Pythagorean · birth-date positions and phases</h3>
+ <p class="detail">Date sections only calculate when a real valid date is supplied. Challenges and Pinnacles use SHIMS v4.7's declared month/day/year reductions, including its 11/22/33 stopping convention.</p>
+ <div id="datePositions" class="deck" aria-live="polite"></div>
+ <h3 style="margin-top:18px">Chaldean &amp; English Gematria · distinct word routes</h3>
+ <div id="wordPositions" class="deck" aria-live="polite"></div>
+ <details style="margin-top:12px"><summary style="cursor:pointer;color:var(--blue);font-weight:700">Methods, calculation boundaries and source contact</summary>
+ <div class="science scope"><strong>Calculation is not validation.</strong><p class="compact">Raw values are reproducible under disclosed letter tables, input spelling, chosen vowel convention and DOB. Meaning can differ between name positions, date positions and traditions. Agreement across number systems is a mathematical feature of those mappings, not evidence of a causal human trait.</p></div>
+ <div class="science"><strong>Source inheritance.</strong><p class="compact">Pythagorean/Chaldean/Ordinal/Reverse tables, missing numbers, Hidden Passion, and DOB challenge/pinnacle/period methods: recovered SHIMS Reality-Aligned Reading Core v4.7. Cornerstone, Capstone, First Vowel and Balance are labelled extensions using the same established tables. Personal Year/Month/Day are optional date-phase extensions with the displayed calculation. Full astrology ephemeris/natal calculations are not claimed.</p></div>
+ <div class="science symbol"><strong>Y and non-Latin spellings.</strong><p class="compact">The historical donor's vowel convention is AEIOU unless Y is explicitly selected. Only A–Z enters numeric totals. Displayed names remain as entered and any transliteration/omitted letters must be acknowledged.</p></div>
+ </details>
+</section>
+<section class="panel" id="shimsMeaning" aria-labelledby="meaningTitle">
+ <h2 id="meaningTitle">3A · Original SHIMS Meaning Matrix</h2>
+ <p class="muted compact">Recovered SHIMS v4.7: native symbolic meaning <strong>×</strong> number position <strong>×</strong> JMLogic <strong>×</strong> possible difficulty <strong>×</strong> recourse. Every field is labelled as a historical interpretation, not a factual assessment of a person.</p>
+ <div class="matrix-head">
+  <div><label for="meaningSystem">Symbolic tradition</label><select id="meaningSystem"><option value="pyth">Pythagorean</option><option value="chald">Chaldean</option><option value="gem">English Gematria</option></select></div>
+  <div><label for="meaningPosition">Meaning position</label><select id="meaningPosition"><option value="Expression">Expression / full name</option><option value="SoulUrge">Soul Urge / vowel body</option><option value="Personality">Personality / consonants</option><option value="LifePath">Life Path / birth date</option><option value="Challenge">Challenge / pressure</option><option value="Pinnacle">Pinnacle / phase</option><option value="Maturity">Maturity / integration</option><option value="Cornerstone">Cornerstone / first letter</option><option value="Capstone">Capstone / final letter</option><option value="Period">Life period</option></select></div>
+  <div><label for="meaningNumber">Number</label><select id="meaningNumber"><option value="auto">Follow the reading</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>11</option><option>22</option><option>33</option></select></div>
+ </div>
+ <div id="meaningSummary" class="matrix-summary" role="status" aria-live="polite">Choose a name or number to compare meanings.</div>
+ <div id="meaningCards" class="deck" style="margin-top:12px"></div>
+ <details><summary>SHIMS donor, tradition differences and uncertainty</summary><p class="compact">The meanings here are re-used from <strong>SHIMS Reality-Aligned Reading Core v4.7</strong>. The same numerical value is not the same statement in different systems or positions. Chaldean compound totals are preserved; reduction-based comparison is <em>illustrative</em>, not permission to impose Pythagorean master-number rules on Chaldean. The historical English Gematria route here is ordinal A=1...Z=26. This is not a validated human measurement.</p></details>
+</section>
+<section class="panel" aria-labelledby="contextTitle">
+ <h2 id="contextTitle">4 · JM contextual preference reflection</h2>
+ <p class="muted compact">Included from the start. Original JM questions informed by the comparative idea of preferences, not a copy of the official MBTI instrument and not a validated assessment. Midpoints are meaningful; context can change answers.</p>
+ <div id="axisList"></div>
+ <label for="situation">Situation being considered (optional)</label><input id="situation" type="text" placeholder="e.g. learning a new skill, working with others" autocomplete="off">
+</section>
+<section class="panel" aria-labelledby="astroTitle">
+ <h2 id="astroTitle">5 · Astrology: installed as an optional lens</h2>
+ <label class="checkrow"><input id="astroOpt" type="checkbox"><span>Include a date-based tropical sun-sign preview in this reading</span></label>
+ <div id="astroBlock" hidden><div class="science symbol"><strong id="sunSign">Provide a date first.</strong><p class="compact">This is a conventional approximate date-range illustration, not a calculated natal chart, a prediction or proof of a trait. Full natal interpretation requires an accurate date, birth time, birthplace and an ephemeris; cusp dates may differ by year, time and timezone.</p></div></div>
+
+ <details id="astroComposer" hidden style="margin-top:10px">
+  <summary>Optional SHIMS astrology chart-key composer (manual, not calculated)</summary>
+  <p class="detail">If you already have a chart from another source, you may record its exact keys here. These entries are <strong>user-supplied</strong>, not an ephemeris or an inferred natal chart. Don't enter another person's data without their permission.</p>
+  <label class="checkrow"><input id="astroKeysOpt" type="checkbox"><span>Include manually supplied chart keys in an explicit local receipt</span></label>
+  <div id="astroKeysInputs" hidden class="scene-choice" style="margin-top:12px">
+   <div><label for="moonKey">Moon sign as supplied</label><input id="moonKey" type="text" maxlength="70" autocomplete="off" placeholder="Optional manually sourced value"></div>
+   <div><label for="riseKey">Rising/Ascendant as supplied</label><input id="riseKey" type="text" maxlength="70" autocomplete="off" placeholder="Optional manually sourced value"></div>
+   <div style="grid-column:1/-1"><label for="houseKeys">Houses / aspects / source notes</label><textarea id="houseKeys" maxlength="400" rows="3" style="min-height:85px" placeholder="Include the chart's source, uncertainty, or chart keys"></textarea></div>
+  </div>
+ </details>
+</section>
+
+<section class="panel" id="palmReflection" aria-labelledby="palmTitle">
+ <h2 id="palmTitle">5A · SHIMS palm observation (optional)</h2>
+ <p class="muted compact">Another independently recovered SHIMS aspect. It concerns <em>manually described</em> hand forms and culturally interpreted symbols. No prediction, medical conclusion, ancestry claim, or hand-image analysis is performed.</p>
+ <label class="checkrow"><input id="palmOpt" type="checkbox"><span>Include a manual palm observation in this reading</span></label>
+ <div id="palmInputs" hidden style="margin-top:12px">
+  <div class="scene-choice">
+   <div><label for="palmHand">Hand observed</label><select id="palmHand"><option value="not-stated">Not stated</option><option value="left">Left</option><option value="right">Right</option><option value="both">Both</option></select></div>
+   <div><label for="palmForm">Shape (your own description)</label><input id="palmForm" type="text" maxlength="100" placeholder="No standard identity inferred"></div>
+   <div style="grid-column:1/-1"><label for="palmNotes">Observed thumb / fingers / lines / mounts</label><textarea id="palmNotes" rows="3" maxlength="400" style="min-height:85px" placeholder="Observation vs symbolic interpretation: keep them separate"></textarea></div>
+  </div>
+  <p class="detail">Optional manual observations are added only to a JSON receipt you explicitly generate. Nothing is saved automatically.</p>
+ </div>
+</section>
+<section class="panel" aria-labelledby="scienceTitle">
+ <h2 id="scienceTitle">6 · Real science, existing JM theories and claim status</h2>
+ <div class="notes">
+  <div class="science"><strong>Psychology</strong><p class="compact">Big Five stays on as a research-comparison lens. Actual Big Five scores require appropriate questions and declared scoring; these JM preference sliders are exploratory, not psychometric scores.</p></div>
+  <div class="science"><strong>Brain &amp; biology</strong><p class="compact">Empirical observations and mechanisms belong here when supported. A name calculation cannot tell us somebody's brain anatomy, medical condition or genetic traits.</p></div>
+  <div class="science symbol"><strong>Symbolic meaning</strong><p class="compact">Pythagorean, Chaldean, English Gematria and optional astrology can be explored as traditions of meaning without assuming they predict behaviour scientifically.</p></div>
+  <div class="science scope"><strong>VTS / DGYAK</strong><p class="compact">Keep source, method, confidence, interpretation, unknowns, challenge and correction visible. The individual owns their self-description.</p></div>
+ </div>
+ <details><summary style="cursor:pointer;color:var(--blue);font-weight:700">Scientific and historical contact</summary><p class="compact">2025 MBTI Form M synthesis: <a href="https://doi.org/10.1002/jcad.70006">Erford et al.</a>; traditional astrology double-blind assessment: <a href="https://doi.org/10.1038/318419a0">Carlson (1985)</a>; phrenology re-evaluated empirically: <a href="https://doi.org/10.1016/j.cortex.2018.04.011">Cortex (2018)</a>. Phrenology's historical localisation idea is different from using skull bumps to read personality; the latter is unsupported.</p></details>
+ <p class="compact">Existing JM source rooms: <a href="https://jmisjustme-estate.pages.dev/theory/" rel="noopener noreferrer" target="_blank">Theory MultiHub</a> · <a href="https://jmisjustme-estate.pages.dev/access/" rel="noopener noreferrer" target="_blank">Estate Access Mesh</a>. Historical addresses—not proof of current deployment or private-source access.</p>
+</section>
+<section class="panel" id="exemplarLab" aria-labelledby="exemplarTitle">
+ <h2 id="exemplarTitle">6A · Examplifying Examples Examplifier</h2>
+ <p class="muted compact"><strong>One family. One house. One situation. One lesson.</strong> Your original fictional teaching-world is now interactive: a person's actions, relationships and understanding can change with circumstances. Characters are <em>illustrative roles</em>, not demographic stereotypes or personality diagnoses.</p>
+ <div class="scene-choice">
+  <div><label for="familyScene">House / life situation</label><select id="familyScene"><option value="light">Hallway · Flickering light</option><option value="table">Dining table · A misunderstood question</option><option value="mirror">Mirror · Self-image and social response</option><option value="garden">Garden · Two neighbouring viewpoints</option><option value="attic">Attic · A helpful Goest / memory</option></select></div>
+  <div><label for="familyActor">Whose perspective?</label><select id="familyActor"><option value="Younger child">Younger child</option><option value="Middle child">Middle child</option><option value="Older child">Older child</option><option value="Mother">Mother</option><option value="Father">Father</option><option value="Grandparent">Grandparent</option><option value="Neighbour">Neighbour</option></select></div>
+  <div><label for="familyVersion">Contextual version</label><select id="familyVersion"><option value="Everyday">Everyday circumstances</option><option value="Pressure">Under pressure</option><option value="Recovered">After support / recovery</option></select></div>
+  <div><label for="familyChoice">Possible response</label><select id="familyChoice"><option value="ask">Ask and check</option><option value="assume">Assume and act</option><option value="repair">Pause, listen and repair</option></select></div>
+ </div>
+ <div id="sceneHeadline" class="matrix-summary" role="status" aria-live="polite"></div>
+ <div class="scene-result">
+  <div class="scene-line"><strong>Contact / observation</strong><p id="sceneSignal"></p></div>
+  <div class="scene-line"><strong>Interpretation / alternative</strong><p id="sceneAlternative"></p></div>
+  <div class="scene-line"><strong>Action / possible consequence</strong><p id="sceneConsequence"></p></div>
+  <div class="scene-line"><strong>Changed nextness / what to check</strong><p id="sceneNextness"></p></div>
+ </div>
+ <div class="method-grid">
+  <div class="science"><strong>Psychology and neuroscience contact</strong><p id="sceneScience" class="compact"></p></div>
+  <div class="science symbol"><strong>JM source relationship</strong><p id="sceneJM" class="compact"></p></div>
+ </div>
+ <div class="science scope"><strong>Five perspectives together</strong><p id="sceneModes" class="compact"></p></div>
+ <details><summary>Original family boundary and fiction status</summary><p class="compact">Based on the independently retained 28 August 2026 <em>Examplifying Examples Examplifier</em> source: the family is an exemplar, the house a contact field, life the runtime. Three character versions describe <strong>relational/contextual conditions</strong>, never three different fixed personas. The three-child minimum, extended family, neighbours, symbolic Goests and room-based lessons are preserved. This scene engine illustrates possibilities; it is not observational human data. No source manuscript is overwritten or replaced.</p></details>
+</section>
+<section class="panel" id="conditionalFit" aria-labelledby="fitTitle">
+ <h2 id="fitTitle">6B · Peepull Printsipull · XYZ-ness</h2>
+ <p class="muted compact">One framework, different individual fits. Compare <strong>who / when / where / how</strong> with the method and evidence before claiming an interpretation is universal. Your own spelling and definitions remain authorially open.</p>
+ <div class="scene-choice">
+  <div><label for="fitScope">Scope of a claim</label><select id="fitScope"><option value="unresolved">Unresolved / not established</option><option value="some">May fit some cases</option><option value="all">Proposed for all cases (requires stronger evidence)</option><option value="none">Not supported for this situation</option></select></div>
+  <div><label for="fitEvidence">What kind of evidence is available?</label><select id="fitEvidence"><option value="symbolic">Symbolic interpretation only</option><option value="self">Personal account / self-report</option><option value="observed">Directly observed event</option><option value="research">Relevant external research (source needed)</option></select></div>
+ </div>
+ <div id="fitOutcome" role="status" aria-live="polite"></div>
+ <div class="science scope"><strong>How research and symbolism can share a room</strong><p class="compact">Psychology and neuroscience can investigate measurable changes in behaviour, experience and brain learning. Numerology, astrology, philosophy and faith traditions can be explored as sources of symbolic or personal meaning. No entry must be discarded, but a symbolic account does not become independent empirical proof merely through agreement with another symbolic account.</p><p class="compact">Science contacts: <a href="https://doi.org/10.1038/s44159-024-00295-z" target="_blank" rel="noopener noreferrer">Personality change review (2024)</a> · <a href="https://www.nationalacademies.org/read/24783/chapter/5" target="_blank" rel="noopener noreferrer">How People Learn II: brain, environment and learning</a> · <a href="https://doi.org/10.1146/annurev-devpsych-010923-101709" target="_blank" rel="noopener noreferrer">Personality development review (2024)</a>. Research addresses its measured questions; it does not certify these JM interpretations.</p></div>
+</section>
+<section class="panel" aria-labelledby="lensesTitle">
+ <h2 id="lensesTitle">7 · Five ways of encountering the reading</h2>
+ <div class="tabs" id="modeTabs"></div><div id="modeExplain" class="science" role="status" style="margin-top:12px"></div>
+</section>
+<section class="panel" aria-labelledby="feedbackTitle">
+ <h2 id="feedbackTitle">8 · Voluntary feedback and correction</h2>
+ <p class="muted compact">A reading can be useful, inaccurate, too broad or simply not a fit. Mark this only with the subject's consent. A self-report is not proof of predictive validity; rigorous independent research requires participants, appropriate controls and analysis.</p>
+ <label class="checkrow"><input id="feedbackOpt" type="checkbox"><span>Include my optional feedback in a receipt I explicitly generate</span></label>
+ <div id="feedbackInputs" hidden style="margin-top:12px">
+   <label for="feedbackStatus">My reaction to the interpretation</label>
+   <select id="feedbackStatus"><option value="not-assessed">Not assessed</option><option value="reflectively-useful">Reflectively useful</option><option value="partly-useful">Partly useful</option><option value="not-useful">Not useful</option><option value="too-general">Too general</option><option value="unexpectedly-specific">Unexpectedly specific</option><option value="uncertain">Uncertain</option><option value="contradicted">Contradicted by my experience</option></select>
+   <label for="feedbackContext" style="margin-top:12px">Relevant context or counterexample (optional)</label>
+   <textarea id="feedbackContext" rows="4" maxlength="800" style="min-height:100px" placeholder="What actually happened? What might the interpretation have missed?"></textarea>
+   <p class="detail">No automatic storage or transmission. Only included if you check the option and generate the local JSON; you control whether to save or share it.</p>
+ </div>
+</section>
+<section class="panel" aria-labelledby="receiptTitle">
+ <h2 id="receiptTitle">9 · Local, explicitly exported trace</h2>
+ <p class="muted compact">A human-readable evidence boundary is attached to every route. Nothing is saved automatically. Generate this JSON only if you choose; download only when you press the export button. For personal readings, keep it private.</p>
+ <div class="controls"><button id="makeReceipt" class="primary">Generate reading receipt</button><button id="saveReceipt" disabled>Download JSON receipt</button></div>
+ <textarea id="receipt" spellcheck="false" readonly placeholder="Your optional local JSON receipt appears here after pressing Generate."></textarea>
+ <p class="detail">Working bench only. Original SHIMS v4.7 and the historical Pseudology index remain separate source authorities. No permanent personality type, diagnosis, fate prediction or scientific certification is generated.</p>
+</section>
+</main>
+<footer>JM PSEUDOALTRY · Zoomometry × Pseudoludo × Physical Contact · Pseudotry method and Pseudology history preserved · No Ding, No Claim</footer>
+<script>
+(function(){'use strict';
+const $=id=>document.getElementById(id);
+const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function mGroups(groups){const m={};groups.forEach((g,i)=>[...g].forEach(c=>{m[c]=i+1}));return m}
+const MAPS={pyth:mGroups(['AJS','BKT','CLU','DMV','ENW','FOX','GPY','HQZ','IR']),chald:mGroups(['AIJQY','BKR','CGLS','DMT','EHNX','UVW','OZ','FP']),ordinal:Object.fromEntries([...ABC].map((c,i)=>[c,i+1])),reverse:Object.fromEntries([...ABC].map((c,i)=>[c,26-i]))};
+const reduce=n=>{const path=[n];while(n>9&&![11,22,33].includes(n)){n=String(n).split('').reduce((a,c)=>a+Number(c),0);path.push(n)}return {value:n,path:path.join(' → ')}};
+function calc(s,map,yAsVowel=false){const letters=[...String(s).toUpperCase().replace(/[^A-Z]/g,'')].map(c=>({letter:c,value:map[c]}));const total=letters.reduce((a,x)=>a+x.value,0);const v=letters.filter(x=>('AEIOU'+(yAsVowel?'Y':'')).includes(x.letter)),vTotal=v.reduce((a,x)=>a+x.value,0);return {total,reduced:reduce(total),vowels:vTotal,consonants:total-vTotal,letters}}
+
+// Exact historical SHIMS v4.7 Meaning Matrix records retained as independent symbolic donor data.
+const SHIMS_NUM ={
+1:{general:'beginning, singularity, initiative, first movement, self-direction',pyth:'independence, leadership, originality, individual will, pioneering expression',chald:'solar initiating force, command, visibility, creative spark, authority pressure',gem:'first letter / first unit / seed value; a word begins to become countable route',tarot:'Magician: will, tools, operator force, manifestation through technique',astro:'1st house rhyme: body, appearance, first contact, self-interface',jm:'source ignition into a route; scattered possibility becomes one directional body',shadow:'isolation, domination, ego crown, starting without relation',recourse:'name the first useful action; begin without pretending completion'},
+2:{general:'pairing, relation, sensitivity, receiving, balance',pyth:'cooperation, diplomacy, support, mediation',chald:'lunar field, receptivity, relationship tides, emotional reflection',gem:'second unit creates comparison and polarity',tarot:'High Priestess: hidden knowledge, threshold, listening',astro:'2nd house rhyme: value, possession, resource interface',jm:'contact field; one route meets another route',shadow:'dependency, avoidance, over-merging',recourse:'clarify boundary and shared signal'},
+3:{general:'expression, language, creative movement, social signal',pyth:'communication, charm, artistry, visible feeling',chald:'Jupiter-like expansion, speech, teaching, expressive fortune',gem:'triangulation: word gains pattern through third point',tarot:'Empress: creation, body, growth, abundance',astro:'3rd house rhyme: communication, siblings, immediate environment',jm:'message becomes form; route learns to speak',shadow:'scattered talk, performance without ground',recourse:'turn expression into one traceable output'},
+4:{general:'structure, order, work, foundation, container',pyth:'discipline, craft, method, dependable building',chald:'Uranian/Rahu pressure in some schools; system, technical force, unconventional order',gem:'four corners, square, framework for meaning',tarot:'Emperor: structure, rule, architecture',astro:'4th house rhyme: roots, home, base, inner foundation',jm:'body/frame/container; route gets a room',shadow:'rigidity, control, dead systems',recourse:'build the simplest stable container'},
+5:{general:'change, movement, adaptation, freedom, contact',pyth:'versatility, experience, travel, sensory intelligence',chald:'Mercury-like movement, commerce, language, quickness',gem:'pivot number; word-route opens into exchange',tarot:'Hierophant: institution, teaching, transmission; also tradition gate',astro:'5th house rhyme: creativity, play, romance, self-expression',jm:'route in motion; system tests field through change',shadow:'restlessness, excess, no completion',recourse:'choose one experiment and trace the result'},
+6:{general:'care, responsibility, harmony, family, service',pyth:'nurture, duty, beauty, repair, domestic/social care',chald:'Venus-like harmony, attraction, service, responsibility',gem:'sixfold balance; word-route enters duty/use',tarot:'Lovers: choice, union, values, alignment',astro:'6th house rhyme: work, health routines, service, maintenance',jm:'route becomes useful to people; care plus responsibility',shadow:'over-responsibility, rescuing, perfection pressure',recourse:'serve without self-erasure; define responsibility line'},
+7:{general:'analysis, inwardness, study, mystery, refinement',pyth:'research, spiritual/intellectual depth, solitude, discernment',chald:'Ketu/Neptune-like hidden route, occult study, separation, inner knowing',gem:'the word turns inward; meaning seeks hidden route',tarot:'Chariot: directed will through control and alignment',astro:'7th house rhyme: partnership/mirror; note system difference',jm:'route enters the hidden room; proof, study, source check',shadow:'withdrawal, suspicion, unshared insight',recourse:'show the method; let insight become teachable route'},
+8:{general:'power, material order, authority, consequence, management',pyth:'ambition, executive force, finance, achievement, karma of power',chald:'Saturn-like weight, restriction, endurance, authority lesson',gem:'word takes structural consequence; meaning becomes force',tarot:'Strength/Justice depending deck: power disciplined by ethics/balance',astro:'8th house rhyme: shared resources, death/rebirth, intimacy, hidden power',jm:'route meets consequence; power must become accountable structure',shadow:'control, material obsession, harsh judgment',recourse:'audit power, exchange, responsibility and impact'},
+9:{general:'completion, compassion, broad view, release, wisdom',pyth:'humanitarianism, completion, universal concern, art of release',chald:'Mars-like fire in some systems; intensity, completion, sacrifice/action',gem:'word reaches full cycle before reset; total field view',tarot:'Hermit: wisdom, lantern, completion through inner guide',astro:'9th house rhyme: philosophy, higher learning, long journeys',jm:'route closes a cycle and returns meaning to the field',shadow:'martyrdom, vague universalism, unfinished endings',recourse:'complete, archive, return what is usable'},
+11:{general:'master signal, inspiration, heightened sensitivity',pyth:'intuitive messenger, illumination, spiritual/creative voltage',chald:'compound meaning depends source; not forced into modern master rules',gem:'double-one signal; mirrored ignition',tarot:'Justice/Strength depending deck; high-voltage balance or power',astro:'11th house rhyme: groups, future networks',jm:'two ignitions facing each other; signal must be grounded',shadow:'nervous overload, grandiosity, ungrounded prophecy',recourse:'ground insight into one clear action and one claim label'},
+22:{general:'master builder, large structure, practical vision',pyth:'big work, institution-building, vision made practical',chald:'compound source-specific; must show method, not assume',gem:'two-two architecture; relation becomes build system',tarot:'Fool/World depending mapping; cycle and new route',astro:'not a house; compare only symbolically',jm:'route architecture at scale; body becomes system',shadow:'pressure, avoidance, collapse under scale',recourse:'build the next support beam, not the whole temple at once'},
+33:{general:'master care/teacher, compassionate service',pyth:'teaching through love, service, sacrifice with wisdom',chald:'compound source-specific; must be labelled',gem:'triple expression/care gate',tarot:'composite mapping, not native major arcana',astro:'not a house; symbolic only',jm:'care body becomes teaching route',shadow:'rescuer crown, burnout, moral theatre',recourse:'teach with boundary and consent'}
+};
+const SHIMS_POS ={Expression:'outer route/output style; how the full name expresses as action and visible method',SoulUrge:'inner motive/desire; what the vowel-body wants underneath the public form',Personality:'outer mask/contact surface; consonant body and first impression',LifePath:'recurring terrain from DOB; life-route themes, not destiny sentence',Birthday:'specific day gift/pressure; the day-number as a local route tool',Maturity:'Expression plus Life Path; later-life integration route',Challenge:'pressure gate; the number shows what must be learned, balanced or repaired',Pinnacle:'seasonal route; number acts as a chapter tone over a life period',Period:'background life-cycle field; month/day/year reduced into chapter environment','House 1':'body/contact interface; first appearance of the route in the world','Planet Sign':'planet function wearing a sign costume; meaning depends on planet plus sign','Tarot Arcana':'image/operator symbol; route works through archetype rather than name table','Palm Aspect':'visible/manual observation; treat as symbolic/body-language, not diagnosis','RouteStyle':'your custom non-MBTI profile; describes preference route, not fixed type'};
+const axes=[{id:'energy',title:'Energy route',left:'Quiet reflection',right:'Live interaction'}, {id:'attention',title:'Attention route',left:'Immediate observed detail',right:'Patterns and possibilities'}, {id:'decision',title:'Decision route',left:'Formal consistency',right:'Personal/contextual impacts'}, {id:'action',title:'Action route',left:'Plan and sequence',right:'Adapt and explore'}];
+// Deep-donor calculation layer. Deterministic, offline; no inferred character scores.
+function digits(n){return [...String(Math.abs(Number(n)||0))].reduce((a,c)=>a+Number(c),0)}
+function words(s){return String(s||'').trim().split(/\s+/).map(w=>w.replace(/[^A-Za-z]/g,'')).filter(Boolean)}
+function dateParts(dob){if(!validateDob(dob))return null;const [year,month,day]=dob.split('-').map(Number);return {year,month,day}}
+function dateDeep(dob,now=new Date()){
+ const d=dateParts(dob);if(!d)return null;
+ const month=reduce(d.month),day=reduce(d.day),year=reduce(digits(d.year));
+ const life=reduce([...dob.replace(/\D/g,'')].reduce((a,x)=>a+Number(x),0));
+ const challenges=[Math.abs(day.value-month.value),Math.abs(day.value-year.value),0,Math.abs(month.value-year.value)];
+ challenges[2]=Math.abs(challenges[0]-challenges[1]);
+ const pinnacles=[reduce(month.value+day.value),reduce(day.value+year.value)];pinnacles.push(reduce(pinnacles[0].value+pinnacles[1].value));pinnacles.push(reduce(month.value+year.value));
+ const periods=[month.value,day.value,year.value];
+ const personalYear=reduce(month.value+day.value+digits(now.getFullYear()));
+ const personalMonth=reduce(personalYear.value+(now.getMonth()+1));
+ const personalDay=reduce(personalMonth.value+now.getDate());
+ return {birth_date:dob,life_path:life,birthday:{raw:d.day,red:day},month,day,year,challenge:challenges,pinnacle:pinnacles,periods,calendar_as_of:`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`,personal_year:personalYear,personal_month:personalMonth,personal_day:personalDay};
+}
+function deepRead(name,dob,yAsVowel=false,now=new Date()){
+ const normalized=String(name||'').toUpperCase().replace(/[^A-Z]/g,''),wordList=words(name);
+ const p=normalized?calc(name,MAPS.pyth,yAsVowel):null,ch=normalized?calc(name,MAPS.chald,yAsVowel):null,ord=normalized?calc(name,MAPS.ordinal,yAsVowel):null,rev=normalized?calc(name,MAPS.reverse,yAsVowel):null;
+ const vowelChars='AEIOU'+(yAsVowel?'Y':'');
+ const num=x=>x?{raw:x,total_reduced:x.reduced.value,trace:x.reduced.path}:null;
+ const firstVowel=normalized.split('').find(c=>vowelChars.includes(c))||null;
+ const firstLetter=normalized[0]||null,lastLetter=normalized[normalized.length-1]||null;
+ const counts={};if(p)p.letters.forEach(l=>counts[l.value]=(counts[l.value]||0)+1);
+ const max=Math.max(0,...Object.values(counts));
+ const passions=max?Object.keys(counts).filter(k=>counts[k]===max).map(Number).sort((a,b)=>a-b):[];
+ const missing=p?Array.from({length:9},(_,i)=>i+1).filter(i=>!counts[i]):[];
+ const balanceLetters=wordList.map(w=>w[0].toUpperCase());
+ const balanceTotal=balanceLetters.reduce((a,l)=>a+(MAPS.pyth[l]||0),0);
+ const date=dateDeep(dob,now);
+ const nm=p?{
+  expression:{raw:p.total,reduction:p.reduced},soul_urge:{raw:p.vowels,reduction:reduce(p.vowels)},personality:{raw:p.consonants,reduction:reduce(p.consonants)},
+  cornerstone:firstLetter?{letter:firstLetter,value:MAPS.pyth[firstLetter]}:null,
+  capstone:lastLetter?{letter:lastLetter,value:MAPS.pyth[lastLetter]}:null,
+  first_vowel:firstVowel?{letter:firstVowel,value:MAPS.pyth[firstVowel]}:null,
+  balance:balanceLetters.length?{letters:balanceLetters,raw:balanceTotal,reduction:reduce(balanceTotal)}:null,
+  hidden_passions:passions,missing_values:missing,
+  maturity:date?reduce(p.reduced.value+date.life_path.value):null
+ }:null;
+ const separate=(map,whole)=>whole?{compound:whole.total,reduction:whole.reduced,words:wordList.map(w=>({word:w,total:calc(w,map,yAsVowel).total,reduction:calc(w,map,yAsVowel).reduced})),vowels:whole.vowels,consonants:whole.consonants}:null;
+ return {pythagorean:nm,date, chaldean:separate(MAPS.chald,ch),english_gematria:{ordinal:separate(MAPS.ordinal,ord),reverse:separate(MAPS.reverse,rev)}, conventions:{letters:'A-Z only',vowels_y_opt_in:yAsVowel,master_reduction:'11,22,33 preserved if encountered',date_method:'SHIMS v4.7 challenge/pinnacle/period method',cornerstone_capstone_balance:'position extensions from existing mapping',symbolic_only:true}};
+}
+function datumCard(title,main,details=''){
+ const cell=document.createElement('div');cell.className='card';
+ const h=document.createElement('h3');h.textContent=title;cell.appendChild(h);
+ const n=document.createElement('div');n.className='num';n.textContent=String(main);cell.appendChild(n);
+ if(details){const d=document.createElement('div');d.className='detail';d.textContent=details;cell.appendChild(d)}
+ return cell;
+}
+function paintCards(holder,rows){const node=$(holder);node.replaceChildren(...rows.map(row=>datumCard(...row)))}
+function renderDeep(){
+ const raw=$('person').value,dob=$('dob').value,y=$('yVowel').checked,x=deepRead(raw,dob,y);
+ const n=x.pythagorean;
+ if(!n){paintCards('namePositions',[['No name provided','—','Enter a name or word-body. No values are inferred.']]);}else{
+ const cv=a=>a?`${a.raw} → ${a.reduction.value}`:'—';
+ const letter=a=>a?`${a.letter} = ${a.value}`:'—';
+ paintCards('namePositions',[
+  ['Expression',cv(n.expression),'Full A–Z name · original Pythagorean mapping'],
+  ['Soul Urge',cv(n.soul_urge),'Vowels '+(y?'A E I O U Y':'A E I O U')],
+  ['Personality',cv(n.personality),'Consonant letters'],
+  ['Cornerstone',letter(n.cornerstone),'First mapped letter'],
+  ['Capstone',letter(n.capstone),'Last mapped letter'],
+  ['First Vowel',letter(n.first_vowel),'First mapped vowel · — if none'],
+  ['Balance',n.balance?`${n.balance.raw} → ${n.balance.reduction.value}`:'—',n.balance?`Name-parts initial letters: ${n.balance.letters.join(' + ')}`:'Not supplied'],
+  ['Hidden Passion',n.hidden_passions.join(', ')||'—','Most frequent Pythagorean mapped value(s)'],
+  ['Missing / Karmic Lesson',n.missing_values.join(', ')||'None','Absent Pythagorean values (1–9)'],
+  ['Maturity',n.maturity?`${n.maturity.path}`:'Needs birth date','Reduced Expression + reduced Life Path']]);
+ }
+ const d=x.date;
+ if(!d){paintCards('datePositions',[['Birth-date routes','Not supplied','Enter a valid date for Life Path, Birthday, Periods, Challenges, Pinnacles and personal cycles.']]);}
+ else{paintCards('datePositions',[
+  ['Life Path',d.life_path.path,'Full date YYYYMMDD digit sum'],
+  ['Birthday',`${d.birthday.raw} → ${d.birthday.red.value}`,'Day of month'],
+  ['Challenges',d.challenge.join(' · '),'|day−month| · |day−year| · |C1−C2| · |month−year|'],
+  ['Pinnacles',d.pinnacle.map(p=>p.value).join(' · '),'M+D · D+Y · P1+P2 · M+Y (each reduced)'],
+  ['Life Periods',d.periods.join(' · '),'Reduced month · day · year'],
+  ['Personal Year',d.personal_year.path,`Calendar ${d.calendar_as_of} · month + day + current-year digit sum`],
+  ['Personal Month',d.personal_month.path,'Personal Year + current calendar month'],
+  ['Personal Day',d.personal_day.path,'Personal Month + current calendar day']]);}
+ const c=x.chaldean,o=x.english_gematria;
+ if(!c){paintCards('wordPositions',[['Word-by-word routes','—','Enter a name or phrase to compare native word positions.']]);}
+ else{
+ const format=arr=>arr.map(w=>`${w.word}: ${w.total}→${w.reduction.value}`).join(' · ');
+ paintCards('wordPositions',[
+  ['Chaldean',`${c.compound} → ${c.reduction.value}`,format(c.words)],
+  ['Chaldean vowels / consonants',`${c.vowels} / ${c.consonants}`,'Separate roles, same Chaldean table'],
+  ['English Ordinal',`${o.ordinal.compound} → ${o.ordinal.reduction.value}`,format(o.ordinal.words)],
+  ['Reverse Ordinal',`${o.reverse.compound} → ${o.reverse.reduction.value}`,format(o.reverse.words)]
+ ]);}
+ return x;
+}
+const modes=[['Overview','See the person, reading methods and surrounding context before narrowing your focus.'],['Sensismell','Notice emerging signals and alternative interpretations. A sensed pattern is a prompt to investigate, not proof.'],['Underhold','Retain exact original words, context, counterexamples and existing JM source relationships.'],['Throughguide','Choose a path for further understanding and real-world checking without surrendering agency.'],['Individe','Recognise distinct selves, situations, methods, sciences and symbolic traditions without forcing them to merge.']];
+
+const SHIMS_POS_EXT={Cornerstone:'first mapped letter; symbolic approach at entry, not a behavioural prediction',Capstone:'final mapped letter; symbolic ending/closing position, not observed conduct'};
+const scenes={
+ light:{room:'Hallway · light switch',signal:'The hallway light flickers twice; no one has yet checked the cause.',alternative:'A child calls it a message from the house; another proposes a loose bulb. Both are interpretations; neither proves a cause.',ask:'The family keeps a safe distance and asks what was observed, then requests a competent person to check the electrical fault.',assume:'A quick explanation is treated as certain; the household may miss an ordinary cause or create unnecessary fear.',repair:'Someone recognises their first interpretation was premature, listens and helps the group agree on a safe check.',next:'Compare what people noticed, record the actual electrical finding, and ask how the next experience changes their interpretation.',science:'Different expectations can influence perception, while the electrical cause needs a separate physical test. The brain learns from feedback; neither a feeling nor a number reading diagnoses the circuit.',jm:'Theory of Mind · State Change Theory · The Model and the Thing · Interactors Interacting · SHIMS symbolic interpretation remains separate.'},
+ table:{room:'Dining table · a question',signal:'At dinner, one person asks, “Why did you do that?” Someone else hears accusation rather than curiosity.',alternative:'The words are the same but tone, past experience, relationship and current stress may alter the received meaning.',ask:'The family asks what the speaker intended and what the listener heard; both accounts are recorded without forcing agreement.',assume:'An assumed accusation escalates the conversation; participants may respond to a motive that was never verified.',repair:'A participant names the mismatch and invites the question to be rephrased before returning to the issue.',next:'See whether rephrasing and a calmer context improve understanding; notice who gets to revise their interpretation.',science:'Communication involves context and inference. There is no medical diagnosis here; an interpretation is a hypothesis to be checked with the speaker.',jm:'FlowTalk · Meaning Arrival Calibration · Truth / Honesty / Meaning / Selfhood · MMMBBB.'},
+ mirror:{room:'Hallway mirror · self-image',signal:'A member of the family avoids a mirror after hearing a comment about their appearance.',alternative:'Avoidance might relate to the comment, timing, comfort, fatigue or another reason that the observer does not yet know.',ask:'The household asks whether the person wants support and what the situation means to them, without claiming to read their mind.',assume:'An adult labels the person “insecure” and misses how the person understands the moment.',repair:'The family withdraws its label, listens and offers a choice of how to continue.',next:'Respect privacy, context and the person’s own account; do not turn a single action into a permanent trait.',science:'Self-evaluation and social feedback are complex. A single fictional example cannot establish a diagnosis or a stable personality trait.',jm:'The Me Theme · Named Reflective Interface / EMI-Myzelf · Whole Human Participation · GTKM/GTKY.'},
+ garden:{room:'Garden · neighbour contact',signal:'Two neighbours interpret the same dry-looking plant differently after a hot afternoon.',alternative:'One suspects too little water; another thinks soil or light matters. The plant’s needs must be investigated.',ask:'They examine the soil and the conditions together before deciding how to care for it.',assume:'One neighbour acts on an untested explanation, possibly changing the plant’s situation without solving it.',repair:'They compare observations respectfully, acknowledge uncertainty and adjust the next check.',next:'Use environment, plant response and changing conditions as evidence, not who sounds most convincing.',science:'Living systems depend on interacting conditions. Science compares competing explanations using observations and repeatable checks.',jm:'Contact Field Theory · CAUSE MUST PASS · JM Subject House Ecology · JentilMeshing.'},
+ attic:{room:'Attic · Goest / useful memory',signal:'An old notebook records an earlier family mistake and the repair that followed.',alternative:'The record may help, but memories and notes can be incomplete. A Goest is a creative, beneficial echo—not evidence of a supernatural event.',ask:'Someone compares the note with present circumstances and asks whether the old repair still applies.',assume:'The family treats the old account as an unchanging rule, even when conditions have changed.',repair:'They keep the lesson, update the method and preserve the original note separately.',next:'What stays useful, what changed, and what should be written down for the next family member?',science:'Remembering is reconstructive; records support recovery but must be interpreted in their original context.',jm:'Goests · Handprint Systems · Known-Body / Route-State / Ever-Changing Sameness · VTS/DGYAK.'}
+};
+const sceneModes={Overview:'Identify the entire situation before choosing a narrow account.',Sensismell:'Notice the signal; check whether a competing explanation also fits.',Underhold:'Keep the first words, context and source even if a later explanation changes.',Throughguide:'Choose a small, reversible and safe next action.',Individe:'Distinguish each person’s experience from what physically happened.'};
+function meaningCurrentNumber(sys,pos){
+ const r=deepRead($('person').value,$('dob').value,$('yVowel').checked);let n=null;
+ if(sys==='pyth'){
+  if(pos==='Expression')n=r.pythagorean?.expression?.reduction?.value;
+  if(pos==='SoulUrge')n=r.pythagorean?.soul_urge?.reduction?.value;
+  if(pos==='Personality')n=r.pythagorean?.personality?.reduction?.value;
+  if(pos==='Maturity')n=r.pythagorean?.maturity?.value;
+  if(pos==='Cornerstone')n=r.pythagorean?.cornerstone?.value;
+  if(pos==='Capstone')n=r.pythagorean?.capstone?.value;
+  if(pos==='LifePath')n=r.date?.life_path?.value;
+  if(pos==='Challenge')n=r.date?.challenge?.[0];
+  if(pos==='Pinnacle')n=r.date?.pinnacle?.[0]?.value;
+  if(pos==='Period')n=r.date?.periods?.[0];
+ }
+ if(sys==='chald')n=pos==='Expression'?r.chaldean?.reduction?.value:null;
+ if(sys==='gem')n=pos==='Expression'?r.english_gematria?.ordinal?.reduction?.value:null;
+ return n===null||n===undefined?null:Number(n);
+}
+function nativeMeaning(v,sys,pos){
+ const o=SHIMS_NUM[v];if(!o)return null;
+ return {number:v,system:sys,position:pos,native:sys==='chald'?o.chald:sys==='gem'?o.gem:o.pyth,
+  position_meaning:SHIMS_POS[pos]||SHIMS_POS_EXT[pos]||'Position method pending original source contact',
+  JMLogic:o.jm,shadow:o.shadow,recourse:o.recourse,
+  source:'SHIMS Reality-Aligned Reading Core v4.7: historical symbolic interpretation',claim:'SYMBOLIC_NOT_EMPIRICAL'};
+}
+function renderMeaning(){
+ const sys=$('meaningSystem').value,pos=$('meaningPosition').value,selected=$('meaningNumber').value;
+ const auto=selected==='auto',n=auto?meaningCurrentNumber(sys,pos):Number(selected);
+ const v=SHIMS_NUM[n]?n:null;
+ if(v===null){$('meaningSummary').textContent='This system/position does not have a calculated value for the present input. Enter suitable details or choose a number manually; no identity is inferred.';paintCards('meaningCards',[['No meaning inferred','—','Only a traceable value or user-selected comparison can be shown.']]);return}
+ const m=nativeMeaning(v,sys,pos);
+ $('meaningSummary').textContent=`${auto?'Derived reading':'Manual symbolic comparison'} · ${sys==='pyth'?'Pythagorean':sys==='chald'?'Chaldean':'English Gematria'} · ${pos} · ${v}. The words below come from an original JM SHIMS interpretation table; they are not measured facts about this person.`;
+ paintCards('meaningCards',[
+ ['Native system meaning',String(v),m.native],
+ ['Position / role',pos,m.position_meaning],
+ ['JMLogic route',String(v),m.JMLogic],
+ ['Shadow / challenge','Explore',m.shadow],
+ ['Possible recourse','Try',m.recourse],
+ ['Evidence boundary','SYMBOLIC','Compare with lived experience; seek independent evidence before making any factual prediction.']]);
+}
+const roleQuestions={'Younger child':'What did you notice, in your own words?', 'Middle child':'What else might explain it?', 'Older child':'What do you think should be checked before deciding?', 'Mother':'What assumptions are we making right now?', 'Father':'What did you observe rather than infer?', 'Grandparent':'Does the earlier experience still apply here?', 'Neighbour':'How might the same event look from another household?'};
+const stateEffects={Everyday:'There is time to ask and adjust before drawing a conclusion.',Pressure:'Under pressure, this response may be harder to carry out; extra time or support could change the consequence.',Recovered:'After support and reflection, the person may notice an alternative earlier; this is a possible development, not a permanent new identity.'};
+function renderScene(){
+ const s=scenes[$('familyScene').value],who=$('familyActor').value,version=$('familyVersion').value,choice=$('familyChoice').value;
+ const context=version==='Pressure'?'There is limited time or emotional pressure; choices may change.':version==='Recovered'?'Support, reflection or earlier feedback is available; improvement is possible.':'Ordinary conditions, with no fixed trait assumed.';
+ $('sceneHeadline').textContent=`${s.room}. ${who} — ${version}. ${context}`;
+ $('sceneSignal').textContent=s.signal;
+ $('sceneAlternative').textContent=s.alternative+' '+roleQuestions[who];
+ $('sceneConsequence').textContent=s[choice]+' '+stateEffects[version];
+ $('sceneNextness').textContent=s.next;
+ $('sceneScience').textContent=s.science;
+ $('sceneJM').textContent=s.jm;
+ $('sceneModes').textContent=`${active}: ${sceneModes[active]} · Four other perspectives remain available in the five-lens tabs.`;
+}
+function renderFit(){
+ const scope=$('fitScope').value,ev=$('fitEvidence').value;
+ const premises={symbolic:'This is a symbolic reading. It can be recorded as a meaning, not as proof of a physical or psychological cause.',self:'A participant’s account can describe their experience; it does not establish everybody’s experience.',observed:'A direct observation supports what was observed, but not every possible explanation for it.',research:'A research claim requires its actual source, methods, population and applicability; this selector alone does not provide those.'};
+ const bounds={unresolved:'No general fit has been established.',some:'Possible relevance in bounded contexts; look for supporting cases and counterexamples.',all:'Universal scope is a proposed claim only. Do not approve without strong evidence and counterexample testing.',none:'Treat this context as a counterexample or no-fit, not as a verdict about the person.'};
+ $('fitOutcome').textContent=`Evidence: ${premises[ev]} Scope: ${bounds[scope]} The person, timing, setting and source method may change the reading.`;
+}
+
+let active='Overview',lastReceipt=null;
+
+// CP05: Side A and Side B share the EXISTING intake, Exemplar Family and claim fields.
+let activeSide='A';
+const zoomScaleText={person:'the person’s own experience, action and interpretation',relation:'interactions between people, responses and repair',environment:'the setting, time pressure, support and constraints',system:'the method, its categories, sources and claim boundaries'};
+const zoomQuestionText={observe:'Name the observation first; distinguish it from a proposed explanation.',compare:'Consider a plausible alternative and check what would differ.',limits:'Identify missing evidence, counterexamples and possible source limitations.',repair:'Choose a reversible next action; observe and revisit rather than label permanently.'};
+function renderSides(){
+ const person=$('person').value.trim(),target=person==='Exemplifying Exemplifier'?'the fictional exemplar':person?'the locally entered subject':'the currently unfilled subject';
+ const scene=$('familyScene').selectedOptions[0].textContent,who=$('familyActor').value,condition=$('familyVersion').selectedOptions[0].textContent;
+ $('zoomOutcome').textContent=`Examining ${target} at the scale of ${zoomScaleText[$('zoomScale').value]}. In the shared ${scene} scenario, ${who} is considered under ${condition.toLowerCase()}. ${zoomQuestionText[$('zoomQuestion').value]} Current claim status: ${$('fitEvidence').selectedOptions[0].textContent}; scope: ${$('fitScope').selectedOptions[0].textContent}. An interpretation is not itself observation.`;
+ $('playResponse').value=$('familyChoice').value;
+ $('playPerspective').value=$('familyActor').value;
+ $('ludoOutcome').textContent=`With ${who} in the ${scene} scenario (${condition.toLowerCase()}), the simulated response is “${$('playResponse').selectedOptions[0].textContent}.” Possible consequence: ${$('sceneConsequence').textContent} This is one fictional branch, not a prediction. Compare the result with another response, then return to Zoomometry to distinguish effects actually observed from imagined possibilities.`;
+}
+function activateSide(side,moveFocus=false){
+ activeSide=side==='B'?'B':'A';
+ $('zoomFace').hidden=activeSide!=='A';$('ludoFace').hidden=activeSide!=='B';
+ $('flipA').setAttribute('aria-selected',String(activeSide==='A'));$('flipB').setAttribute('aria-selected',String(activeSide==='B'));
+ $('flipA').tabIndex=activeSide==='A'?0:-1;$('flipB').tabIndex=activeSide==='B'?0:-1;
+ renderSides();renderPhysical();invalidateReceipt();
+ if(moveFocus)$(activeSide==='A'?'flipA':'flipB').focus();
+}
+function initSides(){
+ $('flipA').addEventListener('click',()=>activateSide('A'));
+ $('flipB').addEventListener('click',()=>activateSide('B'));
+ for(const [key,side] of [['zoomPlay','B'],['ludoExamine','A']])$(key).addEventListener('click',()=>activateSide(side,true));
+ for(const id of ['flipA','flipB'])$(id).addEventListener('keydown',e=>{if(['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();const s=e.key==='Home'?'A':e.key==='End'?'B':id==='flipA'?'B':'A';activateSide(s,true)}});
+ for(const id of ['zoomScale','zoomQuestion'])$(id).addEventListener('change',()=>{renderSides();invalidateReceipt()});
+ $('playResponse').addEventListener('change',()=>{$('familyChoice').value=$('playResponse').value;$('familyChoice').dispatchEvent(new Event('change',{bubbles:true}));renderSides()});
+ $('playPerspective').addEventListener('change',()=>{$('familyActor').value=$('playPerspective').value;$('familyActor').dispatchEvent(new Event('change',{bubbles:true}));renderSides()});
+ for(const id of ['familyScene','familyActor','familyVersion','familyChoice','fitScope','fitEvidence'])$(id).addEventListener('change',()=>{renderSides();renderPhysical()});
+ for(const id of ['person','dob'])$(id).addEventListener('input',renderSides);
+ renderSides();
+}
+
+// CP06: shared physical participation contact. No sensor claims, no automatic saving.
+const physicalActivities={
+ perspective:{name:'Perspective swap',steps:'Place one ordinary, non-breakable object on a stable surface. Look from a comfortable close viewpoint, then from a comfortable further viewpoint. What became easier or harder to see? Do not move your body beyond your comfort.'},
+ route:{name:'Route test',steps:'Draw two simple routes between A and B on a piece of paper. Move an ordinary small token along one route, then the other. Note any observable difference in the paths or effort; no need to hurry or stand.'},
+ environment:{name:'Environment contact',steps:'Place the same ordinary object at two safe positions on a stable table or desk. Compare how visible it is from the same comfortable viewing point. Do not alter wiring, use heat, or handle electricity.'}
+};
+function physicalData(){return {
+ activity:$('physicalActivity').value,
+ capacity:$('physicalCapacity').value,
+ contact_status:$('physicalState').value,
+ before_expectation:$('physicalBefore').value.trim().slice(0,400),
+ after_self_report:$('physicalAfter').value.trim().slice(0,400),
+ difference_or_correction:$('physicalDifference').value.trim().slice(0,400),
+ shared_side:activeSide,
+ shared_fictional_scene:$('familyScene').value,
+ source_status:'VOLUNTARY_SELF_REPORT_NOT_DEVICE_VERIFIED_OR_SCIENTIFIC_VALIDATION',
+ self_reported_completion:$('physicalState').value==='reported-complete'&&!!$('physicalAfter').value.trim()
+};}
+function renderPhysical(){
+ const a=physicalActivities[$('physicalActivity').value],state=$('physicalState').value,hasAfter=!!$('physicalAfter').value.trim();
+ $('physicalSteps').textContent=a.name+' · '+a.steps;
+ const status=state==='reported-complete'?(hasAfter?'You report completion and have described an observation. This is an unverified participant account.':'You selected completed, but have not described an observation. No physical outcome has been established.'):
+  state==='attempted'?'You report an attempt; no completed outcome is assumed.':state==='planned'?'Planned only. Nothing has been observed by this app.':state==='parked'?'Parked. Pausing or declining is an acceptable result.':'Not started. This is an optional invitation, not an automatic action.';
+ const side=activeSide==='A'?'Zoomometry: separate observable details from explanations.':'Pseudoludo: imagine alternatives, then return to observed reality before any claim.';
+ $('physicalOutcome').textContent=status+' '+side+' Current simulated family action: '+$('familyChoice').selectedOptions[0].textContent+'. That fictional outcome is separate from this physical activity. Receipt inclusion: '+($('physicalReceiptOpt').checked?'opted in':'off by default')+'.';
+}
+function initPhysical(){
+ for(const id of ['physicalActivity','physicalCapacity','physicalBefore','physicalAfter','physicalState','physicalDifference','physicalReceiptOpt']){
+  $(id).addEventListener('input',()=>{renderPhysical();invalidateReceipt()});
+  $(id).addEventListener('change',()=>{renderPhysical();invalidateReceipt()});
+ }
+ $('physicalReset').addEventListener('click',()=>{
+  $('physicalActivity').value='perspective';$('physicalCapacity').value='available';$('physicalBefore').value='';$('physicalAfter').value='';$('physicalState').value='not-started';$('physicalDifference').value='';$('physicalReceiptOpt').checked=false;renderPhysical();invalidateReceipt();
+ });
+ $('physicalPrint').addEventListener('click',()=>window.print());
+ for(const id of ['flipA','flipB','playResponse','playPerspective','familyScene','familyChoice'])$(id).addEventListener('change',renderPhysical);
+ $('flipA').addEventListener('click',renderPhysical);$('flipB').addEventListener('click',renderPhysical);
+ renderPhysical();
+}
+
+function init(){
+ $('axisList').innerHTML=axes.map(a=>`<div class="axis"><strong>${a.title}</strong><div class="ends"><span>${a.left}</span><span>${a.right}</span></div><input type="range" id="axis-${a.id}" aria-label="${a.title}" min="1" max="5" step="1" value="3"><div class="detail">Current reflection: <span id="axis-label-${a.id}" class="value">3 / 5 · flexible/middle</span></div></div>`).join('');
+ $('modeTabs').innerHTML=modes.map(m=>`<button type="button" data-mode="${m[0]}" aria-pressed="false">${m[0]}</button>`).join('');
+ $('modeTabs').addEventListener('click',e=>{const btn=e.target.closest('button[data-mode]');if(btn){active=btn.dataset.mode;updateMode()}});
+ for(const a of axes){$(`axis-${a.id}`).addEventListener('input',()=>{const v=Number($(`axis-${a.id}`).value);$(`axis-label-${a.id}`).textContent=`${v} / 5 · ${v===3?'flexible/middle':v<3?'leans toward '+a.left:'leans toward '+a.right}`;invalidateReceipt()})}
+ for(const id of ['person','dob','situation','astroOpt','yVowel'])$(id).addEventListener('input',render);
+ $('demo').addEventListener('click',()=>{$('person').value='Exemplifying Exemplifier';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;$('feedbackOpt').checked=false;$('feedbackInputs').hidden=true;$('feedbackStatus').value='not-assessed';$('feedbackContext').value='';$('astroKeysOpt').checked=false;$('astroKeysInputs').hidden=true;$('moonKey').value='';$('riseKey').value='';$('houseKeys').value='';$('palmOpt').checked=false;$('palmInputs').hidden=true;$('palmHand').value='not-stated';$('palmForm').value='';$('palmNotes').value='';$('familyScene').value='light';$('familyActor').value='Younger child';$('familyVersion').value='Everyday';$('familyChoice').value='ask';$('meaningSystem').value='pyth';$('meaningPosition').value='Expression';$('meaningNumber').value='auto';$('fitScope').value='unresolved';$('fitEvidence').value='symbolic';axes.forEach(a=>{$(`axis-${a.id}`).value=3;$(`axis-label-${a.id}`).textContent='3 / 5 · flexible/middle'});render();$('zoomScale').value='person';$('zoomQuestion').value='observe';activateSide('A')});
+ $('clear').addEventListener('click',()=>{$('person').value='';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;$('feedbackOpt').checked=false;$('feedbackInputs').hidden=true;$('feedbackStatus').value='not-assessed';$('feedbackContext').value='';$('astroKeysOpt').checked=false;$('astroKeysInputs').hidden=true;$('moonKey').value='';$('riseKey').value='';$('houseKeys').value='';$('palmOpt').checked=false;$('palmInputs').hidden=true;$('palmHand').value='not-stated';$('palmForm').value='';$('palmNotes').value='';$('familyScene').value='light';$('familyActor').value='Younger child';$('familyVersion').value='Everyday';$('familyChoice').value='ask';$('meaningSystem').value='pyth';$('meaningPosition').value='Expression';$('meaningNumber').value='auto';$('fitScope').value='unresolved';$('fitEvidence').value='symbolic';render();$('zoomScale').value='person';$('zoomQuestion').value='observe';activateSide('A');$('person').focus()});
+ $('feedbackOpt').addEventListener('input',()=>{$('feedbackInputs').hidden=!$('feedbackOpt').checked;invalidateReceipt()});
+ $('astroKeysOpt').addEventListener('input',()=>{$('astroKeysInputs').hidden=!$('astroKeysOpt').checked;invalidateReceipt()});
+ $('palmOpt').addEventListener('input',()=>{$('palmInputs').hidden=!$('palmOpt').checked;invalidateReceipt()});
+ for(const id of ['moonKey','riseKey','houseKeys','palmHand','palmForm','palmNotes'])$(id).addEventListener('input',invalidateReceipt);
+ for(const id of ['feedbackStatus','feedbackContext'])$(id).addEventListener('input',invalidateReceipt);
+ for(const id of ['meaningSystem','meaningPosition','meaningNumber'])$(id).addEventListener('change',()=>{renderMeaning();invalidateReceipt()});
+ for(const id of ['familyScene','familyActor','familyVersion','familyChoice'])$(id).addEventListener('change',()=>{renderScene();invalidateReceipt()});
+ for(const id of ['fitScope','fitEvidence'])$(id).addEventListener('change',()=>{renderFit();invalidateReceipt()});
+ $('makeReceipt').addEventListener('click',makeReceipt);
+ $('saveReceipt').addEventListener('click',saveReceipt);
+ updateMode();render();initSides();initPhysical();
+}
+function validateDob(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const [y,m,d]=s.split('-').map(Number);const t=new Date(Date.UTC(y,m-1,d));return t.getUTCFullYear()===y&&t.getUTCMonth()===m-1&&t.getUTCDate()===d}
+function sign(d){const mm=Number(d.slice(5,7)),dd=Number(d.slice(8,10));const arr=[['Capricorn',119],['Aquarius',218],['Pisces',320],['Aries',419],['Taurus',520],['Gemini',620],['Cancer',722],['Leo',822],['Virgo',922],['Libra',1022],['Scorpio',1121],['Sagittarius',1221],['Capricorn',1231]];const key=mm*100+dd;return arr.find(x=>key<=x[1])?.[0]||'Capricorn'}
+function render(){
+ invalidateReceipt();
+ const raw=$('person').value,has=raw.toUpperCase().replace(/[^A-Z]/g,'').length>0;
+ const demo=raw==='Exemplifying Exemplifier';$('identityNote').textContent=demo?'Fictional exemplar — demonstrated, not a judgment about a real person.':has?'Personal/other phrase entered locally; no automatic storage. Interpretation requires the subject’s consent.':'Enter a name or word-body to activate the three standard number routes.';
+ const displays=[['pythNum','pythDetails',MAPS.pyth],['chNum','chDetails',MAPS.chald],['ordNum','ordDetails',MAPS.ordinal]];
+ displays.forEach(([numId,dtId,map],i)=>{const c=has?calc(raw,map,$('yVowel').checked):null;$(numId).textContent=c?`${c.total} → ${c.reduced.value}`:'—';$(dtId).textContent=!c?'Waiting for an input':i===0?`Expression · vowels ${c.vowels} → ${reduce(c.vowels).value} · consonants ${c.consonants} → ${reduce(c.consonants).value}`:i===1?'Compound Chaldean total · system table 1–8':'English Ordinal A=1 through Z=26'});
+ $('revNum').textContent=has?(()=>{const c=calc(raw,MAPS.reverse);return `${c.total} → ${c.reduced.value}`})():'—';
+ const dob=$('dob').value,valid=validateDob(dob);
+ $('lifeNum').textContent=valid?(()=>{const rawValue=[...dob.replace(/\D/g,'')].reduce((a,d)=>a+Number(d),0);return `${rawValue} → ${reduce(rawValue).value}`})():'Not supplied';
+ renderDeep();renderMeaning();renderScene();renderFit();
+ const trace=has?Object.entries(MAPS).map(([key,map])=>{const c=calc(raw,map,$('yVowel').checked);return key+': '+c.letters.map(x=>`${x.letter}=${x.value}`).join(' + ')+' = '+c.total+'; reduction '+c.reduced.path}).join('\n\n'):'No letters to calculate';$('letterProof').textContent=trace;
+ $('astroBlock').hidden=!$('astroOpt').checked;$('astroComposer').hidden=!$('astroOpt').checked;
+ $('sunSign').textContent=valid?`Conventional approximate tropical sign: ${sign(dob)}`:'Enter a valid birth date to show the approximate sun-sign date range.';
+ renderSides();
+ $('inputWarning').textContent=/[^A-Za-z\s]/.test(raw)?'Some entered characters do not map to A–Z and are omitted by the historical SHIMS normalisation. Check spelling/transliteration before interpreting.':'Only A–Z letters are used in this historical donor’s normalisation; accented and non-Latin names require a declared transliteration rule.';
+}
+function updateMode(){for(const btn of $('modeTabs').querySelectorAll('button'))btn.setAttribute('aria-pressed',String(btn.dataset.mode===active));$('modeExplain').textContent=modes.find(m=>m[0]===active)[1]; if($('sceneModes')){$('sceneModes').textContent=`${active}: ${sceneModes[active]} · Other lenses remain available.`;}invalidateReceipt()}
+function invalidateReceipt(){lastReceipt=null;$('saveReceipt').disabled=true;$('receipt').value='';}
+function makeReceipt(){const raw=$('person').value,dob=$('dob').value,has=raw.toUpperCase().replace(/[^A-Z]/g,'').length>0;const routes={};if(has){for(const [k,map] of Object.entries(MAPS)){const c=calc(raw,map,$('yVowel').checked);routes[k]={total:c.total,reduced:c.reduced.value,reduction_path:c.reduced.path};if(k==='pyth'){routes[k].vowels=c.vowels;routes[k].consonants=c.consonants}}}
+ const axesOut={};axes.forEach(a=>{axesOut[a.id]={value:Number($(`axis-${a.id}`).value),low:a.left,high:a.right}});
+ const valid=validateDob(dob),astro=$('astroOpt').checked;const deep=deepRead(raw,dob,$('yVowel').checked);const feedback=$('feedbackOpt').checked?{reaction:$('feedbackStatus').value,context_or_counterexample:$('feedbackContext').value.trim().slice(0,800),kind:'VOLUNTARY_SELF_REPORT_NOT_VALIDATION'}:null;
+ lastReceipt={schema:'JM.PSEUDOALTRY.CONTACT.v0.6.0',ancestor_schema:'JM.PSEUDOTRY.CONTACT.v0.5.0',public_name:'JM Pseudoaltry',historical_identities:['JM Pseudotry','JM Pseudology'],physical_scope:'VOLUNTARY_REAL_WORLD_PARTICIPATION_NOT_AUTOMATIC_MEASUREMENT',sides:{active:activeSide,side_a:'Zoomometry',side_b:'Pseudoludo',zoom_scale:$('zoomScale').value,zoom_question:$('zoomQuestion').value,fictional_response:$('playResponse').value,before_after:'Side Be → Contact → Side Af'},date_generated:new Date().toISOString(),demo:raw==='Exemplifying Exemplifier',subject_text:raw,source_conventions:{name_normalisation:'upper A-Z only',reduce:'digit sum; stop at 11/22/33 if reached',source_donor:'SHIMS Reality-Aligned Reading Core v4.7 methods; parent JM Pseudology v0.2 preserved unchanged'},default_three_routes:{pythagorean:routes.pyth||null,chaldean:routes.chald||null,english_gematria_ordinal:routes.ordinal||null},deep_reading:deep,optional_feedback:feedback,gematria_optional_mirror:routes.reverse||null,optional_date_route:valid?{date:dob,digit_sum:[...dob.replace(/\D/g,'')].reduce((a,d)=>a+Number(d),0)}:null,astrology:{available:true,opted_in:astro,approx_tropical_sun_sign:astro&&valid?sign(dob):null,full_natal_chart:'NOT_CALCULATED'},jm_contextual_orientation:{context:$('situation').value,axes:axesOut,scientific_validity:'UNVALIDATED EXPLORATORY SELF-REPORT'},source_family_links:['SHIMS','JM Theory Estate 51 seats','Exemplar Family','GTKM/GTKY','MMMBBB','VTS / DGYAK'],five_perspective_active:active,
+ ...( $('physicalReceiptOpt').checked ? {optional_physical_contact:physicalData()} : {} ),
+ original_SHIMS_meaning: (()=>{const sys=$('meaningSystem').value,pos=$('meaningPosition').value,n=$('meaningNumber').value==='auto'?meaningCurrentNumber(sys,pos):Number($('meaningNumber').value);return SHIMS_NUM[n]?nativeMeaning(n,sys,pos):null})(),
+ optional_manual_astrology:($('astroOpt').checked&&$('astroKeysOpt').checked)?{moon_sign_supplied:$('moonKey').value.slice(0,70),rising_supplied:$('riseKey').value.slice(0,70),house_aspect_notes:$('houseKeys').value.slice(0,400),source_kind:'UNVERIFIED_USER_SUPPLIED_CHART_KEYS_NOT_CALCULATED'}:null,
+ optional_manual_palm: $('palmOpt').checked?{hand:$('palmHand').value,shape_observed:$('palmForm').value.slice(0,100),notes_observed:$('palmNotes').value.slice(0,400),source_kind:'VOLUNTARY_MANUAL_OBSERVATION_SYMBOLIC_ONLY_NO_MEDICAL_CLAIM'}:null,
+ fictional_exemplar_contact:{source:'Examplifying Examples Examplifier 2026-08-28; original roles retained',fictional:true,room:$('familyScene').value,actor:$('familyActor').value,contextual_version:$('familyVersion').value,action:$('familyChoice').value,possible_consequence:$('sceneConsequence').textContent,claim_kind:'FICTIONAL_HYPOTHETICAL_NOT_OBSERVED_HUMAN'},
+ conditional_fit:{scope:$('fitScope').value,evidence_kind:$('fitEvidence').value,claim_kind:'USER_SELECTED_CONSTRAINT_NOT_VALIDATION'},
+ claim_boundaries:['numeric calculations deterministic under disclosed conventions','symbolic interpretation is not established personality prediction','no psychometric scoring or diagnostic claim','biology/neuroscience must rely on applicable empirical evidence','not publicly published or stored unless exported by user'],privacy:'In-memory only. Receipt generated explicitly. Do not share personal information without consent.'};
+ $('receipt').value=JSON.stringify(lastReceipt,null,2);$('saveReceipt').disabled=false;
+}
+function saveReceipt(){if(!lastReceipt)return;const blob=new Blob([JSON.stringify(lastReceipt,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='JM_PSEUDOALTRY_CONTACT_RECEIPT_v0_6_0.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+window.JMPseudoaltryProbe={calc,MAPS,reduce,validateDob,sign,deepRead,dateDeep,nativeMeaning,meaningCurrentNumber,scenes,SHIMS_NUM,activateSide,renderSides,physicalData,renderPhysical};
+window.JMPseudotryProbe=window.JMPseudoaltryProbe; // historical v0.5.0 API alias
+window.JMPseudologyProbe=window.JMPseudoaltryProbe; // historical v0.2–v0.4.1 API alias, one runtime
+init();
+})();
+</script>
+</body>
+</html>

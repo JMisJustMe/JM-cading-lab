@@ -6,6 +6,8 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'navigator/estate-integration/public-registry.json'
+      - 'governance/estate-integration/verify_existing_homes_cp02.py'
       - 'apps/index.html'
       - 'games-beyond/app.js'
       - 'games-beyond/registry.json'
@@ -19,6 +21,7 @@ on:
       - 'author/authuser.html'
       - 'sitemap.xml'
       - 'sw.js'
+      - 'tests/ailatheo-customer-entitlement.mjs'
       - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
       - 'estate-owner-vault.js'
       - 'functions/api/owner/vault.js'
@@ -28,6 +31,8 @@ on:
     paths:
       - 'access/**'
       - 'navigator/estate-integration/index.html'
+      - 'navigator/estate-integration/public-registry.json'
+      - 'governance/estate-integration/verify_existing_homes_cp02.py'
       - 'apps/index.html'
       - 'games-beyond/app.js'
       - 'games-beyond/registry.json'
@@ -41,6 +46,7 @@ on:
       - 'author/authuser.html'
       - 'sitemap.xml'
       - 'sw.js'
+      - 'tests/ailatheo-customer-entitlement.mjs'
       - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
       - 'estate-owner-vault.js'
       - 'functions/api/owner/vault.js'
@@ -103,6 +109,43 @@ jobs:
           grep -Fq 'https://jmisjustme-estate.pages.dev/books/' sitemap.xml
           grep -Fq 'https://jmisjustme-estate.pages.dev/visual-story/' sitemap.xml
           grep -Fq 'https://jmisjustme-estate.pages.dev/market-lab/' sitemap.xml
+      - name: CP02 governed existing-homes pointer differential
+        run: python3 governance/estate-integration/verify_existing_homes_cp02.py
+      - name: CP12 original AILatheo entitlement API cache admission
+        run: node tests/ailatheo-customer-entitlement.mjs
+      - name: CP11 original service worker syntax parse gate
+        shell: bash
+        run: |
+          node --check sw.js
+          node -e "const fs=require('node:fs'); const s=fs.readFileSync('sw.js','utf8'); if(s.includes(String.fromCharCode(92)+'n')) process.exit(21); console.log('CP11 SW syntax and original source newline PASS')"
+      - name: CP12 Cloudflare no-store public CORE preservation and private rejection
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+          const source=fs.readFileSync('sw.js','utf8');
+          const origin='http://127.0.0.1:4178',scope=origin+'/';
+          const hooks={};
+          const c={self:{location:{origin},registration:{scope},addEventListener:(name,fn)=>hooks[name]=fn},Request,Response,URL};
+          vm.createContext(c);
+          vm.runInContext(source,c);
+          const req=(path,headers)=>new Request(origin+path,{headers});
+          const res=(policy)=>new Response('SYNTHETIC',{status:200,headers:{'Cache-Control':policy}});
+          assert.equal(c.publicCacheRequest(req('/api/jm/v1/health')),false);
+          assert.equal(c.publicCacheRequest(req('/api/ailatheo')),false);
+          assert.equal(c.safeCacheResponse(res('no-store, no-cache, must-revalidate'),req('/access/index.html')),true);
+          assert.equal(c.safeCacheResponse(res('no-store'),req('/games-beyond/registry.json')),true);
+          assert.equal(c.safeCacheResponse(res('private, no-store'),req('/access/index.html')),false);
+          assert.equal(c.safeCacheResponse(res('no-store'),req('/cp12-unlisted-public.json')),false);
+          assert.equal(c.safeCacheResponse(res('no-store'),req('/access/index.html?token=SYNTHETIC')),false);
+          assert.equal(c.safeCacheResponse(res('public, max-age=60'),req('/cp12-unlisted-public.json')),true);
+          assert.equal(c.safeCacheResponse(res('public'),req('/owner/synthetic')),false);
+          assert.equal(c.safeCacheResponse(res('public'),req('/access/index.html',{Authorization:'Bearer CP12-SYNTHETIC'})),false);
+          assert.equal(typeof hooks.install,'function');
+          assert.equal(typeof hooks.activate,'function');
+          assert.equal(typeof hooks.fetch,'function');
+          console.log('CP12 Cloudflare CORE/PWA contract PASS: 10 policy cases + 3 original worker hooks, public offline CORE vs private/no-store boundary');
+          NODE
       - name: Install browser proof runtime
         run: |
           npm install --no-save playwright@1.54.1
@@ -112,6 +155,455 @@ jobs:
           python3 -m http.server 4178 >/tmp/jm-access-mesh-http.log 2>&1 &
           for i in {1..20}; do curl -fsS http://127.0.0.1:4178/access/ >/dev/null && exit 0; sleep 1; done
           exit 1
+      - name: CP15 four public discovery doors — touch-sized differential (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          const fs=require('node:fs');
+          const origin='http://127.0.0.1:4178';
+          const doors=[
+            {href:'../navigator/estate-integration/#bodyContact',path:'/navigator/estate-integration/',anchor:'#bodyContact'},
+            {href:'../games-beyond/all-games.html',path:'/games-beyond/all-games.html'},
+            {href:'../recent/',path:'/recent/'},
+            {href:'../recovery/',path:'/recovery/'}
+          ];
+          const source=fs.readFileSync('access/index.html','utf8');
+          const section=source.match(/<section id="jmDiscoveryLenses"[\s\S]*?<\/section>/)?.[0];
+          assert(section,'Original access page must retain exactly one public discovery section');
+          assert.equal((source.match(/id="jmDiscoveryLenses"/g)||[]).length,1,'One contact door, not a replacement page');
+          assert(!/drive\.google\.com|onedrive\.live\.com|libfile_|JM-continuation|\/Not sure yet\//i.test(section),'No owner-private custodian URL or identifier');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let total=0;
+            try{
+              for(const size of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport:size,hasTouch:true,isMobile:true,deviceScaleFactor:2});
+                const page=await context.newPage();
+                try{
+                  page.setDefaultTimeout(25000);
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const base=page.locator('#jmDiscoveryLenses');
+                  assert.equal(await base.count(),1,'Unique discovery section on live DOM');
+                  const jump=page.locator('.top .nav a').first();
+                  assert.equal(await jump.getAttribute('href'),'#jmDiscoveryLenses',
+                    'Phone header must jump to the existing creation finder');
+                  await jump.tap();
+                  await page.waitForFunction(()=>location.hash==='#jmDiscoveryLenses',null,{timeout:15000});
+                  await page.waitForFunction(()=>{
+                    const r=document.getElementById('jmDiscoveryLenses').getBoundingClientRect();
+                    return r.top>=0 && r.top<innerHeight*0.8;
+                  },null,{timeout:15000});
+                  const ownerPanel=base.locator('#jmOwnerWipGames');
+                  assert.equal(await ownerPanel.count(),1,'Owner unfinished-game re-entry visible in existing discovery section');
+                  const ownerLinks=ownerPanel.locator('a.btn');
+                  assert.equal(await ownerLinks.count(),2,'Real COMBOUND owner player and existing Games House workbench');
+                  assert.equal(await ownerLinks.nth(0).getAttribute('href'),'http://127.0.0.1:8876/index.html');
+                  assert.equal(await ownerLinks.nth(1).getAttribute('href'),'https://jmisjustme.github.io/JM-cading-lab/games-beyond/?jm-room=proof');
+                  for(const link of [ownerLinks.nth(0),ownerLinks.nth(1)]){
+                    const bounds=await link.boundingBox();
+                    assert(bounds && bounds.height>=44,'Owner re-entry link must be touch-sized');
+                  }
+                  assert.equal(await base.locator('.card').count(),4,'Four existing public House doors, no copied creations');
+                  assert.equal(await base.locator('.btn.primary').count(),4,'Each house has a touch link');
+                  await base.scrollIntoViewIfNeeded();
+                  const cardRects=await base.locator('.card').evaluateAll(cards=>cards.map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right}}));
+                  for(const rect of cardRects){
+                    assert(rect.left>=-2&&rect.right<=size.width+2,
+                      'Discovery card breaks '+size.width+'px viewport: '+JSON.stringify(rect));
+                  }
+                  for(const [i,door] of doors.entries()){
+                    if(i)await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                    const a=page.locator('#jmDiscoveryLenses .btn.primary').nth(i);
+                    assert.equal(await a.getAttribute('href'),door.href,'Preserve original public House destination');
+                    await a.scrollIntoViewIfNeeded();
+                    const rect=await a.boundingBox();
+                    assert(rect&&rect.height>=44,'New touch target must be at least 44px high: '+door.href);
+                    const matchingPath=url=>url.pathname===door.path||
+                      (i===1&&url.pathname==='/games-beyond/all-games');
+                    const navigation=page.waitForURL(matchingPath,{waitUntil:'domcontentloaded',timeout:15000});
+                    await a.tap();
+                    await navigation;
+                    const destination=new URL(page.url());
+                    assert(matchingPath(destination),
+                      'Original public route failed: '+door.href+' => '+page.url());
+                    if(door.anchor){
+                      assert.equal(destination.hash,door.anchor,'Direct to original named search/contact');
+                      assert.equal(await page.locator(door.anchor).count(),1,'Original anchor exists');
+                    }
+                    assert(await page.locator('body').count()===1,'Destination page did not render body');
+                    total++;
+                  }
+                  await context.close();
+                }catch(e){throw Error('CP15 '+size.width+'x'+size.height+' '+e.message)}
+              }
+              assert.equal(total,8);
+              for(const size of [{width:390,height:844},{width:850,height:650}]){
+                const pg=await browser.newPage({viewport:size,hasTouch:true,isMobile:true});
+                try{
+                  await pg.goto(origin+'/games-beyond/?jm-room=proof',{waitUntil:'domcontentloaded'});
+                  const proofTab=pg.locator('#view-proof');
+                  await proofTab.waitFor({state:'visible',timeout:15000});
+                  assert.equal(await pg.locator('.nav button[data-view="proof"]').getAttribute('aria-selected'),'true',
+                    'Owner game workbench opens on original proof/import tab');
+                  assert.equal(await proofTab.locator('#importHtml').count(),1,'Owner local HTML importer retained');
+                  assert.equal(await proofTab.locator('#connectPhoneOriginal').count(),1,'Owner original COMBOUND connector retained');
+                }finally{await pg.close();}
+              }
+              console.log('CP15 PUBLIC DISCOVERY TOUCH PASS: 4/4 original existing houses on phone and Fold, 8/8 real taps in Chromium, min 44px controls, no private owner pointers or card overflow.');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP15_PUBLIC_DISCOVERY_TOUCH_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP08 direct-use buttons contact original game and editor (phone and desktop)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const origin='http://127.0.0.1:4178';
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let pass=0;
+            try{
+              const cases=[
+                {width:390,height:844,id:'fourfold-arena',action:'play'},
+                {width:1366,height:900,id:'fight-clash',action:'play'},
+                {width:390,height:844,id:'gameforge',action:'edit'},
+              ];
+              for(const target of cases){
+                const page=await browser.newPage({viewport:{width:target.width,height:target.height}});
+                try{
+                  page.setDefaultTimeout(90000);
+                  const errors=[];
+                  page.on('pageerror',e=>errors.push(String(e)));
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const button=page.locator('[data-jm-use-entry="'+target.id+'"] a[data-jm-launch="'+target.action+'"]');
+                  if(await button.count()!==1)throw Error('Original direct-use button missing: '+target.id);
+                  await button.click();
+                  const expected='?jm-'+target.action+'='+target.id;
+                  await page.waitForURL(url=>url.pathname==='/games-beyond/'&&url.search===expected,{timeout:15000});
+                  if(target.action==='play'){
+                    await page.waitForFunction(id=>document.querySelector('#status')?.dataset.directPlay===id &&
+                      document.querySelector('#bodyDialog')?.open,target.id,{timeout:90000});
+                    const exact=await page.locator('#bodyFrame').getAttribute('srcdoc');
+                    if(!exact||!/<html|<!doctype/i.test(exact))throw Error('Original mounted HTML not opened: '+target.id);
+                  }else{
+                    await page.waitForFunction(id=>window.GamesBeyond?.activeEditorBodyId===id &&
+                      document.querySelector('#source')?.value.includes('<html'),target.id,{timeout:90000});
+                    if(await page.locator('#workspace').isHidden())throw Error('Existing editor not entered');
+                  }
+                  if(errors.length)throw Error('Original runtime page errors: '+errors.join('|'));
+                  await page.close();pass++;
+                }catch(e){throw Error('CP08 '+target.width+'x'+target.height+' '+target.id+' '+target.action+': '+e);}
+              }
+              if(pass!==3)throw Error('Not all original-use contacts completed');
+              console.log('CP08 DIRECT USE BROWSER PASS: 2 mounted originals open in inherited Games House + 1 original GameForge editor; phone/desktop; no copied bodies');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP08_DIRECT_USE_BROWSER_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP13 five live-mounted game doors and owner-local pin proof (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const origin='http://127.0.0.1:4178',ids=[
+            'crewbound-arena','house-siege','western-sniper','dead-reckon','cardbored'
+          ];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let opened=0;
+            try{
+              for(const [i,id] of ids.entries()){
+                const viewport=i%2===0?{width:390,height:844}:{width:850,height:650};
+                const page=await browser.newPage({viewport});
+                try{
+                  page.setDefaultTimeout(90000);
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const row=page.locator('[data-jm-use-entry="'+id+'"]');
+                  if(await row.count()!==1)throw Error('Original game missing in Use Now: '+id);
+                  const play=row.locator('a[data-jm-launch="play"]');
+                  const edit=row.locator('a[data-jm-launch="edit"]');
+                  if(await play.count()!==1||await edit.count()!==1)throw Error('Play/Edit original pointers incomplete: '+id);
+                  const expected='?jm-play='+id;
+                  await play.click();
+                  await page.waitForURL(url=>url.pathname==='/games-beyond/'&&url.search===expected,{timeout:20000});
+                  await page.waitForFunction(x=>
+                    document.querySelector('#status')?.dataset.directPlay===x &&
+                    document.querySelector('#bodyDialog')?.open,id,{timeout:90000});
+                  const source=await page.locator('#bodyFrame').getAttribute('srcdoc');
+                  if(!source||source.length<1000||!/<html|<!doctype/i.test(source))
+                    throw Error('Public original game HTML did not mount: '+id);
+                  await page.close();opened++;
+                }catch(e){throw Error('CP13 '+viewport.width+'x'+viewport.height+' '+id+': '+e);}
+              }
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport});
+                const page=await context.newPage();
+                try{
+                  await page.goto(origin+'/access/',{waitUntil:'domcontentloaded'});
+                  const key='game:crewbound-arena';
+                  const btn=page.locator('[data-jm-pin-id="'+key+'"]');
+                  if(await btn.count()!==1)throw Error('New pin control missing');
+                  await btn.click();
+                  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-access-owner-pins-v1')||'[]'));
+                  if(!saved.includes(key))throw Error('New public game pin not stored as owner-local ID');
+                  await page.reload({waitUntil:'domcontentloaded'});
+                  const pinned=page.locator('#jmPinnedDoorList a[href$="?jm-play=crewbound-arena"]');
+                  if(await pinned.count()!==1)throw Error('Original pinned route not recovered after reload');
+                  const bbox=await btn.boundingBox();
+                  if(!bbox||bbox.height<44)throw Error('New pin tap target below 44px');
+                  await context.close();
+                }catch(e){throw Error('CP13 pin '+viewport.width+'x'+viewport.height+': '+e);}
+              }
+              if(opened!==5)throw Error('All five original bodies must open');
+              console.log('CP13 LIVE-MOUNTED ORIGINALS PASS: 5/5 launched with exact HTML; 2/2 phone/Fold pin and reload; original Games House used, no copies');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP13_ORIGINAL_USE_GONG_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP09 Quick Return recents and local-only pinned doors (phone and Fold landscape)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const size of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport:size});
+                const page=await context.newPage();
+                page.setDefaultTimeout(20000);
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                await page.evaluate(()=>{
+                  localStorage.setItem('jm-gb-recent-v05',JSON.stringify(['fight-clash','fourfold-arena','not-mounted-private']));
+                  localStorage.setItem('jm-access-owner-pins-v1',JSON.stringify(['game:fourfold-arena','not-allowed:external']));
+                });
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelectorAll('#jmRecentGameDoors a').length===2,{timeout:20000});
+                const recent=await page.locator('#jmRecentGameDoors a').allTextContents();
+                if(!recent[0].includes('Fight Clash')||!recent[1].includes('FOURFOLD'))throw Error('Existing Games House recent order/body names lost: '+JSON.stringify(recent));
+                if(await page.locator('#jmPinnedDoorList a').count()!==1)throw Error('Unknown pin was not discarded');
+                const first=page.locator('[data-jm-pin-id="game:fourfold-arena"]');
+                if(await first.getAttribute('aria-pressed')!=='true')throw Error('Existing original pin did not restore');
+                const pin=page.locator('[data-jm-pin-id="game:tboys-core-clash"]');
+                await pin.click();
+                if(await pin.getAttribute('aria-pressed')!=='true')throw Error('Pin button state not reflected');
+                let stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-access-owner-pins-v1')));
+                if(JSON.stringify(stored)!==JSON.stringify(['game:tboys-core-clash','game:fourfold-arena']))throw Error('Owner pin IDs not persisted safely: '+JSON.stringify(stored));
+                await page.reload({waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelectorAll('#jmRecentGameDoors a').length===2);
+                if(await page.locator('#jmPinnedDoorList a').count()!==2)throw Error('Pinned original links missing after reload');
+                await page.locator('[data-jm-pin-id="room:openbox"]').click();
+                if(await page.locator('#jmPinnedDoorList a').count()!==3)throw Error('Existing OPENBOX door did not pin');
+                if(await page.locator('[data-jm-pin-id="room:openbox"]').getAttribute('aria-pressed')!=='true')throw Error('Pinned OPENBOX state missing');
+                const hrefs=await page.locator('#jmPinnedDoorList a').evaluateAll(nodes=>nodes.map(n=>n.href));
+                if(!hrefs.every(url=>url.startsWith('https://jmisjustme-estate.pages.dev/')||url.startsWith('https://jmisjustme.github.io/')))throw Error('Unapproved pinned URL');
+                if((await pin.boundingBox())?.height<44)throw Error('Pin tap target below 44px');
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+                if(overflow)throw Error('Quick Return causes horizontal overflow at '+size.width);
+                await page.locator('#jmClearPinnedDoors').click();
+                stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-access-owner-pins-v1')));
+                if(stored.length||await page.locator('#jmPinnedDoorList a').count())throw Error('Clear pins did not clear');
+                const history=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm-gb-recent-v05')));
+                if(history.join('|')!=='fight-clash|fourfold-arena|not-mounted-private')throw Error('Owner pins changed the Games House history');
+                if(errors.length)throw Error('Browser runtime errors '+errors.join('|'));
+                await context.close();passed++;
+              }
+              if(passed!==2)throw Error('Quick Return needs both viewports');
+              console.log('CP09 QUICK RETURN PASS: 2/2 phone and Fold-landscape; original Games House recents; owner pin/reload/clear; 44px touch; no source/history replacement');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP09_QUICK_RETURN_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP10 existing PWA installation identity and Continue shortcut (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const page=await browser.newPage({viewport});
+                try{
+                  page.setDefaultTimeout(20000);
+                  await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                  const manifestLink=page.locator('link[rel="manifest"]');
+                  if(await manifestLink.count()!==1 || await manifestLink.getAttribute('href')!=='../manifest.webmanifest')
+                    throw Error('Access Mesh not connected to existing original manifest');
+                  const data=await page.evaluate(async()=>{
+                    const response=await fetch(document.querySelector('link[rel="manifest"]').href);
+                    return {ok:response.ok,body:await response.json()};
+                  });
+                  if(!data.ok||data.body.start_url!=='./#estate'||data.body.scope!=='./'||data.body.display!=='standalone')
+                    throw Error('Original PWA identity/scope drift');
+                  const expected=[
+                    './games-beyond/',
+                    './coding-estate/everybody/',
+                    './#owner',
+                    './access/#jmQuickReturn'
+                  ];
+                  if(JSON.stringify(data.body.shortcuts.map(x=>x.url))!==JSON.stringify(expected))
+                    throw Error('Original three or appended Continue shortcut drift');
+                  const a=page.locator('#jmExistingAppInstall');
+                  const box=await a.boundingBox();
+                  if(!box || box.height<44)throw Error('Existing Estate app door below Fold touch target');
+                  if(await page.locator('#jmQuickReturn').count()!==1)
+                    throw Error('Existing owner Quick Return missing');
+                  await a.click();
+                  await page.waitForURL(url=>url.pathname==='/'&&url.hash==='#estate',{timeout:12000});
+                  if(await page.locator('#installButton').count()!==1)
+                    throw Error('Did not arrive at the original Estate PWA install control');
+                  if(await page.locator('link[rel="manifest"]').getAttribute('href')!=='./manifest.webmanifest')
+                    throw Error('Original PWA root manifest unexpectedly replaced');
+                  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+                  if(overflow)throw Error('Root app horizontal overflow at '+viewport.width);
+                  await page.close();
+                  passed++;
+                }catch(e){throw Error('CP10 '+viewport.width+'x'+viewport.height+' '+e);}
+              }
+              if(passed!==2)throw Error('CP10 both viewports required');
+              console.log('CP10 PWA PASS: 2/2 phone and Fold, original install app/manifest/root shortcut, installed-app identity preserved, no second site');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP10_PWA_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP11 original service worker registration and offline Access (phone and Fold)
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let passed=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport});
+                const page=await context.newPage();
+                page.setDefaultTimeout(25000);
+                try{
+                  const root=await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded'});
+                  if(root.status()!==200)throw Error('Original root not available');
+                  await page.waitForFunction(async()=>{
+                    if(!('serviceWorker' in navigator))return false;
+                    const reg=await navigator.serviceWorker.getRegistration('/');
+                    return Boolean(reg?.active?.scriptURL.endsWith('/sw.js') &&
+                                   navigator.serviceWorker.controller);
+                  },null,{timeout:90000});
+                  const registration=await page.evaluate(async()=>{
+                    const r=await navigator.serviceWorker.getRegistration('/');
+                    return {script:r?.active?.scriptURL,scope:r?.scope,controller:navigator.serviceWorker.controller?.scriptURL};
+                  });
+                  if(registration.script!=='http://127.0.0.1:4178/sw.js' ||
+                     registration.scope!=='http://127.0.0.1:4178/' ||
+                     registration.controller!=='http://127.0.0.1:4178/sw.js')
+                    throw Error('Original single Estate service-worker identity changed: '+JSON.stringify(registration));
+                  await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller),null,{timeout:15000});
+                  const cacheReady=await page.evaluate(async()=>{
+                    const keys=await caches.keys();
+                    const name=keys.find(k=>k.startsWith('jm-web-estate-'));
+                    if(!name)return false;
+                    const cache=await caches.open(name);
+                    return Boolean(await cache.match(new URL('/access/index.html',location.href).href));
+                  });
+                  if(!cacheReady)throw Error('Original Access Mesh is not cached by the existing Estate worker');
+                  await context.setOffline(true);
+                  await page.reload({waitUntil:'domcontentloaded',timeout:20000});
+                  if(!await page.locator('title').textContent().then(x=>x.includes('JM Current Access Mesh')))
+                    throw Error('Offline Access Mesh did not recover original cached page');
+                  if(!await page.locator('#jmQuickReturn').count() ||
+                     !await page.locator('#jmWixDoors').count())
+                    throw Error('Offline Access lost current original Quick Return or Wix doors');
+                  await context.setOffline(false);
+                  await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded'});
+                  if(!await page.locator('#installButton').count())
+                    throw Error('Original Estate install button absent');
+                  await context.close();passed++;
+                }catch(e){throw Error('CP11 '+viewport.width+'x'+viewport.height+': '+e.message);}
+              }
+              if(passed!==2)throw Error('Phone/Fold proof incomplete');
+              console.log('CP11 SW LIVE BROWSER PASS 2/2: original root worker registered+controlling; cached Access page returns offline on phone and Fold; install button preserved');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error('CP11_ORIGINAL_SW_HOLD',e);process.exitCode=1});
+          NODE
+      - name: CP12 public-only PWA cache — original API/privacy boundaries on phone and Fold
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright');
+          const fs=require('node:fs'),path=require('node:path');
+          const fixtures=[
+            ['api/jm/v1/cp12-synthetic-probe.json', '{"ok":true,"synthetic":"API"}'],
+            ['owner/cp12-synthetic-probe.json', '{"ok":true,"synthetic":"OWNER"}'],
+            ['cp12-synthetic-auth.json', '{"ok":true,"synthetic":"AUTH"}'],
+          ];
+          (async()=>{
+            for(const [p,body] of fixtures){
+              if(fs.existsSync(p))throw Error('Refuse to overwrite source '+p);
+              fs.mkdirSync(path.dirname(p),{recursive:true});
+              fs.writeFileSync(p,body);
+            }
+            const browser=await chromium.launch({headless:true});
+            let count=0;
+            try{
+              for(const viewport of [{width:390,height:844},{width:850,height:650}]){
+                const context=await browser.newContext({viewport});
+                const page=await context.newPage();
+                page.setDefaultTimeout(20000);
+                try{
+                  await page.goto('http://127.0.0.1:4178/access/',{waitUntil:'domcontentloaded'});
+                  const primed=await page.evaluate(async()=>{
+                    const c=await caches.open('jm-web-estate-v1.4.13-ailatheo-entitlement-boundary');
+                    await c.put('/api/jm/v1/cp12-synthetic-probe.json',new Response('{"stale":"API"}',{status:200}));
+                    await c.put('/owner/cp12-synthetic-probe.json',new Response('{"stale":"OWNER"}',{status:200}));
+                    await c.put('/cp12-synthetic-private.json',new Response('{"stale":"PRIVATE"}',{status:200,headers:{'Cache-Control':'private'}}));
+                    return (await c.keys()).filter(req=>req.url.includes('cp12-synthetic')).length;
+                  });
+                  if(primed!==3)throw Error('Could not seed 3 legacy unsafe cache entries before original worker registration');
+                  await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded'});
+                  await page.waitForFunction(async()=>{
+                    const r=await navigator.serviceWorker?.getRegistration('/');
+                    return Boolean(r?.active&&navigator.serviceWorker.controller);
+                  },null,{timeout:90000});
+                  const result=await page.evaluate(async()=>{
+                    const names=['api/jm/v1/cp12-synthetic-probe.json','owner/cp12-synthetic-probe.json'];
+                    const responses=[];
+                    for(const n of names){
+                      const r=await fetch('/'+n);
+                      responses.push({path:n,status:r.status,data:await r.json()});
+                    }
+                    const auth=await fetch('/cp12-synthetic-auth.json',{headers:{Authorization:'Bearer CP12-SYNTHETIC-ONLY'}});
+                    const authData=await auth.json();
+                    const pub=await fetch('/games-beyond/registry.json');
+                    const registrations=await navigator.serviceWorker.getRegistrations();
+                    const cache=await caches.open('jm-web-estate-v1.4.13-ailatheo-entitlement-boundary');
+                    const urls=(await cache.keys()).map(x=>new URL(x.url).pathname);
+                    return {
+                      responses,auth:{status:auth.status,data:authData},pubStatus:pub.status,urls,
+                      workerCount:registrations.filter(r=>r.scope===location.origin+'/').length
+                    };
+                  });
+                  if(result.workerCount!==1)throw Error('Original single worker identity drift');
+                  if(result.responses.some(r=>r.status!==200||!r.data?.ok)||result.auth.status!==200||!result.auth.data.ok)
+                    throw Error('Synthetic API/owner/auth GET unexpectedly blocked');
+                  if(result.pubStatus!==200)throw Error('Original public registry no longer fetches');
+                  if(result.urls.some(x=>x.startsWith('/api/')||x.startsWith('/owner/')||x==='/cp12-synthetic-auth.json'||x==='/cp12-synthetic-private.json'))
+                    throw Error('Protected synthetic response was stored in original PWA cache: '+JSON.stringify(result.urls.filter(x=>x.includes('cp12-'))));
+                  if(!result.urls.includes('/games-beyond/registry.json'))
+                    throw Error('Original public registry lost cached offline delivery');
+                  await context.close();count++;
+                }catch(e){throw Error('CP12 '+viewport.width+'x'+viewport.height+' '+e.message);}
+              }
+              if(count!==2)throw Error('Phone and Fold proof incomplete');
+              console.log('CP12 PUBLIC CACHE PASS 2/2 — prior API/owner/private cache entries scrubbed + new authenticated and API requests never cached; existing public registry cached; original single PWA preserved');
+            }finally{
+              await browser.close();
+              for(const [p] of fixtures)fs.rmSync(p,{force:true});
+            }
+          })().catch(e=>{console.error('CP12_CACHE_GONG_HOLD',e);process.exitCode=1});
+          NODE
       - name: Eight-contact phone and desktop proof
         shell: bash
         run: |

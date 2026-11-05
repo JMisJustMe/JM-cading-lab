@@ -3,11 +3,13 @@
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).with_name("JM_M001_STORAGE_LIBRARY_MCP_CP34.py")
 spec = importlib.util.spec_from_file_location("jm_m001_cp34", SCRIPT)
@@ -121,6 +123,35 @@ class StorageMCPTests(unittest.TestCase):
         with self.assertRaises(m.Hold):
             m.compare({"library": str(self.a), "recovery": str(self.a)}, self.args)
 
+    def test_hard_link_is_not_independent_recovery(self):
+        (self.b / "item.json").unlink()
+        os.link(self.a / "item.json", self.b / "item.json")
+        with self.assertRaisesRegex(m.Hold, "INDEPENDENT_FILE_OBJECTS_REQUIRED"):
+            m.compare(self.roots, self.args)
+
+    def test_overlapping_roots_same_file_is_not_recovery(self):
+        roots = {"library": self.tmp.name, "recovery": str(self.a)}
+        args = dict(self.args, library_file="library/item.json")
+        with self.assertRaisesRegex(m.Hold, "INDEPENDENT_FILE_OBJECTS_REQUIRED"):
+            m.compare(roots, args)
+
+    def test_malformed_method_does_not_crash_dispatch(self):
+        for method in (None, 17, True, [], {}, ""):
+            with self.subTest(method=method):
+                result = m.dispatch({"jsonrpc":"2.0", "id":7, "method":method}, self.roots)
+                self.assertEqual(result["error"]["code"], -32600)
+
+    def test_stdio_recovers_after_malformed_method(self):
+        messages = [{"jsonrpc":"2.0","id":1,"method":17},
+                    {"jsonrpc":"2.0","id":2,"method":"ping"}]
+        cp = subprocess.run([sys.executable, str(SCRIPT)],
+                            input="\n".join(map(json.dumps, messages))+"\n",
+                            text=True, capture_output=True, timeout=10, check=True)
+        replies = [json.loads(line) for line in cp.stdout.splitlines()]
+        self.assertEqual(replies[0]["error"]["code"], -32600)
+        self.assertEqual(replies[1], {"jsonrpc":"2.0","id":2,"result":{}})
+        self.assertEqual(cp.stderr, "")
+
     def test_large_file_hold(self):
         with (self.b / "item.json").open("wb") as f:
             f.truncate(m.MAX_BYTES + 1)
@@ -166,6 +197,26 @@ class StorageMCPTests(unittest.TestCase):
         different = m.dispatch(req, self.roots)["result"]
         self.assertTrue(different["isError"])
         self.assertEqual(different["structuredContent"]["state"], "DIFFERENT_BYTES_HOLD")
+
+    def test_same_size_source_change_during_read_holds(self):
+        target = self.a / "item.json"
+        stamp = target.stat()
+        real_fdopen = os.fdopen
+
+        class ChangingReader:
+            def __init__(self, handle): self.handle = handle
+            def __enter__(self): self.handle.__enter__(); return self
+            def __exit__(self, *args): return self.handle.__exit__(*args)
+            def fileno(self): return self.handle.fileno()
+            def read(self, limit):
+                data = self.handle.read(limit)
+                target.write_bytes(data.replace(b"JM", b"NX"))
+                os.utime(target, ns=(stamp.st_atime_ns, stamp.st_mtime_ns + 1_000_000_000))
+                return data
+
+        with patch.object(m.os, "fdopen", side_effect=lambda *a, **kw: ChangingReader(real_fdopen(*a, **kw))):
+            with self.assertRaisesRegex(m.Hold, "SOURCE_CHANGED_DURING_READ"):
+                m.compare(self.roots, self.args)
 
     def test_no_mutation_of_snapshot_files(self):
         before = [(p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())

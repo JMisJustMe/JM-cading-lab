@@ -1,0 +1,12 @@
+JM.PY 1.0
+def bodies():
+    return ["JM.WEB", "JM Visualang", "JM.PY"]
+
+def sections():
+    return ["Home", "Games", "Code", "Create", "About"]
+
+def body_total():
+    return len(bodies())
+
+def section_total():
+    return len(sections())

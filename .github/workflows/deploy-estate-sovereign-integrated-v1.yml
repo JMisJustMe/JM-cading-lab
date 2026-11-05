@@ -19,7 +19,18 @@ on:
       - "404.html"
       - "assets/ecostate-v3/**"
       - "access/**"
+      - "api-hub/**"
       - "apps/**"
+      # CP13: Only the eight already governed, public-safe Apps & Tools
+      # workroom bodies may trigger this existing Estate deployment.
+      - "estate-publication/apps-tools-convergence/index.html"
+      - "estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_v0_1.css"
+      - "estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js"
+      - "estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"
+      - "estate-publication/apps-tools-convergence/evidence-governance/index.html"
+      - "estate-publication/apps-tools-convergence/creation-publication/index.html"
+      - "estate-publication/apps-tools-convergence/contact-practice/index.html"
+      - "estate-publication/apps-tools-convergence/route-ftr/index.html"
       - "author/**"
       - "books/**"
       - "career/**"
@@ -140,7 +151,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in access apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab mmzg-runtime-v0.6 navigator recent recovery shims-reader theory visual-story; do
+          for dir in access api-hub apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab mmzg-runtime-v0.6 navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -233,6 +244,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /access/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /api-hub/*
+            Cache-Control: no-store, no-cache, must-revalidate
           /apps/*
             Cache-Control: no-store, no-cache, must-revalidate
           /books/*
@@ -268,6 +281,8 @@ jobs:
           /navigator/ /navigator/index.html 200
           /access /access/index.html 200
           /access/ /access/index.html 200
+          /api-hub /api-hub/index.html 200
+          /api-hub/ /api-hub/index.html 200
           /apps /apps/index.html 200
           /apps/ /apps/index.html 200
           /books /books/index.html 200
@@ -298,6 +313,12 @@ jobs:
         run: |
           set -euo pipefail
           test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/api-hub/index.html
+          test -s cloudflare-estate/api-hub/visual/index.html
+          test -s cloudflare-estate/api-hub/visual/foundation-catalog.json
+          grep -Fq 'data-jm-foundations="cp03"' cloudflare-estate/api-hub/visual/index.html
+          grep -Fq 'data-jm-koco-house="v2"' cloudflare-estate/api-hub/visual/index.html
+          grep -Fq 'data-jm-api-house="v1"' cloudflare-estate/api-hub/index.html
           test -s cloudflare-estate/estate-return-route.js
           grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/career/index.html
@@ -360,7 +381,7 @@ jobs:
           echo '634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html' | sha256sum -c -
           echo 'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/styles.css' | sha256sum -c -
           echo 'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs' | sha256sum -c -
-          echo '7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs' | sha256sum -c -
+          echo 'c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs' | sha256sum -c -
           grep -Fq 'Contact.<br>Change.<br>Return.' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html
           grep -Fq 'verifyReloadChallenge' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs
           grep -Fq '__JM_RUNTIME_DEBUG__' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs
@@ -378,7 +399,27 @@ jobs:
           test -s cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css
           test -s cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js
           echo 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html' | sha256sum -c -
-          echo 'd650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css' | sha256sum -c -
+          echo '27a53b46b0c3e262b23f592ce6e076782d1c314093afbe466310b9b40d979477  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css' | sha256sum -c -
+          # FTR source ancestry stays exact: frozen 11,501-byte original,
+          # inherited CP01 340-byte phone fix, plus scoped CP02 187-byte tablet fix.
+          # The original FLAZ manifest and CP01 are preserved, not overwritten.
+          python3 - <<'PY'
+          from pathlib import Path
+          from hashlib import sha256
+          path=Path('cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css')
+          full=path.read_bytes()
+          historical=full[:11501]
+          cp01=full[11501:11841]
+          cp02=full[11841:]
+          assert len(full)==12028 and len(cp01)==340 and len(cp02)==187, (len(full),len(cp01),len(cp02))
+          assert sha256(historical).hexdigest()=='d650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c', 'Frozen FTR CSS ancestry changed'
+          assert sha256(full[:11841]).hexdigest()=='5ba19a86cedef6c3f331da848f64cc1e8ea2eba4ef9408ea905d345f735aba51', 'FTR CP01 verified handheld descendant changed'
+          assert sha256(full).hexdigest()=='27a53b46b0c3e262b23f592ce6e076782d1c314093afbe466310b9b40d979477', 'FTR CP02 tablet descendant changed'
+          assert cp01.startswith(b'\n/* CP01 handheld overflow repair:'), 'Not the acknowledged FTR CP01 repair'
+          assert b'.topbar{flex-wrap:wrap}' in cp01 and b'.issue-hero h1{font-size:clamp(' in cp01
+          assert cp02.startswith(b'/* CP02: fluid Fold landscape issue-title fit;') and b'@media(min-width:641px)' in cp02
+          print('FTR CSS DESCENDANTS PASS: frozen 11,501-byte source + CP01 340-byte phone fix + CP02 187-byte Fold landscape fix')
+          PY
           echo 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js' | sha256sum -c -
           grep -Fq 'BACKGROUND<br>NOISE' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html
           grep -Fq 'Reader ≠ source authority.' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html
@@ -432,8 +473,9 @@ jobs:
           grep -Fq 'jm-cloud-contact-server-v05.onrender.com/market' cloudflare-estate/market-lab/index.html
           grep -Fq 'One door.' cloudflare-estate/access/index.html
           grep -Fq '56 ≠ 98 ≠ 45' cloudflare-estate/books/index.html
-          grep -Fq 'I study where people meet systems.' cloudflare-estate/career/index.html
-          grep -Fq 'Return to…' cloudflare-estate/career/index.html
+          grep -Fq 'Career &amp; Collaboration' cloudflare-estate/career/index.html
+          grep -Fq 'Private employment information and recipient-specific gifts are intentionally not published here.' cloudflare-estate/career/index.html
+          grep -Fq '../apps/' cloudflare-estate/career/index.html
           grep -Fq 'FIRST WATCHABLE SCENE' cloudflare-estate/visual-story/index.html
 
           python3 - <<'PY'
@@ -623,9 +665,9 @@ jobs:
             jb="$(wc -c < "$RUNNER_TEMP/ftr-reader.js" 2>/dev/null | tr -d ' ' || true)"
 
             if [ "$ih" = 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c' ] \
-              && [ "$ch" = 'd650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c' ] \
+              && [ "$ch" = '27a53b46b0c3e262b23f592ce6e076782d1c314093afbe466310b9b40d979477' ] \
               && [ "$jh" = 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f' ] \
-              && [ "$ib" = '4761' ] && [ "$cb" = '11501' ] && [ "$jb" = '9977' ] \
+              && [ "$ib" = '4761' ] && [ "$cb" = '12028' ] && [ "$jb" = '9977' ] \
               && grep -Fq 'BACKGROUND<br>NOISE' "$RUNNER_TEMP/ftr-index.html" \
               && grep -Fq '22 / 22' "$RUNNER_TEMP/ftr-index.html" \
               && grep -Fq 'Reader ≠ source authority.' "$RUNNER_TEMP/ftr-index.html" \
@@ -659,7 +701,7 @@ jobs:
             if check_file index.html 634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147 4962 "$attempt" \
               && check_file styles.css dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15 6144 "$attempt" \
               && check_file runtime-core.mjs fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26 7130 "$attempt" \
-              && check_file app.mjs 7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb 7034 "$attempt" \
+              && check_file app.mjs c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6 7842 "$attempt" \
               && grep -Fq 'Contact.<br>Change.<br>Return.' "$RUNNER_TEMP/runtime-index.html" \
               && grep -Fq 'verifyReloadChallenge' "$RUNNER_TEMP/runtime-runtime-core.mjs" \
               && grep -Fq '__JM_RUNTIME_DEBUG__' "$RUNNER_TEMP/runtime-app.mjs"; then
@@ -705,7 +747,7 @@ jobs:
               'index.html':{'bytes':4962,'sha256':'634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147'},
               'styles.css':{'bytes':6144,'sha256':'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15'},
               'runtime-core.mjs':{'bytes':7130,'sha256':'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'},
-              'app.mjs':{'bytes':7034,'sha256':'7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb'}
+              'app.mjs':{'bytes':7842,'sha256':'c0fbc303c5385b40ae27ce299f3d4e4e7b15e50c5a4305374884090df3ab69f6'}
             },
             'boundary':'Canonical public executable runtime proof only. No owner Windows/Edge proof transfer, OS reboot, cross-device persistence, external-model contact, unrestricted actuation or AGI/general-intelligence claim.'
           }

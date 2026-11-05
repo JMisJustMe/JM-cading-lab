@@ -112,3 +112,22 @@ CONNECT ≠ MERGE
 RECOVER BEFORE REBUILD
 NO DING, NO CLAIM
 ```
+
+## CP18 · restored local HTML game import (5 November 2026)
+
+The existing House's older **Mount HTML Bodies** feature is restored in the current proof/recovery room as **IMPORT ORIGINAL HTML (LOCAL)**. Choose a downloaded self-contained `.html` game from the owner device. The House verifies the local text encoding and SHA-256, then uses its existing atomic House import and IndexedDB; the game opens in the existing iframe. No source HTML is sent to public GitHub or the server, and original Drive/Library files are left untouched.
+
+- **COMBOUND Original v3.7.11 CP17:** the pinned original SHA-256 `3b5b791c15ea82e6e240b55d690b6e034bbc6f61ce0143c6a9fb0156326ce242` is checked before it is mounted as `combound-original-v3-7-11-cp17`. This is a separate local candidate from the built-in COMBOUND v0.7. After importing in the *same browser*, the local deep link is `?jm-play=combound-original-v3-7-11-cp17`.
+- **Protected JM Studios:** the original pair still requires its dedicated exact-proof House JSON import. Direct HTML import refuses those protected source identities.
+- **Unknown owner HTML:** imported under a separate hash-derived `owner-*` ID, not rewritten into an existing public game or automatic new authority. A repeated identical import reopens the mounted source instead of copying it again; a conflicting same-ID source is held.
+- The previous **IMPORT ECO/ESTATE FULL HOUSE** JSON workflow stays available, including protected originals and owner local recovery. No game/engine is rebundled or republished.
+
+Owner Fold8 HTML selection/import and deep gameplay remain a physical-owner acceptance gate. Browser syntax and source-level preflight alone are not device acceptance.
+
+## CP19 — Owner phone-only COMBOUND original contact (5 Nov 2026)
+
+The existing **Proof & Recovery** room includes **CONNECT COMBOUND CP17 FROM THIS PHONE**. This is an optional, explicitly user-triggered shortcut to the authentic CP17 source already present in the owner's Fold8 Downloads. It contacts the owner's existing read-only Termux bridge on `127.0.0.1:8877`, compares exact length and SHA-256, then calls the *same existing* HTML import code and IndexedDB transaction as the file-picker route. On success it opens the local game inside the House. It never copies or publishes the original source to GitHub, Drive or a remote server.
+
+The bridge is bound to loopback and only permits the published Games House browser origin (`https://jmisjustme.github.io`) through CORS; it rejects other browser origins. Modern Chrome can require an explicit **loopback network permission** for an HTTPS page to read the phone's local bridge. Permission is not bypassed or automatically granted. If the bridge is stopped, browser blocks local access, or original bytes change, the import fails closed, leaving the existing **IMPORT ORIGINAL HTML (LOCAL)** file-picker fallback intact. Exact owner-source hash: `3b5b791c15ea82e6e240b55d690b6e034bbc6f61ce0143c6a9fb0156326ce242`, 1,277,449 bytes.
+
+No implicit current-crown promotion: built-in public COMBOUND v0.7 remains mounted; CP17 is a separate private locally mounted candidate. Cross-browser physical Fold8 acceptance of the new permission and button remains open until the owner observes it. The direct local game door `http://127.0.0.1:8876/index.html` is an independent proven fallback.

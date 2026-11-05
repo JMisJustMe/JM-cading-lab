@@ -14,7 +14,9 @@ const CORE=[
   './author-home-door.js',
   './estate-head-public-consumer.js',
   './access/',
-  './access/index.html',\n  './career/',\n  './career/index.html',
+  './access/index.html',
+  './career/',
+  './career/index.html',
   './books/',
   './books/index.html',
   './visual-story/',
@@ -61,16 +63,58 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(keys.filter(key => key.startsWith('jm-web-estate-') && key !== CACHE).map(key => caches.delete(key))))
+      .then(async () => {
+        const cache = await caches.open(CACHE);
+        for (const request of await cache.keys()) {
+          const response = await cache.match(request);
+          if (!publicCacheRequest(request) || !safeCacheResponse(response,request)) {
+            await cache.delete(request);
+          }
+        }
+      })
       .then(() => self.clients.claim())
   );
 });
+
+// Original Estate: only public, same-origin GETs may enter the offline cache.
+function publicCacheRequest(request){
+  if(request.method !== 'GET' || request.headers.has('Authorization')) return false;
+  const url = new URL(request.url);
+  if(url.origin !== self.location.origin) return false;
+  const path = url.pathname;
+  if(path === '/api' || path.startsWith('/api/')) return false;
+  if(path === '/owner' || path.startsWith('/owner/')) return false;
+  if(path === '/author/authuser.html') return false;
+  return true;
+}
+
+// Offline installation deliberately includes only these source-authorised CORE files.
+// Cloudflare sends no-store on some public pages to prevent stale HTTP delivery;
+// an explicit CORE URL remains eligible for service-worker offline recovery.
+function explicitOfflineCore(request){
+  const url = new URL(request.url);
+  if(url.origin !== self.location.origin || url.search) return false;
+  return CORE.some(relative => new URL(relative,self.registration.scope).pathname === url.pathname);
+}
+
+function safeCacheResponse(response,request){
+  if(!response || !response.ok || !publicCacheRequest(request)) return false;
+  const policy = response.headers.get('Cache-Control') || '';
+  if(/(?:^|[,\s])private(?:[,\s=]|$)/i.test(policy)) return false;
+  if(/(?:^|[,\s])no-store(?:[,\s=]|$)/i.test(policy)) return explicitOfflineCore(request);
+  return true;
+}
 
 async function fresh(request){
   try{
     const response = await fetch(request,{cache:'no-store'});
     if(response && response.ok){
       const cache = await caches.open(CACHE);
-      cache.put(request,response.clone()).catch(()=>{});
+      if(safeCacheResponse(response,request)){
+        cache.put(request,response.clone()).catch(()=>{});
+      } else {
+        await cache.delete(request);
+      }
       return response;
     }
     const cached = await caches.match(request,{ignoreSearch:true});
@@ -87,8 +131,6 @@ async function fresh(request){
 }
 
 self.addEventListener('fetch', event => {
-  if(event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if(url.pathname.startsWith('/api/owner/')||url.pathname==='/api/ailatheo') return;
+  if (!publicCacheRequest(event.request)) return;
   event.respondWith(fresh(event.request));
 });

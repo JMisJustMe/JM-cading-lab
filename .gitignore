@@ -1,0 +1,7 @@
+# JM ECOSTATE public-origin guard: never stage owner-private family source bodies here.
+# Preserve Rim Route as an independent public game, including future assets.
+/family-gifts/*
+!/family-gifts/rim-route/
+# Owner-private source-test workflows remain retired; do not restage them.
+/.github/workflows/jm-two-family-gifts-contact.yml
+/.github/workflows/jm-scripture-companion-v161-qa.yml

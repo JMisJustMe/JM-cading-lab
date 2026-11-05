@@ -1,0 +1,60 @@
+{
+  "schema": "JM.Estate.AIAuthorityContactDelta/1",
+  "date": "2026-11-04",
+  "state": "EVIDENCE_RECONCILED__HOSTED_RUNTIME_SYNC_DRIFT_OPEN",
+  "authority_class": "DERIVED_PUBLIC_SAFE_CONTACT_RECORD_NOT_HOT_AUTHORITY",
+  "law": [
+    "RECOVER_BEFORE_REBUILD",
+    "OWNER_ORIGINAL_CURRENT_POINTER_OVERRIDES_OLDER_HOSTED_SNAPSHOT",
+    "MESH_NOT_MERGE",
+    "DO_NOT_CROWN_WITHOUT_LIVE_REPROOF"
+  ],
+  "identity": "JM LLM #2",
+  "current_source": {
+    "name": "JM LLM #2 v2.1 — Maximal Earned Direct-Content Edition",
+    "version": "v2.1",
+    "status": "OWNER_FROZEN_CURRENT_POINTER_CONFIRMED",
+    "archive": "JM_LLM_2_v2_1_MAXIMAL_EARNED_DIRECT_CONTENT_EDITION.zip",
+    "archive_sha256": "28016904da6a44dabc6e49688090452fde98e7da73541a5daa2003c8c51d38b0",
+    "learned_bank_sha256": "133cf26f1dfc106133bf183fb4ddcd0ffa4a8d7280628863ad35c667af50af21",
+    "provenance_role": "owner-private exact Library 00_CURRENT_POINTER and RELEASE_MANIFEST",
+    "reported_acquisition": "46/46 PASS",
+    "reported_full_integration": "23/23 PASS",
+    "actual_fresh_original_execution": "RECEIPTED_SEPARATELY_CP02"
+  },
+  "protected_parent": {
+    "name": "JM LLM #2 v2.0 — Unified Executable Program Edition",
+    "role": "FROZEN_HISTORICAL_ANCESTOR_NOT_CURRENT",
+    "execution_semantics": "bounded fixed ISA (not current v2.1 direct-content decoder)"
+  },
+  "unpromoted": {
+    "name": "JM LLM #2 v2.2 experimental trials",
+    "role": "NOT_CURRENT",
+    "best_frozen_heldout": "22/23",
+    "promoted": false
+  },
+  "hosted_build_mesh_snapshot": {
+    "server_version": "0.8.6",
+    "registry_schema": "JM.CareerCurrentProjectRegistry/0.24",
+    "registry_date": "2026-10-06",
+    "registry_source": "current_registry.json",
+    "registry_path_mode": "SERVICE_LOCAL",
+    "registry_sha256": "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31",
+    "observed_llm2_pointer": "v2.0",
+    "state": "STALE_FOR_JM_LLM2"
+  },
+  "proof_boundary": {
+    "static_delta_verifiable_in_repo": true,
+    "live_build_mesh_registry_mutated": false,
+    "latest_hosted_current_head_verified_as_v2_1": false,
+    "private_weights_published": false,
+    "model_identity_merged": false,
+    "next_action": "update owner-authorized service-local current registry using exact v2.1 source evidence, redeploy safely, verify /mcp current-head readback; no secrets in public tracker"
+  },
+  "existing_contact": {
+    "receiver_pr": 729,
+    "merged_commit": "96eb059ee6222a77090d58f4ca317f56526d70b4",
+    "original_sender_receipt": "JM.IntelligenceFederation.CP02/1",
+    "scope": "Original JM LLM2 v2.1 to Core v1.16 then 4 independent Estate receiver offices"
+  }
+}

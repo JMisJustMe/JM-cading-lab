@@ -1,0 +1,32 @@
+name: JM API v1.1 QA
+on:
+  pull_request:
+    paths:
+      - 'jm-api/**'
+      - 'api-hub/**'
+      - 'index.html'
+      - 'access/index.html'
+      - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+      - 'functions/api/jm/**'
+      - 'tests/jm-api-*.test.mjs'
+      - '.github/workflows/jm-api-v1-1-qa.yml'
+  workflow_dispatch:
+jobs:
+  jm-api-contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate local, Pages, and bounded upstream contact
+        run: |
+          node tests/jm-api-v1.test.mjs
+          node tests/jm-api-http.test.mjs
+          node tests/jm-api-reconciliation.test.mjs
+          node tests/jm-api-hub.test.mjs
+          node tests/jm-koco-foundations-cp02.test.mjs
+          node tests/jm-koco-foundations-cp03.test.mjs

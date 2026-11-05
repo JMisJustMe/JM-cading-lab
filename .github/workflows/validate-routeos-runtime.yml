@@ -75,9 +75,10 @@ jobs:
           assert 'function seedCamera()' in runtime
           assert 'const {w,h}=SEED_WORLD' in runtime
           # Cache revisions advance during source-faithful House upgrades.
-          # Check the canonical cache family, not one expired cache instance.
+          # Keep the known version family strict, including source-faithful CPxx offline owner/contact releases.
+          # No broad wildcard: reject unrelated cache keys; this is not a new cache or a republish.
           cache = re.search(r"^const CACHE='([^']+)';", sw, re.M)
-          assert cache and re.fullmatch(r'games-beyond-v[0-9]+-[0-9]+-whole-estate-current-r[1-9][0-9]*', cache[1]), 'Invalid House cache identity'
+          assert cache and re.fullmatch(r'games-beyond-v[0-9]+-[0-9]+-whole-estate-current-r[1-9][0-9]*(?:-cp[0-9]+-offline-(?:owner-html|phone-contact)(?:-cp[0-9]+)?-[0-9]{8})?', cache[1]), 'Invalid House cache identity'
 
           receipt = {
               'schema':'JM.RouteOSRunnableRuntimeValidation/1.0',

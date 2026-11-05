@@ -1,0 +1,307 @@
+/* JM ECOSTATE Recovery Head · Body/Carrier/Route Tracer CP01
+ * Additive read-only capability. Source Ledger/FTR/TraceBox semantics are
+ * inherited as governance rules, not replaced or merged.
+ * No private files uploaded; no source writes; no automatic downloads.
+ */
+(function () {
+  'use strict';
+  const host = document.querySelector('main.shell');
+  const grid = host && host.querySelector('section.grid');
+  if (!grid || document.getElementById('jm-tracer')) return;
+
+  const css = document.createElement('style');
+  css.textContent = '.jm-tracer{margin:22px 0;border-color:#397766}.jm-tracer h2{margin:4px 0 7px}.jm-tracer p{color:#afcec4}.jm-tracer .trace-actions{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.jm-tracer .trace-actions label{display:inline-flex;align-items:center}.jm-tracer .trace-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0}.jm-tracer .trace-node{padding:12px 8px;border:1px solid #325a50;border-radius:12px;background:#091c18;text-align:center;font-size:.85rem}.jm-tracer .trace-node b{display:block;color:#d6fff0}.jm-tracer .trace-node span{display:block;color:#8db7aa;font-size:.75rem}.jm-tracer .trace-readout{white-space:pre-wrap;overflow-wrap:anywhere;max-height:390px;overflow:auto;margin:12px 0;padding:14px;background:#06100e;color:#e2fff6;border:1px solid #294b43;border-radius:12px;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.jm-tracer .trace-small{font-size:.82rem;color:#b4cec5}.jm-tracer input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.jm-tracer .trace-pill{display:inline-block;border:1px solid #426758;border-radius:999px;padding:4px 10px;font-size:.8rem;color:#b7f7d9}@media(max-width:720px){.jm-tracer .trace-flow{grid-template-columns:1fr 1fr}.jm-tracer .trace-node:last-child{grid-column:1/-1}}';
+  document.head.appendChild(css);
+
+  const root = document.createElement('section');
+  root.id = 'jm-tracer';
+  root.className = 'card jm-tracer';
+  root.setAttribute('aria-label', 'JM Body/Carrier/Route Tracer');
+  root.innerHTML =
+    '<div class="eyebrow">Existing Recovery Head · TraceBox × FTR × Source Ledger</div>' +
+    '<h2>Trace the body, not just its box</h2>' +
+    '<p>Follow what entered, where it came from, what contains it, which route was taken and what visibly works. One inspection, separate identities. This diagnostic never uploads, moves, executes or replaces selected local files.</p>' +
+    '<div class="trace-flow" aria-label="Trace stages">' +
+      '<div class="trace-node"><b>1 · Source</b><span>Origin / custody</span></div>' +
+      '<div class="trace-node"><b>2 · Body</b><span>Actual bytes + hash</span></div>' +
+      '<div class="trace-node"><b>3 · Container</b><span>ZIP / format / contents</span></div>' +
+      '<div class="trace-node"><b>4 · Route</b><span>Loader / dependencies</span></div>' +
+      '<div class="trace-node"><b>5 · Contact</b><span>Observed behaviour</span></div>' +
+    '</div>' +
+    '<div class="trace-actions">' +
+      '<button type="button" class="btn primary" id="jm-trace-theory">Examine live Theory rooms</button>' +
+      '<label class="btn" for="jm-trace-file">Inspect a file / ZIP<input type="file" id="jm-trace-file" aria-label="Choose a local file to inspect"></label>' +
+      '<select id="jm-trace-house" aria-label="Choose existing public House" style="background:#06100e;border:1px solid #426758;border-radius:10px;padding:9px"><option value="apps">Apps &amp; Tools</option><option value="games">Games &amp; Beyond</option><option value="theory">Theory Wing</option><option value="recovery">Recovery Head</option></select>' +
+      '<button type="button" class="btn" id="jm-trace-house-run">Trace public House</button>' +
+      '<div class="trace-actions" style="flex-basis:100%;margin:3px 0" aria-label="Compare two local file bodies">' +
+      '<label class="btn" for="jm-trace-pair-a">Select first file<input type="file" id="jm-trace-pair-a" aria-label="Select first local file"></label>' +
+      '<label class="btn" for="jm-trace-pair-b">Select second file<input type="file" id="jm-trace-pair-b" aria-label="Select second local file"></label>' +
+      '<button type="button" class="btn primary" id="jm-trace-compare">Compare both files</button></div>' +
+      '<button type="button" class="btn" id="jm-trace-receipt" disabled>Export inspection receipt</button>' +
+    '</div>' +
+    '<span class="trace-pill" id="jm-trace-status" role="status" aria-live="polite">READY · No inspection yet</span>' +
+    '<pre class="trace-readout" id="jm-trace-readout" aria-live="polite">Choose a file, or trace the live Theory room route. Unknown origin stays UNKNOWN; matched hashes establish byte equality, not authorship or working gameplay.</pre>' +
+    '<p class="trace-small">BIAT → FLAZ boundaries: source ≠ container; exact bytes ≠ working behaviour; registration ≠ visible contact; a diagnostic receipt is not a current-best promotion. Protected sources stay local.</p>';
+  grid.before(root);
+
+  const $ = (id) => root.querySelector('#' + id);
+  const report = {schema:'JM.ECOSTATE.BodyCarrierRouteTracer/1.0', version:'CP02', mode:'READ_ONLY',
+    preservation:'NO_FILE_WRITES_NO_UPLOAD_NO_AUTO_EXPORT', theory:null, house:null, localFile:null, pair:null};
+  function status(message, body) {
+    $('jm-trace-status').textContent = message;
+    if (body !== undefined) $('jm-trace-readout').textContent = body;
+    $('jm-trace-receipt').disabled = !report.theory && !report.house && !report.localFile && !report.pair;
+  }
+  function hex(bytes) {
+    return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  async function hash(buffer) {
+    if (!globalThis.crypto || !crypto.subtle) throw Error('SHA-256 requires a secure browser context (HTTPS or localhost).');
+    return hex(await crypto.subtle.digest('SHA-256', buffer));
+  }
+  function url(path) { return new URL('../theory/' + path, location.href); }
+  function zipInfo(buffer) {
+    const view = new DataView(buffer), end = buffer.byteLength;
+    let eocd = -1;
+    for (let i = end - 22; i >= Math.max(0,end - 65557); i--) {
+      if (view.getUint32(i, true) === 0x06054b50 && i + 22 + view.getUint16(i + 20, true) <= end) {eocd = i; break;}
+    }
+    if (eocd < 0) throw Error('ZIP central-directory end not found; no extraction attempted.');
+    const count = view.getUint16(eocd + 10, true);
+    const start = view.getUint32(eocd + 16, true);
+    if (count === 0xffff || start === 0xffffffff) throw Error('ZIP64 requires a specialist parser; contents left unverified.');
+    if (start >= eocd && count) throw Error('Invalid ZIP directory offset.');
+    let offset = start, entries = [], unsafe = 0, encrypted = 0, totalUnpacked = 0;
+    for (let i = 0; i < count; i++) {
+      if (offset + 46 > end || view.getUint32(offset, true) !== 0x02014b50) throw Error('Incomplete ZIP central directory at item '+i);
+      const flags = view.getUint16(offset + 8, true);
+      const unpacked = view.getUint32(offset + 24, true);
+      const nameSize = view.getUint16(offset + 28, true);
+      const extraSize = view.getUint16(offset + 30, true);
+      const commentSize = view.getUint16(offset + 32, true);
+      if (offset + 46 + nameSize + extraSize + commentSize > end) throw Error('Truncated ZIP entry.');
+      const name = new TextDecoder((flags & 0x800) ? 'utf-8' : 'windows-1252').decode(
+        new Uint8Array(buffer, offset + 46, nameSize));
+      if (/^(\/|[A-Za-z]:)|(^|\/)\.\.(\/|$)|\\/.test(name)) unsafe++;
+      if (flags & 1) encrypted++;
+      if (entries.length < 30) entries.push(name);
+      totalUnpacked += unpacked;
+      offset += 46 + nameSize + extraSize + commentSize;
+    }
+    return {centralDirectoryEntries: count, first30EntryNames: entries, encryptedEntries: encrypted,
+      suspiciousPaths: unsafe, declaredUncompressedBytes: totalUnpacked,
+      boundary:'Central-directory metadata only. No ZIP members were extracted, executed or verified individually.'};
+  }
+
+  async function inspect(file) {
+    if (!file) return;
+    status('INSPECTING · Local only', 'Reading metadata and calculating SHA-256. This file stays on your device.');
+    let result = {name:file.name, bytes:file.size, mediaType:file.type||'unspecified',
+      exactByteHash:null, format:file.name.toLowerCase().endsWith('.zip')?'ZIP':'OTHER',
+      origin:'HOLD_NOT_ESTABLISHED', functionalProof:'NOT_TESTED', container:null};
+    try {
+      if (file.size > 268435456) throw Error('File exceeds 256 MiB phone-safe inspection limit; unchanged, no hash claim.');
+      const buffer = await file.arrayBuffer();
+      result.exactByteHash = await hash(buffer);
+      if (result.format === 'ZIP') result.container = zipInfo(buffer);
+      result.hashState = 'PASS_SHA256_CALCULATED_NOT_COMPARED_TO_AUTHORITY';
+      report.localFile = result;
+      status('HASHED · Authority remains separate', JSON.stringify(result, null, 2));
+    } catch (error) {
+      result.hold = String(error.message||error);
+      report.localFile = result;
+      status('HOLD · Local file unchanged', JSON.stringify(result, null, 2));
+    }
+  }
+
+  async function checkSource(path) {
+    const address = url(path);
+    const response = await fetch(address, {cache:'no-store',credentials:'same-origin'});
+    if (!response.ok) throw Error(path + ' returned HTTP ' + response.status);
+    const bytes = await response.arrayBuffer();
+    return {path:address.pathname, http:response.status, bytes:bytes.byteLength,
+      sha256:await hash(bytes), text:new TextDecoder().decode(bytes)};
+  }
+  async function checkRuntime() {
+    const frame = document.createElement('iframe');
+    frame.title = 'Temporary same-origin read-only Theory room check';
+    frame.setAttribute('aria-hidden','true');
+    frame.tabIndex = -1;
+    frame.style.cssText = 'position:absolute;left:-10000px;top:0;width:500px;height:400px;opacity:0;pointer-events:none';
+    root.appendChild(frame);
+    try {
+      frame.src = url('');
+      const deadline = Date.now()+14000;
+      while (Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 180));
+        let doc;
+        try {doc = frame.contentDocument;} catch {throw Error('Same-origin room contact unavailable');}
+        if (!doc) continue;
+        const cards = doc.querySelectorAll('#roomGrid .room-card');
+        if (cards.length === 42) {
+          const roomButton = doc.querySelector('#roomGrid [data-room-select]');
+          if (roomButton) roomButton.click();
+          const readerText = (doc.querySelector('#roomReader')?.textContent||'').trim();
+          return {renderedCards:cards.length, firstRoomTitle:cards[0]?.querySelector('h3')?.textContent||null,
+            readerOpened:!!(roomButton && readerText.includes('Coding Becomes Cold Ding')),
+            contact:'ACTUAL_SAME_ORIGIN_DOM', deviceScope:'BROWSER_VIEWPORT_NOT_FOLD8_OWNER_ACCEPTANCE'};
+        }
+      }
+      let count = 0;
+      try { count = frame.contentDocument?.querySelectorAll('#roomGrid .room-card').length||0; } catch {}
+      return {renderedCards:count, readerOpened:false, contact:'HOLD_TIMEOUT_OR_MISSING_CARDS'};
+    } finally {frame.remove();}
+  }
+
+  async function traceTheory() {
+    $('jm-trace-theory').disabled = true;
+    status('TRACING · Source → container → runtime', 'Recovering actual mounted-room data and loader from the existing Theory Wing…');
+    const result = {target:'JM Theory MultiHub · Mounted Chat Rooms', mode:'READ_ONLY',
+      source:'existing deployed Theory Wing', originAuthority:'PUBLIC_CARRIER_ONLY',
+      registeredRooms:null, distinctRoomIds:null, sourceFiles:[], runtime:null,
+      verdict:'HOLD', time:new Date().toISOString()};
+    try {
+      const paths=['index.html','data/chat-room-recovery/mounted-rooms.js','chat-room-recovery-v6.js'];
+      for (const path of paths) {
+        const checked=await checkSource(path);
+        result.sourceFiles.push({path:checked.path,http:checked.http,bytes:checked.bytes,sha256:checked.sha256});
+        if (path.includes('mounted-rooms')) {
+          const match=checked.text.match(/^\s*window\.JMTheoryMountedRoomsCompact\s*=\s*(\[[\s\S]*\]);?\s*$/);
+          if (!match) throw Error('Mounted-room payload assignment could not be parsed as JSON safely.');
+          const rows=JSON.parse(match[1]);
+          if (!Array.isArray(rows)) throw Error('Room source is not an array.');
+          result.registeredRooms=rows.length;
+          result.distinctRoomIds=new Set(rows.map((r)=>r.i)).size;
+        }
+        if (path.includes('recovery-v6') && !checked.text.includes('JMTheoryMountedRoomsCompact'))
+          throw Error('Loader does not reference the mounted-room source.');
+      }
+      result.runtime=await checkRuntime();
+      result.verdict=result.registeredRooms===42 && result.distinctRoomIds===42 &&
+        result.runtime.renderedCards===42 && result.runtime.readerOpened ? 'PASS_SCOPED_LIVE_ROOM_CONTACT' : 'HOLD_MISMATCH';
+      report.theory=result;
+      status(result.verdict.startsWith('PASS')?'PASS · Live room route':'HOLD · Incomplete live contact',
+        JSON.stringify(result,null,2));
+    } catch (error) {
+      result.error=String(error.message||error);
+      report.theory=result;
+      status('HOLD · No live proof', JSON.stringify(result,null,2));
+    } finally {
+      $('jm-trace-theory').disabled = false;
+    }
+  }
+  async function traceHouse() {
+    const choice = $('jm-trace-house').value;
+    const routes = {apps:'../apps/',games:'../games-beyond/',theory:'../theory/',recovery:'./'};
+    const target = new URL(routes[choice], location.href);
+    const result = {target:target.pathname, purpose:'PUBLIC_DEPENDENCY_CONTACT',
+      mode:'READ_ONLY', originAuthority:'PUBLIC_CARRIER_ONLY', htmlHttp:null,
+      declaredLocalAssets:0, examinedAssets:[], externalAssetsSkipped:0, 
+      runtimeFunctionalProof:'NOT_TESTED', verdict:'HOLD', time:new Date().toISOString()};
+    $('jm-trace-house-run').disabled=true;
+    status('TRACING · Public House', 'Inspecting the current public HTML and its directly declared same-origin script and stylesheet carriers…');
+    try {
+      const response=await fetch(target,{cache:'no-store',credentials:'same-origin'});
+      result.htmlHttp=response.status;
+      if (!response.ok) throw Error('House page returned HTTP '+response.status);
+      const body=await response.text();
+      if (!/<!doctype html|<html\b/i.test(body)) throw Error('House response is not an HTML document.');
+      result.htmlSha256=await hash(new TextEncoder().encode(body).buffer);
+      const parsed=new DOMParser().parseFromString(body,'text/html');
+      const found=Array.from(parsed.querySelectorAll('script[src],link[rel="stylesheet"][href]'));
+      const urls=[];
+      for(const element of found) {
+        const relative=element.getAttribute('src')||element.getAttribute('href');
+        const asset=new URL(relative,target);
+        if(asset.origin!==location.origin) {result.externalAssetsSkipped++;continue;}
+        if(!urls.some((u)=>u.href===asset.href)) urls.push(asset);
+      }
+      result.declaredLocalAssets=urls.length;
+      const sample=urls.slice(0,48);
+      result.uncheckedAssetCount=Math.max(0,urls.length-sample.length);
+      result.examinedAssets=await Promise.all(sample.map(async (asset)=>{
+        const row={path:asset.pathname,http:null,sha256:null,bytes:null};
+        try{
+          const r=await fetch(asset,{cache:'no-store',credentials:'same-origin'});
+          row.http=r.status;
+          if(!r.ok) throw Error('HTTP '+r.status);
+          const bytes=await r.arrayBuffer();
+          row.bytes=bytes.byteLength;
+          if(bytes.byteLength>8388608) {row.hold='Over 8 MiB; hash not calculated';return row;}
+          row.sha256=await hash(bytes);
+        }catch(e){row.hold=String(e.message||e);}
+        return row;
+      }));
+      const failures=result.examinedAssets.filter(x=>x.http!==200||x.hold).length;
+      result.verdict=failures||result.uncheckedAssetCount?'HOLD_UNVERIFIED_OR_FAILED_ASSETS':'PASS_DECLARED_PUBLIC_CARRIER_ASSETS_ONLY';
+      result.boundary='HTTP 200 and source hashes show available carriers, not working gameplay, successful user journeys, current private sources or device acceptance.';
+    }catch(e){result.error=String(e.message||e);}
+    report.house=result;
+    status(result.verdict.startsWith('PASS')?'PASS · Carriers accessible':'HOLD · Carrier gaps',JSON.stringify(result,null,2));
+    $('jm-trace-house-run').disabled=false;
+  }
+
+
+  // FTR / Source Ledger: equality of bytes is NOT equality of roles, custody or authority.
+  // Observe both user-selected files in memory only; never store raw content.
+  async function comparePair() {
+    const first = $('jm-trace-pair-a').files?.[0], second = $('jm-trace-pair-b').files?.[0];
+    if (!first || !second) {
+      report.pair = null;
+      status('HOLD · Select two files', 'Choose both files independently. No file was read or changed.');
+      return;
+    }
+    $('jm-trace-compare').disabled = true;
+    report.pair = null;
+    status('COMPARING · Device-local only','Reading two selected bodies and calculating independent SHA-256 fingerprints…');
+    const observation = {kind:'TWO_FILE_BODY_COMPARISON',mode:'READ_ONLY_LOCAL',
+      first:null,second:null, sameName:null,sameBytes:null, verdict:'HOLD',
+      sourceAuthority:'NOT_ESTABLISHED', roleEquivalence:'NOT_INFERRED',
+      recoveryPath:'Keep both originals and their independent custodial routes.', 
+      boundary:'Byte identity is not evidence of redundant roles. No automatic deletion, overwrite, archive retirement or source promotion.'};
+    async function identify(file) {
+      if (file.size>268435456) throw Error('One selected file exceeds the 256 MiB per-file inspection bound.');
+      const buffer=await file.arrayBuffer();
+      return {name:file.name, bytes:file.size, sha256:await hash(buffer),
+        role:'UNDECLARED', origin:'NOT_ESTABLISHED'};
+    }
+    try {
+      observation.first=await identify(first);
+      observation.second=await identify(second);
+      observation.sameName=first.name===second.name;
+      observation.sameBytes=first.size===second.size &&
+        observation.first.sha256===observation.second.sha256;
+      observation.verdict=observation.sameBytes ? 'PASS_BYTE_IDENTICAL'
+        : 'PASS_BYTE_DIFFERENT';
+      report.pair=observation;
+      status(observation.sameBytes?'MATCH · Same bytes, independent roles':'DIFFERENT · No equivalence claim',
+        JSON.stringify(observation,null,2));
+    }catch(error){
+      observation.error=String(error.message||error);
+      report.pair=observation;
+      status('HOLD · No equality claim',JSON.stringify(observation,null,2));
+    }finally{
+      $('jm-trace-compare').disabled = false;
+    }
+  }
+
+  function exportReceipt() {
+    if (!report.theory && !report.localFile && !report.house && !report.pair) return;
+    const receipt={...report, generatedAt:new Date().toISOString(),
+      boundary:'Public carrier or local hash contact does not prove original authorship, device acceptance, dependency safety or other untested creations.'};
+    const bytes = new Blob([JSON.stringify(receipt,null,2)], {type:'application/json'});
+    const link = document.createElement('a');
+    link.href=URL.createObjectURL(bytes);
+    link.download='JM_BODY_CARRIER_ROUTE_TRACE_CP02_RECEIPT.json';
+    link.click();
+    setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+  }
+  $('jm-trace-theory').addEventListener('click',traceTheory);
+  $('jm-trace-house-run').addEventListener('click',traceHouse);
+  $('jm-trace-file').addEventListener('change',(event)=>inspect(event.target.files?.[0]));
+  $('jm-trace-compare').addEventListener('click',comparePair);
+  $('jm-trace-receipt').addEventListener('click',exportReceipt);
+  window.JMBodyCarrierTracer = Object.freeze({version:'CP02',inspect,traceTheory,comparePair,
+    traceHouse,snapshot:()=>JSON.parse(JSON.stringify(report))});
+  if (location.hash==='#jm-tracer') requestAnimationFrame(()=>root.scrollIntoView({block:'start'}));
+})();

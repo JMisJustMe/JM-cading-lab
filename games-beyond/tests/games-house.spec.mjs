@@ -341,13 +341,17 @@ test('@source-boundary verified pair survives full backup into a fresh browser c
 });
 
 
-test('@boot legacy catalogue re-entry cannot overwrite live House authority', async ({ page }) => {
+test('@boot controlled House navigation preserves modern Catalogue without obsolete core override', async ({ page }) => {
   await openHouse(page);
   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null);
   await page.reload();
   await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, {timeout:45_000});
   await expect(page.locator('.hero p')).toContainText('Mounted Rooms follow the verified payload manifest');
-  await expect(page.locator('#catalogueStat').locator('..')).toContainText('Legacy catalogue subset');
+  await expect(page.getByRole('tab',{name:'CATALOGUE'})).toBeVisible();
+  await expect(page.locator('#view-catalogue-current iframe')).toHaveAttribute('src', /all-games\.html/);
+  await expect(page.locator('#catalogueStat')).toHaveCount(0);
+  await page.getByRole('tab',{name:'CATALOGUE'}).click();
+  await expect(page.locator('#view-catalogue-current')).toBeVisible();
   await expect(page.locator('.hero p')).not.toContainText('Twenty-one');
   await expect(page.locator('#status')).not.toContainText('WHOLE CATALOGUE CURRENT');
 });

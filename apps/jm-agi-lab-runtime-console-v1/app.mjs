@@ -22,7 +22,17 @@ function loadState(){
 }
 function saveState(){
   state.updatedAt=Date.now();
-  localStorage.setItem(STORE,JSON.stringify(state));
+  try{
+    localStorage.setItem(STORE,JSON.stringify(state));
+    return true;
+  }catch(e){
+    el('storageState').textContent='HOLD · LOCAL STORAGE UNAVAILABLE';
+    return false;
+  }
+}
+function storageAvailable(){
+  try{const key='__jm_storage_probe__';localStorage.setItem(key,'1');localStorage.removeItem(key);return true;}
+  catch(e){return false;}
 }
 function safeJson(key){
   try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null;}catch(e){return null;}
@@ -87,7 +97,10 @@ function render(){
 }
 function toast(text){
   el('storageState').textContent=text;
-  setTimeout(function(){el('storageState').textContent='LOCAL · READY';},1800);
+  setTimeout(function(){
+    try{localStorage.setItem('__jm_storage_probe__','1');localStorage.removeItem('__jm_storage_probe__');el('storageState').textContent='LOCAL · READY';}
+    catch(e){el('storageState').textContent='HOLD · LOCAL STORAGE UNAVAILABLE';}
+  },1800);
 }
 
 el('contactBtn').addEventListener('click',function(){
@@ -98,16 +111,17 @@ el('contactBtn').addEventListener('click',function(){
       value:el('factValue').value,
       confidence:Number(el('confidence').value)
     });
-    saveState();render();toast('STATE WRITTEN');
+    const saved=saveState();render();toast(saved?'STATE WRITTEN':'HOLD · STATE NOT PERSISTED');
   }catch(e){toast('HOLD · '+e.message);}
 });
 el('consequenceBtn').addEventListener('click',function(){
   state=applyCommand(state,{type:'CONSEQUENCE',label:'bounded UI consequence'});
-  saveState();render();toast('CONSEQUENCE WRITTEN');
+  const saved=saveState();render();toast(saved?'CONSEQUENCE WRITTEN':'HOLD · CONSEQUENCE NOT PERSISTED');
 });
 el('settleBtn').addEventListener('click',function(){
   if(settleTimer) return;
-  state=applyCommand(state,{type:'ARM_SETTLE'});saveState();render();
+  if(!storageAvailable()){toast('HOLD · LOCAL STORAGE UNAVAILABLE');return;}
+  state=applyCommand(state,{type:'ARM_SETTLE'});if(!saveState()){render();toast('HOLD · SETTLE NOT PERSISTED');return;}render();
   settleTimer=setInterval(function(){
     try{
       state=applyCommand(state,{type:'TICK_SETTLE'});
@@ -122,6 +136,7 @@ el('settleBtn').addEventListener('click',function(){
 });
 el('armReloadBtn').addEventListener('click',function(){
   try{
+    if(!storageAvailable()) throw new Error('local storage unavailable');
     const priorProbe=localStorage.getItem(PROBE);
     const token=(globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('token-'+Date.now());
     const challenge=makeReloadChallenge(state,{token,loadId,priorProbe,now:Date.now()});

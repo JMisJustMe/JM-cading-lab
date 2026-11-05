@@ -64,8 +64,27 @@ function installPortableControls(){
   const statusNode=document.createElement('p');statusNode.id='continuityStatus';statusNode.setAttribute('role','status');statusNode.setAttribute('aria-live','polite');statusNode.style.cssText='width:100%;font-size:.82rem;line-height:1.45';
   bar.after(statusNode);
   status(sourceHold?'HOLD: existing saved source unreadable ('+sourceHold.message+'). No overwrite permitted.':'Device-local source ready · export for cross-device recovery',!!sourceHold);
-  const exp=document.createElement('button');exp.textContent='EXPORT ENVIRONMENT';
-  exp.onclick=()=>{try{spine.download('JM_'+cfg.id.toUpperCase()+'_PORTABLE_'+Date.now()+'.json',spine.exportEnvironment(cfg.id));status('Portable environment export requested; keep the file for recovery')}catch(error){status('EXPORT HOLD: '+error.message,true)}};const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{const f=picker.files?.[0];if(!f)return;try{const obj=await spine.readFile(f);const result=spine.importEnvironment(cfg.id,obj);state=result.state;sourceHold=null;render();status('Imported, saved and re-read '+result.packets+' incoming packets · '+result.mergedPackets+' shared packets preserved');alert('Environment restored · '+result.packets+' incoming packet(s), '+result.mergedPackets+' shared packets held')}catch(err){alert(`Import stopped: ${err.message||err}`)}finally{picker.value=''}};bar.append(exp,imp,picker)}
+  const exp=document.createElement('button');exp.textContent='EXPORT ENVIRONMENT';exp.title='Includes the entire shared packet bus across workrooms, which may contain private source or notes.';
+  exp.onclick=()=>{try{spine.download('JM_'+cfg.id.toUpperCase()+'_PORTABLE_'+Date.now()+'.json',spine.exportEnvironment(cfg.id));status('PRIVATE EXPORT CREATED: JSON includes all shared bus packets across workrooms. Keep it private and review before sharing.')}catch(error){status('EXPORT HOLD: '+error.message,true)}};const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{const f=picker.files?.[0];if(!f)return;try{const obj=await spine.readFile(f);const result=spine.importEnvironment(cfg.id,obj);state=result.state;sourceHold=null;render();status('Imported, saved and re-read '+result.packets+' incoming packets · '+result.mergedPackets+' shared packets preserved');alert('Environment restored · '+result.packets+' incoming packet(s), '+result.mergedPackets+' shared packets held')}catch(err){alert(`Import stopped: ${err.message||err}`)}finally{picker.value=''}};bar.append(exp,imp,picker);
+  // CP04: the exported packet bus has its own restore path, independent of room state.
+  const busImport=document.createElement('button');
+  busImport.type='button';
+  busImport.textContent='IMPORT BUS';
+  busImport.setAttribute('aria-label','Import Bus — merge exported packets while preserving existing saved packets');
+  const busPicker=document.createElement('input');
+  busPicker.type='file';busPicker.accept='application/json,.json';busPicker.hidden=true;
+  busImport.onclick=()=>busPicker.click();
+  busPicker.onchange=async()=>{
+    const file=busPicker.files?.[0];if(!file)return;
+    try{
+      const result=spine.mergeBus(await spine.readFile(file));
+      status('Imported '+result.added+' new shared packet(s), preserving '+result.preserved+' existing; '+result.total+' now stored and read back');
+    }catch(error){
+      status('BUS IMPORT HOLD: '+String(error.message||error)+'. Existing stored packets preserved.',true);
+    }finally{busPicker.value=''}
+  };
+  bar.append(busImport,busPicker);
+}
 window.JMAppsToolsEnvironment={get state(){return structuredClone(state)},get sourceHold(){return sourceHold?.message||null}};
 window.addEventListener('jm:packet',renderBus);window.addEventListener('jm:bus-cleared',renderBus);window.addEventListener('jm:bus-imported',renderBus);
 document.addEventListener('DOMContentLoaded',()=>{render();installPortableControls();$('#exportBus').onclick=()=>spine.download(`JM_${cfg.id.toUpperCase()}_BUS_${Date.now()}.json`,spine.exportBus());$('#clearBus').onclick=()=>{if(confirm('Clear the shared local packet bus? Donor files are untouched.'))spine.clear()}});

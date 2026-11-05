@@ -95,4 +95,30 @@ check('CP11 exported environment contains original state and original bus identi
   assert.equal(e.state.rooms.gem.source,'PRESERVE ORIGINAL');
   assert.equal(e.packets[0].id,'kept');
 });
+check('CP13 portable environment same-ID/different-content import holds without mutation',()=>{
+  const kept=p('kept-id','evidence-governance');
+  const altered=p('kept-id','evidence-governance');
+  altered.payload.text='CHANGED SOURCE WITH REUSED ID';
+  const t=runtime({[key]:JSON.stringify([kept]),[stateKey('evidence-governance')]:JSON.stringify(originalState)});
+  const before=[t.items.get(key),t.items.get(stateKey('evidence-governance'))];
+  assert.throws(()=>t.spine.importEnvironment('evidence-governance',{
+    schema:'jm.apps.tools.portable-environment/1.0',environment:'evidence-governance',
+    state:nextState,packets:[altered]
+  }),/PACKET_BUS_ID_COLLISION_HOLD/);
+  assert.deepEqual([t.items.get(key),t.items.get(stateKey('evidence-governance'))],before);
+  assert(!t.events.includes('jm:bus-imported'));
+});
+check('CP13 portable export flags inherited full shared bus privacy scope',()=>{
+  const t=runtime();
+  t.spine.saveState('route-ftr',{rooms:{deck:{value:'synthetic'}},active:'deck'});
+  t.spine.send(p('other-room-packet','evidence-governance'));
+  const portable=t.spine.exportEnvironment('route-ftr');
+  assert.equal(portable.environment,'route-ftr');
+  assert.equal(portable.packets.length,1);
+  assert.equal(portable.packets[0].meta.environment,'evidence-governance');
+  const ui=fs.readFileSync('estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js','utf8');
+  assert.match(ui,/PRIVATE EXPORT CREATED/);
+  assert.match(ui,/Includes the entire shared packet bus across workrooms/);
+});
+
 console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection; not user-device or network proof)');

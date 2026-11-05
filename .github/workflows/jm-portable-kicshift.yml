@@ -7,6 +7,11 @@ on:
     paths:
       - 'apps-tools-games/jm-portable-body/kicshift-v0.1/**'
       - '.github/workflows/jm-portable-kicshift.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps-tools-games/jm-portable-body/kicshift-v0.1/**'
+      - '.github/workflows/jm-portable-kicshift.yml'
   workflow_dispatch:
 
 permissions:
@@ -14,7 +19,7 @@ permissions:
 
 jobs:
   independent-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
@@ -27,8 +32,27 @@ jobs:
           node-version: 22
       - name: Install independent dependencies
         run: npm install --no-audit --no-fund
+      - name: Test existing simulation reset and held-control release
+        run: node --experimental-strip-types --test tests/control-release.test.mjs
       - name: Build outside Lovable
         run: npm run build
+      - name: Install existing Playwright browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Prove KICSHIFT lost-focus release in mobile Chromium
+        run: |
+          set -euo pipefail
+          npm run dev -- --host 127.0.0.1 --port 4179 > /tmp/jm-kicshift-focus-vite.log 2>&1 &
+          SERVER=$!
+          trap 'kill "$SERVER" 2>/dev/null || true' EXIT
+          ready=0
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4179/ >/dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/jm-kicshift-focus-vite.log; exit 1; fi
+          node tests/focus-recovery.browser.mjs
       - name: Record carrier contents
         run: find dist -maxdepth 2 -type f -printf '%p %s bytes\n' | sort
       - name: Upload independent carrier
@@ -50,6 +74,7 @@ jobs:
             apps-tools-games/jm-portable-body/kicshift-v0.1/src
           if-no-files-found: error
       - name: Mount canonical Estate carrier route
+        if: github.event_name != 'pull_request'
         working-directory: .
         run: |
           rm -rf games-beyond/kicshift

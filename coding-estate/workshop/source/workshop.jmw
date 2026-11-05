@@ -1,0 +1,54 @@
+JM.WEB 1.0
+STYLE highlight {"color":"#A9F7D8","size":36,"weight":"bold","gap":20}
+STYLE line {"color":"#B7CADB","size":18,"gap":14}
+DOCUMENT "JM CODING WORKSHOP - Independent Estate Door"
+PAGE "Workshop" AS home
+LAYOUT STACK
+APPLY highlight
+HERO "Build with the bodies you already own."
+APPLY line
+TEXT "An independent JM website for code, app building and original programming languages. Created with JM.WEB, not a website builder."
+NOTE "Your actual JM Coding Estate and OPENBOX are delivered here as distinct original application bodies. This website is the door, not their replacement."
+LINK "Open OPENBOX - Code In, App Out" "https://jmisjustme.rf.gd/openbox/"
+LINK "Open the original JM Coding Estate" "https://jmisjustme.rf.gd/coding-estate.html"
+LINK "See the coding languages" "#languages"
+LINK "See all workshop doors" "#doors"
+ENDPAGE
+PAGE "Your original code tools" AS doors
+APPLY highlight
+HERO "Working tools. Distinct source."
+APPLY line
+TEXT "OPENBOX v2.0 reads and previews source in a sandbox. JM Coding Estate v0.1 contains original coding-body demonstrations and tests. Both retain their individual source authorities."
+LINK "Launch OPENBOX editor" "https://jmisjustme.rf.gd/openbox/"
+LINK "Launch original coding room" "https://jmisjustme.rf.gd/coding-estate.html"
+LINK "Back to the workshop" "#home"
+ENDPAGE
+PAGE "Original languages" AS languages
+APPLY highlight
+HERO "JM.WEB. JM.PY. Visualang."
+APPLY line
+TEXT "JM.WEB supplies this website's original declarative page source and independently compiles its browser-compatible output. JM.PY and Visualang remain separate original programming bodies with prior published execution proofs."
+NOTE "Native authoring and web delivery are different layers. Standard HTML, CSS and JavaScript remain browser compatibility carriers where needed; no claim of replacing the browser or Internet."
+LINK "Explore existing JM Coding Estate" "https://jmisjustme.rf.gd/coding-estate.html"
+LINK "Back to the workshop" "#home"
+ENDPAGE
+PAGE "Other Estate websites" AS estate
+APPLY highlight
+HERO "One Estate. Multiple independent doors."
+APPLY line
+TEXT "The original JMISJUSTME independent website, existing Wix Living Estate, RUKQUSS business gateway and separate JM WEBSITE 001 retain their own homes and purposes. This new workshop does not crown or replace any of them."
+LINK "Visit original JMISJUSTME Estate" "https://jmisjustme.xo.je/"
+LINK "Visit published JMISJUSTME Living Estate" "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es"
+LINK "Visit RUKQUSS business gateway" "https://rukquss.com/"
+LINK "Back to the workshop" "#home"
+ENDPAGE
+PAGE "Identity and provenance" AS about
+APPLY highlight
+HERO "Recover. Connect. Improve. Verify."
+APPLY line
+TEXT "This website was authored in JM.WEB 1.0 and compiled using the already-verified JM LANGUAGES v1 source. It includes unmodified public carrier copies of two separate original JM apps."
+QUOTE "One original keeper. Many verified doors. Mesh is not a merge."
+TEXT "Do not use public browser storage for passwords or private source. The OPENBOX offline owner edition is kept separately in the JM Library."
+LINK "Return to the workshop" "#home"
+ENDPAGE
+ENDDOCUMENT

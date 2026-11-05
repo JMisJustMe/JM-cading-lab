@@ -1,0 +1,48 @@
+JM.WEB 1.0
+STYLE signal {"color":"#9DF4D3","size":36,"weight":"bold","gap":20}
+STYLE small {"color":"#A3B5C9","size":18,"gap":14}
+DOCUMENT "JM WEBSITE 001 - Original source"
+PAGE "Welcome" AS home
+LAYOUT STACK
+APPLY signal
+HERO "I am JM. It is just me."
+APPLY default
+TEXT "Made with JM.WEB. Not a template. Not a replacement. A new website written in an original language."
+NOTE "One creator. Independent bodies. Connected capabilities."
+LINK "See the games" "#games"
+LINK "See the coding bodies" "#coding"
+LINK "Explore the creative estate" "#creative"
+LINK "About this website" "#about"
+ENDPAGE
+PAGE "Games and beyond" AS games
+HERO "Made to be played."
+TEXT "Open the existing Games and Beyond house. Its games and engines remain in their original homes."
+LINK "Open Games and Beyond" "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+LINK "Back to the start" "#home"
+ENDPAGE
+PAGE "Coding my own way" AS coding
+HERO "My own code. My own rules."
+TEXT "JM.WEB creates this document. Its verified compiler generates browser-compatible output. JM.PY remains an independent programming language with its own execution route."
+TEXT "OPENBOX, SOLOHOST and TRIAD FORGE remain separate tools. Connection does not replace their originals."
+LINK "Open the original JM Cading home" "https://jmisjustme.github.io/JM-cading-lab/cading.html"
+LINK "Try the original JM Visualang interaction" "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/visualang.html"
+LINK "Open the JM.PY original-language proof" "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/jm-py-proof.html"
+LINK "Open JM OPENBOX — Code In, App Out" "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/"
+LINK "Back to the start" "#home"
+ENDPAGE
+PAGE "Creative worlds" AS creative
+HERO "More than code."
+TEXT "Games, music, theories, tools and stories can share one accessible front door without copying every original into it."
+LINK "Open JM LyricStudio" "https://jmisjustme-estate.pages.dev/lyrics/"
+LINK "Explore JM theories" "https://jmisjustme-estate.pages.dev/theory/"
+LINK "Back to the start" "#home"
+ENDPAGE
+PAGE "About and proof" AS about
+HERO "Created from the source."
+TEXT "This website is a changed-scope descendant. Its original JM.WEB file is the editable source; its compiled HTML is the public web edition."
+QUOTE "Discover. Identify. Connect. Improve. Verify."
+TEXT "No original compiler, tool, game or creative source has been overwritten to create this site."
+LINK "Visit the existing JM Estate" "https://jmisjustme.github.io/JM-cading-lab/"
+LINK "Back to the start" "#home"
+ENDPAGE
+ENDDOCUMENT

@@ -5,12 +5,12 @@
   const EXPECTED_NEW_CONTACTS = 20;
   const PLACEHOLDER_TOTAL = 260;
   const CENSUS_TOTAL = 297;
-  const BASELINE_SOURCE_ROUTES = 120;
+  const QUARANTINED_V1 = 94;
   let ready = false;
   let sourceRows = new Map();
-  let sourceBacked = BASELINE_SOURCE_ROUTES;
-  let sourceContacts = BASELINE_SOURCE_ROUTES;
-  let stillOpen = PLACEHOLDER_TOTAL - BASELINE_SOURCE_ROUTES;
+  let sourceBacked = 0;
+  let sourceContacts = 0;
+  let stillOpen = PLACEHOLDER_TOTAL;
 
   const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -53,14 +53,18 @@
     return DATA.records.filter((record) => record.chat_source).length;
   }
 
-  async function waitForPriorPasses() {
-    for (let attempt = 0; attempt < 240; attempt += 1) {
-      if (typeof DATA !== 'undefined' && Array.isArray(DATA.records) && DATA.records.length === CENSUS_TOTAL) {
-        if (existingSourceCount() >= BASELINE_SOURCE_ROUTES) return;
-      }
+  async async function waitForPriorPasses() {
+    for (let attempt = 0; attempt < 400; attempt += 1) {
+      if (
+        typeof DATA !== 'undefined'
+        && Array.isArray(DATA.records)
+        && DATA.records.length === CENSUS_TOTAL
+        && window.JMTheorySourceGraftV3
+        && existingSourceCount() === window.JMTheorySourceGraftV3.sourceBacked
+      ) return;
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
-    console.warn('JM theory source graft v4: prior grafts did not reach 120 before timeout; merging against available state.');
+    throw new Error('Q1 healthy graft-v3 authority did not become ready');
   }
 
   function mergeIntoRecords() {
@@ -126,9 +130,10 @@
     setText('proofSourceContacts', sourceContacts);
     setText('proofOpenRoutes', stillOpen);
 
+    const prior = window.JMTheorySourceGraftV3?.sourceBacked || 0;
     const lead = document.getElementById('sourcePassLead');
     if (lead) {
-      lead.textContent = `The first three passes supplied 120 source-backed routes. This Library + Wisebase pass adds 20 bounded source contacts from complete bodies, full chat passages, saved-memory custody and chat-purpose records. After duplicate-safe merging, ${sourceBacked} placeholders now carry source evidence and ${stillOpen} remain open.`;
+      lead.textContent = `Q1 executes ${prior} proved v2/memory source routes and adds ${EXPECTED_NEW_CONTACTS} bounded Library + Wisebase contacts. The damaged ${QUARANTINED_V1}-record v1 carrier remains quarantined and is not counted.`;
     }
 
     const resultHead = document.querySelector('.results-head');
@@ -139,14 +144,14 @@
         summary.className = 'chat-graft-summary';
         resultHead.appendChild(summary);
       }
-      summary.textContent = `${sourceBacked} source-backed placeholders · ${sourceContacts} source contacts · ${stillOpen} still open`;
+      summary.textContent = `${sourceBacked} healthy source-backed routes · ${sourceContacts} contacts · ${QUARANTINED_V1} v1 records quarantined`;
       let note = resultHead.querySelector('.source-pass-note');
       if (!note) {
         note = document.createElement('span');
         note.className = 'source-pass-note';
         resultHead.appendChild(note);
       }
-      note.textContent = 'v0.13 adds complete-body, Library-chat, saved-memory and Wisebase custody without replacing earlier source grades.';
+      note.textContent = 'v0.13-Q1 continues from proved carriers only. Quarantined ancestry remains named, preserved and excluded.';
     }
   }
 
@@ -218,11 +223,14 @@
       ready = true;
       mergeIntoRecords();
       window.JMTheorySourceGraftV4 = Object.freeze({
-        version: 'v0.13',
+        version: 'v0.13-Q1',
+        state: 'HEALTHY_DESCENDANT_WITH_V1_QUARANTINED',
         sourceBacked,
         sourceContacts,
         stillOpen,
-        addedContacts: EXPECTED_NEW_CONTACTS
+        priorHealthy: window.JMTheorySourceGraftV3?.sourceBacked || 0,
+        addedContacts: EXPECTED_NEW_CONTACTS,
+        quarantinedV1: QUARANTINED_V1
       });
     })
     .catch((error) => console.error('JM theory source graft v4:', error));

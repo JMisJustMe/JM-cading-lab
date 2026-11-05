@@ -157,7 +157,8 @@ def patch_v3() -> None:
       summary.className = 'chat-graft-summary';
       resultHead.appendChild(summary);
     }
-    summary.textContent = `${grafts.size} healthy source-backed routes · ${EXPECTED_V1_QUARANTINED} v1 records quarantined`;
+    const summaryText = `${grafts.size} healthy source-backed routes · ${EXPECTED_V1_QUARANTINED} v1 records quarantined`;
+    if (summary.textContent !== summaryText) summary.textContent = summaryText;
     let note = resultHead.querySelector('[data-q1-v3-note]');
     if (!note) {
       note = document.createElement('span');
@@ -165,7 +166,8 @@ def patch_v3() -> None:
       note.className = 'source-pass-note';
       resultHead.appendChild(note);
     }
-    note.textContent = 'Q1 preserves the damaged v1 ancestor in custody and executes only the proved 21-record v2 carrier plus five local memory records.';
+    const boundaryText = 'Q1 preserves the damaged v1 ancestor in custody and executes only the proved 21-record v2 carrier plus five local memory records.';
+    if (note.textContent !== boundaryText) note.textContent = boundaryText;
   }'''
     text = replace_function(text, "updateSummary", update_summary)
 

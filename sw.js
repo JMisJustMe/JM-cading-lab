@@ -63,17 +63,43 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(keys.filter(key => key.startsWith('jm-web-estate-') && key !== CACHE).map(key => caches.delete(key))))
+      .then(async () => {
+        const cache = await caches.open(CACHE);
+        for (const request of await cache.keys()) {
+          const response = await cache.match(request);
+          if (!publicCacheRequest(request) || !safeCacheResponse(response)) {
+            await cache.delete(request);
+          }
+        }
+      })
       .then(() => self.clients.claim())
   );
 });
 
+// Original Estate: only public, same-origin GETs may enter the offline cache.
+function publicCacheRequest(request){
+  if(request.method !== 'GET' || request.headers.has('Authorization')) return false;
+  const url = new URL(request.url);
+  if(url.origin !== self.location.origin) return false;
+  const path = url.pathname;
+  if(path === '/api' || path.startsWith('/api/')) return false;
+  if(path === '/owner' || path.startsWith('/owner/')) return false;
+  if(path === '/author/authuser.html') return false;
+  return true;
+}
+
+function safeCacheResponse(response){
+  if(!response || !response.ok) return false;
+  const policy = response.headers.get('Cache-Control') || '';
+  return !/(?:^|[,\s])(?:private|no-store)(?:[,\s=]|$)/i.test(policy);
+}
+
 async function fresh(request){
   try{
     const response = await fetch(request,{cache:'no-store'});
-    if(response && response.ok){
+    if(response && safeCacheResponse(response)){
       const cache = await caches.open(CACHE);
       cache.put(request,response.clone()).catch(()=>{});
-      return response;
     }
     const cached = await caches.match(request,{ignoreSearch:true});
     if(cached) return cached;
@@ -89,8 +115,6 @@ async function fresh(request){
 }
 
 self.addEventListener('fetch', event => {
-  if(event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if(url.pathname.startsWith('/api/owner/')||url.pathname==='/api/ailatheo') return;
+  if (!publicCacheRequest(event.request)) return;
   event.respondWith(fresh(event.request));
 });

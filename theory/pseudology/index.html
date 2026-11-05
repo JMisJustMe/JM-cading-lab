@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>JM Pseudology — Deep First Contact v0.4.1</title>
+<title>JM Pseudotry — Zoomometry × Pseudoludo · v0.5.0</title>
 <style>
 :root{color-scheme:dark;--bg:#08111d;--panel:#111f30;--pane:#172b40;--line:#31506d;--text:#eaf5fe;--muted:#a5c0d6;--blue:#72d7ef;--gold:#efd188;--green:#91dfbd;--r:19px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 8% -5%,#173450 0,transparent 37%),radial-gradient(ellipse at 99% 18%,#1b2b4a 0,transparent 32%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif}main,header,footer{max-width:1040px;margin:auto;padding:20px}header{padding-top:38px;padding-bottom:8px}h1{margin:.2em 0;line-height:1.05;font-size:clamp(2.1rem,7vw,4.3rem);letter-spacing:-.05em}h2{font-size:1.4rem;margin:0 0 12px}h3{font-size:1.04rem;margin:0 0 7px}p{margin:6px 0 12px}.muted,small{color:var(--muted)}small{font-size:.79rem}.eyebrow{color:var(--blue);text-transform:uppercase;letter-spacing:.15em;font-size:.75rem;font-weight:800}.deck{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.panel{background:linear-gradient(155deg,#112438f3,#101b2cf5);border:1px solid var(--line);border-radius:var(--r);padding:19px;margin-bottom:14px;box-shadow:0 9px 30px #0003}.card{grid-column:span 4;background:var(--pane);border:1px solid var(--line);border-radius:16px;padding:15px;min-width:0}.wide{grid-column:span 12}.half{grid-column:span 6}.pill{border:1px solid #41637b;color:#d0e7f5;border-radius:999px;padding:4px 10px;display:inline-block;font-size:.76rem;font-weight:700;margin-right:6px;margin-bottom:5px}.pill.active{border-color:var(--green);color:var(--green)}.num{font-size:2rem;color:var(--gold);line-height:1.2;font-weight:800;letter-spacing:-.03em}.detail{font-size:.84rem;color:var(--muted)}.inputgrid{display:grid;grid-template-columns:2fr 1fr;gap:12px}label{display:block;font-weight:650;font-size:.86rem;margin:0 0 4px}input[type=text],input[type=date],textarea{display:block;width:100%;background:#0a1828;color:var(--text);border:1px solid #4b6a84;border-radius:11px;padding:12px 13px;font:inherit;outline-offset:2px}textarea{font-size:.79rem;min-height:240px;resize:vertical}input[type=range]{width:100%;accent-color:#6fd4e6;min-height:27px}button{border:1px solid #4f7891;background:#203b52;color:var(--text);border-radius:12px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}button:focus-visible{outline:3px solid #91dfbd;outline-offset:3px}button.primary{background:#2d7892;color:#fff;border-color:#7fc9df}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}select{display:block;width:100%;background:#0a1828;color:var(--text);border:1px solid #4b6a84;border-radius:11px;padding:12px 13px;font:inherit}.checkrow{display:flex;gap:10px;align-items:center;cursor:pointer}.checkrow input{width:18px;height:18px;accent-color:#77cbe2}.science{border-left:3px solid var(--blue);padding:6px 12px;margin:9px 0;background:#12283a}.symbol{border-left-color:var(--gold)}.scope{border-left-color:var(--green)}.axis{border-top:1px solid var(--line);padding:13px 0}.axis:first-of-type{border-top:0}.ends{display:flex;justify-content:space-between;gap:12px}.ends span{max-width:45%;font-size:.79rem;color:#bbd4e7}.value{color:var(--gold);font-weight:800}.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}a{color:#9cdff0}a:hover{text-decoration:none}.feature{font-weight:800;color:var(--green)}.notice{color:var(--gold)}.hairline{border:0;border-top:1px solid #2e4a64;margin:20px 0}#astroBlock[hidden],#astroComposer[hidden]{display:none}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tabs button[aria-pressed=true]{background:#2c6578;border-color:#79d7e6}.compact{font-size:.86rem}footer{text-align:center;color:var(--muted);font-size:.8rem;padding-bottom:44px}@media(max-width:700px){header{padding-top:24px}main,header,footer{padding-left:13px;padding-right:13px}.card,.half{grid-column:span 12}.inputgrid{grid-template-columns:1fr}.notes{grid-template-columns:1fr}.panel{padding:15px}.num{font-size:1.9rem}body{font-size:15px}}
@@ -22,17 +22,70 @@
 .footnote{font-size:.77rem;color:var(--muted)}
 select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 @media(max-width:700px){.matrix-head,.scene-choice,.scene-result,.method-grid{grid-template-columns:1fr}#meaningCards .card{grid-column:span 12}.scene-line{padding:10px}}
+
+/* CP05 / Pseudotry: one existing engine, two context-driven reading faces. */
+#flipDeck{border-color:#517f91;background:linear-gradient(146deg,#142c42,#101e32)}
+.flip-top{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.flip-top h2{font-size:1.5rem}
+.dual-toggle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.dual-toggle button{min-width:0;text-align:left;min-height:75px;border:1px solid #587589;background:#13293b;padding:13px 15px;border-radius:15px}
+.dual-toggle button strong{display:block;font-size:1.1rem;letter-spacing:-.02em}
+.dual-toggle button small{display:block;line-height:1.5;color:#b8d1df}
+.dual-toggle button[aria-selected="true"]{background:#21566c;border-color:#89e4ef;box-shadow:inset 0 0 0 1px #84d7e3}
+.flip-face{background:#0b1c2d;border:1px solid #35536a;border-radius:16px;padding:16px}
+.flip-face h3{font-size:1.15rem;color:var(--gold)}
+.flip-face[hidden]{display:none}
+.flip-face .controls{margin-top:13px}
+.flip-face .science{margin-top:12px}
+.flip-footer{margin-top:13px;border-top:1px solid #32516b;padding-top:13px}
+.flip-identity{display:inline-flex;align-items:center;border-radius:999px;border:1px solid #587b88;color:#b6e0e8;padding:4px 11px;font-size:.75rem;font-weight:700}
+.flip-status{border-left:3px solid var(--green);margin-top:12px;padding:9px 12px;background:#112a35;border-radius:9px}
+.flip-status p{margin:0}
+@media(max-width:530px){.dual-toggle{gap:7px}.dual-toggle button{padding:11px;min-height:92px}.dual-toggle button strong{font-size:.94rem}.flip-face{padding:12px}}
 </style>
 </head>
 <body>
 <header>
-  <div class="eyebrow">JM ECOSTATE · Owner-first context and meaning · v0.4.1</div>
-  <h1>JM Pseudology</h1>
-  <p class="muted">Three full-depth numerology routes · SHIMS Meaning Matrix · Exemplar Family living scenes · science and sources separated · optional astrology</p>
+  <div class="eyebrow">JM ECOSTATE · Source-linked exploration · v0.5.0</div>
+  <h1>JM Pseudotry</h1>
+  <p class="muted">Zoomometry × Pseudoludo · two sides of one continuing exploration · original SHIMS, Exemplar Family, three numerology routes and evidence checks intact</p>
   <nav class="controls" aria-label="Estate return doors"><a class="pill" href="../../access/">JM Access Mesh</a><a class="pill" href="../">Theory MultiHub</a></nav>
   <span class="pill active">Pythagorean ON</span><span class="pill active">Chaldean ON</span><span class="pill active">English Gematria ON</span><span class="pill">Astrology AVAILABLE</span>
 </header>
 <main>
+
+<section class="panel" id="flipDeck" aria-labelledby="flipTitle">
+ <div class="flip-top">
+  <div><div class="eyebrow">JM Pseudotry · Same creation, different approaches</div><h2 id="flipTitle">Turn the idea. Keep the evidence.</h2></div>
+  <span class="flip-identity">Side Be → Contact → Side Af</span>
+ </div>
+ <p class="compact muted">A single shared subject, scenario, source and receipt. Side A examines across scales; Side B plays with possible responses. Both can challenge each other. <strong>Neither side is a truth machine.</strong></p>
+ <div class="dual-toggle" role="tablist" aria-label="Choose an exploration side">
+  <button type="button" role="tab" id="flipA" aria-controls="zoomFace" aria-selected="true" tabindex="0"><strong>Side A · Zoomometry</strong><small>Examine · Compare · Question</small></button>
+  <button type="button" role="tab" id="flipB" aria-controls="ludoFace" aria-selected="false" tabindex="-1"><strong>Side B · Pseudoludo</strong><small>Play · Imagine · Test possibilities</small></button>
+ </div>
+ <div class="flip-face" id="zoomFace" role="tabpanel" aria-labelledby="flipA">
+  <h3>Zoomometry · What do we know, and at what scale?</h3>
+  <div class="scene-choice">
+   <div><label for="zoomScale">Change examination scale</label><select id="zoomScale"><option value="person">Individual · actions and experiences</option><option value="relation">Relationship · interaction and response</option><option value="environment">Environment · pressures and conditions</option><option value="system">System · rules, categories and evidence</option></select></div>
+   <div><label for="zoomQuestion">Investigative move</label><select id="zoomQuestion"><option value="observe">Separate observation from interpretation</option><option value="compare">Compare alternative explanations</option><option value="limits">Identify what remains unproven</option><option value="repair">Find a reversible next step</option></select></div>
+  </div>
+  <div class="flip-status" id="zoomOutcome" aria-live="polite"></div>
+  <div class="controls"><a class="pill" href="#conditionalFit">Check claim scope and evidence</a><a class="pill" href="#shimsMeaning">Explore SHIMS meanings</a><button type="button" id="zoomPlay">Flip to Pseudoludo</button></div>
+ </div>
+ <div class="flip-face" id="ludoFace" role="tabpanel" aria-labelledby="flipB" hidden>
+  <h3>Pseudoludo · What if we tried another response?</h3>
+  <p class="compact muted">The original Exemplar Family supplies the fictional scenario; switching a response here also changes the living scene below. This is a simulation, <strong>not</strong> observed human behaviour.</p>
+  <div class="scene-choice">
+   <div><label for="playResponse">Possible action in the shared family scene</label><select id="playResponse"><option value="ask">Ask and check</option><option value="assume">Assume and act</option><option value="repair">Pause, listen and repair</option></select></div>
+   <div><label for="playPerspective">Whose perspective?</label><select id="playPerspective"><option value="Younger child">Younger child</option><option value="Middle child">Middle child</option><option value="Older child">Older child</option><option value="Mother">Mother</option><option value="Father">Father</option><option value="Grandparent">Grandparent</option><option value="Neighbour">Neighbour</option></select></div>
+  </div>
+  <div class="flip-status" id="ludoOutcome" aria-live="polite"></div>
+  <div class="controls"><a class="pill" href="#exemplarLab">Open the full Exemplar Family</a><button type="button" id="ludoExamine">Flip to Zoomometry</button></div>
+ </div>
+ <div class="flip-footer compact"><strong>Pseudotry</strong> is the shared method: propose → try → observe what actually follows → revise. <strong>Side Be</strong> (before contact) and <strong>Side Af</strong> (after contact) are inherited JM before/after concepts, <em>not</em> replacements for Side A/B. The earlier Manifestic Theory / Practical Method pairing is preserved as a distinct ancestor. Meaningful play is not proof; any empirical conclusion still needs relevant evidence.</div>
+ <details style="margin-top:10px"><summary>Source and naming continuity</summary><p class="compact">Public title: JM Pseudotry, authorised November 2026. Historical project name: JM Pseudology (v0.2–v0.4.1). Existing /theory/pseudology/ location is retained so prior pointers continue to work. Original SHIMS, Exemplifier Family, Whole Human Systems, Side Be/Af, and Contextual A/B Controls remain independent sources. The two new names are working methods, not established scientific disciplines.</p></details>
+</section>
 <section class="panel" aria-labelledby="intakeTitle">
  <h2 id="intakeTitle">1 · First contact</h2>
  <p class="muted compact">Starts with JM's existing fictional SHIMS example. Replace it to calculate a different name or phrase. No login, analytics, automatic saving, external calls, or uploads.</p>
@@ -184,10 +237,10 @@ select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
  <p class="muted compact">A human-readable evidence boundary is attached to every route. Nothing is saved automatically. Generate this JSON only if you choose; download only when you press the export button. For personal readings, keep it private.</p>
  <div class="controls"><button id="makeReceipt" class="primary">Generate reading receipt</button><button id="saveReceipt" disabled>Download JSON receipt</button></div>
  <textarea id="receipt" spellcheck="false" readonly placeholder="Your optional local JSON receipt appears here after pressing Generate."></textarea>
- <p class="detail">Working bench only. Original SHIMS v4.7 and the Pseudology index remain separate source authorities. No permanent personality type, diagnosis, fate prediction or scientific certification is generated.</p>
+ <p class="detail">Working bench only. Original SHIMS v4.7 and the historical Pseudology index remain separate source authorities. No permanent personality type, diagnosis, fate prediction or scientific certification is generated.</p>
 </section>
 </main>
-<footer>JM PSEUDOLOGY · Recover before rebuild · Mind Matter Meshing / Brain Body Bonding · No Ding, No Claim</footer>
+<footer>JM PSEUDOTRY · Zoomometry × Pseudoludo · Recover before rebuild · No Ding, No Claim</footer>
 <script>
 (function(){'use strict';
 const $=id=>document.getElementById(id);
@@ -379,14 +432,47 @@ function renderFit(){
 }
 
 let active='Overview',lastReceipt=null;
+
+// CP05: Side A and Side B share the EXISTING intake, Exemplar Family and claim fields.
+let activeSide='A';
+const zoomScaleText={person:'the person’s own experience, action and interpretation',relation:'interactions between people, responses and repair',environment:'the setting, time pressure, support and constraints',system:'the method, its categories, sources and claim boundaries'};
+const zoomQuestionText={observe:'Name the observation first; distinguish it from a proposed explanation.',compare:'Consider a plausible alternative and check what would differ.',limits:'Identify missing evidence, counterexamples and possible source limitations.',repair:'Choose a reversible next action; observe and revisit rather than label permanently.'};
+function renderSides(){
+ const person=$('person').value.trim(),target=person==='Exemplifying Exemplifier'?'the fictional exemplar':person?'the locally entered subject':'the currently unfilled subject';
+ const scene=$('familyScene').selectedOptions[0].textContent,who=$('familyActor').value,condition=$('familyVersion').selectedOptions[0].textContent;
+ $('zoomOutcome').textContent=`Examining ${target} at the scale of ${zoomScaleText[$('zoomScale').value]}. In the shared ${scene} scenario, ${who} is considered under ${condition.toLowerCase()}. ${zoomQuestionText[$('zoomQuestion').value]} Current claim status: ${$('fitEvidence').selectedOptions[0].textContent}; scope: ${$('fitScope').selectedOptions[0].textContent}. An interpretation is not itself observation.`;
+ $('playResponse').value=$('familyChoice').value;
+ $('playPerspective').value=$('familyActor').value;
+ $('ludoOutcome').textContent=`With ${who} in the ${scene} scenario (${condition.toLowerCase()}), the simulated response is “${$('playResponse').selectedOptions[0].textContent}.” Possible consequence: ${$('sceneConsequence').textContent} This is one fictional branch, not a prediction. Compare the result with another response, then return to Zoomometry to distinguish effects actually observed from imagined possibilities.`;
+}
+function activateSide(side,moveFocus=false){
+ activeSide=side==='B'?'B':'A';
+ $('zoomFace').hidden=activeSide!=='A';$('ludoFace').hidden=activeSide!=='B';
+ $('flipA').setAttribute('aria-selected',String(activeSide==='A'));$('flipB').setAttribute('aria-selected',String(activeSide==='B'));
+ $('flipA').tabIndex=activeSide==='A'?0:-1;$('flipB').tabIndex=activeSide==='B'?0:-1;
+ renderSides();invalidateReceipt();
+ if(moveFocus)$(activeSide==='A'?'flipA':'flipB').focus();
+}
+function initSides(){
+ $('flipA').addEventListener('click',()=>activateSide('A'));
+ $('flipB').addEventListener('click',()=>activateSide('B'));
+ for(const [key,side] of [['zoomPlay','B'],['ludoExamine','A']])$(key).addEventListener('click',()=>activateSide(side,true));
+ for(const id of ['flipA','flipB'])$(id).addEventListener('keydown',e=>{if(['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();const s=e.key==='Home'?'A':e.key==='End'?'B':id==='flipA'?'B':'A';activateSide(s,true)}});
+ for(const id of ['zoomScale','zoomQuestion'])$(id).addEventListener('change',()=>{renderSides();invalidateReceipt()});
+ $('playResponse').addEventListener('change',()=>{$('familyChoice').value=$('playResponse').value;$('familyChoice').dispatchEvent(new Event('change',{bubbles:true}));renderSides()});
+ $('playPerspective').addEventListener('change',()=>{$('familyActor').value=$('playPerspective').value;$('familyActor').dispatchEvent(new Event('change',{bubbles:true}));renderSides()});
+ for(const id of ['familyScene','familyActor','familyVersion','familyChoice','fitScope','fitEvidence'])$(id).addEventListener('change',renderSides);
+ for(const id of ['person','dob'])$(id).addEventListener('input',renderSides);
+ renderSides();
+}
 function init(){
  $('axisList').innerHTML=axes.map(a=>`<div class="axis"><strong>${a.title}</strong><div class="ends"><span>${a.left}</span><span>${a.right}</span></div><input type="range" id="axis-${a.id}" aria-label="${a.title}" min="1" max="5" step="1" value="3"><div class="detail">Current reflection: <span id="axis-label-${a.id}" class="value">3 / 5 · flexible/middle</span></div></div>`).join('');
  $('modeTabs').innerHTML=modes.map(m=>`<button type="button" data-mode="${m[0]}" aria-pressed="false">${m[0]}</button>`).join('');
  $('modeTabs').addEventListener('click',e=>{const btn=e.target.closest('button[data-mode]');if(btn){active=btn.dataset.mode;updateMode()}});
  for(const a of axes){$(`axis-${a.id}`).addEventListener('input',()=>{const v=Number($(`axis-${a.id}`).value);$(`axis-label-${a.id}`).textContent=`${v} / 5 · ${v===3?'flexible/middle':v<3?'leans toward '+a.left:'leans toward '+a.right}`;invalidateReceipt()})}
  for(const id of ['person','dob','situation','astroOpt','yVowel'])$(id).addEventListener('input',render);
- $('demo').addEventListener('click',()=>{$('person').value='Exemplifying Exemplifier';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;$('feedbackOpt').checked=false;$('feedbackInputs').hidden=true;$('feedbackStatus').value='not-assessed';$('feedbackContext').value='';$('astroKeysOpt').checked=false;$('astroKeysInputs').hidden=true;$('moonKey').value='';$('riseKey').value='';$('houseKeys').value='';$('palmOpt').checked=false;$('palmInputs').hidden=true;$('palmHand').value='not-stated';$('palmForm').value='';$('palmNotes').value='';$('familyScene').value='light';$('familyActor').value='Younger child';$('familyVersion').value='Everyday';$('familyChoice').value='ask';$('meaningSystem').value='pyth';$('meaningPosition').value='Expression';$('meaningNumber').value='auto';$('fitScope').value='unresolved';$('fitEvidence').value='symbolic';axes.forEach(a=>{$(`axis-${a.id}`).value=3;$(`axis-label-${a.id}`).textContent='3 / 5 · flexible/middle'});render()});
- $('clear').addEventListener('click',()=>{$('person').value='';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;$('feedbackOpt').checked=false;$('feedbackInputs').hidden=true;$('feedbackStatus').value='not-assessed';$('feedbackContext').value='';$('astroKeysOpt').checked=false;$('astroKeysInputs').hidden=true;$('moonKey').value='';$('riseKey').value='';$('houseKeys').value='';$('palmOpt').checked=false;$('palmInputs').hidden=true;$('palmHand').value='not-stated';$('palmForm').value='';$('palmNotes').value='';$('familyScene').value='light';$('familyActor').value='Younger child';$('familyVersion').value='Everyday';$('familyChoice').value='ask';$('meaningSystem').value='pyth';$('meaningPosition').value='Expression';$('meaningNumber').value='auto';$('fitScope').value='unresolved';$('fitEvidence').value='symbolic';render();$('person').focus()});
+ $('demo').addEventListener('click',()=>{$('person').value='Exemplifying Exemplifier';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;$('feedbackOpt').checked=false;$('feedbackInputs').hidden=true;$('feedbackStatus').value='not-assessed';$('feedbackContext').value='';$('astroKeysOpt').checked=false;$('astroKeysInputs').hidden=true;$('moonKey').value='';$('riseKey').value='';$('houseKeys').value='';$('palmOpt').checked=false;$('palmInputs').hidden=true;$('palmHand').value='not-stated';$('palmForm').value='';$('palmNotes').value='';$('familyScene').value='light';$('familyActor').value='Younger child';$('familyVersion').value='Everyday';$('familyChoice').value='ask';$('meaningSystem').value='pyth';$('meaningPosition').value='Expression';$('meaningNumber').value='auto';$('fitScope').value='unresolved';$('fitEvidence').value='symbolic';axes.forEach(a=>{$(`axis-${a.id}`).value=3;$(`axis-label-${a.id}`).textContent='3 / 5 · flexible/middle'});render();$('zoomScale').value='person';$('zoomQuestion').value='observe';activateSide('A')});
+ $('clear').addEventListener('click',()=>{$('person').value='';$('dob').value='';$('situation').value='';$('astroOpt').checked=false;$('yVowel').checked=false;$('feedbackOpt').checked=false;$('feedbackInputs').hidden=true;$('feedbackStatus').value='not-assessed';$('feedbackContext').value='';$('astroKeysOpt').checked=false;$('astroKeysInputs').hidden=true;$('moonKey').value='';$('riseKey').value='';$('houseKeys').value='';$('palmOpt').checked=false;$('palmInputs').hidden=true;$('palmHand').value='not-stated';$('palmForm').value='';$('palmNotes').value='';$('familyScene').value='light';$('familyActor').value='Younger child';$('familyVersion').value='Everyday';$('familyChoice').value='ask';$('meaningSystem').value='pyth';$('meaningPosition').value='Expression';$('meaningNumber').value='auto';$('fitScope').value='unresolved';$('fitEvidence').value='symbolic';render();$('zoomScale').value='person';$('zoomQuestion').value='observe';activateSide('A');$('person').focus()});
  $('feedbackOpt').addEventListener('input',()=>{$('feedbackInputs').hidden=!$('feedbackOpt').checked;invalidateReceipt()});
  $('astroKeysOpt').addEventListener('input',()=>{$('astroKeysInputs').hidden=!$('astroKeysOpt').checked;invalidateReceipt()});
  $('palmOpt').addEventListener('input',()=>{$('palmInputs').hidden=!$('palmOpt').checked;invalidateReceipt()});
@@ -397,7 +483,7 @@ function init(){
  for(const id of ['fitScope','fitEvidence'])$(id).addEventListener('change',()=>{renderFit();invalidateReceipt()});
  $('makeReceipt').addEventListener('click',makeReceipt);
  $('saveReceipt').addEventListener('click',saveReceipt);
- updateMode();render();
+ updateMode();render();initSides();
 }
 function validateDob(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const [y,m,d]=s.split('-').map(Number);const t=new Date(Date.UTC(y,m-1,d));return t.getUTCFullYear()===y&&t.getUTCMonth()===m-1&&t.getUTCDate()===d}
 function sign(d){const mm=Number(d.slice(5,7)),dd=Number(d.slice(8,10));const arr=[['Capricorn',119],['Aquarius',218],['Pisces',320],['Aries',419],['Taurus',520],['Gemini',620],['Cancer',722],['Leo',822],['Virgo',922],['Libra',1022],['Scorpio',1121],['Sagittarius',1221],['Capricorn',1231]];const key=mm*100+dd;return arr.find(x=>key<=x[1])?.[0]||'Capricorn'}
@@ -414,6 +500,7 @@ function render(){
  const trace=has?Object.entries(MAPS).map(([key,map])=>{const c=calc(raw,map,$('yVowel').checked);return key+': '+c.letters.map(x=>`${x.letter}=${x.value}`).join(' + ')+' = '+c.total+'; reduction '+c.reduced.path}).join('\n\n'):'No letters to calculate';$('letterProof').textContent=trace;
  $('astroBlock').hidden=!$('astroOpt').checked;$('astroComposer').hidden=!$('astroOpt').checked;
  $('sunSign').textContent=valid?`Conventional approximate tropical sign: ${sign(dob)}`:'Enter a valid birth date to show the approximate sun-sign date range.';
+ renderSides();
  $('inputWarning').textContent=/[^A-Za-z\s]/.test(raw)?'Some entered characters do not map to A–Z and are omitted by the historical SHIMS normalisation. Check spelling/transliteration before interpreting.':'Only A–Z letters are used in this historical donor’s normalisation; accented and non-Latin names require a declared transliteration rule.';
 }
 function updateMode(){for(const btn of $('modeTabs').querySelectorAll('button'))btn.setAttribute('aria-pressed',String(btn.dataset.mode===active));$('modeExplain').textContent=modes.find(m=>m[0]===active)[1]; if($('sceneModes')){$('sceneModes').textContent=`${active}: ${sceneModes[active]} · Other lenses remain available.`;}invalidateReceipt()}
@@ -421,7 +508,7 @@ function invalidateReceipt(){lastReceipt=null;$('saveReceipt').disabled=true;$('
 function makeReceipt(){const raw=$('person').value,dob=$('dob').value,has=raw.toUpperCase().replace(/[^A-Z]/g,'').length>0;const routes={};if(has){for(const [k,map] of Object.entries(MAPS)){const c=calc(raw,map,$('yVowel').checked);routes[k]={total:c.total,reduced:c.reduced.value,reduction_path:c.reduced.path};if(k==='pyth'){routes[k].vowels=c.vowels;routes[k].consonants=c.consonants}}}
  const axesOut={};axes.forEach(a=>{axesOut[a.id]={value:Number($(`axis-${a.id}`).value),low:a.left,high:a.right}});
  const valid=validateDob(dob),astro=$('astroOpt').checked;const deep=deepRead(raw,dob,$('yVowel').checked);const feedback=$('feedbackOpt').checked?{reaction:$('feedbackStatus').value,context_or_counterexample:$('feedbackContext').value.trim().slice(0,800),kind:'VOLUNTARY_SELF_REPORT_NOT_VALIDATION'}:null;
- lastReceipt={schema:'JM.PSEUDOLOGY.CONTACT.v0.4.1',date_generated:new Date().toISOString(),demo:raw==='Exemplifying Exemplifier',subject_text:raw,source_conventions:{name_normalisation:'upper A-Z only',reduce:'digit sum; stop at 11/22/33 if reached',source_donor:'SHIMS Reality-Aligned Reading Core v4.7 methods; parent JM Pseudology v0.2 preserved unchanged'},default_three_routes:{pythagorean:routes.pyth||null,chaldean:routes.chald||null,english_gematria_ordinal:routes.ordinal||null},deep_reading:deep,optional_feedback:feedback,gematria_optional_mirror:routes.reverse||null,optional_date_route:valid?{date:dob,digit_sum:[...dob.replace(/\D/g,'')].reduce((a,d)=>a+Number(d),0)}:null,astrology:{available:true,opted_in:astro,approx_tropical_sun_sign:astro&&valid?sign(dob):null,full_natal_chart:'NOT_CALCULATED'},jm_contextual_orientation:{context:$('situation').value,axes:axesOut,scientific_validity:'UNVALIDATED EXPLORATORY SELF-REPORT'},source_family_links:['SHIMS','JM Theory Estate 51 seats','Exemplar Family','GTKM/GTKY','MMMBBB','VTS / DGYAK'],five_perspective_active:active,
+ lastReceipt={schema:'JM.PSEUDOTRY.CONTACT.v0.5.0',ancestor_schema:'JM.PSEUDOLOGY.CONTACT.v0.4.1',public_name:'JM Pseudotry',historical_identity:'JM Pseudology',sides:{active:activeSide,side_a:'Zoomometry',side_b:'Pseudoludo',zoom_scale:$('zoomScale').value,zoom_question:$('zoomQuestion').value,fictional_response:$('playResponse').value,before_after:'Side Be → Contact → Side Af'},date_generated:new Date().toISOString(),demo:raw==='Exemplifying Exemplifier',subject_text:raw,source_conventions:{name_normalisation:'upper A-Z only',reduce:'digit sum; stop at 11/22/33 if reached',source_donor:'SHIMS Reality-Aligned Reading Core v4.7 methods; parent JM Pseudology v0.2 preserved unchanged'},default_three_routes:{pythagorean:routes.pyth||null,chaldean:routes.chald||null,english_gematria_ordinal:routes.ordinal||null},deep_reading:deep,optional_feedback:feedback,gematria_optional_mirror:routes.reverse||null,optional_date_route:valid?{date:dob,digit_sum:[...dob.replace(/\D/g,'')].reduce((a,d)=>a+Number(d),0)}:null,astrology:{available:true,opted_in:astro,approx_tropical_sun_sign:astro&&valid?sign(dob):null,full_natal_chart:'NOT_CALCULATED'},jm_contextual_orientation:{context:$('situation').value,axes:axesOut,scientific_validity:'UNVALIDATED EXPLORATORY SELF-REPORT'},source_family_links:['SHIMS','JM Theory Estate 51 seats','Exemplar Family','GTKM/GTKY','MMMBBB','VTS / DGYAK'],five_perspective_active:active,
  original_SHIMS_meaning: (()=>{const sys=$('meaningSystem').value,pos=$('meaningPosition').value,n=$('meaningNumber').value==='auto'?meaningCurrentNumber(sys,pos):Number($('meaningNumber').value);return SHIMS_NUM[n]?nativeMeaning(n,sys,pos):null})(),
  optional_manual_astrology:($('astroOpt').checked&&$('astroKeysOpt').checked)?{moon_sign_supplied:$('moonKey').value.slice(0,70),rising_supplied:$('riseKey').value.slice(0,70),house_aspect_notes:$('houseKeys').value.slice(0,400),source_kind:'UNVERIFIED_USER_SUPPLIED_CHART_KEYS_NOT_CALCULATED'}:null,
  optional_manual_palm: $('palmOpt').checked?{hand:$('palmHand').value,shape_observed:$('palmForm').value.slice(0,100),notes_observed:$('palmNotes').value.slice(0,400),source_kind:'VOLUNTARY_MANUAL_OBSERVATION_SYMBOLIC_ONLY_NO_MEDICAL_CLAIM'}:null,
@@ -430,8 +517,9 @@ function makeReceipt(){const raw=$('person').value,dob=$('dob').value,has=raw.to
  claim_boundaries:['numeric calculations deterministic under disclosed conventions','symbolic interpretation is not established personality prediction','no psychometric scoring or diagnostic claim','biology/neuroscience must rely on applicable empirical evidence','not publicly published or stored unless exported by user'],privacy:'In-memory only. Receipt generated explicitly. Do not share personal information without consent.'};
  $('receipt').value=JSON.stringify(lastReceipt,null,2);$('saveReceipt').disabled=false;
 }
-function saveReceipt(){if(!lastReceipt)return;const blob=new Blob([JSON.stringify(lastReceipt,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='JM_PSEUDOLOGY_CONTACT_RECEIPT_v0_4_1.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-window.JMPseudologyProbe={calc,MAPS,reduce,validateDob,sign,deepRead,dateDeep,nativeMeaning,meaningCurrentNumber,scenes,SHIMS_NUM};
+function saveReceipt(){if(!lastReceipt)return;const blob=new Blob([JSON.stringify(lastReceipt,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='JM_PSEUDOTRY_CONTACT_RECEIPT_v0_5_0.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+window.JMPseudotryProbe={calc,MAPS,reduce,validateDob,sign,deepRead,dateDeep,nativeMeaning,meaningCurrentNumber,scenes,SHIMS_NUM,activateSide,renderSides};
+window.JMPseudologyProbe=window.JMPseudotryProbe; // historical test/API alias, not a second runtime
 init();
 })();
 </script>

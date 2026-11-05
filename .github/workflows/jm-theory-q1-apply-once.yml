@@ -1,0 +1,44 @@
+name: JM Theory Q1 original recovery adapter — isolated branch only
+on:
+  push:
+    branches:
+      - jm/theory-runtime-q1-biat-flaz-20261105
+    paths:
+      - .github/workflows/jm-theory-q1-apply-once.yml
+permissions:
+  contents: write
+jobs:
+  original-q1-source-adapter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Run existing JM Theory Q1 source-preserving adapter
+        run: python governance/apply_theory_runtime_quarantine_q1.py
+      - name: Verify receipt and syntax
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("registry/theory-runtime-quarantine-q1-source-receipt.json")
+          data=json.loads(p.read_text(encoding="utf-8"))
+          assert data["status"]=="SOURCE_TRANSFORMATION_PASS_LIVE_PROOF_PENDING", data
+          assert data["identity_merges"]==0
+          assert len(data["changed_files"])==8, data["changed_files"]
+          assert all(data["checks"].values()), data["checks"]
+          print("BIAT original Q1 adapter/static proof PASS, eight source files")
+          PY
+          for f in theory/chat-graft-v3.js theory/chat-graft-v4.js theory/full-body-recovery-v5.js theory/chat-room-recovery-v6.js theory/project-route-recovery-v7.js theory/first-stage-deep-recovery-v8.js theory/first-stage-t2-card-recovery-v9.js theory/first-stage-t1-reconciliation-v10.js; do node --check "$f"; done
+          git diff --check
+      - name: Commit to isolated branch (never main)
+        shell: bash
+        run: |
+          git config user.name "jm-theory-q1-recovery"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add theory/chat-graft-v3.js theory/chat-graft-v4.js theory/full-body-recovery-v5.js theory/chat-room-recovery-v6.js theory/project-route-recovery-v7.js theory/first-stage-deep-recovery-v8.js theory/first-stage-t2-card-recovery-v9.js theory/first-stage-t1-reconciliation-v10.js registry/theory-runtime-quarantine-q1-source-receipt.json
+          git diff --cached --quiet && { echo "No changes to commit" >&2; exit 1; }
+          git commit -m "BIAT Q1: preserve corrupt ancestors, restore healthy Theory descendants"
+          git push origin HEAD:jm/theory-runtime-q1-biat-flaz-20261105

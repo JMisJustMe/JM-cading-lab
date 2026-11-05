@@ -132,6 +132,11 @@ def verify_direct_use_cp08():
         "rim-route",
         "fight-clash",
         "futarized",
+        "crewbound-arena",
+        "house-siege",
+        "western-sniper",
+        "dead-reckon",
+        "cardbored",
         "gameforge",
         "glyphforge",
     ]
@@ -165,7 +170,7 @@ def verify_direct_use_cp08():
             "Device/private mount boundary disappeared")
     require("#jmUseNow .use-actions a{display:inline-flex" in html and "min-height:44px" in html,
             "Fold touch button threshold disappeared")
-    print("CP08 DIRECT USE PASS — 7/7 manifest-mounted bodies · 14 exact play/edit pointers · 5/5 independent public rooms · no private JMStudios body or fake download")
+    print("CP13 DIRECT USE PASS — 12/12 manifest-mounted bodies · 24 exact play/edit pointers · 5/5 independent public rooms · no private JMStudios body or fake download")
 
 
 def verify_quick_return_cp09():
@@ -182,7 +187,10 @@ def verify_quick_return_cp09():
     pins = findall(r'<button class="jm-pin-btn"[^>]*data-jm-pin-id="([^"]+)"', html)
     expected = [
         "game:tboys-core-clash", "game:fourfold-arena", "game:rim-route",
-        "game:fight-clash", "game:futarized", "game:gameforge", "game:glyphforge",
+        "game:fight-clash", "game:futarized",
+        "game:crewbound-arena", "game:house-siege", "game:western-sniper",
+        "game:dead-reckon", "game:cardbored",
+        "game:gameforge", "game:glyphforge",
         "room:openbox", "room:workshop", "room:agi-console", "room:music", "room:ftr-issue01",
     ]
     require(pins == expected, "Original Quick Return pin identities changed")
@@ -205,7 +213,7 @@ def verify_quick_return_cp09():
             "Pin destination origin whitelist unexpectedly modified")
     require("min-height:44px" in html and "#jmQuickReturn .jm-return-grid" in html,
             "Fold phone touch and layout repair dropped")
-    print("CP09 QUICK RETURN — 12/12 known pin doors, inherited Games House recents, local-only owner pins, source boundary PASS")
+    print("CP13 QUICK RETURN — 17/17 known pin doors, inherited Games House recents, local-only owner pins, source boundary PASS")
 
 
 def verify_original_pwa_cp10():

@@ -49,10 +49,12 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
 
 
 def replace_function(text: str, name: str, replacement: str) -> str:
-    marker = f"function {name}("
+    # Match the complete async declaration first: matching "function" inside an
+    # "async function" otherwise leaves a duplicate "async " during replacement.
+    marker = f"async function {name}("
     start = text.find(marker)
     if start < 0:
-        marker = f"async function {name}("
+        marker = f"function {name}("
         start = text.find(marker)
     if start < 0:
         raise RuntimeError(f"Function {name} not found")

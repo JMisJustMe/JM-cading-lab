@@ -48,11 +48,11 @@ test('missing offline JavaScript fails 503, not misleading HTML 200',async()=>{
 });
 test('service worker activation only retires this House cache lineage',async()=>{
  const x=harness();
- for(const name of ['JM_Studios_Originals','zionfolder-keeper-v4','games-beyond-old','games-beyond-v0-9-whole-estate-current-r4-cp31-offline','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-owner-html-20261105','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-20261105']) await x.caches.open(name);
+ for(const name of ['JM_Studios_Originals','zionfolder-keeper-v4','games-beyond-old','games-beyond-v0-9-whole-estate-current-r4-cp31-offline','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-owner-html-20261105','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-20261105','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-cp21-20261105']) await x.caches.open(name);
  let done;x.handlers.get('activate')({waitUntil:p=>done=p});
  await done;
- assert.deepEqual([...x.store.keys()].sort(),['JM_Studios_Originals','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-20261105','zionfolder-keeper-v4'].sort());
- assert.deepEqual(x.deleted,['games-beyond-old','games-beyond-v0-9-whole-estate-current-r4-cp31-offline','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-owner-html-20261105']);
+ assert.deepEqual([...x.store.keys()].sort(),['JM_Studios_Originals','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-cp21-20261105','zionfolder-keeper-v4'].sort());
+ assert.deepEqual(x.deleted,['games-beyond-old','games-beyond-v0-9-whole-estate-current-r4-cp31-offline','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-owner-html-20261105','games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-20261105']);
  assert.equal(x.receipts.get('claimed'),true);
 });
 test('House HTML is a fallback only for House navigation, not asset requests',async()=>{

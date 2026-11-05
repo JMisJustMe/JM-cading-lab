@@ -39,7 +39,6 @@ function apply(){
   // unrelated professional-master extraction or census verification.
   // Those checks may certify the linked bodies; they must not hide the room doors.
   done=true;
-  staticCopy();
   render();
   detail(null);
   bind();
@@ -48,6 +47,7 @@ function apply(){
   wait().then(()=>{
     try{
       verify();
+      staticCopy();
       rerender();
       window.JMTheoryChatRoomRecoveryV6=Object.freeze({version:'v0.15-room-mount-repair',verifiedMasters:M.length,mountedRooms:R.length,fullBodies:FULL,censusRoutes:ROUTES,masterVerification:'PASS'});
     }catch(e){

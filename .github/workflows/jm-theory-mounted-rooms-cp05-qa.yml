@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   prove-original-mounted-rooms:
@@ -27,6 +27,26 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: jm/theory-chatrooms-repair-cp05-20261105
+          persist-credentials: true
+      - name: Apply existing Q1 quarantine adapter to source-backed branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq 'JM_THEORY_RUNTIME_QUARANTINE_Q1_V3' theory/chat-graft-v3.js; then
+            echo 'Original Q1 adapter already applied — no duplicate mutation.'
+          else
+            python3 governance/apply_theory_runtime_quarantine_q1.py
+            python3 -m json.tool registry/theory-runtime-quarantine-q1-source-receipt.json >/dev/null
+            git config user.name 'JM ECOSTATE Source Recovery'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add theory/chat-graft-v3.js theory/chat-graft-v4.js theory/full-body-recovery-v5.js               theory/chat-room-recovery-v6.js theory/project-route-recovery-v7.js               theory/first-stage-deep-recovery-v8.js theory/first-stage-t2-card-recovery-v9.js               theory/first-stage-t1-reconciliation-v10.js               registry/theory-runtime-quarantine-q1-source-receipt.json
+            git diff --cached --check
+            git diff --cached --name-only
+            git commit -m 'CP05: inherit existing Q1 Theory healthy-source quarantine adapter'
+            git push origin HEAD:jm/theory-chatrooms-repair-cp05-20261105
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

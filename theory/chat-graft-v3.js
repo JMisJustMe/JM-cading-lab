@@ -55,7 +55,7 @@
     return response.text();
   }
 
-  async async function loadSources() {
+  async function loadSources() {
     const [v2Parts, v3] = await Promise.all([
       Promise.all(Array.from({ length: V2_PARTS }, (_, index) => (
         fetchText(`${V2_BASE}${String(index + 1).padStart(2, '0')}.txt?v=1200`)

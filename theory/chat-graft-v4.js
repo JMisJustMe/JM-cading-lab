@@ -53,7 +53,7 @@
     return DATA.records.filter((record) => record.chat_source).length;
   }
 
-  async async function waitForPriorPasses() {
+  async function waitForPriorPasses() {
     for (let attempt = 0; attempt < 400; attempt += 1) {
       if (
         typeof DATA !== 'undefined'

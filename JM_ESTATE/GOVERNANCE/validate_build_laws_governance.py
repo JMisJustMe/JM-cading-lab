@@ -103,6 +103,69 @@ for needle in required_text:
     if needle not in text:
         errors.append("human standard missing: "+needle)
 
+# CP14 — inherit, do not reinvent, the owner's 19 Oct living-relationship law.
+# Public route declarations must not be mistaken for private write authority.
+public_registry=load(ROOT / "navigator" / "estate-integration" / "public-registry.json")
+expected_relationship_operations=[
+    "SEPARATE","MESH","INTEGRATE","MERGE","TRANSFORM","BREAKAWAY"
+]
+expected_merger_gate=[
+    "participant source identities recovered",
+    "target identity and desired consequence explicit",
+    "authority for participating bodies resolved",
+    "migration and recovery route recorded",
+    "receiver behaviour independently tested",
+    "persisted consequence and receipt verified"
+]
+
+def relationship_policy_errors(contract, public, human):
+    found=[]
+    owner=(contract.get("relationship_policy") or {})
+    published=(public.get("relationship_policy") or {})
+    if owner.get("schema") != "JM.Estate.RelationshipOperations/1":
+        found.append("owner relationship schema drift")
+    if owner.get("state") != "OWNER_CORRECTED_FORWARD":
+        found.append("owner corrected relationship authority lost")
+    if owner.get("operations") != expected_relationship_operations:
+        found.append("six owner relationship choices drift")
+    if owner.get("merger_gate") != expected_merger_gate:
+        found.append("merger independent authority/proof/recovery gates drift")
+    if owner.get("selection") != "Choose the smallest beneficial relationship supported by intent, compatibility, explicit authority, proof and reversible recovery.":
+        found.append("owner smallest-beneficial-relationship rule drift")
+    if owner.get("safety") != "No silent overwrite, proof transfer, involuntary merger, loss of ancestry, or automatic external write.":
+        found.append("owner lineage/consent protection drift")
+    if owner.get("applicability") != "Whole JM ECOSTATE. Does not retroactively modify frozen source receipts.":
+        found.append("whole-estate and frozen-ancestor boundary drift")
+    if published.get("schema") != owner.get("schema"):
+        found.append("public relationship schema not aligned with owner law")
+    if published.get("operations") != owner.get("operations"):
+        found.append("public relationship choices not aligned with owner law")
+    if published.get("status") != "PUBLIC_DECLARATION_ONLY_NO_MERGER_PROOF":
+        found.append("public declaration incorrectly promoted to execution proof")
+    if "not owner-write capability" not in published.get("proof_boundary",""):
+        found.append("public relationship bridge lost private-write boundary")
+    if "Owner correction, 19 October 2026" not in human or "not** perpetual separation" not in human:
+        found.append("human owner correction lost")
+    return found
+
+errors.extend(relationship_policy_errors(data, public_registry, text))
+
+# Mutate in-memory fixtures ONLY; no source or owner file is written.
+from copy import deepcopy
+for label, mutate in [
+    ("lost breakaway", lambda a,b: a["relationship_policy"]["operations"].remove("BREAKAWAY")),
+    ("unearned merger", lambda a,b: a["relationship_policy"].update(merger_gate=[])),
+    ("public merger overclaim", lambda a,b: b["relationship_policy"].update(status="MERGER_EXECUTED")),
+    ("lost recovery consent", lambda a,b: a["relationship_policy"].update(safety="Automatic overwrite allowed"))
+]:
+    owner_fixture, public_fixture=deepcopy(data),deepcopy(public_registry)
+    try:
+        mutate(owner_fixture,public_fixture)
+        if not relationship_policy_errors(owner_fixture,public_fixture,text):
+            errors.append("negative-test unexpectedly accepted: "+label)
+    except Exception as exc:
+        errors.append("negative-test failed to run "+label+": "+str(exc))
+
 if errors:
     print("JM BUILD LAWS / PREFERENCES / GOVERNANCE STANDARD: FAIL")
     for error in errors:
@@ -112,3 +175,4 @@ if errors:
 print("JM BUILD LAWS / PREFERENCES / GOVERNANCE STANDARD: PASS")
 print(f"foundational_laws={len(laws)} authority_gates=6 current_coding_identities={len(ids)}")
 print("host_neutral=True source_replacement=False consequence_readback_required=True")
+print("owner_living_relationship_operations=6 public_declaration_only=True negative_mutations_rejected=4")

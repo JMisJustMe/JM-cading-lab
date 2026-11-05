@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   prove-original-mounted-rooms:
@@ -27,53 +27,6 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: jm/theory-chatrooms-repair-cp05-20261105
-          persist-credentials: true
-      - name: Apply existing Q1 quarantine adapter to source-backed branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          if grep -Fq 'JM_THEORY_RUNTIME_QUARANTINE_Q1_V3' theory/chat-graft-v3.js; then
-            echo 'Original Q1 adapter already applied — no duplicate mutation.'
-          else
-            python3 governance/apply_theory_runtime_quarantine_q1.py
-            python3 -m json.tool registry/theory-runtime-quarantine-q1-source-receipt.json >/dev/null
-            git config user.name 'JM ECOSTATE Source Recovery'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add theory/chat-graft-v3.js theory/chat-graft-v4.js theory/full-body-recovery-v5.js               theory/chat-room-recovery-v6.js theory/project-route-recovery-v7.js               theory/first-stage-deep-recovery-v8.js theory/first-stage-t2-card-recovery-v9.js               theory/first-stage-t1-reconciliation-v10.js               registry/theory-runtime-quarantine-q1-source-receipt.json
-            git diff --cached --check
-            git diff --cached --name-only
-            git commit -m 'CP05: inherit existing Q1 Theory healthy-source quarantine adapter'
-            git push origin HEAD:jm/theory-chatrooms-repair-cp05-20261105
-          fi
-          # Record the actual post-application bytes after the exact duplicate-async fix.
-          node --check theory/chat-graft-v3.js
-          node --check theory/chat-graft-v4.js
-          node --check theory/full-body-recovery-v5.js
-          python3 - <<'PY'
-          from pathlib import Path
-          import hashlib, json
-          path=Path('registry/theory-runtime-quarantine-q1-source-receipt.json')
-          receipt=json.loads(path.read_text(encoding='utf-8'))
-          assert receipt['status']=='SOURCE_TRANSFORMATION_PASS_LIVE_PROOF_PENDING'
-          for filename in ('theory/chat-graft-v3.js','theory/chat-graft-v4.js','theory/full-body-recovery-v5.js'):
-              contents=Path(filename).read_bytes()
-              receipt['after'][filename]['bytes']=len(contents)
-              receipt['after'][filename]['sha256']=hashlib.sha256(contents).hexdigest()
-              assert b'async async function' not in contents
-          receipt['checks']['post_application_async_prefixes_corrected']=True
-          path.write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-          print('Q1 ACTUAL BYTES READBACK — three JS syntactic repairs SHA-256 resigned, untouched source fields preserved')
-          PY
-          if ! git diff --quiet -- registry/theory-runtime-quarantine-q1-source-receipt.json; then
-            git config user.name 'JM ECOSTATE Source Recovery'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add registry/theory-runtime-quarantine-q1-source-receipt.json
-            git diff --cached --check
-            git commit -m 'CP05: correct original Q1 receipt to exact verified source bytes'
-            git push origin HEAD:jm/theory-chatrooms-repair-cp05-20261105
-          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -111,7 +64,23 @@ jobs:
                 page.on('pageerror',e=>errors.push(e.message));
                 page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
                 await page.goto(url,{waitUntil:'domcontentloaded'});
-                await page.locator('[data-view="rooms"]:visible').first().click();
+                const navDiagnostic=await page.evaluate(()=>({
+                  viewport:{width:innerWidth,height:innerHeight},body:document.body?.className,
+                  css:Array.from(document.styleSheets).map(x=>x.href).filter(Boolean),
+                  navs:[...document.querySelectorAll('[data-view="rooms"]')].map(el=>({
+                    text:el.textContent,display:getComputedStyle(el).display,
+                    visibility:getComputedStyle(el).visibility,rect:el.getBoundingClientRect().toJSON()
+                  })),
+                  loading:{hidden:document.getElementById('loading')?.hidden,
+                    className:document.getElementById('loading')?.className,
+                    status:document.getElementById('loadStatus')?.textContent,
+                    error:document.getElementById('loadError')?.textContent}
+                }));
+                console.log('CP05_NAV_DIAGNOSTIC',JSON.stringify({viewport,navDiagnostic}));
+                // Use the existing native view API to diagnose source loading separately
+                // from potentially hidden phone controls; still require real 42 cards.
+                await page.evaluate(()=>{if(typeof setView!=='function')throw Error('Original setView missing');setView('rooms',false)});
+
                 try{
                   await page.waitForFunction(()=>window.JMTheoryChatRoomRecoveryV6?.mountedRooms===42 &&
                     document.querySelectorAll('#roomGrid [data-room-select]').length===42,

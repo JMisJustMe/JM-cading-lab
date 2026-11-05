@@ -138,7 +138,10 @@ jobs:
     needs: deploy
     timeout-minutes: 6
     steps:
-      # Current CP02 published CSS descendant is 12,028 bytes / SHA below.\n      # Its prefixes remain verified: frozen source 11,501 bytes and CP01 11,841 bytes.\n      # This gate checks current live delivery, not a rollback to the original styling.\n      - name: Prove exact manufactured FTR comic carrier after Pages deploy
+      # Current CP02 published CSS descendant is 12,028 bytes / SHA below.
+      # Its prefixes remain verified: frozen source 11,501 bytes and CP01 11,841 bytes.
+      # This gate checks current live delivery, not a rollback to the original styling.
+      - name: Prove exact manufactured FTR comic carrier after Pages deploy
         shell: bash
         run: |
           set -euo pipefail

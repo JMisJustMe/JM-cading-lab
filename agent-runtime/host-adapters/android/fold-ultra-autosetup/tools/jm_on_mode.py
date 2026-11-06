@@ -53,7 +53,7 @@ def cmd(*argv, timeout=12):
         return None
 
 def find_devices():
-    """Use original ADB discovery IDs, not last week's rotating TCP port."""
+    """Collect *all* advertised ADB TLS ports: old mDNS records may linger."""
     result = cmd("adb", "mdns", "services", timeout=12)
     if not result or result.returncode:
         return {}
@@ -64,19 +64,44 @@ def find_devices():
                 continue
             m = re.search(r"((?:[0-9]{1,3}\.){3}[0-9]{1,3}:[0-9]{2,5})", line)
             if m:
-                found[name] = (m.group(1), expected)
+                item = (m.group(1), expected)
+                options = found.setdefault(name, [])
+                if item not in options:
+                    options.append(item)
     return found
 
 def connected():
-    found = find_devices()
     live = {}
-    for name, (address, expected) in found.items():
-        candidate = cmd("adb", "connect", address, timeout=8)
-        if not candidate or candidate.returncode:
+    # First reuse *already authorised and attached* Android ADB transports.
+    # Their serial may contain whitespace, e.g. OPPO " (2)._adb-tls...".
+    result = cmd("adb", "devices", "-l", timeout=12)
+    if result and result.returncode == 0:
+        for line in result.stdout.splitlines():
+            match = re.match(r"^(.+?)\s+device\s+.*?\bmodel:(\S+)", line)
+            if not match:
+                continue
+            serial, model = match.groups()
+            for name, identity, expected in DEVICES:
+                if name in live or model != expected:
+                    continue
+                check = cmd("adb", "-s", serial, "shell", "getprop",
+                            "ro.product.model", timeout=8)
+                if check and check.returncode == 0 and check.stdout.strip() == expected:
+                    live[name] = serial
+    # Only if no verified live route, try each mDNS candidate separately.
+    # Refused stale ports cannot overwrite a working newer one.
+    for name, options in find_devices().items():
+        if name in live:
             continue
-        model = cmd("adb", "-s", address, "shell", "getprop", "ro.product.model", timeout=8)
-        if model and model.returncode == 0 and model.stdout.strip() == expected:
-            live[name] = address
+        for address, expected in options:
+            attempt = cmd("adb", "connect", address, timeout=8)
+            if not attempt or attempt.returncode != 0:
+                continue
+            check = cmd("adb", "-s", address, "shell", "getprop",
+                        "ro.product.model", timeout=8)
+            if check and check.returncode == 0 and check.stdout.strip() == expected:
+                live[name] = address
+                break
     return live
 
 def get_timeout(serial):

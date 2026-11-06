@@ -37,6 +37,32 @@ def open_lab():
     tap("JM HOME LAB","cp01_original_root_entry")
     has("Your JM home, your layout","cp01_real_native_home")
 
+def request_dialog_with_verified_touch(button,label):
+    """Only pass after real emulator UI shows JM's actual owner-consent dialog.
+
+    The stock API35 Quickstep ANR can swallow a touch even after its system
+    overlay is dismissed. A bounded second touch is permissible ONLY while
+    the original DEVICES page and the exact native Button remain visible.
+    Never infer modal confirmation from a tap command returning exit 0.
+    """
+    for attempt in range(2):
+        nodes=dump("cp08_pre_request_"+label+"_"+str(attempt))
+        if any("Share a request-only template?" in n.get("text","") for n in nodes):
+            return
+        original_page=any(n.get("text","")=="Device contact" for n in nodes)
+        still_button=any(n.get("class")=="android.widget.Button" and
+            button in n.get("text","") for n in nodes)
+        if not (original_page and still_button):
+            capture("HOLD_cp08_request_"+label+"_"+str(attempt))
+            raise AssertionError("HOLD: cannot confirm original DEVICES button after system overlay")
+        tap(button,label+("_bounded_retry" if attempt else "_initial_touch"))
+        nodes=dump("cp08_post_request_"+label+"_"+str(attempt))
+        if any("Share a request-only template?" in n.get("text","") for n in nodes):
+            return
+        capture("CP08_TOUCH_WITHOUT_VISIBLE_DIALOG_"+label+"_"+str(attempt))
+    raise AssertionError("HOLD: two real owner-style touches never displayed JM request dialog")
+
+
 def preference_mode():
     xml=adb("exec-out","run-as",PKG,"cat",
             "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
@@ -107,7 +133,8 @@ def main():
     tap("DEVICES","cp01_device_panel")
     has("OPPO · NOT CONTACTED","cp01_oppo_not_contacted")
     has("EXISTING DONOR / JM PHONE","cp01_original_phone_laptop_donor")
-    tap("Prepare OPPO handoff text","cp01_explicit_handoff_dialog")
+    request_dialog_with_verified_touch("Prepare OPPO handoff text",
+        "cp01_explicit_handoff_dialog")
     has("Share a request-only template?","cp01_request_only_warning")
     tap("Cancel","cp01_owner_cancels_request")
     assert pref_values()==before,"Canceled handoff changed protected Fold state"
@@ -142,7 +169,8 @@ def main():
     tap("Use this profile","cp01_approve_local_role")
     has("Selected LOCAL profile · OPPO","cp01_oppo_local_profile")
     has("Fold8 Ultra · NOT CONTACTED","cp01_fold_peer_unpaired")
-    tap("Prepare Fold8 Ultra handoff text","cp01_oppo_to_fold_request")
+    request_dialog_with_verified_touch("Prepare Fold8 Ultra handoff text",
+        "cp01_oppo_to_fold_request")
     has("Share a request-only template?","cp01_oppo_to_fold_is_request_only")
     tap("Cancel","cp01_cancel_second_device_share")
     tap("Use Fold8 profile","cp01_restore_fold_profile_choice")

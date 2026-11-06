@@ -63,6 +63,20 @@ class HomeLabScopeTest(unittest.TestCase):
         self.assertIn('Restore default JM tiles',ui)
         self.assertIn('if("FOLD8".equals(selectedRole()))editor.putString("layout.mode",mode)',ui)
 
+    def test_sidecar_qa_is_not_original_update(self):
+        gradle=(ROOT/"app/build.gradle").read_text()
+        self.assertIn("applicationId 'com.jmisjustme.foldultra'",gradle)
+        self.assertIn("applicationIdSuffix '.homeqa'",gradle)
+        self.assertIn("versionNameSuffix '-qa'",gradle)
+        manifest=(ROOT/"app/src/homeqa/AndroidManifest.xml").read_text()
+        self.assertIn('android:label="JM Home Lab QA"',manifest)
+        self.assertIn('tools:node="removeAll"',manifest)
+        self.assertIn('tools:node="remove"',manifest)
+        self.assertNotIn('android.intent.category.HOME',manifest)
+        self.assertNotIn('android.intent.action.SEND',manifest)
+        self.assertNotIn('jmfoldultra://',manifest)
+        self.assertNotIn('uses-permission',manifest)
+
     def test_original_root_remains_authoritative(self):
         source=(SRC/"java/com/jmisjustme/foldultra/MainActivity.java").read_text(encoding="utf-8")
         self.assertIn('btn(page,"JM WORKROOM / Write · Code · Files"',source)

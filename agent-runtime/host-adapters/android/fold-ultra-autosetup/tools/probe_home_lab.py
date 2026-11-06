@@ -133,6 +133,8 @@ def main():
     tap("DEVICES","cp01_device_panel")
     has("OPPO · NOT CONTACTED","cp01_oppo_not_contacted")
     has("EXISTING DONOR / JM PHONE","cp01_original_phone_laptop_donor")
+    has("View current Home Lab checks","cp13_devices_github_checks")
+    has("Open last verified CI run","cp13_devices_verified_run")
     request_dialog_with_verified_touch("Prepare OPPO handoff text",
         "cp01_explicit_handoff_dialog")
     has("Share a request-only template?","cp01_request_only_warning")
@@ -209,29 +211,23 @@ def main():
     tap("HOME","cp02_fold_home_separate")
     has("4 columns","cp02_fold_auto_restored")
     assert pref_values()==before,"Menu editor changed protected original JM state"
-    # CP07_FOREGROUND_ON_MODE: native Android keep-awake, not Android HOME takeover.
-    # Test the explicit owner-style ON/OFF touches and *actual* app preference
-    # stored by Android; never infer a phone-wide keep-awake from a UI label.
-    tap("JM ON MODE · Keep this screen on for 60 minutes",
-        "cp07_on_mode_owner_turns_on")
-    has("JM ON MODE · OFF / restore normal","cp07_on_mode_off_visible")
-    owner_pref=adb("exec-out","run-as",PKG,"cat",
-        "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
-    on_tree=ET.fromstring(owner_pref)
-    expiry=next((x.attrib.get("value") for x in on_tree
-        if x.attrib.get("name")=="owner.onmode.foreground_until_ms"),None)
-    assert expiry and int(expiry) > int(time.time()*1000),"ON did not save a future expiry"
-    assert int(expiry) <= int(time.time()*1000)+3600000, "ON expiry exceeds 60-minute boundary"
-    capture("CP07_ON_MODE_NATIVE_ON")
-    tap("JM ON MODE · OFF / restore normal","cp07_on_mode_owner_turns_off")
-    has("JM ON MODE · Keep this screen on for 60 minutes","cp07_on_mode_restored")
+    # CP13_OWNER_CORRECTION: The owner rejected any 60-minute session.
+    # Inspect the new native *owner-tapped entrance* without opening the
+    # external GitHub UI or occupying any real handset.
+    has("JM HEADLESS · Open current checks","cp13_headless_phone_door")
+    headless_nodes=dump("CP13_HEADLESS_PHONE_DOOR")
+    assert any(n.get("text")=="JM HEADLESS · Open current checks"
+               and n.get("class")=="android.widget.Button"
+               for n in headless_nodes), "HEADLESS must be a real native Button"
+    assert not any("JM ON MODE" in n.get("text","")
+                   for n in headless_nodes), "Rejected wake-timer UI still visible"
     owner_pref=adb("exec-out","run-as",PKG,"cat",
         "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
     off_tree=ET.fromstring(owner_pref)
-    assert not any(x.attrib.get("name")=="owner.onmode.foreground_until_ms"
-        for x in off_tree),"OFF must remove keep-awake expiry"
-    capture("CP07_ON_MODE_NATIVE_OFF")
-    assert pref_values()==before,"ON MODE must not mutate inherited original JM data"
+    assert not any(n.get("name")=="owner.onmode.foreground_until_ms"
+                   for n in off_tree), "Retired timer preference survived app start"
+    # The original owner JM layout and session state must remain unchanged.
+    assert pref_values()==before, "Phone check door changed original JM state"
 
     receipt={
       "status":"PASS","scope":"generic Android emulator CP01+CP02 real native taps",
@@ -244,8 +240,11 @@ def main():
       "oppo_not_contacted":True,"owner_handoff_cancellation":True,
       "layout_switch":True,"cold_preference":True,"compact_and_expanded":True,
       "original_state_unchanged":True,"android_default_home":"NOT_CHANGED",
-      "cp07_native_foreground_on_off_touch":True,
-      "cp07_bounded_expiry_stored_then_removed":True
+      "cp13_owner_headless_github_button":True,
+      "cp13_no_timed_wake_button":True,
+      "cp13_no_expiry_preference":True,
+      "github_external_browser_launched":False,
+      "github_job_triggered":False
     }
     (OUT/"JM_HOME_LAB_CP01_EMULATOR_RECEIPT.json").write_text(
         json.dumps(receipt,indent=2),encoding="utf-8")

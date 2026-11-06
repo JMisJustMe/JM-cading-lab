@@ -7,10 +7,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -34,12 +37,52 @@ public final class LauncherLabActivity extends Activity {
   private static final int BG=0xff09101D, PANEL=0xff192840, INK=0xffE5F1FF, SOFT=0xffA9C2DB;
   private SharedPreferences prefs;
   private LinearLayout body;
+  // The no-permission Android switch applies only while Home Lab is visible.
+  // It never changes Android HOME, device lock or another application's screen.
+  private static final String OWNER_ON_MODE_EXPIRY="owner.onmode.foreground_until_ms";
+  private final Handler onModeTimer=new Handler(Looper.getMainLooper());
+  private final Runnable onModeExpire=()->applyForegroundOnMode();
+
+  private void applyForegroundOnMode() {
+    onModeTimer.removeCallbacks(onModeExpire);
+    long until=prefs.getLong(OWNER_ON_MODE_EXPIRY,0L);
+    long remaining=until-System.currentTimeMillis();
+    if(remaining>0L) {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      onModeTimer.postDelayed(onModeExpire,remaining);
+    } else {
+      getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      if(until!=0L)prefs.edit().remove(OWNER_ON_MODE_EXPIRY).apply();
+    }
+  }
+
+  private void toggleForegroundOnMode() {
+    boolean isOn=prefs.getLong(OWNER_ON_MODE_EXPIRY,0L)>System.currentTimeMillis();
+    if(isOn) {
+      prefs.edit().remove(OWNER_ON_MODE_EXPIRY).apply();
+    } else {
+      prefs.edit().putLong(OWNER_ON_MODE_EXPIRY,
+        System.currentTimeMillis()+60L*60L*1000L).apply();
+    }
+    applyForegroundOnMode();
+    showHome();
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    if(prefs!=null)applyForegroundOnMode();
+  }
+  @Override protected void onDestroy() {
+    onModeTimer.removeCallbacks(onModeExpire);
+    super.onDestroy();
+  }
 
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     prefs=getSharedPreferences("jm.fold.ultra.home.lab.cp01", MODE_PRIVATE);
     getWindow().setStatusBarColor(BG);
     getWindow().setNavigationBarColor(BG);
+    applyForegroundOnMode();
     showHome();
   }
 
@@ -144,6 +187,13 @@ public final class LauncherLabActivity extends Activity {
         }
       }
     }
+    boolean on=prefs.getLong(OWNER_ON_MODE_EXPIRY,0L)>System.currentTimeMillis();
+    button(on?"JM ON MODE · OFF / restore normal"
+      :"JM ON MODE · Keep this screen on for 60 minutes",
+      ()->toggleForegroundOnMode());
+    label("This native switch works only while Home Lab is visible and expires"
+      +" automatically. For other apps or GroundZeroJM, use the separate owner"
+      +" laptop ON MODE controls. Your phone lock and Android HOME are unchanged.",12,SOFT);
     label("Edit these tiles in LAYOUT. JM ROOT and BACK TO JM cannot be hidden.",13,SOFT);
     label("This preview belongs to your existing JM Fold Ultra app, not a second launcher.",13,SOFT);
   }

@@ -8,9 +8,9 @@ let n=0;
 async function check(name,task){await task();n++;console.log('PASS',name)}
 const receive=async req=>{const res=await onRequest({request:req});return {status:res.status,headers:res.headers,body:await res.json()}};
 
-await check('original 7 independently identified API bodies',async()=>{
+await check('existing original API bodies plus four independently gated MCP seats',async()=>{
   const {body}=await receive(r('/services'));
-  assert.deepEqual(body.services.map(x=>x.id),['build-mesh','workshop','live-experience','cloud-contact','owner-vault','ailatheo','phone-commander']);
+  assert.deepEqual(body.services.map(x=>x.id),['build-mesh','workshop','live-experience','navigator-public','unique-bodies-cp08','app-commons-cp06','federation-receipt-cp02','cloud-contact','owner-vault','ailatheo','phone-commander']);
   assert(body.services.every(x=>x.observedNowByThisApi===false));
   assert.equal(body.services.find(x=>x.id==='phone-commander').endpoint,null);
 });
@@ -19,18 +19,18 @@ await check('historical API entries never crowned current',async()=>{
  assert.deepEqual(body.historical.map(x=>x.id),['jm-studios-api','shims-reading-backend','sovereign-agent-gateway']);
  assert(body.historical.every(x=>x.publicRoute===null&&x.state.includes('UNVERIFIED')));
 });
-await check('9 plans contact their actual independent services',async()=>{
- const expected={discover:'build-mesh',recover:'build-mesh',compose:'workshop',test:'workshop',admit:'live-experience',workspace:'cloud-contact',vault:'owner-vault',entitlement:'ailatheo',phone:'phone-commander'};
+await check('13 plans contact their actual independent services',async()=>{
+ const expected={discover:'build-mesh',recover:'build-mesh',compose:'workshop',test:'workshop',admit:'live-experience',navigate:'navigator-public',uniqueBodies:'unique-bodies-cp08',commons:'app-commons-cp06',receipt:'federation-receipt-cp02',workspace:'cloud-contact',vault:'owner-vault',entitlement:'ailatheo',phone:'phone-commander'};
  for(const [operation,service] of Object.entries(expected)){
   const {body,status}=await receive(r('/plan','POST',JSON.stringify({operation}),{'content-type':'application/json'}));
   assert.equal(status,200);assert.equal(body.contact.id,service);assert.equal(body.state,'PLAN_ONLY');
   assert.equal(body.proof.ownerCredentialForwarded,false);assert.equal(body.proof.remoteToolExecuted,false);
  }
 });
-await check('OpenAPI has 9 valid contact plan operations and one fixed readiness endpoint',async()=>{
+await check('OpenAPI has 13 valid contact plan operations and one fixed readiness endpoint',async()=>{
  const v=jmOpenApi(base);assert.equal(v.info.version,'1.1.0');
  assert.equal(v.paths[JM_API_BASE+'/contact/cloud-contact/ready'].get.summary.includes('Fixed'),true);
- assert.equal(v.paths[JM_API_BASE+'/plan'].post.requestBody.content['application/json'].schema.properties.operation.enum.length,9);
+ assert.equal(v.paths[JM_API_BASE+'/plan'].post.requestBody.content['application/json'].schema.properties.operation.enum.length,13);
 });
 await check('Pages and portable core match',async()=>{
  const x=await onRequest({request:r('/lineage')}),y=await handleJMApi(r('/lineage')); assert.deepEqual(await x.json(),await y.json());

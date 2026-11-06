@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <queries>
+        <!-- Least-scope visibility for native owner-tapped app drawer. -->
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
         <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
         <package android:name="com.sec.android.app.myfiles" />
         <package android:name="com.samsung.android.app.notes" />
@@ -47,6 +49,8 @@
             <!-- Official Android static shortcut; same allowlisted GALAXY route. -->
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
+        <!-- Opt-in preview: no HOME intent filter, exported=false, no permission changes. -->
+        <activity android:name=".launcher.LauncherLabActivity" android:exported="false" />
         <activity android:name=".workroom.WorkroomActivity" android:exported="false"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" />
     </application>

@@ -50,7 +50,7 @@ def tap_with_actual_viewport(fragment,label):
     above the system navigation area, then the caller checks the resulting UI.
     """
     raw=adb("shell","wm","size").decode(errors="replace")
-    sizes=re.findall(r"(\\d+)x(\\d+)",raw)
+    sizes=re.findall(r"(\d+)x(\d+)",raw)
     assert sizes,("Cannot read active Android display dimensions",raw)
     width,height=map(int,sizes[-1])
     safe_bottom=height-90
@@ -59,7 +59,7 @@ def tap_with_actual_viewport(fragment,label):
         for n in nodes:
             if n.get("text")!=fragment or n.get("class")!="android.widget.Button":
                 continue
-            bounds=[int(x) for x in re.findall(r"\\d+",n.get("bounds",""))]
+            bounds=[int(x) for x in re.findall(r"\d+",n.get("bounds",""))]
             if len(bounds)!=4:continue
             x1,y1,x2,y2=bounds
             if x1<0 or x2>width or y1<100 or y2>safe_bottom:

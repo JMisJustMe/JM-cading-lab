@@ -53,10 +53,26 @@ def main():
     open_lab()
     has("2 columns","cp01_auto_compact")
     capture("CP01_HOME_COMPACT")
+    # The home TILE also contains APP DRAWER text. Do not mistake it for
+    # the drawer screen; require a distinct help sentence plus an EditText.
     tap("APP DRAWER","cp01_drawer_tile")
-    has("App drawer","cp01_app_drawer_render")
-    assert any(n.get("class")=="android.widget.EditText"
-               for n in dump("cp01_drawer_search_input")), "No actual app-search EditText"
+    for attempt in range(2):
+        nodes=dump("cp01_drawer_search_input_"+str(attempt))
+        correct=(any("Launch installed, discoverable Android apps only by tapping one."
+                     in n.get("text","") for n in nodes)
+                 and any(n.get("class")=="android.widget.EditText" for n in nodes))
+        if correct: break
+        capture("CP01_DRAWER_NOT_REACHED_"+str(attempt))
+        if attempt==0 and any(n.get("text","")=="APP DRAWER" and
+                              n.get("class")=="android.widget.Button" for n in nodes):
+            tap("APP DRAWER","cp01_drawer_tile_bounded_retry")
+        else:
+            raise AssertionError("Home tile failed to open native searchable drawer")
+    else:
+        raise AssertionError("No real app drawer after two owner-style taps")
+    has("Launch installed, discoverable Android apps only by tapping one.",
+        "cp01_drawer_actual_screen")
+    capture("CP01_NATIVE_DRAWER_SEARCH")
     tap("DEVICES","cp01_device_panel")
     has("OPPO · NOT CONTACTED","cp01_oppo_not_contacted")
     tap("Prepare OPPO handoff text","cp01_explicit_handoff_dialog")

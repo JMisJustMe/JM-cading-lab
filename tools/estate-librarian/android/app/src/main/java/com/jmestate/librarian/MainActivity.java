@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Build;
 import android.view.WindowInsets;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.graphics.Insets;
 import android.provider.DocumentsContract;
 import android.webkit.JavascriptInterface;
@@ -40,10 +42,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        webView = new WebView(this);
-        // OPPO CP03: system-bar padding for Android 15/16 edge-to-edge, following existing
-        // JM File Grabber CP08 insets implementation. Original v0.4.1A remains untouched.
-        webView.setOnApplyWindowInsetsListener((view, insets) -> {
+        // Outer container owns system-bar insets. Padding a WebView directly does not
+        // reliably move CSS fixed-position controls below Android 16 system bars.
+        FrameLayout insetRoot = new FrameLayout(this);
+        insetRoot.setOnApplyWindowInsetsListener((view, insets) -> {
             if (Build.VERSION.SDK_INT >= 30) {
                 Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
                 view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
@@ -53,7 +55,10 @@ public class MainActivity extends Activity {
                     insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
             return insets.consumeSystemWindowInsets();
         });
-        setContentView(webView);
+        webView = new WebView(this);
+        insetRoot.addView(webView, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setContentView(insetRoot);
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);

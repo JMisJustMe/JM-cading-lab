@@ -32,6 +32,34 @@ const SERVICES = Object.freeze([
     boundary:'Gameplay admission requires its own source and owner authorization.'
   },
   {
+    id:'navigator-public', name:'JM3232 Navigator public-safe MCP', protocol:'MCP',
+    endpoint:'https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp',
+    access:'PUBLIC_READ_ONLY', role:'public-search-lineage-contact', source:'EXISTING_ESTATE_PUBLIC_INTEGRATION',
+    capabilities:['public-search','public-lineage','public-bridge-status'],
+    boundary:'Public descendant only; not owner/live Navigator, raw private source, or owner-write authority.'
+  },
+  {
+    id:'unique-bodies-cp08', name:'JM Unique Bodies CP08', protocol:'MCP',
+    endpoint:'https://jm-unique-bodies-cp08-contact.onrender.com/mcp',
+    access:'OWNER_BEARER_REQUIRED', role:'owner-authorized-atomic-body-contact', source:'EXISTING_MCP_FEDERATION_REGISTER',
+    capabilities:['owner-authorized-atomic-contact','atlas-history'],
+    boundary:'No anonymous tools or proxy. Owner bearer admission, remote write and durable Atlas proof remain separate.'
+  },
+  {
+    id:'app-commons-cp06', name:'JM APP//COMMONS CP06', protocol:'MCP',
+    endpoint:'https://jm-app-commons-cp06-mcp.onrender.com/mcp',
+    access:'OWNER_BEARER_REQUIRED', role:'protected-source-inspection-comparison-and-capsules', source:'EXISTING_MCP_FEDERATION_REGISTER',
+    capabilities:['owner-authorized-source-inspection','comparison','capsules'],
+    boundary:'Original independently hosted MCP. No source disclosure or credential forwarding through JM API.'
+  },
+  {
+    id:'federation-receipt-cp02', name:'JM Federation Receipt CP02', protocol:'MCP',
+    endpoint:'https://jm-federation-receipt-cp02-mcp.onrender.com/mcp',
+    access:'OWNER_BEARER_REQUIRED', role:'owner-authorized-federation-receipt-issuance', source:'EXISTING_MCP_FEDERATION_REGISTER',
+    capabilities:['owner-authorized-receipt-issuance'],
+    boundary:'Issuance and signing remain with original owner-controlled host; JM API can only route a plan.'
+  },
+  {
     id:'cloud-contact', name:'JM Cloud Contact Server', protocol:'REST',
     endpoint:'/api/estate-contact', access:'SCOPED_BEARER',
     role:'existing-cloud-workspaces-and-verified-receipts', source:'RECOVERED_GITHUB_SOURCE',
@@ -73,6 +101,10 @@ const ROUTES = Object.freeze({
   compose:{service:'workshop',tool:'workshop_compose',scope:'recipe-construction',gate:'Validate recipe and compare candidate against ancestor; then independently test.'},
   test:{service:'workshop',tool:'workshop_test',scope:'fixture-only',gate:'A fixture test is not real-host or owner-device execution.'},
   admit:{service:'live-experience',tool:null,scope:'admission-governed',gate:'Consult service admission rules, owner and game-specific proof.'},
+  navigate:{service:'navigator-public',tool:'public_search',scope:'public-navigation',gate:'Use read-only Navigator tools; owner/live content and authenticated source remain separate.'},
+  uniqueBodies:{service:'unique-bodies-cp08',tool:null,scope:'owner-authenticated',gate:'Obtain authorised bearer admission through the original CP08 client; no tokens through JM API.'},
+  commons:{service:'app-commons-cp06',tool:null,scope:'owner-authenticated',gate:'Use original APP//COMMONS protected client for inspection and capsules; no private payload through public router.'},
+  receipt:{service:'federation-receipt-cp02',tool:null,scope:'owner-authenticated',gate:'Use the original receipt signer with separately verified credentials and provenance; JM API issues nothing.'},
   workspace:{service:'cloud-contact',tool:null,scope:'scoped-private',gate:'Use original bearer auth and independently check signed receipt and persisted state.'},
   vault:{service:'owner-vault',tool:null,scope:'owner-private',gate:'Use original owner session key; no copied credentials, bytes or authorities.'},
   entitlement:{service:'ailatheo',tool:null,scope:'customer-auth',gate:'Billing and identity checks stay on the original AILatheo API.'},

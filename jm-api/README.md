@@ -78,3 +78,13 @@ The archive/source-discovery hold for the historical Studio API-stage prototypes
 ## CP05 Fold8 original Phone Commander local contact — 4 November 2026
 
 Authorised Samsung SM-F976B Termux connection recovered an existing original checkout `~/JM_WORKSPACE/JM-cading-lab/agent-runtime/host-adapters/android/phone-commander/jm_phone_commander.py`. Started its original `serve --port 8765` command in a separate remote terminal session. Actual bound source uses `ThreadingHTTPServer(("127.0.0.1", port))`. Private token was created under `~/.config/jm-phone-commander/local-token` with owner-only `0600` permissions and was **never displayed, exported or committed**. With a locally loaded private token, `GET http://127.0.0.1:8765/status` returned HTTP 200 and state PASS. Without authorization 401; with browser Origin 403. This proves actual local authenticated service contact during the test, not off-device API reachability, boot persistence, remote operation approval, or public HTML access. Do not publish the local token or try to call the endpoint from a public web origin.
+
+## CP01 cross-MCP API seating — review candidate, 6 November 2026
+
+The existing JM API service catalogue now has proposed **additive** registrations for four existing independent original routes: public-safe JM3232 Navigator and owner-bearer-protected JM Unique Bodies CP08, JM APP//COMMONS CP06, and JM Federation Receipt CP02. The original Build Mesh, Workshop, Live Experience, Cloud Contact, Owner Vault, AILatheo and Phone Commander remain separate.
+
+The additional plan-only operations are `navigate`, `uniqueBodies`, `commons` and `receipt`. The public API does **not** invoke or proxy protected MCPs, forward credentials, issue receipts, open private Library files, modify GitHub or create owner permissions. A catalogue entry or candidate PR is not a fresh provider-client installation, live deployment or authenticated capability proof.
+
+Source authority: original [six-host MCP register](https://github.com/JMisJustMe/JM-cading-lab), JM Build Mesh v0.8.6 and the independently preserved private services. Keep source integrity hold [#774](https://github.com/JMisJustMe/JM-cading-lab/issues/774), Owner Vault fail-closed hold [#591](https://github.com/JMisJustMe/JM-cading-lab/issues/591) and GONG post-merge checks [#536](https://github.com/JMisJustMe/JM-cading-lab/issues/536) separate from API discovery.
+
+Acceptance: run `node tests/jm-api-v1.test.mjs` and the other original JM API suites against these exact bytes; verify expected service IDs, all four `PLAN_ONLY` routes, no credentials, no unauthorised proxy, no server write, and independent new deployment proof before claiming the public endpoint changed.

@@ -33,8 +33,11 @@ def copy_exclusive_verified(data:bytes,target:Path):
 
 def copy_one(archive:Path,destination:Path):
     if archive.suffix!='.jmufc' or not archive.is_file() or archive.is_symlink():raise ValueError('Only regular .jmufc source files')
-    receipt_file=Path(str(archive)+'.receipt.json')
-    if not receipt_file.is_file() or receipt_file.is_symlink():raise RuntimeError('HOLD: missing sidecar receipt')
+    # Python exports <name>.jmufc.receipt.json; Android/browser exports <name>.receipt.json.
+    matches=[p for p in (Path(str(archive)+'.receipt.json'),archive.with_suffix('.receipt.json')) if p.is_file()]
+    if len(matches)!=1:raise RuntimeError('HOLD: expected exactly one sidecar receipt (missing/ambiguous)')
+    receipt_file=matches[0]
+    if receipt_file.is_symlink():raise RuntimeError('HOLD: symlink receipt disallowed')
     if archive.stat().st_size>300*1024*1024:raise RuntimeError('HOLD: archive exceeds bounded copy size')
     raw=archive.read_bytes();receipt_raw=receipt_file.read_bytes()
     if len(receipt_raw)>512*1024 or not any(raw.startswith(m) for m in MAGICS):raise RuntimeError('HOLD: malformed carrier/receipt')

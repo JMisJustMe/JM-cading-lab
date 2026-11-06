@@ -42,6 +42,10 @@ class HomeLabScopeTest(unittest.TestCase):
         self.assertFalse(record["execution"]["hostPromoted"])
         ui=(SRC/"java/com/jmisjustme/foldultra/launcher/LauncherLabActivity.java").read_text()
         self.assertIn("Read original Phone ↔ Laptop proof record",ui)
+        self.assertIn('prefs.getString("device.role","FOLD8")',ui)
+        self.assertIn('makeRequest(selectedRole(),target,"OPEN_JM_ROOT",true)',ui)
+        self.assertIn('button("Use OPPO profile"',ui)
+        self.assertIn('button("Use Fold8 profile"',ui)
         self.assertNotIn('android.intent.category.HOME',ui)
         self.assertNotIn('https://jm-cloud-contact-server',ui)
 

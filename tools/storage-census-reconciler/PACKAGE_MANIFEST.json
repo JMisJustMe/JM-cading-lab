@@ -1,0 +1,32 @@
+{
+  "body": "JM Cross-Location Storage Census & Reconciler",
+  "version": "0.1.0",
+  "status": "browser/source build complete; GitHub Actions compile governed by branch workflow; physical Android proof pending",
+  "buildDecision": "PATCH / CONNECT — not restart",
+  "androidSourceSha256": "7422939fc855fd0e6f967bdaf2e8edb2a4d84d6db6bddf8102ed57661fc1ec79",
+  "sourceCarrier": "source/android-source.b64.part00..part05",
+  "donorLineage": [
+    "JM Estate Librarian v0.4",
+    "JM File Grabber",
+    "FLL BenefitMerge",
+    "Current Best / Crown / Living Registers",
+    "BodyVault"
+  ],
+  "capabilities": [
+    "permissioned source manifests",
+    "inventory-only, candidate-exactness and exact-all scan modes",
+    "chunked streaming SHA-256",
+    "cross-location exact duplicate reconciliation",
+    "provable reclaim-byte calculation",
+    "observed-one-location and missing-hash queues",
+    "body/version family suggestions",
+    "master audit and receipt exports"
+  ],
+  "laws": [
+    "read-only source access",
+    "exact hash before duplicate claim",
+    "one-body Android navigation",
+    "recovery > storage",
+    "no silent file actions"
+  ]
+}

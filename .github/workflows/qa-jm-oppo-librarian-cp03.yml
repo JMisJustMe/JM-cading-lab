@@ -22,7 +22,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Use preinstalled runner Android command-line tools
+      - name: Bootstrap Android command-line tools on fresh runner
+        uses: android-actions/setup-android@v3
+        continue-on-error: true
+        # This action currently attempts obsolete `sdkmanager tools` after extracting cmdline-tools.
+        # Continue only to perform strict explicit sdkmanager checks below.
+      - name: Verify installed Android command-line tools
         shell: bash
         run: |
           set -euo pipefail

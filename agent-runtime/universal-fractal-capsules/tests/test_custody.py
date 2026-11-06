@@ -15,6 +15,17 @@ class CustodyTest(unittest.TestCase):
  def test_tampered_receipt_fails_without_copy(self):
   r=json.loads(self.receipt.read_text());r['encrypted_archive_sha256']='a'*64;self.receipt.write_text(json.dumps(r));out=run(self.inbox,self.dest)
   self.assertFalse(out['success']);self.assertEqual(list(self.dest.iterdir()),[])
+ def test_browser_sidecar_name_supported(self):
+  alternative=self.archive.with_suffix('.receipt.json')
+  self.receipt.rename(alternative)
+  out=run(self.inbox,self.dest)
+  self.assertTrue(out['success'])
+  self.assertEqual(out['copied_or_checked'],1)
+ def test_ambiguous_sidecar_holds(self):
+  self.archive.with_suffix('.receipt.json').write_bytes(self.receipt.read_bytes())
+  out=run(self.inbox,self.dest)
+  self.assertFalse(out['success'])
+  self.assertEqual(out['failed'],1)
  def test_missing_cloud_fails_closed(self):
   self.dest.rmdir()
   with self.assertRaises(RuntimeError):run(self.inbox,self.dest)

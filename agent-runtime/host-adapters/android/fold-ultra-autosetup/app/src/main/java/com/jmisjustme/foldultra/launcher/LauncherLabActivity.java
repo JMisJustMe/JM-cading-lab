@@ -308,11 +308,26 @@ public final class LauncherLabActivity extends Activity {
     button("Prepare GroundZeroJM handoff text",()->shareTemplate("GROUNDZEROJM"));
     label("EXISTING DONOR / JM PHONE ↔ LAPTOP v0.5",15,INK);
     label("Recorded v0.2 owner-device contact and v0.5 software QA. "
-      +"This Home Lab has NOT verified a current v0.5 live host, "
-      +"paired OPPO, or native Android transport.",13,SOFT);
+      +"The separate v0.5.1 host passed 7/7 read-only GET checks on GroundZeroJM. "
+      +"This app has not paired devices or authenticated any transport.",13,SOFT);
+    button("Check existing v0.5.1 host readiness",()->openExistingHost("/ready"));
+    button("Open existing Phone ↔ Laptop control",()->openExistingHost("/profiles/phone-laptop/control"));
     button("Read original Phone ↔ Laptop proof record",()->openDonorRecord());
     label("Actual pairing needs explicit approval on both devices, an authenticated transport,"
       +" revocation and replay-safe receipts. A shared text request proves none of those.",13,SOFT);
+  }
+
+  private void openExistingHost(String route) {
+    // Explicit owner tap opens the separately preserved hosted donor in a browser.
+    // No credentials, pairing, background probing or server mutation from Home Lab.
+    if(!"/ready".equals(route) && !"/profiles/phone-laptop/control".equals(route))
+      throw new IllegalArgumentException("Unapproved host route");
+    final String originalHost="https://jm-cloud-contact-server-v05.onrender.com";
+    try {
+      startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(originalHost+route)));
+    } catch(RuntimeException e) {
+      Toast.makeText(this,"HOLD · original host door unavailable",Toast.LENGTH_SHORT).show();
+    }
   }
 
   private void openDonorRecord() {

@@ -167,3 +167,35 @@ jobs:
           name: JM_WORKROOM_CP05_ANDROID_PROOF
           path: emulator-proof/
           retention-days: 14
+
+  home-lab-android:
+    name: CP01 native Home Lab owner-tap / layout QA — generic Android only
+    needs: native-carrier
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_CARRIER
+          path: emulator-input
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Real Home Lab taps on disposable Android (not owner Fold)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: default
+          arch: x86_64
+          profile: pixel_6
+          emulator-boot-timeout: 700
+          script: python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_home_lab.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: JM_HOME_LAB_CP01_NATIVE_EMULATOR_EVIDENCE
+          path: emulator-proof/
+          retention-days: 14

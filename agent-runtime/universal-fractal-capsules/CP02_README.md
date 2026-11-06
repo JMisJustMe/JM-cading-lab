@@ -51,3 +51,7 @@ Python sidecar: `your.jmufc.receipt.json`. Browser sidecar: `your.receipt.json`.
 ## Scheduling
 
 A local Windows Task Scheduler job can run the custody runner periodically against a **dedicated opt-in outbox** and the already-mounted Drive/OneDrive folders. Scheduling does not imply cloud upload is complete. Always verify independently through the provider if cloud custody is needed. Do not monitor arbitrary Downloads or automatically delete an original from the outbox.
+
+## Installable Android/desktop browser carrier
+
+The existing `web/index.html` now has a same-origin PWA manifest, 192px/512px local icons and `sw.js` for **static shell only**. On HTTPS or localhost, the browser may offer *Install app* or *Add to home screen*. After its first successful cache, the UI can open without the server, but actual encrypted archives and passwords are never cached by the service worker. Device-download and browser share still depend on the target's permission and implementation. The service worker cannot read ChatGPT/Gemini provider transcripts or silently extract private data. Browser compatibility and real Fold8 touch/restore require separate device proof.

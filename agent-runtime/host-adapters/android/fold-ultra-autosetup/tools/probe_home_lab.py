@@ -118,12 +118,46 @@ def main():
     tap("Use this profile","cp01_restore_fold_profile")
     has("Selected LOCAL profile · Fold8 Ultra","cp01_fold_profile_restored")
     assert pref_values()==before,"Role choices changed original JM sessions"
+    # A real, reversible menu edit. Original JM Workroom and ROOT are untouched.
+    tap("LAYOUT","cp02_menu_editor")
+    tap("Move DEVICES up","cp02_reorder_device_tile")
+    xml=adb("exec-out","run-as",PKG,"cat",
+        "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
+    keys={n.get("name"):n.text for n in ET.fromstring(xml)}
+    assert keys.get("menu.tiles.FOLD8")=="ROOT,WORKROOM,DEVICES,DRAWER,LAYOUT,BACK",keys
+    tap("Hide WORKROOM","cp02_hide_only_menu_tile")
+    tap("HOME","cp02_preview_hidden_menu")
+    nodes=dump("cp02_hidden_menu_real_ui")
+    assert not any(n.get("text")=="WORKROOM" and
+                   n.get("class")=="android.widget.Button" for n in nodes)
+    has("JM ROOT","cp02_original_root_still_visible")
+    tap("LAYOUT","cp02_restore_hidden_menu")
+    tap("Show WORKROOM","cp02_show_tile_again")
+    tap("Restore default JM tiles","cp02_restore_default_order")
+    tap("HOME","cp02_original_order_restored")
+    has("WORKROOM","cp02_workroom_tile_visible_again")
+    # Different owner-selected profile = separate layout keys on the same emulator.
+    tap("DEVICES","cp02_switch_to_oppo_for_layout")
+    tap("Use OPPO profile","cp02_oppo_role_button")
+    tap("Use this profile","cp02_oppo_role_approved")
+    tap("LAYOUT","cp02_oppo_layout_workshop")
+    tap("COMPACT / 2 columns","cp02_oppo_compact_independent")
+    has("2 columns","cp02_oppo_compact_on_wide_screen")
+    capture("CP02_OPPO_PROFILE_COMPACT")
+    tap("DEVICES","cp02_switch_back_fold")
+    tap("Use Fold8 profile","cp02_fold_role_button")
+    tap("Use this profile","cp02_fold_role_approved")
+    tap("HOME","cp02_fold_home_separate")
+    has("4 columns","cp02_fold_auto_restored")
+    assert pref_values()==before,"Menu editor changed protected original JM state"
     receipt={
-      "status":"PASS","scope":"generic Android emulator CP01 real native taps",
+      "status":"PASS","scope":"generic Android emulator CP01+CP02 real native taps",
       "inherited_disposable_ready_fixture":True,
       "owner_installed_app":False,"real_phone":False,"remote_peer_paired":False,
       "root_entry":True,"app_drawer":True,"search_input":True,
       "oppo_independent_profile":True,"fold_profile_restored":True,
+      "menu_reorder_and_restore":True,"menu_hide_show":True,
+      "independent_oppo_layout":True,"protected_root_retained":True,
       "oppo_not_contacted":True,"owner_handoff_cancellation":True,
       "layout_switch":True,"cold_preference":True,"compact_and_expanded":True,
       "original_state_unchanged":True,"android_default_home":"NOT_CHANGED"

@@ -199,3 +199,58 @@ jobs:
           name: JM_HOME_LAB_CP01_NATIVE_EMULATOR_EVIDENCE
           path: emulator-proof/
           retention-days: 14
+
+  homeqa-isolated-carrier:
+    name: Isolated Home Lab QA identity and signer audit
+    needs: native-carrier
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android API 36
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+      - name: Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Compile isolated sidecar and verify package boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          R=agent-runtime/host-adapters/android/fold-ultra-autosetup
+          (cd "$R" && gradle --no-daemon :app:assembleHomeqa)
+          APK="$R/app/build/outputs/apk/homeqa/app-homeqa.apk"
+          mkdir -p /tmp/jm-homeqa
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > /tmp/jm-homeqa/BADGING.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump xmltree "$APK" AndroidManifest.xml > /tmp/jm-homeqa/MERGED_MANIFEST.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" > /tmp/jm-homeqa/PERMISSIONS.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-homeqa/SIGNATURE.txt
+          unzip -t "$APK" > /tmp/jm-homeqa/ZIP_INTEGRITY.txt
+          grep -Fq "package: name='com.jmisjustme.foldultra.homeqa'" /tmp/jm-homeqa/BADGING.txt
+          grep -Fq "application-label:'JM Home Lab QA'" /tmp/jm-homeqa/BADGING.txt
+          grep -Fq "com.jmisjustme.foldultra.MainActivity" /tmp/jm-homeqa/MERGED_MANIFEST.txt
+          grep -Fq "android.intent.category.LAUNCHER" /tmp/jm-homeqa/MERGED_MANIFEST.txt
+          if grep -E 'android.intent.action.SEND|jmfoldultra|android.intent.category.HOME' /tmp/jm-homeqa/MERGED_MANIFEST.txt; then
+            echo 'Original-intent collision: QA package held'
+            exit 1
+          fi
+          if grep -E 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-homeqa/PERMISSIONS.txt; then
+            echo 'QA package unexpectedly requests permissions'
+            exit 1
+          fi
+          cp "$APK" /tmp/jm-homeqa/JM_HOME_LAB_CP03_ISOLATED_QA.apk
+          sha256sum /tmp/jm-homeqa/*.apk > /tmp/jm-homeqa/SHA256.txt
+          printf 'Isolated QA package only; no original update, phone installation or Home role performed.\n' > /tmp/jm-homeqa/RECEIPT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_HOME_LAB_CP03_ISOLATED_QA_CARRIER
+          path: /tmp/jm-homeqa/
+          if-no-files-found: error
+          retention-days: 14

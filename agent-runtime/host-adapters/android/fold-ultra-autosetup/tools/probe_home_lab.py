@@ -104,11 +104,26 @@ def main():
     has("4 columns","cp01_auto_expanded")
     capture("CP01_HOME_AUTO_EXPANDED")
     assert pref_values()==before,"Home Lab mutated original JM app state"
+    # The two Android handsets keep independent local profiles, even offline.
+    tap("DEVICES","cp01_wide_devices")
+    tap("Use OPPO profile","cp01_choose_oppo_profile")
+    has("Use OPPO layout profile?","cp01_role_confirmation")
+    tap("Use this profile","cp01_approve_local_role")
+    has("Selected LOCAL profile · OPPO","cp01_oppo_local_profile")
+    has("Fold8 Ultra · NOT CONTACTED","cp01_fold_peer_unpaired")
+    tap("Prepare Fold8 Ultra handoff text","cp01_oppo_to_fold_request")
+    has("Share a request-only template?","cp01_oppo_to_fold_is_request_only")
+    tap("Cancel","cp01_cancel_second_device_share")
+    tap("Use Fold8 profile","cp01_restore_fold_profile_choice")
+    tap("Use this profile","cp01_restore_fold_profile")
+    has("Selected LOCAL profile · Fold8 Ultra","cp01_fold_profile_restored")
+    assert pref_values()==before,"Role choices changed original JM sessions"
     receipt={
       "status":"PASS","scope":"generic Android emulator CP01 real native taps",
       "inherited_disposable_ready_fixture":True,
       "owner_installed_app":False,"real_phone":False,"remote_peer_paired":False,
       "root_entry":True,"app_drawer":True,"search_input":True,
+      "oppo_independent_profile":True,"fold_profile_restored":True,
       "oppo_not_contacted":True,"owner_handoff_cancellation":True,
       "layout_switch":True,"cold_preference":True,"compact_and_expanded":True,
       "original_state_unchanged":True,"android_default_home":"NOT_CHANGED"

@@ -1,0 +1,33 @@
+name: JM Work Mode CP03 - isolated tests
+
+on:
+  push:
+    branches:
+      - jm/manual-work-mode-cp01-20261106
+    paths:
+      - agent-runtime/host-adapters/android/fold-ultra-autosetup/**
+      - .github/workflows/jm-work-mode-cp03.yml
+
+permissions:
+  contents: read
+
+jobs:
+  local-controller-contract:
+    name: "CP03 source + loopback + queue fixture (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Fetch original repository working tree
+        uses: actions/checkout@v4
+      - name: Set Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate local-only controller and new launcher
+        run: python -m unittest discover -s agent-runtime/host-adapters/android/fold-ultra-autosetup/tools -p "test_jm_work_mode*.py" -v
+      - name: Validate existing original execution contract
+        run: python scripts/jm_build_execution.py --self-test

@@ -124,12 +124,17 @@ def navigate_once_with_verified_room(button, expected, previous, label):
             RECEIPTS.append({"check":label+"_confirmed","result":"PASS",
                              "room":expected,"touches":attempt})
             return
-        original=bool(match(current,previous))
-        same_button=any(button.lower() in n.get("text","").lower() and
-                        n.get("class")=="android.widget.Button" for n in current)
-        if not original or not same_button:
+        # When the session is scrolled down to the Return Point button, the
+        # session heading is naturally off-screen. The real session body
+        # carries its own distinctive anchors; accept either visible proof.
+        original=(bool(match(current,previous))
+                  or bool(match(current,"PROJECT SESSION / LIVE DRAFT"))
+                  or bool(match(current,"TWO SCREENS / ONE LOCAL STATE")))
+        if not original:
             capture("HOLD_UNEXPECTED_ROOM_"+label+"_"+str(attempt))
-            raise AssertionError("HOLD: original room/button not safely present for "+label)
+            raise AssertionError("HOLD: original JM session not visible for "+label)
+        # tap() performs its own native Button, exact-label, safe-bounds
+        # and scroll checks. No fixed coordinate or unguarded tap is allowed.
         tap(button,label+("_bounded_retry" if attempt else "_first_touch"))
         updated=dump("nav_after_"+label+"_"+str(attempt))
         if match(updated,expected):

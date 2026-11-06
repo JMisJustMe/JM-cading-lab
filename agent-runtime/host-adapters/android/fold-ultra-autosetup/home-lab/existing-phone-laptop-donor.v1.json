@@ -67,5 +67,15 @@
     "lanExposure": "NOT_ENABLED",
     "status": "RECOVERED_AND_BOUNDED_LOOPBACK_CONTACT_ONLY",
     "nextGate": "Owner-approved secure transport selection with authenticated peer connection and revocation"
+  },
+  "externalHostedV051Contact": {
+    "verified": "GET_7_7",
+    "version": "0.5.1-hosted",
+    "origin": "GroundZeroJM",
+    "readinessUrl": "https://jm-cloud-contact-server-v05.onrender.com/ready",
+    "controlUrl": "https://jm-cloud-contact-server-v05.onrender.com/profiles/phone-laptop/control",
+    "paired": false,
+    "nativeBridge": false,
+    "verifiedDate": "2026-11-06"
   }
 }

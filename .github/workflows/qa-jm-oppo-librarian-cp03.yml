@@ -22,8 +22,13 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Prepare Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Use preinstalled runner Android command-line tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ANDROID_HOME=${ANDROID_HOME}"
+          command -v sdkmanager
+          sdkmanager --version
       - name: Install platform and build tools
         run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
       - name: Prepare Gradle 8.9

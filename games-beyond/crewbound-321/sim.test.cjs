@@ -127,3 +127,59 @@ test("the two squads have different complete identities, not mirror duplicates",
  assert.deepEqual(g.team("enemy").map(x=>x.name),["Static","Latch","Ember","Wrought","Vivid","Dasher"]);
  assert.equal(new Set(g.units.map(x=>x.key)).size,12);
 });
+
+test("CP04 independent A/B actions and destinations produce two committed player orders",()=>{
+ const g=make(),two=g.floor("player").slice(0,2);
+ for(const u of two)assert.equal(g.choose(u.id),true);
+ assert.equal(g.setPairAction(two[0].id,"ATTACK"),true);
+ assert.equal(g.setPairTarget(two[0].id,205,265),true);
+ assert.equal(g.canCommit(),false,"A alone cannot commit");
+ assert.equal(g.setPairAction(two[1].id,"GUARD"),true);
+ assert.equal(g.setPairTarget(two[1].id,430,560),true);
+ assert.equal(g.canCommit(),true);
+ assert.equal(g.commit(),true);
+ const plans=g.log.find(r=>r.type==="SIMULTANEOUS_PAIR_COMMIT").playerPlans;
+ assert.deepEqual(plans.map(x=>x.action),["ATTACK","GUARD"]);
+ assert.deepEqual(plans.map(x=>x.target),[{x:205,y:265},{x:430,y:560}]);
+ assert.equal(g.turn,1);
+ assert.equal(g.selected.length,0);assert.equal(Object.keys(g.pairPlans).length,0);
+});
+
+test("CP04 linked controls retain original two-fighter default behaviour",()=>{
+ const g=make(),two=g.floor("player").slice(0,2);
+ two.forEach(u=>g.choose(u.id));
+ g.setAction("MOVE");g.setTarget(320,420);
+ assert.equal(g.canCommit(),true);
+ assert.equal(g.commit(),true);
+ const plans=g.log.find(x=>x.type==="SIMULTANEOUS_PAIR_COMMIT").playerPlans;
+ assert.deepEqual(plans.map(x=>x.action),["MOVE","MOVE"]);
+ assert.equal(plans[0].target.x,285);assert.equal(plans[1].target.x,355);
+});
+
+test("CP04 deselect or replace clears stale individual plans and rejects foreign IDs",()=>{
+ const g=make(),three=g.floor("player");
+ g.choose(three[0].id);g.choose(three[1].id);
+ assert.equal(g.setEditing(three[0].id),true);
+ assert.equal(g.setPairTarget(three[0].id,160,280),true);
+ assert.equal(g.setPairAction("enemy-0-SKIP","GUARD"),false);
+ assert.equal(g.setPairAction(three[0].id,"MISTAKE"),false);
+ g.choose(three[2].id);
+ assert.equal(g.selected.includes(three[0].id),false);
+ assert.equal(g.pairPlans[three[0].id],undefined);
+ assert.equal(g.editing,null);
+ assert.equal(g.canCommit(),false);
+});
+
+test("CP04 linked retarget explicitly clears individual-target overrides",()=>{
+ const g=make(),two=g.floor("player").slice(0,2);
+ two.forEach(u=>g.choose(u.id));
+ g.setPairTarget(two[0].id,135,330);g.setPairTarget(two[1].id,550,360);
+ assert.equal(g.canCommit(),true);
+ g.setTarget(350,410);
+ assert.equal(g.pairPlans[two[0].id].target,undefined);
+ assert.equal(g.pairPlans[two[1].id].target,undefined);
+ g.setPairAction(two[0].id,"ATTACK");g.setPairAction(two[1].id,"GUARD");
+ g.setAction("COMBO");
+ assert.equal(g.pairPlans[two[0].id].action,undefined);
+ assert.equal(g.pairPlans[two[1].id].action,undefined);
+});

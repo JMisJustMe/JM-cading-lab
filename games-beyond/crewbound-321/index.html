@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
-<title>CREWBOUND 3+2+1 — Living Orders CP01</title>
+<title>CREWBOUND 3+2+1 — Two Independent Orders CP04</title>
 <style>
 :root{color-scheme:dark;--bg:#06101c;--panel:#0d2133;--line:#355369;--text:#ecfbff;--muted:#b0c6d4;--aqua:#65ecff;--gold:#ffe28c;--pink:#ff82ab}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d5160,var(--bg) 55%);color:var(--text);font-family:system-ui,Arial,sans-serif}
@@ -24,6 +24,10 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:
 .unit{background:#10253a;border:1px solid var(--line);border-radius:11px;min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;padding:7px 3px}
 .unit.active{background:#102e3a;border-color:var(--aqua)}.unit.selected{outline:3px solid var(--gold);outline-offset:-3px}.unit.undone{opacity:.46}.unit .portrait{width:100%;height:70px;max-width:84px;object-fit:contain;filter:drop-shadow(0 0 8px var(--glow));flex-shrink:0}.unit b{font-size:.77rem}.unit small{font-size:.58rem;white-space:nowrap;color:#d2e0ed}.unit .hp{height:4px;width:82%;border-radius:8px;background:#33475c;overflow:hidden}.unit .hp i{display:block;height:100%;background:var(--glow);width:var(--hp)}
 .controls{border:1px solid var(--line);background:#0a1d2c;border-radius:16px;padding:10px;margin-top:9px}
+.pairPlan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:7px 0 10px}
+.pairPlan button{min-height:48px;min-width:0;border:1px solid var(--line);background:#152d42;border-radius:9px;font-size:.67rem;font-weight:800;padding:6px 3px;line-height:1.3}
+.pairPlan button[aria-pressed=true]{background:#344b39;border-color:var(--gold);color:#fff0bb}
+.pairPlan button:disabled{opacity:.48}.pairHint{font-size:.63rem;color:var(--muted);line-height:1.5;margin:4px 0 10px}
 .modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 .modes button{padding:9px 1px;border:1px solid var(--line);border-radius:9px;background:#183043;font-size:.64rem;font-weight:850}
 .modes button[aria-pressed=true]{border-color:var(--gold);background:#544122;color:#fff3b4}
@@ -61,7 +65,13 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <div class="rack" id="roster"></div>
 </section>
 <section class="controls" aria-label="Two-character orders">
-  <div class="sectionTitle" style="margin-top:0">PLAN ACTION <span>RIVAL PLANS TOO</span></div>
+  <div class="sectionTitle" style="margin-top:0">PLAN TWO ACTIONS <span>RIVAL PLANS TOO</span></div>
+  <div class="pairPlan" role="group" aria-label="Plan both fighters together or give each fighter a separate order">
+    <button id="editBoth" aria-pressed="true">BOTH · LINKED</button>
+    <button id="editFirst" disabled aria-pressed="false">A · PICK</button>
+    <button id="editSecond" disabled aria-pressed="false">B · PICK</button>
+  </div>
+  <p class="pairHint">BOTH = shared move; A / B = <strong>different actions and destinations</strong>.</p>
   <div class="modes" id="modes">
     <button data-action="COMBO" aria-pressed="true">COMBO</button>
     <button data-action="ATTACK" aria-pressed="false">ATTACK</button>
@@ -72,7 +82,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <div class="actions"><button id="dice" title="Optional risk modifier, never required">🎲 ROLL</button><button class="primary" id="commit" disabled>COMMIT PAIR</button><button id="pause">Ⅱ PAUSE</button></div>
 </section>
 <section class="receipts" aria-live="polite"><strong>CONTACT / ROUTE TRACE</strong><p id="log">New combat pilots. Choose two fighters.</p></section>
-<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Tap two character cards, choose COMBO, ATTACK, GUARD, MOVE or DEPLOY, then tap or flick a destination on the field. Press COMMIT PAIR. Two rival orders resolve at the same time. All floor fighters continue moving and defending even between your orders. Yard characters can shield and assist; the flex character can deploy as a fourth floor fighter. Dice is optional.</p></details></div>
+<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending even between your orders. Yard characters can shield and assist; the flex character can deploy as a fourth floor fighter. Dice is optional.</p></details></div>
 </div>
 </div>
 <p class="footer">A separate CP02 work-in-progress, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
@@ -96,8 +106,11 @@ canvas.addEventListener("pointerup",ev=>{
  if(delta<16){
   const u=game.floor("player").find(u=>Math.hypot(u.x-p.x,u.y-p.y)<24);
   if(u){game.choose(u.id);updateUI();startPointer=null;return}
-  game.setTarget(p.x,p.y);
- } else game.setTarget(startPointer.x+(p.x-startPointer.x)*1.8,startPointer.y+(p.y-startPointer.y)*1.8);
+  if(game.editing)game.setPairTarget(game.editing,p.x,p.y);else game.setTarget(p.x,p.y);
+ } else {
+   const x=startPointer.x+(p.x-startPointer.x)*1.8,y=startPointer.y+(p.y-startPointer.y)*1.8;
+   if(game.editing)game.setPairTarget(game.editing,x,y);else game.setTarget(x,y);
+  }
  startPointer=null;updateUI();
 });
 function makeRoster(){
@@ -133,18 +146,34 @@ function updateUI(){
  $("pair").textContent=game.selected.length+" / 2 READY";
  $("clock").textContent=String(Math.floor(game.time/60)).padStart(2,"0")+":"+String(Math.floor(game.time%60)).padStart(2,"0");
  $("formation").textContent="FLOOR "+game.floor("player").length+" · YARD "+game.yard("player").length+" · FLEX "+(game.flex("player")?1:0);
- $("commit").disabled=game.ended||game.resolve>0||game.selected.length!==2||!game.target;
+ $("commit").disabled=!game.canCommit();
+  for(const [id,fighterId,label] of [["editFirst",game.selected[0],"A"],["editSecond",game.selected[1],"B"]]){
+   const b=$(id),u=game.find(fighterId),plan=game.pairPlans[fighterId]||{};
+   b.disabled=!u||game.resolve>0||game.ended;
+   b.textContent=u?label+" · "+u.name+(plan.action?" / "+plan.action:"")+(plan.target?" ✓":""):label+" · PICK";
+   b.setAttribute("aria-pressed",String(!!u&&game.editing===fighterId));
+  }
+  $("editBoth").setAttribute("aria-pressed",String(game.editing===null));
+  const shown=game.editing?(game.pairPlans[game.editing]?.action||game.action):game.action;
+  for(const b of $("modes").querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.action===shown));
  $("dice").disabled=game.ended||game.resolve>0;
  $("dice").textContent=game.die?"🎲 "+game.die:"🎲 ROLL";
- $("fieldHelp").textContent=game.ended?"Battle finished · rematch to continue":game.resolve>0?"Both crews execute their plans now":game.target?"Target set · commit your two orders":!started?"Clock starts on your first COMMIT PAIR · choose two fighters and a target":"Tap two fighters, then tap or flick a target";
+ $("fieldHelp").textContent=game.ended?"Battle finished · rematch to continue":
+   game.resolve>0?"Both crews execute their plans now":
+   game.editing?"EDIT "+(game.find(game.editing)?.name||"fighter")+" · choose action and target":
+   game.canCommit()?"Both orders ready · COMMIT PAIR":
+   !started?"Clock starts on first COMMIT · select two fighters and target(s)":
+   "Tap A/B for individual orders, or BOTH for a linked plan";
  const rec=game.log.slice(-2).reverse().map(x=>x.type+" · "+(x.body||x.from||x.player?.join(" + ")||"")).join(" | ");
  $("log").textContent=rec||"Planning continues while the rival moves.";
  makeRoster();
 }
+$("editBoth").onclick=()=>{game.setEditing(null);updateUI()};
+$("editFirst").onclick=()=>{game.setEditing(game.selected[0]);updateUI()};
+$("editSecond").onclick=()=>{game.setEditing(game.selected[1]);updateUI()};
 $("modes").addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");if(!b)return;
- game.setAction(b.dataset.action);
- for(const button of $("modes").querySelectorAll("button"))button.setAttribute("aria-pressed",button===b?"true":"false");
+ if(game.editing)game.setPairAction(game.editing,b.dataset.action);else game.setAction(b.dataset.action);
  updateUI();
 });
 $("dice").onclick=()=>{game.roll();updateUI()};
@@ -176,6 +205,13 @@ function paint(){
  ctx.fillStyle="#40dce622";ctx.beginPath();ctx.arc(340,420,45,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#d8f8ffb8";ctx.font="900 17px system-ui";ctx.textAlign="center";ctx.fillText("RIVAL TERRITORY",340,74);ctx.fillText("YOUR TERRITORY",340,797);
  if(game.target){ctx.strokeStyle="#ffe88f";ctx.setLineDash([5,5]);ctx.beginPath();ctx.arc(game.target.x,game.target.y,26,0,Math.PI*2);ctx.stroke();ctx.setLineDash([])}
+ for(const [i,id] of game.selected.entries()){
+  const t=game.pairPlans[id]?.target;if(!t)continue;
+  ctx.save();ctx.strokeStyle=i===0?"#81ecff":"#ffbd81";ctx.lineWidth=3;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.arc(t.x,t.y,30,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=ctx.strokeStyle;ctx.font="900 18px system-ui";ctx.textAlign="center";ctx.fillText(i===0?"A":"B",t.x,t.y-35);
+  ctx.restore();
+ }
  for(const u of game.units.filter(u=>u.alive&&u.role==="floor")){
   if(u.order){ctx.strokeStyle=u.team==="player"?"#77f6ffaf":"#ff82b2a0";ctx.setLineDash([7,7]);ctx.beginPath();ctx.moveTo(u.x,u.y);ctx.lineTo(u.order.target.x,u.order.target.y);ctx.stroke();ctx.setLineDash([])}
   drawFighter(u);

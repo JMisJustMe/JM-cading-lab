@@ -219,11 +219,37 @@ public final class LauncherLabActivity extends Activity {
     }
   }
 
+  private String selectedRole() {
+    String role=prefs.getString("device.role","FOLD8");
+    return "OPPO".equals(role) ? "OPPO" : "FOLD8";
+  }
+
+  private void chooseRole(String role) {
+    if(!"OPPO".equals(role) && !"FOLD8".equals(role))
+      throw new IllegalArgumentException("Unknown local device profile");
+    new AlertDialog.Builder(this)
+      .setTitle("Use "+JMHomeLayout.labelFor(role)+" layout profile?")
+      .setMessage("This sets a local HOME LAB preference. It does not verify the"
+        +" device identity, pair hardware, transfer data, or change Android HOME.")
+      .setNegativeButton("Keep current",(d,w)->{})
+      .setPositiveButton("Use this profile",(d,w)->{
+        prefs.edit().putString("device.role",role).apply();
+        showDevices();
+      }).show();
+  }
+
   private void showDevices() {
-    screen("Device contact","Roles are declared, not paired. No scanning, remote execution or silent transfers.");
-    label("Fold8 Ultra · local launcher preview only (not paired)",14,INK);
-    label("OPPO · NOT CONTACTED",14,SOFT);
-    button("Prepare OPPO handoff text",()->shareTemplate("OPPO"));
+    String local=selectedRole();
+    String other="FOLD8".equals(local)?"OPPO":"FOLD8";
+    screen("Device contact","Roles are local profiles, not paired device identities."
+      +" No scanning, remote execution or silent transfers.");
+    label("Selected LOCAL profile · "+JMHomeLayout.labelFor(local)
+      +" (owner-selected, hardware not verified)",14,INK);
+    button("Use Fold8 profile",()->chooseRole("FOLD8"));
+    button("Use OPPO profile",()->chooseRole("OPPO"));
+    label(JMHomeLayout.labelFor(other)+" · NOT CONTACTED",14,SOFT);
+    button("Prepare "+JMHomeLayout.labelFor(other)+" handoff text",
+      ()->shareTemplate(other));
     label("GroundZeroJM · NOT CONTACTED (remote access is separate)",14,SOFT);
     button("Prepare GroundZeroJM handoff text",()->shareTemplate("GROUNDZEROJM"));
     label("EXISTING DONOR / JM PHONE ↔ LAPTOP v0.5",15,INK);
@@ -246,7 +272,7 @@ public final class LauncherLabActivity extends Activity {
   }
 
   private void shareTemplate(String target) {
-    final String payload=JMDeviceLinkContract.makeRequest("FOLD8",target,"OPEN_JM_ROOT",true);
+    final String payload=JMDeviceLinkContract.makeRequest(selectedRole(),target,"OPEN_JM_ROOT",true);
     new AlertDialog.Builder(this)
       .setTitle("Share a request-only template?")
       .setMessage("No private JM notes or pairing keys are included. Sharing does not connect"

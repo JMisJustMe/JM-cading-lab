@@ -34,6 +34,39 @@ jobs:
         shell: bash
         working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
         run: gradle --no-daemon :app:assembleDebug
+      - name: Build and audit isolated Home Lab QA APK
+        shell: bash
+        working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :app:assembleHomeLabQa
+          APK=app/build/outputs/apk/homeLabQa/app-homeLabQa.apk
+          test -s "$APK"
+          mkdir -p /tmp/jm-home-lab-qa
+          TOOLS="$ANDROID_HOME/build-tools/36.0.0"
+          "$TOOLS/aapt" dump badging "$APK" > /tmp/jm-home-lab-qa/BADGING.txt
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-home-lab-qa/SIGNATURE.txt
+          "$TOOLS/aapt" dump xmltree "$APK" AndroidManifest.xml > /tmp/jm-home-lab-qa/MERGED_MANIFEST.txt
+          "$TOOLS/aapt" dump permissions "$APK" > /tmp/jm-home-lab-qa/PERMISSIONS.txt
+          grep -Fq "package: name='com.jmisjustme.foldultra.homelabqa'" /tmp/jm-home-lab-qa/BADGING.txt
+          grep -Fq "application-label:'JM Home Lab QA'" /tmp/jm-home-lab-qa/BADGING.txt
+          grep -Fq 'com.jmisjustme.foldultra.launcher.LauncherLabActivity' /tmp/jm-home-lab-qa/MERGED_MANIFEST.txt
+          if grep -Fq 'android.intent.category.HOME' /tmp/jm-home-lab-qa/MERGED_MANIFEST.txt; then
+            echo 'QA PREVIEW MUST NOT DECLARE ANDROID HOME ROLE'; exit 1
+          fi
+          if grep -Eq 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-home-lab-qa/PERMISSIONS.txt; then
+            echo 'QA PREVIEW MUST NOT ADD REQUESTED PERMISSIONS'; exit 1
+          fi
+          unzip -t "$APK" > /tmp/jm-home-lab-qa/ZIP_INTEGRITY.txt
+          cp "$APK" /tmp/jm-home-lab-qa/JM_HOME_LAB_QA_SIDE_BY_SIDE.apk
+          sha256sum /tmp/jm-home-lab-qa/JM_HOME_LAB_QA_SIDE_BY_SIDE.apk > /tmp/jm-home-lab-qa/SHA256.txt
+          printf 'Build + side-by-side package + app label + no HOME + no runtime permissions + signing + ZIP PASS. Physical devices NOT YET installed.\n' > /tmp/jm-home-lab-qa/RECEIPT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_HOME_LAB_QA_SIDE_BY_SIDE_CARRIER
+          path: /tmp/jm-home-lab-qa/
+          if-no-files-found: error
+          retention-days: 14
       - name: Audit signed Android carrier
         shell: bash
         run: |

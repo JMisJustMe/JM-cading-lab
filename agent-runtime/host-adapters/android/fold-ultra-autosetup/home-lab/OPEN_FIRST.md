@@ -30,3 +30,16 @@
 5. Only after acceptance: separate opt-in HOME activity and reversible Android default-Home selection. Never silently replace One UI.
 
 CP01 is **a real in-app foundation**, not proof of actual multi-device synchronisation.
+
+## CP01 continuation — recovered real device donor / independent handset profiles
+- Original unrelated donor recovered (not invented): `JM_ESTATE/PHONE_LAPTOP/v0.5/FLAZ_RECEIPT_v1.0.md`. Its historical record documents v0.2 real owner Phone↔Laptop CONNECT→PAIR→EXCHANGE→RECOVER→REVOKE→BLOCK and v0.5 27/27 software QA plus 10/10 final tests. This is inherited **historical evidence**, not current Home Lab networking proof.
+- An original-donor link is now available inside the native DEVICES room by deliberate owner tap.
+- Fold8 and OPPO use **independently owner-selected local profile preferences** within the existing JM Fold Ultra Android app. Selecting a profile is not an assertion of physical identity or connection.
+- A phone-specific request template now uses the chosen local profile to target the other phone or laptop. It still cannot execute remotely, authenticate, or sync. The actual recipient has no bound receiver yet.
+- The actual v0.5 hosted/server profile remains a separate gated source authority; no duplicate server, credentials, WebRTC engine, or pairing service is being created inside the launcher.
+- Device-specific acceptance (Fold8 installed current app, OPPO OS compatibility, laptop donor host) is explicitly untested until contacted.
+
+## CP01 runner evidence and live test boundaries
+- Earlier exact-branch native Android and 42 offline test methods passed.
+- First CP01 real Android emulator test failed at app-drawer contact. Inspecting failure screenshots and UI XML showed the HOME tile still visible; a false-positive label check was removed, with bounded real-native second tap and required search EditText proof.
+- The existing CI carries a separate CP01 generic Android emulator lane with actual UI taps, persistence, owner-cancelled Sharesheet, donor label and both local profiles. Pass is **not granted** until that exact source-head job completes and its receipt matches.

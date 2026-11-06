@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+"""JM Home Lab CP01: real native UI taps on disposable generic Android API35.
+
+Temporary ready-state fixture is ONLY for this isolated test; prelaunch
+onboarding has its own CI gate. Never a Fold8/OPPO/device-pairing claim.
+"""
+import json
+import time
+from pathlib import Path
+import xml.etree.ElementTree as ET
+from audit_ui_flow import adb, capture, dump, has, tap, pref_values
+
+PKG="com.jmisjustme.foldultra"
+MAIN=PKG+"/.MainActivity"
+OUT=Path("emulator-proof")
+
+def ready_fixture():
+    adb("shell","am","start","-W","-n",MAIN)
+    adb("shell","am","force-stop",PKG)
+    raw=adb("exec-out","run-as",PKG,"cat",
+            "shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml")
+    tree=ET.fromstring(raw)
+    for existing in list(tree):
+        if existing.get("name") in ("ready","nav.last"):tree.remove(existing)
+    ET.SubElement(tree,"boolean",{"name":"ready","value":"true"})
+    ET.SubElement(tree,"int",{"name":"nav.last","value":"0"})
+    path=OUT/"CP01_DISPOSABLE_READY_FIXTURE.xml"
+    path.write_bytes(ET.tostring(tree,encoding="utf-8",xml_declaration=True))
+    adb("push",str(path),"/data/local/tmp/jm-home-lab-ready.xml")
+    adb("shell","run-as",PKG,"cp","/data/local/tmp/jm-home-lab-ready.xml",
+        "shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml")
+    adb("shell","am","start","-W","-n",MAIN)
+    time.sleep(1.5)
+
+def open_lab():
+    tap("JM HOME LAB","cp01_original_root_entry")
+    has("Your JM home, your layout","cp01_real_native_home")
+
+def preference_mode():
+    xml=adb("exec-out","run-as",PKG,"cat",
+            "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
+    tree=ET.fromstring(xml)
+    return next((x.text for x in tree if x.get("name")=="layout.mode"),None)
+
+def main():
+    OUT.mkdir(exist_ok=True)
+    adb("install","emulator-input/JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_DEBUG.apk",timeout=90)
+    adb("shell","wm","size","720x1600")
+    adb("shell","wm","density","320")
+    ready_fixture()
+    before=pref_values()
+
+    open_lab()
+    has("2 columns","cp01_auto_compact")
+    capture("CP01_HOME_COMPACT")
+    tap("APP DRAWER","cp01_drawer_tile")
+    has("App drawer","cp01_app_drawer_render")
+    assert any(n.get("class")=="android.widget.EditText"
+               for n in dump("cp01_drawer_search_input")), "No actual app-search EditText"
+    tap("DEVICES","cp01_device_panel")
+    has("OPPO · NOT CONTACTED","cp01_oppo_not_contacted")
+    tap("Prepare OPPO handoff text","cp01_explicit_handoff_dialog")
+    has("Share a request-only template?","cp01_request_only_warning")
+    tap("Cancel","cp01_owner_cancels_request")
+    assert pref_values()==before,"Canceled handoff changed protected Fold state"
+
+    tap("LAYOUT","cp01_layout_panel")
+    tap("EXPANDED / 4 columns","cp01_select_expanded")
+    has("4 columns","cp01_user_selected_four_columns")
+    assert preference_mode()=="EXPANDED","Layout preference was not saved"
+    capture("CP01_HOME_EXPANDED_NARROW")
+    adb("shell","am","force-stop",PKG)
+    adb("shell","am","start","-W","-n",MAIN)
+    time.sleep(1)
+    open_lab()
+    has("4 columns","cp01_cold_layout_persistence")
+    tap("LAYOUT","cp01_auto_layout_button")
+    tap("AUTO / 2 compact","cp01_reset_auto")
+    assert preference_mode()=="AUTO"
+
+    adb("shell","wm","size","1400x1800")
+    adb("shell","wm","density","280")
+    adb("shell","am","force-stop",PKG)
+    adb("shell","am","start","-W","-n",MAIN)
+    time.sleep(1.5)
+    open_lab()
+    has("4 columns","cp01_auto_expanded")
+    capture("CP01_HOME_AUTO_EXPANDED")
+    assert pref_values()==before,"Home Lab mutated original JM app state"
+    receipt={
+      "status":"PASS","scope":"generic Android emulator CP01 real native taps",
+      "inherited_disposable_ready_fixture":True,
+      "owner_installed_app":False,"real_phone":False,"remote_peer_paired":False,
+      "root_entry":True,"app_drawer":True,"search_input":True,
+      "oppo_not_contacted":True,"owner_handoff_cancellation":True,
+      "layout_switch":True,"cold_preference":True,"compact_and_expanded":True,
+      "original_state_unchanged":True,"android_default_home":"NOT_CHANGED"
+    }
+    (OUT/"JM_HOME_LAB_CP01_EMULATOR_RECEIPT.json").write_text(
+        json.dumps(receipt,indent=2),encoding="utf-8")
+    print(json.dumps(receipt))
+
+if __name__=="__main__":
+    main()

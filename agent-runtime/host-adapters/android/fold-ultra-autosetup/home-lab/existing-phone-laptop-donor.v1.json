@@ -52,5 +52,20 @@
     "liveTransport": false,
     "hostPromoted": false
   },
-  "law": "CONTACT BEFORE CROWN · MESH ≠ MERGE · NO DING, NO CLAIM"
+  "law": "CONTACT BEFORE CROWN · MESH ≠ MERGE · NO DING, NO CLAIM",
+  "relatedIndependentExistingLocalContact": {
+    "name": "JM Device2Device CP03.5 — Trusted LAN Windows/Fold",
+    "originalSource": "GroundZeroJM: JM_DEVICE2DEVICE_CP03_5_TRUSTED_LAN_WINDOWS_FOLD/JM_D2D_LAN_EXTENSION_CP03_5.py",
+    "originalManifestSha256Checked": "8/8 original source package files and byte lengths",
+    "historicalSuite": "25/25 tested localhost (recorded 2026-10-21, original source preserved)",
+    "liveWindowsSession": "2026-11-06",
+    "liveWindowsLoopbackRuntime": "7/7 PASS on GroundZeroJM actual local HTTP server, no persistent state",
+    "separateFromPhoneLaptopV05": true,
+    "transport": "HTTP, unencrypted",
+    "phoneConnection": "NOT_CONNECTED",
+    "pairingAuthority": "NOT_ESTABLISHED",
+    "lanExposure": "NOT_ENABLED",
+    "status": "RECOVERED_AND_BOUNDED_LOOPBACK_CONTACT_ONLY",
+    "nextGate": "Owner-approved secure transport selection with authenticated peer connection and revocation"
+  }
 }

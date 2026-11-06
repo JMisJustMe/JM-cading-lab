@@ -56,6 +56,11 @@ def replace_function(text: str, name: str, replacement: str) -> str:
         start = text.find(marker)
     if start < 0:
         raise RuntimeError(f"Function {name} not found")
+    # The first match can begin after the original async keyword.
+    # Include it in the replacement span: otherwise "async async function"
+    # passes static receipt checks but fails JavaScript syntax validation.
+    if start >= 6 and text[start - 6:start] == "async ":
+        start -= 6
 
     brace = text.find("{", start)
     if brace < 0:
@@ -102,10 +107,27 @@ def file_state(path: Path) -> dict[str, Any]:
     }
 
 
+def settle_v3_observer(text: str) -> str:
+    text = text.replace(
+        "summary.textContent = `${grafts.size} healthy source-backed routes · ${EXPECTED_V1_QUARANTINED} v1 records quarantined`;",
+        "const summaryText = `${grafts.size} healthy source-backed routes · ${EXPECTED_V1_QUARANTINED} v1 records quarantined`;\n    if (summary.textContent !== summaryText) summary.textContent = summaryText;",
+    )
+    text = text.replace(
+        "note.textContent = 'Q1 preserves the damaged v1 ancestor in custody and executes only the proved 21-record v2 carrier plus five local memory records.';",
+        "const noteText = 'Q1 preserves the damaged v1 ancestor in custody and executes only the proved 21-record v2 carrier plus five local memory records.';\n    if (note.textContent !== noteText) note.textContent = noteText;",
+    )
+    text = text.replace(
+        "const observer = new MutationObserver(() => {\n    if (graftReady) mergeIntoRecords();\n  });",
+        "let recordsMerged = false;\n  const observer = new MutationObserver(() => {\n    if (!graftReady) return;\n    if (!recordsMerged) {\n      recordsMerged = mergeIntoRecords();\n      return;\n    }\n    markRows();\n    appendSelectedGraft();\n  });",
+    )
+    return text.replace("graftReady = true;\n      mergeIntoRecords();", "graftReady = true;\n      recordsMerged = mergeIntoRecords();")
+
+
 def patch_v3() -> None:
     path = V3
     text = path.read_text(encoding="utf-8")
     if "JM_THEORY_RUNTIME_QUARANTINE_Q1_V3" in text:
+        path.write_text(settle_v3_observer(text), encoding="utf-8")
         return
 
     text = replace_once(
@@ -187,7 +209,7 @@ def patch_v3() -> None:
       window.dispatchEvent(new CustomEvent('jm:graft-v3-ready', { detail: window.JMTheorySourceGraftV3 }));
     })"""
     text = replace_once(text, old_then, new_then, "v3 ready object")
-    path.write_text(text, encoding="utf-8")
+    path.write_text(settle_v3_observer(text), encoding="utf-8")
 
 
 def patch_v4() -> None:

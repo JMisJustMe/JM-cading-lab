@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- QA-only overlay: original package, launcher intent filters, deep links,
+         share receivers and app data remain entirely untouched. -->
+    <application android:label="JM Home Lab QA" tools:replace="android:label">
+        <!-- Keep the original activity internal to the separate QA package. -->
+        <activity android:name="com.jmisjustme.foldultra.MainActivity"
+            android:exported="false" tools:node="replace" />
+        <!-- A separately installed preview has its own visible app icon;
+             it can NEVER claim Android HOME or the original JM deep links. -->
+        <activity android:name="com.jmisjustme.foldultra.launcher.LauncherLabActivity"
+            android:exported="true" tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

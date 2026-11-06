@@ -1,0 +1,56 @@
+{
+  "schema": "JM.HomeLab.ExistingDonorContact/0.1",
+  "date": "2026-11-06",
+  "sourceAuthority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "body": "JM PHONE ↔ LAPTOP",
+    "version": "v0.5.0",
+    "recordPath": "JM_ESTATE/PHONE_LAPTOP/v0.5/FLAZ_RECEIPT_v1.0.md",
+    "estateAnchor": "JM_ESTATE/PHONE_LAPTOP/v0.5/",
+    "kind": "EXISTING_INDEPENDENT_SOURCE_NOT_MERGED"
+  },
+  "evidenceBounds": {
+    "recordedPhysicalV02": [
+      "CONNECT",
+      "PAIR",
+      "EXCHANGE",
+      "RECOVER",
+      "REVOKE",
+      "BLOCK"
+    ],
+    "historicalV05SoftwareQA": "27/27 (RECORDED)",
+    "historicalV05FinalGates": "10/10 (RECORDED)",
+    "currentV05LiveHost": "NOT_VERIFIED_FOR_HOME_LAB",
+    "currentV05PhysicalOwnerUse": "NOT_VERIFIED_FOR_HOME_LAB",
+    "currentNativeLauncherIntegration": "NOT_CONNECTED"
+  },
+  "roleCandidates": [
+    {
+      "source": "FOLD8",
+      "target": "GROUNDZEROJM",
+      "interface": "JM PHONE↔LAPTOP donor profile",
+      "state": "CONTRACT_SEAT_ONLY"
+    },
+    {
+      "source": "OPPO",
+      "target": "GROUNDZEROJM",
+      "interface": "JM PHONE↔LAPTOP donor profile",
+      "state": "CONTRACT_SEAT_ONLY"
+    },
+    {
+      "source": "FOLD8",
+      "target": "OPPO",
+      "interface": "NOT_INHERITED_FROM_PHONE_LAPTOP_PROOF",
+      "state": "FUTURE_EXPLICIT_CONTACT"
+    }
+  ],
+  "execution": {
+    "peerDiscovery": false,
+    "credentialsStored": false,
+    "remoteControl": false,
+    "automaticPairing": false,
+    "liveTransport": false,
+    "hostPromoted": false
+  },
+  "law": "CONTACT BEFORE CROWN · MESH ≠ MERGE · NO DING, NO CLAIM"
+}

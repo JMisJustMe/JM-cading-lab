@@ -30,3 +30,24 @@ Local owner UUID, personal #N, capsule UUID, per-item UUID, SHA-256 and parent e
 - Browser validation must be contacted on a real browser with file export/import. Android viewport emulation does not qualify as real Fold8 contact.
 - No API-level ChatGPT/Gemini automatic conversation extraction, no AI vendor-controlled clipboard ingestion, no auto consent, no background provider Drive/email sync, and no cross-owner signed identity until separately implemented and tested.
 - Never merge protected PRs, modify primary JM LLM model source, or publish private source files as a side effect.
+
+## Existing JM LLM / AI Studio export ingestion (additive)
+
+`jm_ufc_ai_adapter.py` accepts an **explicit, owner-supplied** conversation JSON with `messages:[{role,content,attachments?:[{source,mime_type}]}]` plus original local asset bytes. It retains the complete original JSON unchanged, exports each original message as a content-addressed child, and connects real attachment bytes to the exact parent message. A deterministic UUIDv5 hierarchy based on the owner's stable UUID and an exported `conversation_id` permits re-reference of the same message identities. Run:
+
+```bash
+JM_UFC_PASSPHRASE=YOUR_PRIVATE_SECRET python jm_ufc_ai_adapter.py \
+  --input /local/export.json --base /local/export-assets \
+  --owner-id YOUR_PRIVATE_OWNER_UUID --personal-number 1 \
+  --archive /private/backup.jmufc
+```
+
+On Windows, set the passphrase in the current process's environment rather than typing it into the CLI. The adapter does not read private JM LLM weights, scrape vendor chat histories, invent missing media bytes or transfer ownership. Existing JM LLM Core v1.16 and JM LLM #2 v2.1 remain unchanged; their verified original outputs are eligible source inputs only when legitimately exported and available.
+
+## Browser vs Python receipt filenames
+
+Python sidecar: `your.jmufc.receipt.json`. Browser sidecar: `your.receipt.json`. The custody runner accepts exactly one matching sidecar for either pattern. Two simultaneously present conflicting/ambiguous patterns cause HOLD rather than choosing arbitrarily.
+
+## Scheduling
+
+A local Windows Task Scheduler job can run the custody runner periodically against a **dedicated opt-in outbox** and the already-mounted Drive/OneDrive folders. Scheduling does not imply cloud upload is complete. Always verify independently through the provider if cloud custody is needed. Do not monitor arbitrary Downloads or automatically delete an original from the outbox.

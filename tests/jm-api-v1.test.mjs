@@ -30,19 +30,19 @@ await check('metadata prohibits proof transfer and mutation', async () => {
 });
 await check('catalog contains original independent services exactly once', async () => {
   const {result}=await run(request(JM_API_BASE+'/services'));
-  assert.deepEqual(result.services.map(s=>s.id),['build-mesh','workshop','live-experience','cloud-contact','owner-vault','ailatheo','phone-commander']);
+  assert.deepEqual(result.services.map(s=>s.id),['build-mesh','workshop','live-experience','navigator-public','unique-bodies-cp08','app-commons-cp06','federation-receipt-cp02','cloud-contact','owner-vault','ailatheo','phone-commander']);
   assert(result.services.every(s=>s.observedNowByThisApi===false));
 });
 await check('capability operations are named without execution', async () => {
   const {result}=await run(request(JM_API_BASE+'/capabilities'));
-  assert.equal(result.operations.length,9); assert(result.operations.every(s=>s.action==='PLAN_ONLY'));
+  assert.equal(result.operations.length,13); assert(result.operations.every(s=>s.action==='PLAN_ONLY'));
 });
 await check('OpenAPI is machine-readable, origin-bound and describes planning', async () => {
   const {result}=await run(request(JM_API_BASE+'/openapi.json'));
   assert.equal(result.openapi,'3.1.0'); assert.equal(result.servers[0].url,origin);
   assert(result.paths[JM_API_BASE+'/plan'].post);assert.deepEqual(result,jmOpenApi(origin));
 });
-for(const operation of ['discover','recover','compose','test','admit','workspace','vault','entitlement','phone']){
+for(const operation of ['discover','recover','compose','test','admit','navigate','uniqueBodies','commons','receipt','workspace','vault','entitlement','phone']){
   await check(operation+' returns nonmutating governed route',async()=>{
     const {response,result}=await run(request(JM_API_BASE+'/plan','POST',JSON.stringify({operation,subject:'sample game'}),{'content-type':'application/json'}));
     assert.equal(response.status,200);assert.equal(result.state,'PLAN_ONLY');
@@ -50,6 +50,24 @@ for(const operation of ['discover','recover','compose','test','admit','workspace
     assert(operation === 'phone' ? result.contact.endpoint === null : Boolean(result.contact.endpoint));
   });
 }
+await check('protected MCP links are registered without impersonating access', async () => {
+  const {result}=await run(request(JM_API_BASE+'/services'));
+  const protectedIds=['unique-bodies-cp08','app-commons-cp06','federation-receipt-cp02'];
+  for(const id of protectedIds){
+    const service=result.services.find(s=>s.id===id);
+    assert(service);assert.equal(service.access,'OWNER_BEARER_REQUIRED');
+    assert.equal(service.observedNowByThisApi,false);
+    assert(service.endpoint.startsWith('https://'));
+  }
+  const navigator=result.services.find(s=>s.id==='navigator-public');
+  assert.equal(navigator.access,'PUBLIC_READ_ONLY');
+  for(const operation of ['navigate','uniqueBodies','commons','receipt']){
+    const checkPlan=await run(request(JM_API_BASE+'/plan','POST',JSON.stringify({operation}),{'content-type':'application/json'}));
+    assert.equal(checkPlan.result.state,'PLAN_ONLY');
+    assert.equal(checkPlan.result.proof.remoteToolExecuted,false);
+    assert.equal(checkPlan.result.proof.ownerCredentialForwarded,false);
+  }
+});
 await check('body with invalid JSON fails closed',async()=>{
   const r=await run(request(JM_API_BASE+'/plan','POST','{broken',{'content-type':'application/json'}));assert.equal(r.response.status,400);
 });

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081624">
+<title>CREWBOUND | Twelve Original Fighters — CP02</title>
+<style>
+*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:radial-gradient(ellipse at top,#1a4653 0,#081624 52%);color:#effaff;font-family:system-ui,Arial,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:16px 12px 42px}
+a{color:#8ff3ff}nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+nav a{text-decoration:none;font-size:.78rem;font-weight:850;letter-spacing:.01em}
+.tag{color:#ffd383;font-size:.64rem;font-weight:950;letter-spacing:.13em}
+h1{font-size:clamp(1.65rem,6vw,3rem);line-height:1.04;margin:5px 0 8px;letter-spacing:-.04em}h1 span{color:#79eafb}
+p{color:#b3cbd8;font-size:.81rem;line-height:1.6;margin:7px 0}
+.hero{padding:16px;border:1px solid #377183;border-radius:20px;background:#102a38c9}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 6px}
+button{font:inherit;cursor:pointer;min-height:44px;touch-action:manipulation}
+.tools button{border-radius:10px;border:1px solid #4b687b;background:#122e40;color:#f0fcff;padding:8px 12px;font-size:.76rem;font-weight:900}
+.tools button[aria-pressed=true]{border-color:#80f4fa;background:#1a5770}
+h2{margin:22px 0 10px;font-size:1.1rem;letter-spacing:.07em}
+.grid[hidden],h2[hidden]{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{position:relative;background:linear-gradient(165deg,#19374c,#101e31 67%);border:1px solid #446479;border-radius:18px;padding:10px;min-width:0}
+.card.rival{background:linear-gradient(165deg,#422837,#101b30 65%);border-color:#69475f}
+.card .label{font-size:.55rem;letter-spacing:.11em;color:#9dcfe0;font-weight:900}
+.card .heroPortrait{display:block;width:100%;max-width:210px;aspect-ratio:1;object-fit:contain;margin:4px auto 0;filter:drop-shadow(0 0 12px var(--glow))}
+.card h3{font-size:1.12rem;margin:0 0 2px;font-weight:950;letter-spacing:.02em}
+.card .role{font-size:.69rem;color:#b9d1e3;font-weight:650;min-height:2em}
+.card .move{margin:7px 0;padding:7px;border-radius:8px;background:#071625;border:1px solid #355265;font-size:.65rem;line-height:1.5}
+.card .move b{color:var(--glow)}
+.card .personal{margin:6px 0 0;font-size:.7rem;color:#ccdce8;font-style:italic}
+.card .kit{font-size:.62rem;color:#9cc1cd;line-height:1.4;margin-top:6px}
+.card .source{font-size:.57rem;color:#6f93a5;line-height:1.4;margin-top:5px}
+footer{font-size:.73rem;color:#b7cfda;margin-top:26px;border-top:1px solid #426174;padding-top:14px;line-height:1.6}
+.btn{display:inline-flex;justify-content:center;align-items:center;padding:10px 12px;border:1px solid #4de8ef;border-radius:12px;background:#12516b;font-weight:900;text-decoration:none}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*,*:after,*:before{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+<nav><a href="./index.html">‹ PLAY 3+2+1</a><span class="tag">JM CREWBOUND / CP02 CAST</span></nav>
+<header class="hero">
+<div class="tag">NOT COMBOUND. NOT THE OLD CREWBOUND CREATURE ROSTER.</div>
+<h1>TWELVE <span>NEW FIGHTERS.</span></h1>
+<p>Fresh combat pilots with distinct silhouettes, roles, personalities, kit, movement paths and fighting techniques. Their battle maths inherit the original protected CREWBOUND PrimeBody as a donor — their identities and costumes are exclusive to this new 3+2+1 descendant.</p>
+<div class="tools" role="group" aria-label="Cast viewing modes">
+<button id="all" aria-pressed="true">ALL 12</button>
+<button id="home" aria-pressed="false">YOUR 6</button>
+<button id="rivals" aria-pressed="false">RIVAL 6</button>
+<button id="sil" aria-pressed="false" title="Compare silhouette shapes without costume colours">SILHOUETTE TEST</button>
+</div>
+<a class="btn" href="./index.html">🎮 PLAY THE NEW GAME</a>
+</header>
+<div id="catalogue">
+<h2>SHIFT CREW — YOUR SIX</h2><section class="grid" id="playerCast" aria-label="Player-exclusive characters"></section>
+<h2>COUNTER CREW — SIX RIVALS</h2><section class="grid" id="enemyCast" aria-label="Rival-exclusive characters"></section>
+</div>
+<footer>
+<b>Source custody:</b> Original CREWBOUND v0.5 preserved. Original COMBOUND preserved. This cast is an independent CP02 proposal with original artwork expressed entirely as local canvas drawing code. Names, costumes and movement profiles are new; the inherited original donor archetypes are disclosed for proof, not displayed as the playable cast.
+</footer>
+</main>
+<script src="./roster.js"></script>
+<script src="./cast.js"></script>
+<script src="./art.js"></script>
+<script>
+"use strict";
+const source=window.JM_CREWBOUND_321_CAST,art=window.JM_CREWBOUND_321_ART,root=document.getElementById("catalogue");
+let showing="all",silhouettes=false;
+function render(){
+ for(const [side,keys] of [["player",source.crews.player],["enemy",source.crews.enemy]]){
+  const container=document.getElementById(side+"Cast");container.innerHTML="";
+  const heading=container.previousElementSibling;
+  const visible=showing==="all"||showing==="home"&&side==="player"||showing==="rivals"&&side==="enemy";
+  container.hidden=!visible;heading.hidden=!visible;
+  for(const key of keys){
+   const f=source.fighters[key],card=document.createElement("article");card.className="card"+(side==="enemy"?" rival":"");
+   card.style.setProperty("--glow",f.palette[0]);
+   const label=document.createElement("div");label.className="label";label.textContent=side==="player"?"SHIFT CREW / FIELD SPECIALIST":"COUNTER CREW / RIVAL SPECIALIST";
+   const canvas=document.createElement("canvas");canvas.className="heroPortrait";canvas.width=240;canvas.height=240;
+   canvas.setAttribute("role","img");canvas.setAttribute("aria-label",f.name+" unique "+f.silhouette+" character illustration");
+   const c=canvas.getContext("2d");art.draw(c,f,120,151,145,0,side);
+   if(silhouettes){c.save();c.globalCompositeOperation="source-in";c.fillStyle="#010713";c.fillRect(0,0,240,240);c.restore()}
+   const name=document.createElement("h3");name.textContent=f.name.toUpperCase();
+   const role=document.createElement("div");role.className="role";role.textContent=f.role;
+   const move=document.createElement("div");move.className="move";
+   const one=document.createElement("b");one.textContent="MOVE "+f.maneuver.toUpperCase();
+   move.append(one,document.createElement("br"),"DEFEND "+f.defense,document.createElement("br"),"ATTACK "+f.attack,document.createElement("br"),"SIGNATURE "+f.signature_name);
+   const personal=document.createElement("div");personal.className="personal";personal.textContent=f.personality;
+   const kit=document.createElement("div");kit.className="kit";kit.textContent="EQUIPMENT: "+f.kit;
+   const donor=document.createElement("div");donor.className="source";donor.textContent="Donor archetype: "+f.source_name+" (mechanics only)";
+   card.append(label,canvas,name,role,move,personal,kit,donor);container.append(card);
+  }
+ }
+ for(const [id,yes] of [["all",showing==="all"],["home",showing==="home"],["rivals",showing==="rivals"],["sil",silhouettes]])
+  document.getElementById(id).setAttribute("aria-pressed",String(yes));
+}
+for(const [id,value] of [["all","all"],["home","home"],["rivals","rivals"]])document.getElementById(id).onclick=()=>{showing=value;render()};
+document.getElementById("sil").onclick=()=>{silhouettes=!silhouettes;render()};
+render();
+</script>
+</body>
+</html>

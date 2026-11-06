@@ -100,13 +100,30 @@ public final class LauncherLabActivity extends Activity {
     row.addView(b,p);
   }
 
+  private String layoutKey() { return "layout.mode."+selectedRole(); }
+  private String menuKey() { return "menu.tiles."+selectedRole(); }
+
+  private String layoutMode() {
+    // Restore CP01's existing Fold8 mode without rewriting its original local preference.
+    String fallback="FOLD8".equals(selectedRole())
+      ? prefs.getString("layout.mode",JMHomeLayout.AUTO) : JMHomeLayout.AUTO;
+    String mode=prefs.getString(layoutKey(),fallback);
+    try { JMHomeLayout.columns(390,mode);return mode; }
+    catch(IllegalArgumentException e) { return JMHomeLayout.AUTO; }
+  }
+
+  private String menuOrder() {
+    return String.join(",",JMHomeMenu.safeTokens(
+      prefs.getString(menuKey(),JMHomeMenu.defaultOrder())));
+  }
+
   private void showHome() {
-    String mode=prefs.getString("layout.mode",JMHomeLayout.AUTO);
+    String mode=layoutMode();
     int width=Math.max(1,getResources().getConfiguration().screenWidthDp);
     int cols=JMHomeLayout.columns(width,mode);
     screen("Your JM home, your layout","Offline-first preview · "+cols+" columns · "+mode
-      +" · Samsung default HOME is unchanged.");
-    String[] rooms=JMHomeLayout.rooms();
+      +" · "+JMHomeLayout.labelFor(selectedRole())+" profile · Android HOME unchanged.");
+    String[] rooms=JMHomeMenu.safeTokens(menuOrder());
     for(int i=0;i<rooms.length;i+=cols) {
       LinearLayout line=new LinearLayout(this);
       line.setOrientation(LinearLayout.HORIZONTAL);
@@ -116,41 +133,78 @@ public final class LauncherLabActivity extends Activity {
         if(at>=rooms.length) {
           line.addView(new View(this),new LinearLayout.LayoutParams(0,dp(88),1));
         } else {
-          Button tile=makeButton(rooms[at],()->openTile(at));
+          String token=rooms[at];
+          Button tile=makeButton(JMHomeMenu.label(token),()->openTile(token));
           LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(88),1);
           p.setMargins(dp(3),dp(3),dp(3),dp(3));
           line.addView(tile,p);
         }
       }
     }
+    label("Edit these tiles in LAYOUT. JM ROOT and BACK TO JM cannot be hidden.",13,SOFT);
     label("This preview belongs to your existing JM Fold Ultra app, not a second launcher.",13,SOFT);
   }
 
-  private void openTile(int at) {
-    switch(at) {
-      case 0: finish();break;
-      case 1: startActivity(new Intent(this,WorkroomActivity.class));break;
-      case 2: showApps();break;
-      case 3: showDevices();break;
-      case 4: showLayout();break;
-      case 5: finish();break;
+  private void openTile(String token) {
+    switch(token) {
+      case "ROOT": finish();break;
+      case "WORKROOM": startActivity(new Intent(this,WorkroomActivity.class));break;
+      case "DRAWER": showApps();break;
+      case "DEVICES": showDevices();break;
+      case "LAYOUT": showLayout();break;
+      case "BACK": finish();break;
       default: throw new IllegalArgumentException("Unknown home tile");
     }
   }
 
   private void showLayout() {
-    screen("Layout workshop","Your compact and expanded grids are stored only in this preview.");
-    String saved=prefs.getString("layout.mode",JMHomeLayout.AUTO);
-    label("Selected: "+saved+". Fold sizing is read from Android screenWidthDp.",14,INK);
+    screen("Layout workshop","Saved only inside JM Home Lab. Fold8 and OPPO preferences are independent.");
+    String saved=layoutMode();
+    label("Profile: "+JMHomeLayout.labelFor(selectedRole())+" · Grid: "+saved,14,INK);
     button("AUTO / 2 compact · 4 expanded",()->choose(JMHomeLayout.AUTO));
     button("COMPACT / 2 columns",()->choose(JMHomeLayout.COMPACT));
     button("EXPANDED / 4 columns",()->choose(JMHomeLayout.EXPANDED));
-    label("No widgets, wallpapers, system settings or Samsung launcher arrangement are modified.",13,SOFT);
+    label("ARRANGE YOUR HOME TILES",16,INK);
+    String order=menuOrder();
+    String[] visible=JMHomeMenu.safeTokens(order);
+    for(String token:visible) {
+      String tile=JMHomeMenu.label(token);
+      label("Visible: "+tile,14,INK);
+      button("Move "+tile+" up",()->moveTile(token,-1));
+      button("Move "+tile+" down",()->moveTile(token,1));
+      if(!"ROOT".equals(token) && !"BACK".equals(token))
+        button("Hide "+tile,()->toggleTile(token));
+    }
+    for(String token:new String[]{"WORKROOM","DRAWER","DEVICES","LAYOUT"}) {
+      if(!java.util.Arrays.asList(visible).contains(token)) {
+        String name=JMHomeMenu.label(token);
+        button("Show "+name,()->toggleTile(token));
+      }
+    }
+    button("Restore default JM tiles",()->{
+      prefs.edit().remove(menuKey()).apply();
+      showLayout();
+    });
+    label("No widgets, app files, Samsung HOME icons, wallpapers or system settings are modified.",13,SOFT);
+  }
+
+  private void moveTile(String token,int direction) {
+    String updated=JMHomeMenu.move(menuOrder(),token,direction);
+    prefs.edit().putString(menuKey(),updated).apply();
+    showLayout();
+  }
+
+  private void toggleTile(String token) {
+    String updated=JMHomeMenu.toggle(menuOrder(),token);
+    prefs.edit().putString(menuKey(),updated).apply();
+    showLayout();
   }
 
   private void choose(String mode) {
     JMHomeLayout.columns(390,mode);
-    prefs.edit().putString("layout.mode",mode).apply();
+    SharedPreferences.Editor editor=prefs.edit().putString(layoutKey(),mode);
+    if("FOLD8".equals(selectedRole()))editor.putString("layout.mode",mode);
+    editor.apply();
     showHome();
   }
 

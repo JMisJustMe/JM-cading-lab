@@ -43,7 +43,7 @@ class GitHubOwnerControlSourceContract(unittest.TestCase):
         self.assertNotIn("github_pat_",CANDIDATE)
         self.assertNotIn("HttpURLConnection",CANDIDATE)
         self.assertNotIn("workflow_dispatch",CANDIDATE)
-        self.assertIn("owner-tapped",CANDIDATE)
+        self.assertIn("Owner-tapped GitHub entrance only",CANDIDATE)
 
     def test_only_retired_timer_preference_is_cleared(self):
         self.assertIn('prefs.edit().remove("owner.onmode.foreground_until_ms").apply()',

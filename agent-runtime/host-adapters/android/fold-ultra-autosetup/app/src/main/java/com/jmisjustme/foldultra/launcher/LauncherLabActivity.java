@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -225,8 +226,23 @@ public final class LauncherLabActivity extends Activity {
     button("Prepare OPPO handoff text",()->shareTemplate("OPPO"));
     label("GroundZeroJM · NOT CONTACTED (remote access is separate)",14,SOFT);
     button("Prepare GroundZeroJM handoff text",()->shareTemplate("GROUNDZEROJM"));
+    label("EXISTING DONOR / JM PHONE ↔ LAPTOP v0.5",15,INK);
+    label("Recorded v0.2 owner-device contact and v0.5 software QA. "
+      +"This Home Lab has NOT verified a current v0.5 live host, "
+      +"paired OPPO, or native Android transport.",13,SOFT);
+    button("Read original Phone ↔ Laptop proof record",()->openDonorRecord());
     label("Actual pairing needs explicit approval on both devices, an authenticated transport,"
       +" revocation and replay-safe receipts. A shared text request proves none of those.",13,SOFT);
+  }
+
+  private void openDonorRecord() {
+    // A verified source-record entrance only; never contacts a device or launches commands.
+    String record="https://github.com/JMisJustMe/JM-cading-lab/blob/main/"
+      +"JM_ESTATE/PHONE_LAPTOP/v0.5/FLAZ_RECEIPT_v1.0.md";
+    try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(record))); }
+    catch(RuntimeException e) {
+      Toast.makeText(this,"HOLD · original source link unavailable",Toast.LENGTH_SHORT).show();
+    }
   }
 
   private void shareTemplate(String target) {

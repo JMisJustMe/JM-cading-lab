@@ -136,10 +136,10 @@ test('CP03 no three-minute timeout before first paired command; rematch re-arms 
   await page.locator('#commit').click();
   await expect(page.locator('#turn')).toHaveText('GO 1');
   await page.waitForTimeout(350);
-  const live=await page.evaluate(()=>({
-    time:game.time,turn:game.turn,moved:game.floor('player').concat(game.floor('enemy')).some((u,i)=>u.x!==initial.positions[i]?.[0]||u.y!==initial.positions[i]?.[1]),
+  const live=await page.evaluate((initialPositions)=>({
+    time:game.time,turn:game.turn,moved:game.floor('player').concat(game.floor('enemy')).some((u,i)=>u.x!==initialPositions[i]?.[0]||u.y!==initialPositions[i]?.[1]),
     simultaneous:game.log.some(r=>r.type==='SIMULTANEOUS_PAIR_COMMIT')
-  }));
+  }),initial.positions);
   expect(live.time).toBeGreaterThan(0);expect(live.moved).toBe(true);expect(live.simultaneous).toBe(true);
   await page.locator('#reset').click();
   await page.waitForTimeout(500);

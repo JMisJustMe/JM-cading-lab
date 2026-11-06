@@ -1,0 +1,60 @@
+name: JM OPPO CP03 Librarian Android 16 isolated build proof
+on:
+  push:
+    branches:
+      - test/oppo-cp03-librarian-android16-insets-20261106
+    paths:
+      - "tools/estate-librarian/android/**"
+      - ".github/workflows/qa-jm-oppo-librarian-cp03.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout isolated proof branch
+        uses: actions/checkout@v4
+      - name: Prepare Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install platform and build tools
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - name: Prepare Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile isolated debug APK
+        working-directory: tools/estate-librarian/android
+        run: gradle --no-daemon assembleDebug
+      - name: Verify independent identity and APK integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=tools/estate-librarian/android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/jm-cp03-badging.txt
+          grep -q "package: name='com.jmestate.librarian.v041a.cp03'" /tmp/jm-cp03-badging.txt
+          grep -q "versionName='0.4.1A-CP03-TEST'" /tmp/jm-cp03-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          unzip -t "$APK"
+          sha256sum "$APK" | tee /tmp/jm-cp03-sha256.txt
+          {
+            echo "## JM OPPO CP03 isolated candidate"
+            echo "- Original app com.jmestate.librarian.v041a remains untouched."
+            echo "- Candidate app com.jmestate.librarian.v041a.cp03 has a separate app sandbox."
+            echo "- Native compile and APK integrity verified. Physical OPPO QA remains pending."
+            cat /tmp/jm-cp03-sha256.txt
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload independently named candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_OPPO_CP03_Librarian_Android16_TEST_APK
+          path: tools/estate-librarian/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30

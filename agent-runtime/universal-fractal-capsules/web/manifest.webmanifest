@@ -1,0 +1,26 @@
+{
+  "id": "./index.html",
+  "name": "JM Universal Fractal Capsules",
+  "short_name": "JM Capsules",
+  "description": "Private, portable encrypted records of JM creations and their original files",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10151e",
+  "theme_color": "#10151e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -8,6 +8,11 @@ SESSION=[
     {"class":"android.widget.TextView","text":"JM / SESSION CONTACT · 0.8"},
     {"class":"android.widget.Button","text":"Capture or recover a JM Return Point"},
 ]
+SCROLLED_SESSION=[
+    {"class":"android.widget.TextView","text":"PROJECT SESSION / LIVE DRAFT"},
+    {"class":"android.widget.TextView","text":"TWO SCREENS / ONE LOCAL STATE"},
+    {"class":"android.widget.Button","text":"Capture or recover a JM Return Point"},
+]
 ROOM=[
     {"class":"android.widget.TextView","text":"JM / RETURN POINT"},
     {"class":"android.widget.Button","text":"RETURN → new revision"},
@@ -35,6 +40,24 @@ class ReturnPointNavigationContract(unittest.TestCase):
 
     def test_first_touch_swallowed_then_bounded_retry(self):
         self.assertEqual(self.exercise([SESSION,SESSION,SESSION,ROOM]),(4,2,1))
+
+    def test_scrolled_session_header_offscreen_still_retries_safely(self):
+        # Exact GitHub CI proof: session heading is offscreen once button
+        # is reached; the return-point native button remains on its own page.
+        self.assertEqual(self.exercise(
+            [SESSION,SCROLLED_SESSION,SCROLLED_SESSION,ROOM]),(4,2,1))
+
+    def test_stale_button_on_unrelated_page_must_not_trigger_touch(self):
+        fake=[{"class":"android.widget.Button",
+               "text":"Capture or recover a JM Return Point"}]
+        with patch.object(audit,"dump",return_value=fake), \
+             patch.object(audit,"tap") as tap, \
+             patch.object(audit,"capture"):
+            with self.assertRaisesRegex(AssertionError,"HOLD"):
+                audit.navigate_once_with_verified_room(
+                    "Capture or recover a JM Return Point",
+                    "JM / RETURN POINT","JM / SESSION CONTACT","stale_button")
+            tap.assert_not_called()
 
     def test_already_visible_room_requires_no_touch(self):
         self.assertEqual(self.exercise([ROOM]),(1,0,0))

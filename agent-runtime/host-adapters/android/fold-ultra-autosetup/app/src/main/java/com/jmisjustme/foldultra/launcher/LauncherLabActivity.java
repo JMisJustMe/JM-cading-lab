@@ -57,7 +57,10 @@ public final class LauncherLabActivity extends Activity {
     label("JM / HOME LAB · CP01",14,SOFT);
     label(heading,26,INK);
     label(description,14,SOFT);
-    button("← Original JM FOLD ULTRA",()->finish());
+    // QA package launches this room directly; never imply Back edits or opens the
+    // separately signed original JM Fold Ultra installation.
+    button(getPackageName().endsWith(".homelabqa")
+        ? "← Exit JM Home Lab QA" : "← Original JM FOLD ULTRA",()->finish());
     LinearLayout tabs=new LinearLayout(this);
     tabs.setOrientation(LinearLayout.HORIZONTAL);
     body.addView(tabs);

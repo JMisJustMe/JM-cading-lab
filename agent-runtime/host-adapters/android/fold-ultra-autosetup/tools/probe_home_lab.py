@@ -5,6 +5,7 @@ Temporary ready-state fixture is ONLY for this isolated test; prelaunch
 onboarding has its own CI gate. Never a Fold8/OPPO/device-pairing claim.
 """
 import json
+import re
 import time
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -41,6 +42,36 @@ def preference_mode():
             "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
     tree=ET.fromstring(xml)
     return next((x.text for x in tree if x.get("name")=="layout.mode"),None)
+
+def tap_with_actual_viewport(fragment,label):
+    """Scoped Home Lab touch: use real active emulator size, not 1500px constant.
+
+    Never infer a pass merely from visible text. Touch only an actual Button
+    above the system navigation area, then the caller checks the resulting UI.
+    """
+    raw=adb("shell","wm","size").decode(errors="replace")
+    sizes=re.findall(r"(\\d+)x(\\d+)",raw)
+    assert sizes,("Cannot read active Android display dimensions",raw)
+    width,height=map(int,sizes[-1])
+    safe_bottom=height-90
+    for attempt in range(9):
+        nodes=dump("find_"+label+"_"+str(attempt))
+        for n in nodes:
+            if n.get("text")!=fragment or n.get("class")!="android.widget.Button":
+                continue
+            bounds=[int(x) for x in re.findall(r"\\d+",n.get("bounds",""))]
+            if len(bounds)!=4:continue
+            x1,y1,x2,y2=bounds
+            if x1<0 or x2>width or y1<100 or y2>safe_bottom:
+                continue
+            adb("shell","input","tap",str((x1+x2)//2),str((y1+y2)//2))
+            time.sleep(.65)
+            return
+        adb("shell","input","swipe",str(width//2),str(height-180),
+            str(width//2),str(height//4),"260")
+        time.sleep(.35)
+    capture("FAIL_"+label)
+    raise AssertionError("No genuinely safe native button contact: "+fragment)
 
 def main():
     OUT.mkdir(exist_ok=True)
@@ -132,8 +163,8 @@ def main():
                    n.get("class")=="android.widget.Button" for n in nodes)
     has("JM ROOT","cp02_original_root_still_visible")
     tap("LAYOUT","cp02_restore_hidden_menu")
-    tap("Show WORKROOM","cp02_show_tile_again")
-    tap("Restore default JM tiles","cp02_restore_default_order")
+    tap_with_actual_viewport("Show WORKROOM","cp02_show_tile_again")
+    tap_with_actual_viewport("Restore default JM tiles","cp02_restore_default_order")
     tap("HOME","cp02_original_order_restored")
     has("WORKROOM","cp02_workroom_tile_visible_again")
     # Different owner-selected profile = separate layout keys on the same emulator.

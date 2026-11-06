@@ -75,6 +75,7 @@ def main():
     capture("CP01_NATIVE_DRAWER_SEARCH")
     tap("DEVICES","cp01_device_panel")
     has("OPPO · NOT CONTACTED","cp01_oppo_not_contacted")
+    has("EXISTING DONOR / JM PHONE","cp01_original_phone_laptop_donor")
     tap("Prepare OPPO handoff text","cp01_explicit_handoff_dialog")
     has("Share a request-only template?","cp01_request_only_warning")
     tap("Cancel","cp01_owner_cancels_request")

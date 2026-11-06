@@ -19,4 +19,14 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    // Optional side-by-side QA only. assembleDebug remains original package identity.
+    buildTypes {
+        homeqa {
+            initWith debug
+            applicationIdSuffix '.homeqa'
+            versionNameSuffix '-qa'
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+        }
+    }
 }

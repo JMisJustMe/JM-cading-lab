@@ -32,6 +32,19 @@ class HomeLabScopeTest(unittest.TestCase):
         self.assertNotIn("QUERY_ALL_PACKAGES",(SRC/"AndroidManifest.xml").read_text())
         self.assertIn("android.intent.category.LAUNCHER",(SRC/"AndroidManifest.xml").read_text())
 
+    def test_existing_phone_laptop_donor_does_not_transfer_proof(self):
+        record=json.loads((ROOT/"home-lab/existing-phone-laptop-donor.v1.json").read_text())
+        self.assertEqual(record["sourceAuthority"]["body"],"JM PHONE ↔ LAPTOP")
+        self.assertEqual(record["sourceAuthority"]["version"],"v0.5.0")
+        self.assertEqual(record["evidenceBounds"]["currentV05LiveHost"],
+                         "NOT_VERIFIED_FOR_HOME_LAB")
+        self.assertFalse(record["execution"]["automaticPairing"])
+        self.assertFalse(record["execution"]["hostPromoted"])
+        ui=(SRC/"java/com/jmisjustme/foldultra/launcher/LauncherLabActivity.java").read_text()
+        self.assertIn("Read original Phone ↔ Laptop proof record",ui)
+        self.assertNotIn('android.intent.category.HOME',ui)
+        self.assertNotIn('https://jm-cloud-contact-server',ui)
+
     def test_original_root_remains_authoritative(self):
         source=(SRC/"java/com/jmisjustme/foldultra/MainActivity.java").read_text(encoding="utf-8")
         self.assertIn('btn(page,"JM WORKROOM / Write · Code · Files"',source)

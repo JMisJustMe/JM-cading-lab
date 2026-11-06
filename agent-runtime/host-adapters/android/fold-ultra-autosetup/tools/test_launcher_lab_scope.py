@@ -47,7 +47,10 @@ class HomeLabScopeTest(unittest.TestCase):
         self.assertIn('button("Use OPPO profile"',ui)
         self.assertIn('button("Use Fold8 profile"',ui)
         self.assertNotIn('android.intent.category.HOME',ui)
-        self.assertNotIn('https://jm-cloud-contact-server',ui)
+        self.assertIn('https://jm-cloud-contact-server-v05.onrender.com',ui)
+        self.assertIn('Check existing v0.5.1 host readiness',ui)
+        self.assertIn('Open existing Phone',ui)
+        self.assertIn('if(!"/ready".equals(route)',ui)
 
     def test_menu_editor_preserves_return_tiles_and_independent_profiles(self):
         menu=(SRC/"java/com/jmisjustme/foldultra/launcher/JMHomeMenu.java").read_text()

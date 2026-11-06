@@ -181,6 +181,30 @@ def main():
     tap("HOME","cp02_fold_home_separate")
     has("4 columns","cp02_fold_auto_restored")
     assert pref_values()==before,"Menu editor changed protected original JM state"
+    # CP07_FOREGROUND_ON_MODE: native Android keep-awake, not Android HOME takeover.
+    # Test the explicit owner-style ON/OFF touches and *actual* app preference
+    # stored by Android; never infer a phone-wide keep-awake from a UI label.
+    tap("JM ON MODE · Keep this screen on for 60 minutes",
+        "cp07_on_mode_owner_turns_on")
+    has("JM ON MODE · OFF / restore normal","cp07_on_mode_off_visible")
+    owner_pref=adb("exec-out","run-as",PKG,"cat",
+        "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
+    on_tree=ET.fromstring(owner_pref)
+    expiry=next((x.attrib.get("value") for x in on_tree
+        if x.attrib.get("name")=="owner.onmode.foreground_until_ms"),None)
+    assert expiry and int(expiry) > int(time.time()*1000),"ON did not save a future expiry"
+    assert int(expiry) <= int(time.time()*1000)+3600000, "ON expiry exceeds 60-minute boundary"
+    capture("CP07_ON_MODE_NATIVE_ON")
+    tap("JM ON MODE · OFF / restore normal","cp07_on_mode_owner_turns_off")
+    has("JM ON MODE · Keep this screen on for 60 minutes","cp07_on_mode_restored")
+    owner_pref=adb("exec-out","run-as",PKG,"cat",
+        "shared_prefs/jm.fold.ultra.home.lab.cp01.xml")
+    off_tree=ET.fromstring(owner_pref)
+    assert not any(x.attrib.get("name")=="owner.onmode.foreground_until_ms"
+        for x in off_tree),"OFF must remove keep-awake expiry"
+    capture("CP07_ON_MODE_NATIVE_OFF")
+    assert pref_values()==before,"ON MODE must not mutate inherited original JM data"
+
     receipt={
       "status":"PASS","scope":"generic Android emulator CP01+CP02 real native taps",
       "inherited_disposable_ready_fixture":True,
@@ -191,7 +215,9 @@ def main():
       "independent_oppo_layout":True,"protected_root_retained":True,
       "oppo_not_contacted":True,"owner_handoff_cancellation":True,
       "layout_switch":True,"cold_preference":True,"compact_and_expanded":True,
-      "original_state_unchanged":True,"android_default_home":"NOT_CHANGED"
+      "original_state_unchanged":True,"android_default_home":"NOT_CHANGED",
+      "cp07_native_foreground_on_off_touch":True,
+      "cp07_bounded_expiry_stored_then_removed":True
     }
     (OUT/"JM_HOME_LAB_CP01_EMULATOR_RECEIPT.json").write_text(
         json.dumps(receipt,indent=2),encoding="utf-8")

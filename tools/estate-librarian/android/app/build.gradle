@@ -13,6 +13,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Independent OPPO CP03 proof app: never upgrade or replace the preserved v0.4.1A identity.
+            applicationIdSuffix '.cp03'
+            versionNameSuffix '-CP03-TEST'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

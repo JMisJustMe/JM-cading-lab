@@ -62,14 +62,28 @@ async function sameSecret(provided, expected) {
   return mismatch === 0;
 }
 
+class PrivateCustodyHold extends Error {
+  constructor() { super('PRIVATE_CUSTODY_HOLD'); }
+}
+
+// A missing object is a legitimate first-run state. Existing unreadable,
+// malformed, or structurally invalid metadata must never become an empty shelf.
 async function readJson(bucket, key, fallback) {
-  const object = await bucket.get(key);
+  let object;
+  try { object = await bucket.get(key); }
+  catch { throw new PrivateCustodyHold(); }
   if (!object) return fallback;
   try {
-    return JSON.parse(await object.text());
-  } catch {
-    return fallback;
-  }
+    const value = JSON.parse(await object.text());
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new PrivateCustodyHold();
+    if (key === INDEX_KEY && (!Array.isArray(value.bodies)
+      || value.bodies.some(body => !body || typeof body !== 'object' || typeof body.id !== 'string'))) {
+      throw new PrivateCustodyHold();
+    }
+    if (key === STATE_KEY && (!value.state || typeof value.state !== 'object'
+      || Array.isArray(value.state))) throw new PrivateCustodyHold();
+    return value;
+  } catch { throw new PrivateCustodyHold(); }
 }
 
 async function writeJson(bucket, key, value) {
@@ -112,6 +126,8 @@ async function manifest(bucket) {
 }
 
 async function saveState(bucket, payload) {
+  // Never overwrite an existing unreadable owner state.
+  await readJson(bucket, STATE_KEY, { schema: `${SCHEMA}.State`, updated_at: null, state: safeState({}) });
   const now = new Date().toISOString();
   const record = {
     schema: `${SCHEMA}.State`,
@@ -321,6 +337,7 @@ export async function onRequest(context) {
   if (!auth.ok) return auth.response;
   const bucket = env.JM_OWNER_VAULT;
 
+  try {
   if (request.method === 'GET') {
     const bodyId = url.searchParams.get('body');
     if (bodyId) return downloadBody(bucket, bodyId);
@@ -366,4 +383,10 @@ export async function onRequest(context) {
   }
 
   return json({ schema: SCHEMA, error: 'METHOD_NOT_ALLOWED' }, 405, { allow: 'GET, PUT, POST, DELETE' });
+  } catch (error) {
+    if (error instanceof PrivateCustodyHold) {
+      return json({ schema: SCHEMA, error: 'PRIVATE_CUSTODY_HOLD' }, 503);
+    }
+    throw error;
+  }
 }

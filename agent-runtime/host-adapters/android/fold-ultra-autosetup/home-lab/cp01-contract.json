@@ -1,0 +1,92 @@
+{
+  "schema": "JM.HomeLab/CP01",
+  "date": "2026-11-06",
+  "custodian": "JM / Theoxius",
+  "host": {
+    "package": "com.jmisjustme.foldultra",
+    "sourceBranch": "jm/fold-ultra-workroom-cp05-20261026",
+    "launchMode": "EXPLICIT_IN_APP",
+    "androidDefaultHome": false,
+    "installedAppUpgrade": false
+  },
+  "separateDonors": [
+    {
+      "identity": "JM Fold Ultra CP05",
+      "relation": "INHERITED_SOURCE_HEAD"
+    },
+    {
+      "identity": "JM Fold Ultra CP03 Estate",
+      "relation": "SIBLING_CANDIDATE_NOT_MERGED",
+      "pr": 708
+    },
+    {
+      "identity": "RouteOS",
+      "relation": "FUTURE_CONTRACT_CONTACT_NOT_MERGED"
+    },
+    {
+      "identity": "JM Living Home",
+      "relation": "PREEXISTING_INHERITED_ROUTE"
+    }
+  ],
+  "layouts": {
+    "AUTO": {
+      "compactColumns": 2,
+      "expandedColumns": 4,
+      "thresholdDp": 600
+    },
+    "COMPACT": {
+      "columns": 2
+    },
+    "EXPANDED": {
+      "columns": 4
+    }
+  },
+  "devices": [
+    {
+      "id": "FOLD8",
+      "role": "local_android",
+      "contact": "LOCAL_PREVIEW_ONLY",
+      "paired": false
+    },
+    {
+      "id": "OPPO",
+      "role": "android_peer",
+      "contact": "NOT_CONTACTED",
+      "paired": false
+    },
+    {
+      "id": "GROUNDZEROJM",
+      "role": "windows_peer",
+      "contact": "NOT_CONTACTED",
+      "paired": false
+    }
+  ],
+  "bridge": {
+    "protocol": "JM.DeviceLink.Handoff/0.1",
+    "authority": "REQUEST_ONLY",
+    "authentication": "NOT_IMPLEMENTED",
+    "network": "NOT_IMPLEMENTED",
+    "send": "ANDROID_OWNER_SELECTED_SHARE",
+    "remoteCommandExecution": false,
+    "revocation": "REQUIRED_BEFORE_PAIRING",
+    "antiReplay": "REQUIRED_BEFORE_PAIRING"
+  },
+  "safeguards": {
+    "noDefaultHomeIntent": true,
+    "noNewAndroidRuntimePermissions": true,
+    "noBackgroundScanning": true,
+    "noSilentSync": true,
+    "noAppDataReplacement": true,
+    "noAutomaticExternalAppLaunch": true,
+    "noCredentialsInHandoff": true
+  },
+  "proof": {
+    "source": "PENDING_INDEPENDENT_READBACK",
+    "portableTests": "PENDING",
+    "androidBuild": "PENDING_CI",
+    "emulator": "PENDING_CI",
+    "physicalFold8": "NOT_TESTED",
+    "physicalOppo": "NOT_TESTED",
+    "windowsPairing": "NOT_TESTED"
+  }
+}

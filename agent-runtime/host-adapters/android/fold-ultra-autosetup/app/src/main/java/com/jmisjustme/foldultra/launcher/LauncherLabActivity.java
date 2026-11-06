@@ -7,13 +7,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -37,52 +34,14 @@ public final class LauncherLabActivity extends Activity {
   private static final int BG=0xff09101D, PANEL=0xff192840, INK=0xffE5F1FF, SOFT=0xffA9C2DB;
   private SharedPreferences prefs;
   private LinearLayout body;
-  // The no-permission Android switch applies only while Home Lab is visible.
-  // It never changes Android HOME, device lock or another application's screen.
-  private static final String OWNER_ON_MODE_EXPIRY="owner.onmode.foreground_until_ms";
-  private final Handler onModeTimer=new Handler(Looper.getMainLooper());
-  private final Runnable onModeExpire=()->applyForegroundOnMode();
-
-  private void applyForegroundOnMode() {
-    onModeTimer.removeCallbacks(onModeExpire);
-    long until=prefs.getLong(OWNER_ON_MODE_EXPIRY,0L);
-    long remaining=until-System.currentTimeMillis();
-    if(remaining>0L) {
-      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-      onModeTimer.postDelayed(onModeExpire,remaining);
-    } else {
-      getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-      if(until!=0L)prefs.edit().remove(OWNER_ON_MODE_EXPIRY).apply();
-    }
-  }
-
-  private void toggleForegroundOnMode() {
-    boolean isOn=prefs.getLong(OWNER_ON_MODE_EXPIRY,0L)>System.currentTimeMillis();
-    if(isOn) {
-      prefs.edit().remove(OWNER_ON_MODE_EXPIRY).apply();
-    } else {
-      prefs.edit().putLong(OWNER_ON_MODE_EXPIRY,
-        System.currentTimeMillis()+60L*60L*1000L).apply();
-    }
-    applyForegroundOnMode();
-    showHome();
-  }
-
-  @Override protected void onResume() {
-    super.onResume();
-    if(prefs!=null)applyForegroundOnMode();
-  }
-  @Override protected void onDestroy() {
-    onModeTimer.removeCallbacks(onModeExpire);
-    super.onDestroy();
-  }
-
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     prefs=getSharedPreferences("jm.fold.ultra.home.lab.cp01", MODE_PRIVATE);
     getWindow().setStatusBarColor(BG);
     getWindow().setNavigationBarColor(BG);
-    applyForegroundOnMode();
+    // CP13 owner correction: permanently retire the unused 60-minute UI flag,
+    // without touching the owner's role, app tiles, project or saved layout.
+    prefs.edit().remove("owner.onmode.foreground_until_ms").apply();
     showHome();
   }
 
@@ -187,13 +146,11 @@ public final class LauncherLabActivity extends Activity {
         }
       }
     }
-    boolean on=prefs.getLong(OWNER_ON_MODE_EXPIRY,0L)>System.currentTimeMillis();
-    button(on?"JM ON MODE · OFF / restore normal"
-      :"JM ON MODE · Keep this screen on for 60 minutes",
-      ()->toggleForegroundOnMode());
-    label("This native switch works only while Home Lab is visible and expires"
-      +" automatically. For other apps or GroundZeroJM, use the separate owner"
-      +" laptop ON MODE controls. Your phone lock and Android HOME are unchanged.",12,SOFT);
+    label("HEADLESS / GITHUB · Leave your phone free",15,INK);
+    button("JM HEADLESS · Open current checks",()->openGitHubChecks(false));
+    label("Owner-tapped GitHub entrance only. Build and emulator work runs on"
+      +" GitHub, not inside your phone. No keep-awake timer, device control,"
+      +" credentials, new permissions or automatic re-run.",12,SOFT);
     label("Edit these tiles in LAYOUT. JM ROOT and BACK TO JM cannot be hidden.",13,SOFT);
     label("This preview belongs to your existing JM Fold Ultra app, not a second launcher.",13,SOFT);
   }
@@ -359,6 +316,12 @@ public final class LauncherLabActivity extends Activity {
       ()->shareTemplate(other));
     label("GroundZeroJM · NOT CONTACTED (remote access is separate)",14,SOFT);
     button("Prepare GroundZeroJM handoff text",()->shareTemplate("GROUNDZEROJM"));
+    label("JM HEADLESS / GITHUB WORKFLOW",15,INK);
+    button("View current Home Lab checks",()->openGitHubChecks(false));
+    button("Open last verified CI run",()->openGitHubChecks(true));
+    label("An authenticated GitHub owner can review or re-run the verified"
+      +" workflow from the GitHub interface. This app only opens the page;"
+      +" it does not trigger jobs or request repository credentials.",12,SOFT);
     label("EXISTING DONOR / JM PHONE ↔ LAPTOP v0.5",15,INK);
     label("Recorded v0.2 owner-device contact and v0.5 software QA. "
       +"The separate v0.5.1 host passed 7/7 read-only GET checks on GroundZeroJM. "
@@ -368,6 +331,19 @@ public final class LauncherLabActivity extends Activity {
     button("Read original Phone ↔ Laptop proof record",()->openDonorRecord());
     label("Actual pairing needs explicit approval on both devices, an authenticated transport,"
       +" revocation and replay-safe receipts. A shared text request proves none of those.",13,SOFT);
+  }
+
+  private void openGitHubChecks(boolean lastVerified) {
+    // Source-authoritative entrance. Neither the browser nor this app receives
+    // stored GitHub tokens. GitHub controls owner authentication and reruns.
+    final String base="https://github.com/JMisJustMe/JM-cading-lab";
+    final String route=lastVerified
+      ? "/actions/runs/42280236211" : "/pull/782/checks";
+    try {
+      startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(base+route)));
+    } catch(RuntimeException e) {
+      Toast.makeText(this,"HOLD · GitHub entrance unavailable",Toast.LENGTH_SHORT).show();
+    }
   }
 
   private void openExistingHost(String route) {

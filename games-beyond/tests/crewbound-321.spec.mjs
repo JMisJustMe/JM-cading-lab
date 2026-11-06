@@ -114,3 +114,36 @@ test('CP02 Fold-friendly roster keeps touch button identity across live frames',
   await page.waitForTimeout(450);
   await expect(page.locator('#roster .unit').first()).toHaveAttribute('aria-pressed','true');
 });
+
+
+test('CP03 no three-minute timeout before first paired command; rematch re-arms clock',async({page})=>{
+  await page.goto(PATH);
+  await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+  const initial=await page.evaluate(()=>({
+    time:game.time,turn:game.turn,positions:game.floor('player').concat(game.floor('enemy')).map(u=>[u.x,u.y]),ended:game.ended
+  }));
+  await page.waitForTimeout(1250);
+  const idle=await page.evaluate(()=>({
+    time:game.time,turn:game.turn,positions:game.floor('player').concat(game.floor('enemy')).map(u=>[u.x,u.y]),ended:game.ended
+  }));
+  expect(initial.time).toBe(0);expect(idle.time).toBe(0);
+  expect(idle.positions).toEqual(initial.positions);expect(idle.ended).toBe(false);
+  await page.locator('#roster .unit').nth(0).click();
+  await page.locator('#roster .unit').nth(1).click();
+  await expect(page.locator('#commit')).toBeDisabled();
+  await page.locator('#arena').click({position:{x:200,y:250}});
+  await expect(page.locator('#commit')).toBeEnabled();
+  await page.locator('#commit').click();
+  await expect(page.locator('#turn')).toHaveText('GO 1');
+  await page.waitForTimeout(350);
+  const live=await page.evaluate(()=>({
+    time:game.time,turn:game.turn,moved:game.floor('player').concat(game.floor('enemy')).some((u,i)=>u.x!==initial.positions[i]?.[0]||u.y!==initial.positions[i]?.[1]),
+    simultaneous:game.log.some(r=>r.type==='SIMULTANEOUS_PAIR_COMMIT')
+  }));
+  expect(live.time).toBeGreaterThan(0);expect(live.moved).toBe(true);expect(live.simultaneous).toBe(true);
+  await page.locator('#reset').click();
+  await page.waitForTimeout(500);
+  const reset=await page.evaluate(()=>({time:game.time,turn:game.turn,ended:game.ended,selected:game.selected.length}));
+  expect(reset).toEqual({time:0,turn:0,ended:false,selected:0});
+  await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+});

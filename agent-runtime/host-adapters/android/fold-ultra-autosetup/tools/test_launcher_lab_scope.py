@@ -49,6 +49,17 @@ class HomeLabScopeTest(unittest.TestCase):
         self.assertNotIn('android.intent.category.HOME',ui)
         self.assertNotIn('https://jm-cloud-contact-server',ui)
 
+    def test_menu_editor_preserves_return_tiles_and_independent_profiles(self):
+        menu=(SRC/"java/com/jmisjustme/foldultra/launcher/JMHomeMenu.java").read_text()
+        ui=(SRC/"java/com/jmisjustme/foldultra/launcher/LauncherLabActivity.java").read_text()
+        self.assertIn('!seen.contains("ROOT")',menu)
+        self.assertIn('!seen.contains("BACK")',menu)
+        self.assertIn('prefs.getString(menuKey()',ui)
+        self.assertIn('"menu.tiles."+selectedRole()',ui)
+        self.assertIn('"layout.mode."+selectedRole()',ui)
+        self.assertIn('Restore default JM tiles',ui)
+        self.assertIn('if("FOLD8".equals(selectedRole()))editor.putString("layout.mode",mode)',ui)
+
     def test_original_root_remains_authoritative(self):
         source=(SRC/"java/com/jmisjustme/foldultra/MainActivity.java").read_text(encoding="utf-8")
         self.assertIn('btn(page,"JM WORKROOM / Write · Code · Files"',source)

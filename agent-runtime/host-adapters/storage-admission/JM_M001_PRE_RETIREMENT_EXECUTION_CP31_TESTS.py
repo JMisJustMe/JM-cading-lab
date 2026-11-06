@@ -11,7 +11,7 @@ class CP31Tests(unittest.TestCase):
  def setUp(self):
   self.tmp=tempfile.TemporaryDirectory(); d=Path(self.tmp.name);self.d=d
   for name in ('root.zip','house.zip','drive.zip'):
-   with zipfile.ZipFile(d/name,'w') as z:z.writestr('original.txt','a'*2048)
+   with zipfile.ZipFile(d/name,'w') as z:z.writestr(zipfile.ZipInfo('original.txt', date_time=(2026,10,20,12,0,0)), 'a'*2048)
   b=(d/'root.zip').read_bytes()
   self.now=datetime(2026,10,28,19,18,tzinfo=timezone.utc)
   self.row={'label':'SYNTHETIC_PREMATURE_CP30_REGRESSION','root_path':str(d/'root.zip'),'house_path':str(d/'house.zip'),

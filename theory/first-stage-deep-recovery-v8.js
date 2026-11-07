@@ -1,6 +1,6 @@
 'use strict';
 (()=>{
-const VERSION='v0.17',EXPECTED=34,FULL=17,ROUTES=300,EXPECTED_GRADES={T4:6,T3:28};
+const VERSION='v0.17',EXPECTED=34,FULL=16,ROUTES=300,EXPECTED_GRADES={T4:6,T3:28};
 let items=[],query='',grade='ALL',kind='ALL',done=false;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const familyOf=c=>/MATURED/.test(c)?'MATURED':/WORKING|IMPLEMENTED|SCOPED/.test(c)?'WORKING':/BUILD OPEN|SPECIFICATION/.test(c)?'BUILD OPEN':/ACTIVE|EVENT/.test(c)?'ACTIVE':'DEFINED';
@@ -38,7 +38,7 @@ function mount(){
 function mark(){document.querySelectorAll('#results [data-id]').forEach(n=>{const r=DATA.records.find(x=>String(x.id)===String(n.dataset.id));n.classList.toggle('v8deep',!!r?.first_stage_deep_recovery)});document.querySelectorAll('#features [data-id]').forEach(n=>{const r=DATA.records.find(x=>String(x.id)===String(n.dataset.id));n.classList.toggle('v8deep',!!r?.first_stage_deep_recovery)})}
 function staticCopy(){
  document.title='JM Theory Multihub v0.17 — First Stage Deep Recovery 34';
- const d=document.querySelector('meta[name=description]');if(d)d.content='JM Theory Multihub v0.17 — 34 T4/T3 First Stage routes deep-recovered from source and routed to authoritative homes; 17 full/canonical bodies remain honestly counted.';
+ const d=document.querySelector('meta[name=description]');if(d)d.content='JM Theory Multihub v0.17 — 34 T4/T3 First Stage routes deep-recovered from source and routed to authoritative homes; 16 full/canonical bodies before source-integrity remain honestly counted.';
  const b=document.querySelector('.brand small');if(b)b.textContent='v0.17 · First Stage Deep Recovery Pass 001';
  const ts=document.querySelector('.topstats');if(ts&&!document.getElementById('topDeepRecovered'))ts.insertAdjacentHTML('beforeend','<span class="pill"><b id="topDeepRecovered">34</b> deep recovered</span>');
  const lead=document.getElementById('sourcePassLead');if(lead)lead.textContent='Recovery Pass 004 deep-recovers the six T4 and twenty-eight T3 First Stage routes from their actual source corpora, assigns authoritative homes, and keeps the full/canonical count honestly fixed at 17.';

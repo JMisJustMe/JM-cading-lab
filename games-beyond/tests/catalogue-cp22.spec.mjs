@@ -39,5 +39,5 @@ test('@cp22 Rooms can search the entire Estate without inventing player doors', 
   await expect(page).toHaveURL(/all-games\.html\?q=LightLites/);
   await expect(page.locator('#search')).toHaveValue('LightLites');
   await expect(page.locator('#grid h3').filter({hasText:'LightLites / LL'})).toHaveCount(1);
-  await expect(page.locator('#grid h3').filter({hasText:'LightLites / LL'}).locator('..')).toContainText('No public carrier');
+  await expect(page.locator('#grid h3').filter({hasText:'LightLites / LL'}).locator('xpath=ancestor::article')).toContainText('No public carrier');
 });

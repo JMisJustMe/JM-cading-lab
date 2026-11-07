@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BUILT_IN = '22 MOUNTED · 24 FULL';
+const BUILT_IN = '22 MOUNTED ROOMS';
 
 async function boot(page, path='./') {
   await page.goto(path);

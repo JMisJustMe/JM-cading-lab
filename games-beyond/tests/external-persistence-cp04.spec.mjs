@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 // No server-side write, deployment, or owner-device claim.
 async function open(page) {
   await page.goto('./');
-  await expect(page.locator('#status')).toHaveText('22 MOUNTED · 24 FULL', {timeout: 60000});
+  await expect(page.locator('#status')).toHaveText('22 MOUNTED ROOMS', {timeout: 60000});
 }
 async function editor(page) {
   await page.locator('.nav [data-view="rooms"]').click();

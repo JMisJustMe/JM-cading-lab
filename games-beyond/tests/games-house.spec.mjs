@@ -20,7 +20,7 @@ async function openHouse(page) {
   page.on('console', message => message.type() === 'error' && errors.push(message.text()));
 
   await page.goto('./');
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`, { timeout: 45_000 });
   await expect(page.locator('#mountedStat')).toHaveText(String(BUILT_IN));
   await expect(page.locator('#expectedStat')).toHaveText(String(FULL_TARGET));
   await expect(page.locator('#enterBtn')).toBeEnabled();
@@ -214,14 +214,14 @@ test('@responsive portrait, landscape and desktop House routes', async ({ page }
 
   await page.setViewportSize({ width: 844, height: 390 });
   await page.reload();
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`, { timeout: 45_000 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
   await showRooms(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.reload();
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`, { timeout: 45_000 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
   for (const view of ['rooms', 'edit', 'proof', 'access', 'house']) {
@@ -245,10 +245,10 @@ test('@source-boundary protected JMStudios identity cannot enter through ordinar
     buffer: Buffer.from(JSON.stringify(forged))
   });
   await expect(page.locator('#toast')).toContainText('JMStudios original-source identity requires verified lineage pair');
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`);
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`);
   expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.some(x => x.id === 'jmstudios-actual-crown'))).toBeFalsy();
   await page.reload();
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`, { timeout: 45_000 });
   expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.some(x => x.id === 'jmstudios-actual-crown'))).toBeFalsy();
 });
 
@@ -268,7 +268,7 @@ test('@source-boundary fake lineage cannot crown altered JMStudios HTML', async 
     buffer: Buffer.from(JSON.stringify(forged))
   });
   await expect(page.locator('#toast')).toContainText('JMStudios exact-source verification HOLD');
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`);
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`);
   expect(await page.evaluate(() => window.GamesBeyond.pack.bodies.filter(x => x.id.startsWith('jmstudios-')).length)).toBe(0);
 });
 
@@ -315,7 +315,7 @@ test('@source-boundary verified pair survives full backup into a fresh browser c
   await openHouse(page);
   const incoming = {source_custody:{original_lineage_zip_file:'JM_STUDIOS_B0_8_CROWN_CHAIN_UNIQUE_LINEAGE_v1_0.zip'},bodies};
   await page.locator('#importFile').setInputFiles({name:'synthetic-pair.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(incoming))});
-  await expect(page.locator('#status')).toHaveText('24/24 FULL HOUSE');
+  await expect(page.locator('#status')).toHaveText('24/24 HOUSE ROOMS');
   await expect(page.locator('#editedStat')).toHaveText('0');
   await page.locator('.nav [data-view="proof"]').click();
   const downloadWait=page.waitForEvent('download');await page.locator('#exportHouse').click();
@@ -331,8 +331,8 @@ test('@source-boundary verified pair survives full backup into a fresh browser c
   try {
     const fresh=await context.newPage();await intercept(fresh);await openHouse(fresh);
     await fresh.locator('#importFile').setInputFiles({name:'synthetic-full-backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
-    await expect(fresh.locator('#status')).toHaveText('24/24 FULL HOUSE');
-    await fresh.reload();await expect(fresh.locator('#status')).toHaveText('24 MOUNTED · 24 FULL');
+    await expect(fresh.locator('#status')).toHaveText('24/24 HOUSE ROOMS');
+    await fresh.reload();await expect(fresh.locator('#status')).toHaveText('24 MOUNTED ROOMS');
     await expect(fresh.locator('#editedStat')).toHaveText('1');
     expect(await fresh.evaluate(()=>window.GamesBeyond.pack.bodies.filter(b=>b.edited).map(b=>b.id))).toEqual(['gameforge']);
     const restored=await fresh.evaluate(()=>window.GamesBeyond.pack.bodies.filter(b=>b.id.startsWith('jmstudios-')).map(b=>({id:b.id,html:b.html,hash:b.hash,edited:b.edited})));
@@ -345,7 +345,7 @@ test('@boot controlled House navigation preserves modern Catalogue without obsol
   await openHouse(page);
   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null);
   await page.reload();
-  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, {timeout:45_000});
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED ROOMS`, {timeout:45_000});
   await expect(page.locator('.hero p')).toContainText('Mounted Rooms follow the verified payload manifest');
   await expect(page.getByRole('tab',{name:'CATALOGUE'})).toBeVisible();
   await expect(page.locator('#view-catalogue-current iframe')).toHaveAttribute('src', /all-games\.html/);

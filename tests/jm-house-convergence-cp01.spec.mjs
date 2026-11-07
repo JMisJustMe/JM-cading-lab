@@ -48,7 +48,11 @@ test('H02 original Theory home contains only local owner-controlled import; no s
   assert.match(theoryPage,/sandbox="allow-scripts"/);
   assert.doesNotMatch(theoryPage,/script src="\.\/owner-register-97\.js/);
   assert.match(theoryReader,/id="jmOwnerTheory97File"/);
-  assert.match(theoryReader,/owner-register-97\.js/);
+  assert.match(theoryReader,/<script>/);
+  assert.doesNotMatch(theoryReader,/<script[^>]*src=/);
+  const liveReaderScript=theoryReader.match(/<script>([\s\S]*?)<\/script>/)?.[1]?.trim();
+  assert.equal(liveReaderScript,theory.trim(),"The offline reader must inherit the exact same script donor");
+  assert.match(theoryReader,/script-src 'unsafe-inline'/);
   assert.match(theoryReader,/connect-src 'none'/);
   assert.match(theoryReader,/default-src 'none'/);
   assert.match(theoryPage,/47 original-source seats and four remaining holds/);

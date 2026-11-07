@@ -5,6 +5,7 @@ import { test } from 'node:test';
 
 const theory=fs.readFileSync('theory/owner-register-97.js','utf8');
 const theoryPage=fs.readFileSync('theory/index.html','utf8');
+const theoryReader=fs.readFileSync('theory/owner-register-97-reader.html','utf8');
 const gameHome=fs.readFileSync('games-beyond/index.html','utf8');
 const gameCatalog=fs.readFileSync('games-beyond/all-games.html','utf8');
 const gameApp=fs.readFileSync('games-beyond/app.js','utf8');
@@ -44,8 +45,12 @@ async function choose(u,obj){
 }
 
 test('H02 original Theory home contains only local owner-controlled import; no source upload',()=>{
-  assert.match(theoryPage,/id="jmOwnerTheory97File"/);
-  assert.match(theoryPage,/owner-register-97\.js/);
+  assert.match(theoryPage,/sandbox="allow-scripts"/);
+  assert.doesNotMatch(theoryPage,/script src="\.\/owner-register-97\.js/);
+  assert.match(theoryReader,/id="jmOwnerTheory97File"/);
+  assert.match(theoryReader,/owner-register-97\.js/);
+  assert.match(theoryReader,/connect-src 'none'/);
+  assert.match(theoryReader,/default-src 'none'/);
   assert.match(theoryPage,/47 original-source seats and four remaining holds/);
   assert.doesNotMatch(theory,/\bfetch\s*\(|XMLHttpRequest|localStorage|indexedDB|sendBeacon|WebSocket|eval\s*\(/);
 });

@@ -1,0 +1,31 @@
+{
+  "messages": [
+    {
+      "position": 0,
+      "role": "user",
+      "text": "Preserve this conversation, picture and document"
+    },
+    {
+      "position": 1,
+      "role": "assistant",
+      "text": "The picture belongs here",
+      "attachments": [
+        {
+          "path": "media/image.png",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "position": 2,
+      "role": "assistant",
+      "text": "Derived document",
+      "attachments": [
+        {
+          "path": "docs/derived.docx",
+          "position": 0
+        }
+      ]
+    }
+  ]
+}

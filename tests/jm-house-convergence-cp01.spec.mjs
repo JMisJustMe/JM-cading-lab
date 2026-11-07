@@ -108,6 +108,7 @@ test('H05 and books retain their existing independent seats rather than count in
   assert.match(appHome,/\.\.\/theory\/#jmOwnerTheory97/);
   assert.match(appHome,/\.\.\/games-beyond\/all-games\.html/);
   assert.match(appHome,/\.\.\/books\//);
+  assert.match(appHome,/\.\.\/visual-story\//);
   assert.match(bookHome,/56<\/b><small>primary Book \/ Written bodies/);
   assert.match(bookHome,/98<\/b><small>Liebury \/ Bookcase routes/);
 });

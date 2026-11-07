@@ -47,7 +47,7 @@ function activateCatalogue(){
     <iframe id="wholeGamesCatalogueFrame" loading="lazy" title="Searchable public Whole Current Games Estate catalogue" src="all-games.html?v=${REV}" style="display:block;width:100%;min-height:80dvh;margin-top:9px;border:1px solid var(--line);border-radius:18px;background:#050811"></iframe>`;
     view.dataset.jmCatalogueRendered=REV;
     const frame=view.querySelector('#wholeGamesCatalogueFrame');
-    if(frame)frame.addEventListener('load',()=>{try{const count=frame.contentDocument?.getElementById('statAll')?.textContent?.trim();const slot=view.querySelector('#catalogueRecordCount');if(slot&&/^\\d+$/.test(count||''))slot.textContent=count+' public records · mounted Rooms counted separately';else if(slot)slot.textContent='Open the full catalogue for the current count';}catch{const slot=view.querySelector('#catalogueRecordCount');if(slot)slot.textContent='Open full catalogue to browse records';}});
+    if(frame)frame.addEventListener('load',()=>{try{const count=frame.contentDocument?.getElementById('statAll')?.textContent?.trim();const slot=view.querySelector('#catalogueRecordCount');if(slot&&/^\d+$/.test(count||''))slot.textContent=count+' public records · mounted Rooms counted separately';else if(slot)slot.textContent='Open the full catalogue for the current count';}catch{const slot=view.querySelector('#catalogueRecordCount');if(slot)slot.textContent='Open full catalogue to browse records';}});
   }
   btn.textContent='CATALOGUE';
   const label=document.querySelector('.brand small');

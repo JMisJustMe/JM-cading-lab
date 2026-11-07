@@ -318,7 +318,7 @@ public final class LauncherLabActivity extends Activity {
     button("Prepare GroundZeroJM handoff text",()->shareTemplate("GROUNDZEROJM"));
     label("JM HEADLESS / GITHUB WORKFLOW",15,INK);
     button("View current Home Lab checks",()->openGitHubChecks(false));
-    button("Open last verified CI run",()->openGitHubChecks(true));
+    button("View verified baseline CI run",()->openGitHubChecks(true));
     label("An authenticated GitHub owner can review or re-run the verified"
       +" workflow from the GitHub interface. This app only opens the page;"
       +" it does not trigger jobs or request repository credentials.",12,SOFT);

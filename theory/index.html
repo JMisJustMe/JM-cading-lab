@@ -7,7 +7,14 @@
 <meta name="description" content="Explore JM theory bodies, formation rooms, projects, districts, proofs and recoverable source routes without flattening their distinctions.">
 <title>JM Theory Multihub v0.20.1 — Living Theory Estate</title>
 <link rel="stylesheet" href="./app.css?v=0411">
-<link rel="stylesheet" href="../ecostate-visual-v1.css"><link rel="stylesheet" href="../ecostate-personality-v2.css"><link rel="stylesheet" href="../ecostate-authored-v3.css"><link rel="stylesheet" href="../ecostate-contact-v4.css"></head>
+<link rel="stylesheet" href="../ecostate-visual-v1.css"><link rel="stylesheet" href="../ecostate-personality-v2.css"><link rel="stylesheet" href="../ecostate-authored-v3.css"><link rel="stylesheet" href="../ecostate-contact-v4.css"><style>
+#jmOwnerTheory97 .jm-theory-private-entry{border:1px solid #3b5975;border-radius:10px;margin:6px 0;padding:8px 11px;background:#091727}
+#jmOwnerTheory97 summary{cursor:pointer;line-height:1.45}
+#jmOwnerTheory97 summary strong{font-size:.93rem}
+#jmOwnerTheory97 .jm-theory-private-muted{font-size:.78rem;color:#b8c9d8}
+#jmOwnerTheory97 .jm-theory-private-grade{font-weight:760;color:#fbd995}
+#jmOwnerTheory97 p{max-width:920px}
+</style></head>
 <body data-public-route-wave="01" data-ecostate-surface="theory">
 <a class="skip" href="#main">Skip to content</a>
 <header class="topbar"><div class="mark" aria-hidden="true">Θ</div><div class="brand"><strong>JM THEORY MULTIHUB</strong><small>v0.20.1 integrity layer · v0.19 reconciled shell</small></div><div class="topstats"><span class="pill"><b id="topFullBodies">17</b> full bodies</span><span class="pill exact-master-count"><b id="topExactMasters">8</b> exact masters</span><span class="pill mounted-room-count"><b id="topMountedRooms">42</b> mounted rooms</span><span class="pill"><b id="topRoutes">300</b> census routes</span><span class="pill"><b id="topFirstStageRoutes">256</b> First Stage routes</span><span class="pill"><b id="topDeepRecovered">34</b> deep recovered</span><span class="pill"><b id="topT2Recovered">154</b> exact T2 routes</span><span class="pill"><b id="topT1Reconciled">68</b> T1 reconciled</span></div></header>
@@ -27,9 +34,22 @@
 <main id="main">
 <section aria-label="Theory source custody and publication boundary" style="margin:16px 0;padding:18px;border:1px solid #46637a;border-radius:16px;background:#101d2b;color:#e8f3fa;line-height:1.55">
 <strong style="display:block;font-size:1.12rem">51-theory source-custody boundary · private collection</strong>
-<p>The original sovereign theory register accounts for 51 identities. The existing private CP46 reading edition records 46 authenticated complete source-backed seats and five original-source custody holds (#05, #10, #19, #27, #49). This public Theory Multihub is a separate, smaller access and source-depth surface; its 17 full-body count is not the 51-theory sourcebook.</p>
+<p>The private strict-manuscript register accounts for 51 sovereign identities. Its CP46 reading edition was prepared at 46 authenticated complete source-backed seats and five holds; later CP52 source recovery established 47 original-source seats and four remaining holds (#05, #10, #19, #49). The separate JM Master Theory Register v0.3 holds 97 theory/framework/method identities (58 source cards, 39 register/shelf contacts). These registers overlap in scope and must never be added, silently merged or reclassified as 97 public manuscripts. This public Multihub's 17 full-body count is a different, independently proven mounted grade.</p>
 <p><strong>Privacy:</strong> The complete private sourcebook and its original source custody are not published here. An identity, summary, route or source-depth card must not be mistaken for a released full manuscript or scientific validation.</p>
 <a href="./full-bodies/" style="display:inline-block;padding:10px 14px;border:1px solid #7de6f4;border-radius:10px;color:#e8faff">Explore existing public source-depth vault</a>
+</section>
+<section id="jmOwnerTheory97" aria-label="Owner-private 97-body theory shelf" style="margin:14px 0;padding:16px;border:1px solid #537e94;border-radius:16px;background:#101d2b;color:#e8f3fa;line-height:1.5">
+<h2 style="margin:0 0 7px;font-size:1.15rem">Your complete 97-identity theory register · private owner shelf</h2>
+<p style="margin:0 0 12px;color:#c0d0e0">The 97 belong in this Theory Wing alongside the independently sourced 51-manuscript collection and public 300-route census. Select your original <code>JM_MASTER_THEORY_REGISTER_v0_3_SOURCE_STAGE_COMPLETE.json</code> or the later H02 owner-custody JSON to browse all 97 here. <strong>Owner-selected file only:</strong> this module neither uploads nor stores its contents, and no unverified summary is promoted to a full manuscript.</p>
+<div style="display:flex;flex-wrap:wrap;gap:9px;align-items:center">
+<label for="jmOwnerTheory97File" style="font-weight:750">Load owner-private theory register (.json)</label>
+<input id="jmOwnerTheory97File" type="file" accept=".json,application/json" aria-describedby="jmOwnerTheory97Status" style="max-width:100%">
+<input id="jmOwnerTheory97Search" type="search" placeholder="Search all 97 by name, ID, family or subject" aria-label="Search owner theory register" disabled style="flex:1 1 210px;min-width:0;background:#08121c;border:1px solid #537e94;border-radius:8px;padding:10px">
+<button id="jmOwnerTheory97Clear" type="button" disabled style="border:1px solid #537e94;border-radius:8px;padding:10px;background:#091320">Clear local view</button>
+</div>
+<p id="jmOwnerTheory97Status" role="status" aria-live="polite" style="color:#bddcf0;font-size:.84rem;margin:10px 0">Owner-private 97 register not loaded.</p>
+<div id="jmOwnerTheory97Rows" aria-label="97 original theory identities" style="max-height:55vh;overflow:auto">
+</div>
 </section>
 <section class="view active" data-view-panel="home">
 <div class="hero">
@@ -53,6 +73,7 @@
 <nav class="mobile-nav" aria-label="Mobile Theory Wing navigation"><button type="button" class="active" data-view="home">Crown</button><button type="button" data-view="library">Census</button><button type="button" data-view="rooms">Rooms</button><button type="button" data-view="projects">Projects</button><button type="button" data-view="districts">Districts</button><button type="button" data-view="proof">Proof</button></nav>
 <div class="loading" id="loading"><div><div class="spinner" aria-hidden="true"></div><h2>Opening the Theory Wing…</h2><p id="loadStatus">Fetching seven mounted census sections.</p><div id="loadError" class="error"></div></div></div>
 <noscript><div class="loading error-state"><div><h2>JavaScript is required for the searchable census.</h2><p><a class="btn primary" href="./full-bodies/">Open the source-depth vault</a></p></div></div></noscript>
+<script src="./owner-register-97.js?v=cp01"></script>
 <script src="./app.js?v=0410"></script>
 <script src="./chat-graft-v3.js?v=1200"></script>
 <script src="./chat-graft-v4.js?v=1300"></script>

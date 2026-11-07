@@ -42,7 +42,7 @@ function activateCatalogue(){
       </div><a class="btn gold" href="all-games.html?v=${REV}">OPEN FULL PAGE</a></div>
       <p id="catalogueRecordCount" class="law" role="status" aria-live="polite" style="margin-top:10px">Reading public catalogue records…</p>
       <form action="all-games.html" method="get" class="row" aria-label="Search all game records"><label class="sr-only" for="catalogueQuery">Search all public Games Estate records</label><input id="catalogueQuery" name="q" type="search" class="search" placeholder="Find original games, COMBOUND, FPS…" style="flex:1 1 220px" required><button class="btn cyan" type="submit">SEARCH FULL CATALOGUE</button></form>
-      <p style="font-size:.72rem;color:var(--muted)">An earlier CP14 report counted 143 catalogue identities; the current public source has a different 140-record scope. Record-by-record reconciliation remains open. Private family-only originals remain protected. These counts are not unique completed games.</p>
+      <p style="font-size:.72rem;color:var(--muted)">The current public catalogue renders 143 records, including three later historical additions. The earlier CP14 report also counted 143; a numeric match is not proof of full source-custody equivalence. Private family-only originals remain protected. These are not unique completed games.</p>
     </section>
     <iframe id="wholeGamesCatalogueFrame" loading="lazy" title="Searchable public Whole Current Games Estate catalogue" src="all-games.html?v=${REV}" style="display:block;width:100%;min-height:80dvh;margin-top:9px;border:1px solid var(--line);border-radius:18px;background:#050811"></iframe>`;
     view.dataset.jmCatalogueRendered=REV;

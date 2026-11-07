@@ -1,0 +1,32 @@
+name: JM House Convergence CP01 — Source-Safe Owner Doors
+on:
+  pull_request:
+    paths:
+      - 'theory/index.html'
+      - 'theory/owner-register-97.js'
+      - 'games-beyond/index.html'
+      - 'games-beyond/all-games.html'
+      - 'tests/jm-house-convergence-cp01.spec.mjs'
+      - '.github/workflows/jm-house-convergence-cp01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  house-source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static JavaScript syntax
+        run: node --check theory/owner-register-97.js
+      - name: Source-preserving H02 H04 H05 Books cross-home checks
+        run: node --test tests/jm-house-convergence-cp01.spec.mjs
+      - name: Ensure no original / private theory manuscripts enter public bundle
+        run: |
+          test ! -f theory/JM_MASTER_THEORY_REGISTER_v0_3_SOURCE_STAGE_COMPLETE.json
+          test ! -f theory/JM_THEORY_97_HOUSE_SOURCE_CONTACT_CP01.json
+          test ! -f games-beyond/JM_COMBOUND_ORIGINAL_v3_7_11_CP17_CREATURE_DEFINITION_ANIMATION_CANDIDATE.html

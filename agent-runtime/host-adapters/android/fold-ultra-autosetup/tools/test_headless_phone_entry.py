@@ -21,7 +21,7 @@ class GitHubOwnerControlSourceContract(unittest.TestCase):
     def test_current_and_verified_run_doors_are_owner_tapped(self):
         self.assertIn('button("JM HEADLESS · Open current checks",()->openGitHubChecks(false))',
                       CANDIDATE)
-        self.assertIn('button("Open last verified CI run",()->openGitHubChecks(true))',
+        self.assertIn('button("View verified baseline CI run",()->openGitHubChecks(true))',
                       CANDIDATE)
 
     def test_browser_uses_github_owner_domain_and_known_paths(self):

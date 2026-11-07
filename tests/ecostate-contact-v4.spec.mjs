@@ -75,5 +75,65 @@ console.log(JSON.stringify({reducedMotion:true,...reducedState,ok:reducedState.c
 if(!(reducedState.contact==='v4'&&reducedState.story&&reducedState.veil&&!reducedState.overflow))failed=true;
 await reduced.close();
 
+// November front-door regression: browser storage may be malformed or denied.
+// These are public-shell boot and owner-byte preservation checks, not device custody proof.
+for (const scenario of ['malformed-recent', 'unknown-mounted', 'denied-storage']) {
+  const context=await browser.newContext({viewport:{width:390,height:844}});
+  await context.addInitScript(kind=>{
+    if(kind==='malformed-recent') localStorage.setItem('jm-estate-recent','{bad-json');
+    if(kind==='unknown-mounted') localStorage.setItem('jm-estate-mounted','{"unknown":"owner bytes"}');
+    if(kind==='denied-storage'){
+      for(const method of ['getItem','setItem','removeItem']){
+        Storage.prototype[method]=()=>{throw new Error('Device storage denied')};
+      }
+    }
+  },scenario);
+  const page=await context.newPage();
+  let ok=true,detail={};
+  try{
+    await page.goto('http://127.0.0.1:4175/',{waitUntil:'domcontentloaded',timeout:30000});
+    await page.waitForSelector('#featureDoors .door-card',{timeout:10000});
+    detail=await page.evaluate(()=>({
+      features:document.querySelectorAll('#featureDoors .door-card').length,
+      year:document.querySelector('#year')?.textContent,
+      mounted:document.querySelector('#mountedCount')?.textContent,
+      storageHold:document.querySelector('#storageSupport')?.textContent||''
+    }));
+    const expectedHold=scenario==='malformed-recent'?'recent':scenario==='unknown-mounted'?'mounted':'favourites';
+    ok=detail.features>=5 && Number(detail.year)>2020 && Boolean(detail.mounted) && detail.storageHold.includes('OWNER STORAGE HOLD') && detail.storageHold.includes(expectedHold);
+    if(scenario==='malformed-recent'){
+      // Click the real feature-door handler; module-private trackRecent is not global.
+      await page.locator('#featureDoors [data-card-id]').first().click();
+      await page.waitForLoadState('domcontentloaded');
+      const preserved=await page.evaluate(()=>localStorage.getItem('jm-estate-recent')==='{bad-json');
+      ok=ok&&preserved;detail.preserved=preserved;
+    }
+    if(scenario==='unknown-mounted'){
+      // Exercise the actual file-input owner mount, not an inaccessible module function.
+      await page.locator('#htmlMountInput').setInputFiles({
+        name:'storage-probe.html',mimeType:'text/html',
+        buffer:Buffer.from('<!doctype html><html><body>JM probe</body></html>')
+      });
+      await page.waitForFunction(()=>document.querySelector('#toast')?.textContent?.includes('Local storage could not accept'));
+      const preserved=await page.evaluate(()=>localStorage.getItem('jm-estate-mounted')==='{"unknown":"owner bytes"}'&&document.querySelector('#mountedCount')?.textContent==='0 BODIES');
+      ok=ok&&preserved;detail.preserved=preserved;
+    }
+    if(scenario==='denied-storage'){
+      // Dispatch the real notes input event even when the Owner view is not visible.
+      const kept=await page.locator('#ownerNotes').evaluate(el=>{
+        el.value='session-only test';
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        return el.value;
+      });
+      const warning=(await page.locator('#toast').textContent())||'';
+      ok=ok&&kept==='session-only test'&&warning.includes('Owner notes are session-only');
+      detail.notesInput=kept;detail.sessionOnlyWarning=warning.includes('Owner notes are session-only');
+    }
+  }catch(error){ok=false;detail.error=String(error)}
+  console.log(JSON.stringify({frontDoorStorageScenario:scenario,...detail,ok}));
+  if(!ok)failed=true;
+  await context.close();
+}
+
 await browser.close();
 if(failed)process.exit(1);

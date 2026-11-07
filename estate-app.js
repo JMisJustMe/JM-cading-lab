@@ -69,11 +69,38 @@ const HOUSES = [
   {id:'owner-house',name:'Owner Room',kind:'Owner',state:'LOCAL-FIRST',accent:'#ffd166',route:'owner',summary:'Device-only mounting, notes, favourites, recent routes and portable receipts without pretending local storage is server security.',proof:'Local controls work without uploading private HTML.'}
 ];
 
+// A damaged or denied device store must not prevent the public Estate from booting.
+// Read-only fallback never repairs, deletes, or overwrites unknown owner bytes.
+const ownerStorageHolds = [];
+const validFavourite = value => typeof value === 'string';
+const validRecent = value => value && typeof value === 'object' && typeof value.id === 'string' && typeof value.name === 'string';
+const validMounted = value => validRecent(value) && typeof value.content === 'string' && Number.isFinite(value.bytes) && value.bytes >= 0 && typeof value.at === 'string';
+function readStoredList(key, validItem) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return [];
+    const value = JSON.parse(raw);
+    if (Array.isArray(value) && value.every(validItem)) return value;
+  } catch (_) {}
+  ownerStorageHolds.push(key);
+  return [];
+}
+function writeStoredList(key, value, validItem) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw !== null) {
+      const existing = JSON.parse(raw);
+      if (!Array.isArray(existing) || !existing.every(validItem)) return false;
+    }
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (_) { return false; }
+}
 const state = {
   route:'estate', filter:'All', directoryQuery:'', libraryQuery:'',
-  favourites:new Set(JSON.parse(localStorage.getItem('jm-estate-favourites')||'[]')),
-  recent:JSON.parse(localStorage.getItem('jm-estate-recent')||'[]'),
-  mounted:JSON.parse(localStorage.getItem('jm-estate-mounted')||'[]'),
+  favourites:new Set(readStoredList('jm-estate-favourites', validFavourite)),
+  recent:readStoredList('jm-estate-recent', validRecent),
+  mounted:readStoredList('jm-estate-mounted', validMounted),
   data:structuredClone(FALLBACK)
 };
 
@@ -129,7 +156,7 @@ function routeTo(name,push=true){
 function trackRecent(item){
   const entry={id:item.id,name:item.name,path:item.path||null,route:item.route||null,at:new Date().toISOString()};
   state.recent=[entry,...state.recent.filter(x=>x.id!==entry.id)].slice(0,8);
-  localStorage.setItem('jm-estate-recent',JSON.stringify(state.recent));
+  if(!writeStoredList('jm-estate-recent',state.recent,validRecent)) toast('Recent route is session-only; protected or unavailable device storage.',true);
   renderOwner();
 }
 function openItem(item){
@@ -140,9 +167,9 @@ function openItem(item){
 }
 function toggleFavourite(id){
   state.favourites.has(id)?state.favourites.delete(id):state.favourites.add(id);
-  localStorage.setItem('jm-estate-favourites',JSON.stringify([...state.favourites]));
+  const saved=writeStoredList('jm-estate-favourites',[...state.favourites],validFavourite);
   renderDirectory();renderContinue();renderOwner();
-  toast(state.favourites.has(id)?'Added to your owner shelf.':'Removed from favourites.');
+  toast(saved?(state.favourites.has(id)?'Added to your owner shelf.':'Removed from favourites.'):'Favourite changed for this session only; device storage unavailable or protected.',!saved);
 }
 function getAllItems(){
   const gameItems=state.data.games.map(g=>({...g,kind:'Games',state:g.stage,summary:g.role,path:`./games-beyond/?jm-play=${encodeURIComponent(g.id)}`,proof:`${g.room} · ${g.version}`}));
@@ -216,7 +243,7 @@ function renderCommand(){
 }
 // Commit local mounting atomically: never replace in-memory source before durable storage accepts it.
 function saveMounted(next=state.mounted){
-  localStorage.setItem('jm-estate-mounted',JSON.stringify(next));
+  if(!writeStoredList('jm-estate-mounted',next,validMounted)) throw new Error('Owner-mounted source could not be stored without overwriting protected bytes.');
   state.mounted=next;
   renderOwner();
 }
@@ -297,8 +324,9 @@ function wireEvents(){
   $('#previewClose').addEventListener('click',()=>{$('#previewDialog').close();$('#previewFrame').src='about:blank';if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null});
   $('#exportReceiptButton').addEventListener('click',exportReceipt);
   $('#htmlMountInput').addEventListener('change',event=>mountFiles([...event.target.files]));
-  const notes=$('#ownerNotes');notes.value=localStorage.getItem('jm-estate-owner-notes')||'';notes.addEventListener('input',()=>localStorage.setItem('jm-estate-owner-notes',notes.value));
-  $('#clearNotesButton').addEventListener('click',()=>{notes.value='';localStorage.removeItem('jm-estate-owner-notes');toast('Owner notes cleared.')});
+  const notes=$('#ownerNotes');try{notes.value=localStorage.getItem('jm-estate-owner-notes')||''}catch{notes.value=''}
+  notes.addEventListener('input',()=>{try{localStorage.setItem('jm-estate-owner-notes',notes.value)}catch{toast('Owner notes are session-only; device storage is unavailable.',true)}});
+  $('#clearNotesButton').addEventListener('click',()=>{try{localStorage.removeItem('jm-estate-owner-notes');notes.value='';toast('Owner notes cleared.')}catch{toast('Owner notes could not be cleared from device storage.',true)}});
   $('#copyNotesButton').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(notes.value);toast('Owner notes copied.')}catch{toast('Copy was blocked by this browser.',true)}});
   window.addEventListener('online',updateNetwork);window.addEventListener('offline',updateNetwork);window.addEventListener('popstate',()=>routeTo(location.hash.slice(1)||'estate',false));
   window.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();$('#commandPalette').showModal();renderPalette();setTimeout(()=>$('#paletteSearch').focus(),50)}});
@@ -307,7 +335,8 @@ function wireEvents(){
 async function init(){
   $('#year').textContent=new Date().getFullYear();
   renderFeatureDoors();renderContinue();renderFilters();renderDirectory();renderLibrary();renderCommand();renderOwner();wireEvents();registerPWA();updateNetwork();
-  $('#storageSupport').textContent='Device-only local storage ready. Larger bodies should use Games & Beyond IndexedDB mounting.';
+  const heldOwnerKeys=ownerStorageHolds.map(key=>key.replace('jm-estate-','')).join(', ');
+  $('#storageSupport').textContent=heldOwnerKeys?`OWNER STORAGE HOLD (${heldOwnerKeys}): saved bytes are protected, not shown or overwritten. Recover them before changing this shelf.`:'Device-only storage is used when available; unknown saved bytes are preserved. Larger bodies should use Games & Beyond IndexedDB mounting.';
   routeTo(location.hash.slice(1)||'estate',false);
   await loadRegistries();applyEstateHeadPublicAuthority();
   $('#liveRouteCount').textContent=state.data.estate.routes.length;$('#gameBodyCount').textContent=state.data.games.length;

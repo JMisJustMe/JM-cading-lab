@@ -373,12 +373,23 @@ async function importHouse(file){
    else{pack.bodies.push(item);protectedBodies.set(item.id,structuredClone(item))}
    if(!item.edited)protectedBodies.set(item.id,structuredClone(item));
   }
-  const full=manifest.fullTargetCount||manifest.builtInBodyCount||manifest.bodyCount,done=pack.bodies.length>=full;
-  $('status').textContent=done?`${full}/${full} HOUSE ROOMS`:`${pack.bodies.length} MOUNTED ROOMS`;
+  // CP24: 24 mounted slots are not proof of the two independent, private JMStudios originals.
+  // Other owner-local games extend the House without satisfying the protected pair gate.
+  const full=manifest.fullTargetCount||manifest.builtInBodyCount||manifest.bodyCount;
+  const originals=await Promise.all(Object.keys(JMSTUDIOS_ORIGINAL_HASHES).map(async id=>
+    isOriginalJMStudios(findBody(id))));
+  const verifiedOriginals=originals.filter(Boolean).length;
+  const done=pack.bodies.length>=full&&verifiedOriginals===Object.keys(JMSTUDIOS_ORIGINAL_HASHES).length;
+  $('status').textContent=done&&pack.bodies.length===full
+    ? `${full}/${full} HOUSE ROOMS`
+    : `${pack.bodies.length} MOUNTED ROOMS · JMSTUDIOS ${verifiedOriginals}/2 ${done?'VERIFIED':'HOLD'}`;
   $('status').className='status '+(done?'ok':'');
-  await receipt(done?'ECO_ESTATE_FULL_HOUSE_IMPORTED':'HOUSE_BACKUP_IMPORTED','Games&Beyond',{incoming:incoming.bodies.length,added,updated,mounted:pack.bodies.length,fullTarget:full,verifiedOriginals:exactPair?2:0});
+  await receipt(done?'ECO_ESTATE_FULL_HOUSE_IMPORTED':'HOUSE_BACKUP_IMPORTED','Games&Beyond',
+    {incoming:incoming.bodies.length,added,updated,mounted:pack.bodies.length,
+      fullTarget:full,verifiedOriginals,completeProtectedHouse:done});
   renderAll();await runAudit(false);
-  toast(done?`${full}-body full House mounted`:`Import added ${added} bodies`);
+  toast(done?`Verified protected House plus ${pack.bodies.length-full} owner-local additions`
+    :`Import added ${added} owner-local bodies; JMStudios ${verifiedOriginals}/2 HOLD`);
  }catch(err){toast('Import failed: '+err.message,true)}
 }
 async function clearEdits(){if(!confirm('Clear all local edits and imported bodies?'))return;for(const x of await all('edits'))await remove('edits',x.id);location.reload()}

@@ -31,7 +31,7 @@ jobs:
       - name: Boot and registry gate
         run: npx playwright test --project=mobile-chromium --grep '@boot'
       - name: CP22 real whole-catalogue and missing-door browser contracts
-        run: npx playwright test tests/catalogue-cp22.spec.mjs --project=mobile-chromium --project=desktop-chromium
+        run: npx playwright test tests/catalogue-cp22.spec.mjs tests/crewbound-live-door-cp23.spec.mjs tests/futarized-public-recovery-cp23.spec.mjs --project=mobile-chromium --project=desktop-chromium
       - name: Mounted room opens
         run: npx playwright test --project=mobile-chromium --grep '@room-open'
       - name: Mounted room Ding contact

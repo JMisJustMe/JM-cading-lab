@@ -292,6 +292,8 @@ public final class MainActivity extends Activity {
   void root(){
     btn(page,"JM WORKROOM / Write · Code · Files",true,()->
       startActivity(new Intent(this,com.jmisjustme.foldultra.workroom.WorkroomActivity.class)));
+    btn(page,"JM HOME LAB / Layout · Apps · Devices",false,()->
+      startActivity(new Intent(this,com.jmisjustme.foldultra.launcher.LauncherLabActivity.class)));
     String focus=sp.getString("focus","CREATE");
     LinearLayout c=card("CURRENT FIELD",focus+" / "+(wide?"WORKFIELD":"SOURCE"),
       wide?"Expanded creative and testing routes.":"One-handed fast routes and capture.",PURPLE);

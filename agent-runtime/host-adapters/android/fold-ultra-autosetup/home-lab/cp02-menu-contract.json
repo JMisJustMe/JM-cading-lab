@@ -1,0 +1,81 @@
+{
+  "schema": "JM.HomeLab/CP02",
+  "date": "2026-11-06",
+  "parent": {
+    "body": "JM FOLD ULTRA",
+    "package": "com.jmisjustme.foldultra",
+    "ancestor": "jm/fold-ultra-workroom-cp05-20261026",
+    "cp01Candidate": "jm/fold-ultra-home-lab-cp01-20261106"
+  },
+  "newScope": "owner-customizable native HOME LAB menus; still not an Android default HOME activity",
+  "profiles": {
+    "FOLD8": {
+      "gridKey": "layout.mode.FOLD8",
+      "tileKey": "menu.tiles.FOLD8",
+      "legacyFallback": "layout.mode"
+    },
+    "OPPO": {
+      "gridKey": "layout.mode.OPPO",
+      "tileKey": "menu.tiles.OPPO",
+      "legacyFallback": null
+    }
+  },
+  "mutableLocalPrefsOnly": [
+    "device.role",
+    "layout.mode.FOLD8",
+    "layout.mode.OPPO",
+    "menu.tiles.FOLD8",
+    "menu.tiles.OPPO",
+    "layout.mode (historical Fold8 compatibility)"
+  ],
+  "defaultTiles": [
+    "ROOT",
+    "WORKROOM",
+    "DRAWER",
+    "DEVICES",
+    "LAYOUT",
+    "BACK"
+  ],
+  "invariantVisible": [
+    "ROOT",
+    "BACK"
+  ],
+  "independentSources": [
+    {
+      "name": "JM PHONE ↔ LAPTOP v0.5",
+      "kind": "DONOR_REFERENCE_ONLY",
+      "authorityRecord": "JM_ESTATE/PHONE_LAPTOP/v0.5/FLAZ_RECEIPT_v1.0.md"
+    },
+    {
+      "name": "Fold Ultra Estate CP03",
+      "kind": "UNMERGED_SIBLING",
+      "pr": 708
+    }
+  ],
+  "userActions": [
+    "reorder adjacent tiles",
+    "hide/re-show permitted tiles",
+    "restore default",
+    "choose local device profile",
+    "choose independent compact/expanded grid"
+  ],
+  "untouched": [
+    "original JM Workroom",
+    "original JM root note",
+    "sessions",
+    "Return Points",
+    "installed applications",
+    "Samsung launcher",
+    "system HOME",
+    "other devices"
+  ],
+  "proofGates": {
+    "nativeCompile": "EXACT_CI_REQUIRED",
+    "javaPortable": "EXACT_CI_REQUIRED",
+    "androidMenuTouch": "EXACT_CI_REQUIRED",
+    "physicalSamsung": "NOT_TESTED",
+    "physicalOppo": "NOT_TESTED",
+    "remoteConnection": "NOT_IMPLEMENTED"
+  },
+  "preservation": "Additive protected draft PR; no merge/deploy/install"
+}

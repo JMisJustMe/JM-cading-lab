@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- QA install is a separately identifiable package with its own Android app data. -->
+    <application android:label="JM Home Lab QA" tools:replace="android:label">
+        <activity android:name=".MainActivity">
+            <!-- Avoid intercepting original JM deep links, share targets or shortcuts. -->
+            <intent-filter tools:node="removeAll" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" tools:node="remove" />
+        </activity>
+    </application>
+</manifest>

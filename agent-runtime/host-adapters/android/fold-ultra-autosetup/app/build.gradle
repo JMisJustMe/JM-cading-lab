@@ -9,4 +9,24 @@ android {
         versionCode 10
         versionName '1.0.0'
     }
+    // Additive QA identity: never signs over, updates, or shares data with original JM Fold Ultra.
+    buildTypes {
+        homeLabQa {
+            initWith debug
+            applicationIdSuffix '.homelabqa'
+            versionNameSuffix '-home-lab-qa'
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
+    }
+    // Optional side-by-side QA only. assembleDebug remains original package identity.
+    buildTypes {
+        homeqa {
+            initWith debug
+            applicationIdSuffix '.homeqa'
+            versionNameSuffix '-qa'
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+        }
+    }
 }

@@ -110,6 +110,41 @@ def scroll_header(fragment, label):
     raise AssertionError("Expected JM stage heading not visible: "+fragment)
 
 
+def navigate_once_with_verified_room(button, expected, previous, label):
+    """A real native button touch must change the visible room.
+
+    Stock Quickstep ANR can swallow the first tap. A single retry is allowed
+    ONLY when the original room and exact interactive button remain present.
+    Any unexpected screen or a second failure stays HOLD; never mutate saved
+    JM state through ADB, infer navigation from tap success, or force a page.
+    """
+    for attempt in range(2):
+        current=dump("nav_before_"+label+"_"+str(attempt))
+        if match(current,expected):
+            RECEIPTS.append({"check":label+"_confirmed","result":"PASS",
+                             "room":expected,"touches":attempt})
+            return
+        # When the session is scrolled down to the Return Point button, the
+        # session heading is naturally off-screen. The real session body
+        # carries its own distinctive anchors; accept either visible proof.
+        original=(bool(match(current,previous))
+                  or bool(match(current,"PROJECT SESSION / LIVE DRAFT"))
+                  or bool(match(current,"TWO SCREENS / ONE LOCAL STATE")))
+        if not original:
+            capture("HOLD_UNEXPECTED_ROOM_"+label+"_"+str(attempt))
+            raise AssertionError("HOLD: original JM session not visible for "+label)
+        # tap() performs its own native Button, exact-label, safe-bounds
+        # and scroll checks. No fixed coordinate or unguarded tap is allowed.
+        tap(button,label+("_bounded_retry" if attempt else "_first_touch"))
+        updated=dump("nav_after_"+label+"_"+str(attempt))
+        if match(updated,expected):
+            RECEIPTS.append({"check":label+"_confirmed","result":"PASS",
+                             "room":expected,"touches":attempt+1})
+            return
+        capture("NAV_TOUCH_NO_ROOM_"+label+"_"+str(attempt))
+    raise AssertionError("HOLD: two real native touches failed to open "+expected)
+
+
 def advance_stage(button, expected, label, previous, expected_number):
     """One real touch, monotonic saved state, then visible UI.
 
@@ -170,7 +205,9 @@ def main():
     capture("EXPANDED_SESSION")
 
     # Return-point screen: deliberately cancel. Verify no hidden mutation.
-    tap("Capture or recover a JM Return Point","reentry_touch")
+    navigate_once_with_verified_room(
+        "Capture or recover a JM Return Point",
+        "JM / RETURN POINT","JM / SESSION CONTACT","reentry_touch")
     has("JM / RETURN POINT","reentry_room")
     has("Captured from revision 2","return_state_visible")
     tap("RETURN → new revision","open_return_confirmation")

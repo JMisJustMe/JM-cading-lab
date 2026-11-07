@@ -1,0 +1,141 @@
+{
+  "schema": "JM.HomeLab.ExistingDonorContact/0.1",
+  "date": "2026-11-06",
+  "sourceAuthority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "body": "JM PHONE ↔ LAPTOP",
+    "version": "v0.5.0",
+    "recordPath": "JM_ESTATE/PHONE_LAPTOP/v0.5/FLAZ_RECEIPT_v1.0.md",
+    "estateAnchor": "JM_ESTATE/PHONE_LAPTOP/v0.5/",
+    "kind": "EXISTING_INDEPENDENT_SOURCE_NOT_MERGED"
+  },
+  "evidenceBounds": {
+    "recordedPhysicalV02": [
+      "CONNECT",
+      "PAIR",
+      "EXCHANGE",
+      "RECOVER",
+      "REVOKE",
+      "BLOCK"
+    ],
+    "historicalV05SoftwareQA": "27/27 (RECORDED)",
+    "historicalV05FinalGates": "10/10 (RECORDED)",
+    "currentV05LiveHost": "NOT_VERIFIED_FOR_HOME_LAB",
+    "currentV05PhysicalOwnerUse": "NOT_VERIFIED_FOR_HOME_LAB",
+    "currentNativeLauncherIntegration": "NOT_CONNECTED"
+  },
+  "roleCandidates": [
+    {
+      "source": "FOLD8",
+      "target": "GROUNDZEROJM",
+      "interface": "JM PHONE↔LAPTOP donor profile",
+      "state": "CONTRACT_SEAT_ONLY"
+    },
+    {
+      "source": "OPPO",
+      "target": "GROUNDZEROJM",
+      "interface": "JM PHONE↔LAPTOP donor profile",
+      "state": "CONTRACT_SEAT_ONLY"
+    },
+    {
+      "source": "FOLD8",
+      "target": "OPPO",
+      "interface": "NOT_INHERITED_FROM_PHONE_LAPTOP_PROOF",
+      "state": "FUTURE_EXPLICIT_CONTACT"
+    }
+  ],
+  "execution": {
+    "peerDiscovery": false,
+    "credentialsStored": false,
+    "remoteControl": false,
+    "automaticPairing": false,
+    "liveTransport": false,
+    "hostPromoted": false
+  },
+  "law": "CONTACT BEFORE CROWN · MESH ≠ MERGE · NO DING, NO CLAIM",
+  "relatedIndependentExistingLocalContact": {
+    "name": "JM Device2Device CP03.5 — Trusted LAN Windows/Fold",
+    "originalSource": "GroundZeroJM: JM_DEVICE2DEVICE_CP03_5_TRUSTED_LAN_WINDOWS_FOLD/JM_D2D_LAN_EXTENSION_CP03_5.py",
+    "originalManifestSha256Checked": "8/8 original source package files and byte lengths",
+    "historicalSuite": "25/25 tested localhost (recorded 2026-10-21, original source preserved)",
+    "liveWindowsSession": "2026-11-06",
+    "liveWindowsLoopbackRuntime": "7/7 PASS on GroundZeroJM actual local HTTP server, no persistent state",
+    "separateFromPhoneLaptopV05": true,
+    "transport": "HTTP, unencrypted",
+    "phoneConnection": "NOT_CONNECTED",
+    "pairingAuthority": "NOT_ESTABLISHED",
+    "lanExposure": "NOT_ENABLED",
+    "status": "RECOVERED_AND_BOUNDED_LOOPBACK_CONTACT_ONLY",
+    "nextGate": "Owner-approved secure transport selection with authenticated peer connection and revocation"
+  },
+  "externalHostedV051Contact": {
+    "verified": "GET_7_7",
+    "version": "0.5.1-hosted",
+    "origin": "GroundZeroJM",
+    "readinessUrl": "https://jm-cloud-contact-server-v05.onrender.com/ready",
+    "controlUrl": "https://jm-cloud-contact-server-v05.onrender.com/profiles/phone-laptop/control",
+    "paired": false,
+    "nativeBridge": false,
+    "verifiedDate": "2026-11-06"
+  },
+  "physicalDeviceContactCP04": {
+    "observedDate": "2026-11-06",
+    "evidenceClass": [
+      "PHYSICAL_DEVICE_ADB",
+      "LOCAL_RUNTIME",
+      "PUBLIC_HTTPS_CONTACT"
+    ],
+    "host": "GroundZeroJM",
+    "donorCode": "JM Device2Device CP03.5 (read-only recovered source; distinct from JM PHONE LAPTOP v0.5)",
+    "primary": {
+      "role": "FOLD8",
+      "model": "SM-F976B",
+      "androidApi": 37,
+      "wirelessAdb": "AUTHORISED_LIVE",
+      "installedOriginal": "com.jmisjustme.foldultra@1.0.0",
+      "originalMainActivityLaunch": "PHYSICAL_PASS",
+      "systemHome": "SAMSUNG_ONE_UI_HOME_UNCHANGED",
+      "installedSignerSHA256": "e4bcc3d42f264ff25cb9d7ae117eb88e0d30409f5a0aa366368e82b5d46b5790"
+    },
+    "secondary": {
+      "role": "OPPO",
+      "model": "CPH2305",
+      "androidApi": 36,
+      "wirelessAdb": "AUTHORISED_LIVE",
+      "homeLabNativeInstalled": "NO_FOLDULTRA_MAIN_USER_PACKAGE",
+      "preexistingJMApps": "PRESERVED",
+      "foregroundInteraction": "NONE"
+    },
+    "originalLocalBridge": {
+      "localhostBound": true,
+      "reverseTransport": "ANDROID_WIRELESS_ADB_TLS",
+      "temporaryRoleTokens": "DISTINCT_PER_DEVICE_IN_MEMORY_ONLY",
+      "perPhonePositiveAndNegativeTests": "5/5 each",
+      "crossTokenRejection": "2/2",
+      "total": "12/12 PASS",
+      "scanOutlook": false,
+      "persistentStorage": false,
+      "publicLANExposure": false,
+      "leftRunning": false
+    },
+    "hostedExistingServer": {
+      "url": "https://jm-cloud-contact-server-v05.onrender.com/ready",
+      "fold8": "HTTP_200_TLS_VERIFY_0",
+      "oppo": "HTTP_200_TLS_VERIFY_0",
+      "credentialsSubmitted": false,
+      "liveMemberPairing": false
+    },
+    "cp02CandidateSignerSHA256": "e7145a102df77d0bff69bc4b68f89952f4839f81f0a5cbcd485ca9ae168efab6",
+    "signerMatchesInstalled": false,
+    "updateDisallowedWithoutSignerContinuity": true,
+    "explicitHolds": [
+      "signed in-place original JM Fold Ultra update",
+      "owner-approved isolated QA install",
+      "persistent authenticated/revocable member pairing",
+      "native CP03 Home Lab installed physical touch",
+      "default HOME role owner consent"
+    ],
+    "separateAcceptedCP48Body": "com.aistudio.jmecostate.kvxp.qa — independent previously closed MEGALITH/Owner Studio repair, not Fold Ultra",
+    "evidencePath": "home-lab/OPEN_FIRST.md#cp04--live-fold8-first--independent-oppo-physical-contact-6-november-2026"
+  }
+}

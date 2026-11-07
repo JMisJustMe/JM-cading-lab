@@ -22,7 +22,19 @@ def main() -> None:
     m = json.loads(MANIFEST.read_text(encoding="utf-8"))
     chunks = []
     for e in m["canonical_parts"]:
-        p = ROOT / e["name"]
+        name = e["name"]
+        # Source carriage must remain within its original carrier directory,
+        # not an absolute path, traversal, alias or linked external file.
+        if not isinstance(name, str):
+            fail("invalid carrier part name")
+        from pathlib import PurePosixPath
+        part = PurePosixPath(name)
+        if (part.is_absolute() or len(part.parts) != 2 or part.parts[0] != "carrier"
+                or part.parts[1] in ("", ".", "..") or str(part) != name):
+            fail(f"carrier part outside canonical directory: {name}")
+        p = ROOT / name
+        if p.is_symlink() or not p.is_file():
+            fail(f"missing or linked carrier part: {name}")
         b = p.read_bytes()
         if len(b) != e["size"]: fail(f"size mismatch {e['name']}")
         if sha256(b) != e["sha256"]: fail(f"sha256 mismatch {e['name']}")
@@ -43,7 +55,21 @@ def main() -> None:
     for forbidden in ("-----begin private key-----","-----begin rsa private key-----",".keystore","pkcs8"):
         if forbidden in lowered: fail(f"public-safety exclusion failed: {forbidden}")
     if args.write:
-        (ROOT / m["source_filename"]).write_bytes(src)
+        # This transport publishes one exact original; the manifest cannot redirect output.
+        if m.get("source_filename") != "gamecore.html":
+            fail("unexpected source filename")
+        target = ROOT / "gamecore.html"
+        if target.is_symlink():
+            fail("refusing to follow a source-output symlink")
+        if target.exists():
+            if not target.is_file() or target.read_bytes() != src:
+                fail("existing source differs; refusing to overwrite")
+        else:
+            try:
+                with target.open("xb") as output:
+                    output.write(src)
+            except FileExistsError:
+                fail("source output appeared during write; refusing to overwrite")
     print("PASS: JM GameCore v0.2I-A exact public source reconstructed")
     print(f"source_bytes={len(src)}")
     print(f"source_sha256={sha256(src)}")

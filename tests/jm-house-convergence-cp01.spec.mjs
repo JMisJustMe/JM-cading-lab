@@ -95,6 +95,10 @@ test('H04 catalogue has 143-source access and reuses real original House importe
 test('H05 and books retain their existing independent seats rather than count inflation',()=>{
   assert.match(appHome,/45<\/b><span>registered non-game rooms/);
   assert.match(appHome,/29<\/b><span>full \+ preserved bodies/);
+  assert.match(appHome,/id="jmCorrectHouseCrosslinks"/);
+  assert.match(appHome,/\.\.\/theory\/#jmOwnerTheory97/);
+  assert.match(appHome,/\.\.\/games-beyond\/all-games\.html/);
+  assert.match(appHome,/\.\.\/books\//);
   assert.match(bookHome,/56<\/b><small>primary Book \/ Written bodies/);
   assert.match(bookHome,/98<\/b><small>Liebury \/ Bookcase routes/);
 });

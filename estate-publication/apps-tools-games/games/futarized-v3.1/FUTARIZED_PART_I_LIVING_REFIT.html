@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<meta name="theme-color" content="#050816" />
+<title>FUTARIZED Part I v2.1 — Living Body Polish</title>
+<style>
+:root{
+  --bg:#050816;--bg2:#090f24;--panel:#0d1530;--panel2:#121d3c;--ink:#f7fbff;--muted:#9fb0c9;
+  --cyan:#80f4ff;--green:#8dffd1;--gold:#ffd66e;--red:#ff728d;--violet:#c9a7ff;--blue:#8eb9ff;
+  --line:rgba(255,255,255,.13);--shadow:0 24px 70px rgba(0,0,0,.48);--r:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#050816;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulation}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:
+  radial-gradient(circle at 14% 12%,rgba(128,244,255,.12),transparent 27%),
+  radial-gradient(circle at 88% 18%,rgba(201,167,255,.11),transparent 24%),
+  radial-gradient(circle at 50% 110%,rgba(255,214,110,.09),transparent 38%),
+  linear-gradient(180deg,#071024,#03050d 70%);z-index:-2}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,black,transparent 82%);z-index:-1}
+.app{height:100svh;max-width:1180px;margin:auto;padding:8px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:7px}
+.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(18,29,61,.95),rgba(8,13,31,.96));box-shadow:var(--shadow);padding:10px 11px;backdrop-filter:blur(14px)}
+.brand{min-width:0}.brand h1{margin:0;font-size:clamp(1.08rem,4vw,1.72rem);letter-spacing:-.055em;line-height:.96}.brand h1 span{color:var(--gold)}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:.72rem;font-weight:720}.topActions{display:flex;gap:6px}
+.iconBtn,.btn,.faceBtn,.traitCard,.fitBtn,.objectBtn{border:1px solid var(--line);background:#111b37;color:var(--ink);border-radius:14px;font-weight:900}
+.iconBtn{min-width:42px;min-height:42px;padding:8px;font-size:.72rem}.iconBtn.on{color:var(--green);border-color:rgba(141,255,209,.42)}
+.mission{border:1px solid rgba(128,244,255,.18);border-radius:17px;background:rgba(11,21,49,.9);padding:7px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.missionCopy{min-width:0}.missionCopy b{display:block;font-size:.77rem;color:#eafcff}.missionCopy span{display:block;color:var(--muted);font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.progress{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}.progress::-webkit-scrollbar{display:none}
+.faceBtn{flex:0 0 auto;min-width:78px;padding:7px 8px;text-align:left;background:#0c1530;color:var(--muted);font-size:.59rem;line-height:1.08}
+.faceBtn strong{display:block;color:var(--ink);font-size:.65rem;margin-bottom:2px}.faceBtn.active{color:var(--gold);border-color:rgba(255,214,110,.55);background:rgba(255,214,110,.08)}.faceBtn.done{border-color:rgba(141,255,209,.35)}.faceBtn.done strong{color:var(--green)}
+.shell{min-height:0;position:relative}.face{display:none;height:100%;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(13,22,48,.97),rgba(5,9,22,.98));box-shadow:var(--shadow);padding:10px;scrollbar-width:thin}.face.active{display:block}
+.faceHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}.faceHead h2{margin:0;font-size:1rem;letter-spacing:-.025em}.faceHead p{margin:3px 0 0;color:var(--muted);font-size:.68rem;line-height:1.25}.phase{border:1px solid rgba(255,214,110,.32);border-radius:999px;padding:6px 9px;color:var(--gold);font:900 .58rem/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+.gameGrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr);gap:9px}.playPanel{min-width:0}.sidePanel{display:grid;align-content:start;gap:7px}
+.canvasWrap{position:relative;overflow:hidden;border:1px solid rgba(128,244,255,.22);border-radius:21px;background:#040714;min-height:390px}.gameCanvas{width:100%;height:390px;display:block;touch-action:none}
+.hint{position:absolute;left:9px;right:9px;bottom:9px;border:1px solid rgba(255,214,110,.24);border-radius:13px;background:rgba(3,6,17,.82);padding:7px 9px;color:#fff4ca;font:800 .64rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;pointer-events:none;backdrop-filter:blur(8px)}
+.cornerTag{position:absolute;top:9px;left:9px;border:1px solid rgba(128,244,255,.24);border-radius:999px;background:rgba(3,6,17,.78);padding:6px 8px;color:var(--cyan);font:900 .58rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;pointer-events:none}
+.panel,.objective,.lawBox,.summaryBox{border:1px solid var(--line);border-radius:17px;background:rgba(13,22,47,.85);padding:9px}.objective{border-color:rgba(141,255,209,.24);background:rgba(141,255,209,.045)}
+.panel h3,.objective h3,.lawBox h3,.summaryBox h3{margin:0 0 5px;font-size:.67rem;letter-spacing:.07em;text-transform:uppercase;color:var(--gold)}
+.panel p,.objective p,.lawBox p,.summaryBox p{margin:0;color:var(--muted);font-size:.67rem;line-height:1.35}.objective b{color:#e8fff4}
+.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.meter{border:1px solid var(--line);border-radius:13px;background:#091126;padding:7px;color:var(--muted);font-size:.58rem}.meter b{display:block;color:var(--ink);font-size:.84rem;margin-top:2px}.bar{height:7px;border-radius:99px;background:#02040c;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold));transition:.2s}
+.btnRow{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.btn{min-height:42px;padding:8px 10px;font-size:.66rem}.btn.primary{color:#07111a;background:linear-gradient(135deg,var(--cyan),#9effdd);border-color:transparent}.btn.gold{color:var(--gold);border-color:rgba(255,214,110,.42)}.btn.red{color:var(--red);border-color:rgba(255,114,141,.42)}.btn.violet{color:var(--violet);border-color:rgba(201,167,255,.42)}.btn:disabled{opacity:.38;cursor:not-allowed}
+.ding{min-height:38px;border:1px solid rgba(128,244,255,.18);border-radius:13px;background:#07101f;padding:7px;color:#dffaff;font:760 .62rem/1.32 ui-monospace,SFMono-Regular,Menlo,monospace}
+/* FORM LAB */
+.formLayout{display:grid;grid-template-columns:minmax(280px,.78fr) minmax(0,1.22fr);gap:9px}.previewBay{border:1px solid rgba(128,244,255,.22);border-radius:21px;background:radial-gradient(circle at 50% 45%,rgba(128,244,255,.09),transparent 32%),#050918;min-height:410px;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}.previewCanvas{width:100%;height:330px;display:block}.capacity{padding:9px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.capacity b{font-size:.72rem}.capacity span{color:var(--muted);font-size:.64rem}
+.threatStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:7px}.threat{border:1px solid var(--line);border-radius:13px;background:#091128;padding:7px;text-align:center;color:var(--muted);font-size:.57rem}.threat b{display:block;color:var(--red);font-size:.68rem;margin-bottom:2px}
+.traitGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.traitCard{position:relative;padding:10px;text-align:left;min-height:112px;background:linear-gradient(180deg,#142044,#0a1229);overflow:hidden}.traitCard:after{content:"";position:absolute;inset:auto -22px -28px auto;width:82px;height:82px;border-radius:50%;background:var(--traitGlow,rgba(128,244,255,.15));filter:blur(8px)}.traitCard b{display:block;color:var(--ink);font-size:.78rem}.traitCard small{display:block;color:var(--muted);font-size:.59rem;line-height:1.28;margin-top:4px;max-width:85%}.traitCard em{display:block;color:var(--gold);font:900 .56rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:7px}.traitCard.selected{border-color:var(--green);box-shadow:0 0 22px rgba(141,255,209,.12)}.traitCard.blocked{opacity:.45}
+/* WORLD LAB */
+.objectTray{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.objectBtn{min-height:62px;padding:7px;font-size:.58rem;color:var(--muted)}.objectBtn b{display:block;color:var(--ink);font-size:.67rem}.objectBtn.active{border-color:var(--gold);color:var(--gold);background:rgba(255,214,110,.08)}
+/* FTR */
+.ftrLayout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:9px}.ftrStage{border:1px solid rgba(128,244,255,.22);border-radius:21px;background:#040715;overflow:hidden}.ftrCanvas{display:block;width:100%;height:430px}.fitGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.fitBtn{padding:10px;text-align:left;background:#0b1530;color:var(--muted)}.fitBtn b{display:block;color:var(--ink);font-size:.72rem}.fitBtn span{display:block;font-size:.57rem;line-height:1.25;margin-top:3px}.fitBtn.active{border-color:var(--green);background:rgba(141,255,209,.06)}
+.traceList{height:150px;overflow:auto;border:1px solid var(--line);border-radius:13px;background:#050b19;padding:7px;font:650 .57rem/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}.traceLine{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.syntax{border:1px solid rgba(201,167,255,.22);border-radius:15px;background:#080d1e;padding:8px}.syntax summary{cursor:pointer;color:var(--violet);font:900 .64rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace}.syntax textarea{width:100%;min-height:65px;margin-top:7px;border:1px solid var(--line);border-radius:11px;background:#030612;color:#e8efff;padding:8px;font:650 .62rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.footer{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;border:1px solid var(--line);border-radius:18px;background:rgba(11,18,40,.96);padding:7px 8px;box-shadow:var(--shadow)}.footerText{min-width:0;color:var(--muted);font:750 .61rem/1.25 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.footer .btn{min-height:38px;padding:7px 10px}
+/* INTRO */
+.intro{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:14px;background:rgba(2,4,12,.88);backdrop-filter:blur(14px)}.intro.hidden{display:none}.introCard{width:min(680px,100%);border:1px solid rgba(128,244,255,.28);border-radius:28px;background:linear-gradient(160deg,#111c3e,#060a18 72%);box-shadow:0 35px 100px rgba(0,0,0,.68);padding:20px;overflow:hidden;position:relative}.introCard:before{content:"";position:absolute;right:-70px;top:-90px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(128,244,255,.24),transparent 68%)}.introCard h2{margin:0;font-size:clamp(1.5rem,7vw,3.2rem);line-height:.92;letter-spacing:-.065em;max-width:560px}.introCard h2 span{color:var(--gold)}.introCard>p{color:#c7d4e8;line-height:1.48;font-size:.86rem;max-width:570px}.introSteps{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0}.introStep{border-top:1px solid rgba(255,255,255,.18);padding-top:8px;color:var(--muted);font-size:.64rem;line-height:1.3}.introStep b{display:block;color:var(--ink);font-size:.74rem;margin-bottom:3px}.introLock{border:1px solid rgba(141,255,209,.22);border-radius:15px;background:rgba(141,255,209,.045);padding:9px;color:#ddfff0;font:750 .66rem/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;margin-bottom:10px}
+
+/* v2.1 LIVING BODY POLISH */
+:root{--ease:cubic-bezier(.2,.8,.2,1)}
+button{transition:transform .14s var(--ease),filter .14s var(--ease),border-color .18s,background .18s,box-shadow .18s}
+button:active{transform:scale(.965);filter:brightness(1.15)}
+.top,.mission,.face,.footer{position:relative;isolation:isolate}
+.top:after,.mission:after,.footer:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(105deg,transparent 0 42%,rgba(255,255,255,.045) 49%,transparent 56%);transform:translateX(-120%);animation:chromeSweep 8s ease-in-out infinite}
+@keyframes chromeSweep{0%,70%{transform:translateX(-120%)}88%,100%{transform:translateX(120%)}}
+.face.active{animation:faceEnter .32s var(--ease)}
+@keyframes faceEnter{from{opacity:.25;transform:translateY(8px) scale(.992);filter:blur(2px)}to{opacity:1;transform:none;filter:none}}
+.canvasWrap,.previewBay,.ftrStage{box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 18px 50px rgba(0,0,0,.24)}
+.canvasWrap:after,.previewBay:after,.ftrStage:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 24%,transparent 76%,rgba(0,0,0,.16))}
+.canvasWrap,.previewBay,.ftrStage{position:relative}
+.cornerTag{letter-spacing:.05em;box-shadow:0 8px 25px rgba(0,0,0,.28)}
+.phase{box-shadow:inset 0 0 14px rgba(255,214,110,.05)}
+.faceBtn.active{box-shadow:0 0 22px rgba(255,214,110,.13),inset 0 0 16px rgba(255,214,110,.04)}
+.faceBtn.done:after{content:"✓";float:right;color:var(--green);margin-left:5px}
+.nextReady{animation:nextReady 1.15s ease-in-out infinite alternate;box-shadow:0 0 28px rgba(141,255,209,.28)!important}
+@keyframes nextReady{to{filter:brightness(1.16);transform:translateY(-1px)}}
+.ding{transition:border-color .2s,background .2s,color .2s;box-shadow:inset 0 0 18px rgba(128,244,255,.025)}
+.stageToast{position:fixed;z-index:80;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-18px) scale(.96);width:min(560px,calc(100% - 22px));opacity:0;pointer-events:none;border:1px solid rgba(128,244,255,.38);border-radius:18px;background:linear-gradient(135deg,rgba(10,22,50,.96),rgba(5,9,24,.96));box-shadow:0 24px 70px rgba(0,0,0,.58),0 0 32px rgba(128,244,255,.09);padding:10px 12px;transition:.25s var(--ease);backdrop-filter:blur(14px)}
+.stageToast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.stageToast b{display:block;color:var(--gold);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase}.stageToast span{display:block;color:#dffaff;font-size:.65rem;line-height:1.3;margin-top:3px}
+.traitCard{transition:.2s var(--ease)}.traitCard:hover{transform:translateY(-2px)}.traitCard.selected{transform:translateY(-2px);background:linear-gradient(180deg,#173054,#0a172e)}
+.fitBtn.active,.objectBtn.active{box-shadow:0 0 22px rgba(141,255,209,.1)}
+.meter b{font-variant-numeric:tabular-nums}.bar i{box-shadow:0 0 12px rgba(128,244,255,.35)}
+.introCard{animation:introRise .45s var(--ease)}@keyframes introRise{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:830px){.stageToast{top:max(8px,env(safe-area-inset-top));padding:8px 10px}.stageToast b{font-size:.64rem}.stageToast span{font-size:.59rem}}
+
+@media(max-width:830px){
+ .app{padding:5px;gap:5px}.top{border-radius:17px;padding:8px}.brand p{font-size:.62rem}.iconBtn{min-width:38px;min-height:38px}
+ .mission{padding:6px;grid-template-columns:1fr}.missionCopy span{max-width:none;white-space:normal;line-height:1.2}.progress{width:100%}.faceBtn{min-width:71px;padding:6px}
+ .face{padding:7px;border-radius:19px}.gameGrid,.formLayout,.ftrLayout{grid-template-columns:1fr}.canvasWrap{min-height:330px}.gameCanvas{height:330px}.sidePanel{grid-template-columns:1fr 1fr}.sidePanel .objective,.sidePanel .lawBox,.sidePanel .ding,.sidePanel .btnRow,.sidePanel>.meters,.sidePanel>.objectTray,.sidePanel>.summaryBox,.sidePanel>.panel,.sidePanel>.fitGrid,.sidePanel>.traceList,.sidePanel>.syntax{grid-column:1/-1}
+ .previewBay{min-height:345px}.previewCanvas{height:275px}.traitGrid{grid-template-columns:repeat(2,1fr)}.traitCard{min-height:100px;padding:8px}
+ .ftrCanvas{height:340px}.footerText{font-size:.55rem}.footer .btn{font-size:.58rem}.introCard{padding:16px}.introSteps{grid-template-columns:1fr}
+}
+@media(max-height:760px) and (max-width:830px){
+ .brand p{display:none}.top{padding:6px}.iconBtn{min-height:34px;min-width:34px;padding:5px}.missionCopy b{font-size:.68rem}.missionCopy span{font-size:.56rem}.faceBtn{min-width:66px;padding:5px}.faceBtn strong{font-size:.59rem}.faceHead{margin-bottom:6px}.faceHead p{font-size:.6rem}.canvasWrap{min-height:285px}.gameCanvas{height:285px}.hint{display:none}.sidePanel{grid-template-columns:repeat(2,1fr)}.panel,.objective,.lawBox,.summaryBox{padding:7px}.panel p,.objective p,.lawBox p,.summaryBox p{font-size:.59rem}.previewCanvas{height:235px}.previewBay{min-height:300px}.traitCard{min-height:88px}.traitCard small{font-size:.54rem}.ftrCanvas{height:290px}.traceList{height:110px}.footer{padding:5px}.footer .btn{min-height:34px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="intro" id="intro">
+  <div class="introCard">
+    <h2>Carry one body <span>forward</span> without erasing it.</h2>
+    <p>You are the refitter. FUTARIAN-01 remains one living game-body through every face. Learn its source movement, keep it flowing under pressure, choose a legal form, play the result, refit its world, then carry it onward through FTR.</p>
+    <div class="introSteps">
+      <div class="introStep"><b>1. Preserve</b>The source identity must survive every change.</div>
+      <div class="introStep"><b>2. Transform</b>BTG governs which traits and routes may form.</div>
+      <div class="introStep"><b>3. Fit onward</b>FTR connects the finished body without replacing it.</div>
+    </div>
+    <div class="introLock">SOURCE → SIGNAL → CONTACT → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT</div>
+    <button class="btn primary" id="beginBtn">ENTER THE LIVING BODY</button>
+  </div>
+</div>
+<div class="stageToast" id="stageToast"><b id="stageToastTitle">DING</b><span id="stageToastText">The body changed.</span></div>
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1><span>FUTARIZED</span> PART I <small style="font-size:.58em">v2.1</small></h1><p>Living Body Polish // one body, six connected forms of contact</p></div>
+    <div class="topActions"><button class="iconBtn on" id="soundBtn">SOUND</button><button class="iconBtn" id="resetBtn">RESET</button></div>
+  </header>
+
+  <section class="mission">
+    <div class="missionCopy"><b id="missionTitle">FACE 1 — FIND THE SOURCE</b><span id="missionText">Pull FUTARIAN-01, release it, collect three memory sparks, then enter the root gate.</span></div>
+    <nav class="progress" id="progress"></nav>
+  </section>
+
+  <main class="shell">
+    <section class="face active" id="face1">
+      <div class="faceHead"><div><h2>Face 1 — Source / Force</h2><p>Learn what the body already does before changing it.</p></div><span class="phase">AIM_DRAG</span></div>
+      <div class="gameGrid">
+        <div class="playPanel"><div class="canvasWrap"><canvas class="gameCanvas" id="sourceCanvas"></canvas><div class="cornerTag">FUTARIAN-01 // SOURCE INTACT</div><div class="hint" id="sourceHint">Touch the body, pull away, and release. Collect 3 memory sparks. The root gate opens when the source remembers itself.</div></div></div>
+        <aside class="sidePanel">
+          <div class="objective"><h3>What you are doing</h3><p><b>Recover the body’s movement memory.</b> This is not a fight. Every spark is part of the source identity that later changes must preserve.</p></div>
+          <div class="meters"><div class="meter">Identity<b id="sourceIdentity">100</b><div class="bar"><i id="sourceIdentityBar"></i></div></div><div class="meter">Memory<b id="memoryCount">0 / 3</b><div class="bar"><i id="memoryBar"></i></div></div></div>
+          <div class="lawBox"><h3>BTG gate</h3><p>No later form is allowed to erase the source core collected here.</p></div>
+          <div class="btnRow"><button class="btn gold" id="sourceNudge">NUDGE</button><button class="btn red" id="sourceRestart">RESET FACE</button></div>
+          <div class="ding" id="sourceDing">Waiting for first contact.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="face" id="face2">
+      <div class="faceHead"><div><h2>Face 2 — Route / Pressure</h2><p>Guide the same body through pressure without losing its source.</p></div><span class="phase">TUG_ROUTE</span></div>
+      <div class="gameGrid">
+        <div class="playPanel"><div class="canvasWrap"><canvas class="gameCanvas" id="routeCanvas"></canvas><div class="cornerTag">HOLD + DRAG TO STEER</div><div class="hint">The body moves forward by itself. Hold anywhere and steer it through all three living gates. Pressure pushes back; your route keeps meaning moving.</div></div></div>
+        <aside class="sidePanel">
+          <div class="objective"><h3>What you are doing</h3><p><b>Prove a route that can carry the source.</b> Pass three gates. Missing one damages identity and sends the body back.</p></div>
+          <div class="meters"><div class="meter">Gates<b id="routeGates">0 / 3</b><div class="bar"><i id="routeBar"></i></div></div><div class="meter">Stability<b id="routeStability">0</b><div class="bar"><i id="routeStabilityBar"></i></div></div></div>
+          <div class="lawBox"><h3>FTR root/route</h3><p>The route is powered from inside the body. It is not bolted on afterwards.</p></div>
+          <div class="btnRow"><button class="btn primary" id="routeStart">START ROUTE</button><button class="btn red" id="routeRestart">RESET FACE</button></div>
+          <div class="ding" id="routeDing">Source body required, but this face remains open for inspection.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="face" id="face3">
+      <div class="faceHead"><div><h2>Face 3 — Form / Choice</h2><p>Choose future traits under BTG governance. The body changes visibly now.</p></div><span class="phase">TCG_CARD</span></div>
+      <div class="formLayout">
+        <div class="previewBay"><canvas class="previewCanvas" id="formCanvas"></canvas><div class="capacity"><div><b>BTG CAPACITY</b><span id="capacityText">Choose 3 traits. Total cost may not exceed 4.</span></div><strong id="capacityValue">0 / 4</strong></div></div>
+        <div>
+          <div class="threatStrip"><div class="threat"><b>IMPACT</b>force contact</div><div class="threat"><b>DRIFT</b>route loss</div><div class="threat"><b>DRAIN</b>body fade</div></div>
+          <div class="traitGrid" id="traitGrid"></div>
+          <div class="panel" style="margin-top:7px"><h3>Why this is card play</h3><p>The future test announces its pressures first. You build a legal response hand, but every card changes the same body rather than summoning a disconnected unit.</p></div>
+          <div class="btnRow" style="margin-top:7px"><button class="btn primary" id="lockForm">LOCK FUTURE FORM</button><button class="btn red" id="clearTraits">CLEAR HAND</button></div>
+          <div class="ding" id="formDing" style="margin-top:7px">No form committed.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="face" id="face4">
+      <div class="faceHead"><div><h2>Face 4 — Future / Play</h2><p>Play the transformed body. Earlier faces now exist as behaviour, not meters.</p></div><span class="phase">FULL_RUBIK_SIDE</span></div>
+      <div class="gameGrid">
+        <div class="playPanel"><div class="canvasWrap"><canvas class="gameCanvas" id="futureCanvas"></canvas><div class="cornerTag" id="futureTag">FUTURE BODY // NOT STARTED</div><div class="hint">Hold and drag to move. Collect 3 root fragments, resist drift bodies, then enter the FTR gate. Double-tap the field to pulse when PULSE is equipped.</div></div></div>
+        <aside class="sidePanel">
+          <div class="objective"><h3>What you are doing</h3><p><b>Prove that the changed body still plays as itself.</b> The route, traits and source integrity all operate together here.</p></div>
+          <div class="meters"><div class="meter">Fragments<b id="fragmentCount">0 / 3</b><div class="bar"><i id="fragmentBar"></i></div></div><div class="meter">Integrity<b id="futureIntegrity">100</b><div class="bar"><i id="futureIntegrityBar"></i></div></div></div>
+          <div class="summaryBox"><h3>Active future form</h3><p id="futureSummary">No traits locked yet.</p></div>
+          <div class="meters"><div class="meter">Shield<b id="futureShield">0</b><div class="bar"><i id="futureShieldBar"></i></div></div><div class="meter">Pulse<b id="futurePulse">OFF</b><div class="bar"><i id="futurePulseBar"></i></div></div></div>
+          <div class="btnRow"><button class="btn primary" id="futureStart">START FUTURE TEST</button><button class="btn violet" id="pulseBtn">PULSE</button></div>
+          <div class="ding" id="futureDing">The future is waiting for a legal form.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="face" id="face5">
+      <div class="faceHead"><div><h2>Face 5 — World / Objects</h2><p>Refit the environment, then replay the future body inside it.</p></div><span class="phase">OBJECTS_ARENA</span></div>
+      <div class="gameGrid">
+        <div class="playPanel"><div class="canvasWrap"><canvas class="gameCanvas" id="worldCanvas"></canvas><div class="cornerTag">SELECT OBJECT → TAP FIELD</div><div class="hint">Place up to five world objects. Rails guide. Bumpers redirect. Root wells recover. Pressure fields challenge. These objects become real in Face 4.</div></div></div>
+        <aside class="sidePanel">
+          <div class="objective"><h3>What you are doing</h3><p><b>Change the world without changing the body’s identity.</b> This is FUTARIZED as refit workshop, not a separate level editor bolted beside the game.</p></div>
+          <div class="objectTray" id="objectTray"></div>
+          <div class="meters"><div class="meter">Objects<b id="objectCount">0 / 5</b><div class="bar"><i id="objectBar"></i></div></div><div class="meter">World state<b id="worldState">SOURCE</b></div></div>
+          <div class="btnRow"><button class="btn primary" id="playRefit">PLAY REFITTED WORLD</button><button class="btn red" id="clearWorld">CLEAR WORLD</button></div>
+          <div class="ding" id="worldDing">The source world is untouched.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="face" id="face6">
+      <div class="faceHead"><div><h2>Face 6 — Trace / FTR</h2><p>Choose how the completed body fits onward. FTR connects; it does not replace.</p></div><span class="phase">TRACE_SIT_SHIP</span></div>
+      <div class="ftrLayout">
+        <div class="ftrStage"><canvas class="ftrCanvas" id="ftrCanvas"></canvas></div>
+        <div class="sidePanel">
+          <div class="objective"><h3>FTR fit decision</h3><p><b>Over, beside, around, through or inside.</b> Choose the route relationship. The source body remains identifiable in every fit.</p></div>
+          <div class="fitGrid" id="fitGrid"></div>
+          <div class="summaryBox"><h3>Current body</h3><p id="shipSummary">Complete the future test to produce a shippable body.</p></div>
+          <div class="btnRow"><button class="btn primary" id="shipBtn">SHIP FUTARIZED BODY</button><button class="btn gold" id="downloadReceipt">DOWNLOAD RECEIPT</button><button class="btn good" id="enterPart2">ENTER PART II</button></div>
+          <div class="traceList" id="traceList"></div>
+          <details class="syntax"><summary>JM ROUTE CONSOLE — optional inspection layer</summary><textarea id="syntaxInput" placeholder="SOURCE > TOUCH > RELEASE"></textarea><div class="btnRow" style="margin-top:6px"><button class="btn violet" id="runSyntax">RUN ROUTE</button><button class="btn" id="showBody">SHOW BODY</button></div><div class="ding" id="syntaxOutput" style="margin-top:6px">The console governs the same visible body. It is not required for basic play.</div></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="footerText" id="footerText">THE ESTATE REMEMBERS. THIS WORKSHOP CHANGES THE BODY.</div><button class="btn" id="backBtn">BACK</button><button class="btn primary" id="nextBtn">NEXT FACE</button></footer>
+</div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const STORAGE_KEY='jm_futarized_v21_living_body_polish';
+
+/*
+  FUTARIZED v2.1 — LIVING BODY POLISH
+  Browser APIs remain the execution carrier.
+  JM/FUTARIZED bodies govern identity, route ownership, allowed transformation,
+  trace, recovery and FTR fit decisions.
+*/
+const FUTARIZED_BODY={
+  id:'JM.GAMES.FUTARIZED',version:'2.1',class:'PLAYABLE_BTG_FTR_BRIDGE_LIVING_POLISH',
+  identity:'OLD_DNA_FORWARD_BY_OWN_ROUTE',
+  laws:['SOURCE_SURVIVES_CHANGE','MESH_NOT_MERGE','CONNECTED_NOT_FLATTENED','BTG_GOVERNS_FORM','FTR_FITS_NOT_REPLACES','TRACE_EVERY_DING'],
+  runtimeSpine:['SOURCE','SIGNAL','CONTACT','ROUTE_PRESSURE','STATE_CHANGE','DING','TRACE','RECOVERY','OUTPUT'],
+  stages:{
+    1:{id:'SOURCE_FORCE',owns:['AIM','PULL','DRAG','RELEASE','MEMORY']},
+    2:{id:'ROUTE_PRESSURE',owns:['ROUTE','STEER','PRESSURE','GATE','RECOVER']},
+    3:{id:'FORM_CHOICE',owns:['DRAW','CHOOSE','COUNTER','CAPACITY','LOCK']},
+    4:{id:'FUTURE_PLAY',owns:['BIND','PLAY','CONTACT','SURVIVE','FIT']},
+    5:{id:'WORLD_OBJECTS',owns:['PLACE','MOVE','REFIT','RAIL','ROOT']},
+    6:{id:'TRACE_FTR',owns:['TRACE','RECEIPT','SIT','SHIP','ROUTE']}
+  }
+};
+const TRAITS=[
+  {id:'SPLIT',name:'Split Echo',cost:2,counter:'IMPACT',desc:'A second orbiting echo strikes drift bodies and preserves the source through duplication without replacement.',color:'#c9a7ff'},
+  {id:'LIGHT',name:'LightLites Skin',cost:1,counter:'DRAIN',desc:'Stores a visible shield. Shape stays readable while the light gives it life.',color:'#80f4ff'},
+  {id:'ANCHOR',name:'Deep Anchor',cost:1,counter:'DRIFT',desc:'Reduces knockback and keeps the route from sliding away under pressure.',color:'#ffd66e'},
+  {id:'GLIDE',name:'Route Glide',cost:1,counter:'DRIFT',desc:'The body follows contact more freely and crosses the field with less drag.',color:'#8dffd1'},
+  {id:'PULSE',name:'Contact Pulse',cost:2,counter:'IMPACT',desc:'Double-tap or use backup PULSE to release stored contact as a clearing wave.',color:'#ff728d'},
+  {id:'ROOT',name:'Root Recovery',cost:1,counter:'DRAIN',desc:'Root fragments and wells restore integrity instead of merely scoring points.',color:'#8eb9ff'}
+];
+const WORLD_TYPES=[
+  {id:'RAIL',name:'Route Rail',desc:'guides movement',color:'#80f4ff'},
+  {id:'BUMPER',name:'Force Bumper',desc:'redirects contact',color:'#ffd66e'},
+  {id:'ROOT_WELL',name:'Root Well',desc:'restores integrity',color:'#8dffd1'},
+  {id:'PRESSURE',name:'Pressure Field',desc:'tests the route',color:'#ff728d'}
+];
+const FTR_MODES=[
+  {id:'OVER',name:'Fit Over',desc:'add a guiding layer without deleting the body'},
+  {id:'BESIDE',name:'Fit Beside',desc:'operate as a connected neighbour'},
+  {id:'AROUND',name:'Fit Around',desc:'support the body as an adaptive shell'},
+  {id:'THROUGH',name:'Fit Through',desc:'power the route across the existing form'},
+  {id:'INSIDE',name:'Fit Inside',desc:'become an internal route organ'}
+];
+const defaultState=()=>({
+  stage:1,identity:100,memory:0,sourceComplete:false,routeComplete:false,routeGates:0,routeStability:0,routeStyle:'UNPROVEN',
+  traits:[],formLocked:false,fragments:0,futureComplete:false,world:[],fitMode:null,shipped:false,trace:0,receipts:[],sound:true,lastCompleted:0,
+  updated:new Date().toISOString()
+});
+let state=defaultState();
+try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(saved&&saved.version==='2.1')state={...defaultState(),...saved.state};}catch(_){ }
+
+const JM_RUNTIME={
+  commit(route,message,extra={}){
+    state.trace++;
+    const stageId=FUTARIZED_BODY.stages[state.stage]?.id||'BODY';
+    const receipt={n:state.trace,time:new Date().toISOString(),body:FUTARIZED_BODY.id,version:FUTARIZED_BODY.version,stage:state.stage,stageId,route:String(route).toUpperCase(),message,identity:Math.round(state.identity),traits:[...state.traits],world:state.world.map(o=>o.type),fit:state.fitMode,...extra};
+    state.receipts.unshift(receipt); if(state.receipts.length>90)state.receipts.pop();
+    state.updated=receipt.time; save(); renderTrace(); renderHUD();
+    return receipt;
+  },
+  ding(route,message,extra={}){tone('ding');haptic([18,30,18]);showMoment(String(route).replaceAll('_',' '),message,/COMPLETE|FORM_LOCK|SHIP/.test(route)?'complete':'ding');return this.commit(route,message,{ding:true,...extra});},
+  recover(route,message,extra={}){tone('recover');showMoment('RECOVERY',message,'error');return this.commit(route,message,{recovery:true,...extra});}
+};
+const BTG_GATE={
+  traitCost(ids=state.traits){return ids.reduce((n,id)=>n+(TRAITS.find(t=>t.id===id)?.cost||0),0)},
+  canAdd(id){if(state.formLocked)return {ok:false,why:'FORM ALREADY LOCKED'};if(state.traits.includes(id))return {ok:true,remove:true};if(state.traits.length>=3)return {ok:false,why:'THREE TRAITS MAX'};const cost=this.traitCost()+TRAITS.find(t=>t.id===id).cost;if(cost>4)return {ok:false,why:'BTG CAPACITY 4 EXCEEDED'};return {ok:true}},
+  validForm(){return state.traits.length===3&&this.traitCost()<=4&&state.identity>0}
+};
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:'2.1',state}))}catch(_){}}
+function tone(kind='tap'){
+  if(!state.sound)return;
+  try{const ac=tone.ac||(tone.ac=new (window.AudioContext||window.webkitAudioContext)());const o=ac.createOscillator(),g=ac.createGain();const now=ac.currentTime;const map={tap:[220,.035],ding:[680,.12],hit:[110,.08],collect:[920,.09],recover:[420,.14],ship:[260,.4],error:[90,.1]};const [f,d]=map[kind]||map.tap;o.frequency.setValueAtTime(f,now);if(kind==='ship')o.frequency.exponentialRampToValueAtTime(720,now+d);g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.08,now+.01);g.gain.exponentialRampToValueAtTime(.0001,now+d);o.connect(g);g.connect(ac.destination);o.start(now);o.stop(now+d+.02)}catch(_){}}
+function haptic(pattern=12){try{navigator.vibrate?.(pattern)}catch(_){}}
+function setDing(id,text){const el=$(id);if(el){el.textContent=text;el.style.borderColor='rgba(128,244,255,.34)';setTimeout(()=>{el.style.borderColor=''},420)}}
+let toastTimer=0;
+function showMoment(title,text,kind='ding'){
+  const box=$('#stageToast');if(!box)return;$('#stageToastTitle').textContent=title;$('#stageToastText').textContent=text;
+  box.style.borderColor=kind==='error'?'rgba(255,114,141,.5)':kind==='complete'?'rgba(141,255,209,.55)':'rgba(128,244,255,.38)';
+  box.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>box.classList.remove('show'),kind==='complete'?2100:1250);
+}
+function currentStageDone(){return [state.sourceComplete,state.routeComplete,state.formLocked,state.futureComplete,state.world.length>0,state.shipped][state.stage-1]}
+function updateNextReady(){const b=$('#nextBtn');if(!b)return;b.classList.toggle('nextReady',!!currentStageDone()&&state.stage<6)}
+function markComplete(stage,title,text){state.lastCompleted=Math.max(state.lastCompleted,stage);showMoment(title,text,'complete');updateNextReady()}
+function pushTrail(list,x,y,color='#80f4ff',size=16){list.push({x,y,color,size,life:1});if(list.length>18)list.shift()}
+function drawTrail(ctx,list){for(let i=0;i<list.length;i++){const p=list[i];p.life*=.93;ctx.globalAlpha=p.life*.32;ctx.fillStyle=p.color;ctx.beginPath();ctx.ellipse(p.x,p.y,p.size*p.life*.75,p.size*p.life*.35,0,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;for(let i=list.length-1;i>=0;i--)if(list[i].life<.05)list.splice(i,1)}
+
+const stageMeta=[
+  ['SOURCE','Find the body','Pull, release, recover three memory sparks, then enter the root gate.'],
+  ['ROUTE','Carry the source','Steer the same body through all three living gates under pressure.'],
+  ['FORM','Govern change','Choose three legal future traits within BTG capacity four.'],
+  ['FUTURE','Play the result','Collect three root fragments and reach the FTR gate with the transformed body.'],
+  ['WORLD','Refit the field','Place world objects that become real when you replay the future test.'],
+  ['FTR','Fit onward','Choose the FTR relationship, inspect the trace, and ship without erasing the source.']
+];
+function buildProgress(){
+  $('#progress').innerHTML=stageMeta.map((m,i)=>`<button class="faceBtn" data-stage="${i+1}"><strong>${i+1}. ${m[0]}</strong>${m[1]}</button>`).join('');
+  $$('.faceBtn').forEach(b=>b.onclick=()=>showStage(+b.dataset.stage));
+}
+function showStage(n){
+  const previous=state.stage;state.stage=clamp(n,1,6);$$('.face').forEach((f,i)=>f.classList.toggle('active',i===state.stage-1));
+  $$('.faceBtn').forEach((b,i)=>b.classList.toggle('active',i===state.stage-1));
+  const active=$(`.faceBtn[data-stage="${state.stage}"]`);active?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  const m=stageMeta[state.stage-1];$('#missionTitle').textContent=`FACE ${state.stage} — ${m[1].toUpperCase()}`;$('#missionText').textContent=m[2];
+  $('#backBtn').disabled=state.stage===1;$('#nextBtn').textContent=state.stage===6?'RETURN TO SOURCE':'NEXT FACE';
+  if(previous!==state.stage){JM_RUNTIME.commit('NAV',`Opened ${FUTARIZED_BODY.stages[state.stage].id}`);showMoment(`FACE ${state.stage} · ${m[0]}`,m[1]);}
+  renderAll();updateNextReady();
+}
+function renderHUD(){
+  const done=[state.sourceComplete,state.routeComplete,state.formLocked,state.futureComplete,state.world.length>0,state.shipped];
+  $$('.faceBtn').forEach((b,i)=>b.classList.toggle('done',done[i]));
+  $('#sourceIdentity').textContent=Math.round(state.identity);$('#sourceIdentityBar').style.width=state.identity+'%';
+  $('#memoryCount').textContent=`${state.memory} / 3`;$('#memoryBar').style.width=(state.memory/3*100)+'%';
+  $('#routeGates').textContent=`${state.routeGates} / 3`;$('#routeBar').style.width=(state.routeGates/3*100)+'%';
+  $('#routeStability').textContent=Math.round(state.routeStability);$('#routeStabilityBar').style.width=state.routeStability+'%';
+  $('#fragmentCount').textContent=`${state.fragments} / 3`;$('#fragmentBar').style.width=(state.fragments/3*100)+'%';
+  $('#futureIntegrity').textContent=Math.round(state.identity);$('#futureIntegrityBar').style.width=state.identity+'%';
+  $('#futureShield').textContent=Math.round(future?.shield||0);$('#futureShieldBar').style.width=clamp((future?.shield||0)/36*100,0,100)+'%';
+  $('#futurePulse').textContent=state.traits.includes('PULSE')?(future?.pulse>0?'RECOVERING':'READY'):'NOT FITTED';$('#futurePulseBar').style.width=state.traits.includes('PULSE')?((1-(future?.pulse||0))*100)+'%':'0%';
+  $('#objectCount').textContent=`${state.world.length} / 5`;$('#objectBar').style.width=(state.world.length/5*100)+'%';$('#worldState').textContent=state.world.length?'REFITTED':'SOURCE';
+  $('#futureSummary').textContent=state.traits.length?state.traits.map(id=>TRAITS.find(t=>t.id===id)?.name).join(' + '):'No traits locked yet.';
+  $('#shipSummary').textContent=`Source ${Math.round(state.identity)}% · Route ${state.routeStyle} · Form ${state.traits.length?state.traits.join(' + '):'UNLOCKED'} · World ${state.world.length} objects · Fit ${state.fitMode||'UNDECIDED'}`;
+  $('#routeStart').disabled=!state.sourceComplete;$('#lockForm').disabled=!state.routeComplete||!BTG_GATE.validForm()||state.formLocked;$('#futureStart').disabled=!state.formLocked;$('#playRefit').disabled=!state.futureComplete;$('#shipBtn').disabled=!state.futureComplete||!state.fitMode;$('#downloadReceipt').disabled=!state.shipped;
+  $('#pulseBtn').disabled=!state.traits.includes('PULSE')||!future?.running||future?.pulse>0;
+  $('#footerText').textContent=currentStageDone()&&state.stage<6?'DING HELD. MOVE FORWARD WHEN READY.':'THE ESTATE REMEMBERS. THIS WORKSHOP CHANGES THE BODY.';updateNextReady();
+}
+function renderTrace(){
+  $('#traceList').innerHTML=state.receipts.slice(0,24).map(r=>`<div class="traceLine">${String(r.n).padStart(3,'0')} ${r.stageId} &gt; ${r.route} &gt; ${escapeHtml(r.message)}</div>`).join('')||'<div class="traceLine">No trace yet.</div>';
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* CANVAS HELPERS */
+function fitCanvas(c){const dpr=Math.min(2,window.devicePixelRatio||1),r=c.getBoundingClientRect();if(c.width!==Math.round(r.width*dpr)||c.height!==Math.round(r.height*dpr)){c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr)}const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w:r.width,h:r.height,dpr}}
+function glowCircle(ctx,x,y,r,color,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.shadowColor=color;ctx.shadowBlur=r*1.5;const g=ctx.createRadialGradient(x-r*.3,y-r*.3,2,x,y,r);g.addColorStop(0,'#fff');g.addColorStop(.18,color);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.restore()}
+function drawBackdrop(ctx,w,h,t=0,accent='#80f4ff',mood='field'){
+  ctx.clearRect(0,0,w,h);
+  const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,mood==='route'?'#0b0a2c':'#071630');g.addColorStop(.52,'#050816');g.addColorStop(1,mood==='future'?'#071d20':'#160b2b');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  const aur=ctx.createRadialGradient(w*(.25+.08*Math.sin(t*.35)),h*.25,2,w*.3,h*.25,w*.65);aur.addColorStop(0,accent+'2b');aur.addColorStop(.5,accent+'0c');aur.addColorStop(1,'transparent');ctx.fillStyle=aur;ctx.fillRect(0,0,w,h);
+  ctx.save();ctx.globalAlpha=.18;ctx.strokeStyle=accent;ctx.lineWidth=1;for(let x=-80+(t*14)%64;x<w+80;x+=64){ctx.beginPath();ctx.moveTo(x,h);ctx.lineTo(x+110,0);ctx.stroke()}ctx.restore();
+  ctx.save();ctx.translate(w*.5,h*.62);ctx.scale(1,.34);for(let r=80;r<Math.max(w,h)*1.15;r+=72){ctx.globalAlpha=.035+.025*Math.sin(t+r);ctx.strokeStyle=accent;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.stroke()}ctx.restore();
+  ctx.save();for(let i=0;i<40;i++){const x=(i*97+t*(5+i%4))%(w+40)-20,y=(i*59+Math.sin(t+i)*8)%h;ctx.globalAlpha=.07+(i%6)*.012;ctx.fillStyle=i%7===0?accent:'#fff';ctx.beginPath();ctx.arc(x,y,i%9===0?1.7:.8,0,Math.PI*2);ctx.fill()}ctx.restore();
+  const horizon=h*.82;const fog=ctx.createLinearGradient(0,horizon-50,0,h);fog.addColorStop(0,'transparent');fog.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=fog;ctx.fillRect(0,horizon-50,w,h-horizon+50);
+}
+function drawFutarian(ctx,x,y,s=1,opts={}){
+  const t=performance.now()/1000,traits=opts.traits||state.traits,angle=opts.angle||0,integrity=opts.integrity??state.identity;
+  const speed=Math.min(1,Math.hypot(opts.vx||0,opts.vy||0)/8),step=Math.sin(t*8+speed*3)*speed;
+  ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(s,s);
+  ctx.globalAlpha=.38;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(0,47,38,12,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+  if(traits.includes('LIGHT')){ctx.strokeStyle='rgba(128,244,255,.48)';ctx.lineWidth=2;ctx.shadowColor='#80f4ff';ctx.shadowBlur=22;ctx.beginPath();ctx.arc(0,0,61+Math.sin(t*3)*3,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0}
+  const bodyGrad=ctx.createLinearGradient(-24,-38,24,42);bodyGrad.addColorStop(0,traits.includes('LIGHT')?'#f3ffff':'#d8e5ff');bodyGrad.addColorStop(.24,'#76f4ff');bodyGrad.addColorStop(.58,'#385eb0');bodyGrad.addColorStop(1,'#11183d');
+  ctx.shadowColor=traits.includes('LIGHT')?'#80f4ff':'rgba(128,244,255,.62)';ctx.shadowBlur=traits.includes('LIGHT')?25:12;ctx.fillStyle=bodyGrad;
+  ctx.beginPath();ctx.moveTo(0,-31);ctx.bezierCurveTo(18,-28,27,-8,22,14);ctx.bezierCurveTo(18,32,10,39,0,43);ctx.bezierCurveTo(-10,39,-18,32,-22,14);ctx.bezierCurveTo(-27,-8,-18,-28,0,-31);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(255,255,255,.64)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#07101d';ctx.beginPath();ctx.arc(0,-42,14,0,Math.PI*2);ctx.fill();ctx.strokeStyle=traits.includes('LIGHT')?'#80f4ff':'#e4edff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#80f4ff';ctx.shadowColor='#80f4ff';ctx.shadowBlur=9;ctx.fillRect(-7,-45,14,3);ctx.shadowBlur=0;
+  const armSwing=step*9;ctx.strokeStyle='#5f83c9';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-18,-4);ctx.lineTo(-34,12+armSwing);ctx.lineTo(-27,28+armSwing*.35);ctx.stroke();ctx.beginPath();ctx.moveTo(18,-4);ctx.lineTo(34,12-armSwing);ctx.lineTo(27,28-armSwing*.35);ctx.stroke();
+  ctx.strokeStyle=traits.includes('ANCHOR')?'#ffd66e':'#6687c8';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-9,38);ctx.lineTo(-13,56-step*5);ctx.lineTo(-23,66);ctx.stroke();ctx.beginPath();ctx.moveTo(9,38);ctx.lineTo(13,56+step*5);ctx.lineTo(23,66);ctx.stroke();
+  glowCircle(ctx,0,5,15,integrity<35?'#ff728d':'#ffd66e',.9);ctx.fillStyle='#050b16';ctx.beginPath();ctx.arc(0,5,6,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.28)';ctx.beginPath();ctx.moveTo(-12,-18);ctx.quadraticCurveTo(0,-4,12,-18);ctx.stroke();
+  const orbitCount=traits.includes('SPLIT')?5:3;for(let i=0;i<orbitCount;i++){const a=t*(traits.includes('GLIDE')?2:1.15)+i*Math.PI*2/orbitCount,ox=Math.cos(a)*50,oy=Math.sin(a)*20;ctx.fillStyle=i%2?'#c9a7ff':'#80f4ff';ctx.globalAlpha=.78;ctx.beginPath();ctx.moveTo(ox,oy-5);ctx.lineTo(ox+5,oy);ctx.lineTo(ox,oy+5);ctx.lineTo(ox-5,oy);ctx.closePath();ctx.fill()}ctx.globalAlpha=1;
+  if(traits.includes('ROOT')){ctx.strokeStyle='rgba(142,185,255,.8)';ctx.lineWidth=2;for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(i*8,43);ctx.quadraticCurveTo(i*18,60,i*25,71);ctx.stroke()}}
+  if(traits.includes('PULSE')){ctx.strokeStyle='rgba(255,114,141,.62)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,5,27+Math.sin(t*5)*3,0,Math.PI*2);ctx.stroke()}
+  ctx.restore();
+  if(traits.includes('SPLIT')&&opts.echo!==false){ctx.save();ctx.globalAlpha=.22;drawFutarian(ctx,x-28,y+9,s*.82,{...opts,traits:traits.filter(v=>v!=='SPLIT'),echo:false});ctx.restore()}
+}
+function particleBurst(list,x,y,color,count=12){for(let i=0;i<count;i++)list.push({x,y,vx:rnd(-2.8,2.8),vy:rnd(-2.8,2.8),life:1,color,size:rnd(1.5,4)})}
+function drawParticles(ctx,list){for(let i=list.length-1;i>=0;i--){const p=list[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy*=.97;p.life-=.025;if(p.life<=0){list.splice(i,1);continue}ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.2,p.size*p.life),0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
+
+/* FACE 1 */
+const source={body:{x:150,y:220,vx:0,vy:0},drag:null,nodes:[],gate:{x:0,y:0,open:false},particles:[],trail:[],shake:0};
+function resetSource(full=true){const c=$('#sourceCanvas'),r=c.getBoundingClientRect();source.body={x:r.width*.22,y:r.height*.58,vx:0,vy:0};source.drag=null;source.nodes=[{x:r.width*.43,y:r.height*.28,hit:state.memory>0},{x:r.width*.62,y:r.height*.68,hit:state.memory>1},{x:r.width*.72,y:r.height*.25,hit:state.memory>2}];source.gate={x:r.width*.9,y:r.height*.5,open:state.memory>=3};source.particles=[];source.trail=[];source.shake=0;if(full){state.memory=0;state.sourceComplete=false;state.identity=100;JM_RUNTIME.recover('SOURCE','Source face reset to original body')}renderHUD()}
+function sourcePointer(e){const c=$('#sourceCanvas'),r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+$('#sourceCanvas').addEventListener('pointerdown',e=>{const p=sourcePointer(e);if(dist(p,source.body)<70){source.drag=p;$('#sourceCanvas').setPointerCapture(e.pointerId);JM_RUNTIME.commit('SOURCE_CONTACT','Body contacted for pull');tone('tap')}});
+$('#sourceCanvas').addEventListener('pointermove',e=>{if(source.drag)source.drag=sourcePointer(e)});
+$('#sourceCanvas').addEventListener('pointerup',e=>{if(!source.drag)return;const p=sourcePointer(e),dx=source.body.x-p.x,dy=source.body.y-p.y,power=Math.min(15,Math.hypot(dx,dy)*.065);source.body.vx+=dx/(Math.hypot(dx,dy)||1)*power;source.body.vy+=dy/(Math.hypot(dx,dy)||1)*power;source.drag=null;JM_RUNTIME.commit('AIM_PULL_RELEASE','Source movement released',{power:Math.round(power)});tone('tap')});
+$('#sourceNudge').onclick=()=>{const target=source.nodes.find(n=>!n.hit)||(source.gate.open?source.gate:null);if(!target){source.body.vx+=3;return}const dx=target.x-source.body.x,dy=target.y-source.body.y,d=Math.hypot(dx,dy)||1;source.body.vx+=dx/d*6;source.body.vy+=dy/d*6;JM_RUNTIME.commit('SOURCE_NUDGE','Backup nudge aimed toward the next source contact')};
+$('#sourceRestart').onclick=()=>resetSource(true);
+function tickSource(){const c=$('#sourceCanvas'),{ctx,w,h}=fitCanvas(c),t=performance.now()/1000;drawBackdrop(ctx,w,h,t,'#80f4ff','source');if(!source.nodes.length)resetSource(false);source.gate.x=w*.9;source.gate.y=h*.5;
+  source.body.x+=source.body.vx;source.body.y+=source.body.vy;source.body.vx*=.985;source.body.vy*=.985;if(Math.hypot(source.body.vx,source.body.vy)>.6)pushTrail(source.trail,source.body.x,source.body.y,'#80f4ff',20);
+  if(source.body.x<55||source.body.x>w-55)source.body.vx*=-.78;if(source.body.y<65||source.body.y>h-65)source.body.vy*=-.78;source.body.x=clamp(source.body.x,55,w-55);source.body.y=clamp(source.body.y,65,h-65);
+  ctx.save();ctx.translate(source.gate.x,source.gate.y);ctx.strokeStyle=source.gate.open?'#8dffd1':'rgba(255,255,255,.22)';ctx.lineWidth=5;ctx.shadowColor=source.gate.open?'#8dffd1':'transparent';ctx.shadowBlur=20;ctx.beginPath();ctx.arc(0,0,34,-Math.PI*.65,Math.PI*.65);ctx.stroke();ctx.beginPath();ctx.moveTo(-12,-34);ctx.quadraticCurveTo(0,-52,12,-34);ctx.stroke();ctx.restore();
+  source.nodes.forEach((n,i)=>{n.x=[w*.43,w*.62,w*.72][i];n.y=[h*.28,h*.68,h*.25][i];if(!n.hit){ctx.save();ctx.translate(n.x,n.y);ctx.rotate(t+i);ctx.fillStyle=['#ffd66e','#80f4ff','#c9a7ff'][i];ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=16;ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(10,0);ctx.lineTo(0,13);ctx.lineTo(-10,0);ctx.closePath();ctx.fill();ctx.restore();if(dist(source.body,n)<34){n.hit=true;state.memory++;source.gate.open=state.memory>=3;particleBurst(source.particles,n.x,n.y,['#ffd66e','#80f4ff','#c9a7ff'][i],18);JM_RUNTIME.ding('MEMORY_RECOVERED',`Source memory ${state.memory}/3 recovered`);setDing('#sourceDing',`DING — memory ${state.memory}/3 returned to FUTARIAN-01.`);renderHUD()}}});
+  if(source.gate.open&&dist(source.body,source.gate)<48&&!state.sourceComplete){state.sourceComplete=true;state.routeStyle='READY';particleBurst(source.particles,source.gate.x,source.gate.y,'#8dffd1',30);JM_RUNTIME.ding('SOURCE_COMPLETE','Source identity recovered and carried to route face');markComplete(1,'SOURCE RECOVERED','FUTARIAN-01 remembers its own movement.');setDing('#sourceDing','SOURCE COMPLETE — the body remembers how it moves. Face 2 now carries this same body.');tone('ship')}
+  drawTrail(ctx,source.trail);const ang=Math.atan2(source.body.vy,source.body.vx)*.12;drawFutarian(ctx,source.body.x,source.body.y,.72,{traits:[],angle:ang,integrity:state.identity,vx:source.body.vx,vy:source.body.vy});if(source.drag){const dx=source.body.x-source.drag.x,dy=source.body.y-source.drag.y,d=Math.hypot(dx,dy)||1,p=Math.min(15,d*.065);ctx.save();ctx.strokeStyle='#ffd66e';ctx.lineWidth=3;ctx.setLineDash([8,7]);ctx.beginPath();ctx.moveTo(source.body.x,source.body.y);ctx.lineTo(source.drag.x,source.drag.y);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=.55;for(let i=1;i<=6;i++){const k=i*17;ctx.beginPath();ctx.arc(source.body.x+dx/d*k,source.body.y+dy/d*k,Math.max(2,7-i*.7),0,Math.PI*2);ctx.fillStyle='#ffd66e';ctx.fill()}ctx.globalAlpha=1;ctx.font='900 11px ui-monospace';ctx.fillStyle='#fff4c8';ctx.fillText(`FORCE ${Math.round(p)}`,source.body.x-25,source.body.y-60);ctx.restore()}drawParticles(ctx,source.particles);
+}
+
+/* FACE 2 */
+const route={running:false,body:{x:70,y:190},targetY:null,gates:[],passed:[],particles:[],trail:[],time:0,flow:0};
+function resetRoute(){route.running=false;route.body={x:70,y:190};route.targetY=null;route.passed=[false,false,false];route.particles=[];route.trail=[];route.time=0;route.flow=0;state.routeGates=0;state.routeStability=0;setDing('#routeDing',state.sourceComplete?'Source carried in. Press START ROUTE.':'You may inspect this face, but the source is not recovered yet.');renderHUD()}
+function startRoute(){if(!state.sourceComplete){tone('error');setDing('#routeDing','Recover the source in Face 1 first.');return}route.running=true;route.body={x:62,y:$('#routeCanvas').getBoundingClientRect().height*.5};route.targetY=route.body.y;route.passed=[false,false,false];route.time=0;state.routeGates=0;state.routeStability=18;JM_RUNTIME.commit('ROUTE_START','Living route started');tone('tap')}
+$('#routeStart').onclick=startRoute;$('#routeRestart').onclick=resetRoute;
+$('#routeCanvas').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect();route.targetY=e.clientY-r.top;e.currentTarget.setPointerCapture(e.pointerId)});$('#routeCanvas').addEventListener('pointermove',e=>{if(e.buttons||e.pressure){const r=e.currentTarget.getBoundingClientRect();route.targetY=e.clientY-r.top}});
+function tickRoute(dt=.016){const c=$('#routeCanvas'),{ctx,w,h}=fitCanvas(c),t=performance.now()/1000;drawBackdrop(ctx,w,h,t,'#c9a7ff','route');const xs=[w*.34,w*.58,w*.8],ys=[h*.31,h*.69,h*.4],gap=90;route.gates=xs.map((x,i)=>({x,y:ys[i]}));
+  route.gates.forEach((g,i)=>{ctx.save();ctx.strokeStyle=route.passed[i]?'#8dffd1':'#ffd66e';ctx.lineWidth=5;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=route.passed[i]?16:7;ctx.beginPath();ctx.moveTo(g.x,0);ctx.lineTo(g.x,g.y-gap/2);ctx.moveTo(g.x,g.y+gap/2);ctx.lineTo(g.x,h);ctx.stroke();ctx.restore()});
+  ctx.save();ctx.lineWidth=16;ctx.lineCap='round';ctx.strokeStyle='rgba(201,167,255,.065)';ctx.beginPath();ctx.moveTo(0,h*.5);for(let x=0;x<=w;x+=24)ctx.lineTo(x,h*.5+Math.sin(x*.023+t*2)*28);ctx.stroke();ctx.restore();
+  for(let i=0;i<7;i++){const x=w-((t*(88+i*3)+i*118)%(w+120)),y=(i*61+t*21)%h;ctx.fillStyle='rgba(255,114,141,.12)';ctx.beginPath();ctx.ellipse(x,y,52,11,0,0,Math.PI*2);ctx.fill()}
+  if(route.running&&state.stage===2){route.time+=dt;route.body.x+=state.routeGates<3?1.85:2.3;const pressure=Math.sin(t*2.3)*.7+Math.sin(t*.63)*.45;route.body.y+=pressure+(route.targetY-route.body.y)*.085;route.body.y=clamp(route.body.y,50,h-50);route.flow=clamp(route.flow+dt*11,0,100);pushTrail(route.trail,route.body.x,route.body.y,'#c9a7ff',18);
+    route.gates.forEach((g,i)=>{if(!route.passed[i]&&route.body.x>=g.x){route.passed[i]=true;const success=Math.abs(route.body.y-g.y)<gap/2-8;if(success){state.routeGates++;state.routeStability=clamp(state.routeStability+27,0,100);particleBurst(route.particles,g.x,route.body.y,'#8dffd1',15);JM_RUNTIME.ding('GATE_PASS',`Living gate ${i+1} carried the source`);setDing('#routeDing',`DING — gate ${i+1}/3 passed. The source stayed inside the route.`)}else{state.identity=clamp(state.identity-12,0,100);state.routeStability=clamp(state.routeStability-10,0,100);route.body.x-=54;route.passed[i]=false;route.body.y=h*.5;particleBurst(route.particles,g.x,g.y,'#ff728d',18);JM_RUNTIME.commit('GATE_REJECT','Pressure rejected an unstable route',{gate:i+1});setDing('#routeDing','SNEEZE — route rejected. The body recovered backward instead of being erased.')}}});
+    if(state.routeGates>=3&&route.body.x>w-35&&!state.routeComplete){route.running=false;state.routeComplete=true;state.routeStyle=state.routeStability>=80?'TRUE / GLIDE':state.routeStability>=55?'MESH / STEADY':'TIGHT / RECOVERED';JM_RUNTIME.ding('ROUTE_COMPLETE',`Route proved as ${state.routeStyle}`);markComplete(2,'ROUTE PROVED',`The source survived as ${state.routeStyle}.`);setDing('#routeDing',`ROUTE COMPLETE — ${state.routeStyle}. Face 3 can now govern future form.`);tone('ship')}
+  }
+  drawTrail(ctx,route.trail);if(route.targetY!=null){ctx.strokeStyle='rgba(128,244,255,.24)';ctx.setLineDash([5,7]);ctx.beginPath();ctx.moveTo(route.body.x,route.body.y);ctx.lineTo(Math.min(w-20,route.body.x+95),route.targetY);ctx.stroke();ctx.setLineDash([])}drawFutarian(ctx,route.body.x,route.body.y,.66,{traits:[],integrity:state.identity,vx:2,vy:(route.targetY??route.body.y)-route.body.y});drawParticles(ctx,route.particles);
+}
+
+/* FACE 3 */
+function renderTraits(){
+  $('#traitGrid').innerHTML=TRAITS.map(t=>{const selected=state.traits.includes(t.id),test=BTG_GATE.canAdd(t.id),blocked=!test.ok&&!selected;return `<button class="traitCard ${selected?'selected':''} ${blocked?'blocked':''}" data-trait="${t.id}" style="--traitGlow:${t.color}33"><b>${t.name}</b><small>${t.desc}</small><em>COST ${t.cost} · COUNTERS ${t.counter}</em></button>`}).join('');
+  $$('.traitCard').forEach(b=>b.onclick=()=>toggleTrait(b.dataset.trait));const cost=BTG_GATE.traitCost();$('#capacityValue').textContent=`${cost} / 4`;$('#capacityText').textContent=state.formLocked?'Future form locked. Clear hand to redesign.':'Choose exactly 3 traits. Total cost may not exceed 4.';$('#lockForm').disabled=!state.routeComplete||!BTG_GATE.validForm()||state.formLocked;
+}
+function toggleTrait(id){if(state.formLocked){tone('error');setDing('#formDing','FORM LOCKED — clear the hand before changing it.');return}const test=BTG_GATE.canAdd(id);if(test.remove){state.traits=state.traits.filter(x=>x!==id);JM_RUNTIME.commit('FORM_REMOVE',`${id} removed from future hand`)}else if(test.ok){state.traits.push(id);JM_RUNTIME.commit('FORM_CHOOSE',`${id} accepted by BTG gate`);tone('tap')}else{tone('error');setDing('#formDing',`BTG REJECTED — ${test.why}.`)}renderTraits();renderHUD()}
+$('#lockForm').onclick=()=>{if(!state.routeComplete){tone('error');setDing('#formDing','Prove the route in Face 2 before locking a future form.');return}if(!BTG_GATE.validForm())return;state.formLocked=true;JM_RUNTIME.ding('FORM_LOCK',`Future form locked: ${state.traits.join(' + ')}`);markComplete(3,'FORM LOCKED',state.traits.map(id=>TRAITS.find(t=>t.id===id).name).join(' + '));setDing('#formDing','FORM LOCKED — the chosen traits will now alter real play in Face 4.');renderTraits();renderHUD()};
+$('#clearTraits').onclick=()=>{state.traits=[];state.formLocked=false;state.futureComplete=false;JM_RUNTIME.recover('FORM_CLEAR','Future hand cleared; source identity preserved');setDing('#formDing','Hand cleared. The source body remains intact.');renderTraits();renderHUD()};
+function tickForm(){const c=$('#formCanvas'),{ctx,w,h}=fitCanvas(c),t=performance.now()/1000;drawBackdrop(ctx,w,h,t,'#ffd66e');ctx.save();ctx.globalAlpha=.22;ctx.fillStyle='#ffd66e';ctx.beginPath();ctx.arc(w*.5,h*.5,110+Math.sin(t)*8,0,Math.PI*2);ctx.fill();ctx.restore();drawFutarian(ctx,w*.5,h*.5,.98,{traits:state.traits,integrity:state.identity});ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='800 12px ui-monospace';ctx.textAlign='center';ctx.fillText(state.formLocked?'FUTURE FORM LOCKED':'SOURCE BODY + LIVE PREVIEW',w*.5,h-22)}
+
+/* FACE 4 */
+const future={running:false,body:{x:70,y:200},target:{x:70,y:200},fragments:[],enemies:[],particles:[],trail:[],shield:0,pulse:0,lastTap:0,gate:{x:0,y:0},shake:0};
+function resetFuture(){const r=$('#futureCanvas').getBoundingClientRect();future.running=false;future.body={x:70,y:r.height*.55};future.target={...future.body};future.fragments=[];future.enemies=[];future.particles=[];future.trail=[];future.shake=0;future.shield=state.traits.includes('LIGHT')?36:0;future.pulse=0;state.fragments=0;$('#futureTag').textContent='FUTURE BODY // READY';setDing('#futureDing',state.formLocked?'Future form ready. Start the test.':'Lock a legal form in Face 3 first.');renderHUD()}
+function startFuture(){if(!state.formLocked){tone('error');setDing('#futureDing','Lock a legal form in Face 3 first.');return}const r=$('#futureCanvas').getBoundingClientRect();future.running=true;future.body={x:62,y:r.height*.56};future.target={...future.body};future.fragments=[{x:r.width*.3,y:r.height*.25,hit:false},{x:r.width*.56,y:r.height*.72,hit:false},{x:r.width*.76,y:r.height*.31,hit:false}];future.enemies=[{x:r.width*.42,y:r.height*.54,vx:-.2,vy:.3,hp:2},{x:r.width*.68,y:r.height*.52,vx:.2,vy:-.2,hp:2},{x:r.width*.82,y:r.height*.74,vx:-.3,vy:-.2,hp:2}];future.particles=[];future.trail=[];future.shake=0;future.shield=state.traits.includes('LIGHT')?36:0;state.fragments=0;state.identity=Math.max(55,state.identity);$('#futureTag').textContent='FUTURE BODY // LIVE';JM_RUNTIME.commit('FUTURE_START','Transformed body entered combined play');tone('tap');renderHUD()}
+$('#futureStart').onclick=startFuture;$('#pulseBtn').onclick=()=>triggerPulse();
+$('#futureCanvas').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect(),now=performance.now();future.target={x:e.clientX-r.left,y:e.clientY-r.top};if(now-future.lastTap<300)triggerPulse();future.lastTap=now;e.currentTarget.setPointerCapture(e.pointerId)});$('#futureCanvas').addEventListener('pointermove',e=>{if(e.buttons||e.pressure){const r=e.currentTarget.getBoundingClientRect();future.target={x:e.clientX-r.left,y:e.clientY-r.top}}});
+function triggerPulse(){if(!future.running||!state.traits.includes('PULSE')){setDing('#futureDing','PULSE is not part of this future form.');tone('error');return}if(future.pulse>0){setDing('#futureDing','Pulse recovering.');return}future.pulse=1;particleBurst(future.particles,future.body.x,future.body.y,'#ff728d',28);future.enemies.forEach(e=>{if(dist(e,future.body)<125)e.hp--});JM_RUNTIME.ding('CONTACT_PULSE','Stored contact released as clearing wave')}
+function applyWorld(ctx){const t=performance.now()/1000;state.world.forEach((o,i)=>{const x=o.x*ctx.canvas.getBoundingClientRect().width,y=o.y*ctx.canvas.getBoundingClientRect().height;ctx.save();ctx.translate(x,y);if(o.type==='RAIL'){ctx.shadowColor='#80f4ff';ctx.shadowBlur=12;ctx.strokeStyle='#80f4ff';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-34,0);ctx.lineTo(34,0);ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.moveTo(-24,0);ctx.lineTo(24,0);ctx.stroke()}else if(o.type==='BUMPER'){glowCircle(ctx,0,0,21,'#ffd66e',.72);ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,15+Math.sin(t*3+i)*2,0,Math.PI*2);ctx.stroke()}else if(o.type==='ROOT_WELL'){ctx.rotate(t*.22);ctx.strokeStyle='#8dffd1';ctx.shadowColor='#8dffd1';ctx.shadowBlur=12;ctx.lineWidth=3;for(let r=10;r<=26;r+=8){ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.stroke()}ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(-13,19);ctx.moveTo(0,-20);ctx.lineTo(13,19);ctx.stroke()}else{ctx.fillStyle='rgba(255,114,141,.17)';ctx.beginPath();ctx.arc(0,0,30+Math.sin(t*2+i)*3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ff728d';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([])}ctx.restore()})}
+function tickFuture(dt=.016){const c=$('#futureCanvas'),{ctx,w,h}=fitCanvas(c),t=performance.now()/1000;drawBackdrop(ctx,w,h,t,'#8dffd1','future');applyWorld(ctx);future.gate={x:w*.92,y:h*.5};
+  ctx.save();ctx.translate(future.gate.x,future.gate.y);ctx.rotate(t*.25);ctx.strokeStyle=state.fragments>=3?'#8dffd1':'rgba(255,255,255,.2)';ctx.lineWidth=5;for(let i=0;i<3;i++){ctx.rotate(Math.PI*2/3);ctx.strokeRect(-27,-27,54,54)}ctx.restore();
+  if(future.running&&state.stage===4){const speed=state.traits.includes('GLIDE')?3.35:2.65;future.body.x+=(future.target.x-future.body.x)*.055*speed;future.body.y+=(future.target.y-future.body.y)*.055*speed;future.body.x=clamp(future.body.x,48,w-48);future.body.y=clamp(future.body.y,55,h-55);pushTrail(future.trail,future.body.x,future.body.y,state.traits.includes('LIGHT')?'#80f4ff':'#8dffd1',19);if(future.pulse>0)future.pulse=Math.max(0,future.pulse-dt*.8);
+    future.fragments.forEach((f,i)=>{f.x=[w*.3,w*.56,w*.76][i];f.y=[h*.25,h*.72,h*.31][i];if(!f.hit&&dist(f,future.body)<34){f.hit=true;state.fragments++;if(state.traits.includes('ROOT'))state.identity=clamp(state.identity+9,0,100);particleBurst(future.particles,f.x,f.y,'#8eb9ff',18);JM_RUNTIME.ding('ROOT_FRAGMENT',`Root fragment ${state.fragments}/3 integrated`);setDing('#futureDing',`DING — root fragment ${state.fragments}/3 joined without replacing the body.`);renderHUD()}});
+    state.world.forEach(o=>{const ox=o.x*w,oy=o.y*h,d=Math.hypot(future.body.x-ox,future.body.y-oy);if(o.type==='ROOT_WELL'&&d<36)state.identity=clamp(state.identity+.04,0,100);if(o.type==='PRESSURE'&&d<34)state.identity=clamp(state.identity-.08,0,100);if(o.type==='BUMPER'&&d<31){future.target.x=clamp(future.body.x+(future.body.x-ox)*3,40,w-40);future.target.y=clamp(future.body.y+(future.body.y-oy)*3,45,h-45)}if(o.type==='RAIL'&&d<38)future.body.y=lerp(future.body.y,oy,.12)});
+    future.enemies.forEach(e=>{if(e.hp<=0)return;const a=Math.atan2(future.body.y-e.y,future.body.x-e.x);e.x+=Math.cos(a)*(.55+state.world.filter(o=>o.type==='PRESSURE').length*.04);e.y+=Math.sin(a)*(.55+state.world.filter(o=>o.type==='PRESSURE').length*.04);if(state.traits.includes('SPLIT')&&dist(e,future.body)<72)e.hp-=.012;if(dist(e,future.body)<36){const damage=state.traits.includes('ANCHOR')?.035:.075;if(future.shield>0)future.shield=Math.max(0,future.shield-damage*6);else state.identity=clamp(state.identity-damage,0,100);future.body.x-=Math.cos(a)*(state.traits.includes('ANCHOR')?3:8);future.body.y-=Math.sin(a)*(state.traits.includes('ANCHOR')?3:8)}});
+    if(state.identity<=0){future.running=false;JM_RUNTIME.recover('FUTURE_RECOVERY','Future body collapsed; source retained for restart');setDing('#futureDing','RECOVERY — the test failed, but the source was not erased. Restart Face 4.');tone('error')}
+    if(state.fragments>=3&&dist(future.body,future.gate)<55&&!state.futureComplete){future.running=false;state.futureComplete=true;particleBurst(future.particles,future.gate.x,future.gate.y,'#8dffd1',40);JM_RUNTIME.ding('FUTURE_COMPLETE','Transformed body reached FTR gate intact');markComplete(4,'FUTURE BODY PROVED','The changed body still moves as itself.');setDing('#futureDing','FUTURE BODY PROVED — now refit the world or choose an FTR fit in Face 6.');$('#futureTag').textContent='FUTURE BODY // PROVED';tone('ship')}
+  }
+  future.fragments.forEach((f,i)=>{if(!f.hit){ctx.save();ctx.translate(f.x||[w*.3,w*.56,w*.76][i],f.y||[h*.25,h*.72,h*.31][i]);ctx.rotate(t+i);ctx.fillStyle='#8eb9ff';ctx.shadowColor='#8eb9ff';ctx.shadowBlur=14;ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(9,7);ctx.lineTo(-9,7);ctx.closePath();ctx.fill();ctx.restore()}});
+  future.enemies.forEach(e=>{if(e.hp<=0)return;ctx.save();ctx.translate(e.x,e.y);ctx.rotate(t);const rg=ctx.createRadialGradient(0,0,2,0,0,24);rg.addColorStop(0,'rgba(255,114,141,.32)');rg.addColorStop(1,'transparent');ctx.fillStyle=rg;ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ff728d';ctx.lineWidth=3;ctx.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?10:21;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}ctx.closePath();ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,25,-Math.PI/2,-Math.PI/2+Math.PI*2*clamp(e.hp/2,0,1));ctx.stroke();ctx.restore()});
+  drawTrail(ctx,future.trail);drawFutarian(ctx,future.body.x,future.body.y,.66,{traits:state.traits,integrity:state.identity,vx:future.target.x-future.body.x,vy:future.target.y-future.body.y});if(future.pulse>0){ctx.strokeStyle=`rgba(255,114,141,${future.pulse})`;ctx.lineWidth=4;ctx.beginPath();ctx.arc(future.body.x,future.body.y,(1-future.pulse)*140,0,Math.PI*2);ctx.stroke()}drawParticles(ctx,future.particles);
+}
+
+/* FACE 5 */
+let selectedObject='RAIL';
+function renderObjectTray(){
+  $('#objectTray').innerHTML=WORLD_TYPES.map(o=>`<button class="objectBtn ${selectedObject===o.id?'active':''}" data-object="${o.id}"><b>${o.name}</b>${o.desc}</button>`).join('');$$('.objectBtn').forEach(b=>b.onclick=()=>{selectedObject=b.dataset.object;renderObjectTray();tone('tap')})
+}
+$('#worldCanvas').addEventListener('pointerdown',e=>{if(!state.futureComplete){setDing('#worldDing','Prove the future body in Face 4 before refitting its world.');tone('error');return}if(state.world.length>=5){setDing('#worldDing','WORLD CAPACITY — five objects already placed.');tone('error');return}const r=e.currentTarget.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;state.world.push({type:selectedObject,x:clamp(x,.08,.92),y:clamp(y,.12,.88)});JM_RUNTIME.ding('WORLD_PLACE',`${selectedObject} placed into future arena`);if(state.world.length===1)markComplete(5,'WORLD REFIT STARTED','The environment now changes the same future body.');setDing('#worldDing',`${selectedObject} now exists in Face 4. Tap PLAY REFITTED WORLD to test it.`);renderHUD()});
+$('#clearWorld').onclick=()=>{state.world=[];JM_RUNTIME.recover('WORLD_CLEAR','World refit cleared; source arena restored');setDing('#worldDing','World returned to source state.');renderHUD()};
+$('#playRefit').onclick=()=>{showStage(4);setTimeout(startFuture,80)};
+function tickWorld(){const c=$('#worldCanvas'),{ctx,w,h}=fitCanvas(c),t=performance.now()/1000;drawBackdrop(ctx,w,h,t,'#ffd66e','world');ctx.strokeStyle='rgba(255,255,255,.08)';for(let x=40;x<w;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=40;y<h;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}applyWorld(ctx);drawFutarian(ctx,w*.14,h*.5,.68,{traits:state.traits,integrity:state.identity});ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='800 12px ui-monospace';ctx.textAlign='center';ctx.fillText(`${state.world.length}/5 WORLD OBJECTS`,w*.5,h-22)}
+
+/* FACE 6 */
+function renderFits(){
+  $('#fitGrid').innerHTML=FTR_MODES.map(m=>`<button class="fitBtn ${state.fitMode===m.id?'active':''}" data-fit="${m.id}"><b>${m.name}</b><span>${m.desc}</span></button>`).join('');$$('.fitBtn').forEach(b=>b.onclick=()=>{if(!state.futureComplete){tone('error');showMoment('FTR WAITING','Prove the future body in Face 4 first.','error');return}state.fitMode=b.dataset.fit;JM_RUNTIME.commit('FTR_FIT',`FTR set to ${state.fitMode}`);renderFits();renderHUD();tone('tap')})
+}
+$('#shipBtn').onclick=()=>{if(!state.futureComplete||!state.fitMode)return;state.shipped=true;JM_RUNTIME.ding('SHIP',`FUTARIZED body shipped through FTR ${state.fitMode}`);markComplete(6,'BODY SHIPPED',`FTR ${state.fitMode}: source intact.`);tone('ship');try{localStorage.setItem('jm_futarized_part2_profile',JSON.stringify(receiptObject()))}catch(_){}renderHUD()};
+function receiptObject(){return {project:'FUTARIZED',version:'2.1',classification:'PLAYABLE BTG/FTR BRIDGE — LIVING BODY POLISH',body:FUTARIZED_BODY,state:{identity:Math.round(state.identity),sourceComplete:state.sourceComplete,routeComplete:state.routeComplete,routeStyle:state.routeStyle,traits:[...state.traits],futureComplete:state.futureComplete,world:[...state.world],fitMode:state.fitMode,shipped:state.shipped},latestTrace:state.receipts.slice(0,30),keeper:'Carry one body forward without erasing it.',polish:'v2.1 living graphics, connected flow, stronger contact feedback',generated:new Date().toISOString()}}
+$('#downloadReceipt').onclick=()=>{const blob=new Blob([JSON.stringify(receiptObject(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='FUTARIZED_v2_1_LIVING_BODY_receipt.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),300)};
+
+$('#enterPart2').onclick=()=>{try{localStorage.setItem('jm_futarized_part2_profile',JSON.stringify(receiptObject()))}catch(_){}location.href='FUTARIZED_PART_II_FUTARIAN_FIELD.html'};
+function tickFTR(){const c=$('#ftrCanvas'),{ctx,w,h}=fitCanvas(c),t=performance.now()/1000;drawBackdrop(ctx,w,h,t,'#8dffd1','ftr');const cx=w*.5,cy=h*.5;ctx.save();ctx.translate(cx,cy);const mode=state.fitMode||'UNDECIDED';ctx.strokeStyle=state.futureComplete?'#8dffd1':'rgba(255,255,255,.16)';ctx.lineWidth=3;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=18;
+  if(mode==='OVER'){ctx.strokeRect(-105,-95,210,35)}else if(mode==='BESIDE'){ctx.strokeRect(72,-55,68,110)}else if(mode==='AROUND'){ctx.beginPath();ctx.arc(0,0,120,0,Math.PI*2);ctx.stroke()}else if(mode==='THROUGH'){ctx.beginPath();ctx.moveTo(-155,0);ctx.lineTo(155,0);ctx.stroke()}else if(mode==='INSIDE'){ctx.beginPath();ctx.arc(0,0,42,0,Math.PI*2);ctx.stroke()}else{ctx.setLineDash([8,8]);ctx.beginPath();ctx.arc(0,0,120,0,Math.PI*2);ctx.stroke()}ctx.restore();
+  drawFutarian(ctx,cx,cy,.98,{traits:state.traits,integrity:state.identity});ctx.fillStyle='#dfffee';ctx.font='900 13px ui-monospace';ctx.textAlign='center';ctx.fillText(`FTR ${state.fitMode||'FIT UNDECIDED'}`,cx,h-30);if(state.shipped){ctx.fillStyle='rgba(141,255,209,.12)';ctx.fillRect(0,0,w,h);ctx.fillStyle='#8dffd1';ctx.font='1000 24px system-ui';ctx.fillText('BODY SHIPPED WITH SOURCE INTACT',cx,42)}
+}
+
+/* SYNTAX */
+function normalizeSyntax(s){return String(s||'').toUpperCase().replace(/[→⇒]/g,'>').replace(/\s*>\s*/g,' > ').replace(/\s+/g,' ').trim()}
+function executeSyntax(s){const src=normalizeSyntax(s),words=src.split(/[\s>:+/]+/).filter(Boolean);if(!src)return 'EMPTY ROUTE';const has=x=>words.includes(x);if(has('SOURCE')||has('AIM')||has('RELEASE')){showStage(1);source.body.vx+=4;return 'SOURCE route committed: visible source body nudged.'}if(has('WORLD')||has('ARENA')||has('PLACE')){showStage(5);return 'WORLD route opened: select an object and tap the field.'}if(has('FTR')||has('SHIP')||has('TRACE')){showStage(6);return 'FTR route opened: choose fit and inspect trace.'}if(has('FORM')||has('CARD')||has('CHOOSE')){showStage(3);return 'FORM route opened: choose a legal future hand.'}if(has('FUTURE')||has('PLAY')||has('FULL')){showStage(4);if(state.formLocked)startFuture();return 'FUTURE route committed to the visible play body.'}if(has('ROUTE')||has('GATE')||has('PRESSURE')){showStage(2);startRoute();return 'ROUTE route committed: living route started.'}return `INSPECTED: ${src}\nNo visible route matched.`}
+$('#runSyntax').onclick=()=>{const out=executeSyntax($('#syntaxInput').value);$('#syntaxOutput').textContent=out;JM_RUNTIME.commit('SYNTAX',out,{source:normalizeSyntax($('#syntaxInput').value)})};
+$('#showBody').onclick=()=>{$('#syntaxOutput').textContent=JSON.stringify({FUTARIZED_BODY,BTG_GATE:{capacity:4,maxTraits:3},FTR_MODES},null,2)};
+
+/* APP CONTROLS */
+$('#beginBtn').onclick=()=>{$('#intro').classList.add('hidden');tone('ding');JM_RUNTIME.commit('ENTRY','Player entered through source body')};
+$('#soundBtn').onclick=()=>{state.sound=!state.sound;$('#soundBtn').classList.toggle('on',state.sound);$('#soundBtn').textContent=state.sound?'SOUND':'MUTED';save();if(state.sound)tone('tap')};
+$('#resetBtn').onclick=()=>{if(!confirm('Reset FUTARIZED v2.1 to the untouched source body?'))return;state=defaultState();localStorage.removeItem(STORAGE_KEY);resetSource(false);resetRoute();resetFuture();renderAll();JM_RUNTIME.recover('PROJECT_RESET','Whole project returned to source body')};
+$('#backBtn').onclick=()=>showStage(state.stage===1?1:state.stage-1);$('#nextBtn').onclick=()=>showStage(state.stage===6?1:state.stage+1);
+window.addEventListener('resize',()=>{resetSource(false);if(!future.running)resetFuture()});
+
+function renderAll(){renderHUD();renderTraits();renderObjectTray();renderFits();renderTrace();updateNextReady();$('#soundBtn').classList.toggle('on',state.sound);$('#soundBtn').textContent=state.sound?'SOUND':'MUTED'}
+let last=performance.now();function loop(now){const dt=Math.min(.04,(now-last)/1000);last=now;tickSource();tickRoute(dt);tickForm();tickFuture(dt);tickWorld();tickFTR();requestAnimationFrame(loop)}
+buildProgress();resetSource(false);resetRoute();resetFuture();renderAll();showStage(state.stage||1);requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

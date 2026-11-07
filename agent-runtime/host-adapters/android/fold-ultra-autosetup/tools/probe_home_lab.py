@@ -134,7 +134,7 @@ def main():
     has("OPPO · NOT CONTACTED","cp01_oppo_not_contacted")
     has("EXISTING DONOR / JM PHONE","cp01_original_phone_laptop_donor")
     has("View current Home Lab checks","cp13_devices_github_checks")
-    has("Open last verified CI run","cp13_devices_verified_run")
+    has("View verified baseline CI run","cp13_devices_verified_run")
     request_dialog_with_verified_touch("Prepare OPPO handoff text",
         "cp01_explicit_handoff_dialog")
     has("Share a request-only template?","cp01_request_only_warning")

@@ -12,6 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: CP23 ensure authentic Part I and II HTML are shipped as GitHub Pages files
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1
+          for part in FUTARIZED_PART_I_LIVING_REFIT.html FUTARIZED_PART_II_FUTARIAN_FIELD.html; do
+            git ls-files --error-unmatch "$P/$part" >/dev/null
+            test -s "$P/$part"
+          done
       - name: Reconstruct exact crowned HTML bodies
         shell: bash
         run: |

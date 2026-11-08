@@ -481,3 +481,19 @@ test('CP07 standalone review HTML includes same tactical readout with no externa
  expect(requests.filter(u=>!u.includes('CREWBOUND_CP07_PLAY.html'))).toEqual([]);
  expect(errors).toEqual([]);
 });
+
+test('CP07 missing-target warnings outrank conditional near-pair bonuses',async({page})=>{
+ await page.goto(PATH);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.evaluate(()=>{
+   const [a,b]=game.floor('player');
+   b.x=a.x+15;b.y=a.y+15;updateUI();
+ });
+ expect(await page.evaluate(()=>game.pairPreview().nearPair)).toBe(true);
+ expect(await page.evaluate(()=>game.pairPreview().ready)).toBe(false);
+ await expect(page.locator('#previewHint')).toContainText('Choose a target');
+ await page.locator('#arena').click({position:{x:160,y:135}});
+ await expect(page.locator('#previewHint')).toContainText('PAIR IN RANGE');
+ await expect(page.locator('#commit')).toBeEnabled();
+});

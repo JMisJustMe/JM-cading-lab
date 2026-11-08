@@ -27,7 +27,7 @@ class CreationsDoorsContracts(unittest.TestCase):
         self.assertEqual(len(self.data["sections"]), 9)
         ids = [x["id"] for x in self.entries]
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertEqual(len(ids), 72)
+        self.assertEqual(len(ids), 117)
         self.assertTrue(all(e.get("label") for e in self.entries))
 
     def test_openbox_current_verified_original_door(self):
@@ -104,6 +104,25 @@ class CreationsDoorsContracts(unittest.TestCase):
         self.assertEqual(entries["jm-crewbound-321-unique-cast"]["kind"],"web")
         self.assertIn("22 public payload mounts",self.data["policy"]["mounted_bodies_claim"])
         self.assertFalse(self.data["policy"]["source_bodies_copied"])
+
+    def test_apps_house_all_45_versioned_rows_with_clear_contact_boundaries(self):
+        entries=[e for e in self.entries if e["id"].startswith("jm-apps-house-")]
+        self.assertEqual(len(entries),45)
+        self.assertEqual(sorted(e["sourceIndex"] for e in entries),list(range(45)))
+        self.assertEqual(len({e["id"] for e in entries}),45)
+        self.assertEqual(sum(e["status"].startswith("PUBLIC EXECUTABLE CARRIER") for e in entries),2)
+        self.assertEqual(sum(e["status"].startswith("HOUSE SEARCH CONTACT") for e in entries),43)
+        self.assertTrue(all(e["kind"]=="web" and e["version"] and e["originalStatus"]
+                            and e["sourceScope"] for e in entries))
+        for item in entries:
+            if item["status"].startswith("HOUSE SEARCH CONTACT"):
+                self.assertIn("/apps/?q=",item["url"])
+                self.assertIn("not direct app",item["status"])
+                self.assertIn("Filtered entry",item["routeScope"])
+        policy=self.data["policy"]["apps_house_reference"]
+        self.assertEqual(policy["entries"],45)
+        self.assertTrue(policy["noMergedBodies"])
+        self.assertIn("source-version labels only",self.data["policy"]["latest_body_claim"])
 
     def test_activity_is_private_and_home_role_absent(self):
         root = ET.parse(MANIFEST).getroot()

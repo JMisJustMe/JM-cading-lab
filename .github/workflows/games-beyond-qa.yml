@@ -12,6 +12,9 @@ on:
     paths:
       - 'games-beyond/**'
       - '.github/workflows/games-beyond-qa.yml'
+  # Owner-requested phone/GitHub headless execution: exact branch reruns without
+  # touching any installed game, source, phone screen or private GitHub data.
+  workflow_dispatch:
 
 jobs:
   browser-qa:

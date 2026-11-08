@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- {"schema":"JM.CREWBOUND.CP07.STANDALONE_HTML/1","branch":"jm/crewbound-cp07-battle-clarity","source_files_blob_sha1":{"index.html":"518c789883a943a6fa1db0f335fca9b59f481c83","roster.js":"4f72cbd4c0a9e4ae3e3d9cc216b5a4763136fa8f","cast.js":"27b525b9e3a1267ec3acb219b7606fd7beab492c","art.js":"e6a4efdb38f62c41bed09d8e8b34aea5b83448e1","combat-kit.js":"5dde84477aee07d3ef7c7ef5005ab6528f15aa32","sim.js":"9b074fc195ed55453c19abd2ee5bb42b7174db64"},"role":"offline review only, modular GitHub source keeper","ancestors":"original CREWBOUND v0.5 preserved; protected CP03–CP06 distinct"} -->
+<!-- {"schema":"JM.CREWBOUND.CP07.STANDALONE_HTML/1","branch":"jm/crewbound-cp07-battle-clarity","source_files_blob_sha1":{"index.html":"dd053087b90a5a7665d88ef0b97b1d8c6c6434b9","roster.js":"4f72cbd4c0a9e4ae3e3d9cc216b5a4763136fa8f","cast.js":"27b525b9e3a1267ec3acb219b7606fd7beab492c","art.js":"e6a4efdb38f62c41bed09d8e8b34aea5b83448e1","combat-kit.js":"5dde84477aee07d3ef7c7ef5005ab6528f15aa32","sim.js":"9b074fc195ed55453c19abd2ee5bb42b7174db64"},"role":"offline review only, modular GitHub source keeper","ancestors":"original CREWBOUND v0.5 preserved; protected CP03–CP06 distinct"} -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
@@ -874,7 +874,7 @@ function updateUI(){
    el.textContent=planned.slot+" · "+planned.name+" · "+planned.action+" · "+where+
      (planned.reason?" · "+planned.reason:" · READY");
  }
- $("previewHint").textContent=preview.nearPair?"PAIR IN RANGE · close fighters earn a linked bonus when striking":
+ $("previewHint").textContent=preview.ready&&preview.nearPair?"PAIR IN RANGE · close fighters earn a linked bonus when striking":
    preview.hint;
  const rival=game.lastRivalPair();
  $("rivalReadback").textContent=rival?

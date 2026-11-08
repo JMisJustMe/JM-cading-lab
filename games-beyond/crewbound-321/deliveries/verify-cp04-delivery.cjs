@@ -19,7 +19,7 @@ let html=text["index.html"];
 for(const name of names.slice(1)){
  const pattern='<script src="./'+name+'"></script>';
  assert.equal(html.split(pattern).length,2,"exact single script dependency "+name);
- assert.doesNotMatch(text[name],/<\\/script/i,"unsafe embedded script token "+name);
+ assert.ok(!text[name].toLowerCase().includes("</script"),"unsafe embedded script token "+name);
  html=html.replace(pattern,'<script>\n/* CP04 source: '+name+' Git blob '+blobs[name]+' */\n'+text[name]+'\n</script>');
 }
 const gallery='href="./cast.html"';

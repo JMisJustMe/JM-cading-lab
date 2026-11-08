@@ -6,7 +6,7 @@ async function expectHouseBoot(page) {
   const errors = [];
   page.on('pageerror', error => { errors.push(String(error)); console.log('JM startup page error:', String(error)); });
   await page.goto('./');
-  await expect(page.locator('#status')).toHaveText('22 MOUNTED · 24 FULL', { timeout: 45_000 });
+  await expect(page.locator('#status')).toHaveText('22 MOUNTED ROOMS', { timeout: 45_000 });
   await expect(page.locator('#enterBtn')).toBeEnabled();
   expect(errors).toEqual([]);
 }

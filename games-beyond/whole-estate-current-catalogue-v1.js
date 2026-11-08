@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const REV='2026-09-20-r1';
+const REV='2026-11-07-cp22';
 let mounted=false;
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function activateCatalogue(){
@@ -33,15 +33,22 @@ function activateCatalogue(){
     if(main)main.appendChild(view);
   }
   if(!view)return false;
-  view.innerHTML=`
+  if(view.dataset.jmCatalogueRendered!==REV){
+    view.innerHTML=`
     <section class="panel" style="margin-top:0">
       <div class="panelHead"><div>
-        <h2>Whole Current Games Estate</h2>
-        <p>This is the whole-game catalogue lane. Mounted Rooms remain exact carriers; this view also keeps current heads, unmounted/private bodies, families, HOLDs and playable proof loops visible without pretending they are all mounted or publicly released.</p>
+        <h2>Whole Games Catalogue · public source register</h2>
+        <p>Every public catalogue record is searchable below. This is not the mounted Rooms subset: independently preserved games, descendants, proofs, families and recovery HOLDs retain separate identities, with no invented play links.</p>
       </div><a class="btn gold" href="all-games.html?v=${REV}">OPEN FULL PAGE</a></div>
-      <div class="law" style="margin-top:10px">COUNT THE GAME ONCE. KEEP EVERY PLAYABLE FORM IT EARNED. CONNECT THE WHOLE LINE.</div>
+      <p id="catalogueRecordCount" class="law" role="status" aria-live="polite" style="margin-top:10px">Reading public catalogue records…</p>
+      <form action="all-games.html" method="get" class="row" aria-label="Search all game records"><label class="sr-only" for="catalogueQuery">Search all public Games Estate records</label><input id="catalogueQuery" name="q" type="search" class="search" placeholder="Find original games, COMBOUND, FPS…" style="flex:1 1 220px" required><button class="btn cyan" type="submit">SEARCH FULL CATALOGUE</button></form>
+      <p style="font-size:.72rem;color:var(--muted)">The current public catalogue renders 143 records, including three later historical additions. The earlier CP14 report also counted 143; a numeric match is not proof of full source-custody equivalence. Private family-only originals remain protected. These are not unique completed games.</p>
     </section>
-    <iframe title="Whole Current Games Estate catalogue" src="all-games.html?v=${REV}" style="display:block;width:100%;min-height:78dvh;margin-top:9px;border:1px solid var(--line);border-radius:18px;background:#050811"></iframe>`;
+    <iframe id="wholeGamesCatalogueFrame" loading="lazy" title="Searchable public Whole Current Games Estate catalogue" src="all-games.html?v=${REV}" style="display:block;width:100%;min-height:80dvh;margin-top:9px;border:1px solid var(--line);border-radius:18px;background:#050811"></iframe>`;
+    view.dataset.jmCatalogueRendered=REV;
+    const frame=view.querySelector('#wholeGamesCatalogueFrame');
+    if(frame)frame.addEventListener('load',()=>{try{const count=frame.contentDocument?.getElementById('statAll')?.textContent?.trim();const slot=view.querySelector('#catalogueRecordCount');if(slot&&/^\d+$/.test(count||''))slot.textContent=count+' public records · mounted Rooms counted separately';else if(slot)slot.textContent='Open the full catalogue for the current count';}catch{const slot=view.querySelector('#catalogueRecordCount');if(slot)slot.textContent='Open full catalogue to browse records';}});
+  }
   btn.textContent='CATALOGUE';
   const label=document.querySelector('.brand small');
   if(label)label.textContent='Whole-Estate House · Mounted Rooms + Current Catalogue';
@@ -54,13 +61,13 @@ function activateCatalogue(){
       note.dataset.jmWholeCatalogueNote='1';
       note.className='law';
       note.style.marginTop='9px';
-      note.innerHTML='ROOMS = exact mounted carriers. <button type="button" data-open-whole-catalogue style="margin-left:6px;border:1px solid var(--cyan);border-radius:9px;background:#08232b;color:var(--cyan);padding:7px 9px;font-weight:900">OPEN WHOLE GAMES CATALOGUE</button>';
+      note.innerHTML='ROOMS = mounted carriers, NOT the whole Games Estate. <button type="button" data-open-whole-catalogue style="margin-left:6px;border:1px solid var(--cyan);border-radius:9px;background:#08232b;color:var(--cyan);padding:7px 9px;font-weight:900">OPEN WHOLE GAMES CATALOGUE</button>';
       panel.appendChild(note);
       note.querySelector('[data-open-whole-catalogue]').onclick=()=>btn.click();
     }
   }
   const description=document.querySelector('#view-house .hero p');
-  if(description)description.textContent='Mounted Rooms follow the verified payload manifest. The two exact private JMStudios originals complete the local House after import. The current Games Estate catalogue is a separate scope; neither catalogue source nor its older counts overrides live mount proof.';
+  if(description)description.textContent='Mounted Rooms follow the verified payload manifest. The two protected JMStudios originals complete the local mounted House only after owner-controlled import. The wider catalogue is a separate public source register: it is not limited to mounted Rooms, and a public listing does not certify gameplay.';
   const legacyStat=document.getElementById('catalogueStat');
   if(legacyStat?.parentElement?.querySelector('span'))legacyStat.parentElement.querySelector('span').textContent='Legacy catalogue subset';
   const status=document.getElementById('status');

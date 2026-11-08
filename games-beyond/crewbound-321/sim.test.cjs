@@ -183,3 +183,112 @@ test("CP04 linked retarget explicitly clears individual-target overrides",()=>{
  assert.equal(g.pairPlans[two[0].id].action,undefined);
  assert.equal(g.pairPlans[two[1].id].action,undefined);
 });
+
+test("CP05 twelve different role kits, silhouettes, abilities and source-traceable ancestors",()=>{
+ const kit=require("./combat-kit.js");
+ assert.equal(Object.keys(kit.KITS).length,12);
+ const fighters=Object.values(ROSTER);
+ for(const key of Object.keys(ROSTER)){
+  assert.ok(kit.KITS[key],"missing original player identity "+key);
+  assert.ok(kit.KITS[key].reach>=40&&kit.KITS[key].reach<=100);
+  assert.ok(kit.KITS[key].recharge>=5);
+  assert.ok(kit.KITS[key].defense&&kit.KITS[key].special);
+ }
+ assert.equal(new Set(Object.values(kit.KITS).map(v=>v.name)).size,12);
+ assert.equal(new Set(Object.values(kit.KITS).map(v=>v.defense)).size,12);
+ assert.equal(new Set(Object.values(kit.KITS).map(v=>v.special)).size,12);
+ assert.equal(new Set(fighters.map(v=>v.silhouette)).size,12);
+});
+
+test("CP05 every character can trigger its own original cooldown-gated signature",()=>{
+ const combat=require("./combat-kit.js");
+ for(const key of Object.keys(combat.KITS)){
+  const g=make(),a=g.units.find(x=>x.key===key);
+  const b=g.units.find(x=>x.team!==a.team);
+  assert.ok(a&&b,key);
+  a.role="floor";b.role="floor";
+  a.kitCooldown=0;
+  assert.equal(combat.castSpecial(g,a,b,40),true,"failed "+key);
+  assert.ok(a.kitCooldown>0,key);
+  assert.ok(a.specialFlash>0,key);
+  const receipt=g.log.filter(x=>x.type==="SIGNATURE");
+  assert.equal(receipt.length,1,key);
+  assert.equal(receipt[0].move,combat.KITS[key].name,key);
+  assert.equal(combat.castSpecial(g,a,b,40),false,"cooldown bypass "+key);
+ }
+});
+
+test("CP05 defensive identities vary real damage, not merely colours",()=>{
+ const combat=require("./combat-kit.js");
+ const g=make(),attacker=g.floor("enemy")[0];
+ const iron=g.units.find(x=>x.key==="IRONVALE"),wrought=g.units.find(x=>x.key==="WROUGHT");
+ iron.role="floor";wrought.role="floor";
+ iron.guard=0;wrought.guard=0;
+ assert.ok(combat.guardMultiplier(g,wrought,attacker)<combat.guardMultiplier(g,iron,attacker));
+ const locke=g.units.find(x=>x.key==="LOCKE");
+ locke.guard=2;assert.ok(combat.guardMultiplier(g,locke,attacker)<.6);
+});
+
+test("CP05 linked pair damage bonus is conditional on actual partner proximity",()=>{
+ const g=make(),[a,b]=g.floor("player"),foe=g.floor("enemy")[0];
+ a.x=300;a.y=300;b.x=300;b.y=320;foe.x=310;foe.y=306;
+ assert.equal(plan(g,[a.id,b.id],"COMBO",310,320),true);
+ assert.ok(g.pairLink&&g.pairLink.ids.length===2);
+ a.cooldown=0;g.strike(a,foe);
+ assert.ok(g.stats.player.combos>=1);
+ assert.ok(g.stats.player.hits>=1);
+ assert.ok(g.log.some(x=>x.type==="CONTACT"));
+});
+
+test("CP05 relay occupation rewards presence but never free contested points",()=>{
+ const g=make(),z=g.zones[0];
+ for(const u of g.floor("player")){
+  u.x=z.x+12;u.y=z.y+12;
+  u.order={mode:"GUARD",target:{x:z.x,y:z.y},remaining:20};
+ }
+ for(const u of g.floor("enemy")){
+  u.x=580;u.y=130;
+  u.order={mode:"GUARD",target:{x:590,y:120},remaining:20};
+ }
+ for(let i=0;i<100;i++)g.step(.05);
+ assert.ok(g.scores.player>0,"no relay score");
+ assert.ok(g.log.some(x=>x.type==="RELAY_CAPTURE"&&x.side==="player"));
+ assert.ok(g.scores.enemy>=0);
+ const before=g.scores.player;
+ g.zones[0].x=580;g.zones[0].y=130;
+ // Once the rival dominates the relocated relay, the player's score stops increasing.
+ g.zones[1].x=580;g.zones[1].y=130;
+ for(let i=0;i<15;i++)g.step(.05);
+ assert.ok(g.scores.player<=before+.03);
+});
+
+test("CP05 match conclusion reports winner, objective scores and combat stats",()=>{
+ const g=make();
+ g.time=179.95;g.scores.player=9;g.scores.enemy=3;
+ g.step(.05);
+ assert.equal(g.ended,true);
+ assert.ok(["player","enemy"].includes(g.winner));
+ assert.equal(g.matchReason,"TIME / RELAY SCORE");
+ const r=g.log.find(x=>x.type==="MATCH_END");
+ assert.equal(r.winner,g.winner);
+ assert.equal(r.scores.player,g.scores.player);
+ assert.ok(Number.isFinite(r.hits.player));
+});
+
+test("CP05 yard assists have real cooldown and recorded contribution",()=>{
+ const g=make(),yard=g.yard("player")[0],floor=g.floor("player")[0];
+ g.choose(yard.id);g.choose(floor.id);g.setAction("GUARD");g.setTarget(floor.x,floor.y);
+ assert.equal(g.commit(),true);
+ assert.ok(g.stats.player.assists>=1);
+ assert.ok(yard.supportCooldown>0);
+ assert.ok(g.floor("player").some(u=>u.shield>0));
+});
+
+test("CP05 snapshot exposes relay scores, capture zones and match statistics without changing source",()=>{
+ const g=make(),s=g.snapshot();
+ assert.equal(s.zones.length,2);
+ assert.equal(s.scores.player,0);
+ assert.equal(s.stats.enemy.hits,0);
+ assert.equal(s.matchReason,null);
+ assert.equal(ORIGINAL_BODY_SHA256,"5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7");
+});

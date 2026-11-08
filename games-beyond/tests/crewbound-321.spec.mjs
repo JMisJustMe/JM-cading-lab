@@ -232,3 +232,107 @@ test('CP04 standalone source-parity HTML runs independently with real A/B touch 
   expect(errors).toEqual([]);
   expect(requests.filter(u=>!u.includes('CREWBOUND_CP04_PLAY.html'))).toEqual([]);
 });
+
+test('CP05 relay arena and twelve exclusive combat kits render without missing controls',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ await expect(page.locator('#myRelay')).toHaveText('0.0');
+ await expect(page.locator('#theirRelay')).toHaveText('0.0');
+ await expect(page.locator('#matchOverlay')).toBeHidden();
+ const data=await page.evaluate(()=>({
+   zones:game.zones.length,
+   kits:Object.keys(window.JM_CREWBOUND_321_COMBAT.KITS).length,
+   original:window.JM_CREWBOUND_321_SIM.ORIGINAL_BODY_SHA256,
+   names:[...document.querySelectorAll('#roster .unit b')].map(n=>n.textContent)
+ }));
+ expect(data.zones).toBe(2);expect(data.kits).toBe(12);
+ expect(data.names).toEqual(['Kepler','Ironvale','Solace','Locke','Aster','Nox']);
+ expect(data.original).toBe('5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7');
+ expect(errors).toEqual([]);
+});
+
+test('CP05 selected fighter signature triggers a distinct visible arena contact',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ const outcome=await page.evaluate(()=>{
+   const a=game.floor('player')[0],b=game.floor('enemy')[0];
+   a.x=300;a.y=300;b.x=311;b.y=307;
+   a.cooldown=0;a.kitCooldown=0;
+   game.strike(a,b);
+   updateUI();paint();
+   return {move:game.log.find(x=>x.type==='SIGNATURE')?.move,
+      glow:a.specialFlash,damage:game.stats.player.damage,hits:game.stats.player.hits}
+ });
+ expect(outcome.move).toBe('RAIL SLIP');
+ expect(outcome.glow).toBeGreaterThan(0);
+ expect(outcome.damage).toBeGreaterThan(0);
+ expect(outcome.hits).toBe(1);
+ expect(errors).toEqual([]);
+});
+
+test('CP05 a three-minute finished match reports winner then resets to planning',async({page})=>{
+ await page.goto(PATH);
+ await page.evaluate(()=>{
+   game.time=179.95;
+   game.scores.player=12;
+   game.scores.enemy=1;
+   game.step(.05);updateUI();
+ });
+ await expect(page.locator('#matchOverlay')).toBeVisible();
+ await expect(page.locator('#resultTitle')).toContainText(/VICTORY|RIVALS WIN/);
+ await expect(page.locator('#resultSummary')).toContainText('RELAY');
+ await page.locator('#playAgain').click();
+ await expect(page.locator('#matchOverlay')).toBeHidden();
+ await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+ await expect(page.locator('#commit')).toBeDisabled();
+});
+
+test('CP05 360px touch screen has accessible commands, roster, and no horizontal overflow',async({page})=>{
+ await page.setViewportSize({width:360,height:700});
+ await page.goto(PATH);
+ await expect(page.locator('#roster .unit')).toHaveCount(6);
+ const size=await page.evaluate(()=>({
+   scroll:document.documentElement.scrollWidth,
+   client:document.documentElement.clientWidth,
+   buttons:[...document.querySelectorAll('#editBoth,#editFirst,#editSecond,#commit,#pause')].map(b=>({
+     id:b.id,height:b.getBoundingClientRect().height,width:b.getBoundingClientRect().width}))
+ }));
+ expect(size.scroll).toBeLessThanOrEqual(size.client+2);
+ expect(size.buttons.every(b=>b.height>=44&&b.width>32)).toBe(true);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=ATTACK]').click();
+ await page.locator('#arena').click({position:{x:68,y:115}});
+ await page.locator('#editSecond').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:100,y:160}});
+ await expect(page.locator('#commit')).toBeEnabled();
+});
+
+test('CP05 standalone offline HTML opens with new kits and finishes a match without external JS',async({page})=>{
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',req=>requests.push(req.url()));
+ await page.goto('./crewbound-321/deliveries/CREWBOUND_CP05_PLAY.html');
+ await expect(page.locator('h1')).toContainText('3 + 2 + 1');
+ await expect(page.locator('#roster .unit')).toHaveCount(6);
+ await expect(page.locator('#myRelay')).toHaveText('0.0');
+ expect(await page.locator('script[src]').count()).toBe(0);
+ const kits=await page.evaluate(()=>Object.keys(window.JM_CREWBOUND_321_COMBAT.KITS));
+ expect(kits).toHaveLength(12);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=ATTACK]').click();
+ await page.locator('#arena').click({position:{x:140,y:145}});
+ await page.locator('#editSecond').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:210,y:190}});
+ await page.locator('#commit').click();
+ const plans=await page.evaluate(()=>game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT').playerPlans);
+ expect(plans.map(x=>x.action)).toEqual(['ATTACK','GUARD']);
+ await page.evaluate(()=>{game.time=179.95;game.step(.05);updateUI()});
+ await expect(page.locator('#matchOverlay')).toBeVisible();
+ expect(errors).toEqual([]);
+ expect(requests.filter(url=>!url.includes('CREWBOUND_CP05_PLAY.html'))).toEqual([]);
+});

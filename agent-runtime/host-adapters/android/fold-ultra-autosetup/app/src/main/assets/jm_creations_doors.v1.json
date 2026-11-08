@@ -1,0 +1,398 @@
+{
+  "schema": "JM.FoldUltra.CreationsEntrances/1.0",
+  "date": "2026-11-08",
+  "policy": {
+    "original_app": "com.jmisjustme.foldultra",
+    "access_only": true,
+    "source_bodies_copied": false,
+    "automatic_external_navigation": false,
+    "no_launcher_takeover": true,
+    "private_repos_require_external_auth": true,
+    "latest_version_requires_independent_proof": true,
+    "source_donor": "JMisJustMe/JM-cading-lab PR #708 (CP03 registry); independent donor not merged"
+  },
+  "sections": [
+    {
+      "id": "websites",
+      "label": "My Websites",
+      "entries": [
+        {
+          "id": "jm-ecostate",
+          "label": "JM Ecostate",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-estate-access",
+          "label": "JM ECOSTATE Access Mesh",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/access/",
+          "status": "LIVE · 200",
+          "source": "JM ECOSTATE canonical access route, 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "coding",
+      "label": "My Coding & Editors",
+      "entries": [
+        {
+          "id": "cading-lab",
+          "label": "JM-cading-lab",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "cloud-contact",
+          "label": "JM Cloud Contact",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "ai-studio-surface",
+          "label": "JM AI Studio Surface",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-surface",
+          "status": "PRIVATE · use authenticated GitHub",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "continuation",
+          "label": "JM Continuation",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-continuation",
+          "status": "PRIVATE · use authenticated GitHub",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "ai-react",
+          "label": "JM AI Studio React Descendant",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-react-descendant",
+          "status": "PRIVATE · use authenticated GitHub",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-web-original-evidence",
+          "label": "JM.WEB original source & deployment receipts",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/main/docs/JM_WEB_ESTATE_v1_2_DEPLOYMENT_RECEIPT.md",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-web-source",
+          "label": "JM.WEB source estate",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/docs",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-native-coding-bodies",
+          "label": "JM coding and runtime sources",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/agent-runtime",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-openbox-v2-cp10",
+          "label": "JM OPENBOX · Code In. App Out.",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
+          "status": "LIVE · 200",
+          "version": "v2.0 CP10",
+          "source": "JM WEBSITE 001 original OPENBOX; verified 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "label": "My Apps",
+      "entries": [
+        {
+          "id": "fold-ultra",
+          "label": "JM Fold Ultra",
+          "kind": "android",
+          "package": "com.jmisjustme.foldultra",
+          "status": "PACKAGE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "source-package"
+        },
+        {
+          "id": "ailatheo",
+          "label": "AILatheo",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/ailatheo/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "rim",
+          "label": "JM Rim Ro",
+          "kind": "hold",
+          "status": "HOLD",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "screenshot-only"
+        },
+        {
+          "id": "theoc",
+          "label": "JM TheoC",
+          "kind": "android",
+          "package": "com.jm.theocnative.deviceapp",
+          "status": "PACKAGE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "source-apk-manifest"
+        },
+        {
+          "id": "jm-apps-current",
+          "label": "JM Apps & Tools · current first-party door",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/",
+          "status": "LIVE · 200",
+          "source": "First-party Apps House; verified 8 Nov 2026"
+        },
+        {
+          "id": "jm-home-lab-qa",
+          "label": "JM Home Lab QA",
+          "kind": "android",
+          "package": "com.jmisjustme.foldultra.homelabqa",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-ailatheo-native",
+          "label": "AILatheo Creation · native",
+          "kind": "android",
+          "package": "com.jmisjustme.ailatheocreation",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-slingfall",
+          "label": "JM SLINGFALL CP08",
+          "kind": "android",
+          "package": "org.jmecostate.slingfall.cp08",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-rimroute-native",
+          "label": "JM Rim Route · native",
+          "kind": "android",
+          "package": "com.jmisjustme.rimroute",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-theoc-native",
+          "label": "JM TheoC · native",
+          "kind": "android",
+          "package": "com.jm.theocnative.deviceapp",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-ai-studio-qa",
+          "label": "JM AI Studio QA",
+          "kind": "android",
+          "package": "com.aistudio.jmecostate.kvxp.qa",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-commander-bridge",
+          "label": "JM Commander Bridge",
+          "kind": "android",
+          "package": "com.jmisjustme.commanderbridge",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-cp03-sandbox",
+          "label": "JM CP03 Sandbox",
+          "kind": "android",
+          "package": "com.jmisjustme.cp03sandboxproof",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "games",
+      "label": "My Games",
+      "entries": [
+        {
+          "id": "jm-games-beyond",
+          "label": "JM Games & Beyond",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "rim-route-original",
+          "label": "JM Rim Route (verified original)",
+          "kind": "hold",
+          "status": "HOLD · 404 at public URL",
+          "source": "Preserved original family-gift pointer; no public fallback",
+          "basis": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "theories",
+      "label": "My Theories",
+      "entries": [
+        {
+          "id": "jm-theory-estate",
+          "label": "JM Theory Estate",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-theory-current",
+          "label": "JM Theory Estate · first-party door",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/theory/",
+          "status": "LIVE · 200",
+          "source": "First-party theory door; verified 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "label": "My Music",
+      "entries": [
+        {
+          "id": "jm-lyrics-music-house",
+          "label": "JM Lyrics & Music House",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/lyrics/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-lyrics-current",
+          "label": "JM Lyrics & Music · first-party door",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/lyrics/",
+          "status": "LIVE · 200",
+          "source": "First-party lyrics door; verified 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "creations",
+      "label": "My Creations",
+      "entries": [
+        {
+          "id": "jm-nongame-apps-house",
+          "label": "JM Non-Game Apps House",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "connections",
+      "label": "My Connections",
+      "entries": [
+        {
+          "id": "jm-estate-live-registry",
+          "label": "JM Estate Live Registry",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-estate-live-registry/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "label": "My Tools & Engines",
+      "entries": [
+        {
+          "id": "jm-android-forge",
+          "label": "JM Android Forge",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-android-forge/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-html-apps-house",
+          "label": "JM HTML Apps House",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-gameforge-original",
+          "label": "GameForge original source authority",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-glyphforge-original",
+          "label": "GlyphForge original source authority",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/glyphforge-v68.2",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-liveforge-original",
+          "label": "LiveForge original app",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/liveforge-engine-v0.1",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-routeos-original",
+          "label": "RouteOS original estate shelf",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        }
+      ]
+    }
+  ]
+}

@@ -69,7 +69,25 @@ def main():
     adb("shell","am","force-stop",PKG)
     adb("shell","am","start","-W","-n",MAIN)
     time.sleep(2)
-    has("JM / COMPANION CONTACT","cp02_cold_return_to_jm")
+    # Android may transiently report the outgoing confirmation dialog in its
+    # first accessibility dump even after a cold foreground relaunch. The CP02
+    # failure screenshot from run 42449090354 shows the correct companion screen
+    # already visible, while the earlier hierarchy still described the dialog.
+    # Poll actual fresh native hierarchies; never infer PASS from am start alone.
+    cold_seen=False
+    last_visible=[]
+    for attempt in range(5):
+        nodes=dump("cp02_cold_companion_retry_"+str(attempt))
+        last_visible=[n.get("text","") for n in nodes if n.get("text","")]
+        if any("JM / COMPANION CONTACT" in t for t in last_visible):
+            cold_seen=True
+            break
+        # A stale alert or unrelated page does not itself count as contact.
+        time.sleep(.9)
+    if not cold_seen:
+        capture("HOLD_CP02_COLD_COMPANION_NOT_VISIBLE")
+        raise AssertionError("HOLD: five refreshed native UI trees never showed JM Companion Contact; last visible texts: "+repr(last_visible[:8]))
+    capture("PASS_CP02_COLD_COMPANION_VISIBLE")
     capture("COMPANION_CP02_REOPEN")
     tap("Open JM source intake","cp02_existing_jm_source_route")
     has("Owner-selected originals.","cp02_original_intake_inherited")

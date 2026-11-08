@@ -27,7 +27,7 @@ const meta={schema:"JM.CREWBOUND.CP07.STANDALONE_HTML/1",
   branch:"jm/crewbound-cp07-battle-clarity",
   source_files_blob_sha1:sha,
   role:"offline review only, modular GitHub source keeper",
-  ancestry:"original CREWBOUND v0.5 preserved; protected CP03–CP06 distinct"};
+  ancestors:"original CREWBOUND v0.5 preserved; protected CP03–CP06 distinct"};
 html=html.replace("<head>","<head>\n<!-- "+JSON.stringify(meta)+" -->");
 assert.ok(!html.includes('<script src="./'),"offline source has no external game JS");
 const file=path.join(__dirname,"CREWBOUND_CP07_PLAY.html");

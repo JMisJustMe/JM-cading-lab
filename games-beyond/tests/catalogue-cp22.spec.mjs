@@ -41,3 +41,18 @@ test('@cp22 Rooms can search the entire Estate without inventing player doors', 
   await expect(page.locator('#grid h3').filter({hasText:'LightLites / LL'})).toHaveCount(1);
   await expect(page.locator('#grid h3').filter({hasText:'LightLites / LL'}).locator('xpath=ancestor::article')).toContainText('No public carrier');
 });
+
+test('@cp24 exact older T-Boys Estate Clash public door is distinct from v0.2.4 candidate', async ({ page }) => {
+  await page.goto('./all-games.html');
+  await expect(page.locator('#statAll')).toHaveText('143');
+  await expect(page.locator('#statDoors')).toHaveText('25');
+  await page.locator('#search').fill('T-Boys: Estate Clash');
+  const card = page.locator('#grid article').filter({ has: page.locator('h3', { hasText:'T-Boys: Estate Clash' }) });
+  await expect(card).toHaveCount(1);
+  await expect(card).toContainText('v0.2.4 declared current');
+  await expect(card).toContainText('v0.2.3 exact source is playable');
+  await expect(card.locator('a[href="bodies/tboys-estate-clash-v0-2-3-original.html"]')).toHaveCount(1);
+  await page.goto('./bodies/tboys-estate-clash-v0-2-3-original.html');
+  await expect(page.locator('#startBtn')).toHaveText('ENTER THE FIGHT');
+  await expect(page.locator('canvas')).toHaveCount(2);
+});

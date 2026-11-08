@@ -48,7 +48,7 @@ test("CP08 collision and scope: foreign/edited pilot ancestry and cast are rejec
  check(d=>d.career.wins=300,"career totals");
  check(d=>d.rng=-1,"seed");
  check(d=>d.log=Array(122).fill({type:"CONTACT",time:0}),"bounded logs");
- assert.throws(()=>capsule.unpack("{not JSON"),/invalid JSON/);
+ assert.throws(()=>capsule.unpack("{not JSON with sufficiently long content"),/invalid JSON/);
  assert.throws(()=>capsule.unpack("z".repeat(capsule.MAX_LENGTH+1)),/JSON size/);
 });
 test("CP08 failed second command rolls back all earlier shield effects, damage, randomness and receipts",()=>{

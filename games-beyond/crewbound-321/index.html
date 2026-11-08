@@ -23,6 +23,10 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:
 .rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 .unit{min-width:0;overflow:hidden;background:#10253a;border:1px solid var(--line);border-radius:11px;min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;padding:7px 3px}
 .unit.active{background:#102e3a;border-color:var(--aqua)}.unit.selected{outline:3px solid var(--gold);outline-offset:-3px}.unit.undone{opacity:.46}.unit .portrait{width:100%;height:70px;max-width:84px;object-fit:contain;filter:drop-shadow(0 0 8px var(--glow));flex-shrink:0}.unit b{font-size:.77rem}.unit small{font-size:.58rem;white-space:nowrap;max-width:98%;overflow:hidden;text-overflow:ellipsis;color:#d2e0ed}.unit .hp{height:4px;width:82%;border-radius:8px;background:#33475c;overflow:hidden}.unit .hp i{display:block;height:100%;background:var(--glow);width:var(--hp)}
+.formationEdit{border:1px solid #467c88;border-radius:12px;background:#0c2936;padding:9px;margin-top:9px}
+.formationEdit button{min-height:48px;width:100%;border:1px solid #7fe3f0;border-radius:10px;background:#184b5d;font-weight:900;font-size:.76rem}
+.formationEdit p{min-height:1.6em;font-size:.68rem;line-height:1.5;color:#cbe1ed;margin:7px 0 2px}
+.unit.formationPick{outline:4px solid #ffdb7d;outline-offset:-3px}
 .controls{border:1px solid var(--line);background:#0a1d2c;border-radius:16px;padding:10px;margin-top:9px}
 .pairPlan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:7px 0 10px}
 .pairPlan button{min-height:48px;min-width:0;border:1px solid var(--line);background:#152d42;border-radius:9px;font-size:.67rem;font-weight:800;padding:6px 3px;line-height:1.3}
@@ -75,6 +79,10 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 <section aria-label="Player crew selection">
   <div class="sectionTitle"><span>YOUR SIX · TAP TWO</span><span id="pair">0 / 2 READY</span></div>
   <div class="rack" id="roster"></div>
+  <div class="formationEdit">
+    <button id="arrange" type="button" aria-pressed="false">ARRANGE STARTING SIX</button>
+    <p id="arrangeHelp" aria-live="polite">Before your first go, swap a floor fighter with a yard or flex fighter. Three on floor, two in yard, one flex.</p>
+  </div>
 </section>
 <section class="controls" aria-label="Two-character orders">
   <div class="sectionTitle" style="margin-top:0">PLAN TWO ACTIONS <span>RIVAL PLANS TOO</span></div>
@@ -94,7 +102,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <div class="actions"><button id="dice" title="Optional risk modifier, never required">🎲 ROLL</button><button class="primary" id="commit" disabled>COMMIT PAIR</button><button id="pause">Ⅱ PAUSE</button></div>
 </section>
 <section class="receipts" aria-live="polite"><strong>CONTACT / ROUTE TRACE</strong><p id="log">New combat pilots. Choose two fighters.</p></section>
-<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending between your orders. Each character has its own combat kit and periodically triggers a signature manoeuvre when contact is made. Yard fighters shield or intervene; the flex can deploy as a fourth floor fighter. Capture the two glowing relay zones to gain tactical points. Win by disabling the rival crew or leading on remaining crew health plus relay points at the three-minute limit. Dice is optional.</p></details></div>
+<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Before the first go, tap ARRANGE STARTING SIX and then two fighters with different roles to exchange their starting positions. Tap DONE ARRANGING before issuing combat commands. Your six identities remain the same; only their first positions change. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending between your orders. Each character has its own combat kit and periodically triggers a signature manoeuvre when contact is made. Yard fighters shield or intervene; the flex can deploy as a fourth floor fighter. Capture the two glowing relay zones to gain tactical points. Win by disabling the rival crew or leading on remaining crew health plus relay points at the three-minute limit. Dice is optional.</p></details></div>
 </div>
 </div>
 <p class="footer">A separate CP05 experimental descendant, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
@@ -104,7 +112,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
-let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0;
+let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0,arranging=false,formationPick=null,arrangeMessage="";
 const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT;
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
@@ -138,15 +146,29 @@ function makeRoster(){
    const name=document.createElement("b");name.textContent=u.name;
    const role=document.createElement("small");role.textContent=u.role.toUpperCase()+" · "+f.role;
    const hp=document.createElement("div");hp.className="hp";hp.append(document.createElement("i"));
-   button.append(face,name,role,hp);button.addEventListener("click",()=>{game.choose(u.id);updateUI()});
+   button.append(face,name,role,hp);button.addEventListener("click",()=>{
+      if(arranging){
+        if(!formationPick){
+          formationPick=u.id;arrangeMessage="Choose a second fighter with a different role to swap with "+u.name+".";
+        }else if(formationPick===u.id){formationPick=null;arrangeMessage="Selection cleared · tap the first fighter again."}
+        else{
+          const original=game.find(formationPick);
+          const changed=game.swapFormation(formationPick,u.id);
+          arrangeMessage=changed?original.name+" and "+u.name+" exchanged starting positions.":
+            "These fighters share a role or cannot swap. Choose a floor, yard or flex fighter with a different role.";
+          formationPick=null;
+        }
+      }else game.choose(u.id);
+      updateUI();
+    });
    root.append(button);
   }
-  button.className="unit"+(u.role==="floor"?" active":"")+(game.selected.includes(u.id)?" selected":"")+(u.alive?"":" undone");
+  button.className="unit"+(u.role==="floor"?" active":"")+(game.selected.includes(u.id)?" selected":"")+(arranging&&formationPick===u.id?" formationPick":"")+(u.alive?"":" undone");
   button.style.setProperty("--glow",f.palette[0]);
   button.style.setProperty("--hp",(100*u.hp/u.maxHp).toFixed(1)+"%");
   button.querySelector("small").textContent=u.role.toUpperCase()+" · "+Combat.KITS[u.key].name;
-  button.setAttribute("aria-pressed",game.selected.includes(u.id));
-  button.setAttribute("aria-label",u.name+", "+u.role+", "+Math.round(u.hp)+" health, "+f.role+", "+f.signature_name);
+  button.setAttribute("aria-pressed",String(arranging?formationPick===u.id:game.selected.includes(u.id)));
+  button.setAttribute("aria-label",u.name+", "+u.role+", "+Math.round(u.hp)+" health, "+f.role+", "+f.signature_name+(arranging?", tap to exchange formation role":""));
  }
 }
 function updateUI(){
@@ -162,11 +184,18 @@ function updateUI(){
  $("myhp").textContent=Math.round(my.reduce((s,u)=>s+u.hp,0))+" HP";
  $("theirhp").textContent=Math.round(rivals.reduce((s,u)=>s+u.hp,0))+" HP";
  $("turn").textContent="GO "+game.turn;
- $("phase").textContent=game.ended?(game.winner==="player"?"VICTORY":"RIVAL WON"):!started?"READY · PICK 2":game.resolve>0?"LIVE "+game.resolve.toFixed(1)+"s":"CHOOSE × 2";
+ $("phase").textContent=game.ended?(game.winner==="player"?"VICTORY":"RIVAL WON"):!started?(arranging?"ARRANGE CREW":"READY · PICK 2"):game.resolve>0?"LIVE "+game.resolve.toFixed(1)+"s":"CHOOSE × 2";
  $("pair").textContent=game.selected.length+" / 2 READY";
  $("clock").textContent=String(Math.floor(game.time/60)).padStart(2,"0")+":"+String(Math.floor(game.time%60)).padStart(2,"0");
  $("formation").textContent="FLOOR "+game.floor("player").length+" · YARD "+game.yard("player").length+" · FLEX "+(game.flex("player")?1:0);
- $("commit").disabled=!game.canCommit();
+ $("commit").disabled=arranging||!game.canCommit();
+  $("arrange").disabled=!game.canArrange();
+  $("arrange").textContent=arranging?"DONE ARRANGING":game.canArrange()?"ARRANGE STARTING SIX":"LINEUP LOCKED";
+  $("arrange").setAttribute("aria-pressed",String(arranging));
+  $("arrangeHelp").textContent=game.canArrange()?
+    arranging?(arrangeMessage||"Tap a fighter, then tap another with a different starting role. Positions exchange; no one is lost."):
+    (arrangeMessage||"Optional: rearrange 3 floor · 2 yard · 1 flex before first COMMIT."):
+    "Starting positions locked at first go · change fighters using DEPLOY in battle.";
   for(const [id,fighterId,label] of [["editFirst",game.selected[0],"A"],["editSecond",game.selected[1],"B"]]){
    const b=$(id),u=game.find(fighterId),plan=game.pairPlans[fighterId]||{};
    b.disabled=!u||game.resolve>0||game.ended;
@@ -176,9 +205,9 @@ function updateUI(){
   $("editBoth").setAttribute("aria-pressed",String(game.editing===null));
   const shown=game.editing?(game.pairPlans[game.editing]?.action||game.action):game.action;
   for(const b of $("modes").querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.action===shown));
- $("dice").disabled=game.ended||game.resolve>0;
+ $("dice").disabled=arranging||game.ended||game.resolve>0;
  $("dice").textContent=game.die?"🎲 "+game.die:"🎲 ROLL";
- $("fieldHelp").textContent=game.ended?"Battle finished · rematch to continue":
+ $("fieldHelp").textContent=arranging?"ARRANGING STARTING SIX · TAP TWO CARDS":game.ended?"Battle finished · rematch to continue":
    game.resolve>0?"Both crews execute their plans now":
    game.editing?"EDIT "+(game.find(game.editing)?.name||"fighter")+" · choose action and target":
    game.canCommit()?"Both orders ready · COMMIT PAIR":
@@ -188,6 +217,13 @@ function updateUI(){
  $("log").textContent=rec||"Planning continues while the rival moves.";
  makeRoster();
 }
+$("arrange").onclick=()=>{
+  if(!game.canArrange())return;
+  arranging=!arranging;formationPick=null;
+  if(arranging){game.clearPairPlan();arrangeMessage="Tap a fighter, then tap another with a different role to exchange their starting positions."}
+  else arrangeMessage="Starting lineup ready · select two fighters for the first command.";
+  updateUI();
+};
 $("editBoth").onclick=()=>{game.setEditing(null);updateUI()};
 $("editFirst").onclick=()=>{game.setEditing(game.selected[0]);updateUI()};
 $("editSecond").onclick=()=>{game.setEditing(game.selected[1]);updateUI()};
@@ -197,9 +233,9 @@ $("modes").addEventListener("click",e=>{
  updateUI();
 });
 $("dice").onclick=()=>{game.roll();updateUI()};
-$("commit").onclick=()=>{if(game.commit())started=true;updateUI()};
+$("commit").onclick=()=>{if(!arranging&&game.commit()){started=true;formationPick=null;arrangeMessage="Lineup locked after your first paired order."}updateUI()};
 $("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME":"Ⅱ PAUSE";updateUI()};
-function rematch(){game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;$("pause").textContent="Ⅱ PAUSE";updateUI()}
+function rematch(){game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;arranging=false;formationPick=null;arrangeMessage="";$("pause").textContent="Ⅱ PAUSE";updateUI()}
 $("reset").onclick=rematch;
 $("playAgain").onclick=rematch;
 function drawFighter(u){

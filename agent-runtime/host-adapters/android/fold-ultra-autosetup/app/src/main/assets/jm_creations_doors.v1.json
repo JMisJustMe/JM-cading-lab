@@ -9,7 +9,9 @@
     "no_launcher_takeover": true,
     "private_repos_require_external_auth": true,
     "latest_version_requires_independent_proof": true,
-    "source_donor": "JMisJustMe/JM-cading-lab PR #708 (CP03 registry); independent donor not merged"
+    "source_donor": "JMisJustMe/JM-cading-lab PR #708 (CP03 registry); independent donor not merged",
+    "private_file_access": "Owner-selected Android Storage Access Framework only; no path hardcoding, file enumeration or upload",
+    "local_file_source_copied": false
   },
   "sections": [
     {
@@ -119,6 +121,45 @@
           "status": "LIVE · 200",
           "version": "v2.0 CP10",
           "source": "JM WEBSITE 001 original OPENBOX; verified 8 Nov 2026"
+        },
+        {
+          "id": "jm-coding-workshop-direct",
+          "label": "JM Coding Workshop · original JM.WEB",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-everybody-direct",
+          "label": "JM EveryBody · sovereign workbench",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/coding-estate/everybody/",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-visualang-direct",
+          "label": "JM Visualang · original interactive carrier",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/visualang.html",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-py-original-proof",
+          "label": "JM.PY · original website proof (not editor)",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/jm-py-proof.html",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-private-local-html",
+          "label": "Private original HTML · choose local file",
+          "kind": "local_file",
+          "status": "OWNER FILE PICKER · private content never uploaded",
+          "source": "Owner-chosen Android Documents access; no source copied into public APK"
         }
       ]
     },

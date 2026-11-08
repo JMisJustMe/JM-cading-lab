@@ -219,12 +219,19 @@ function makeRoster(){
 function updateUI(){
  const my=game.team("player"),rivals=game.team("enemy");
   $("myRelay").textContent=game.scores.player.toFixed(1);
+ const ranks=game.team("player").map(u=>u.name+" "+game.pilotRank(u.key)).slice(0,3).join(" · ");
+ $("careerLine").textContent="CREW EXPERIENCE · "+game.career.matches+" matches · "+game.career.wins+
+   " wins · "+ranks+" · ranks are earned, not stat boosts";
   $("theirRelay").textContent=game.scores.enemy.toFixed(1);
   $("matchOverlay").hidden=!game.ended;
   if(game.ended){
     $("resultTitle").textContent=game.winner==="player"?"CREW VICTORY":"RIVALS WIN";
     const a=game.stats.player,b=game.stats.enemy;
-    $("resultSummary").textContent=game.matchReason+" · YOUR "+a.hits+" contacts, "+a.assists+" yard assists, "+a.combos+" linked hits · RIVAL "+b.hits+" contacts · RELAY "+game.scores.player.toFixed(1)+" : "+game.scores.enemy.toFixed(1);
+    const earned=game.log.slice().reverse().find(x=>x.type==="CREW_EXPERIENCE");
+   const xp=earned?.gains?.map(x=>x.name+" +"+x.xp+"XP").join(", ")||"";
+   $("resultSummary").textContent=game.matchReason+" · YOUR "+a.hits+" contacts, "+a.assists+
+     " yard assists, "+a.combos+" linked hits · RIVAL "+b.hits+" contacts · RELAY "+
+     game.scores.player.toFixed(1)+" : "+game.scores.enemy.toFixed(1)+(xp?" · CREW PROGRESS "+xp:"");
   }
  $("myhp").textContent=Math.round(my.reduce((s,u)=>s+u.hp,0))+" HP";
  $("theirhp").textContent=Math.round(rivals.reduce((s,u)=>s+u.hp,0))+" HP";
@@ -311,9 +318,53 @@ $("modes").addEventListener("click",e=>{
 $("dice").onclick=()=>{game.roll();updateUI()};
 $("commit").onclick=()=>{if(!arranging&&game.commit()){started=true;formationPick=null;arrangeMessage="Lineup locked after your first paired order."}updateUI()};
 $("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME":"Ⅱ PAUSE";updateUI()};
-function rematch(){game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;arranging=false;formationPick=null;arrangeMessage="";coachOn=false;$("pause").textContent="Ⅱ PAUSE";updateUI()}
+function rematch(){
+ const oldCareer=game.career;
+ game=new Game(Math.floor(performance.now())>>>0,{career:oldCareer});
+ started=false;paused=false;arranging=false;formationPick=null;arrangeMessage="";coachOn=false;
+ $("pause").textContent="Ⅱ PAUSE";updateUI();
+}
 $("reset").onclick=rematch;
 $("playAgain").onclick=rematch;
+function checkpointMessage(msg){$("checkpointStatus").textContent=msg}
+function restoreCode(raw){
+ try{
+   const fresh=Continuity.unpack(raw);
+   // Import validation finishes before replacing the current battle.
+   game=fresh;started=game.turn>0;paused=true;arranging=false;formationPick=null;arrangeMessage="";
+   coachOn=false;startPointer=null;last=performance.now();$("pause").textContent="▶ RESUME";
+   updateUI();checkpointMessage("MATCH RESTORED · paused for your comfort. Tap RESUME when ready.");
+   return true;
+ }catch(err){checkpointMessage("NOT LOADED · "+err.message);return false}
+}
+$("saveMatch").onclick=()=>{
+ try{
+   const code=Continuity.pack(game);localStorage.setItem(LOCAL_KEY,code);
+   checkpointMessage("MATCH SAVED LOCALLY · "+code.length+" characters. No cloud upload.");
+ }catch(err){checkpointMessage("LOCAL STORAGE UNAVAILABLE · use EXPORT CODE instead. "+err.message)}
+};
+$("loadMatch").onclick=()=>{
+ try{
+   const code=localStorage.getItem(LOCAL_KEY);
+   if(!code){checkpointMessage("NO LOCAL SAVE · use EXPORT CODE or save this match first.");return}
+   restoreCode(code);
+ }catch(err){checkpointMessage("LOCAL RESTORE UNAVAILABLE · "+err.message)}
+};
+$("exportMatch").onclick=()=>{
+ try{
+   const code=Continuity.pack(game);$("matchCode").value=code;
+   $("matchCode").focus();$("matchCode").select();
+   checkpointMessage("PORTABLE CODE READY · copy selected text to preserve it outside the browser.");
+ }catch(err){checkpointMessage("EXPORT REJECTED · "+err.message)}
+};
+$("importMatch").onclick=()=>restoreCode($("matchCode").value);
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden&&started&&!paused&&!game.ended){
+   paused=true;last=performance.now();$("pause").textContent="▶ RESUME";
+   checkpointMessage("MATCH PAUSED while the page was in the background. Resume when you choose.");
+   updateUI();
+ }
+});
 function drawFighter(u){
  const f=ROSTER[u.key],col=f.palette[0];
  if(u.selected){ctx.save();ctx.strokeStyle="#fff2a8";ctx.lineWidth=4;ctx.beginPath();ctx.arc(u.x,u.y,45,0,Math.PI*2);ctx.stroke();ctx.restore()}

@@ -15,7 +15,28 @@
   const CREWS=cast?.crews||{player:["ZIPP","BRAX","MIRA","GROVE","ORBI","VEXA"],enemy:["SKIP","KNOT","VEXA","ORBI","GROVE","BRAX"]};
   const clamp=(x,l,h)=>Math.max(l,Math.min(h,x));
   const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-  const rand=(seed)=>{let x=seed>>>0;return()=>((x=(1664525*x+1013904223)>>>0)/4294967296)};
+  // Exportable deterministic PRNG state lets a resumed match continue on exactly
+  // the same random sequence; no extra RNG draws for saving or previews.
+  const rand=(seed)=>{
+    let x=seed>>>0;
+    const next=()=>((x=(1664525*x+1013904223)>>>0)/4294967296);
+    next.state=()=>x>>>0;
+    next.restore=value=>{
+      if(!Number.isInteger(value)||value<0||value>0xffffffff)throw Error("Invalid PRNG state");
+      x=value>>>0;
+    };
+    return next;
+  };
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const careerRecord=carry=>{
+    const safeInt=(n,max)=>Number.isSafeInteger(n)&&n>=0?Math.min(max,n):0;
+    const pilots=Object.create(null);
+    for(const key of CREWS.player){
+      const prior=carry?.pilots?.[key]||{};
+      pilots[key]={xp:safeInt(prior.xp,10000000),matches:safeInt(prior.matches,100000)};
+    }
+    return {matches:safeInt(carry?.matches,100000),wins:safeInt(carry?.wins,100000),pilots};
+  };
   function createUnit(team,key,index){
     const f=R[key],floor=index<3;
     return {id:team+"-"+index+"-"+key,team,key,name:f.name,index,role:floor?"floor":index<5?"yard":"flex",
@@ -24,7 +45,7 @@
       surge:0,kitCooldown:0,specialFlash:0,order:null,selected:false};
   }
   class Game{
-    constructor(seed=321){
+    constructor(seed=321,options={}){
       this.rng=rand(seed);this.seed=seed;this.time=0;this.resolve=0;this.turn=0;this.action="COMBO";
       this.selected=[];this.target=null;this.pairPlans=Object.create(null);this.editing=null;this.die=null;this.ended=false;this.winner=null;this.log=[];
       this.W=W;this.H=H;
@@ -33,9 +54,44 @@
       this.zones=[{id:"relay-west",x:W*.30,y:H*.46,r:100,holder:null,progress:0},
         {id:"relay-east",x:W*.70,y:H*.54,r:100,holder:null,progress:0}];
       this.units=Object.entries(CREWS).flatMap(([team,keys])=>keys.map((k,i)=>createUnit(team,k,i)));
+      this.impact=Object.fromEntries(this.units.map(u=>[u.id,{hits:0,damage:0,guards:0,assists:0,downs:0,signatures:0}]));
+      this.career=careerRecord(options?.career);this.lastCommittedRival=null;
+      this.finalized=false;
       this.receipt("MATCH_START",{source_sha256:source.source_sha256,formation:"3 floor + 2 yard + 1 flex",simultaneous:true,unique_cast:cast?.schema||"BASELINE"});
     }
-    receipt(type,data={}){const v={time:Math.round(this.time*100)/100,type,...data};this.log.push(v);if(this.log.length>120)this.log.shift();return v}
+    receipt(type,data={}){
+      const v={time:Math.round(this.time*100)/100,type,...data};this.log.push(v);
+      if(this.log.length>120)this.log.shift();
+      if(type==="SIGNATURE"&&this.impact){
+        const unit=this.units.find(u=>u.team===data.side&&u.name===data.fighter);
+        if(unit)this.impact[unit.id].signatures++;
+      }
+      return v;
+    }
+    pilotRank(key){
+      const xp=this.career.pilots[key]?.xp||0;
+      return xp>=1200?"ACE":xp>=500?"VETERAN":xp>=180?"TACTICIAN":xp>=60?"SCOUT":"ROOKIE";
+    }
+    closeMatchCareer(){
+      if(this.finalized)return false;
+      this.finalized=true;
+      this.career.matches++;
+      if(this.winner==="player")this.career.wins++;
+      const gains=[];
+      for(const u of this.units.filter(u=>u.team==="player")){
+        const perf=this.impact[u.id];
+        // All six progress; contribution is recognized, but rank NEVER buffs combat.
+        const gain=Math.min(85,4+(this.winner==="player"?8:3)+
+          Math.min(28,perf.hits*4)+Math.min(18,perf.assists*7)+
+          Math.min(16,perf.guards*3)+Math.min(18,perf.signatures*6)+
+          Math.min(12,Math.floor(perf.damage/100)));
+        const pilot=this.career.pilots[u.key];
+        pilot.matches++;pilot.xp=Math.min(10000000,pilot.xp+gain);
+        gains.push({name:u.name,key:u.key,xp:gain,total:pilot.xp,rank:this.pilotRank(u.key)});
+      }
+      this.receipt("CREW_EXPERIENCE",{gains,winner:this.winner,competitiveStatBoost:false});
+      return true;
+    }
     team(t){return this.units.filter(u=>u.team===t&&u.alive)}
     floor(t){return this.team(t).filter(u=>u.role==="floor")}
     yard(t){return this.team(t).filter(u=>u.role==="yard")}
@@ -137,6 +193,7 @@
       return {ready,orders,nearPair,hint};
     }
     lastRivalPair(){
+      if(this.lastCommittedRival)return clone(this.lastCommittedRival);
       const last=this.log.slice().reverse().find(r=>r.type==="SIMULTANEOUS_PAIR_COMMIT");
       return last?{turn:last.turn,rival:last.rival.map(x=>({
         name:x.name,action:x.action,target:{...x.target}}))}:null;
@@ -162,8 +219,10 @@
       const blocked=Math.min(target.shield,amount);target.shield-=blocked;
       const taken=Math.max(0,amount-blocked);target.hp=Math.max(0,target.hp-taken);target.hitFlash=.26;
       if(by?.team&&this.stats[by.team])this.stats[by.team].damage+=taken;
+      if(by?.id&&this.impact[by.id])this.impact[by.id].damage+=taken;
       if(!target.hp){target.alive=false;target.role="down";target.order=null;
         if(by?.team&&this.stats[by.team])this.stats[by.team].downs++;
+        if(by?.id&&this.impact[by.id])this.impact[by.id].downs++;
         this.receipt("FIGHTER_DOWN",{body:target.name,side:target.team,by:by?.name})}
       return taken;
     }
@@ -181,6 +240,7 @@
       }
       u.supportCooldown=5;
       this.stats[u.team].assists++;
+      this.impact[u.id].assists++;
       this.receipt("YARD_INTERVENTION",{body:u.name,side:u.team,mode});
       return true;
     }
@@ -191,7 +251,7 @@
       }
       if(u.role!=="floor"||!u.alive)return false;
       u.order={mode,target:{...target},remaining:WINDOW,issuedBy,bonus:issuedBy==="player"&&this.die?clamp(.88+this.die*.04,.92,1.12):1};
-      if(mode==="GUARD"){u.guard=WINDOW;u.shield=Math.min(350,u.shield+55);this.stats[u.team].guards++}
+      if(mode==="GUARD"){u.guard=WINDOW;u.shield=Math.min(350,u.shield+55);this.stats[u.team].guards++;this.impact[u.id].guards++}
       this.receipt("ORDER",{body:u.name,side:u.team,mode,target:u.order.target});return true;
     }
     commit(){
@@ -202,8 +262,19 @@
       const planned=this.pairPreview().orders.map(x=>({
         u:this.find(x.id),action:x.action,target:{...x.target}
       }));
+      // Atomic orders: a rejected second order must never leave the first
+      // fighter's shield, damage, deployment, XP impact, RNG or log changed.
+      const prior={
+        units:this.units.map(clone),stats:clone(this.stats),impact:clone(this.impact),
+        rngState:this.rng.state(),log:clone(this.log)
+      };
       const issued=planned.map(p=>this.order(p.u,p.action,p.target,"player"));
-      if(!issued.every(Boolean)){this.log.length=before;return false}
+      if(!issued.every(Boolean)){
+        this.units.forEach((u,i)=>Object.assign(u,prior.units[i]));
+        this.stats=prior.stats;this.impact=prior.impact;
+        this.rng.restore(prior.rngState);this.log=prior.log;
+        return false;
+      }
       if(this.turn===0)this.receipt("LINEUP_LOCKED",{
         floor:this.floor("player").map(u=>u.name),
         yard:this.yard("player").map(u=>u.name),
@@ -229,6 +300,7 @@
           enemyPlans.push({name:actor.name,action,target:{x,y}});
         }
       }
+      this.lastCommittedRival={turn:this.turn,rival:clone(enemyPlans)};
       this.receipt("SIMULTANEOUS_PAIR_COMMIT",{turn:this.turn,player:units.map(u=>u.name),
         playerPlans:planned.map(p=>({name:p.u.name,action:p.action,target:p.target})),
         rival:enemyPlans,die:this.die});
@@ -259,6 +331,7 @@
       if(R[a.key].archetype==="GROVE")a.shield=Math.min(350,a.shield+20);
       a.cooldown=profile.cooldown;
       this.stats[a.team].hits++;
+      this.impact[a.id].hits++;
       combat.castSpecial(this,a,b,damage);
       this.receipt("CONTACT",{from:a.name,to:b.name,damage:Math.round(damage)});
     }
@@ -337,10 +410,11 @@
           rating("player")>=rating("enemy")?"player":"enemy";
         this.receipt("MATCH_END",{winner:this.winner,reason:this.matchReason,time:Math.round(this.time),
           scores:{...this.scores},hits:{player:this.stats.player.hits,enemy:this.stats.enemy.hits}});
+        this.closeMatchCareer();
       }
     }
     snapshot(){return {time:this.time,turn:this.turn,resolve:this.resolve,selected:[...this.selected],target:this.target,
-      action:this.action,canArrange:this.canArrange(),formation:this.formationRoster(),
+      action:this.action,canArrange:this.canArrange(),formation:this.formationRoster(),career:clone(this.career),impact:clone(this.impact),
       pairPreview:this.pairPreview(),lastRivalPair:this.lastRivalPair(),
       ended:this.ended,winner:this.winner,matchReason:this.matchReason,
        scores:{...this.scores},stats:JSON.parse(JSON.stringify(this.stats)),

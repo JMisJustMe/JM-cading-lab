@@ -407,3 +407,77 @@ test('CP06 exported offline HTML includes independent formation editor and acts 
  expect(data.source).toBe('5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7');
  expect(errors).toEqual([]);
 });
+
+test('CP07 exact pair readout matches distinct A/B commands and rival response',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ await expect(page.locator('#planA')).toContainText('choose a fighter');
+ await expect(page.locator('#rivalReadback')).toContainText('revealed');
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=ATTACK]').click();
+ await page.locator('#arena').click({position:{x:120,y:135}});
+ await page.locator('#editSecond').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:215,y:190}});
+ await expect(page.locator('#planA')).toContainText('Kepler · ATTACK');
+ await expect(page.locator('#planB')).toContainText('Ironvale · GUARD');
+ await expect(page.locator('#commit')).toBeEnabled();
+ const preview=await page.evaluate(()=>game.pairPreview());
+ await page.locator('#commit').click();
+ const receipt=await page.evaluate(()=>game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT'));
+ expect(receipt.playerPlans.map(x=>x.action)).toEqual(['ATTACK','GUARD']);
+ expect(receipt.playerPlans.map(x=>x.target)).toEqual(preview.orders.map(x=>x.target));
+ await expect(page.locator('#rivalReadback')).toContainText('RIVAL GO 1');
+ const rival=await page.evaluate(()=>game.lastRivalPair());
+ expect(rival.rival.length).toBe(2);
+ expect(errors).toEqual([]);
+});
+
+test('CP07 optional first-go guide follows real play and can be turned off or reset',async({page})=>{
+ await page.setViewportSize({width:360,height:700});
+ await page.goto(PATH);
+ await expect(page.locator('#coachToggle')).toBeVisible();
+ await page.locator('#coachToggle').click();
+ await expect(page.locator('#coachText')).toContainText('STEP 1/3');
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await expect(page.locator('#coachText')).toContainText('STEP 2/3');
+ await page.locator('#arena').click({position:{x:155,y:170}});
+ await expect(page.locator('#coachText')).toContainText('STEP 3/3');
+ await expect(page.locator('#commit')).toBeEnabled();
+ await page.locator('#commit').click();
+ await expect(page.locator('#coachText')).toContainText('YOUR ORDERS ARE LIVE');
+ await page.evaluate(()=>{
+   for(let i=0;i<90;i++)game.step(.05);
+   updateUI();
+ });
+ await expect(page.locator('#coachText')).toContainText('FIRST GO COMPLETE');
+ await page.locator('#coachToggle').click();
+ await expect(page.locator('#coachToggle')).toHaveAttribute('aria-pressed','false');
+ await page.locator('#reset').click();
+ await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+ await expect(page.locator('#coachToggle')).toHaveAttribute('aria-pressed','false');
+ const size=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,
+    width:document.documentElement.clientWidth,button:document.getElementById('coachToggle').getBoundingClientRect().height}));
+ expect(size.scroll).toBeLessThanOrEqual(size.width+2);
+ expect(size.button).toBeGreaterThanOrEqual(44);
+});
+
+test('CP07 standalone review HTML includes same tactical readout with no external game scripts',async({page})=>{
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+ await page.goto('./crewbound-321/deliveries/CREWBOUND_CP07_PLAY.html');
+ await expect(page.locator('#coachToggle')).toBeVisible();
+ await expect(page.locator('#planA')).toContainText('choose a fighter');
+ expect(await page.locator('script[src]').count()).toBe(0);
+ await page.locator('#coachToggle').click();
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#arena').click({position:{x:148,y:176}});
+ await expect(page.locator('#commit')).toBeEnabled();
+ await page.locator('#commit').click();
+ await expect(page.locator('#rivalReadback')).toContainText('RIVAL GO 1');
+ expect(requests.filter(u=>!u.includes('CREWBOUND_CP07_PLAY.html'))).toEqual([]);
+ expect(errors).toEqual([]);
+});

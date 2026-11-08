@@ -5,7 +5,7 @@
 <title>JM Theory · Private 97 Original Register Shelf</title>
 <style>
 :root{color-scheme:dark;font:14px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;background:#101d2b;color:#e8f3fa}
-*{box-sizing:border-box}body{margin:0;padding:10px}h2{font-size:1.2rem;margin:0 0 8px}
+*{box-sizing:border-box}body{margin:0;padding:10px;max-width:100%;overflow-wrap:anywhere}code{white-space:normal;overflow-wrap:anywhere}input[type=file]{max-width:100%}h2{font-size:1.2rem;margin:0 0 8px}
 p{line-height:1.55}strong{font-weight:800}
 .bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 input,button{font:inherit;background:#061521;color:#e8f3fa;border:1px solid #537e94;border-radius:8px;padding:10px;min-height:44px}
@@ -17,6 +17,7 @@ label{font-weight:750}
 .jm-theory-private-muted{font-size:.82rem;color:#c3d5e3}
 .jm-theory-private-grade{font-weight:760;color:#fbd995}
 #jmOwnerTheory97Status{font-size:.85rem;color:#b9d7ef}
+.jm-theory-private-source-link{display:block;padding:8px 10px;margin:6px 0;border:1px solid #426d7b;border-radius:7px;background:#05272b;color:#bbf4f7;text-decoration:underline;overflow-wrap:anywhere;font-size:.86rem}
 </style></head>
 <body>
 <h2>All 97 original theory identities · owner-private shelf</h2>
@@ -29,6 +30,7 @@ label{font-weight:750}
 <button id="jmOwnerTheory97Clear" type="button" disabled>Clear private view</button>
 </div>
 <p role="status" aria-live="polite" id="jmOwnerTheory97Status">Owner-private 97 register not loaded.</p>
+<div id="jmOwnerTheory97BookDoor" aria-label="Owner-verified private strict manuscript reading" style="margin:8px 0"></div>
 <div id="jmOwnerTheory97Rows" aria-label="97 original theory identities"></div>
 <script>
 /* JM Theory Wing · owner-selected 97-record register.
@@ -42,8 +44,9 @@ label{font-weight:750}
   const clear=document.getElementById("jmOwnerTheory97Clear");
   const status=document.getElementById("jmOwnerTheory97Status");
   const list=document.getElementById("jmOwnerTheory97Rows");
-  if(!pick || !search || !clear || !status || !list) return;
-  let entries=[];
+  const bookDoor=document.getElementById("jmOwnerTheory97BookDoor");
+  if(!pick || !search || !clear || !status || !list || !bookDoor) return;
+  let entries=[],sourcebookUrl="";
   const allowed=new Set([
     "JM.H02.Theory97.OwnerCustody/1.0",
     "JM Master Theory Register v0.3"
@@ -56,6 +59,19 @@ label{font-weight:750}
   }
   function assert(condition,message) {
     if(!condition) throw new Error(message);
+  }
+  // Only owner-provided authenticated Drive file links can open. No arbitrary
+  // user-supplied URI, script, data URL, onClick code or network call is used.
+  function safeDriveFileUrl(value) {
+    if(typeof value!=="string" || value.length>350) return "";
+    return /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]{12,}\/view(?:\?[A-Za-z0-9_=&-]+)?$/.test(value) ? value : "";
+  }
+  function sourceLink(caption,url) {
+    const a=text("a",caption,"jm-theory-private-source-link");
+    a.href=url;
+    a.target="_blank";
+    a.rel="noopener noreferrer";
+    return a;
   }
   function validate(data) {
     assert(data && typeof data==="object" && !Array.isArray(data),
@@ -79,7 +95,14 @@ label{font-weight:750}
         contact:String(r.original_source_contact || r.source_contact_class || "REGISTER_OR_SHELF_SOURCE_ONLY"),
         recovery:String(r.source_recovery_level || ""),
         anomaly:!!r.source_card_anomaly,sourceLimit:String(r.source_limit || r.known_limits || ""),
-        publication:String(r.publication_state || "UNKNOWN")
+        publication:String(r.publication_state || "UNKNOWN"),
+        cp12Candidates:Array.isArray(r.cp12_archived_candidates?.files)
+          ? r.cp12_archived_candidates.files.slice(0,12).map(f=>({
+              name:String(f?.filename || "").slice(0,180),
+              url:safeDriveFileUrl(f?.owner_drive),
+              sourceClass:"EXACT_ARCHIVED_CANDIDATE_BYTES_NOT_FULL_ORIGINAL_THEORY"
+            })).filter(x=>x.name && x.url)
+          : []
       };
     });
     const src=out.filter(x=>x.contact==="RETRIEVAL_INDEX_SOURCE_CARD").length;
@@ -87,10 +110,17 @@ label{font-weight:750}
       "Theory source-contact census does not match the original 58/39 register.");
     assert(allowed.has(owner ? data.schema : "JM Master Theory Register v0.3"),
       "Unexpected theory schema.");
-    return {items:out,owner};
+    const sourcebookUrl=owner
+      ? safeDriveFileUrl(data.authority?.strict51_private_body_reading?.owner_google_drive_url)
+      : "";
+    return {items:out,owner,sourcebookUrl};
   }
   function render() {
     list.replaceChildren();
+    bookDoor.replaceChildren();
+    if(sourcebookUrl){
+      bookDoor.append(sourceLink("Open existing private strict 51-seat source-union reading PDF (a separate source collection)",sourcebookUrl));
+    }
     const q=search.value.trim().toLocaleLowerCase();
     const filtered=entries.filter(r=>(r.id+" "+r.name+" "+r.family+" "+r.type+" "+r.keeper)
       .toLocaleLowerCase().includes(q));
@@ -110,6 +140,12 @@ label{font-weight:750}
       if(r.keeper) row.append(text("p",r.keeper));
       if(r.sourceLimit) row.append(text("p","Known boundary: "+r.sourceLimit,
         "jm-theory-private-muted"));
+      if(r.cp12Candidates.length){
+        row.append(text("p","Exact archived document candidates · NOT authenticated founding full-theory bodies","jm-theory-private-grade"));
+        for(const candidate of r.cp12Candidates){
+          row.append(sourceLink("Open archived "+(/\.pdf$/i.test(candidate.name)?"PDF":"DOCX")+" source candidate · "+candidate.name,candidate.url));
+        }
+      }
       row.append(text("small",r.publication+" · Identity listed, not a claim of public full body.",
         "jm-theory-private-muted"));
       list.append(row);
@@ -127,6 +163,7 @@ label{font-weight:750}
       const parsed=JSON.parse(await file.text());
       const ready=validate(parsed);
       entries=ready.items;
+      sourcebookUrl=ready.sourcebookUrl;
       search.disabled=false;
       clear.disabled=false;
       search.value="";
@@ -137,6 +174,8 @@ label{font-weight:750}
       status.textContent+=" "+warning;
     } catch(e) {
       entries=[];
+      sourcebookUrl="";
+      bookDoor.replaceChildren();
       search.disabled=true;
       clear.disabled=true;
       list.replaceChildren();
@@ -147,6 +186,7 @@ label{font-weight:750}
   search.addEventListener("input",render);
   clear.addEventListener("click",()=>{
     entries=[];
+    sourcebookUrl="";
     search.value="";
     search.disabled=true;
     clear.disabled=true;

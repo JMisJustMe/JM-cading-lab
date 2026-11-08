@@ -32,12 +32,12 @@ function fixture(overrides={}) {
 }
 function boot(){
   const ids=['jmOwnerTheory97File','jmOwnerTheory97Search','jmOwnerTheory97Clear',
-    'jmOwnerTheory97Status','jmOwnerTheory97Rows'];
+    'jmOwnerTheory97Status','jmOwnerTheory97Rows','jmOwnerTheory97BookDoor'];
   const elements=new Map(ids.map(id=>[id,new Element()]));
   const document={getElementById:id=>elements.get(id),createElement:tag=>new Element(tag)};
   vm.runInNewContext(theory,{document},{timeout:500});
-  const [picker,search,clear,status,list]=ids.map(id=>elements.get(id));
-  return {picker,search,clear,status,list};
+  const [picker,search,clear,status,list,bookDoor]=ids.map(id=>elements.get(id));
+  return {picker,search,clear,status,list,bookDoor};
 }
 async function choose(u,obj){
   u.picker.files=[{size:120000,text:async()=>JSON.stringify(obj)}];
@@ -45,7 +45,8 @@ async function choose(u,obj){
 }
 
 test('H02 original Theory home contains only local owner-controlled import; no source upload',()=>{
-  assert.match(theoryPage,/sandbox="allow-scripts"/);
+  assert.match(theoryPage,/sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"/);
+  assert.doesNotMatch(theoryPage,/sandbox="[^"]*allow-same-origin/);
   assert.doesNotMatch(theoryPage,/script src="\.\/owner-register-97\.js/);
   assert.match(theoryReader,/id="jmOwnerTheory97File"/);
   assert.match(theoryReader,/<script>/);
@@ -66,6 +67,27 @@ test('H02 owner-import renders all 97 entries and 58/39 grade accurately',async(
   assert.match(u.status.textContent,/58 source cards \/ 39 register-shelf/);
   assert.equal(u.search.disabled,false);
   assert.match(u.list.children[4].children[1].textContent,/SOURCE MATCH HOLD/);
+});
+
+test('H02 owner-only exact archived candidates and strict book link require trusted Drive URLs',async()=>{
+  const x=fixture();
+  x.authority={strict51_private_body_reading:{owner_google_drive_url:'https://drive.google.com/file/d/1zDFonGjiDnvVX7A3PXlxvJp1zq8gQPXX/view'}};
+  x.entries[0].cp12_archived_candidates={files:[
+    {filename:'exact-source-candidate.pdf',owner_drive:'https://drive.google.com/file/d/1qhE_Fo2yCx8-Qnc4Xcd4aSvaVQmu1CfB/view'},
+    {filename:'rejected-source.pdf',owner_drive:'javascript:alert(1)'},
+    {filename:'untrusted-web.pdf',owner_drive:'https://example.org/file/d/123/view'}
+  ]};
+  const u=boot();await choose(u,x);
+  const links=u.list.children[0].children.filter(y=>y.tag==='a');
+  assert.equal(links.length,1);
+  assert.match(links[0].href,/^https:\/\/drive\.google\.com\/file\/d\//);
+  assert.equal(links[0].target,'_blank');
+  assert.equal(links[0].rel,'noopener noreferrer');
+  assert.equal(u.bookDoor.children.length,1);
+  assert.match(u.bookDoor.children[0].href,/^https:\/\/drive\.google\.com\/file\/d\//);
+  u.clear.events.click();
+  assert.equal(u.bookDoor.children.length,0);
+  assert.equal(u.list.children.length,0);
 });
 
 test('H02 filtering works and clear abandons local in-memory register',async()=>{

@@ -9,7 +9,7 @@ from probe_home_lab import ready_fixture
 
 PKG="com.jmisjustme.foldultra"
 OUT=Path("emulator-proof")
-APK="emulator-input/JM_FOLD_ULTRA_CREATIONS_v1_3_DEBUG.apk"
+APK="emulator-input/JM_FOLD_ULTRA_CREATIONS_v1_4_DEBUG.apk"
 
 def tap_search_input():
     nodes=dump("CP06_CREATIONS_EDIT_FIELD")

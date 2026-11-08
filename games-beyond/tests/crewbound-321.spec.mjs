@@ -510,6 +510,7 @@ test('CP08 portable live match export, import and resume preserve exact paired s
  await page.locator('[data-action=GUARD]').click();
  await page.locator('#arena').click({position:{x:205,y:190}});
  const original=await page.evaluate(()=>game.snapshot());
+ await page.locator('details.continuity summary').click();
  await page.locator('#exportMatch').click();
  const code=await page.locator('#matchCode').inputValue();
  expect(code).toContain('JM.CREWBOUND.CP08.MATCH_CAPSULE/1');
@@ -533,6 +534,7 @@ test('CP08 browser saved match reopens paused and untrusted capsule cannot destr
  await page.locator('#roster .unit').nth(1).click();
  await page.locator('#arena').click({position:{x:155,y:150}});
  await page.locator('#commit').click();
+ await page.locator('details.continuity summary').click();
  await page.locator('#saveMatch').click();
  await expect(page.locator('#checkpointStatus')).toContainText('SAVED LOCALLY');
  const before=await page.evaluate(()=>game.snapshot());
@@ -586,6 +588,7 @@ test('CP08 single HTML offline player supports save, export, import and match re
  await page.goto('./crewbound-321/deliveries/CREWBOUND_CP08_PLAY.html');
  await expect(page.locator('#saveMatch')).toHaveCount(1);
  expect(await page.locator('script[src]').count()).toBe(0);
+ await page.locator('details.continuity summary').click();
  await page.locator('#exportMatch').click();
  const code=await page.locator('#matchCode').inputValue();
  expect(code).toContain('CP08.MATCH_CAPSULE/1');

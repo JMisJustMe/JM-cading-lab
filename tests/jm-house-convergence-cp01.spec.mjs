@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import { test } from 'node:test';
 
@@ -133,4 +134,14 @@ test('H05 and books retain their existing independent seats rather than count in
   assert.match(appHome,/\.\.\/visual-story\//);
   assert.match(bookHome,/56<\/b><small>primary Book \/ Written bodies/);
   assert.match(bookHome,/98<\/b><small>Liebury \/ Bookcase routes/);
+});
+
+test('H04 exact public T-Boys Estate Clash v0.2.3 player reuses its original 56,072-byte donor, never crowns v0.2.4',()=>{
+  const bytes=fs.readFileSync('games-beyond/bodies/tboys-estate-clash-v0-2-3-original.html');
+  assert.equal(bytes.length,56072);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),'52263e0e63a25b3ba394faeff0c1b525a9a3a68d7a62290a9c2baca75b755608');
+  assert.match(gameCatalog,/T-Boys: Estate Clash/);
+  assert.match(gameCatalog,/bodies\/tboys-estate-clash-v0-2-3-original\.html/);
+  assert.match(gameCatalog,/Later v0\.2\.4 dossier\/source remains separate and not verified by this player/);
+  assert.match(bytes.toString('utf8'),/<button id="startBtn">ENTER THE FIGHT<\/button>/);
 });

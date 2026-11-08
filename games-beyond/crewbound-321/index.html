@@ -214,7 +214,7 @@ function updateUI(){
    el.textContent=planned.slot+" · "+planned.name+" · "+planned.action+" · "+where+
      (planned.reason?" · "+planned.reason:" · READY");
  }
- $("previewHint").textContent=preview.nearPair?"PAIR IN RANGE · close fighters earn a linked bonus when striking":
+ $("previewHint").textContent=preview.ready&&preview.nearPair?"PAIR IN RANGE · close fighters earn a linked bonus when striking":
    preview.hint;
  const rival=game.lastRivalPair();
  $("rivalReadback").textContent=rival?

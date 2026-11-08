@@ -41,6 +41,11 @@
     yard(t){return this.team(t).filter(u=>u.role==="yard")}
     flex(t){return this.team(t).find(u=>u.role==="flex")||null}
     find(id){return this.units.find(u=>u.id===id)}
+    clearPairPlan(){
+      if(!this.canArrange())return false;
+      this.selected=[];this.editing=null;this.target=null;this.die=null;this.pairPlans=Object.create(null);
+      this.units.forEach(u=>u.selected=false);return true;
+    }
     canArrange(){return !this.ended&&this.turn===0&&this.time===0&&this.resolve===0}
     swapFormation(firstId,secondId){
       if(!this.canArrange()||firstId===secondId)return false;
@@ -52,7 +57,7 @@
       a.role=oldRoles.b;b.role=oldRoles.a;
       a.x=oldCoords.b.x;a.y=oldCoords.b.y;b.x=oldCoords.a.x;b.y=oldCoords.a.y;
       for(const u of [a,b]){u.vx=0;u.vy=0;u.order=null;u.selected=false}
-      this.selected=[];this.editing=null;this.target=null;this.die=null;this.pairPlans=Object.create(null);
+      this.clearPairPlan();
       const line=this.team("player");
       if(this.floor("player").length!==3||this.yard("player").length!==2||!this.flex("player")){
         a.role=oldRoles.a;b.role=oldRoles.b;

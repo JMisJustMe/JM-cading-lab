@@ -41,6 +41,30 @@
     yard(t){return this.team(t).filter(u=>u.role==="yard")}
     flex(t){return this.team(t).find(u=>u.role==="flex")||null}
     find(id){return this.units.find(u=>u.id===id)}
+    canArrange(){return !this.ended&&this.turn===0&&this.time===0&&this.resolve===0}
+    swapFormation(firstId,secondId){
+      if(!this.canArrange()||firstId===secondId)return false;
+      const a=this.find(firstId),b=this.find(secondId);
+      if(!a||!b||!a.alive||!b.alive||a.team!=="player"||b.team!=="player")return false;
+      if(a.role===b.role)return false;
+      const oldRoles={a:a.role,b:b.role};
+      const oldCoords={a:{x:a.x,y:a.y},b:{x:b.x,y:b.y}};
+      a.role=oldRoles.b;b.role=oldRoles.a;
+      a.x=oldCoords.b.x;a.y=oldCoords.b.y;b.x=oldCoords.a.x;b.y=oldCoords.a.y;
+      for(const u of [a,b]){u.vx=0;u.vy=0;u.order=null;u.selected=false}
+      this.selected=[];this.editing=null;this.target=null;this.die=null;this.pairPlans=Object.create(null);
+      const line=this.team("player");
+      if(this.floor("player").length!==3||this.yard("player").length!==2||!this.flex("player")){
+        a.role=oldRoles.a;b.role=oldRoles.b;
+        a.x=oldCoords.a.x;a.y=oldCoords.a.y;b.x=oldCoords.b.x;b.y=oldCoords.b.y;
+        throw Error("CREWBOUND formation invariant violated");
+      }
+      this.receipt("STARTING_LINEUP_SWAP",{a:a.name,b:b.name,roles:{[a.name]:a.role,[b.name]:b.role},
+        originalCount:line.length});
+      return true;
+    }
+    formationRoster(){return this.team("player").map(u=>({id:u.id,name:u.name,role:u.role,key:u.key}))}
+
     nearest(u){return this.floor(u.team==="player"?"enemy":"player").sort((a,b)=>dist(a,u)-dist(b,u))[0]||null}
     choose(id){
       if(this.ended||this.resolve>0)return false;
@@ -149,6 +173,11 @@
       });
       const issued=planned.map(p=>this.order(p.u,p.action,p.target,"player"));
       if(!issued.every(Boolean)){this.log.length=before;return false}
+      if(this.turn===0)this.receipt("LINEUP_LOCKED",{
+        floor:this.floor("player").map(u=>u.name),
+        yard:this.yard("player").map(u=>u.name),
+        flex:this.flex("player")?.name||null
+      });
       this.turn++;
       this.pairLink={ids:units.map(u=>u.id),until:this.time+WINDOW,bonusCount:0};
       const enemyUnits=this.floor("enemy").concat(this.yard("enemy").filter(u=>u.supportCooldown<=0));
@@ -280,7 +309,7 @@
       }
     }
     snapshot(){return {time:this.time,turn:this.turn,resolve:this.resolve,selected:[...this.selected],target:this.target,
-      action:this.action,ended:this.ended,winner:this.winner,matchReason:this.matchReason,
+      action:this.action,canArrange:this.canArrange(),formation:this.formationRoster(),ended:this.ended,winner:this.winner,matchReason:this.matchReason,
        scores:{...this.scores},stats:JSON.parse(JSON.stringify(this.stats)),
        zones:this.zones.map(z=>({...z})),units:this.units.map(u=>({...u,order:u.order?{...u.order}:null})),log:this.log.slice(-8)}}
   }

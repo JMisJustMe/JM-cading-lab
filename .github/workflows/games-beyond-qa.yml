@@ -44,11 +44,11 @@ jobs:
         run: npx playwright test --project=mobile-chromium --grep '@workbench'
       - name: Responsive gate
         run: npx playwright test --project=desktop-chromium --grep '@responsive'
-      - name: CREWBOUND CP08 exact portable HTML and syntax
-        run: node crewbound-321/deliveries/verify-cp08-delivery.cjs
-      - name: CREWBOUND CP08 original, stress and continuity engine acceptance
-        run: node --test crewbound-321/sim.test.cjs crewbound-321/sim.stress.test.cjs crewbound-321/sim.cp08.test.cjs
-      - name: CREWBOUND CP08 touch, save recovery and match fairness acceptance
+      - name: CREWBOUND CP09 exact portable HTML and source syntax
+        run: node crewbound-321/deliveries/verify-cp09-delivery.cjs
+      - name: CREWBOUND CP09 original, stress, continuity and visuals acceptance
+        run: node --test crewbound-321/sim.test.cjs crewbound-321/sim.stress.test.cjs crewbound-321/sim.cp08.test.cjs crewbound-321/feedback.test.cjs
+      - name: CREWBOUND CP09 touch, distinctive effects and reduced-motion browser acceptance
         run: npx playwright test tests/crewbound-321.spec.mjs --reporter=line
       - name: Upload Playwright evidence on failure
         if: failure()

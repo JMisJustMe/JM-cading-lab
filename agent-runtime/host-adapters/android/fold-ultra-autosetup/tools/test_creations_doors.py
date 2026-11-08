@@ -27,7 +27,7 @@ class CreationsDoorsContracts(unittest.TestCase):
         self.assertEqual(len(self.data["sections"]), 9)
         ids = [x["id"] for x in self.entries]
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertGreaterEqual(len(ids), 30)
+        self.assertEqual(len(ids), 43)
         self.assertTrue(all(e.get("label") for e in self.entries))
 
     def test_openbox_current_verified_original_door(self):
@@ -40,7 +40,7 @@ class CreationsDoorsContracts(unittest.TestCase):
     def test_no_unverified_or_dangerous_launch_targets(self):
         for e in self.entries:
             kind = e["kind"]
-            self.assertIn(kind, {"web", "android", "hold"})
+            self.assertIn(kind, {"web", "android", "hold", "local_file"})
             if kind == "web":
                 url = urlsplit(e["url"])
                 self.assertEqual(url.scheme, "https", e["id"])
@@ -55,6 +55,29 @@ class CreationsDoorsContracts(unittest.TestCase):
                 self.assertNotIn("url", e)
             else:
                 self.assertNotIn("url", e)
+
+    def test_original_tools_and_private_picker_keep_separate_authority(self):
+        doors={x["id"]:x for x in self.entries}
+        expected={
+            "jm-coding-workshop-direct":"https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+            "jm-everybody-direct":"https://jmisjustme-estate.pages.dev/coding-estate/everybody/",
+            "jm-visualang-direct":"https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/visualang.html",
+            "jm-py-original-proof":"https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/jm-py-proof.html"
+        }
+        for key,target in expected.items():
+            self.assertEqual(doors[key]["kind"],"web")
+            self.assertEqual(doors[key]["url"],target)
+        private=doors["jm-private-local-html"]
+        self.assertEqual(private["kind"],"local_file")
+        self.assertNotIn("url",private)
+        self.assertNotIn("package",private)
+        self.assertFalse(self.data["policy"]["local_file_source_copied"])
+        self.assertIn("owner",self.data["policy"]["private_file_access"].lower())
+        java=(ROOT/"app/src/main/java/com/jmisjustme/foldultra/creations/CreationsActivity.java").read_text(encoding="utf-8")
+        self.assertIn("Intent.ACTION_OPEN_DOCUMENT",java)
+        self.assertIn("Intent.FLAG_GRANT_READ_URI_PERMISSION",java)
+        self.assertNotIn("READ_EXTERNAL_STORAGE",java)
+        self.assertNotIn("READ_MEDIA_IMAGES",java)
 
     def test_no_private_source_claimed_public(self):
         for e in self.entries:

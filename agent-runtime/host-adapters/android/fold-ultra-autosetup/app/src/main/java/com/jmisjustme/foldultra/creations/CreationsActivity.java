@@ -33,6 +33,7 @@ import java.util.Locale;
  * No embedded source copies, implicit installations, launcher takeover or cloud credentials.
  */
 public final class CreationsActivity extends Activity {
+    static final int REQUEST_PRIVATE_LOCAL_HTML=471;
     static final int BACK=0xff090e19, PANEL=0xff142238, INK=0xffedf4ff,
             SUB=0xffb3c6d9, AQUA=0xff74e4d2, BLUE=0xff77bfff, HOLD=0xffffd777;
     final ArrayList<Group> groups=new ArrayList<>();
@@ -157,6 +158,13 @@ public final class CreationsActivity extends Activity {
         String label=item.optString("label","JM creation");
         String kind=item.optString("kind","hold");
         try{
+            if("local_file".equals(kind)){
+                new AlertDialog.Builder(this).setTitle("Choose your private original")
+                    .setMessage("Select a local HTML document using Android's file picker. JM does not search your phone, copy files into its own storage or upload private source. Choose the working file yourself.")
+                    .setNegativeButton("Stay",null)
+                    .setPositiveButton("Choose file",(d,w)->pickPrivateHtml()).show();
+                return;
+            }
             if("android".equals(kind)){
                 String pkg=item.getString("package");
                 if(!pkg.matches("[a-zA-Z][a-zA-Z0-9_.]{2,180}"))throw new IllegalArgumentException();
@@ -186,6 +194,34 @@ public final class CreationsActivity extends Activity {
                     catch(Exception x){notice("HOLD · No browser is available to open this route.");}
                 }).show();
         }catch(Exception x){notice("HOLD · This source route is not currently safe to launch.");}
+    }
+    void pickPrivateHtml(){
+        Intent picker=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        picker.addCategory(Intent.CATEGORY_OPENABLE);
+        picker.setType("text/html");
+        picker.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try{startActivityForResult(picker,REQUEST_PRIVATE_LOCAL_HTML);}
+        catch(Exception e){notice("HOLD · Android file picker unavailable");}
+    }
+    @Override protected void onActivityResult(int request,int result,Intent data){
+        super.onActivityResult(request,result,data);
+        if(request!=REQUEST_PRIVATE_LOCAL_HTML||result!=RESULT_OK||data==null)return;
+        Uri selected=data.getData();
+        if(selected==null||!"content".equalsIgnoreCase(selected.getScheme())){
+            notice("HOLD · Choose an Android Documents file");return;
+        }
+        final Uri uri=selected;
+        new AlertDialog.Builder(this)
+            .setTitle("Open this owner-selected HTML original?")
+            .setMessage("Only the selected file will be handed to your chosen local app. JM will not copy, execute, save or upload its source.")
+            .setNegativeButton("Stay",null)
+            .setPositiveButton("Choose viewer",(d,w)->{
+                Intent view=new Intent(Intent.ACTION_VIEW);
+                view.setDataAndType(uri,"text/html");
+                view.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                try{startActivity(Intent.createChooser(view,"Open original HTML using"));}
+                catch(Exception e){notice("HOLD · No compatible file viewer found");}
+            }).show();
     }
     void notice(String s){Toast.makeText(this,s,Toast.LENGTH_LONG).show();}
 }

@@ -308,7 +308,9 @@ function updateUI(){
    !started?"Clock starts on first COMMIT · select two fighters and target(s)":
    "Tap A/B for individual orders, or BOTH for a linked plan";
  const meaningful=game.log.slice(-8).reverse().map(Feedback.summary).filter(Boolean).slice(0,2);
- $("log").textContent=meaningful.join(" | ")||"Planning continues while the rival moves.";
+ const commitMarker=game.lastRivalPair()?"SIMULTANEOUS_PAIR_COMMIT · ":"";
+ const nextTrace=commitMarker+(meaningful.join(" | ")||"Planning continues while the rival moves.");
+ if($("log").textContent!==nextTrace)$("log").textContent=nextTrace;
  $("fxMode").textContent="FX · "+combatFeedback.mode();
  $("fxMode").setAttribute("aria-label","Combat effects "+combatFeedback.mode().toLowerCase()+". Tap to cycle full, quiet or off.");
  $("fxHelp").textContent=combatFeedback.mode()==="FULL"?

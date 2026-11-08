@@ -1,0 +1,1339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- {"schema":"JM.CREWBOUND.CP08.OFFLINE_HTML/1","branch":"jm/crewbound-cp08-complete-match","source_files_blob_sha1":{"index.html":"c89b0a012f3d1e82d8c377e8ff279a4b87981398","roster.js":"4f72cbd4c0a9e4ae3e3d9cc216b5a4763136fa8f","cast.js":"27b525b9e3a1267ec3acb219b7606fd7beab492c","art.js":"e6a4efdb38f62c41bed09d8e8b34aea5b83448e1","combat-kit.js":"5dde84477aee07d3ef7c7ef5005ab6528f15aa32","sim.js":"aac9580eea4d6e56c632f8f1463a649af85f0e86","continuity.js":"906c0cbd2c48e9eeadf08d6700cc39d1881c8129"},"role":"standalone owner review, GitHub modular source is keeper","ancestor":"CREWBOUND v0.5 preserved, COMBOUND distinct, CP03-CP07 independently protected"} -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061422">
+<title>CREWBOUND CP08 · Complete Match & Local Recovery</title>
+<style>
+:root{color-scheme:dark;--bg:#06101c;--panel:#0d2133;--line:#355369;--text:#ecfbff;--muted:#b0c6d4;--aqua:#65ecff;--gold:#ffe28c;--pink:#ff82ab}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d5160,var(--bg) 55%);color:var(--text);font-family:system-ui,Arial,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible,canvas:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+main{max-width:920px;margin:auto;padding:10px 10px 38px}
+h1{font-size:clamp(1.3rem,4.5vw,2.1rem);line-height:1.08;margin:6px 0}h1 span{color:var(--aqua)}small,.sub{font-size:.73rem;color:var(--muted);line-height:1.45}.sub{margin:6px 0 10px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;max-width:100%}.top>div{min-width:0;flex:1 1 auto}.top>button{flex:0 0 auto;position:relative;z-index:2;min-width:90px}.tag{color:var(--gold);font-size:.6rem;font-weight:900;letter-spacing:.09em;white-space:normal;overflow-wrap:anywhere;max-width:100%}
+.score{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:7px;padding:10px;background:linear-gradient(95deg,#10465b,#132034,#4c1d38);border:1px solid var(--line);border-radius:15px}
+.score strong{font-size:.75rem;overflow-wrap:anywhere}.score .n{display:block;font-weight:950;font-size:1.1rem;margin-top:3px}.score>div:last-child{text-align:right}.center{text-align:center;font-weight:900;color:var(--gold);min-width:103px;font-size:.8rem}
+.board{position:relative;margin-top:8px;border-radius:18px;border:2px solid #438d9b;overflow:hidden;background:#0d3442;box-shadow:0 10px 35px #0008}
+canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:none}
+.float{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.float span{border:1px solid #9aeeff77;border-radius:9px;padding:5px 8px;background:#071b28df;font-size:.64rem;font-weight:900}
+.fieldHelp{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);text-align:center;border:1px solid #ffffff40;border-radius:12px;padding:7px 12px;background:#061b2fdb;font-size:.68rem;white-space:normal;max-width:94%}
+.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:7px;margin:13px 0 6px;font-size:.73rem;font-weight:950;letter-spacing:.04em}
+.rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.unit{min-width:0;overflow:hidden;background:#10253a;border:1px solid var(--line);border-radius:11px;min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;padding:7px 3px}
+.unit.active{background:#102e3a;border-color:var(--aqua)}.unit.selected{outline:3px solid var(--gold);outline-offset:-3px}.unit.undone{opacity:.46}.unit .portrait{width:100%;height:70px;max-width:84px;object-fit:contain;filter:drop-shadow(0 0 8px var(--glow));flex-shrink:0}.unit b{font-size:.77rem}.unit small{font-size:.58rem;white-space:nowrap;max-width:98%;overflow:hidden;text-overflow:ellipsis;color:#d2e0ed}.unit .hp{height:4px;width:82%;border-radius:8px;background:#33475c;overflow:hidden}.unit .hp i{display:block;height:100%;background:var(--glow);width:var(--hp)}
+.formationEdit{border:1px solid #467c88;border-radius:12px;background:#0c2936;padding:9px;margin-top:9px}
+.formationEdit button{min-height:48px;width:100%;border:1px solid #7fe3f0;border-radius:10px;background:#184b5d;font-weight:900;font-size:.76rem}
+.formationEdit p{min-height:1.6em;font-size:.68rem;line-height:1.5;color:#cbe1ed;margin:7px 0 2px}
+.unit.formationPick{outline:4px solid #ffdb7d;outline-offset:-3px}
+.coachBox{border:1px solid #5b798c;border-radius:12px;padding:10px;margin-top:10px;background:#132b3b}
+.coachBox button{min-height:46px;width:100%;border:1px solid #8cc9ee;border-radius:10px;padding:9px 7px;background:#20425e;font-weight:950;letter-spacing:.03em}
+.coachBox button[aria-pressed="true"]{background:#45502b;border-color:#e8df86}
+.coachBox p{font-size:.7rem;color:#dbebf4;line-height:1.55;margin:8px 0 1px}
+.pairReadout{margin:8px 0;border:1px solid #526f7c;border-radius:11px;padding:8px;background:#0c2436;font-size:.7rem}
+.pairReadout .planRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0}
+.pairReadout .planRows span{display:block;min-width:0;padding:8px 6px;border-radius:9px;background:#163348;line-height:1.5;overflow-wrap:anywhere}
+.pairReadout .planRows span strong{color:#ffe7a4}
+.pairReadout .previewHint{margin:5px 0 0;font-size:.67rem;color:#b5d5e4;line-height:1.4}
+.rivalReport{border-top:1px solid #526477;padding-top:7px;margin-top:8px;line-height:1.5;color:#f5c8d1;font-size:.68rem}
+.controls{border:1px solid var(--line);background:#0a1d2c;border-radius:16px;padding:10px;margin-top:9px}
+.pairPlan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:7px 0 10px}
+.pairPlan button{min-height:48px;min-width:0;border:1px solid var(--line);background:#152d42;border-radius:9px;font-size:.67rem;font-weight:800;padding:6px 3px;line-height:1.3}
+.pairPlan button[aria-pressed=true]{background:#344b39;border-color:var(--gold);color:#fff0bb}
+.pairPlan button:disabled{opacity:.48}.pairHint{font-size:.63rem;color:var(--muted);line-height:1.5;margin:4px 0 10px}
+.modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.modes button{padding:9px 1px;border:1px solid var(--line);border-radius:9px;background:#183043;font-size:.64rem;font-weight:850}
+.modes button[aria-pressed=true]{border-color:var(--gold);background:#544122;color:#fff3b4}
+.actions{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:6px;margin-top:9px}
+.actions button{min-height:51px;border:1px solid var(--line);border-radius:11px;background:#183043;font-size:.73rem;font-weight:900}
+.actions .primary{background:linear-gradient(130deg,#176d7d,#194c77);border-color:var(--aqua);font-size:.82rem}
+button:disabled{opacity:.44;cursor:not-allowed}
+.receipts{margin-top:9px;border:1px solid var(--line);border-radius:13px;padding:9px;background:#081724;min-height:55px}
+.receipts strong{font-size:.7rem;color:var(--aqua)}.receipts p{margin:4px 0 0;color:var(--muted);font-size:.69rem;line-height:1.3}
+.relayBoard{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 0;padding:8px 10px;background:#0b2b35;border:1px solid #4b7e84;border-radius:12px;font-size:.74rem;font-weight:850}
+.relayBoard div:last-child{text-align:right}.relayBoard strong{color:#e8ef91}
+.matchOverlay{position:absolute;inset:0;background:#051426e9;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px 18px}
+.matchOverlay[hidden]{display:none!important}.matchOverlay h2{font-size:clamp(1.5rem,7vw,3rem);margin:0;color:#fff3ba}
+.matchOverlay p{font-size:.87rem;max-width:360px;line-height:1.7;color:#cfe3ec}
+.matchOverlay button{border:2px solid #7be8fb;border-radius:14px;padding:16px 24px;background:#136274;font-weight:950;min-height:54px}
+.continuity{border:1px solid #567d81;background:#0b2730;border-radius:12px;padding:9px;margin-top:10px}
+.continuity summary{list-style:none;cursor:pointer;color:#e9f6c5;font-weight:950;font-size:.78rem;padding:5px 0}
+.continuity .saveGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0}
+.continuity button{min-height:46px;min-width:0;border:1px solid #8dc9cf;background:#183d4b;border-radius:10px;font-size:.69rem;padding:8px 4px;font-weight:900}
+.continuity textarea{width:100%;min-height:84px;max-height:175px;background:#081926;color:#d6f7f1;border:1px solid #668a9b;border-radius:9px;padding:8px;font:12px ui-monospace,monospace;resize:vertical}
+.continuity p{color:#cee4e2;font-size:.69rem;line-height:1.55;margin:6px 0 2px}
+.careerLine{font-size:.72rem;margin:7px 0;padding:7px;border:1px solid #566e72;border-radius:9px;color:#fff0b8;overflow-wrap:anywhere}
+.help{margin-top:10px;display:grid;gap:6px}
+details{border:1px solid var(--line);padding:10px;border-radius:12px;background:#0c1d2d;font-size:.75rem;line-height:1.5}
+summary{cursor:pointer;font-weight:900}
+a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;line-height:1.5}
+@media(min-width:800px){.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;align-items:start;gap:12px}.sidebar{padding-top:0}.board{margin-top:0}.rack{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{margin-top:11px}.modes{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <div><div class="tag">JM CREWBOUND · ORIGINAL v0.5 PRESERVED · EXCLUSIVE CAST</div><h1>CREWBOUND <span>3 + 2 + 1</span></h1></div>
+  <button id="reset" style="border:1px solid var(--line);border-radius:12px;padding:11px;background:#17293c">REMATCH</button>
+</header>
+<p class="sub"><a href="https://jmisjustme.github.io/JM-cading-lab/games-beyond/crewbound-321/cast.html" style="font-weight:900;color:#9ef8ff">MEET THE 12 EXCLUSIVE CREWBOUND FIGHTERS</a> · CP05 living relay clash · twelve distinct combat kits · two independently planned fighters · contested arena zones · yard assists and flex deployment.</p>
+<div class="score"><div><strong>YOUR CREW</strong><span class="n" id="myhp">—</span></div><div class="center"><div id="turn">GO 0</div><div id="phase">PLANNING</div></div><div><strong>RIVAL CREW</strong><span class="n" id="theirhp">—</span></div></div>
+<div class="relayBoard" aria-label="Living field objective score"><div>YOUR RELAYS <strong id="myRelay">0</strong></div><div>RIVAL RELAYS <strong id="theirRelay">0</strong></div></div>
+<div class="layout">
+<section class="board">
+  <canvas id="arena" width="680" height="840" tabindex="0" aria-label="Interactive Crewbound tactical arena: tap two character cards, choose an action, tap or flick a target on the board then commit orders"></canvas>
+  <div class="float"><span id="formation">FLOOR 3 · YARD 2 · FLEX 1</span><span id="clock">00:00</span></div>
+  <div class="fieldHelp" id="fieldHelp">Choose two fighters, then tap or flick the arena.</div>
+  <div id="matchOverlay" class="matchOverlay" hidden aria-live="polite" role="status">
+    <h2 id="resultTitle">MATCH FINISHED</h2>
+    <p id="resultSummary">Results will appear here.</p>
+    <button id="playAgain">PLAY AGAIN</button>
+  </div>
+</section>
+<div class="sidebar">
+<section aria-label="Player crew selection">
+  <div class="sectionTitle"><span>YOUR SIX · TAP TWO</span><span id="pair">0 / 2 READY</span></div>
+  <div class="rack" id="roster"></div>
+  <div class="careerLine" id="careerLine" aria-live="polite">CREW EXPERIENCE · 0 matches · 0 wins</div>
+  <div class="formationEdit">
+    <button id="arrange" type="button" aria-pressed="false">ARRANGE STARTING SIX</button>
+    <p id="arrangeHelp" aria-live="polite">Before your first go, swap a floor fighter with a yard or flex fighter. Three on floor, two in yard, one flex.</p>
+  </div>
+</section>
+<section class="coachBox" aria-label="Optional interactive first-go guidance">
+  <button id="coachToggle" type="button" aria-pressed="false">🎯 PRACTISE FIRST GO</button>
+  <p id="coachText" aria-live="polite">Optional guided practice: use your real fighters and actions. No separate game mode.</p>
+</section>
+<details class="continuity" aria-label="Local match recovery tools">
+  <summary>💾 SAVE / RESTORE MATCH (OPTIONAL)</summary>
+  <p>Local-only. Save this browser's match or export a portable code to keep elsewhere. No account, cloud upload or automatic background storage.</p>
+  <div class="saveGrid">
+    <button type="button" id="saveMatch">SAVE IN BROWSER</button>
+    <button type="button" id="loadMatch">RESTORE SAVED</button>
+    <button type="button" id="exportMatch">EXPORT CODE</button>
+    <button type="button" id="importMatch">IMPORT CODE</button>
+  </div>
+  <textarea id="matchCode" aria-label="Portable CREWBOUND match JSON code" spellcheck="false" placeholder="Export here or paste an existing CREWBOUND CP08 match code"></textarea>
+  <p id="checkpointStatus" aria-live="polite">No match data leaves your browser. Restored battles open paused; tap RESUME when you're ready.</p>
+</details>
+<section class="controls" aria-label="Two-character orders">
+  <div class="sectionTitle" style="margin-top:0">PLAN TWO ACTIONS <span>RIVAL PLANS TOO</span></div>
+  <div class="pairPlan" role="group" aria-label="Plan both fighters together or give each fighter a separate order">
+    <button id="editBoth" aria-pressed="true">BOTH · LINKED</button>
+    <button id="editFirst" disabled aria-pressed="false">A · PICK</button>
+    <button id="editSecond" disabled aria-pressed="false">B · PICK</button>
+  </div>
+  <p class="pairHint">BOTH = shared move; A / B = <strong>different actions and destinations</strong>.</p>
+  <div class="pairReadout" aria-label="Exact preview of planned commands">
+    <strong>YOUR TWO ORDERS · BEFORE COMMIT</strong>
+    <div class="planRows"><span id="planA">A · choose a fighter</span><span id="planB">B · choose a fighter</span></div>
+    <p id="previewHint" class="previewHint">Choose two fighters and select their destinations.</p>
+    <div id="rivalReadback" class="rivalReport" aria-label="Last rival response">RIVAL RESPONSE · revealed after the first paired command.</div>
+  </div>
+  <div class="modes" id="modes">
+    <button data-action="COMBO" aria-pressed="true">COMBO</button>
+    <button data-action="ATTACK" aria-pressed="false">ATTACK</button>
+    <button data-action="GUARD" aria-pressed="false">GUARD</button>
+    <button data-action="MOVE" aria-pressed="false">MOVE</button>
+    <button data-action="DEPLOY" aria-pressed="false">DEPLOY</button>
+  </div>
+  <div class="actions"><button id="dice" title="Optional risk modifier, never required">🎲 ROLL</button><button class="primary" id="commit" disabled>COMMIT PAIR</button><button id="pause">Ⅱ PAUSE</button></div>
+</section>
+<section class="receipts" aria-live="polite"><strong>CONTACT / ROUTE TRACE</strong><p id="log">New combat pilots. Choose two fighters.</p></section>
+<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Before the first go, tap ARRANGE STARTING SIX and then two fighters with different roles to exchange their starting positions. Tap DONE ARRANGING before issuing combat commands. Your six identities remain the same; only their first positions change. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending between your orders. Each character has its own combat kit and periodically triggers a signature manoeuvre when contact is made. Yard fighters shield or intervene; the flex can deploy as a fourth floor fighter. Capture the two glowing relay zones to gain tactical points. Win by disabling the rival crew or leading on remaining crew health plus relay points at the three-minute limit. Dice is optional.</p></details></div>
+</div>
+</div>
+<p class="footer">A separate CP05 experimental descendant, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
+</main>
+<script>
+/* CP08 source: roster.js Git blob 4f72cbd4c0a9e4ae3e3d9cc216b5a4763136fa8f */
+/* Authored Crewbound v0.5 PrimeBody attributes, not COMBOUND or replacement. */
+(function(root){const data={"source_schema":"JM.CREWBOUND.GAME_SOURCE/0.5","source_sha256":"5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7","rule_status":"SOURCE_EXACT_BASELINE_PROPERTIES_PLUS_NEW_DESCENDANT_MOBILITY","fighters":{"ZIPP":{"key":"ZIPP","name":"Zipp","hp":1050,"radius":38,"mass":0.68,"power":0.96,"palette":["#62f2ff","#1575ff","#eaffff"],"shape":"dart","passive":"SURGE","movement_word":"RICOCHET","signature_name":"LIGHTNING LAP","ability_effect":"Each wall charges SURGE. The next enemy contact gains +28% damage per wall, up to four charges.","ability_trigger":"Hit a wall before striking an enemy.","cp01_proposed_speed":205},"BRAX":{"key":"BRAX","name":"Brax","hp":1760,"radius":56,"mass":1.92,"power":1.48,"palette":["#ffb34d","#b44721","#fff1b3"],"shape":"brick","passive":"WEIGHT WORD","movement_word":"WEIGHT","signature_name":"FAULTLINE","ability_effect":"WEIGHT WORD deals 55% bonus damage and adds a second shove after the normal collision.","ability_trigger":"Strike an enemy while moving above heavy-impact speed.","cp01_proposed_speed":96},"MIRA":{"key":"MIRA","name":"Mira","hp":1260,"radius":43,"mass":0.88,"power":0.84,"palette":["#ff8ee9","#813dca","#fff0ff"],"shape":"wisp","passive":"ECHO PASS","movement_word":"RELAY","signature_name":"MIRROR ROUTE","ability_effect":"ECHO PASS accelerates that ally and loads 36% bonus damage onto its next enemy hit. A missed relay gifts a softer echo to the nearest ally.","ability_trigger":"Touch an ally during Mira’s route.","cp01_proposed_speed":157},"VEXA":{"key":"VEXA","name":"Vexa","hp":1160,"radius":41,"mass":0.84,"power":1.12,"palette":["#c879ff","#4e2b91","#a9fff0"],"shape":"shard","passive":"OPEN MARK","movement_word":"MARK","signature_name":"HUNTLINE","ability_effect":"OPEN MARK exposes the target. The next allied hit claims the mark for 50% bonus damage.","ability_trigger":"Hit an unmarked enemy.","cp01_proposed_speed":171},"GROVE":{"key":"GROVE","name":"Grove","hp":1940,"radius":57,"mass":2.12,"power":1.06,"palette":["#9dea65","#3d7531","#fff19c"],"shape":"guardian","passive":"ROOT HOLD","movement_word":"ROOT","signature_name":"FORTRESS ROOT","ability_effect":"ROOT HOLD cuts incoming damage by 32%, deadens the attacker’s momentum and creates a protective shield aura on settle.","ability_trigger":"Receive an enemy hit or finish a route alive.","cp01_proposed_speed":89},"ORBI":{"key":"ORBI","name":"Orbi","hp":1240,"radius":45,"mass":1.02,"power":1.08,"palette":["#ff73be","#6724a8","#ffd86c"],"shape":"star","passive":"NOVA RING","movement_word":"PULSE","signature_name":"SUPERNOVA","ability_effect":"NOVA RING damages every nearby enemy for 48% of the primary hit. Compression and tension enlarge the blast.","ability_trigger":"Land the first enemy hit of Orbi’s route.","cp01_proposed_speed":143},"KNOT":{"key":"KNOT","name":"Knot","hp":1450,"radius":48,"mass":1.18,"power":0.98,"palette":["#49e2b4","#176c6f","#e9ff8b"],"shape":"twin","passive":"TENSION","movement_word":"TENSION","signature_name":"WEBLOCK","ability_effect":"TENSION BIND steals 32% of the target’s movement. On settle, Knot leaves a field that weakens enemy launches for four turns.","ability_trigger":"Strike an enemy or finish a route alive.","cp01_proposed_speed":119},"SKIP":{"key":"SKIP","name":"Skip","hp":1080,"radius":39,"mass":0.64,"power":0.86,"palette":["#7ca7ff","#4044b8","#fffb9f"],"shape":"split","passive":"SIDE DOOR","movement_word":"SIDE DOOR","signature_name":"BACKDOOR","ability_effect":"SIDE DOOR rotates the rebound by about 30° and adds speed, creating a route ordinary reflection cannot reach.","ability_trigger":"Touch the first wall of the route.","cp01_proposed_speed":215}},"relationships":[{"a":"MIRA","b":"ZIPP","name":"RELAY SURGE"},{"a":"BRAX","b":"ORBI","name":"PRESSURE COLLAPSE"},{"a":"KNOT","b":"BRAX","name":"TRAP & SHOVE"},{"a":"SKIP","b":"VEXA","name":"SIDE-DOOR HUNT"},{"a":"GROVE","b":"MIRA","name":"GUARDED ECHO"},{"a":"KNOT","b":"ORBI","name":"TENSION NOVA"},{"a":"ZIPP","b":"VEXA","name":"CHASE & CLAIM"},{"a":"GROVE","b":"BRAX","name":"SHARED WEIGHT"}]};if(typeof module==="object"&&module.exports)module.exports=data;root.JM_CREWBOUND_321_ROSTER=data;})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script><script>
+/* CP08 source: cast.js Git blob 27b525b9e3a1267ec3acb219b7606fd7beab492c */
+/* CREWBOUND CP02 — 12 independent crew identities and authored silhouettes.
+   New names/appearances: NOT COMBOUND's creature roster.
+   Rules and archived source stats inherited by explicit donor reference only.
+   New moves/visuals are candidate CP02 body, not retroactively the v0.5 PrimeBody. */
+(function(root){
+"use strict";
+const donor=root.JM_CREWBOUND_321_ROSTER||(typeof require==="function"?require("./roster.js"):null);
+if(!donor?.fighters)throw Error("CREWBOUND v0.5 PrimeBody donor unavailable");
+const identity=[
+ // YOUR CREW · high-contrast athletic / equipment-based silhouettes
+ {id:"KEPLER",from:"ZIPP",name:"Kepler",role:"Skyline skater",silhouette:"glider",colors:["#3de7ff","#163d88","#ffc975"],speed:210,maneuver:"bank",defense:"Slip Roll",attack:"Rail Dash",signature:"BLUE COMET",personality:"Bold, fast-reading scout",kit:"Wing fins / pulse skates",short:"SKATE"},
+ {id:"IRONVALE",from:"BRAX",name:"Ironvale",role:"Anchor bruiser",silhouette:"anvil",colors:["#ffb767","#643628","#fce6b0"],speed:91,maneuver:"charge",defense:"Brace Plate",attack:"Earthstamp",signature:"CRASH ANCHOR",personality:"Immovable team protector",kit:"Hydraulic gauntlets / shoulder plates",short:"BRACE"},
+ {id:"SOLACE",from:"MIRA",name:"Solace",role:"Relay choreographer",silhouette:"ribbon",colors:["#f5a1cf","#733a7d","#84ead6"],speed:159,maneuver:"weave",defense:"Crossfade",attack:"Ribbon Relay",signature:"AFTERIMAGE",personality:"Calculates moving partnerships",kit:"Twin signal ribbons / long coat",short:"WEAVE"},
+ {id:"LOCKE",from:"GROVE",name:"Locke",role:"Gate captain",silhouette:"sentinel",colors:["#9acaf5","#304873","#f6dc85"],speed:94,maneuver:"anchor",defense:"Hold Wall",attack:"Shield Shunt",signature:"IRON GATE",personality:"Methodical, protects the vulnerable",kit:"Full-length tower shield / visor",short:"HOLD"},
+ {id:"ASTER",from:"ORBI",name:"Aster",role:"Pulse aerialist",silhouette:"astral",colors:["#f9dd74","#5a4179","#ff9376"],speed:146,maneuver:"orbit",defense:"Halo Guard",attack:"Arc Pulse",signature:"SOLAR CHOIR",personality:"Theatrical aerial tactician",kit:"Orbit hoops / split-flight cape",short:"ORBIT"},
+ {id:"NOX",from:"VEXA",name:"Nox",role:"Stealth line-reader",silhouette:"marksman",colors:["#b89aff","#30335d","#9df0f2"],speed:175,maneuver:"sidestep",defense:"Nightstep",attack:"Markline",signature:"HIDDEN VECTOR",personality:"Quiet, precision-minded navigator",kit:"Angular rangefinder / trailing scarf",short:"MARK"},
+ // RIVAL CREW · distinct individual silhouettes, not mirrored recolours
+ {id:"STATIC",from:"SKIP",name:"Static",role:"Phase acrobat",silhouette:"jester",colors:["#ff747b","#753040","#fcdb83"],speed:219,maneuver:"zigzag",defense:"Sidecut",attack:"Backdoor Feint",signature:"GLITCH LEAP",personality:"Unpredictable gap-hunter",kit:"Split-jacket / twin spring boots",short:"SHIFT"},
+ {id:"LATCH",from:"KNOT",name:"Latch",role:"Bind specialist",silhouette:"grappler",colors:["#a8d981","#41566a","#e5aacb"],speed:125,maneuver:"lure",defense:"Catch Net",attack:"Chain Snare",signature:"CROSSHATCH",personality:"Relentless trap architect",kit:"Mechanical spool / hook lance",short:"SNARE"},
+ {id:"EMBER",from:"ORBI",name:"Ember",role:"Blast percussionist",silhouette:"drummer",colors:["#ff986a","#863a48","#ffe2ab"],speed:141,maneuver:"pulse",defense:"Heat Veil",attack:"Impact Beat",signature:"FIRE CIRCLE",personality:"Aggressive rhythmic striker",kit:"Resonance drums / heat visor",short:"BEAT"},
+ {id:"WROUGHT",from:"GROVE",name:"Wrought",role:"Siege wall",silhouette:"juggernaut",colors:["#c5d4dc","#4a4b60","#ff8580"],speed:82,maneuver:"anchor",defense:"Stone Skin",attack:"Ramlock",signature:"IRON PROCESSION",personality:"Slow, relentless frontline wall",kit:"Reinforced crawler suit / ram collar",short:"RAM"},
+ {id:"VIVID",from:"VEXA",name:"Vivid",role:"Laser fencer",silhouette:"lancer",colors:["#fc83cc","#663c79","#97edc3"],speed:169,maneuver:"fence",defense:"Parry Arc",attack:"Laser Draw",signature:"BRIGHT CUT",personality:"Daring long-range duelist",kit:"Thin energy lance / pointed helmet",short:"PARRY"},
+ {id:"DASHER",from:"ZIPP",name:"Dasher",role:"Low-gravity rider",silhouette:"rider",colors:["#66f2cb","#27677a","#ffb26e"],speed:199,maneuver:"drift",defense:"Burnout",attack:"Skid Sweep",signature:"CORKSCREW RUN",personality:"Smooth, momentum-led trick rider",kit:"Single glide wheel / asymmetrical armour",short:"DRIFT"}
+];
+const fighters={};
+for(const entry of identity){
+ const base=donor.fighters[entry.from];if(!base)throw Error("Missing donor "+entry.from);
+ const {id,from,...change}=entry;
+ fighters[id]={...base,...change,key:id,archetype:from,source_name:base.name,source_signature:base.signature_name,
+   source_ability_effect:base.ability_effect,name:entry.name,
+   cp01_proposed_speed:entry.speed,signature_name:entry.signature,
+   movement_word:entry.short,palette:[...entry.colors],
+   hp:Math.round(base.hp*(id==="WROUGHT"?1.05:id==="DASHER"?.96:1)),
+   // Fine visual distinctions are not a claim that inherited mechanic donor changed.
+   new_art_authority:"CREWBOUND_CP02_UNIQUE_CAST"};
+}
+const crews={player:identity.slice(0,6).map(x=>x.id),enemy:identity.slice(6).map(x=>x.id)};
+const api={schema:"JM.CREWBOUND.CP02.UNIQUE_CAST/1",fighters,crews,identity:identity.map(x=>({...x})),
+ source_sha256:donor.source_sha256, source_character_count:Object.keys(donor.fighters).length,
+ source_separation:"CREWBOUND roster is independent of COMBOUND; no donor source files overwritten"};
+if(typeof module==="object"&&module.exports)module.exports=api;
+root.JM_CREWBOUND_321_CAST=api;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script><script>
+/* CP08 source: art.js Git blob e6a4efdb38f62c41bed09d8e8b34aea5b83448e1 */
+/* CREWBOUND CP02 — original twelve-character canvas costume system.
+   Fighter silhouettes are crew-scale humanoid/pilot silhouettes, NOT COMBOUND creatures.
+   No external artwork, image assets or font dependencies. */
+(function(root){
+"use strict";
+function draw(ctx,f,x=0,y=0,size=68,time=0,team="player"){
+ if(!f)return;
+ const [primary,dark,accent]=f.palette,who=f.silhouette,scale=size/72;
+ ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+ const bob=Math.sin(time*2+(f.cp01_proposed_speed||100)/16)*1.5;
+ ctx.translate(0,bob);
+ function stroke(color="#081421",w=3){ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineJoin="round";ctx.lineCap="round"}
+ function path(pts,fill,outline="#081421",w=2.6){
+  ctx.beginPath();pts.forEach(([xx,yy],i)=>i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy));ctx.closePath();
+  ctx.fillStyle=fill;ctx.fill();if(outline){stroke(outline,w);ctx.stroke()}
+ }
+ function ell(x,y,rx,ry,fill,outline="#081421",w=2){
+  ctx.beginPath();ctx.ellipse(x,y,Math.max(.01,rx),Math.max(.01,ry),0,0,Math.PI*2);
+  if(fill){ctx.fillStyle=fill;ctx.fill()}if(outline){stroke(outline,w);ctx.stroke()}
+ }
+ function line(pts,color=accent,w=3){
+  ctx.beginPath();pts.forEach(([xx,yy],i)=>i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy));
+  stroke(color,w);ctx.stroke();
+ }
+ function rect(x,y,w,h,fill,r=3){
+  ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();stroke(dark,1.8);ctx.stroke();
+ }
+ ctx.shadowColor=primary;ctx.shadowBlur=10;
+ ell(0,32,24,5,"#06111c88",null);
+ // Motion/readable equipment behind the character: unique to the cast identity.
+ switch(who){
+  case "glider":
+   path([[-10,-13],[-42,-27],[-33,2],[-13,11]],accent);
+   path([[10,-13],[42,-27],[33,2],[13,11]],primary);
+   line([[-33,-20],[-20,-11],[-14,2]],dark,3);line([[33,-20],[20,-11],[14,2]],dark,3);
+   break;
+  case "anvil":
+   rect(-37,-13,21,29,dark,7);rect(17,-13,21,29,dark,7);
+   path([[-38,-15],[-24,-34],[-8,-21]],accent);
+   path([[38,-15],[24,-34],[8,-21]],accent);
+   break;
+  case "ribbon":
+   line([[-13,-13],[-31,-27],[-38,-9],[-25,15],[-42,25]],primary,7);
+   line([[13,-12],[29,-32],[43,-11],[29,12],[43,31]],accent,5);
+   break;
+  case "sentinel":
+   path([[-30,-19],[-18,-34],[-8,-12],[-14,28],[-31,17]],primary);
+   path([[16,-14],[43,-15],[40,28],[18,27]],dark);
+   break;
+  case "astral":
+   ell(0,-3,37,32,null,accent,4);
+   ell(0,-3,32,38,null,primary,2);
+   ell(-32,-14,5,5,accent,null);ell(31,11,4,4,primary,null);
+   break;
+  case "marksman":
+   path([[-6,-18],[-26,-36],[-33,33],[-8,16]],dark);
+   path([[6,-18],[26,-30],[31,21],[10,15]],primary);
+   break;
+  case "jester":
+   path([[-12,-15],[-34,-40],[-24,-5]],primary);
+   path([[12,-15],[38,-38],[22,-3]],accent);
+   line([[-35,18],[-22,4],[-41,-4]],accent,5);
+   break;
+  case "grappler":
+   ell(-32,9,11,13,null,primary,4);ell(-32,9,5,6,dark,null);
+   line([[-25,6],[-40,-13],[-15,-24],[27,-10]],accent,3.5);
+   break;
+  case "drummer":
+   ell(-27,11,14,14,primary,accent,4);ell(27,11,14,14,primary,accent,4);
+   ell(-27,11,5,5,dark,null);ell(27,11,5,5,dark,null);
+   line([[-27,-8],[-37,-30]],accent,4);line([[27,-8],[39,-28]],accent,4);
+   break;
+  case "juggernaut":
+   path([[-41,-27],[-16,-30],[-21,19],[-39,21]],dark);
+   path([[41,-27],[16,-30],[21,19],[39,21]],dark);
+   rect(-30,-33,60,18,primary,6);
+   break;
+  case "lancer":
+   line([[20,26],[35,-9],[38,-42]],accent,5);
+   path([[38,-53],[49,-30],[30,-30]],primary);
+   path([[-15,-13],[-34,3],[-15,12]],dark);
+   break;
+  case "rider":
+   ell(0,31,17,12,dark,primary,5);
+   ell(0,31,7,7,accent,null);
+   path([[-18,-4],[-38,14],[-27,23],[-12,11]],accent);
+   break;
+ }
+ // Articulated legs. Each character is visibly a person/pilot, not a COMBOUND symbol.
+ const stride=who==="rider"?9:who==="juggernaut"?17:13;
+ path([[-13,14],[-2,15],[-6,32],[-20,35],[-23,30]],dark);
+ path([[2,15],[13,14],[22,30],[20,35],[6,32]],dark);
+ rect(-25,29,20,8,who==="anvil"?accent:primary,3);
+ rect(6,29,21,8,who==="juggernaut"?accent:primary,3);
+ // Main humanoid costume/chest.
+ const thick=who==="anvil"||who==="juggernaut"?24:who==="sentinel"?20:17;
+ path([[-thick,-21],[thick,-21],[thick-2,18],[0,24],[-thick+2,18]],dark);
+ path([[-thick+4,-18],[thick-4,-18],[thick-5,12],[0,18],[-thick+5,12]],primary);
+ line([[-8,-16],[0,-7],[8,-16]],accent,3);
+ if(who==="sentinel"||who==="juggernaut")rect(-10,0,20,12,accent,3);
+ if(who==="astral"||who==="drummer")ell(0,0,9,8,accent,dark,2);
+ if(who==="ribbon")line([[-14,-10],[9,10],[-7,17]],accent,5);
+ if(who==="lancer")rect(-3,-5,6,20,accent,2);
+ if(who==="marksman")line([[-15,-10],[16,13]],accent,4);
+ if(who==="jester")path([[-10,-10],[4,-17],[13,3],[-3,13]],accent);
+ if(who==="grappler")ell(0,1,9,8,accent,dark,3);
+ if(who==="glider")path([[-10,0],[0,-12],[10,0],[0,12]],accent);
+ if(who==="rider")line([[-12,12],[16,-8]],accent,5);
+ // Individual shoulders and arms.
+ ctx.shadowBlur=0;
+ const arm=who==="anvil"||who==="juggernaut"?11:who==="grappler"?9:7;
+ rect(-thick-arm+5,-14,arm+3,22,dark,4);rect(thick-7,-14,arm+3,22,dark,4);
+ ell(-thick-1,13,arm*.62,7,accent,dark,2);ell(thick+1,13,arm*.62,7,accent,dark,2);
+ // Head and signature headwear. Helmet proportions vary per costume.
+ const headSize=who==="juggernaut"?15:who==="anvil"?15:who==="jester"?11:13;
+ ell(0,-29,headSize,16,dark,accent,2.8);
+ switch(who){
+  case "glider":path([[-18,-39],[0,-56],[18,-39],[11,-28],[-11,-28]],primary);break;
+  case "anvil":rect(-17,-40,34,9,accent,4);rect(-11,-54,22,9,primary,2);break;
+  case "ribbon":line([[-12,-37],[-23,-45],[-31,-35]],primary,5);break;
+  case "sentinel":rect(-16,-44,32,12,primary,2);rect(-6,-51,12,8,accent,2);break;
+  case "astral":ell(0,-49,22,7,null,accent,4);ell(0,-51,4,4,primary,null);break;
+  case "marksman":path([[-18,-32],[-19,-47],[0,-57],[19,-47],[17,-32]],primary);break;
+  case "jester":path([[-13,-42],[-19,-56],[-3,-46],[5,-57],[16,-42]],primary);break;
+  case "grappler":rect(-18,-43,36,11,accent,4);break;
+  case "drummer":ell(0,-43,15,8,primary,dark,2);break;
+  case "juggernaut":rect(-20,-41,40,22,primary,5);rect(-16,-52,32,11,dark,4);break;
+  case "lancer":path([[-15,-39],[-4,-55],[11,-48],[18,-30]],primary);break;
+  case "rider":path([[-18,-44],[20,-44],[27,-33],[8,-29],[-18,-31]],primary);break;
+ }
+ // Eye visor distinguishes tactical characters and avoids reuse of creature-face shapes.
+ rect(-11,-34,22,8,who==="jester"?accent:"#071829",4);
+ line([[-9,-30],[8,-30]],accent,2.2);
+ if(who==="marksman")ell(10,-30,5,5,accent,dark,2);
+ if(who==="lancer")line([[12,-29],[24,-32]],accent,2);
+ if(who==="glider")line([[16,-45],[27,-54]],accent,3);
+ ctx.restore();
+}
+const api={draw};
+if(typeof module==="object"&&module.exports)module.exports=api;
+root.JM_CREWBOUND_321_ART=api;
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script><script>
+/* CP08 source: combat-kit.js Git blob 5dde84477aee07d3ef7c7ef5005ab6528f15aa32 */
+/* JM CREWBOUND CP05 · additive unique tactical fighter kits.
+   Each crew-only identity has original combat behaviour. Donor physics and
+   historical source remain separately retained in roster.js / cast.js.
+   This module does not modify COMBOUND or original CREWBOUND Arena v0.5. */
+(function(root,factory){
+ const api=factory();
+ if(typeof module==="object"&&module.exports)module.exports=api;
+ root.JM_CREWBOUND_321_COMBAT=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(){
+ "use strict";
+ const KITS=Object.freeze({
+  KEPLER:    {name:"RAIL SLIP",style:"SKATE",reach:52,damage:.92,cooldown:.63,recharge:6,defense:"bank-evasion",special:"dash-ricochet"},
+  IRONVALE:  {name:"CRASH ANCHOR",style:"BRACE",reach:47,damage:1.38,cooldown:1.28,recharge:7,defense:"brace",special:"shockwave"},
+  SOLACE:    {name:"AFTERIMAGE RELAY",style:"WEAVE",reach:49,damage:.78,cooldown:.78,recharge:5.5,defense:"relay",special:"team-shield"},
+  LOCKE:     {name:"GATE SHUNT",style:"HOLD",reach:43,damage:.84,cooldown:1.13,recharge:6.5,defense:"intercept",special:"fortress"},
+  ASTER:     {name:"SOLAR CHOIR",style:"ORBIT",reach:66,damage:.86,cooldown:.94,recharge:6,defense:"halo",special:"twin-pulse"},
+  NOX:       {name:"HIDDEN VECTOR",style:"MARK",reach:72,damage:1.12,cooldown:1.14,recharge:6,defense:"shadow",special:"precision"},
+  STATIC:    {name:"GLITCH LEAP",style:"SHIFT",reach:43,damage:.87,cooldown:.64,recharge:6.5,defense:"phase",special:"blink"},
+  LATCH:     {name:"CROSSHATCH",style:"SNARE",reach:68,damage:.82,cooldown:1.06,recharge:7,defense:"tether",special:"snare"},
+  EMBER:     {name:"FIRE CIRCLE",style:"BEAT",reach:55,damage:1.02,cooldown:.95,recharge:6.6,defense:"heat-veil",special:"rhythm-wave"},
+  WROUGHT:   {name:"IRON PROCESSION",style:"RAM",reach:54,damage:1.29,cooldown:1.33,recharge:8,defense:"heavy-shell",special:"siege-drive"},
+  VIVID:     {name:"BRIGHT CUT",style:"PARRY",reach:86,damage:.91,cooldown:.81,recharge:5.7,defense:"parry",special:"lance-line"},
+  DASHER:    {name:"CORKSCREW RUN",style:"DRIFT",reach:56,damage:1.01,cooldown:.73,recharge:5.9,defense:"drift",special:"momentum"}
+ });
+ function get(key){return KITS[key]||null}
+ function guardMultiplier(g,target,attacker){
+  const kit=get(target.key),defense=kit?.defense;
+  if(!defense)return 1;
+  const speed=Math.hypot(target.vx,target.vy);
+  let factor=1;
+  switch(defense){
+   case "bank-evasion": factor=speed>90?.76:.99;break;
+   case "brace":factor=target.guard>0?.62:.92;break;
+   case "relay":factor=target.shield>0?.84:1;break;
+   case "intercept":factor=target.guard>0?.55:.89;break;
+   case "halo":factor=target.shield>0?.76:1;break;
+   case "shadow":factor=speed>45?.81:.98;break;
+   case "phase":factor=target.kitCooldown<=0?.61:.94;break;
+   case "tether":factor=attacker?.bound>0?.67:1;break;
+   case "heat-veil":factor=target.guard>0?.72:1;break;
+   case "heavy-shell":factor=.74;break;
+   case "parry":factor=target.guard>0?.47:.94;break;
+   case "drift":factor=speed>90?.72:1;break;
+  }
+  return factor;
+ }
+ function strikeModifier(a,foe){
+  const kit=get(a.key);
+  if(!kit)return {damage:1,reach:43,cooldown:1};
+  let damage=kit.damage;
+  const speed=Math.hypot(a.vx,a.vy);
+  if(a.key==="DASHER")damage*=1+Math.min(.4,speed/600);
+  if(a.key==="NOX"&&foe.hp/foe.maxHp<.42)damage*=1.25;
+  if(a.key==="IRONVALE"&&a.order?.mode==="ATTACK")damage*=1.18;
+  if(a.key==="VIVID"&&a.guard>0)damage*=1.16;
+  return {damage,reach:kit.reach,cooldown:kit.cooldown};
+ }
+ function castSpecial(game,a,foe,dealt){
+  const kit=get(a.key);
+  if(!kit||a.kitCooldown>0||!foe?.alive||dealt<=0)return false;
+  a.kitCooldown=kit.recharge;
+  a.specialFlash=1.05;
+  const allies=game.floor(a.team).filter(u=>u!==a);
+  const rivals=game.floor(foe.team).filter(u=>u!==foe);
+  const near=(list,origin,r)=>list.filter(u=>Math.hypot(u.x-origin.x,u.y-origin.y)<=r);
+  switch(a.key){
+   case "KEPLER":
+    a.shield=Math.min(320,a.shield+45);a.vx*=1.22;a.vy*=1.22;break;
+   case "IRONVALE":
+    for(const u of near(rivals,foe,92))game.hurt(u,Math.min(55,dealt*.32),a);
+    foe.vx+=(foe.x-a.x)*.9;foe.vy+=(foe.y-a.y)*.9;break;
+   case "SOLACE":
+    for(const u of near(allies,a,180))u.shield=Math.min(350,u.shield+83);
+    a.shield=Math.min(350,a.shield+32);break;
+   case "LOCKE":
+    for(const u of near(allies,a,165)){u.guard=Math.max(u.guard,2.5);u.shield=Math.min(350,u.shield+63)}
+    a.shield=Math.min(350,a.shield+56);break;
+   case "ASTER":
+    for(const u of near(rivals,foe,120))game.hurt(u,Math.min(65,dealt*.42),a);break;
+   case "NOX":
+    foe.marked=Math.max(foe.marked,3.5);
+    game.hurt(foe,Math.min(48,dealt*.34),a);break;
+   case "STATIC":
+    a.x=Math.max(24,Math.min(game.W-24,a.x+(a.x<foe.x?-38:38)));
+    a.y=Math.max(24,Math.min(game.H-24,a.y+(a.y<foe.y?-20:20)));a.shield=Math.min(350,a.shield+26);break;
+   case "LATCH":
+    foe.bound=Math.max(foe.bound,2.8);
+    foe.vx*=.42;foe.vy*=.42;break;
+   case "EMBER":
+    for(const u of near(rivals,foe,110)){game.hurt(u,Math.min(44,dealt*.27),a);
+     u.vx+=(u.x-foe.x)*.6;u.vy+=(u.y-foe.y)*.6}
+    break;
+   case "WROUGHT":
+    foe.vx+=(foe.x-a.x)*1.7;foe.vy+=(foe.y-a.y)*1.7;
+    a.guard=Math.max(a.guard,1.7);break;
+   case "VIVID":
+    foe.marked=Math.max(foe.marked,1.5);
+    foe.bound=Math.max(foe.bound,1.25);break;
+   case "DASHER":
+    a.vx*=1.32;a.vy*=1.32;
+    a.shield=Math.min(350,a.shield+38);break;
+  }
+  game.receipt("SIGNATURE",{side:a.team,fighter:a.name,move:kit.name,target:foe.name});
+  return true;
+ }
+ return {KITS,get,guardMultiplier,strikeModifier,castSpecial};
+});
+
+</script><script>
+/* CP08 source: sim.js Git blob aac9580eea4d6e56c632f8f1463a649af85f0e86 */
+/* CREWBOUND 3+2+1 CP01 — additive prototype. Derived from original exact PrimeBody roster.js,
+   not a replacement for v0.5, COMBOUND, or its verified Games House carrier. */
+(function(root,factory){
+  const R=root.JM_CREWBOUND_321_ROSTER||(typeof require==="function"?require("./roster.js"):null);
+  const C=root.JM_CREWBOUND_321_CAST||(typeof require==="function"?require("./cast.js"):null);
+  const K=root.JM_CREWBOUND_321_COMBAT||(typeof require==="function"?require("./combat-kit.js"):null);
+  const api=factory(R,C,K);
+  if(typeof module==="object"&&module.exports)module.exports=api;
+  root.JM_CREWBOUND_321_SIM=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(source,cast,combat){
+  "use strict";
+  if(!source?.fighters)throw Error("Original CREWBOUND roster unavailable");
+  if(!combat?.KITS||Object.keys(combat.KITS).length!==12)throw Error("Independent CREWBOUND CP05 fighter kits unavailable");
+  const R=cast?.fighters||source.fighters,W=680,H=840,WINDOW=4.3,MAX_FLOOR=4;
+  const CREWS=cast?.crews||{player:["ZIPP","BRAX","MIRA","GROVE","ORBI","VEXA"],enemy:["SKIP","KNOT","VEXA","ORBI","GROVE","BRAX"]};
+  const clamp=(x,l,h)=>Math.max(l,Math.min(h,x));
+  const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  // Exportable deterministic PRNG state lets a resumed match continue on exactly
+  // the same random sequence; no extra RNG draws for saving or previews.
+  const rand=(seed)=>{
+    let x=seed>>>0;
+    const next=()=>((x=(1664525*x+1013904223)>>>0)/4294967296);
+    next.state=()=>x>>>0;
+    next.restore=value=>{
+      if(!Number.isInteger(value)||value<0||value>0xffffffff)throw Error("Invalid PRNG state");
+      x=value>>>0;
+    };
+    return next;
+  };
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const careerRecord=carry=>{
+    const safeInt=(n,max)=>Number.isSafeInteger(n)&&n>=0?Math.min(max,n):0;
+    const pilots=Object.create(null);
+    for(const key of CREWS.player){
+      const prior=carry?.pilots?.[key]||{};
+      pilots[key]={xp:safeInt(prior.xp,10000000),matches:safeInt(prior.matches,100000)};
+    }
+    return {matches:safeInt(carry?.matches,100000),wins:safeInt(carry?.wins,100000),pilots};
+  };
+  function createUnit(team,key,index){
+    const f=R[key],floor=index<3;
+    return {id:team+"-"+index+"-"+key,team,key,name:f.name,index,role:floor?"floor":index<5?"yard":"flex",
+      x:135+(index%3)*205,y:team==="player"?675:155,vx:0,vy:0,hp:f.hp,maxHp:f.hp,alive:true,
+      shield:0,marked:0,bound:0,guard:0,hitFlash:0,cooldown:0,supportCooldown:0,pulseCooldown:0,
+      surge:0,kitCooldown:0,specialFlash:0,order:null,selected:false};
+  }
+  class Game{
+    constructor(seed=321,options={}){
+      this.rng=rand(seed);this.seed=seed;this.time=0;this.resolve=0;this.turn=0;this.action="COMBO";
+      this.selected=[];this.target=null;this.pairPlans=Object.create(null);this.editing=null;this.die=null;this.ended=false;this.winner=null;this.log=[];
+      this.W=W;this.H=H;
+      this.scores={player:0,enemy:0};this.matchReason=null;this.pairLink=null;
+      this.stats={player:{hits:0,damage:0,guards:0,assists:0,combos:0,downs:0},enemy:{hits:0,damage:0,guards:0,assists:0,combos:0,downs:0}};
+      this.zones=[{id:"relay-west",x:W*.30,y:H*.46,r:100,holder:null,progress:0},
+        {id:"relay-east",x:W*.70,y:H*.54,r:100,holder:null,progress:0}];
+      this.units=Object.entries(CREWS).flatMap(([team,keys])=>keys.map((k,i)=>createUnit(team,k,i)));
+      this.impact=Object.fromEntries(this.units.map(u=>[u.id,{hits:0,damage:0,guards:0,assists:0,downs:0,signatures:0}]));
+      this.career=careerRecord(options?.career);this.lastCommittedRival=null;
+      this.finalized=false;
+      this.receipt("MATCH_START",{source_sha256:source.source_sha256,formation:"3 floor + 2 yard + 1 flex",simultaneous:true,unique_cast:cast?.schema||"BASELINE"});
+    }
+    receipt(type,data={}){
+      const v={time:Math.round(this.time*100)/100,type,...data};this.log.push(v);
+      if(this.log.length>120)this.log.shift();
+      if(type==="SIGNATURE"&&this.impact){
+        const unit=this.units.find(u=>u.team===data.side&&u.name===data.fighter);
+        if(unit)this.impact[unit.id].signatures++;
+      }
+      return v;
+    }
+    pilotRank(key){
+      const xp=this.career.pilots[key]?.xp||0;
+      return xp>=1200?"ACE":xp>=500?"VETERAN":xp>=180?"TACTICIAN":xp>=60?"SCOUT":"ROOKIE";
+    }
+    closeMatchCareer(){
+      if(this.finalized)return false;
+      this.finalized=true;
+      this.career.matches++;
+      if(this.winner==="player")this.career.wins++;
+      const gains=[];
+      for(const u of this.units.filter(u=>u.team==="player")){
+        const perf=this.impact[u.id];
+        // All six progress; contribution is recognized, but rank NEVER buffs combat.
+        const gain=Math.min(85,4+(this.winner==="player"?8:3)+
+          Math.min(28,perf.hits*4)+Math.min(18,perf.assists*7)+
+          Math.min(16,perf.guards*3)+Math.min(18,perf.signatures*6)+
+          Math.min(12,Math.floor(perf.damage/100)));
+        const pilot=this.career.pilots[u.key];
+        pilot.matches++;pilot.xp=Math.min(10000000,pilot.xp+gain);
+        gains.push({name:u.name,key:u.key,xp:gain,total:pilot.xp,rank:this.pilotRank(u.key)});
+      }
+      this.receipt("CREW_EXPERIENCE",{gains,winner:this.winner,competitiveStatBoost:false});
+      return true;
+    }
+    team(t){return this.units.filter(u=>u.team===t&&u.alive)}
+    floor(t){return this.team(t).filter(u=>u.role==="floor")}
+    yard(t){return this.team(t).filter(u=>u.role==="yard")}
+    flex(t){return this.team(t).find(u=>u.role==="flex")||null}
+    find(id){return this.units.find(u=>u.id===id)}
+    clearPairPlan(){
+      if(!this.canArrange())return false;
+      this.selected=[];this.editing=null;this.target=null;this.die=null;this.pairPlans=Object.create(null);
+      this.units.forEach(u=>u.selected=false);return true;
+    }
+    canArrange(){return !this.ended&&this.turn===0&&this.time===0&&this.resolve===0}
+    swapFormation(firstId,secondId){
+      if(!this.canArrange()||firstId===secondId)return false;
+      const a=this.find(firstId),b=this.find(secondId);
+      if(!a||!b||!a.alive||!b.alive||a.team!=="player"||b.team!=="player")return false;
+      if(a.role===b.role)return false;
+      const oldRoles={a:a.role,b:b.role};
+      const oldCoords={a:{x:a.x,y:a.y},b:{x:b.x,y:b.y}};
+      a.role=oldRoles.b;b.role=oldRoles.a;
+      a.x=oldCoords.b.x;a.y=oldCoords.b.y;b.x=oldCoords.a.x;b.y=oldCoords.a.y;
+      for(const u of [a,b]){u.vx=0;u.vy=0;u.order=null;u.selected=false}
+      this.clearPairPlan();
+      const line=this.team("player");
+      if(this.floor("player").length!==3||this.yard("player").length!==2||!this.flex("player")){
+        a.role=oldRoles.a;b.role=oldRoles.b;
+        a.x=oldCoords.a.x;a.y=oldCoords.a.y;b.x=oldCoords.b.x;b.y=oldCoords.b.y;
+        throw Error("CREWBOUND formation invariant violated");
+      }
+      this.receipt("STARTING_LINEUP_SWAP",{a:a.name,b:b.name,roles:{[a.name]:a.role,[b.name]:b.role},
+        originalCount:line.length});
+      return true;
+    }
+    formationRoster(){return this.team("player").map(u=>({id:u.id,name:u.name,role:u.role,key:u.key}))}
+
+    nearest(u){return this.floor(u.team==="player"?"enemy":"player").sort((a,b)=>dist(a,u)-dist(b,u))[0]||null}
+    choose(id){
+      if(this.ended||this.resolve>0)return false;
+      const u=this.find(id);if(!u||u.team!=="player"||!u.alive)return false;
+      const at=this.selected.indexOf(id);
+      if(at>=0){this.selected.splice(at,1);delete this.pairPlans[id];if(this.editing===id)this.editing=null}
+      else{
+        if(this.selected.length===2){const evicted=this.selected.shift();delete this.pairPlans[evicted];if(this.editing===evicted)this.editing=null}
+        this.selected.push(id);
+      }
+      this.units.forEach(v=>v.selected=this.selected.includes(v.id));return true;
+    }
+    setTarget(x,y){
+      if(!Number.isFinite(x)||!Number.isFinite(y))return false;
+      this.target={x:clamp(x,30,W-30),y:clamp(y,30,H-30)};
+      for(const plan of Object.values(this.pairPlans))delete plan.target;
+      return true;
+    }
+    setAction(a){
+      if(!["COMBO","ATTACK","GUARD","MOVE","DEPLOY"].includes(a))return false;
+      this.action=a;for(const plan of Object.values(this.pairPlans))delete plan.action;return true;
+    }
+    setEditing(id){
+      if(id!==null&&!this.selected.includes(id))return false;
+      this.editing=id;return true;
+    }
+    setPairAction(id,a){
+      if(!this.selected.includes(id)||!["COMBO","ATTACK","GUARD","MOVE","DEPLOY"].includes(a))return false;
+      (this.pairPlans[id]??={}).action=a;return true;
+    }
+    setPairTarget(id,x,y){
+      if(!this.selected.includes(id)||!Number.isFinite(x)||!Number.isFinite(y))return false;
+      (this.pairPlans[id]??={}).target={x:clamp(x,30,W-30),y:clamp(y,30,H-30)};return true;
+    }
+    canCommit(){
+      if(this.ended||this.resolve>0||this.selected.length!==2)return false;
+      const fighters=this.selected.map(id=>this.find(id));
+      return fighters.every(u=>{
+        if(!u?.alive||u.team!=="player")return false;
+        const plan=this.pairPlans[u.id]||{},mode=plan.action||this.action;
+        if(u.role!=="floor"&&mode!=="DEPLOY"&&u.supportCooldown>0)return false;
+        return !!(plan.target||this.target);
+      });
+    }
+    // CP07 is a READ-ONLY tactical preview, not a simulated guarantee of a hit.
+    // It shares the same action/target normalization used by commit() below.
+    pairPreview(){
+      const orders=this.selected.map((id,i)=>{
+        const u=this.find(id),plan=this.pairPlans[id]||{},action=plan.action||this.action;
+        const source=plan.target||this.target;
+        const target=source?{x:clamp(source.x+(plan.target?0:i?35:-35),30,W-30),y:source.y}:null;
+        const reason=!u?.alive?"Unavailable fighter":u.team!=="player"?"Not your crew":
+          u.role!=="floor"&&action!=="DEPLOY"&&u.supportCooldown>0?"Support cooling down":
+          !target?"Choose a target":null;
+        return {slot:i===0?"A":"B",id:u.id,name:u.name,role:u.role,action,target,
+          independent:!!(plan.action||plan.target),ready:!reason,reason};
+      });
+      const ready=this.canCommit();
+      const duo=orders.length===2?orders.map(x=>this.find(x.id)):[];
+      const nearPair=duo.length===2&&duo.every(u=>u.alive&&u.role==="floor")&&dist(duo[0],duo[1])<145;
+      const hint=this.ended?"Match ended — rematch to play":
+        this.resolve>0?"Both crews are executing their orders":
+        orders.length<2?"Select two crew members to plan the next go":
+        orders.find(x=>x.reason)?.reason||"Both plans ready — commit to reveal the rival response";
+      return {ready,orders,nearPair,hint};
+    }
+    lastRivalPair(){
+      if(this.lastCommittedRival)return clone(this.lastCommittedRival);
+      const last=this.log.slice().reverse().find(r=>r.type==="SIMULTANEOUS_PAIR_COMMIT");
+      return last?{turn:last.turn,rival:last.rival.map(x=>({
+        name:x.name,action:x.action,target:{...x.target}}))}:null;
+    }
+    roll(){if(this.resolve>0||this.ended)return 0;this.die=1+Math.floor(this.rng()*6);this.receipt("OPTIONAL_DIE",{value:this.die});return this.die}
+    deploy(u){
+      if(!u?.alive||u.role==="floor")return false;
+      if(this.floor(u.team).length>=MAX_FLOOR){
+        const outgoing=this.floor(u.team).filter(p=>!this.selected.includes(p.id)).sort((a,b)=>a.index-b.index)[0];
+        if(!outgoing)return false;
+        outgoing.role="yard";outgoing.order=null;outgoing.vx=outgoing.vy=0;
+      }
+      u.role="floor";u.x=clamp(u.x,70,W-70);u.y=u.team==="player"?H-112:112;
+      u.vx=u.vy=0;this.receipt("FLEX_OR_YARD_DEPLOY",{team:u.team,body:u.name,floor:this.floor(u.team).length});return true;
+    }
+    hurt(target,amount,by){
+      if(!target?.alive||target.role!=="floor")return 0;
+      if(R[target.key].archetype==="GROVE")amount*=.68;
+      amount*=combat.guardMultiplier(this,target,by);
+      if(target.guard>0)amount*=.5;
+      if(R[target.key].archetype==="SKIP"&&this.rng()<.18)amount*=.25;
+      if(target.marked>0){amount*=1.5;target.marked=0}
+      const blocked=Math.min(target.shield,amount);target.shield-=blocked;
+      const taken=Math.max(0,amount-blocked);target.hp=Math.max(0,target.hp-taken);target.hitFlash=.26;
+      if(by?.team&&this.stats[by.team])this.stats[by.team].damage+=taken;
+      if(by?.id&&this.impact[by.id])this.impact[by.id].damage+=taken;
+      if(!target.hp){target.alive=false;target.role="down";target.order=null;
+        if(by?.team&&this.stats[by.team])this.stats[by.team].downs++;
+        if(by?.id&&this.impact[by.id])this.impact[by.id].downs++;
+        this.receipt("FIGHTER_DOWN",{body:target.name,side:target.team,by:by?.name})}
+      return taken;
+    }
+    intervene(u,mode,target){
+      if(u.supportCooldown>0)return false;
+      const allies=this.floor(u.team),ally=allies.sort((a,b)=>dist(a,target)-dist(b,target))[0];
+      if(!ally)return false;
+      if(mode==="GUARD"){
+        ally.shield=Math.min(350,ally.shield+85+R[u.key].mass*30);ally.guard=Math.max(ally.guard,3);
+      }else if(mode==="MOVE"){
+        ally.vx+=(target.x-ally.x)*.2;ally.vy+=(target.y-ally.y)*.2;ally.shield=Math.min(350,ally.shield+30);
+      }else{
+        const enemy=this.nearest(ally);
+        if(enemy)this.hurt(enemy,25+R[u.key].power*22,u);
+      }
+      u.supportCooldown=5;
+      this.stats[u.team].assists++;
+      this.impact[u.id].assists++;
+      this.receipt("YARD_INTERVENTION",{body:u.name,side:u.team,mode});
+      return true;
+    }
+    order(u,mode,target,issuedBy){
+      if(u.role!=="floor"){
+        if(mode==="DEPLOY")this.deploy(u);
+        else return this.intervene(u,mode,target);
+      }
+      if(u.role!=="floor"||!u.alive)return false;
+      u.order={mode,target:{...target},remaining:WINDOW,issuedBy,bonus:issuedBy==="player"&&this.die?clamp(.88+this.die*.04,.92,1.12):1};
+      if(mode==="GUARD"){u.guard=WINDOW;u.shield=Math.min(350,u.shield+55);this.stats[u.team].guards++;this.impact[u.id].guards++}
+      this.receipt("ORDER",{body:u.name,side:u.team,mode,target:u.order.target});return true;
+    }
+    commit(){
+      if(!this.canCommit())return false;
+      const units=this.selected.map(id=>this.find(id));
+      const before=this.log.length;
+      // All committed targets originate in the same normalizer as the HUD preview.
+      const planned=this.pairPreview().orders.map(x=>({
+        u:this.find(x.id),action:x.action,target:{...x.target}
+      }));
+      // Atomic orders: a rejected second order must never leave the first
+      // fighter's shield, damage, deployment, XP impact, RNG or log changed.
+      const prior={
+        units:this.units.map(clone),stats:clone(this.stats),impact:clone(this.impact),
+        rngState:this.rng.state(),log:clone(this.log)
+      };
+      const issued=planned.map(p=>this.order(p.u,p.action,p.target,"player"));
+      if(!issued.every(Boolean)){
+        this.units.forEach((u,i)=>Object.assign(u,prior.units[i]));
+        this.stats=prior.stats;this.impact=prior.impact;
+        this.rng.restore(prior.rngState);this.log=prior.log;
+        return false;
+      }
+      if(this.turn===0)this.receipt("LINEUP_LOCKED",{
+        floor:this.floor("player").map(u=>u.name),
+        yard:this.yard("player").map(u=>u.name),
+        flex:this.flex("player")?.name||null
+      });
+      this.turn++;
+      this.pairLink={ids:units.map(u=>u.id),until:this.time+WINDOW,bonusCount:0};
+      const enemyUnits=this.floor("enemy").concat(this.yard("enemy").filter(u=>u.supportCooldown<=0));
+      const chosen=[],enemyPlans=[];
+      for(let i=0;i<2&&enemyUnits.length>chosen.length;i++){
+        const pool=enemyUnits.filter(u=>!chosen.includes(u));
+        pool.sort((a,b)=>{const da=this.nearest(a),db=this.nearest(b);return (da?dist(a,da):999)-(db?dist(b,db):999)});
+        const actor=pool[Math.floor(this.rng()*Math.min(2,pool.length))]||pool[0];
+        chosen.push(actor);
+        const target=this.nearest(actor);
+        if(target){
+          const x=clamp(target.x+target.vx*.55+(this.rng()-.5)*70,30,W-30);
+          const y=clamp(target.y+target.vy*.55+(this.rng()-.5)*70,30,H-30);
+          const wounded=actor.hp/actor.maxHp<.28,nearThreat=target&&dist(actor,target)<130;
+          const choice=this.rng();
+          const action=wounded&&nearThreat?"GUARD":actor.role==="yard"&&choice<.35?"GUARD":choice<.2?"MOVE":choice<.43?"GUARD":choice<.74?"ATTACK":"COMBO";
+          this.order(actor,action,{x,y},"enemy");
+          enemyPlans.push({name:actor.name,action,target:{x,y}});
+        }
+      }
+      this.lastCommittedRival={turn:this.turn,rival:clone(enemyPlans)};
+      this.receipt("SIMULTANEOUS_PAIR_COMMIT",{turn:this.turn,player:units.map(u=>u.name),
+        playerPlans:planned.map(p=>({name:p.u.name,action:p.action,target:p.target})),
+        rival:enemyPlans,die:this.die});
+      this.resolve=WINDOW;this.selected=[];this.target=null;this.pairPlans=Object.create(null);this.editing=null;this.die=null;
+      this.units.forEach(u=>u.selected=false);return true;
+    }
+    strike(a,b){
+      const profile=combat.strikeModifier(a,b);
+      if(a.cooldown>0||!b?.alive||a.role!=="floor"||dist(a,b)>profile.reach)return;
+      let power=42*R[a.key].power*profile.damage;
+      if(this.pairLink&&this.time<this.pairLink.until&&this.pairLink.ids.includes(a.id)){
+        const partner=this.find(this.pairLink.ids.find(id=>id!==a.id));
+        if(partner?.alive&&partner.role==="floor"&&dist(a,partner)<145){
+          power*=1.13;this.stats[a.team].combos++;this.pairLink.bonusCount++;
+        }
+      }
+      if(a.order?.mode==="COMBO")power*=1.25;power*=a.order?.bonus||1;
+      if(R[a.key].archetype==="ZIPP"&&a.surge){power*=1+.2*a.surge;a.surge=0}
+      if(R[a.key].archetype==="BRAX"){power*=1.3;b.vx+=(b.x-a.x)*2.2;b.vy+=(b.y-a.y)*2.2}
+      const damage=this.hurt(b,power,a);
+      if(R[a.key].archetype==="VEXA")b.marked=3;
+      if(R[a.key].archetype==="KNOT")b.bound=1.8;
+      if(R[a.key].archetype==="ORBI"&&a.pulseCooldown<=0){
+        this.floor(b.team).filter(x=>x!==b&&dist(x,b)<95).forEach(x=>this.hurt(x,power*.4,a));
+        a.pulseCooldown=5;
+      }
+      if(R[a.key].archetype==="MIRA")this.floor(a.team).filter(x=>x!==a&&dist(x,a)<88).forEach(x=>x.shield=Math.min(350,x.shield+40));
+      if(R[a.key].archetype==="GROVE")a.shield=Math.min(350,a.shield+20);
+      a.cooldown=profile.cooldown;
+      this.stats[a.team].hits++;
+      this.impact[a.id].hits++;
+      combat.castSpecial(this,a,b,damage);
+      this.receipt("CONTACT",{from:a.name,to:b.name,damage:Math.round(damage)});
+    }
+    reinforce(t){
+      if(this.floor(t).length>=3)return;
+      for(const candidate of this.yard(t).concat(this.flex(t)?[this.flex(t)]:[])){
+        if(this.floor(t).length>=3)break;
+        this.deploy(candidate);
+      }
+    }
+    step(seconds){
+      if(!Number.isFinite(seconds)||seconds<=0||this.ended)return;
+      const dt=clamp(seconds,0,.05);this.time+=dt;this.resolve=Math.max(0,this.resolve-dt);
+      for(const u of this.units){
+        if(!u.alive)continue;
+        for(const p of ["cooldown","supportCooldown","pulseCooldown","kitCooldown","specialFlash","hitFlash","guard","marked","bound"])u[p]=Math.max(0,u[p]-dt);
+        if(u.role!=="floor")continue;
+        if(u.order){u.order.remaining-=dt;if(u.order.remaining<=0)u.order=null}
+        const f=R[u.key],foe=this.nearest(u);
+        let target=u.order?.target;
+        if(!target&&foe){
+          const angle=Math.atan2(u.y-foe.y,u.x-foe.x)+Math.sin(this.time*.8+u.index*2.2)*.55;
+          const gap=u.hp/u.maxHp<.3?190:85;
+          target={x:foe.x+Math.cos(angle)*gap,y:foe.y+Math.sin(angle)*gap};
+        }
+        if(!target)continue;
+        const dx=target.x-u.x,dy=target.y-u.y,len=Math.hypot(dx,dy)||1;
+        let desired=f.cp01_proposed_speed*(u.bound>0?.66:1)*(u.order?.mode==="ATTACK"?1.14:1)*(u.order?.mode==="GUARD"?.52:1);
+        // Twelve original CP02 tactical identities; different movement paths, not only different colours.
+        if(f.maneuver==="weave")desired*=1+.10*Math.sin(this.time*4+u.index);
+        if(f.maneuver==="zigzag")desired*=1+.15*Math.sin(this.time*5);
+        if(f.maneuver==="charge"&&u.order?.mode==="ATTACK")desired*=1.23;
+        if(f.maneuver==="anchor"&&u.guard>0)desired*=.63;
+        if(f.maneuver==="pulse")desired*=1+.12*Math.sin(this.time*6.2);
+        if(f.maneuver==="drift")desired*=1.05;
+        if(f.maneuver==="lure"&&foe&&dist(u,foe)<120)desired*=.75;
+        if(f.maneuver==="orbit"&&foe&&dist(u,foe)<170)desired*=1.12;
+        if(f.maneuver==="sidestep"&&foe)desired*=1+.12*Math.sin(this.time*3);
+        if(f.maneuver==="fence"&&foe&&dist(u,foe)<100)desired*=.87;
+        const pace=desired*clamp(len/55,0,1);
+        const sway=f.maneuver==="bank"?.23*Math.sin(this.time*2.5+u.index):
+          f.maneuver==="weave"?.24*Math.sin(this.time*3+u.index):
+          f.maneuver==="zigzag"?.3*Math.sin(this.time*6+u.index):
+          f.maneuver==="drift"?.15*Math.cos(this.time*2+u.index):0;
+        const speed=pace,smooth=clamp(dt*(2.6+2.4/(.6+f.mass))*(f.maneuver==="drift"?.72:1),0,1);
+        const twistX=(-dy/len)*sway*speed,twistY=(dx/len)*sway*speed;
+        u.vx+=(dx/len*speed+twistX-u.vx)*smooth;u.vy+=(dy/len*speed+twistY-u.vy)*smooth;
+        u.x+=u.vx*dt;u.y+=u.vy*dt;
+        if(u.x<24||u.x>W-24||u.y<24||u.y>H-24){
+          if(R[u.key].archetype==="ZIPP")u.surge=Math.min(4,u.surge+1);
+          if(R[u.key].archetype==="SKIP"){u.vx*=-.8;u.vy*=-.8}
+        }
+        u.x=clamp(u.x,24,W-24);u.y=clamp(u.y,24,H-24);
+      }
+      // Crucially, both teams attack and evade during the same advancing clock.
+      for(const team of ["player","enemy"])for(const u of this.floor(team))this.strike(u,this.nearest(u));
+      this.reinforce("player");this.reinforce("enemy");
+      // Two contested living-field relay zones reward prediction, not idle camping.
+      for(const z of this.zones){
+        const count=side=>this.floor(side).filter(u=>dist(u,z)<z.r).length;
+        const player=count("player"),enemy=count("enemy"),controlling=player>enemy?"player":enemy>player?"enemy":null;
+        if(!controlling){z.progress=Math.max(0,z.progress-dt*.1);continue}
+        z.progress=Math.min(1,z.progress+dt*.18);
+        if(z.progress>=.55&&z.holder!==controlling){
+          z.holder=controlling;this.receipt("RELAY_CAPTURE",{zone:z.id,side:controlling});
+        }
+        if(z.progress>=.55)this.scores[controlling]+=dt*.34;
+      }
+      if(this.time>=180||!this.team("player").length||!this.team("enemy").length){
+        const hp=t=>this.team(t).reduce((sum,u)=>sum+u.hp,0);
+        const defeated=side=>this.team(side).length===0;
+        const rating=side=>hp(side)/this.units.filter(u=>u.team===side).reduce((n,u)=>n+u.maxHp,0)*100+this.scores[side];
+        this.matchReason=defeated("player")||defeated("enemy")?"CREW DOWN":"TIME / RELAY SCORE";
+        this.ended=true;
+        this.winner=defeated("enemy")?"player":defeated("player")?"enemy":
+          rating("player")>=rating("enemy")?"player":"enemy";
+        this.receipt("MATCH_END",{winner:this.winner,reason:this.matchReason,time:Math.round(this.time),
+          scores:{...this.scores},hits:{player:this.stats.player.hits,enemy:this.stats.enemy.hits}});
+        this.closeMatchCareer();
+      }
+    }
+    snapshot(){return {time:this.time,turn:this.turn,resolve:this.resolve,selected:[...this.selected],target:this.target,
+      action:this.action,canArrange:this.canArrange(),formation:this.formationRoster(),career:clone(this.career),impact:clone(this.impact),
+      pairPreview:this.pairPreview(),lastRivalPair:this.lastRivalPair(),
+      ended:this.ended,winner:this.winner,matchReason:this.matchReason,
+       scores:{...this.scores},stats:JSON.parse(JSON.stringify(this.stats)),
+       zones:this.zones.map(z=>({...z})),units:this.units.map(u=>({...u,order:u.order?{...u.order}:null})),log:this.log.slice(-8)}}
+  }
+  return {Game,ROSTER:R,CREWS,W,H,WINDOW,ORIGINAL_BODY_SHA256:source.source_sha256,CAST_SCHEMA:cast?.schema||null,ORIGINAL_ARCHETYPES:source.fighters,KITS:combat.KITS};
+});
+
+</script><script>
+/* CP08 source: continuity.js Git blob 906c0cbd2c48e9eeadf08d6700cc39d1881c8129 */
+/* JM CREWBOUND CP08 · local, optional, portable match continuity.
+ * Never networked, never merges identities or reauthors original games.
+ * A capsule resumes exactly the recorded deterministic random stream.
+ */
+(function(root,factory){
+  const core=root.JM_CREWBOUND_321_SIM||(typeof require==="function"?require("./sim.js"):null);
+  const api=factory(core);
+  if(typeof module==="object"&&module.exports)module.exports=api;
+  root.JM_CREWBOUND_321_CONTINUITY=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(core){
+  "use strict";
+  const {Game,W,H,WINDOW,ORIGINAL_BODY_SHA256,CAST_SCHEMA}=core;
+  const SCHEMA="JM.CREWBOUND.CP08.MATCH_CAPSULE/1", MAX_LENGTH=220000;
+  const MODES=["COMBO","ATTACK","GUARD","MOVE","DEPLOY"];
+  const NUMERIC=["x","y","vx","vy","hp","shield","marked","bound","guard",
+    "hitFlash","cooldown","supportCooldown","pulseCooldown","surge","kitCooldown","specialFlash"];
+  const STAT_KEYS=["hits","damage","guards","assists","combos","downs"];
+  const IMPACT_KEYS=["hits","damage","guards","assists","downs","signatures"];
+  const dup=x=>JSON.parse(JSON.stringify(x));
+  function insist(ok,reason){if(!ok)throw Error("CREWBOUND save rejected: "+reason)}
+  function finite(n,low,high){return typeof n==="number"&&Number.isFinite(n)&&n>=low&&n<=high}
+  function integer(n,low,high){return Number.isSafeInteger(n)&&n>=low&&n<=high}
+  function target(t){return t&&typeof t==="object"&&finite(t.x,24,W-24)&&finite(t.y,24,H-24)}
+  function statShape(s,keys,scope){
+    insist(s&&typeof s==="object",scope);
+    const next={};
+    for(const k of keys){
+      insist(finite(s[k],0,10000000),scope+" "+k);
+      next[k]=s[k];
+    }
+    return next;
+  }
+  function pack(g){
+    insist(g instanceof Game,"not the current CREWBOUND game");
+    const obj={
+      schema:SCHEMA,source_sha256:ORIGINAL_BODY_SHA256,cast_schema:CAST_SCHEMA,
+      seed:g.seed,rng:g.rng.state(),time:g.time,resolve:g.resolve,turn:g.turn,
+      action:g.action,selected:dup(g.selected),target:dup(g.target),pairPlans:dup(g.pairPlans),
+      editing:g.editing,die:g.die,ended:g.ended,winner:g.winner,matchReason:g.matchReason,
+      pairLink:dup(g.pairLink),lastCommittedRival:dup(g.lastCommittedRival),
+      finalized:g.finalized,career:dup(g.career),impact:dup(g.impact),
+      scores:dup(g.scores),stats:dup(g.stats),zones:dup(g.zones),
+      units:dup(g.units),log:dup(g.log)
+    };
+    const json=JSON.stringify(obj);
+    insist(json.length<=MAX_LENGTH,"checkpoint too large");
+    return json;
+  }
+  function unpack(raw){
+    insist(typeof raw==="string"&&raw.length>25&&raw.length<=MAX_LENGTH,"JSON size");
+    let data;try{data=JSON.parse(raw)}catch{throw Error("CREWBOUND save rejected: invalid JSON")}
+    insist(data&&typeof data==="object"&&!Array.isArray(data),"capsule root");
+    insist(data.schema===SCHEMA,"capsule version");
+    insist(data.source_sha256===ORIGINAL_BODY_SHA256,"original CREWBOUND ancestry");
+    insist(data.cast_schema===CAST_SCHEMA,"exclusive pilot cast");
+    insist(integer(data.seed,0,0xffffffff)&&integer(data.rng,0,0xffffffff),"deterministic seed");
+    insist(finite(data.time,0,180.05)&&finite(data.resolve,0,WINDOW+.001),"battle clock");
+    insist(integer(data.turn,0,5000)&&MODES.includes(data.action),"turn / action");
+    insist(typeof data.ended==="boolean"&&typeof data.finalized==="boolean","match finalisation");
+    insist([null,"player","enemy"].includes(data.winner),"winner");
+    insist(data.matchReason===null||["CREW DOWN","TIME / RELAY SCORE"].includes(data.matchReason),"end reason");
+    insist(!data.finalized||data.ended,"career finalised without match end");
+    insist((data.ended&&data.winner!==null)||(!data.ended&&data.winner===null),"winner state");
+    const game=new Game(data.seed,{career:data.career});
+    insist(data.career&&typeof data.career==="object","career");
+    insist(integer(data.career.matches,0,100000)&&integer(data.career.wins,0,data.career.matches),"career totals");
+    for(const key of Object.keys(game.career.pilots)){
+      const p=data.career.pilots?.[key];
+      insist(p&&integer(p.xp,0,10000000)&&integer(p.matches,0,data.career.matches),"pilot career "+key);
+    }
+    insist(Array.isArray(data.units)&&data.units.length===game.units.length,"twelve sovereign pilot bodies");
+    const aliveKeys=new Set();
+    const units=game.units.map((old,i)=>{
+      const incoming=data.units[i];
+      insist(incoming&&incoming.id===old.id&&incoming.team===old.team&&
+        incoming.key===old.key&&incoming.name===old.name&&
+        incoming.index===old.index&&incoming.maxHp===old.maxHp,
+        "body/ancestry identity at "+i);
+      insist(["floor","yard","flex","down"].includes(incoming.role),"pilot role "+i);
+      insist(typeof incoming.alive==="boolean","pilot alive flag "+i);
+      const fresh={...old,role:incoming.role,alive:incoming.alive};
+      for(const k of NUMERIC){
+        const limit=k==="vx"||k==="vy"?5000:k==="x"?W:k==="y"?H:
+          k==="hp"?old.maxHp:k==="shield"?400:10000;
+        const low=k==="vx"||k==="vy"?-5000:0;
+        insist(finite(incoming[k],low,limit),"pilot "+i+" "+k);
+        fresh[k]=incoming[k];
+      }
+      insist(finite(fresh.x,24,W-24)&&finite(fresh.y,24,H-24),"fighter arena bounds");
+      insist((fresh.alive&&fresh.hp>0&&fresh.role!=="down")||
+        (!fresh.alive&&fresh.hp===0&&fresh.role==="down"),"alive/knockdown consistency");
+      if(fresh.alive)aliveKeys.add(fresh.id);
+      insist(typeof incoming.selected==="boolean","fighter selection bit");
+      fresh.selected=incoming.selected;
+      if(incoming.order===null)fresh.order=null;
+      else{
+        const o=incoming.order;
+        insist(o&&MODES.includes(o.mode)&&target(o.target)&&finite(o.remaining,0,WINDOW+.001)&&
+          ["player","enemy"].includes(o.issuedBy)&&finite(o.bonus,.5,2),"fighter order");
+        fresh.order={mode:o.mode,target:{x:o.target.x,y:o.target.y},
+          remaining:o.remaining,issuedBy:o.issuedBy,bonus:o.bonus};
+      }
+      return fresh;
+    });
+    for(const side of ["player","enemy"]){
+      const active=units.filter(u=>u.alive&&u.team===side);
+      insist(active.filter(u=>u.role==="floor").length<=4,"floor capacity "+side);
+      insist(active.filter(u=>u.role==="flex").length<=1,"flex capacity "+side);
+    }
+    insist(Array.isArray(data.selected)&&data.selected.length<=2&&
+      new Set(data.selected).size===data.selected.length,"selected pair");
+    insist(data.selected.every(id=>units.some(u=>u.id===id&&u.team==="player"&&u.alive)),"selected ownership");
+    insist(units.every(u=>u.selected===data.selected.includes(u.id)),"selected bits parity");
+    insist(data.target===null||target(data.target),"shared target");
+    insist(data.editing===null||data.selected.includes(data.editing),"current fighter editor");
+    insist(data.die===null||integer(data.die,1,6),"optional dice");
+    insist(data.pairPlans&&typeof data.pairPlans==="object"&&!Array.isArray(data.pairPlans),"individual plans");
+    const pairPlans=Object.create(null);
+    for(const [id,plan] of Object.entries(data.pairPlans)){
+      insist(data.selected.includes(id)&&plan&&typeof plan==="object","plan fighter");
+      insist(plan.action===undefined||MODES.includes(plan.action),"plan action");
+      insist(plan.target===undefined||target(plan.target),"plan destination");
+      pairPlans[id]={...(plan.action?{action:plan.action}:{}),...(plan.target?{target:{x:plan.target.x,y:plan.target.y}}:{})};
+    }
+    insist(data.scores&&finite(data.scores.player,0,1000)&&finite(data.scores.enemy,0,1000),"relay scores");
+    const stats={},impact={};
+    for(const side of ["player","enemy"])stats[side]=statShape(data.stats?.[side],STAT_KEYS,side+" stats");
+    for(const u of units)impact[u.id]=statShape(data.impact?.[u.id],IMPACT_KEYS,"fighter impact "+u.name);
+    insist(Array.isArray(data.zones)&&data.zones.length===game.zones.length,"relay zone count");
+    const zones=game.zones.map((z,i)=>{
+      const p=data.zones[i];
+      insist(p&&p.id===z.id&&p.x===z.x&&p.y===z.y&&p.r===z.r,"relay coordinates");
+      insist([null,"player","enemy"].includes(p.holder)&&finite(p.progress,0,1),"relay state");
+      return {...z,holder:p.holder,progress:p.progress};
+    });
+    insist(data.pairLink===null||(data.pairLink&&Array.isArray(data.pairLink.ids)&&
+      data.pairLink.ids.length===2&&data.pairLink.ids.every(id=>units.some(u=>u.id===id&&u.team==="player"))&&
+      finite(data.pairLink.until,0,185)&&integer(data.pairLink.bonusCount,0,10000)),"pair synergy");
+    insist(data.lastCommittedRival===null||(data.lastCommittedRival&&
+      integer(data.lastCommittedRival.turn,1,5000)&&
+      Array.isArray(data.lastCommittedRival.rival)&&data.lastCommittedRival.rival.length<=2&&
+      data.lastCommittedRival.rival.every(v=>v&&typeof v.name==="string"&&
+        v.name.length<=50&&MODES.includes(v.action)&&target(v.target))),"rival response");
+    insist(Array.isArray(data.log)&&data.log.length<=120,"bounded match receipts");
+    for(const v of data.log){
+      insist(v&&typeof v.type==="string"&&v.type.length<70&&finite(v.time,0,180.05),"match receipt shape");
+      if(v.type==="SIMULTANEOUS_PAIR_COMMIT")
+        insist(Array.isArray(v.rival)&&v.rival.every(r=>r&&typeof r.name==="string"&&
+          MODES.includes(r.action)&&target(r.target)),"paired rival receipt");
+    }
+    game.units=units;game.time=data.time;game.resolve=data.resolve;game.turn=data.turn;
+    game.action=data.action;game.selected=[...data.selected];
+    game.target=data.target?{x:data.target.x,y:data.target.y}:null;
+    game.pairPlans=pairPlans;game.editing=data.editing;game.die=data.die;
+    game.ended=data.ended;game.winner=data.winner;game.matchReason=data.matchReason;
+    game.pairLink=dup(data.pairLink);game.lastCommittedRival=dup(data.lastCommittedRival);
+    game.finalized=data.finalized;game.impact=impact;game.stats=stats;
+    game.scores={player:data.scores.player,enemy:data.scores.enemy};
+    game.zones=zones;game.log=dup(data.log);game.rng.restore(data.rng);
+    return game;
+  }
+  return {SCHEMA,MAX_LENGTH,pack,unpack};
+});
+
+</script>
+<script>
+"use strict";
+const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
+const $=id=>document.getElementById(id);
+let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0,arranging=false,formationPick=null,arrangeMessage="",coachOn=false;
+const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT,
+ Continuity=window.JM_CREWBOUND_321_CONTINUITY,LOCAL_KEY="JM.CREWBOUND.CP08.MATCH_LOCAL/1";
+const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
+function screenPos(ev){
+ const r=canvas.getBoundingClientRect();
+ return{x:(ev.clientX-r.left)/r.width*canvas.width,y:(ev.clientY-r.top)/r.height*canvas.height};
+}
+canvas.addEventListener("pointerdown",ev=>{
+ if(arranging||game.ended||game.resolve>0){startPointer=null;return}
+ startPointer=screenPos(ev);try{canvas.setPointerCapture(ev.pointerId)}catch{}
+});
+canvas.addEventListener("pointerup",ev=>{
+ if(!startPointer||game.ended){startPointer=null;return}
+ if(arranging||game.resolve>0){startPointer=null;return}
+ const p=screenPos(ev),delta=Math.hypot(p.x-startPointer.x,p.y-startPointer.y);
+ if(delta<16){
+  const u=game.floor("player").find(u=>Math.hypot(u.x-p.x,u.y-p.y)<24);
+  if(u){game.choose(u.id);updateUI();startPointer=null;return}
+  if(game.editing)game.setPairTarget(game.editing,p.x,p.y);else game.setTarget(p.x,p.y);
+ } else {
+   const x=startPointer.x+(p.x-startPointer.x)*1.8,y=startPointer.y+(p.y-startPointer.y)*1.8;
+   if(game.editing)game.setPairTarget(game.editing,x,y);else game.setTarget(x,y);
+  }
+ startPointer=null;updateUI();
+});
+function makeRoster(){
+ const root=$("roster"),living=game.team("player");
+ for(const stale of [...root.children])if(!living.some(u=>u.id===stale.dataset.unitId))stale.remove();
+ for(const u of living){
+  const f=ROSTER[u.key];
+  let button=[...root.children].find(x=>x.dataset.unitId===u.id);
+  if(!button){
+   button=document.createElement("button");button.dataset.unitId=u.id;
+   const face=document.createElement("canvas");face.className="portrait";face.width=94;face.height=90;
+   face.setAttribute("aria-hidden","true");Art.draw(face.getContext("2d"),f,47,51,62,0,u.team);
+   const name=document.createElement("b");name.textContent=u.name;
+   const role=document.createElement("small");role.textContent=u.role.toUpperCase()+" · "+f.role;
+   const hp=document.createElement("div");hp.className="hp";hp.append(document.createElement("i"));
+   button.append(face,name,role,hp);button.addEventListener("click",()=>{
+      if(arranging){
+        if(!formationPick){
+          formationPick=u.id;arrangeMessage="Choose a second fighter with a different role to swap with "+u.name+".";
+        }else if(formationPick===u.id){formationPick=null;arrangeMessage="Selection cleared · tap the first fighter again."}
+        else{
+          const original=game.find(formationPick);
+          const changed=game.swapFormation(formationPick,u.id);
+          arrangeMessage=changed?original.name+" and "+u.name+" exchanged starting positions.":
+            "These fighters share a role or cannot swap. Choose a floor, yard or flex fighter with a different role.";
+          formationPick=null;
+        }
+      }else game.choose(u.id);
+      updateUI();
+    });
+   root.append(button);
+  }
+  button.className="unit"+(u.role==="floor"?" active":"")+(game.selected.includes(u.id)?" selected":"")+(arranging&&formationPick===u.id?" formationPick":"")+(u.alive?"":" undone");
+  button.style.setProperty("--glow",f.palette[0]);
+  button.style.setProperty("--hp",(100*u.hp/u.maxHp).toFixed(1)+"%");
+  button.querySelector("small").textContent=u.role.toUpperCase()+" · "+Combat.KITS[u.key].name;
+  button.setAttribute("aria-pressed",String(arranging?formationPick===u.id:game.selected.includes(u.id)));
+  button.setAttribute("aria-label",u.name+", "+u.role+", "+Math.round(u.hp)+" health, "+f.role+", "+f.signature_name+(arranging?", tap to exchange formation role":""));
+ }
+}
+function updateUI(){
+ const my=game.team("player"),rivals=game.team("enemy");
+  $("myRelay").textContent=game.scores.player.toFixed(1);
+ const ranks=game.team("player").map(u=>u.name+" "+game.pilotRank(u.key)).slice(0,3).join(" · ");
+ $("careerLine").textContent="CREW EXPERIENCE · "+game.career.matches+" matches · "+game.career.wins+
+   " wins · "+ranks+" · ranks are earned, not stat boosts";
+  $("theirRelay").textContent=game.scores.enemy.toFixed(1);
+  $("matchOverlay").hidden=!game.ended;
+  if(game.ended){
+    $("resultTitle").textContent=game.winner==="player"?"CREW VICTORY":"RIVALS WIN";
+    const a=game.stats.player,b=game.stats.enemy;
+    const earned=game.log.slice().reverse().find(x=>x.type==="CREW_EXPERIENCE");
+   const xp=earned?.gains?.map(x=>x.name+" +"+x.xp+"XP").join(", ")||"";
+   $("resultSummary").textContent=game.matchReason+" · YOUR "+a.hits+" contacts, "+a.assists+
+     " yard assists, "+a.combos+" linked hits · RIVAL "+b.hits+" contacts · RELAY "+
+     game.scores.player.toFixed(1)+" : "+game.scores.enemy.toFixed(1)+(xp?" · CREW PROGRESS "+xp:"");
+  }
+ $("myhp").textContent=Math.round(my.reduce((s,u)=>s+u.hp,0))+" HP";
+ $("theirhp").textContent=Math.round(rivals.reduce((s,u)=>s+u.hp,0))+" HP";
+ $("turn").textContent="GO "+game.turn;
+ $("phase").textContent=game.ended?(game.winner==="player"?"VICTORY":"RIVAL WON"):!started?(arranging?"ARRANGE CREW":"READY · PICK 2"):game.resolve>0?"LIVE "+game.resolve.toFixed(1)+"s":"CHOOSE × 2";
+ $("pair").textContent=game.selected.length+" / 2 READY";
+ const preview=game.pairPreview();
+ for(let i=0;i<2;i++){
+   const planned=preview.orders[i],el=$(i===0?"planA":"planB");
+   if(!planned){el.textContent=(i===0?"A":"B")+" · choose a fighter";continue}
+   const where=planned.target?"("+Math.round(planned.target.x)+", "+Math.round(planned.target.y)+")":"tap arena";
+   el.textContent=planned.slot+" · "+planned.name+" · "+planned.action+" · "+where+
+     (planned.reason?" · "+planned.reason:" · READY");
+ }
+ $("previewHint").textContent=preview.ready&&preview.nearPair?"PAIR IN RANGE · close fighters earn a linked bonus when striking":
+   preview.hint;
+ const rival=game.lastRivalPair();
+ $("rivalReadback").textContent=rival?
+   "RIVAL GO "+rival.turn+" · "+rival.rival.map(x=>x.name+" "+x.action+
+     " ("+Math.round(x.target.x)+", "+Math.round(x.target.y)+")").join(" / "):
+   "RIVAL RESPONSE · revealed only after you commit your two orders.";
+ $("coachToggle").setAttribute("aria-pressed",String(coachOn));
+ $("coachToggle").textContent=coachOn?"✓ TRAINING ON · TAP TO EXIT":"🎯 PRACTISE FIRST GO";
+ if(coachOn){
+   const message=game.ended?"TRAINING COMPLETE · the match ended. Review the result or rematch.":
+     game.turn>0&&game.resolve===0?"FIRST GO COMPLETE! You saw both sides act. Pick your next two fighters to keep going.":
+     game.turn>0?"YOUR ORDERS ARE LIVE · watch the rival response and the arena for the next window.":
+     arranging?"FORMATION PRACTICE · tap any two fighters with different floor/yard/flex roles, then finish arranging.":
+     game.selected.length<2?"STEP 1/3 · tap TWO fighter cards from your six below.":
+     !preview.ready?"STEP 2/3 · pick BOTH or A/B, choose attack/guard/move, then tap or flick target(s) on the arena.":
+     "STEP 3/3 · both orders are ready. Press COMMIT PAIR; the rival acts too.";
+   if($("coachText").textContent!==message)$("coachText").textContent=message;
+ }else{
+   const message="Optional guided practice with real game actions. No separate training game or artificial win.";
+   if($("coachText").textContent!==message)$("coachText").textContent=message;
+ }
+ $("clock").textContent=String(Math.floor(game.time/60)).padStart(2,"0")+":"+String(Math.floor(game.time%60)).padStart(2,"0");
+ $("formation").textContent="FLOOR "+game.floor("player").length+" · YARD "+game.yard("player").length+" · FLEX "+(game.flex("player")?1:0);
+ $("commit").disabled=arranging||!game.canCommit();
+  $("arrange").disabled=!game.canArrange();
+  $("arrange").textContent=arranging?"DONE ARRANGING":game.canArrange()?"ARRANGE STARTING SIX":"LINEUP LOCKED";
+  $("arrange").setAttribute("aria-pressed",String(arranging));
+  $("arrangeHelp").textContent=game.canArrange()?
+    arranging?(arrangeMessage||"Tap a fighter, then tap another with a different starting role. Positions exchange; no one is lost."):
+    (arrangeMessage||"Optional: rearrange 3 floor · 2 yard · 1 flex before first COMMIT."):
+    "Starting positions locked at first go · change fighters using DEPLOY in battle.";
+  for(const [id,fighterId,label] of [["editFirst",game.selected[0],"A"],["editSecond",game.selected[1],"B"]]){
+   const b=$(id),u=game.find(fighterId),plan=game.pairPlans[fighterId]||{};
+   b.disabled=!u||game.resolve>0||game.ended;
+   b.textContent=u?label+" · "+u.name+(plan.action?" / "+plan.action:"")+(plan.target?" ✓":""):label+" · PICK";
+   b.setAttribute("aria-pressed",String(!!u&&game.editing===fighterId));
+  }
+  $("editBoth").setAttribute("aria-pressed",String(game.editing===null));
+  const shown=game.editing?(game.pairPlans[game.editing]?.action||game.action):game.action;
+  for(const b of $("modes").querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.action===shown));
+ $("dice").disabled=arranging||game.ended||game.resolve>0;
+ $("dice").textContent=game.die?"🎲 "+game.die:"🎲 ROLL";
+ $("fieldHelp").textContent=arranging?"ARRANGING STARTING SIX · TAP TWO CARDS":game.ended?"Battle finished · rematch to continue":
+   game.resolve>0?"Both crews execute their plans now":
+   game.editing?"EDIT "+(game.find(game.editing)?.name||"fighter")+" · choose action and target":
+   game.canCommit()?"Both orders ready · COMMIT PAIR":
+   !started?"Clock starts on first COMMIT · select two fighters and target(s)":
+   "Tap A/B for individual orders, or BOTH for a linked plan";
+ const rec=game.log.slice(-2).reverse().map(x=>x.type+" · "+(x.body||x.from||x.player?.join(" + ")||"")).join(" | ");
+ $("log").textContent=rec||"Planning continues while the rival moves.";
+ makeRoster();
+}
+$("coachToggle").onclick=()=>{coachOn=!coachOn;updateUI()};
+$("arrange").onclick=()=>{
+  if(!game.canArrange())return;
+  arranging=!arranging;formationPick=null;
+  if(arranging){game.clearPairPlan();arrangeMessage="Tap a fighter, then tap another with a different role to exchange their starting positions."}
+  else arrangeMessage="Starting lineup ready · select two fighters for the first command.";
+  updateUI();
+};
+$("editBoth").onclick=()=>{game.setEditing(null);updateUI()};
+$("editFirst").onclick=()=>{game.setEditing(game.selected[0]);updateUI()};
+$("editSecond").onclick=()=>{game.setEditing(game.selected[1]);updateUI()};
+$("modes").addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ if(game.editing)game.setPairAction(game.editing,b.dataset.action);else game.setAction(b.dataset.action);
+ updateUI();
+});
+$("dice").onclick=()=>{game.roll();updateUI()};
+$("commit").onclick=()=>{if(!arranging&&game.commit()){started=true;formationPick=null;arrangeMessage="Lineup locked after your first paired order."}updateUI()};
+$("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME":"Ⅱ PAUSE";updateUI()};
+function rematch(){
+ const oldCareer=game.career;
+ game=new Game(Math.floor(performance.now())>>>0,{career:oldCareer});
+ started=false;paused=false;arranging=false;formationPick=null;arrangeMessage="";coachOn=false;
+ $("pause").textContent="Ⅱ PAUSE";updateUI();
+}
+$("reset").onclick=rematch;
+$("playAgain").onclick=rematch;
+function checkpointMessage(msg){$("checkpointStatus").textContent=msg}
+function restoreCode(raw){
+ try{
+   const fresh=Continuity.unpack(raw);
+   // Import validation finishes before replacing the current battle.
+   game=fresh;started=game.turn>0;paused=true;arranging=false;formationPick=null;arrangeMessage="";
+   coachOn=false;startPointer=null;last=performance.now();$("pause").textContent="▶ RESUME";
+   updateUI();checkpointMessage("MATCH RESTORED · paused for your comfort. Tap RESUME when ready.");
+   return true;
+ }catch(err){checkpointMessage("NOT LOADED · "+err.message);return false}
+}
+$("saveMatch").onclick=()=>{
+ try{
+   const code=Continuity.pack(game);localStorage.setItem(LOCAL_KEY,code);
+   checkpointMessage("MATCH SAVED LOCALLY · "+code.length+" characters. No cloud upload.");
+ }catch(err){checkpointMessage("LOCAL STORAGE UNAVAILABLE · use EXPORT CODE instead. "+err.message)}
+};
+$("loadMatch").onclick=()=>{
+ try{
+   const code=localStorage.getItem(LOCAL_KEY);
+   if(!code){checkpointMessage("NO LOCAL SAVE · use EXPORT CODE or save this match first.");return}
+   restoreCode(code);
+ }catch(err){checkpointMessage("LOCAL RESTORE UNAVAILABLE · "+err.message)}
+};
+$("exportMatch").onclick=()=>{
+ try{
+   const code=Continuity.pack(game);$("matchCode").value=code;
+   $("matchCode").focus();$("matchCode").select();
+   checkpointMessage("PORTABLE CODE READY · copy selected text to preserve it outside the browser.");
+ }catch(err){checkpointMessage("EXPORT REJECTED · "+err.message)}
+};
+$("importMatch").onclick=()=>restoreCode($("matchCode").value);
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden&&started&&!paused&&!game.ended){
+   paused=true;last=performance.now();$("pause").textContent="▶ RESUME";
+   checkpointMessage("MATCH PAUSED while the page was in the background. Resume when you choose.");
+   updateUI();
+ }
+});
+function drawFighter(u){
+ const f=ROSTER[u.key],col=f.palette[0];
+ if(u.selected){ctx.save();ctx.strokeStyle="#fff2a8";ctx.lineWidth=4;ctx.beginPath();ctx.arc(u.x,u.y,45,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ Art.draw(ctx,f,u.x,u.y,72,game.time,u.team);
+ if(u.shield>0){ctx.save();ctx.strokeStyle="#b2f7ff";ctx.lineWidth=3;ctx.beginPath();ctx.arc(u.x,u.y,42,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ if(u.hitFlash>0){ctx.save();ctx.strokeStyle="#ffffff";ctx.lineWidth=5;ctx.beginPath();ctx.arc(u.x,u.y,44,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ if(u.specialFlash>0){ctx.save();ctx.strokeStyle=f.palette[2];ctx.lineWidth=5*u.specialFlash;ctx.globalAlpha=Math.min(1,u.specialFlash);ctx.beginPath();ctx.arc(u.x,u.y,45+(1.05-u.specialFlash)*48,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ ctx.fillStyle="#07121d";ctx.fillRect(u.x-30,u.y-63,60,6);
+ ctx.fillStyle=u.team==="player"?"#4efad0":"#ff708f";ctx.fillRect(u.x-30,u.y-63,60*clamp01(u.hp/u.maxHp),6);
+ ctx.fillStyle="#fff";ctx.font="bold 15px system-ui";ctx.textAlign="center";
+ ctx.fillText(u.name.toUpperCase(),u.x,u.y+49);
+}
+function clamp01(v){return Math.max(0,Math.min(1,v))}
+function paint(){
+ ctx.clearRect(0,0,680,840);
+ const grad=ctx.createLinearGradient(0,0,0,840);grad.addColorStop(0,"#114754");grad.addColorStop(.5,"#22503e");grad.addColorStop(1,"#0d4252");
+ ctx.fillStyle=grad;ctx.fillRect(0,0,680,840);
+ ctx.strokeStyle="#b1f4c827";ctx.lineWidth=2;
+ for(let x=30;x<=650;x+=62){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,840);ctx.stroke()}
+ for(let y=30;y<=810;y+=62){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(680,y);ctx.stroke()}
+ ctx.strokeStyle="#f6fdeb40";ctx.lineWidth=3;ctx.strokeRect(32,45,616,750);
+ ctx.beginPath();ctx.arc(340,420,115,0,Math.PI*2);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(33,420);ctx.lineTo(647,420);ctx.stroke();
+ ctx.fillStyle="#40dce622";ctx.beginPath();ctx.arc(340,420,45,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#d8f8ffb8";ctx.font="900 17px system-ui";ctx.textAlign="center";ctx.fillText("RIVAL TERRITORY",340,74);ctx.fillText("YOUR TERRITORY",340,797);
+ for(const z of game.zones){
+   ctx.save();ctx.beginPath();ctx.arc(z.x,z.y,z.r,0,Math.PI*2);
+   ctx.fillStyle=z.holder==="player"?"#49f7cc19":z.holder==="enemy"?"#ff78931c":"#bff7e512";ctx.fill();
+   ctx.strokeStyle=z.holder==="player"?"#62eed3":z.holder==="enemy"?"#ff7797":"#dffeb288";
+   ctx.lineWidth=3;ctx.setLineDash([7,6]);ctx.stroke();ctx.setLineDash([]);
+   ctx.beginPath();ctx.arc(z.x,z.y,25,0,Math.PI*2);ctx.stroke();
+   ctx.beginPath();ctx.arc(z.x,z.y,34,-Math.PI/2,-Math.PI/2+Math.PI*2*z.progress);
+   ctx.lineWidth=6;ctx.stroke();
+   ctx.fillStyle="#ffffffdd";ctx.font="900 12px system-ui";ctx.textAlign="center";ctx.fillText("RELAY",z.x,z.y+4);
+   ctx.restore();
+ }
+ if(game.target){ctx.strokeStyle="#ffe88f";ctx.setLineDash([5,5]);ctx.beginPath();ctx.arc(game.target.x,game.target.y,26,0,Math.PI*2);ctx.stroke();ctx.setLineDash([])}
+ for(const [i,id] of game.selected.entries()){
+  const t=game.pairPlans[id]?.target;if(!t)continue;
+  ctx.save();ctx.strokeStyle=i===0?"#81ecff":"#ffbd81";ctx.lineWidth=3;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.arc(t.x,t.y,30,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=ctx.strokeStyle;ctx.font="900 18px system-ui";ctx.textAlign="center";ctx.fillText(i===0?"A":"B",t.x,t.y-35);
+  ctx.restore();
+ }
+ // CP07 intent paths show exactly WHERE your selected A/B orders will go,
+ // never pretend the rival will stand at those positions.
+ for(const [i,planned] of game.pairPreview().orders.entries()){
+   if(!planned.target)continue;
+   const u=game.find(planned.id);
+   ctx.save();ctx.strokeStyle=i===0?"#81ecff8e":"#ffbd818e";ctx.lineWidth=3;
+   ctx.setLineDash([4,6]);ctx.beginPath();ctx.moveTo(u.x,u.y);
+   ctx.lineTo(planned.target.x,planned.target.y);ctx.stroke();ctx.setLineDash([]);
+   ctx.beginPath();ctx.arc(planned.target.x,planned.target.y,15,0,Math.PI*2);
+   ctx.stroke();ctx.fillStyle=i===0?"#baf9ff":"#ffe4b8";
+   ctx.font="900 14px system-ui";ctx.textAlign="center";ctx.fillText(planned.slot,planned.target.x,planned.target.y-21);
+   ctx.restore();
+ }
+ for(const u of game.units.filter(u=>u.alive&&u.role==="floor")){
+  if(u.order){ctx.strokeStyle=u.team==="player"?"#77f6ffaf":"#ff82b2a0";ctx.setLineDash([7,7]);ctx.beginPath();ctx.moveTo(u.x,u.y);ctx.lineTo(u.order.target.x,u.order.target.y);ctx.stroke();ctx.setLineDash([])}
+  drawFighter(u);
+ }
+}
+function frame(ts){
+ const dt=Math.min(.035,(ts-last)/1000||.016);last=ts;
+ if(!paused&&started)game.step(dt);
+ paint();if(ts-rerenderAt>180){updateUI();rerenderAt=ts}
+ requestAnimationFrame(frame);
+}
+updateUI();requestAnimationFrame(frame);
+</script>
+</body>
+</html>

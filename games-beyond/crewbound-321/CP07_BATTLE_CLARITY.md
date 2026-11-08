@@ -15,7 +15,7 @@ The player can plan different A/B actions, but before CP07 the interface did not
 
 ## Evidence
 - Added six targeted native tests for exact preview→commit equality; preserved linked-offset behaviour; no simulation/log mutation; support-cooldown readiness; real rival response; proximity hints. Existing 39 native+stress become **45 expected tests** (37 previous native + 6 new native + 2 stress).
-- Added three browser scenarios on both mobile/desktop emulation, covering precise A/B preview, first-go practice, independent target/pointer behaviour, reset, and the portable HTML. Existing 38 browser checks become **44 expected checks**.
+- Added four browser scenarios on both mobile/desktop emulation, covering precise A/B preview, first-go practice, independent target/pointer behaviour, reset, the portable HTML, and correct warning priority when two fighters are nearby but no destination has been chosen. Existing 38 browser checks become **46 expected checks**.
 - `deliveries/CREWBOUND_CP07_PLAY.html` is a *single HTML download*, assembled from the modular GitHub source with five JS modules and one inline runtime (6 scripts). `verify-cp07-delivery.cjs` reconstructs exact Git blob parity and validates syntax; delivery is a file copy, not the canonical source.
 - Existing Games&Beyond House QA retains CP23 broader catalogue checks. Counts are **targets until the current-head workflow finishes**, not claims of passing tests.
 

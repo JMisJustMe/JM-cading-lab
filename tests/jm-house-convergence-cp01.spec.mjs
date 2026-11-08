@@ -134,3 +134,21 @@ test('H05 and books retain their existing independent seats rather than count in
   assert.match(bookHome,/56<\/b><small>primary Book \/ Written bodies/);
   assert.match(bookHome,/98<\/b><small>Liebury \/ Bookcase routes/);
 });
+
+test('H04 current House explicitly distinguishes 143 original catalogue records from local mounted rooms',()=>{
+  assert.match(gameHome,/id="jmEntireGamesEstate"/);
+  assert.match(gameHome,/143 catalogue records/);
+  assert.match(gameHome,/95 game-lane records/);
+  assert.match(gameHome,/Local intake target/);
+  assert.doesNotMatch(gameHome,/<span>Full target<\/span>/);
+  assert.match(gameHome,/id="showEntireGamesCatalogue"/);
+  assert.match(gameApp,/\$\('showEntireGamesCatalogue'\)\.onclick=\(\)=>view\('catalogue-current'\)/);
+});
+
+test('H04 retains the existing CP22 full-catalogue renderer instead of a rival iframe',()=>{
+  assert.match(gameHome,/whole-estate-current-catalogue-v1\.js/);
+  assert.match(gameHome,/id="view-catalogue-current"/);
+  assert.doesNotMatch(gameHome,/jmWholeGamesCatalogFrame/);
+  assert.match(gameApp,/function view\(name,focus=true\)\{\$\$\('\.view'\)/);
+  assert.match(gameApp,/async function importOriginalHtml\(file\)/);
+});

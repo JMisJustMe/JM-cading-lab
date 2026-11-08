@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
-<title>CREWBOUND 3+2+1 — Two Independent Orders CP04</title>
+<title>CREWBOUND CP05 · Living Relay Clash</title>
 <style>
 :root{color-scheme:dark;--bg:#06101c;--panel:#0d2133;--line:#355369;--text:#ecfbff;--muted:#b0c6d4;--aqua:#65ecff;--gold:#ffe28c;--pink:#ff82ab}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d5160,var(--bg) 55%);color:var(--text);font-family:system-ui,Arial,sans-serif}
@@ -37,6 +37,12 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:
 button:disabled{opacity:.44;cursor:not-allowed}
 .receipts{margin-top:9px;border:1px solid var(--line);border-radius:13px;padding:9px;background:#081724;min-height:55px}
 .receipts strong{font-size:.7rem;color:var(--aqua)}.receipts p{margin:4px 0 0;color:var(--muted);font-size:.69rem;line-height:1.3}
+.relayBoard{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 0;padding:8px 10px;background:#0b2b35;border:1px solid #4b7e84;border-radius:12px;font-size:.74rem;font-weight:850}
+.relayBoard div:last-child{text-align:right}.relayBoard strong{color:#e8ef91}
+.matchOverlay{position:absolute;inset:0;background:#051426e9;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px 18px}
+.matchOverlay[hidden]{display:none!important}.matchOverlay h2{font-size:clamp(1.5rem,7vw,3rem);margin:0;color:#fff3ba}
+.matchOverlay p{font-size:.87rem;max-width:360px;line-height:1.7;color:#cfe3ec}
+.matchOverlay button{border:2px solid #7be8fb;border-radius:14px;padding:16px 24px;background:#136274;font-weight:950;min-height:54px}
 .help{margin-top:10px;display:grid;gap:6px}
 details{border:1px solid var(--line);padding:10px;border-radius:12px;background:#0c1d2d;font-size:.75rem;line-height:1.5}
 summary{cursor:pointer;font-weight:900}
@@ -51,13 +57,19 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <div><div class="tag">JM CREWBOUND · ORIGINAL v0.5 PRESERVED · EXCLUSIVE CAST</div><h1>CREWBOUND <span>3 + 2 + 1</span></h1></div>
   <button id="reset" style="border:1px solid var(--line);border-radius:12px;padding:11px;background:#17293c">REMATCH</button>
 </header>
-<p class="sub"><a href="./cast.html" style="font-weight:900;color:#9ef8ff">MEET THE 12 EXCLUSIVE CREWBOUND FIGHTERS</a> · CP02 unique-cast playable descendant · two orders per go · both crews move in real time · distinct speeds and defences · yard assists and flex deployment.</p>
+<p class="sub"><a href="./cast.html" style="font-weight:900;color:#9ef8ff">MEET THE 12 EXCLUSIVE CREWBOUND FIGHTERS</a> · CP05 living relay clash · twelve distinct combat kits · two independently planned fighters · contested arena zones · yard assists and flex deployment.</p>
 <div class="score"><div><strong>YOUR CREW</strong><span class="n" id="myhp">—</span></div><div class="center"><div id="turn">GO 0</div><div id="phase">PLANNING</div></div><div><strong>RIVAL CREW</strong><span class="n" id="theirhp">—</span></div></div>
+<div class="relayBoard" aria-label="Living field objective score"><div>YOUR RELAYS <strong id="myRelay">0</strong></div><div>RIVAL RELAYS <strong id="theirRelay">0</strong></div></div>
 <div class="layout">
 <section class="board">
   <canvas id="arena" width="680" height="840" tabindex="0" aria-label="Interactive Crewbound tactical arena: tap two character cards, choose an action, tap or flick a target on the board then commit orders"></canvas>
   <div class="float"><span id="formation">FLOOR 3 · YARD 2 · FLEX 1</span><span id="clock">00:00</span></div>
   <div class="fieldHelp" id="fieldHelp">Choose two fighters, then tap or flick the arena.</div>
+  <div id="matchOverlay" class="matchOverlay" hidden aria-live="polite" role="status">
+    <h2 id="resultTitle">MATCH FINISHED</h2>
+    <p id="resultSummary">Results will appear here.</p>
+    <button id="playAgain">PLAY AGAIN</button>
+  </div>
 </section>
 <div class="sidebar">
 <section aria-label="Player crew selection">
@@ -82,18 +94,18 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <div class="actions"><button id="dice" title="Optional risk modifier, never required">🎲 ROLL</button><button class="primary" id="commit" disabled>COMMIT PAIR</button><button id="pause">Ⅱ PAUSE</button></div>
 </section>
 <section class="receipts" aria-live="polite"><strong>CONTACT / ROUTE TRACE</strong><p id="log">New combat pilots. Choose two fighters.</p></section>
-<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending even between your orders. Yard characters can shield and assist; the flex character can deploy as a fourth floor fighter. Dice is optional.</p></details></div>
+<div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending between your orders. Each character has its own combat kit and periodically triggers a signature manoeuvre when contact is made. Yard fighters shield or intervene; the flex can deploy as a fourth floor fighter. Capture the two glowing relay zones to gain tactical points. Win by disabling the rival crew or leading on remaining crew health plus relay points at the three-minute limit. Dice is optional.</p></details></div>
 </div>
 </div>
-<p class="footer">A separate CP02 work-in-progress, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
+<p class="footer">A separate CP05 experimental descendant, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
 </main>
-<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./sim.js"></script>
+<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./combat-kit.js"></script><script src="./sim.js"></script>
 <script>
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
 let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0;
-const Art=window.JM_CREWBOUND_321_ART;
+const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT;
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
  const r=canvas.getBoundingClientRect();
@@ -132,13 +144,21 @@ function makeRoster(){
   button.className="unit"+(u.role==="floor"?" active":"")+(game.selected.includes(u.id)?" selected":"")+(u.alive?"":" undone");
   button.style.setProperty("--glow",f.palette[0]);
   button.style.setProperty("--hp",(100*u.hp/u.maxHp).toFixed(1)+"%");
-  button.querySelector("small").textContent=u.role.toUpperCase()+" · "+f.role;
+  button.querySelector("small").textContent=u.role.toUpperCase()+" · "+Combat.KITS[u.key].name;
   button.setAttribute("aria-pressed",game.selected.includes(u.id));
   button.setAttribute("aria-label",u.name+", "+u.role+", "+Math.round(u.hp)+" health, "+f.role+", "+f.signature_name);
  }
 }
 function updateUI(){
  const my=game.team("player"),rivals=game.team("enemy");
+  $("myRelay").textContent=game.scores.player.toFixed(1);
+  $("theirRelay").textContent=game.scores.enemy.toFixed(1);
+  $("matchOverlay").hidden=!game.ended;
+  if(game.ended){
+    $("resultTitle").textContent=game.winner==="player"?"CREW VICTORY":"RIVALS WIN";
+    const a=game.stats.player,b=game.stats.enemy;
+    $("resultSummary").textContent=game.matchReason+" · YOUR "+a.hits+" contacts, "+a.assists+" yard assists, "+a.combos+" linked hits · RIVAL "+b.hits+" contacts · RELAY "+game.scores.player.toFixed(1)+" : "+game.scores.enemy.toFixed(1);
+  }
  $("myhp").textContent=Math.round(my.reduce((s,u)=>s+u.hp,0))+" HP";
  $("theirhp").textContent=Math.round(rivals.reduce((s,u)=>s+u.hp,0))+" HP";
  $("turn").textContent="GO "+game.turn;
@@ -179,13 +199,16 @@ $("modes").addEventListener("click",e=>{
 $("dice").onclick=()=>{game.roll();updateUI()};
 $("commit").onclick=()=>{if(game.commit())started=true;updateUI()};
 $("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME":"Ⅱ PAUSE";updateUI()};
-$("reset").onclick=()=>{game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;$("pause").textContent="Ⅱ PAUSE";updateUI()};
+function rematch(){game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;$("pause").textContent="Ⅱ PAUSE";updateUI()}
+$("reset").onclick=rematch;
+$("playAgain").onclick=rematch;
 function drawFighter(u){
  const f=ROSTER[u.key],col=f.palette[0];
  if(u.selected){ctx.save();ctx.strokeStyle="#fff2a8";ctx.lineWidth=4;ctx.beginPath();ctx.arc(u.x,u.y,45,0,Math.PI*2);ctx.stroke();ctx.restore()}
  Art.draw(ctx,f,u.x,u.y,72,game.time,u.team);
  if(u.shield>0){ctx.save();ctx.strokeStyle="#b2f7ff";ctx.lineWidth=3;ctx.beginPath();ctx.arc(u.x,u.y,42,0,Math.PI*2);ctx.stroke();ctx.restore()}
  if(u.hitFlash>0){ctx.save();ctx.strokeStyle="#ffffff";ctx.lineWidth=5;ctx.beginPath();ctx.arc(u.x,u.y,44,0,Math.PI*2);ctx.stroke();ctx.restore()}
+ if(u.specialFlash>0){ctx.save();ctx.strokeStyle=f.palette[2];ctx.lineWidth=5*u.specialFlash;ctx.globalAlpha=Math.min(1,u.specialFlash);ctx.beginPath();ctx.arc(u.x,u.y,45+(1.05-u.specialFlash)*48,0,Math.PI*2);ctx.stroke();ctx.restore()}
  ctx.fillStyle="#07121d";ctx.fillRect(u.x-30,u.y-63,60,6);
  ctx.fillStyle=u.team==="player"?"#4efad0":"#ff708f";ctx.fillRect(u.x-30,u.y-63,60*clamp01(u.hp/u.maxHp),6);
  ctx.fillStyle="#fff";ctx.font="bold 15px system-ui";ctx.textAlign="center";
@@ -204,6 +227,17 @@ function paint(){
  ctx.beginPath();ctx.moveTo(33,420);ctx.lineTo(647,420);ctx.stroke();
  ctx.fillStyle="#40dce622";ctx.beginPath();ctx.arc(340,420,45,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#d8f8ffb8";ctx.font="900 17px system-ui";ctx.textAlign="center";ctx.fillText("RIVAL TERRITORY",340,74);ctx.fillText("YOUR TERRITORY",340,797);
+ for(const z of game.zones){
+   ctx.save();ctx.beginPath();ctx.arc(z.x,z.y,z.r,0,Math.PI*2);
+   ctx.fillStyle=z.holder==="player"?"#49f7cc19":z.holder==="enemy"?"#ff78931c":"#bff7e512";ctx.fill();
+   ctx.strokeStyle=z.holder==="player"?"#62eed3":z.holder==="enemy"?"#ff7797":"#dffeb288";
+   ctx.lineWidth=3;ctx.setLineDash([7,6]);ctx.stroke();ctx.setLineDash([]);
+   ctx.beginPath();ctx.arc(z.x,z.y,25,0,Math.PI*2);ctx.stroke();
+   ctx.beginPath();ctx.arc(z.x,z.y,34,-Math.PI/2,-Math.PI/2+Math.PI*2*z.progress);
+   ctx.lineWidth=6;ctx.stroke();
+   ctx.fillStyle="#ffffffdd";ctx.font="900 12px system-ui";ctx.textAlign="center";ctx.fillText("RELAY",z.x,z.y+4);
+   ctx.restore();
+ }
  if(game.target){ctx.strokeStyle="#ffe88f";ctx.setLineDash([5,5]);ctx.beginPath();ctx.arc(game.target.x,game.target.y,26,0,Math.PI*2);ctx.stroke();ctx.setLineDash([])}
  for(const [i,id] of game.selected.entries()){
   const t=game.pairPlans[id]?.target;if(!t)continue;

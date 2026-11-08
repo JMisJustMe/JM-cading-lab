@@ -309,3 +309,30 @@ test('CP05 360px touch screen has accessible commands, roster, and no horizontal
  await page.locator('#arena').click({position:{x:100,y:160}});
  await expect(page.locator('#commit')).toBeEnabled();
 });
+
+test('CP05 standalone offline HTML opens with new kits and finishes a match without external JS',async({page})=>{
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',req=>requests.push(req.url()));
+ await page.goto('./crewbound-321/deliveries/CREWBOUND_CP05_PLAY.html');
+ await expect(page.locator('h1')).toContainText('3 + 2 + 1');
+ await expect(page.locator('#roster .unit')).toHaveCount(6);
+ await expect(page.locator('#myRelay')).toHaveText('0.0');
+ expect(await page.locator('script[src]').count()).toBe(0);
+ const kits=await page.evaluate(()=>Object.keys(window.JM_CREWBOUND_321_COMBAT.KITS));
+ expect(kits).toHaveLength(12);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=ATTACK]').click();
+ await page.locator('#arena').click({position:{x:140,y:145}});
+ await page.locator('#editSecond').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:210,y:190}});
+ await page.locator('#commit').click();
+ const plans=await page.evaluate(()=>game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT').playerPlans);
+ expect(plans.map(x=>x.action)).toEqual(['ATTACK','GUARD']);
+ await page.evaluate(()=>{game.time=179.95;game.step(.05);updateUI()});
+ await expect(page.locator('#matchOverlay')).toBeVisible();
+ expect(errors).toEqual([]);
+ expect(requests.filter(url=>!url.includes('CREWBOUND_CP05_PLAY.html'))).toEqual([]);
+});

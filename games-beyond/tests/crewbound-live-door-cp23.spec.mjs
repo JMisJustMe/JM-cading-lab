@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 // CP23 source contact only: two independent CREWBOUND entrances, one sovereign original family.
-// The authentic original game and later playable 3+2+1 public descendant both remain untouched.
+// The authentic original game and later playable 3+2+1 public descendant remain untouched; CP24 independently adds one T-Boys source link.
 test('@cp23 preserves historic CREWBOUND House door and adds one independently playable descendant', async ({ page }) => {
   await page.goto('./all-games.html');
   await expect(page.locator('#statAll')).toHaveText('143');
-  await expect(page.locator('#statDoors')).toHaveText('24');
-  await expect(page.locator('#statNoDoors')).toHaveText('119');
+  await expect(page.locator('#statDoors')).toHaveText('25');
+  await expect(page.locator('#statNoDoors')).toHaveText('118');
 
   await page.locator('#search').fill('CREWBOUND Arena');
   const card = page.locator('#grid article').filter({has:page.locator('h3', {hasText:'CREWBOUND Arena'})});

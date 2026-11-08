@@ -12,6 +12,8 @@ on:
     paths:
       - 'games-beyond/**'
       - '.github/workflows/games-beyond-qa.yml'
+  # Existing owner-controlled manual execution on default main.
+  workflow_dispatch:
 
 jobs:
   browser-qa:

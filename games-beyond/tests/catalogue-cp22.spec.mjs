@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // CP22 preserves the original mounted House and the separately sourced A–Z.
-// Browser proof is not a claim of owner-device acceptance or full game release.
+// CP24 adds one exact older T-Boys source door: 25 linked / 118 source-only, still 143 records. Browser proof is not owner acceptance.
 test('@cp22 native catalogue works without service-worker injection', async ({ page }) => {
   await page.route('**/sw.js*', route => route.abort());
   await page.goto('./');
@@ -16,12 +16,12 @@ test('@cp22 native catalogue works without service-worker injection', async ({ p
   await expect(frame.locator('#statAll')).toHaveText('143', { timeout: 30_000 });
   const linked=Number(await frame.locator('#statDoors').innerText());
   const unlinked=Number(await frame.locator('#statNoDoors').innerText());
-  expect(linked).toBe(24);
-  expect(unlinked).toBe(119);
+  expect(linked).toBe(25);
+  expect(unlinked).toBe(118);
   expect(linked+unlinked).toBe(143);
 
   await frame.locator('[data-filter="unlinked"]').click();
-  await expect(frame.locator('#showing')).toHaveText('119 / 143 shown');
+  await expect(frame.locator('#showing')).toHaveText('118 / 143 shown');
   await frame.locator('[data-filter="all"]').click();
   await frame.locator('#search').fill('FTR First-Person');
   await expect(frame.locator('#grid h3').filter({hasText:'FTR First-Person'})).toHaveCount(1);

@@ -8,7 +8,7 @@
         <package android:name="com.samsung.android.app.notes" />
         <package android:name="com.openai.chatgpt" />
         <package android:name="com.sec.android.gallery3d" />
-        <!-- Visibility only for explicit owner-tapped JM app launches; no QUERY_ALL_PACKAGES. -->
+        <!-- Only individual packages used by explicit owner-tapped JM app launches. -->
         <package android:name="com.jmisjustme.foldultra" />
         <package android:name="com.jmisjustme.foldultra.homelabqa" />
         <package android:name="com.jmisjustme.ailatheocreation" />

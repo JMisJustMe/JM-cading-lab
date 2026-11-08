@@ -604,3 +604,73 @@ test('CP08 single HTML offline player supports save, export, import and match re
  expect(errors).toEqual([]);
  expect(requests.filter(url=>!url.includes('CREWBOUND_CP08_PLAY.html'))).toEqual([]);
 });
+
+test('CP09 every sovereign fighter triggers its own observed signature geometry',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ const samples=await page.evaluate(()=>{
+  const F=window.JM_CREWBOUND_321_FEEDBACK,C=window.JM_CREWBOUND_321_SIM.Game;
+  return Object.entries(F.SHAPES).map(([key,expected])=>{
+   const g=new C(321),a=g.units.find(u=>u.key===key),foe=g.units.find(u=>u.team!==a.team);
+   const fx=F.createFeedback('FULL');fx.observe(g);
+   a.x=300;a.y=320;a.role='floor';a.cooldown=0;
+   foe.x=310;foe.y=325;foe.role='floor';foe.hp=foe.maxHp=10000;
+   g.strike(a,foe);fx.observe(g);
+   const actual=fx.snapshot().find(e=>e.kind==='signature')?.shape;
+   return {key,expected,actual,receipt:g.log.some(e=>e.type==='SIGNATURE'&&e.fighter===a.name)};
+  });
+ });
+ expect(samples).toHaveLength(12);
+ expect(samples.every(x=>x.receipt&&x.expected===x.actual)).toBe(true);
+ expect(new Set(samples.map(x=>x.actual)).size).toBe(12);
+ expect(errors).toEqual([]);
+});
+
+test('CP09 optional effects cycle FULL QUIET OFF and respect system reduced motion',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto(PATH);
+ await expect(page.locator('#fxMode')).toHaveText('FX · QUIET');
+ await expect(page.locator('#fxHelp')).toContainText('Reduced animation');
+ const baseline=await page.evaluate(()=>({units:game.snapshot().units,rng:game.rng.state(),time:game.time}));
+ await page.locator('#fxMode').click();
+ await expect(page.locator('#fxMode')).toHaveText('FX · OFF');
+ await page.locator('#fxMode').click();
+ await expect(page.locator('#fxMode')).toHaveText('FX · FULL');
+ await expect(page.locator('#fxMode')).toHaveAttribute('aria-label',/Combat effects full/);
+ const after=await page.evaluate(()=>({units:game.snapshot().units,rng:game.rng.state(),time:game.time}));
+ expect(after).toEqual(baseline);
+ await page.setViewportSize({width:360,height:700});
+ const size=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth,
+  height:document.querySelector('#fxMode').getBoundingClientRect().height}));
+ expect(size.scroll).toBeLessThanOrEqual(size.width+2);
+ expect(size.height).toBeGreaterThanOrEqual(44);
+});
+
+test('CP09 actual contact receipt becomes accessible combat text without affecting gameplay',async({page})=>{
+ await page.goto(PATH);
+ const pair=await page.evaluate(()=>{
+  const a=game.floor('player')[0],b=game.floor('enemy')[0];
+  const before=game.snapshot().units;
+  game.receipt('CONTACT',{from:a.name,to:b.name,damage:35});
+  combatFeedback.observe(game);updateUI();
+  return {before,after:game.snapshot().units,effects:combatFeedback.snapshot()};
+ });
+ expect(pair.after).toEqual(pair.before);
+ expect(pair.effects.some(x=>x.kind==='contact'&&x.label==='−35')).toBe(true);
+ await expect(page.locator('#log')).toContainText('35 damage');
+});
+
+test('CP09 standalone single-file HTML shows the same readout and recovery controls',async({page})=>{
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+ await page.goto('./crewbound-321/deliveries/CREWBOUND_CP09_PLAY.html');
+ await expect(page.locator('#fxMode')).toHaveText('FX · FULL');
+ expect(await page.locator('script[src]').count()).toBe(0);
+ expect(await page.evaluate(()=>Object.keys(window.JM_CREWBOUND_321_FEEDBACK.SHAPES).length)).toBe(12);
+ await page.locator('#fxMode').click();
+ await expect(page.locator('#fxMode')).toHaveText('FX · QUIET');
+ await page.locator('details.continuity summary').click();
+ await page.locator('#exportMatch').click();
+ await expect(page.locator('#matchCode')).toHaveValue(/CP08.MATCH_CAPSULE/);
+ expect(requests.filter(url=>!url.includes('CREWBOUND_CP09_PLAY.html'))).toEqual([]);
+ expect(errors).toEqual([]);
+});

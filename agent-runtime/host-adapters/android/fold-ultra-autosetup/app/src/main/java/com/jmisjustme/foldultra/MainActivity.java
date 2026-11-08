@@ -294,7 +294,7 @@ public final class MainActivity extends Activity {
       startActivity(new Intent(this,com.jmisjustme.foldultra.workroom.WorkroomActivity.class)));
     btn(page,"JM HOME LAB / Layout · Apps · Devices",false,()->
       startActivity(new Intent(this,com.jmisjustme.foldultra.launcher.LauncherLabActivity.class)));
-    btn(page,"JM CREATIONS / OPENBOX · Coding · Games · Everything",true,()->
+    btn(page,"JM CREATIONS / OPENBOX + ALL",true,()->
       startActivity(new Intent(this,com.jmisjustme.foldultra.creations.CreationsActivity.class)));
 
     String focus=sp.getString("focus","CREATE");

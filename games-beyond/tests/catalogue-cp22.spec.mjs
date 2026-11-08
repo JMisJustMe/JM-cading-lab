@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // CP22 preserves the original mounted House and the separately sourced A–Z.
-// CP24 adds one exact older T-Boys source door: 25 linked / 118 source-only, still 143 records. Browser proof is not owner acceptance.
+// CP24 exact public original v0.2.3 SHA256 52263e0e63a25b3ba394faeff0c1b525a9a3a68d7a62290a9c2baca75b755608; 25 linked / 118 source-only of 143. Later private v0.2.4 is not overwritten or crowned.
 test('@cp22 native catalogue works without service-worker injection', async ({ page }) => {
   await page.route('**/sw.js*', route => route.abort());
   await page.goto('./');

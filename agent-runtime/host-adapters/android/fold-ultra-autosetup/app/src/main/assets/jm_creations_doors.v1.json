@@ -11,7 +11,9 @@
     "latest_version_requires_independent_proof": true,
     "source_donor": "JMisJustMe/JM-cading-lab PR #708 (CP03 registry); independent donor not merged",
     "private_file_access": "Owner-selected Android Storage Access Framework only; no path hardcoding, file enumeration or upload",
-    "local_file_source_copied": false
+    "local_file_source_copied": false,
+    "mounted_bodies_claim": "Games&Beyond v0.5 snapshot: 22 public payload mounts, 2 separately held private JMStudios; no live gameplay or newest private head proof",
+    "versioned_games_reference": "GitHub original games-beyond/registry.json SHA 3b1ac3273a51600c84976eaccbcb61e417088736; current public app.js CP22"
   },
   "sections": [
     {
@@ -296,6 +298,297 @@
           "status": "HOLD · 404 at public URL",
           "source": "Preserved original family-gift pointer; no public fallback",
           "basis": "repository-location"
+        },
+        {
+          "id": "jm-gb-play-fourfold-arena",
+          "label": "Play · FOURFOLD Arena · v0.17 Living Bodies",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fourfold-arena",
+          "version": "v0.17 Living Bodies",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "fourfold-arena",
+          "sourceScope": "Living-body competitive arena / active flagship route",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-tboys-core-clash",
+          "label": "Play · T-Boys Core Clash · v0.1 Final Graft",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=tboys-core-clash",
+          "version": "v0.1 Final Graft",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "tboys-core-clash",
+          "sourceScope": "T-Boys tactical crew clash game",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-rim-route",
+          "label": "Play · JM Rim Route · v0.8.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=rim-route",
+          "version": "v0.8.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "rim-route",
+          "sourceScope": "Portrait basketball / live dribble and ball contact",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-crewbound-arena",
+          "label": "Play · Crewbound Arena · v0.5",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=crewbound-arena",
+          "version": "v0.5",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "crewbound-arena",
+          "sourceScope": "Signature powers / living field arena",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-house-siege",
+          "label": "Play · JM House Siege · v1.3",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=house-siege",
+          "version": "v1.3",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "house-siege",
+          "sourceScope": "Aim parity / focus-depth house battle",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-western-sniper",
+          "label": "Play · JM Western Sniper PvP · v0.5",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=western-sniper",
+          "version": "v0.5",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "western-sniper",
+          "sourceScope": "Identity-field live duel",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-dead-reckon",
+          "label": "Play · Dead Reckon · v0.9",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=dead-reckon",
+          "version": "v0.9",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "dead-reckon",
+          "sourceScope": "Dual-aim body / split-hand route",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-cardbored",
+          "label": "Play · cardBORED · v0.4",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=cardbored",
+          "version": "v0.4",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "cardbored",
+          "sourceScope": "Card-board pressure formation / LG future-position route",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-gameforge",
+          "label": "Open · GameForge · v3.16",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=gameforge",
+          "version": "v3.16",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "gameforge",
+          "sourceScope": "Game-first production forge / one-player separation",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-glyphplay",
+          "label": "Open · GlyphPlay B1 · v29.1",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=glyphplay",
+          "version": "v29.1",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "glyphplay",
+          "sourceScope": "Creator-first playable logic engine",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-glyphforge",
+          "label": "Open · GlyphForge · v68.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=glyphforge",
+          "version": "v68.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "glyphforge",
+          "sourceScope": "ProjectBody to connected play-test bridge",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-game-native-core",
+          "label": "Open · JM Game Native Core · v0.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=game-native-core",
+          "version": "v0.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "game-native-core",
+          "sourceScope": "Native core / apps and tools bridge",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-gamecore",
+          "label": "Open · JM GameCore · v0.2I-A",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=gamecore",
+          "version": "v0.2I-A",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "gamecore",
+          "sourceScope": "Current corrected three-game integration body",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-combound",
+          "label": "Open · JM Combound · v0.7",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=combound",
+          "version": "v0.7",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "combound",
+          "sourceScope": "Natural combo kinetics / combat donor organ",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-quadze",
+          "label": "Open · Quadze Real Estate · v0.6 Bow-Lock",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=quadze",
+          "version": "v0.6 Bow-Lock",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "quadze",
+          "sourceScope": "Frozen Quadze benchmark / real parser-runtime playable body",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-futarized",
+          "label": "Play · FUTARIZED · v1.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=futarized",
+          "version": "v1.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "futarized",
+          "sourceScope": "Game-of-Game / playable manual / earned convergence",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-fight-clash",
+          "label": "Play · Fight Clash Chameleon · v0.4 Open Ring",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fight-clash",
+          "version": "v0.4 Open Ring",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "fight-clash",
+          "sourceScope": "Open-ring fighting body / SideLane line",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-aiming-run",
+          "label": "Open · Aiming Run · v0.1A",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=aiming-run",
+          "version": "v0.1A",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "aiming-run",
+          "sourceScope": "Movement-pressure aiming game / proof body",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-drag-aim",
+          "label": "Open · Drag & Aim Loop Kernel · v0.9.9",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=drag-aim",
+          "version": "v0.9.9",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "drag-aim",
+          "sourceScope": "Reusable touch / pull / release / trajectory organ",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-loopit-boundary",
+          "label": "Open · Loopit / GlyphPlay / GameForge Boundary · Eco/Estate Rejoin Node",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=loopit-boundary",
+          "version": "Eco/Estate Rejoin Node",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "loopit-boundary",
+          "sourceScope": "External-vs-creator-owned playable boundary proof",
+          "proofBoundary": "Governance proof body, not a playable game"
+        },
+        {
+          "id": "jm-gb-play-playform",
+          "label": "Open · PLAYFORM · v0.1",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=playform",
+          "version": "v0.1",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "playform",
+          "sourceScope": "Playable Expression Framework / sister system",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-routeos-platform",
+          "label": "Open · RouteOS · v103 → v108A.5 Recovered Package Authority",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=routeos-platform",
+          "version": "v103 → v108A.5 Recovered Package Authority",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "routeos-platform",
+          "sourceScope": "Original v108A.5 MAX10 package physically recovered and independently revalidated. Full source remains owner-private; public room carries evidence and navigation only. Phone field contact remains a separate proof lane.",
+          "proofBoundary": "Public room; full v108A.5 source remains private"
+        },
+        {
+          "id": "jm-gb-private-jmstudios-source-rebegin",
+          "label": "Private source · JMStudios · B0.8.2 Original Source Patch Merge",
+          "kind": "hold",
+          "version": "B0.8.2 Original Source Patch Merge",
+          "status": "PRIVATE FULL-HOUSE IMPORT ONLY · HOLD",
+          "source": "Games&Beyond registry v0.5; distinct original source not bundled",
+          "sourceId": "jmstudios-source-rebegin"
+        },
+        {
+          "id": "jm-gb-private-jmstudios-actual-crown",
+          "label": "Private source · JMStudios · B0.8.3 Actual Room Link Scan Repair",
+          "kind": "hold",
+          "version": "B0.8.3 Actual Room Link Scan Repair",
+          "status": "PRIVATE FULL-HOUSE IMPORT ONLY · HOLD",
+          "source": "Games&Beyond registry v0.5; distinct original source not bundled",
+          "sourceId": "jmstudios-actual-crown"
+        },
+        {
+          "id": "jm-crewbound-321-unique-cast",
+          "label": "CREWBOUND 3+2+1 · original unique cast",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/crewbound-321/",
+          "status": "LIVE HTTP 200 · independent CP02 cast",
+          "source": "Original /games-beyond/crewbound-321/ page + CP02 source authority, independently tested 8 Nov 2026",
+          "sourceScope": "Distinct public presentation; does not replace Crewbound Arena v0.5"
         }
       ]
     },
@@ -432,6 +725,46 @@
           "status": "SOURCE ROUTE",
           "source": "JM Fold Ultra CP03 registry PR #708",
           "basis": "repository-location"
+        },
+        {
+          "id": "jm-gb-edit-gameforge",
+          "label": "Edit original · GameForge",
+          "kind": "web",
+          "version": "v3.16",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=gameforge",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "gameforge"
+        },
+        {
+          "id": "jm-gb-edit-glyphplay",
+          "label": "Edit original · GlyphPlay B1",
+          "kind": "web",
+          "version": "v29.1",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=glyphplay",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "glyphplay"
+        },
+        {
+          "id": "jm-gb-edit-glyphforge",
+          "label": "Edit original · GlyphForge",
+          "kind": "web",
+          "version": "v68.2",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=glyphforge",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "glyphforge"
+        },
+        {
+          "id": "jm-gb-edit-game-native-core",
+          "label": "Edit original · JM Game Native Core",
+          "kind": "web",
+          "version": "v0.2",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=game-native-core",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "game-native-core"
         }
       ]
     }

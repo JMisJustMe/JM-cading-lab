@@ -101,7 +101,7 @@ def tap_with_actual_viewport(fragment,label):
 
 def main():
     OUT.mkdir(exist_ok=True)
-    adb("install","emulator-input/JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_DEBUG.apk",timeout=90)
+    adb("install","emulator-input/JM_FOLD_ULTRA_CREATIONS_v1_1_DEBUG.apk",timeout=90)
     adb("shell","wm","size","720x1600")
     adb("shell","wm","density","320")
     ready_fixture()

@@ -292,3 +292,77 @@ test("CP05 snapshot exposes relay scores, capture zones and match statistics wit
  assert.equal(s.matchReason,null);
  assert.equal(ORIGINAL_BODY_SHA256,"5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7");
 });
+
+test("CP06 formation swap moves starting roles and positions without changing fighter identity",()=>{
+ const g=make(),floor=g.floor("player")[0],flex=g.flex("player");
+ const saved={
+  floor:{role:floor.role,x:floor.x,y:floor.y,hp:floor.hp,key:floor.key},
+  flex:{role:flex.role,x:flex.x,y:flex.y,hp:flex.hp,key:flex.key}
+ };
+ assert.equal(g.canArrange(),true);
+ assert.equal(g.swapFormation(floor.id,flex.id),true);
+ assert.equal(floor.role,"flex");assert.equal(flex.role,"floor");
+ assert.equal(floor.x,saved.flex.x);assert.equal(floor.y,saved.flex.y);
+ assert.equal(flex.x,saved.floor.x);assert.equal(flex.y,saved.floor.y);
+ assert.equal(floor.hp,saved.floor.hp);assert.equal(flex.hp,saved.flex.hp);
+ assert.equal(floor.key,saved.floor.key);assert.equal(flex.key,saved.flex.key);
+ assert.equal(g.floor("player").length,3);
+ assert.equal(g.yard("player").length,2);
+ assert.equal(g.flex("player").id,floor.id);
+ const receipt=g.log.find(x=>x.type==="STARTING_LINEUP_SWAP");
+ assert.equal(receipt.a,floor.name);assert.equal(receipt.b,flex.name);
+ assert.equal(g.time,0);assert.equal(g.turn,0);
+});
+test("CP06 lineup swaps can involve yard supporters and preserve six independent bodies",()=>{
+ const g=make(),floor=g.floor("player")[2],yard=g.yard("player")[0];
+ assert.equal(g.swapFormation(floor.id,yard.id),true);
+ assert.equal(yard.role,"floor");assert.equal(floor.role,"yard");
+ assert.equal(g.team("player").length,6);
+ assert.equal(g.floor("player").length,3);
+ assert.equal(new Set(g.team("player").map(u=>u.key)).size,6);
+});
+test("CP06 rejects same-role, foreign, identical, missing and rival lineup changes",()=>{
+ const g=make(),floor=g.floor("player"),rival=g.floor("enemy")[0];
+ assert.equal(g.swapFormation(floor[0].id,floor[1].id),false);
+ assert.equal(g.swapFormation(floor[0].id,floor[0].id),false);
+ assert.equal(g.swapFormation(floor[0].id,"missing"),false);
+ assert.equal(g.swapFormation(floor[0].id,rival.id),false);
+ assert.equal(g.swapFormation("missing",floor[0].id),false);
+ assert.equal(g.log.filter(x=>x.type==="STARTING_LINEUP_SWAP").length,0);
+});
+test("CP06 formation change clears abandoned A/B orders and makes player plan fresh",()=>{
+ const g=make(),two=g.floor("player").slice(0,2),sub=g.yard("player")[0];
+ g.choose(two[0].id);g.choose(two[1].id);
+ g.setPairTarget(two[0].id,200,400);
+ g.setPairAction(two[1].id,"ATTACK");
+ assert.equal(g.selected.length,2);
+ assert.equal(g.swapFormation(two[0].id,sub.id),true);
+ assert.deepEqual(g.selected,[]);
+ assert.equal(Object.keys(g.pairPlans).length,0);
+ assert.equal(g.target,null);
+ assert.equal(g.canCommit(),false);
+ assert.ok(g.units.every(u=>u.selected===false));
+});
+test("CP06 lineup becomes immutable after first successful two-character command",()=>{
+ const g=make(),[a,b]=g.floor("player"),flex=g.flex("player");
+ g.choose(a.id);g.choose(b.id);g.setAction("MOVE");g.setTarget(340,460);
+ assert.equal(g.commit(),true);
+ const locked=g.log.find(x=>x.type==="LINEUP_LOCKED");
+ assert.ok(locked);assert.equal(locked.floor.length,3);
+ assert.equal(locked.yard.length,2);assert.ok(locked.flex);
+ assert.equal(g.canArrange(),false);
+ assert.equal(g.swapFormation(a.id,flex.id),false);
+ assert.equal(g.clearPairPlan(),false);
+});
+test("CP06 snapshot includes actual chosen lineup but new rematch restores original roles",()=>{
+ const g=make(),a=g.floor("player")[0],f=g.flex("player");
+ g.swapFormation(a.id,f.id);
+ const s=g.snapshot();
+ assert.equal(s.canArrange,true);
+ assert.equal(s.formation.length,6);
+ assert.equal(s.formation.find(u=>u.name===f.name).role,"floor");
+ assert.equal(s.formation.find(u=>u.name===a.name).role,"flex");
+ const reset=make();
+ assert.equal(reset.floor("player")[0].name,a.name);
+ assert.equal(reset.flex("player").name,f.name);
+});

@@ -336,3 +336,74 @@ test('CP05 standalone offline HTML opens with new kits and finishes a match with
  expect(errors).toEqual([]);
  expect(requests.filter(url=>!url.includes('CREWBOUND_CP05_PLAY.html'))).toEqual([]);
 });
+
+test('CP06 pre-match formation editor changes who starts on floor without losing the six',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ await expect(page.locator('#arrange')).toBeEnabled();
+ await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+ const original=await page.evaluate(()=>({
+  floor:game.floor('player').map(u=>u.name),flex:game.flex('player').name,turn:game.turn}));
+ expect(original.floor).toContain('Kepler');expect(original.flex).toBe('Nox');
+ await page.locator('#arrange').click();
+ await expect(page.locator('#phase')).toHaveText('ARRANGE CREW');
+ await expect(page.locator('#commit')).toBeDisabled();
+ await page.locator('#roster .unit').nth(5).click();
+ await expect(page.locator('#roster .unit').nth(5)).toHaveAttribute('aria-pressed','true');
+ await page.locator('#roster .unit').nth(0).click();
+ const changed=await page.evaluate(()=>({
+  floor:game.floor('player').map(u=>u.name),flex:game.flex('player').name,
+  count:game.team('player').length,receipts:game.log.filter(x=>x.type==='STARTING_LINEUP_SWAP').length}));
+ expect(changed.floor).toContain('Nox');expect(changed.floor).not.toContain('Kepler');
+ expect(changed.flex).toBe('Kepler');expect(changed.count).toBe(6);
+ expect(changed.receipts).toBe(1);
+ expect(await page.locator('#roster .unit').nth(0).locator('small').textContent()).toContain('FLEX');
+ await page.locator('#arrange').click();
+ await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#roster .unit').nth(5).click();
+ await page.locator('#arena').click({position:{x:140,y:140}});
+ await expect(page.locator('#commit')).toBeEnabled();
+ await page.locator('#commit').click();
+ await expect(page.locator('#arrange')).toBeDisabled();
+ expect(await page.evaluate(()=>game.log.some(x=>x.type==='LINEUP_LOCKED'))).toBe(true);
+ expect(errors).toEqual([]);
+});
+
+test('CP06 lineup editor handles rejected role swaps, keyboard/touch and rematch restore',async({page})=>{
+ await page.setViewportSize({width:360,height:700});
+ await page.goto(PATH);
+ await page.locator('#arrange').click();
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await expect(page.locator('#arrangeHelp')).toContainText('share a role');
+ const current=await page.evaluate(()=>game.floor('player').map(u=>u.name));
+ expect(current).toContain('Kepler');
+ await page.locator('#roster .unit').nth(4).click();
+ await page.locator('#roster .unit').nth(0).click();
+ expect(await page.evaluate(()=>game.floor('player').map(u=>u.name))).toContain('Aster');
+ const ui=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,
+   buttonHeight:document.getElementById('arrange').getBoundingClientRect().height}));
+ expect(ui.scroll).toBeLessThanOrEqual(ui.viewport+2);
+ expect(ui.buttonHeight).toBeGreaterThanOrEqual(44);
+ await page.locator('#reset').click();
+ await expect(page.locator('#arrange')).toBeEnabled();
+ expect(await page.evaluate(()=>game.floor('player')[0].name)).toBe('Kepler');
+ await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+});
+
+test('CP06 exported offline HTML includes independent formation editor and acts without external game scripts',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('./crewbound-321/deliveries/CREWBOUND_CP06_PLAY.html');
+ await expect(page.locator('#arrange')).toBeVisible();
+ expect(await page.locator('script[src]').count()).toBe(0);
+ await page.locator('#arrange').click();
+ await page.locator('#roster .unit').nth(3).click();
+ await page.locator('#roster .unit').nth(2).click();
+ const data=await page.evaluate(()=>({floor:game.floor('player').map(u=>u.name),yard:game.yard('player').map(u=>u.name),
+   time:game.time,source:window.JM_CREWBOUND_321_SIM.ORIGINAL_BODY_SHA256}));
+ expect(data.floor).toContain('Locke');expect(data.yard).toContain('Solace');
+ expect(data.time).toBe(0);
+ expect(data.source).toBe('5d022e4a1bde479f25ebcfe74f817a7f277742942f8b71d9ca6f1681893dfee7');
+ expect(errors).toEqual([]);
+});

@@ -27,7 +27,7 @@ class CreationsDoorsContracts(unittest.TestCase):
         self.assertEqual(len(self.data["sections"]), 9)
         ids = [x["id"] for x in self.entries]
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertEqual(len(ids), 43)
+        self.assertEqual(len(ids), 72)
         self.assertTrue(all(e.get("label") for e in self.entries))
 
     def test_openbox_current_verified_original_door(self):
@@ -81,8 +81,29 @@ class CreationsDoorsContracts(unittest.TestCase):
 
     def test_no_private_source_claimed_public(self):
         for e in self.entries:
-            if e.get("status", "").startswith("PRIVATE"):
+            if e.get("status", "").startswith("PRIVATE") and e["kind"] == "web":
                 self.assertIn("github.com", e["url"])
+
+    def test_all_22_original_games_house_mounted_contacts_remain_distinct(self):
+        entries={e["id"]:e for e in self.entries}
+        ids=["fourfold-arena","tboys-core-clash","rim-route","crewbound-arena","house-siege","western-sniper","dead-reckon","cardbored","gameforge","glyphplay","glyphforge","game-native-core","gamecore","combound","quadze","futarized","fight-clash","aiming-run","drag-aim","loopit-boundary","playform","routeos-platform"]
+        self.assertEqual(len(ids),22)
+        for game in ids:
+            source=entries["jm-gb-play-"+game]
+            self.assertEqual(source["kind"],"web")
+            self.assertEqual(source["sourceId"],game)
+            self.assertEqual(source["url"],"https://jmisjustme-estate.pages.dev/games-beyond/?jm-play="+game)
+            self.assertIn("PUBLIC MOUNT",source["status"])
+        for original in ("jmstudios-source-rebegin","jmstudios-actual-crown"):
+            source=entries["jm-gb-private-"+original]
+            self.assertEqual(source["kind"],"hold")
+            self.assertNotIn("url",source)
+        for editor in ("gameforge","glyphplay","glyphforge","game-native-core"):
+            source=entries["jm-gb-edit-"+editor]
+            self.assertEqual(source["url"],"https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit="+editor)
+        self.assertEqual(entries["jm-crewbound-321-unique-cast"]["kind"],"web")
+        self.assertIn("22 public payload mounts",self.data["policy"]["mounted_bodies_claim"])
+        self.assertFalse(self.data["policy"]["source_bodies_copied"])
 
     def test_activity_is_private_and_home_role_absent(self):
         root = ET.parse(MANIFEST).getroot()

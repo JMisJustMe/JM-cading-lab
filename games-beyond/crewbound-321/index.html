@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
-<title>CREWBOUND CP08 · Complete Match & Local Recovery</title>
+<title>CREWBOUND CP09 · Signature Combat Feedback</title>
 <style>
 :root{color-scheme:dark;--bg:#06101c;--panel:#0d2133;--line:#355369;--text:#ecfbff;--muted:#b0c6d4;--aqua:#65ecff;--gold:#ffe28c;--pink:#ff82ab}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d5160,var(--bg) 55%);color:var(--text);font-family:system-ui,Arial,sans-serif}
@@ -27,6 +27,10 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:
 .formationEdit button{min-height:48px;width:100%;border:1px solid #7fe3f0;border-radius:10px;background:#184b5d;font-weight:900;font-size:.76rem}
 .formationEdit p{min-height:1.6em;font-size:.68rem;line-height:1.5;color:#cbe1ed;margin:7px 0 2px}
 .unit.formationPick{outline:4px solid #ffdb7d;outline-offset:-3px}
+.fxControls{border:1px solid #497683;border-radius:12px;margin:9px 0 0;padding:8px 10px;background:#0d2637;display:flex;align-items:center;gap:9px}
+.fxControls button{min-height:48px;min-width:136px;flex:0 0 auto;background:#1b4759;border:1px solid #94e6f0;border-radius:10px;padding:9px;font-size:.74rem;font-weight:900}
+.fxControls p{font-size:.66rem;color:#cce2ed;line-height:1.45;margin:0}
+.fxControls button:focus-visible{outline:3px solid var(--gold)}
 .coachBox{border:1px solid #5b798c;border-radius:12px;padding:10px;margin-top:10px;background:#132b3b}
 .coachBox button{min-height:46px;width:100%;border:1px solid #8cc9ee;border-radius:10px;padding:9px 7px;background:#20425e;font-weight:950;letter-spacing:.03em}
 .coachBox button[aria-pressed="true"]{background:#45502b;border-color:#e8df86}
@@ -78,7 +82,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <div><div class="tag">JM CREWBOUND · ORIGINAL v0.5 PRESERVED · EXCLUSIVE CAST</div><h1>CREWBOUND <span>3 + 2 + 1</span></h1></div>
   <button id="reset" style="border:1px solid var(--line);border-radius:12px;padding:11px;background:#17293c">REMATCH</button>
 </header>
-<p class="sub"><a href="./cast.html" style="font-weight:900;color:#9ef8ff">MEET THE 12 EXCLUSIVE CREWBOUND FIGHTERS</a> · CP05 living relay clash · twelve distinct combat kits · two independently planned fighters · contested arena zones · yard assists and flex deployment.</p>
+<p class="sub"><a href="./cast.html" style="font-weight:900;color:#9ef8ff">MEET THE 12 EXCLUSIVE CREWBOUND FIGHTERS</a> · CP09 signature combat cues · twelve distinct combat kits · two independently planned fighters · contested arena zones · yard assists and flex deployment.</p>
 <div class="score"><div><strong>YOUR CREW</strong><span class="n" id="myhp">—</span></div><div class="center"><div id="turn">GO 0</div><div id="phase">PLANNING</div></div><div><strong>RIVAL CREW</strong><span class="n" id="theirhp">—</span></div></div>
 <div class="relayBoard" aria-label="Living field objective score"><div>YOUR RELAYS <strong id="myRelay">0</strong></div><div>RIVAL RELAYS <strong id="theirRelay">0</strong></div></div>
 <div class="layout">
@@ -101,6 +105,10 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
     <button id="arrange" type="button" aria-pressed="false">ARRANGE STARTING SIX</button>
     <p id="arrangeHelp" aria-live="polite">Before your first go, swap a floor fighter with a yard or flex fighter. Three on floor, two in yard, one flex.</p>
   </div>
+</section>
+<section class="fxControls" aria-label="Combat readability and visual effects">
+  <button id="fxMode" type="button" aria-label="Cycle combat effects full quiet or off" aria-describedby="fxHelp">FX · FULL</button>
+  <p id="fxHelp" aria-live="polite">Character-specific signature moves, impact numbers and relay cues. Switch to quieter effects or off.</p>
 </section>
 <section class="coachBox" aria-label="Optional interactive first-go guidance">
   <button id="coachToggle" type="button" aria-pressed="false">🎯 PRACTISE FIRST GO</button>
@@ -145,16 +153,20 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 <div class="help"><details><summary>HOW TO PLAY · 3+2+1</summary><p>Three fighters start on the floor, two support from the yard and one is flexible. Before the first go, tap ARRANGE STARTING SIX and then two fighters with different roles to exchange their starting positions. Tap DONE ARRANGING before issuing combat commands. Your six identities remain the same; only their first positions change. Select two fighters. Keep BOTH for a shared move, or tap A and B to give each one its own action and tap/flick destination. Press COMMIT PAIR; both fighters act together as the rival crew issues its own two orders. All floor fighters continue moving and defending between your orders. Each character has its own combat kit and periodically triggers a signature manoeuvre when contact is made. Yard fighters shield or intervene; the flex can deploy as a fourth floor fighter. Capture the two glowing relay zones to gain tactical points. Win by disabling the rival crew or leading on remaining crew health plus relay points at the three-minute limit. Dice is optional.</p></details></div>
 </div>
 </div>
-<p class="footer">A separate CP05 experimental descendant, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
+<p class="footer">A separate CP09 experimental descendant, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
 </main>
-<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./combat-kit.js"></script><script src="./sim.js"></script><script src="./continuity.js"></script>
+<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./combat-kit.js"></script><script src="./sim.js"></script><script src="./continuity.js"></script><script src="./feedback.js"></script>
 <script>
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
 let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0,arranging=false,formationPick=null,arrangeMessage="",coachOn=false;
 const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT,
- Continuity=window.JM_CREWBOUND_321_CONTINUITY,LOCAL_KEY="JM.CREWBOUND.CP08.MATCH_LOCAL/1";
+ Continuity=window.JM_CREWBOUND_321_CONTINUITY,LOCAL_KEY="JM.CREWBOUND.CP08.MATCH_LOCAL/1",
+ Feedback=window.JM_CREWBOUND_321_FEEDBACK,
+ prefersQuiet=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches),
+ combatFeedback=Feedback.createFeedback(prefersQuiet?"QUIET":"FULL");
+combatFeedback.observe(game);
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
  const r=canvas.getBoundingClientRect();
@@ -295,10 +307,24 @@ function updateUI(){
    game.canCommit()?"Both orders ready · COMMIT PAIR":
    !started?"Clock starts on first COMMIT · select two fighters and target(s)":
    "Tap A/B for individual orders, or BOTH for a linked plan";
- const rec=game.log.slice(-2).reverse().map(x=>x.type+" · "+(x.body||x.from||x.player?.join(" + ")||"")).join(" | ");
- $("log").textContent=rec||"Planning continues while the rival moves.";
+ const meaningful=game.log.slice(-8).reverse().map(Feedback.summary).filter(Boolean).slice(0,2);
+ const commitMarker=game.lastRivalPair()?"SIMULTANEOUS_PAIR_COMMIT · ":"";
+ const nextTrace=commitMarker+(meaningful.join(" | ")||"Planning continues while the rival moves.");
+ if($("log").textContent!==nextTrace)$("log").textContent=nextTrace;
+ $("fxMode").textContent="FX · "+combatFeedback.mode();
+ $("fxMode").setAttribute("aria-label","Combat effects "+combatFeedback.mode().toLowerCase()+". Tap to cycle full, quiet or off.");
+ $("fxHelp").textContent=combatFeedback.mode()==="FULL"?
+   "Character-exclusive moves, contact numbers, yard assists and relay captures.":
+   combatFeedback.mode()==="QUIET"?
+   "Reduced animation: static combat markers without pilot bobbing.":
+   "Visual overlays are off; combat rules are unchanged.";
  makeRoster();
 }
+$("fxMode").onclick=()=>{
+ const modes=Feedback.MODES;
+ combatFeedback.setMode(modes[(modes.indexOf(combatFeedback.mode())+1)%modes.length]);
+ updateUI();
+};
 $("coachToggle").onclick=()=>{coachOn=!coachOn;updateUI()};
 $("arrange").onclick=()=>{
   if(!game.canArrange())return;
@@ -368,7 +394,7 @@ document.addEventListener("visibilitychange",()=>{
 function drawFighter(u){
  const f=ROSTER[u.key],col=f.palette[0];
  if(u.selected){ctx.save();ctx.strokeStyle="#fff2a8";ctx.lineWidth=4;ctx.beginPath();ctx.arc(u.x,u.y,45,0,Math.PI*2);ctx.stroke();ctx.restore()}
- Art.draw(ctx,f,u.x,u.y,72,game.time,u.team);
+ Art.draw(ctx,f,u.x,u.y,72,combatFeedback.mode()==="FULL"?game.time:0,u.team);
  if(u.shield>0){ctx.save();ctx.strokeStyle="#b2f7ff";ctx.lineWidth=3;ctx.beginPath();ctx.arc(u.x,u.y,42,0,Math.PI*2);ctx.stroke();ctx.restore()}
  if(u.hitFlash>0){ctx.save();ctx.strokeStyle="#ffffff";ctx.lineWidth=5;ctx.beginPath();ctx.arc(u.x,u.y,44,0,Math.PI*2);ctx.stroke();ctx.restore()}
  if(u.specialFlash>0){ctx.save();ctx.strokeStyle=f.palette[2];ctx.lineWidth=5*u.specialFlash;ctx.globalAlpha=Math.min(1,u.specialFlash);ctx.beginPath();ctx.arc(u.x,u.y,45+(1.05-u.specialFlash)*48,0,Math.PI*2);ctx.stroke();ctx.restore()}
@@ -426,10 +452,12 @@ function paint(){
   if(u.order){ctx.strokeStyle=u.team==="player"?"#77f6ffaf":"#ff82b2a0";ctx.setLineDash([7,7]);ctx.beginPath();ctx.moveTo(u.x,u.y);ctx.lineTo(u.order.target.x,u.order.target.y);ctx.stroke();ctx.setLineDash([])}
   drawFighter(u);
  }
+ combatFeedback.paint(ctx);
 }
 function frame(ts){
  const dt=Math.min(.035,(ts-last)/1000||.016);last=ts;
  if(!paused&&started)game.step(dt);
+ combatFeedback.observe(game);combatFeedback.tick(dt);
  paint();if(ts-rerenderAt>180){updateUI();rerenderAt=ts}
  requestAnimationFrame(frame);
 }

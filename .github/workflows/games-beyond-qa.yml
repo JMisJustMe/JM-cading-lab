@@ -47,7 +47,7 @@ jobs:
       - name: CREWBOUND CP05 offline HTML source-parity and syntax
         run: node crewbound-321/deliveries/verify-cp05-delivery.cjs
       - name: CREWBOUND 3+2+1 engine contract (original through CP05)
-        run: node --test crewbound-321/sim.test.cjs
+        run: node --test crewbound-321/sim.test.cjs crewbound-321/sim.stress.test.cjs
       - name: CREWBOUND 3+2+1 CP05 touchscreen browser acceptance
         run: npx playwright test tests/crewbound-321.spec.mjs --reporter=line
       - name: Upload Playwright evidence on failure

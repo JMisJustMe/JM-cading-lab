@@ -147,3 +147,88 @@ test('CP03 no three-minute timeout before first paired command; rematch re-arms 
   expect(reset).toEqual({time:0,turn:0,ended:false,selected:0});
   await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
 });
+
+test('CP04 different actions and targets for the same two-character go on mobile and desktop',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await expect(page.locator('#pair')).toHaveText('2 / 2 READY');
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=ATTACK]').click();
+ await page.locator('#arena').click({position:{x:130,y:120}});
+ await expect(page.locator('#editFirst')).toContainText('ATTACK');
+ await page.locator('#editSecond').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:210,y:180}});
+ await expect(page.locator('#editSecond')).toContainText('GUARD');
+ await expect(page.locator('#commit')).toBeEnabled();
+ await page.locator('#commit').click();
+ const data=await page.evaluate(()=>{
+  const receipt=game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT');
+  return {turn:game.turn,actions:receipt.playerPlans.map(x=>x.action),
+    separated:receipt.playerPlans[0].target.x!==receipt.playerPlans[1].target.x,
+    rivals:receipt.rival.length,resolve:game.resolve,errors:game.ended};
+ });
+ expect(data.turn).toBe(1);
+ expect(data.actions).toEqual(['ATTACK','GUARD']);
+ expect(data.separated).toBe(true);
+ expect(data.rivals).toBe(2);
+ expect(data.resolve).toBeGreaterThan(0);
+ expect(data.errors).toBe(false);
+ expect(errors).toEqual([]);
+});
+
+test('CP04 linked BOTH mode preserves original rapid two-character control',async({page})=>{
+ await page.goto(PATH);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:100,y:130}});
+ await page.locator('#editBoth').click();
+ await page.locator('[data-action=MOVE]').click();
+ await page.locator('#arena').click({position:{x:150,y:200}});
+ await expect(page.locator('#commit')).toBeEnabled();
+ await page.locator('#commit').click();
+ const plans=await page.evaluate(()=>game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT').playerPlans);
+ expect(plans.map(p=>p.action)).toEqual(['MOVE','MOVE']);
+ expect(plans[0].target.x).not.toBe(plans[1].target.x);
+ await page.locator('#reset').click();
+ await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+ await expect(page.locator('#commit')).toBeDisabled();
+});
+
+test('CP04 standalone source-parity HTML runs independently with real A/B touch orders',async({page})=>{
+  const errors=[];const requests=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('request',req=>requests.push(req.url()));
+  await page.goto('./crewbound-321/deliveries/CREWBOUND_CP04_PLAY.html');
+  await expect(page.locator('h1')).toContainText('3 + 2 + 1');
+  await expect(page.locator('#roster .unit')).toHaveCount(6);
+  await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+  expect(await page.locator('script[src]').count()).toBe(0);
+  expect(await page.evaluate(()=>window.JM_CREWBOUND_321_SIM.CAST_SCHEMA))
+    .toBe('JM.CREWBOUND.CP02.UNIQUE_CAST/1');
+  await page.locator('#roster .unit').nth(0).click();
+  await page.locator('#roster .unit').nth(1).click();
+  await page.locator('#editFirst').click();
+  await page.locator('[data-action=ATTACK]').click();
+  await page.locator('#arena').click({position:{x:140,y:155}});
+  await page.locator('#editSecond').click();
+  await page.locator('[data-action=GUARD]').click();
+  await page.locator('#arena').click({position:{x:215,y:195}});
+  await expect(page.locator('#commit')).toBeEnabled();
+  await page.locator('#commit').click();
+  const state=await page.evaluate(()=>{
+    const r=game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT');
+    return {turn:game.turn,actions:r.playerPlans.map(x=>x.action),
+      targets:r.playerPlans.map(x=>x.target.x),rivals:r.rival.length};
+  });
+  expect(state.turn).toBe(1);
+  expect(state.actions).toEqual(['ATTACK','GUARD']);
+  expect(state.targets[0]).not.toBe(state.targets[1]);
+  expect(state.rivals).toBe(2);
+  expect(errors).toEqual([]);
+  expect(requests.filter(u=>!u.includes('CREWBOUND_CP04_PLAY.html'))).toEqual([]);
+});

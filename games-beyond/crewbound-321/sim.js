@@ -24,7 +24,7 @@
   class Game{
     constructor(seed=321){
       this.rng=rand(seed);this.seed=seed;this.time=0;this.resolve=0;this.turn=0;this.action="COMBO";
-      this.selected=[];this.target=null;this.die=null;this.ended=false;this.winner=null;this.log=[];
+      this.selected=[];this.target=null;this.pairPlans=Object.create(null);this.editing=null;this.die=null;this.ended=false;this.winner=null;this.log=[];
       this.units=Object.entries(CREWS).flatMap(([team,keys])=>keys.map((k,i)=>createUnit(team,k,i)));
       this.receipt("MATCH_START",{source_sha256:source.source_sha256,formation:"3 floor + 2 yard + 1 flex",simultaneous:true,unique_cast:cast?.schema||"BASELINE"});
     }
@@ -39,14 +39,45 @@
       if(this.ended||this.resolve>0)return false;
       const u=this.find(id);if(!u||u.team!=="player"||!u.alive)return false;
       const at=this.selected.indexOf(id);
-      if(at>=0)this.selected.splice(at,1);else{if(this.selected.length===2)this.selected.shift();this.selected.push(id)}
+      if(at>=0){this.selected.splice(at,1);delete this.pairPlans[id];if(this.editing===id)this.editing=null}
+      else{
+        if(this.selected.length===2){const evicted=this.selected.shift();delete this.pairPlans[evicted];if(this.editing===evicted)this.editing=null}
+        this.selected.push(id);
+      }
       this.units.forEach(v=>v.selected=this.selected.includes(v.id));return true;
     }
     setTarget(x,y){
       if(!Number.isFinite(x)||!Number.isFinite(y))return false;
-      this.target={x:clamp(x,30,W-30),y:clamp(y,30,H-30)};return true;
+      this.target={x:clamp(x,30,W-30),y:clamp(y,30,H-30)};
+      for(const plan of Object.values(this.pairPlans))delete plan.target;
+      return true;
     }
-    setAction(a){if(!["COMBO","ATTACK","GUARD","MOVE","DEPLOY"].includes(a))return false;this.action=a;return true}
+    setAction(a){
+      if(!["COMBO","ATTACK","GUARD","MOVE","DEPLOY"].includes(a))return false;
+      this.action=a;for(const plan of Object.values(this.pairPlans))delete plan.action;return true;
+    }
+    setEditing(id){
+      if(id!==null&&!this.selected.includes(id))return false;
+      this.editing=id;return true;
+    }
+    setPairAction(id,a){
+      if(!this.selected.includes(id)||!["COMBO","ATTACK","GUARD","MOVE","DEPLOY"].includes(a))return false;
+      (this.pairPlans[id]??={}).action=a;return true;
+    }
+    setPairTarget(id,x,y){
+      if(!this.selected.includes(id)||!Number.isFinite(x)||!Number.isFinite(y))return false;
+      (this.pairPlans[id]??={}).target={x:clamp(x,30,W-30),y:clamp(y,30,H-30)};return true;
+    }
+    canCommit(){
+      if(this.ended||this.resolve>0||this.selected.length!==2)return false;
+      const fighters=this.selected.map(id=>this.find(id));
+      return fighters.every(u=>{
+        if(!u?.alive||u.team!=="player")return false;
+        const plan=this.pairPlans[u.id]||{},mode=plan.action||this.action;
+        if(u.role!=="floor"&&mode!=="DEPLOY"&&u.supportCooldown>0)return false;
+        return !!(plan.target||this.target);
+      });
+    }
     roll(){if(this.resolve>0||this.ended)return 0;this.die=1+Math.floor(this.rng()*6);this.receipt("OPTIONAL_DIE",{value:this.die});return this.die}
     deploy(u){
       if(!u?.alive||u.role==="floor")return false;
@@ -96,13 +127,16 @@
       this.receipt("ORDER",{body:u.name,side:u.team,mode,target:u.order.target});return true;
     }
     commit(){
-      if(this.ended||this.resolve>0||this.selected.length!==2||!this.target)return false;
+      if(!this.canCommit())return false;
       const units=this.selected.map(id=>this.find(id));
-      if(units.some(u=>!u?.alive||u.team!=="player"||u.role!=="floor"&&this.action!=="DEPLOY"&&u.supportCooldown>0))return false;
       const before=this.log.length;
-      const x=this.target.x,y=this.target.y;
-      const issued=units.map((u,i)=>this.order(u,this.action,{x:clamp(x+(i?35:-35),30,W-30),y},"player"));
-      if(!issued.some(Boolean)){this.log.length=before;return false}
+      const planned=units.map((u,i)=>{
+        const proposal=this.pairPlans[u.id]||{},target=proposal.target||this.target;
+        return {u,action:proposal.action||this.action,target:{
+          x:clamp(target.x+(proposal.target?0:i?35:-35),30,W-30),y:target.y}};
+      });
+      const issued=planned.map(p=>this.order(p.u,p.action,p.target,"player"));
+      if(!issued.every(Boolean)){this.log.length=before;return false}
       this.turn++;
       const enemyUnits=this.floor("enemy").concat(this.yard("enemy").filter(u=>u.supportCooldown<=0));
       const chosen=[],enemyPlans=[];
@@ -120,8 +154,10 @@
           enemyPlans.push({name:actor.name,action,target:{x,y}});
         }
       }
-      this.receipt("SIMULTANEOUS_PAIR_COMMIT",{turn:this.turn,player:units.map(u=>u.name),rival:enemyPlans,die:this.die});
-      this.resolve=WINDOW;this.selected=[];this.target=null;this.die=null;
+      this.receipt("SIMULTANEOUS_PAIR_COMMIT",{turn:this.turn,player:units.map(u=>u.name),
+        playerPlans:planned.map(p=>({name:p.u.name,action:p.action,target:p.target})),
+        rival:enemyPlans,die:this.die});
+      this.resolve=WINDOW;this.selected=[];this.target=null;this.pairPlans=Object.create(null);this.editing=null;this.die=null;
       this.units.forEach(u=>u.selected=false);return true;
     }
     strike(a,b){

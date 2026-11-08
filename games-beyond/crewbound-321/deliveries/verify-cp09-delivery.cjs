@@ -1,4 +1,4 @@
-/* JM CREWBOUND CP09 — exact portable HTML parity, syntax and provenance.
+/* JM CREWBOUND CP09 — canonical LF source parity, syntax and provenance.
    The modular GitHub source remains authoritative; this is a delivery copy. */
 "use strict";
 const fs=require("node:fs"),path=require("node:path");
@@ -9,7 +9,7 @@ const names=["index.html","roster.js","cast.js","art.js",
  "combat-kit.js","sim.js","continuity.js","feedback.js"];
 const src={},sha={};
 for(const name of names){
- const contents=fs.readFileSync(path.join(root,name),"utf8");
+ const contents=fs.readFileSync(path.join(root,name),"utf8").replace(/\r\n/g,"\n");
  src[name]=contents;
  sha[name]=crypto.createHash("sha1")
    .update("blob "+Buffer.byteLength(contents)+"\0")
@@ -36,7 +36,7 @@ const proof={
 };
 html=html.replace("<head>","<head>\n<!-- "+JSON.stringify(proof)+" -->");
 assert.ok(!html.includes('<script src="./'),"unexpected sidecar game scripts");
-const shipped=fs.readFileSync(path.join(__dirname,"CREWBOUND_CP09_PLAY.html"),"utf8");
+const shipped=fs.readFileSync(path.join(__dirname,"CREWBOUND_CP09_PLAY.html"),"utf8").replace(/\r\n/g,"\n");
 assert.equal(shipped,html,"CP09 HTML differs from exact current source modules");
 const scripts=[...shipped.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.equal(scripts.length,8,"seven source modules plus one browser runtime");

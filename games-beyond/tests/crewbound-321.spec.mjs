@@ -537,7 +537,12 @@ test('CP08 browser saved match reopens paused and untrusted capsule cannot destr
  await page.locator('details.continuity summary').click();
  await page.locator('#saveMatch').click();
  await expect(page.locator('#checkpointStatus')).toContainText('SAVED LOCALLY');
- const before=await page.evaluate(()=>game.snapshot());
+ // Compare to the actual saved checkpoint, not a live match that advances
+ // additional animation frames between save and inspection.
+ const before=await page.evaluate(()=>{
+   const text=localStorage.getItem('JM.CREWBOUND.CP08.MATCH_LOCAL/1');
+   return window.JM_CREWBOUND_321_CONTINUITY.unpack(text).snapshot();
+ });
  await page.locator('#reset').click();
  await page.locator('#loadMatch').click();
  await expect(page.locator('#checkpointStatus')).toContainText('MATCH RESTORED');

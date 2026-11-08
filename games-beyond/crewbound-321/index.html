@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
-<title>CREWBOUND CP07 · Paired Orders & First-Go Practice</title>
+<title>CREWBOUND CP08 · Complete Match & Local Recovery</title>
 <style>
 :root{color-scheme:dark;--bg:#06101c;--panel:#0d2133;--line:#355369;--text:#ecfbff;--muted:#b0c6d4;--aqua:#65ecff;--gold:#ffe28c;--pink:#ff82ab}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d5160,var(--bg) 55%);color:var(--text);font-family:system-ui,Arial,sans-serif}
@@ -18,7 +18,7 @@ h1{font-size:clamp(1.3rem,4.5vw,2.1rem);line-height:1.08;margin:6px 0}h1 span{co
 canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:none}
 .float{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
 .float span{border:1px solid #9aeeff77;border-radius:9px;padding:5px 8px;background:#071b28df;font-size:.64rem;font-weight:900}
-.fieldHelp{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);text-align:center;border:1px solid #ffffff40;border-radius:12px;padding:7px 12px;background:#061b2fdb;font-size:.68rem;white-space:nowrap;max-width:94%}
+.fieldHelp{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);text-align:center;border:1px solid #ffffff40;border-radius:12px;padding:7px 12px;background:#061b2fdb;font-size:.68rem;white-space:normal;max-width:94%}
 .sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:7px;margin:13px 0 6px;font-size:.73rem;font-weight:950;letter-spacing:.04em}
 .rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 .unit{min-width:0;overflow:hidden;background:#10253a;border:1px solid var(--line);border-radius:11px;min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;padding:7px 3px}
@@ -57,6 +57,13 @@ button:disabled{opacity:.44;cursor:not-allowed}
 .matchOverlay[hidden]{display:none!important}.matchOverlay h2{font-size:clamp(1.5rem,7vw,3rem);margin:0;color:#fff3ba}
 .matchOverlay p{font-size:.87rem;max-width:360px;line-height:1.7;color:#cfe3ec}
 .matchOverlay button{border:2px solid #7be8fb;border-radius:14px;padding:16px 24px;background:#136274;font-weight:950;min-height:54px}
+.continuity{border:1px solid #567d81;background:#0b2730;border-radius:12px;padding:9px;margin-top:10px}
+.continuity summary{list-style:none;cursor:pointer;color:#e9f6c5;font-weight:950;font-size:.78rem;padding:5px 0}
+.continuity .saveGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0}
+.continuity button{min-height:46px;min-width:0;border:1px solid #8dc9cf;background:#183d4b;border-radius:10px;font-size:.69rem;padding:8px 4px;font-weight:900}
+.continuity textarea{width:100%;min-height:84px;max-height:175px;background:#081926;color:#d6f7f1;border:1px solid #668a9b;border-radius:9px;padding:8px;font:12px ui-monospace,monospace;resize:vertical}
+.continuity p{color:#cee4e2;font-size:.69rem;line-height:1.55;margin:6px 0 2px}
+.careerLine{font-size:.72rem;margin:7px 0;padding:7px;border:1px solid #566e72;border-radius:9px;color:#fff0b8;overflow-wrap:anywhere}
 .help{margin-top:10px;display:grid;gap:6px}
 details{border:1px solid var(--line);padding:10px;border-radius:12px;background:#0c1d2d;font-size:.75rem;line-height:1.5}
 summary{cursor:pointer;font-weight:900}
@@ -89,6 +96,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 <section aria-label="Player crew selection">
   <div class="sectionTitle"><span>YOUR SIX · TAP TWO</span><span id="pair">0 / 2 READY</span></div>
   <div class="rack" id="roster"></div>
+  <div class="careerLine" id="careerLine" aria-live="polite">CREW EXPERIENCE · 0 matches · 0 wins</div>
   <div class="formationEdit">
     <button id="arrange" type="button" aria-pressed="false">ARRANGE STARTING SIX</button>
     <p id="arrangeHelp" aria-live="polite">Before your first go, swap a floor fighter with a yard or flex fighter. Three on floor, two in yard, one flex.</p>
@@ -98,6 +106,18 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
   <button id="coachToggle" type="button" aria-pressed="false">🎯 PRACTISE FIRST GO</button>
   <p id="coachText" aria-live="polite">Optional guided practice: use your real fighters and actions. No separate game mode.</p>
 </section>
+<details class="continuity" aria-label="Local match recovery tools">
+  <summary>💾 SAVE / RESTORE MATCH (OPTIONAL)</summary>
+  <p>Local-only. Save this browser's match or export a portable code to keep elsewhere. No account, cloud upload or automatic background storage.</p>
+  <div class="saveGrid">
+    <button type="button" id="saveMatch">SAVE IN BROWSER</button>
+    <button type="button" id="loadMatch">RESTORE SAVED</button>
+    <button type="button" id="exportMatch">EXPORT CODE</button>
+    <button type="button" id="importMatch">IMPORT CODE</button>
+  </div>
+  <textarea id="matchCode" aria-label="Portable CREWBOUND match JSON code" spellcheck="false" placeholder="Export here or paste an existing CREWBOUND CP08 match code"></textarea>
+  <p id="checkpointStatus" aria-live="polite">No match data leaves your browser. Restored battles open paused; tap RESUME when you're ready.</p>
+</details>
 <section class="controls" aria-label="Two-character orders">
   <div class="sectionTitle" style="margin-top:0">PLAN TWO ACTIONS <span>RIVAL PLANS TOO</span></div>
   <div class="pairPlan" role="group" aria-label="Plan both fighters together or give each fighter a separate order">
@@ -127,21 +147,26 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 </div>
 <p class="footer">A separate CP05 experimental descendant, not an overwrite of CREWBOUND v0.5 or COMBOUND. CREWBOUND-exclusive pilots and costumes; donor powers, mass and HP remain traceable to the protected PrimeBody baseline. New visual identity, mobility and 3+2+1 rules belong only to this descendant. Browser gameplay and Fold touch remain separate acceptance gates.</p>
 </main>
-<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./combat-kit.js"></script><script src="./sim.js"></script>
+<script src="./roster.js"></script><script src="./cast.js"></script><script src="./art.js"></script><script src="./combat-kit.js"></script><script src="./sim.js"></script><script src="./continuity.js"></script>
 <script>
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
 let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0,arranging=false,formationPick=null,arrangeMessage="",coachOn=false;
-const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT;
+const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT,
+ Continuity=window.JM_CREWBOUND_321_CONTINUITY,LOCAL_KEY="JM.CREWBOUND.CP08.MATCH_LOCAL/1";
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
  const r=canvas.getBoundingClientRect();
  return{x:(ev.clientX-r.left)/r.width*canvas.width,y:(ev.clientY-r.top)/r.height*canvas.height};
 }
-canvas.addEventListener("pointerdown",ev=>{startPointer=screenPos(ev);try{canvas.setPointerCapture(ev.pointerId)}catch{}});
+canvas.addEventListener("pointerdown",ev=>{
+ if(arranging||game.ended||game.resolve>0){startPointer=null;return}
+ startPointer=screenPos(ev);try{canvas.setPointerCapture(ev.pointerId)}catch{}
+});
 canvas.addEventListener("pointerup",ev=>{
  if(!startPointer||game.ended){startPointer=null;return}
+ if(arranging||game.resolve>0){startPointer=null;return}
  const p=screenPos(ev),delta=Math.hypot(p.x-startPointer.x,p.y-startPointer.y);
  if(delta<16){
   const u=game.floor("player").find(u=>Math.hypot(u.x-p.x,u.y-p.y)<24);

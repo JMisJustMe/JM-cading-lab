@@ -24,9 +24,9 @@ const gallery='href="./cast.html"';
 assert.equal(html.split(gallery).length,2,"original gallery link");
 html=html.replace(gallery,'href="https://jmisjustme.github.io/JM-cading-lab/games-beyond/crewbound-321/cast.html"');
 const meta={schema:"JM.CREWBOUND.CP07.STANDALONE_HTML/1",
-  branch:"jm/crewbound-cp07-formation-training",
+  branch:"jm/crewbound-cp07-battle-clarity",
   source_files_blob_sha1:sha,
-  custody:"offline review only, modular GitHub source keeper",
+  role:"offline review only, modular GitHub source keeper",
   ancestry:"original CREWBOUND v0.5 preserved; protected CP03–CP06 distinct"};
 html=html.replace("<head>","<head>\n<!-- "+JSON.stringify(meta)+" -->");
 assert.ok(!html.includes('<script src="./'),"offline source has no external game JS");

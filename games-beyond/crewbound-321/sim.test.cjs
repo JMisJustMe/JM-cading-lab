@@ -366,3 +366,73 @@ test("CP06 snapshot includes actual chosen lineup but new rematch restores origi
  assert.equal(reset.floor("player")[0].name,a.name);
  assert.equal(reset.flex("player").name,f.name);
 });
+
+test("CP07 exact A/B tactical preview matches committed actions and targets",()=>{
+ const g=make(),[a,b]=g.floor("player");
+ g.choose(a.id);g.choose(b.id);
+ g.setPairAction(a.id,"ATTACK");g.setPairTarget(a.id,184,275);
+ g.setPairAction(b.id,"GUARD");g.setPairTarget(b.id,495,590);
+ const before=g.pairPreview();
+ assert.equal(before.ready,true);
+ assert.deepEqual(before.orders.map(x=>x.action),["ATTACK","GUARD"]);
+ assert.deepEqual(before.orders.map(x=>x.target),[{x:184,y:275},{x:495,y:590}]);
+ assert.equal(g.commit(),true);
+ const receipt=g.log.find(x=>x.type==="SIMULTANEOUS_PAIR_COMMIT");
+ assert.deepEqual(receipt.playerPlans.map(x=>x.target),before.orders.map(x=>x.target));
+ assert.deepEqual(receipt.playerPlans.map(x=>x.action),before.orders.map(x=>x.action));
+});
+test("CP07 linked both preview shares true offset with legacy default",()=>{
+ const g=make(),[a,b]=g.floor("player");
+ g.choose(a.id);g.choose(b.id);g.setAction("MOVE");g.setTarget(340,420);
+ const before=g.pairPreview();
+ assert.equal(before.ready,true);
+ assert.deepEqual(before.orders.map(x=>x.target.x),[305,375]);
+ assert.deepEqual(before.orders.map(x=>x.independent),[false,false]);
+ assert.equal(g.commit(),true);
+ assert.deepEqual(g.log.find(x=>x.type==="SIMULTANEOUS_PAIR_COMMIT").playerPlans.map(x=>x.target.x),[305,375]);
+});
+test("CP07 preview is read-only and cannot mutate RNG, clock, roster or receipts",()=>{
+ const g=make(),[a,b]=g.floor("player");
+ g.choose(a.id);g.choose(b.id);g.setPairAction(a.id,"COMBO");g.setPairTarget(a.id,100,280);
+ const prior=g.snapshot();const oldLog=g.log.length,oldTime=g.time,oldTurn=g.turn,oldRoles=g.formationRoster();
+ const one=g.pairPreview(),two=g.pairPreview();
+ assert.deepEqual(one,two);
+ assert.equal(one.ready,false);
+ assert.equal(one.orders[1].reason,"Choose a target");
+ assert.equal(g.log.length,oldLog);assert.equal(g.time,oldTime);assert.equal(g.turn,oldTurn);
+ assert.deepEqual(g.formationRoster(),oldRoles);
+ assert.deepEqual(g.snapshot().units,prior.units);
+});
+test("CP07 preview reports support cooldown without claiming unready pair can commit",()=>{
+ const g=make(),support=g.yard("player")[0],floor=g.floor("player")[0];
+ g.choose(support.id);g.choose(floor.id);
+ g.setPairAction(support.id,"GUARD");g.setPairTarget(support.id,280,520);
+ g.setPairAction(floor.id,"MOVE");g.setPairTarget(floor.id,330,480);
+ support.supportCooldown=4;
+ const p=g.pairPreview();
+ assert.equal(p.ready,false);
+ assert.equal(p.orders[0].reason,"Support cooling down");
+ assert.equal(g.commit(),false);
+});
+test("CP07 rival-response receipt is absent before first go and reveals only actually committed plans",()=>{
+ const g=make();assert.equal(g.lastRivalPair(),null);
+ const [a,b]=g.floor("player");g.choose(a.id);g.choose(b.id);g.setTarget(340,420);
+ assert.equal(g.lastRivalPair(),null);
+ assert.equal(g.commit(),true);
+ const receipt=g.log.find(x=>x.type==="SIMULTANEOUS_PAIR_COMMIT");
+ const readback=g.lastRivalPair();
+ assert.equal(readback.turn,1);
+ assert.deepEqual(readback.rival,receipt.rival);
+ assert.equal(readback.rival.length,2);
+ assert.equal(g.snapshot().lastRivalPair.turn,1);
+});
+test("CP07 pair preview recognises near-pair synergy but does not guarantee a hit",()=>{
+ const g=make(),[a,b]=g.floor("player");
+ g.choose(a.id);g.choose(b.id);
+ a.x=240;a.y=260;b.x=245;b.y=285;
+ assert.equal(g.pairPreview().nearPair,true);
+ b.x=550;b.y=650;
+ assert.equal(g.pairPreview().nearPair,false);
+ assert.equal(g.pairPreview().ready,false);
+ assert.equal(g.pairPreview().hint.includes("Select two"),false);
+});

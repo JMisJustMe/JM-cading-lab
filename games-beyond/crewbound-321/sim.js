@@ -3,12 +3,14 @@
 (function(root,factory){
   const R=root.JM_CREWBOUND_321_ROSTER||(typeof require==="function"?require("./roster.js"):null);
   const C=root.JM_CREWBOUND_321_CAST||(typeof require==="function"?require("./cast.js"):null);
-  const api=factory(R,C);
+  const K=root.JM_CREWBOUND_321_COMBAT||(typeof require==="function"?require("./combat-kit.js"):null);
+  const api=factory(R,C,K);
   if(typeof module==="object"&&module.exports)module.exports=api;
   root.JM_CREWBOUND_321_SIM=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(source,cast){
+})(typeof globalThis!=="undefined"?globalThis:this,function(source,cast,combat){
   "use strict";
   if(!source?.fighters)throw Error("Original CREWBOUND roster unavailable");
+  if(!combat?.KITS||Object.keys(combat.KITS).length!==12)throw Error("Independent CREWBOUND CP05 fighter kits unavailable");
   const R=cast?.fighters||source.fighters,W=680,H=840,WINDOW=4.3,MAX_FLOOR=4;
   const CREWS=cast?.crews||{player:["ZIPP","BRAX","MIRA","GROVE","ORBI","VEXA"],enemy:["SKIP","KNOT","VEXA","ORBI","GROVE","BRAX"]};
   const clamp=(x,l,h)=>Math.max(l,Math.min(h,x));
@@ -19,12 +21,17 @@
     return {id:team+"-"+index+"-"+key,team,key,name:f.name,index,role:floor?"floor":index<5?"yard":"flex",
       x:135+(index%3)*205,y:team==="player"?675:155,vx:0,vy:0,hp:f.hp,maxHp:f.hp,alive:true,
       shield:0,marked:0,bound:0,guard:0,hitFlash:0,cooldown:0,supportCooldown:0,pulseCooldown:0,
-      surge:0,order:null,selected:false};
+      surge:0,kitCooldown:0,specialFlash:0,order:null,selected:false};
   }
   class Game{
     constructor(seed=321){
       this.rng=rand(seed);this.seed=seed;this.time=0;this.resolve=0;this.turn=0;this.action="COMBO";
       this.selected=[];this.target=null;this.pairPlans=Object.create(null);this.editing=null;this.die=null;this.ended=false;this.winner=null;this.log=[];
+      this.W=W;this.H=H;
+      this.scores={player:0,enemy:0};this.matchReason=null;this.pairLink=null;
+      this.stats={player:{hits:0,damage:0,guards:0,assists:0,combos:0,downs:0},enemy:{hits:0,damage:0,guards:0,assists:0,combos:0,downs:0}};
+      this.zones=[{id:"relay-west",x:W*.30,y:H*.46,r:100,holder:null,progress:0},
+        {id:"relay-east",x:W*.70,y:H*.54,r:100,holder:null,progress:0}];
       this.units=Object.entries(CREWS).flatMap(([team,keys])=>keys.map((k,i)=>createUnit(team,k,i)));
       this.receipt("MATCH_START",{source_sha256:source.source_sha256,formation:"3 floor + 2 yard + 1 flex",simultaneous:true,unique_cast:cast?.schema||"BASELINE"});
     }
@@ -92,12 +99,16 @@
     hurt(target,amount,by){
       if(!target?.alive||target.role!=="floor")return 0;
       if(R[target.key].archetype==="GROVE")amount*=.68;
+      amount*=combat.guardMultiplier(this,target,by);
       if(target.guard>0)amount*=.5;
       if(R[target.key].archetype==="SKIP"&&this.rng()<.18)amount*=.25;
       if(target.marked>0){amount*=1.5;target.marked=0}
       const blocked=Math.min(target.shield,amount);target.shield-=blocked;
       const taken=Math.max(0,amount-blocked);target.hp=Math.max(0,target.hp-taken);target.hitFlash=.26;
-      if(!target.hp){target.alive=false;target.role="down";target.order=null;this.receipt("FIGHTER_DOWN",{body:target.name,side:target.team,by:by?.name})}
+      if(by?.team&&this.stats[by.team])this.stats[by.team].damage+=taken;
+      if(!target.hp){target.alive=false;target.role="down";target.order=null;
+        if(by?.team&&this.stats[by.team])this.stats[by.team].downs++;
+        this.receipt("FIGHTER_DOWN",{body:target.name,side:target.team,by:by?.name})}
       return taken;
     }
     intervene(u,mode,target){
@@ -113,6 +124,7 @@
         if(enemy)this.hurt(enemy,25+R[u.key].power*22,u);
       }
       u.supportCooldown=5;
+      this.stats[u.team].assists++;
       this.receipt("YARD_INTERVENTION",{body:u.name,side:u.team,mode});
       return true;
     }
@@ -123,7 +135,7 @@
       }
       if(u.role!=="floor"||!u.alive)return false;
       u.order={mode,target:{...target},remaining:WINDOW,issuedBy,bonus:issuedBy==="player"&&this.die?clamp(.88+this.die*.04,.92,1.12):1};
-      if(mode==="GUARD"){u.guard=WINDOW;u.shield=Math.min(350,u.shield+55)}
+      if(mode==="GUARD"){u.guard=WINDOW;u.shield=Math.min(350,u.shield+55);this.stats[u.team].guards++}
       this.receipt("ORDER",{body:u.name,side:u.team,mode,target:u.order.target});return true;
     }
     commit(){
@@ -138,6 +150,7 @@
       const issued=planned.map(p=>this.order(p.u,p.action,p.target,"player"));
       if(!issued.every(Boolean)){this.log.length=before;return false}
       this.turn++;
+      this.pairLink={ids:units.map(u=>u.id),until:this.time+WINDOW,bonusCount:0};
       const enemyUnits=this.floor("enemy").concat(this.yard("enemy").filter(u=>u.supportCooldown<=0));
       const chosen=[],enemyPlans=[];
       for(let i=0;i<2&&enemyUnits.length>chosen.length;i++){
@@ -149,7 +162,9 @@
         if(target){
           const x=clamp(target.x+target.vx*.55+(this.rng()-.5)*70,30,W-30);
           const y=clamp(target.y+target.vy*.55+(this.rng()-.5)*70,30,H-30);
-          const action=this.rng()<.3?"GUARD":this.rng()<.6?"ATTACK":"COMBO";
+          const wounded=actor.hp/actor.maxHp<.28,nearThreat=target&&dist(actor,target)<130;
+          const choice=this.rng();
+          const action=wounded&&nearThreat?"GUARD":actor.role==="yard"&&choice<.35?"GUARD":choice<.2?"MOVE":choice<.43?"GUARD":choice<.74?"ATTACK":"COMBO";
           this.order(actor,action,{x,y},"enemy");
           enemyPlans.push({name:actor.name,action,target:{x,y}});
         }
@@ -161,8 +176,15 @@
       this.units.forEach(u=>u.selected=false);return true;
     }
     strike(a,b){
-      if(a.cooldown>0||!b?.alive||dist(a,b)>37+R[a.key].mass*5)return;
-      let power=42*R[a.key].power;
+      const profile=combat.strikeModifier(a,b);
+      if(a.cooldown>0||!b?.alive||a.role!=="floor"||dist(a,b)>profile.reach)return;
+      let power=42*R[a.key].power*profile.damage;
+      if(this.pairLink&&this.time<this.pairLink.until&&this.pairLink.ids.includes(a.id)){
+        const partner=this.find(this.pairLink.ids.find(id=>id!==a.id));
+        if(partner?.alive&&partner.role==="floor"&&dist(a,partner)<145){
+          power*=1.13;this.stats[a.team].combos++;this.pairLink.bonusCount++;
+        }
+      }
       if(a.order?.mode==="COMBO")power*=1.25;power*=a.order?.bonus||1;
       if(R[a.key].archetype==="ZIPP"&&a.surge){power*=1+.2*a.surge;a.surge=0}
       if(R[a.key].archetype==="BRAX"){power*=1.3;b.vx+=(b.x-a.x)*2.2;b.vy+=(b.y-a.y)*2.2}
@@ -175,7 +197,9 @@
       }
       if(R[a.key].archetype==="MIRA")this.floor(a.team).filter(x=>x!==a&&dist(x,a)<88).forEach(x=>x.shield=Math.min(350,x.shield+40));
       if(R[a.key].archetype==="GROVE")a.shield=Math.min(350,a.shield+20);
-      a.cooldown=Math.max(.5,1.25-R[a.key].cp01_proposed_speed/400);
+      a.cooldown=profile.cooldown;
+      this.stats[a.team].hits++;
+      combat.castSpecial(this,a,b,damage);
       this.receipt("CONTACT",{from:a.name,to:b.name,damage:Math.round(damage)});
     }
     reinforce(t){
@@ -190,7 +214,7 @@
       const dt=clamp(seconds,0,.05);this.time+=dt;this.resolve=Math.max(0,this.resolve-dt);
       for(const u of this.units){
         if(!u.alive)continue;
-        for(const p of ["cooldown","supportCooldown","pulseCooldown","hitFlash","guard","marked","bound"])u[p]=Math.max(0,u[p]-dt);
+        for(const p of ["cooldown","supportCooldown","pulseCooldown","kitCooldown","specialFlash","hitFlash","guard","marked","bound"])u[p]=Math.max(0,u[p]-dt);
         if(u.role!=="floor")continue;
         if(u.order){u.order.remaining-=dt;if(u.order.remaining<=0)u.order=null}
         const f=R[u.key],foe=this.nearest(u);
@@ -232,14 +256,33 @@
       // Crucially, both teams attack and evade during the same advancing clock.
       for(const team of ["player","enemy"])for(const u of this.floor(team))this.strike(u,this.nearest(u));
       this.reinforce("player");this.reinforce("enemy");
+      // Two contested living-field relay zones reward prediction, not idle camping.
+      for(const z of this.zones){
+        const count=side=>this.floor(side).filter(u=>dist(u,z)<z.r).length;
+        const player=count("player"),enemy=count("enemy"),controlling=player>enemy?"player":enemy>player?"enemy":null;
+        if(!controlling){z.progress=Math.max(0,z.progress-dt*.1);continue}
+        z.progress=Math.min(1,z.progress+dt*.18);
+        if(z.progress>=.55&&z.holder!==controlling){
+          z.holder=controlling;this.receipt("RELAY_CAPTURE",{zone:z.id,side:controlling});
+        }
+        if(z.progress>=.55)this.scores[controlling]+=dt*.34;
+      }
       if(this.time>=180||!this.team("player").length||!this.team("enemy").length){
         const hp=t=>this.team(t).reduce((sum,u)=>sum+u.hp,0);
-        this.ended=true;this.winner=hp("player")>=hp("enemy")?"player":"enemy";
-        this.receipt("MATCH_END",{winner:this.winner,time:Math.round(this.time)});
+        const defeated=side=>this.team(side).length===0;
+        const rating=side=>hp(side)/this.units.filter(u=>u.team===side).reduce((n,u)=>n+u.maxHp,0)*100+this.scores[side];
+        this.matchReason=defeated("player")||defeated("enemy")?"CREW DOWN":"TIME / RELAY SCORE";
+        this.ended=true;
+        this.winner=defeated("enemy")?"player":defeated("player")?"enemy":
+          rating("player")>=rating("enemy")?"player":"enemy";
+        this.receipt("MATCH_END",{winner:this.winner,reason:this.matchReason,time:Math.round(this.time),
+          scores:{...this.scores},hits:{player:this.stats.player.hits,enemy:this.stats.enemy.hits}});
       }
     }
     snapshot(){return {time:this.time,turn:this.turn,resolve:this.resolve,selected:[...this.selected],target:this.target,
-      action:this.action,ended:this.ended,winner:this.winner,units:this.units.map(u=>({...u,order:u.order?{...u.order}:null})),log:this.log.slice(-8)}}
+      action:this.action,ended:this.ended,winner:this.winner,matchReason:this.matchReason,
+       scores:{...this.scores},stats:JSON.parse(JSON.stringify(this.stats)),
+       zones:this.zones.map(z=>({...z})),units:this.units.map(u=>({...u,order:u.order?{...u.order}:null})),log:this.log.slice(-8)}}
   }
-  return {Game,ROSTER:R,CREWS,W,H,WINDOW,ORIGINAL_BODY_SHA256:source.source_sha256,CAST_SCHEMA:cast?.schema||null,ORIGINAL_ARCHETYPES:source.fighters};
+  return {Game,ROSTER:R,CREWS,W,H,WINDOW,ORIGINAL_BODY_SHA256:source.source_sha256,CAST_SCHEMA:cast?.schema||null,ORIGINAL_ARCHETYPES:source.fighters,KITS:combat.KITS};
 });

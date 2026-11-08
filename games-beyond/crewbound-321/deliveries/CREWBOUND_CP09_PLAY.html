@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- {"schema":"JM.CREWBOUND.CP09.OFFLINE_HTML/1","branch":"jm/crewbound-cp09-combat-feel","source_files_blob_sha1":{"index.html":"a53f4055f0ed9ca416c00340c5dfe116a091df80","roster.js":"4f72cbd4c0a9e4ae3e3d9cc216b5a4763136fa8f","cast.js":"27b525b9e3a1267ec3acb219b7606fd7beab492c","art.js":"e6a4efdb38f62c41bed09d8e8b34aea5b83448e1","combat-kit.js":"5dde84477aee07d3ef7c7ef5005ab6528f15aa32","sim.js":"aac9580eea4d6e56c632f8f1463a649af85f0e86","continuity.js":"906c0cbd2c48e9eeadf08d6700cc39d1881c8129","feedback.js":"9bf943e73d1f7dfa704800a29443870648446fe4"},"role":"owner quick-check delivery; modular source remains authoritative","ancestor":"Original CREWBOUND v0.5 and COMBOUND distinct; protected CP03-CP08 preserved"} -->
+<!-- {"schema":"JM.CREWBOUND.CP09.OFFLINE_HTML/1","branch":"jm/crewbound-cp09-combat-feel","source_files_blob_sha1":{"index.html":"2d0402f11405a88cd531ec6edf3fe4e6be04a8a4","roster.js":"4f72cbd4c0a9e4ae3e3d9cc216b5a4763136fa8f","cast.js":"27b525b9e3a1267ec3acb219b7606fd7beab492c","art.js":"e6a4efdb38f62c41bed09d8e8b34aea5b83448e1","combat-kit.js":"5dde84477aee07d3ef7c7ef5005ab6528f15aa32","sim.js":"aac9580eea4d6e56c632f8f1463a649af85f0e86","continuity.js":"906c0cbd2c48e9eeadf08d6700cc39d1881c8129","feedback.js":"9bf943e73d1f7dfa704800a29443870648446fe4"},"role":"owner quick-check delivery; modular source remains authoritative","ancestor":"Original CREWBOUND v0.5 and COMBOUND distinct; protected CP03-CP08 preserved"} -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
@@ -1388,7 +1388,9 @@ function updateUI(){
    !started?"Clock starts on first COMMIT · select two fighters and target(s)":
    "Tap A/B for individual orders, or BOTH for a linked plan";
  const meaningful=game.log.slice(-8).reverse().map(Feedback.summary).filter(Boolean).slice(0,2);
- $("log").textContent=meaningful.join(" | ")||"Planning continues while the rival moves.";
+ const commitMarker=game.lastRivalPair()?"SIMULTANEOUS_PAIR_COMMIT · ":"";
+ const nextTrace=commitMarker+(meaningful.join(" | ")||"Planning continues while the rival moves.");
+ if($("log").textContent!==nextTrace)$("log").textContent=nextTrace;
  $("fxMode").textContent="FX · "+combatFeedback.mode();
  $("fxMode").setAttribute("aria-label","Combat effects "+combatFeedback.mode().toLowerCase()+". Tap to cycle full, quiet or off.");
  $("fxHelp").textContent=combatFeedback.mode()==="FULL"?

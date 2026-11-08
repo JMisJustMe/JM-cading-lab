@@ -42,6 +42,8 @@ jobs:
         run: npx playwright test --project=mobile-chromium --grep '@workbench'
       - name: Responsive gate
         run: npx playwright test --project=desktop-chromium --grep '@responsive'
+      - name: CREWBOUND CP04 offline HTML source-parity and syntax
+        run: node crewbound-321/deliveries/verify-cp04-delivery.cjs
       - name: CREWBOUND 3+2+1 engine contract (original through CP04)
         run: node --test crewbound-321/sim.test.cjs
       - name: CREWBOUND 3+2+1 touchscreen browser acceptance

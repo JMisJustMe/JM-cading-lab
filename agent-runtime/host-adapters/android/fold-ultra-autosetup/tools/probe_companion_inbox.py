@@ -21,7 +21,7 @@ def inject(value):
     time.sleep(1.3)
 
 def main():
-    apk=Path("emulator-input/JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_DEBUG.apk")
+    apk=Path("emulator-input/JM_FOLD_ULTRA_CREATIONS_v1_4_DEBUG.apk")
     assert apk.is_file(),("missing audited APK",apk)
     adb("install",str(apk),timeout=80)
     adb("shell","wm","size","720x1600")

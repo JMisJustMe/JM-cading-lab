@@ -40,7 +40,7 @@ def reopen():
 
 def main():
     OUT.mkdir(exist_ok=True)
-    adb('install','emulator-input/JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_DEBUG.apk',timeout=90)
+    adb('install','emulator-input/JM_FOLD_ULTRA_CREATIONS_v1_4_DEBUG.apk',timeout=90)
     adb('shell','wm','size','720x1600');adb('shell','wm','density','320')
     adb('shell','am','start','-W','-n',MAIN);time.sleep(1.2)
     adb('shell','am','force-stop',PKG)

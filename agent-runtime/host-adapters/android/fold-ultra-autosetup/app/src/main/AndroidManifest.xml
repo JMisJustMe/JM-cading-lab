@@ -8,6 +8,16 @@
         <package android:name="com.samsung.android.app.notes" />
         <package android:name="com.openai.chatgpt" />
         <package android:name="com.sec.android.gallery3d" />
+        <!-- Only individual packages used by explicit owner-tapped JM app launches. -->
+        <package android:name="com.jmisjustme.foldultra" />
+        <package android:name="com.jmisjustme.foldultra.homelabqa" />
+        <package android:name="com.jmisjustme.ailatheocreation" />
+        <package android:name="org.jmecostate.slingfall.cp08" />
+        <package android:name="com.jmisjustme.rimroute" />
+        <package android:name="com.jm.theocnative.deviceapp" />
+        <package android:name="com.aistudio.jmecostate.kvxp.qa" />
+        <package android:name="com.jmisjustme.commanderbridge" />
+        <package android:name="com.jmisjustme.cp03sandboxproof" />
     </queries>
     <application android:allowBackup="false"
         android:label="JM Fold Ultra"
@@ -50,6 +60,8 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
         <!-- Opt-in preview: no HOME intent filter, exported=false, no permission changes. -->
+        <!-- Searchable original-creation access; never Android HOME. -->
+        <activity android:name=".creations.CreationsActivity" android:exported="false" />
         <activity android:name=".launcher.LauncherLabActivity" android:exported="false" />
         <activity android:name=".workroom.WorkroomActivity" android:exported="false"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" />

@@ -123,7 +123,7 @@ public final class MainActivity extends Activity {
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 1.0",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 1.4",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -294,6 +294,9 @@ public final class MainActivity extends Activity {
       startActivity(new Intent(this,com.jmisjustme.foldultra.workroom.WorkroomActivity.class)));
     btn(page,"JM HOME LAB / Layout · Apps · Devices",false,()->
       startActivity(new Intent(this,com.jmisjustme.foldultra.launcher.LauncherLabActivity.class)));
+    btn(page,"JM CREATIONS / OPENBOX + ALL",true,()->
+      startActivity(new Intent(this,com.jmisjustme.foldultra.creations.CreationsActivity.class)));
+
     String focus=sp.getString("focus","CREATE");
     LinearLayout c=card("CURRENT FIELD",focus+" / "+(wide?"WORKFIELD":"SOURCE"),
       wide?"Expanded creative and testing routes.":"One-handed fast routes and capture.",PURPLE);

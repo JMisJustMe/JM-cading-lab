@@ -1,0 +1,1365 @@
+{
+  "schema": "JM.FoldUltra.CreationsEntrances/1.0",
+  "date": "2026-11-08",
+  "policy": {
+    "original_app": "com.jmisjustme.foldultra",
+    "access_only": true,
+    "source_bodies_copied": false,
+    "automatic_external_navigation": false,
+    "no_launcher_takeover": true,
+    "private_repos_require_external_auth": true,
+    "latest_version_requires_independent_proof": true,
+    "source_donor": "JMisJustMe/JM-cading-lab PR #708 (CP03 registry); independent donor not merged",
+    "private_file_access": "Owner-selected Android Storage Access Framework only; no path hardcoding, file enumeration or upload",
+    "local_file_source_copied": false,
+    "mounted_bodies_claim": "Games&Beyond v0.5 snapshot: 22 public payload mounts, 2 separately held private JMStudios; no live gameplay or newest private head proof",
+    "versioned_games_reference": "GitHub original games-beyond/registry.json SHA 3b1ac3273a51600c84976eaccbcb61e417088736; current public app.js CP22",
+    "apps_house_reference": {
+      "source": "apps/index.html",
+      "source_sha": "e9069444cb53991ac21056a546d4cdca3d36b388",
+      "entries": 45,
+      "routeScope": "45 original registry rows: 2 directly certified public app carriers, 43 original-House filtered lookups (not private app execution or installs)",
+      "noMergedBodies": true
+    },
+    "latest_body_claim": "Live entrance verification and source-version labels only; newest exact private body is not inferred from catalogue"
+  },
+  "sections": [
+    {
+      "id": "websites",
+      "label": "My Websites",
+      "entries": [
+        {
+          "id": "jm-ecostate",
+          "label": "JM Ecostate",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-estate-access",
+          "label": "JM ECOSTATE Access Mesh",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/access/",
+          "status": "LIVE · 200",
+          "source": "JM ECOSTATE canonical access route, 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "coding",
+      "label": "My Coding & Editors",
+      "entries": [
+        {
+          "id": "cading-lab",
+          "label": "JM-cading-lab",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "cloud-contact",
+          "label": "JM Cloud Contact",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "ai-studio-surface",
+          "label": "JM AI Studio Surface",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-surface",
+          "status": "PRIVATE · use authenticated GitHub",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "continuation",
+          "label": "JM Continuation",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-continuation",
+          "status": "PRIVATE · use authenticated GitHub",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "ai-react",
+          "label": "JM AI Studio React Descendant",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-ai-studio-react-descendant",
+          "status": "PRIVATE · use authenticated GitHub",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-web-original-evidence",
+          "label": "JM.WEB original source & deployment receipts",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/main/docs/JM_WEB_ESTATE_v1_2_DEPLOYMENT_RECEIPT.md",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-web-source",
+          "label": "JM.WEB source estate",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/docs",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-native-coding-bodies",
+          "label": "JM coding and runtime sources",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/agent-runtime",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-openbox-v2-cp10",
+          "label": "JM OPENBOX · Code In. App Out.",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
+          "status": "LIVE · 200",
+          "version": "v2.0 CP10",
+          "source": "JM WEBSITE 001 original OPENBOX; verified 8 Nov 2026"
+        },
+        {
+          "id": "jm-coding-workshop-direct",
+          "label": "JM Coding Workshop · original JM.WEB",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-everybody-direct",
+          "label": "JM EveryBody · sovereign workbench",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/coding-estate/everybody/",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-visualang-direct",
+          "label": "JM Visualang · original interactive carrier",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/visualang.html",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-py-original-proof",
+          "label": "JM.PY · original website proof (not editor)",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/jm-py-proof.html",
+          "status": "LIVE · 200",
+          "source": "Existing Apps House CP02 original-carrier contact PR #755; checked 8 Nov 2026"
+        },
+        {
+          "id": "jm-private-local-html",
+          "label": "Private original HTML · choose local file",
+          "kind": "local_file",
+          "status": "OWNER FILE PICKER · private content never uploaded",
+          "source": "Owner-chosen Android Documents access; no source copied into public APK"
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "label": "My Apps",
+      "entries": [
+        {
+          "id": "fold-ultra",
+          "label": "JM Fold Ultra",
+          "kind": "android",
+          "package": "com.jmisjustme.foldultra",
+          "status": "PACKAGE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "source-package"
+        },
+        {
+          "id": "ailatheo",
+          "label": "AILatheo",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/ailatheo/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "rim",
+          "label": "JM Rim Ro",
+          "kind": "hold",
+          "status": "HOLD",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "screenshot-only"
+        },
+        {
+          "id": "theoc",
+          "label": "JM TheoC",
+          "kind": "android",
+          "package": "com.jm.theocnative.deviceapp",
+          "status": "PACKAGE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "source-apk-manifest"
+        },
+        {
+          "id": "jm-apps-current",
+          "label": "JM Apps & Tools · current first-party door",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/",
+          "status": "LIVE · 200",
+          "source": "First-party Apps House; verified 8 Nov 2026"
+        },
+        {
+          "id": "jm-home-lab-qa",
+          "label": "JM Home Lab QA",
+          "kind": "android",
+          "package": "com.jmisjustme.foldultra.homelabqa",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-ailatheo-native",
+          "label": "AILatheo Creation · native",
+          "kind": "android",
+          "package": "com.jmisjustme.ailatheocreation",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-slingfall",
+          "label": "JM SLINGFALL CP08",
+          "kind": "android",
+          "package": "org.jmecostate.slingfall.cp08",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-rimroute-native",
+          "label": "JM Rim Route · native",
+          "kind": "android",
+          "package": "com.jmisjustme.rimroute",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-theoc-native",
+          "label": "JM TheoC · native",
+          "kind": "android",
+          "package": "com.jm.theocnative.deviceapp",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-ai-studio-qa",
+          "label": "JM AI Studio QA",
+          "kind": "android",
+          "package": "com.aistudio.jmecostate.kvxp.qa",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-commander-bridge",
+          "label": "JM Commander Bridge",
+          "kind": "android",
+          "package": "com.jmisjustme.commanderbridge",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-cp03-sandbox",
+          "label": "JM CP03 Sandbox",
+          "kind": "android",
+          "package": "com.jmisjustme.cp03sandboxproof",
+          "status": "DEVICE CHECK",
+          "source": "Fold8 installed package inventory 8 Nov 2026"
+        },
+        {
+          "id": "jm-apps-house-jm-agi-lab-runtime-contact-console-1",
+          "label": "JM AGI Lab Runtime Contact Console · v1.0 Executable Carrier · shared core + browser process re-entry",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/jm-agi-lab-runtime-console-v1/",
+          "version": "v1.0 Executable Carrier · shared core + browser process re-entry",
+          "status": "PUBLIC EXECUTABLE CARRIER · exact Apps House",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "AI & Runtime",
+          "originalStatus": "live_current",
+          "routeScope": "Existing Apps House independent exact live carrier",
+          "sourceIndex": 0
+        },
+        {
+          "id": "jm-apps-house-jmisjustme-living-estate-1",
+          "label": "JMISJUSTME Living Estate · Public v1.12.0",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JMISJUSTME%20Living%20Estate%20Public%20v1.12.0",
+          "version": "Public v1.12.0",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "live_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 1
+        },
+        {
+          "id": "jm-apps-house-jm-living-notebook-estate-operating-tool-1",
+          "label": "JM Living Notebook / Estate Operating Tool · v1.5B",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Living%20Notebook%20%2F%20Estate%20Operating%20Tool%20v1.5B",
+          "version": "v1.5B",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Estate & Recovery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 2
+        },
+        {
+          "id": "jm-apps-house-source-aware-notebook-1",
+          "label": "Source-Aware Notebook · v2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Source-Aware%20Notebook%20v2",
+          "version": "v2",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Estate & Recovery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 3
+        },
+        {
+          "id": "jm-apps-house-jm-estate-librarian-1",
+          "label": "JM Estate Librarian · QUADZE-grade v2.0",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Estate%20Librarian%20QUADZE-grade%20v2.0",
+          "version": "QUADZE-grade v2.0",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Estate & Recovery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 4
+        },
+        {
+          "id": "jm-apps-house-jm-file-grabber-1",
+          "label": "JM File Grabber · Android Intake / FLL Contact Body",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20File%20Grabber%20Android%20Intake%20%2F%20FLL%20Contact%20Body",
+          "version": "Android Intake / FLL Contact Body",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Estate & Recovery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 5
+        },
+        {
+          "id": "jm-apps-house-benefitmerge-1",
+          "label": "BenefitMerge · v0.1 Android proof · READ 316/985",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=BenefitMerge%20v0.1%20Android%20proof%20%C2%B7%20READ%20316%2F985",
+          "version": "v0.1 Android proof · READ 316/985",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Builders, Recovery & Delivery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 6
+        },
+        {
+          "id": "jm-apps-house-benefitmerge-2",
+          "label": "BenefitMerge · v0.2 PWA build · installation pending",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=BenefitMerge%20v0.2%20PWA%20build%20%C2%B7%20installation%20pending",
+          "version": "v0.2 PWA build · installation pending",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Builders, Recovery & Delivery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 7
+        },
+        {
+          "id": "jm-apps-house-jm-zionfolder-os-1",
+          "label": "JM Zionfolder OS · v1.1.1 Scroll Spine Fix",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Zionfolder%20OS%20v1.1.1%20Scroll%20Spine%20Fix",
+          "version": "v1.1.1 Scroll Spine Fix",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Estate & Recovery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 8
+        },
+        {
+          "id": "jm-apps-house-jm-quadze-multihub-onebody-os-1",
+          "label": "JM QUADZE MultiHub OneBody OS · v4.1 SOLO · v4.0 full APK-ready source",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20QUADZE%20MultiHub%20OneBody%20OS%20v4.1%20SOLO%20%C2%B7%20v4.0%20full%20APK-ready%20source",
+          "version": "v4.1 SOLO · v4.0 full APK-ready source",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 9
+        },
+        {
+          "id": "jm-apps-house-jm-estate-multimedia-unit-1",
+          "label": "JM Estate Multimedia Unit · v2.3.0 S³",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Estate%20Multimedia%20Unit%20v2.3.0%20S%C2%B3",
+          "version": "v2.3.0 S³",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 10
+        },
+        {
+          "id": "jm-apps-house-jmstudios-1",
+          "label": "JMStudios · B0.8.2 source anchor · B0.8.3 continuation",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JMStudios%20B0.8.2%20source%20anchor%20%C2%B7%20B0.8.3%20continuation",
+          "version": "B0.8.2 source anchor · B0.8.3 continuation",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 11
+        },
+        {
+          "id": "jm-apps-house-portal-engine-1",
+          "label": "Portal Engine · Estate OS v0.3.1 + TBS Delta 004.1 · access identity recovered",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Portal%20Engine%20Estate%20OS%20v0.3.1%20%2B%20TBS%20Delta%20004.1%20%C2%B7%20access%20identity%20recovered",
+          "version": "Estate OS v0.3.1 + TBS Delta 004.1 · access identity recovered",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 12
+        },
+        {
+          "id": "jm-apps-house-altogether-assembly-jm-estate-os-1",
+          "label": "Altogether Assembly / JM Estate OS · v2.0.2 Assembly Crown",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Altogether%20Assembly%20%2F%20JM%20Estate%20OS%20v2.0.2%20Assembly%20Crown",
+          "version": "v2.0.2 Assembly Crown",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 13
+        },
+        {
+          "id": "jm-apps-house-jm-estate-os-1",
+          "label": "JM Estate OS · v0.2.1 TBS Delta 002 · active additive carrier",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Estate%20OS%20v0.2.1%20TBS%20Delta%20002%20%C2%B7%20active%20additive%20carrier",
+          "version": "v0.2.1 TBS Delta 002 · active additive carrier",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Operating Houses",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 14
+        },
+        {
+          "id": "jm-apps-house-command-register-command-panel-1",
+          "label": "Command Register / Command Panel · v0.1 Working Command Surface",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Command%20Register%20%2F%20Command%20Panel%20v0.1%20Working%20Command%20Surface",
+          "version": "v0.1 Working Command Surface",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Registers & Governance",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 15
+        },
+        {
+          "id": "jm-apps-house-jm-lyricstudio-1",
+          "label": "JM LyricStudio · v0.5 Whole-Estate Mount",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20LyricStudio%20v0.5%20Whole-Estate%20Mount",
+          "version": "v0.5 Whole-Estate Mount",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Lyrics & Language",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 16
+        },
+        {
+          "id": "jm-apps-house-jm-lyricstudio-2",
+          "label": "JM LyricStudio · v2.0 Direct branch",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20LyricStudio%20v2.0%20Direct%20branch",
+          "version": "v2.0 Direct branch",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Lyrics & Language",
+          "originalStatus": "full_alt",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 17
+        },
+        {
+          "id": "jm-apps-house-jm-lyric-estate-1",
+          "label": "JM Lyric Estate · v0.6 Clickable Body Index",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Lyric%20Estate%20v0.6%20Clickable%20Body%20Index",
+          "version": "v0.6 Clickable Body Index",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Lyrics & Language",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 18
+        },
+        {
+          "id": "jm-apps-house-jm-lyric-estate-2",
+          "label": "JM Lyric Estate · v0.4 Exiled Times Lock",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Lyric%20Estate%20v0.4%20Exiled%20Times%20Lock",
+          "version": "v0.4 Exiled Times Lock",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Lyrics & Language",
+          "originalStatus": "full_alt",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 19
+        },
+        {
+          "id": "jm-apps-house-radius-lexicon-1",
+          "label": "RADIUS Lexicon · v0.5A",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=RADIUS%20Lexicon%20v0.5A",
+          "version": "v0.5A",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Lyrics & Language",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 20
+        },
+        {
+          "id": "jm-apps-house-jm-theory-multihub-1",
+          "label": "JM Theory Multihub · v0.4 Project Source Census",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Theory%20Multihub%20v0.4%20Project%20Source%20Census",
+          "version": "v0.4 Project Source Census",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Theory & Books",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 21
+        },
+        {
+          "id": "jm-apps-house-jm-theory-multihub-2",
+          "label": "JM Theory Multihub · Public v0.20.1 Source-Body Integrity · v0.19 shell preserved",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Theory%20Multihub%20Public%20v0.20.1%20Source-Body%20Integrity%20%C2%B7%20v0.19%20shell%20preserved",
+          "version": "Public v0.20.1 Source-Body Integrity · v0.19 shell preserved",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Theory & Books",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 22
+        },
+        {
+          "id": "jm-apps-house-jm-theory-multihub-3",
+          "label": "JM Theory Multihub · v0.5 Readable Source Package",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Theory%20Multihub%20v0.5%20Readable%20Source%20Package",
+          "version": "v0.5 Readable Source Package",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Theory & Books",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 23
+        },
+        {
+          "id": "jm-apps-house-jm-whole-estate-book-foundry-1",
+          "label": "JM Whole-Estate Book Foundry · v0.1",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Whole-Estate%20Book%20Foundry%20v0.1",
+          "version": "v0.1",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Theory & Books",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 24
+        },
+        {
+          "id": "jm-apps-house-jm-money-menu-1",
+          "label": "JM Money Menu · 242-route v1.1 data authority · live public contact v1.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/money-menu/",
+          "version": "242-route v1.1 data authority · live public contact v1.2",
+          "status": "PUBLIC EXECUTABLE CARRIER · exact Apps House",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Commercial & Practical",
+          "originalStatus": "full_current",
+          "routeScope": "Existing Apps House independent exact live carrier",
+          "sourceIndex": 25
+        },
+        {
+          "id": "jm-apps-house-legaliving-1",
+          "label": "Legaliving · v1.0.3 Freeze Anchor",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Legaliving%20v1.0.3%20Freeze%20Anchor",
+          "version": "v1.0.3 Freeze Anchor",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Commercial & Practical",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 26
+        },
+        {
+          "id": "jm-apps-house-ftr-ama-pro-griproute-adaptive-interaction-eng-1",
+          "label": "FTR / Ama-Pro / GripRoute Adaptive Interaction Engine · v1.1 · Ama-Pro native gaming route",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=FTR%20%2F%20Ama-Pro%20%2F%20GripRoute%20Adaptive%20Interaction%20Engine%20v1.1%20%C2%B7%20Ama-Pro%20native%20gaming%20route",
+          "version": "v1.1 · Ama-Pro native gaming route",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "FTR / Devices & Adaptive Interaction",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 27
+        },
+        {
+          "id": "jm-apps-house-gold-mode-coding-hub-1",
+          "label": "Gold Mode Coding Hub · v0.9.5.1 Mobile Hotfix · v0.9.4 preserved core",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Gold%20Mode%20Coding%20Hub%20v0.9.5.1%20Mobile%20Hotfix%20%C2%B7%20v0.9.4%20preserved%20core",
+          "version": "v0.9.5.1 Mobile Hotfix · v0.9.4 preserved core",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 28
+        },
+        {
+          "id": "jm-apps-house-jm-full-original-source-bodies-1",
+          "label": "JM Full Original Source Bodies · No-Links carrier",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=JM%20Full%20Original%20Source%20Bodies%20No-Links%20carrier",
+          "version": "No-Links carrier",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 29
+        },
+        {
+          "id": "jm-apps-house-theo-proof-tool-1",
+          "label": "THEO Proof Tool · v0.2A",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=THEO%20Proof%20Tool%20v0.2A",
+          "version": "v0.2A",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 30
+        },
+        {
+          "id": "jm-apps-house-primebody-parser-1",
+          "label": "PrimeBody Parser · v0.2 family",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=PrimeBody%20Parser%20v0.2%20family",
+          "version": "v0.2 family",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 31
+        },
+        {
+          "id": "jm-apps-house-theoc-theoc-ir-1",
+          "label": "TheoC + TheoC IR · v0.2 family",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=TheoC%20%2B%20TheoC%20IR%20v0.2%20family",
+          "version": "v0.2 family",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 32
+        },
+        {
+          "id": "jm-apps-house-theorun-receipt-export-1",
+          "label": "TheoRun + Receipt Export · v0.2A family",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=TheoRun%20%2B%20Receipt%20Export%20v0.2A%20family",
+          "version": "v0.2A family",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 33
+        },
+        {
+          "id": "jm-apps-house-cadenvm-cadenpad-1",
+          "label": "CadenVM / CadenPad · v0.10 Frozen Project Workspace · Android Ding",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=CadenVM%20%2F%20CadenPad%20v0.10%20Frozen%20Project%20Workspace%20%C2%B7%20Android%20Ding",
+          "version": "v0.10 Frozen Project Workspace · Android Ding",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 34
+        },
+        {
+          "id": "jm-apps-house-tracebox-routebox-1",
+          "label": "TraceBox / RouteBox · v5.2 Standalone PWA",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=TraceBox%20%2F%20RouteBox%20v5.2%20Standalone%20PWA",
+          "version": "v5.2 Standalone PWA",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Coding & Proof",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 35
+        },
+        {
+          "id": "jm-apps-house-latest-body-finder-1",
+          "label": "Latest Body Finder · BUILD 050 · v0.4 installed working organ",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Latest%20Body%20Finder%20BUILD%20050%20%C2%B7%20v0.4%20installed%20working%20organ",
+          "version": "BUILD 050 · v0.4 installed working organ",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Registers & Governance",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 36
+        },
+        {
+          "id": "jm-apps-house-source-body-auditor-1",
+          "label": "Source-Body Auditor · BUILD 050 · v0.4 installed active proof organ",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Source-Body%20Auditor%20BUILD%20050%20%C2%B7%20v0.4%20installed%20active%20proof%20organ",
+          "version": "BUILD 050 · v0.4 installed active proof organ",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Registers & Governance",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 37
+        },
+        {
+          "id": "jm-apps-house-current-best-register-1",
+          "label": "Current Best Register · Living register family",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Current%20Best%20Register%20Living%20register%20family",
+          "version": "Living register family",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Registers & Governance",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 38
+        },
+        {
+          "id": "jm-apps-house-crown-register-1",
+          "label": "Crown Register · Earned-crown register",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Crown%20Register%20Earned-crown%20register",
+          "version": "Earned-crown register",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Registers & Governance",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 39
+        },
+        {
+          "id": "jm-apps-house-bodyvault-1",
+          "label": "BodyVault · v0.4.2 TRUE NO-INTERPRETER",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=BodyVault%20v0.4.2%20TRUE%20NO-INTERPRETER",
+          "version": "v0.4.2 TRUE NO-INTERPRETER",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Estate & Recovery",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 40
+        },
+        {
+          "id": "jm-apps-house-ownmade-1",
+          "label": "OWNMADE · v1.3 PWA Project + File Dock",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=OWNMADE%20v1.3%20PWA%20Project%20%2B%20File%20Dock",
+          "version": "v1.3 PWA Project + File Dock",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Utilities & Incubator",
+          "originalStatus": "full_current",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 41
+        },
+        {
+          "id": "jm-apps-house-fll-craftikbridge-1",
+          "label": "FLL / CraftikBridge · v1.0 Final family",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=FLL%20%2F%20CraftikBridge%20v1.0%20Final%20family",
+          "version": "v1.0 Final family",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Utilities & Incubator",
+          "originalStatus": "routed",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 42
+        },
+        {
+          "id": "jm-apps-house-cartoon-studio-1",
+          "label": "Cartoon Studio · Preparation body",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Cartoon%20Studio%20Preparation%20body",
+          "version": "Preparation body",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Utilities & Incubator",
+          "originalStatus": "prep",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 43
+        },
+        {
+          "id": "jm-apps-house-video-studio-1",
+          "label": "Video Studio · Preparation body",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/apps/?q=Video%20Studio%20Preparation%20body",
+          "version": "Preparation body",
+          "status": "HOUSE SEARCH CONTACT · not direct app",
+          "source": "Original Apps House 45-row register, apps/index.html at main SHA e9069444cb53991ac21056a546d4cdca3d36b388",
+          "sourceScope": "Utilities & Incubator",
+          "originalStatus": "prep",
+          "routeScope": "Filtered entry in original 45-row Apps House; private/full-source body not assumed public, installed or runnable",
+          "sourceIndex": 44
+        }
+      ]
+    },
+    {
+      "id": "games",
+      "label": "My Games",
+      "entries": [
+        {
+          "id": "jm-games-beyond",
+          "label": "JM Games & Beyond",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "rim-route-original",
+          "label": "JM Rim Route (verified original)",
+          "kind": "hold",
+          "status": "HOLD · 404 at public URL",
+          "source": "Preserved original family-gift pointer; no public fallback",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-gb-play-fourfold-arena",
+          "label": "Play · FOURFOLD Arena · v0.17 Living Bodies",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fourfold-arena",
+          "version": "v0.17 Living Bodies",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "fourfold-arena",
+          "sourceScope": "Living-body competitive arena / active flagship route",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-tboys-core-clash",
+          "label": "Play · T-Boys Core Clash · v0.1 Final Graft",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=tboys-core-clash",
+          "version": "v0.1 Final Graft",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "tboys-core-clash",
+          "sourceScope": "T-Boys tactical crew clash game",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-rim-route",
+          "label": "Play · JM Rim Route · v0.8.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=rim-route",
+          "version": "v0.8.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "rim-route",
+          "sourceScope": "Portrait basketball / live dribble and ball contact",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-crewbound-arena",
+          "label": "Play · Crewbound Arena · v0.5",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=crewbound-arena",
+          "version": "v0.5",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "crewbound-arena",
+          "sourceScope": "Signature powers / living field arena",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-house-siege",
+          "label": "Play · JM House Siege · v1.3",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=house-siege",
+          "version": "v1.3",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "house-siege",
+          "sourceScope": "Aim parity / focus-depth house battle",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-western-sniper",
+          "label": "Play · JM Western Sniper PvP · v0.5",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=western-sniper",
+          "version": "v0.5",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "western-sniper",
+          "sourceScope": "Identity-field live duel",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-dead-reckon",
+          "label": "Play · Dead Reckon · v0.9",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=dead-reckon",
+          "version": "v0.9",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "dead-reckon",
+          "sourceScope": "Dual-aim body / split-hand route",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-cardbored",
+          "label": "Play · cardBORED · v0.4",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=cardbored",
+          "version": "v0.4",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "cardbored",
+          "sourceScope": "Card-board pressure formation / LG future-position route",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-gameforge",
+          "label": "Open · GameForge · v3.16",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=gameforge",
+          "version": "v3.16",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "gameforge",
+          "sourceScope": "Game-first production forge / one-player separation",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-glyphplay",
+          "label": "Open · GlyphPlay B1 · v29.1",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=glyphplay",
+          "version": "v29.1",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "glyphplay",
+          "sourceScope": "Creator-first playable logic engine",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-glyphforge",
+          "label": "Open · GlyphForge · v68.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=glyphforge",
+          "version": "v68.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "glyphforge",
+          "sourceScope": "ProjectBody to connected play-test bridge",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-game-native-core",
+          "label": "Open · JM Game Native Core · v0.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=game-native-core",
+          "version": "v0.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "game-native-core",
+          "sourceScope": "Native core / apps and tools bridge",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-gamecore",
+          "label": "Open · JM GameCore · v0.2I-A",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=gamecore",
+          "version": "v0.2I-A",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "gamecore",
+          "sourceScope": "Current corrected three-game integration body",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-combound",
+          "label": "Open · JM Combound · v0.7",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=combound",
+          "version": "v0.7",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "combound",
+          "sourceScope": "Natural combo kinetics / combat donor organ",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-quadze",
+          "label": "Open · Quadze Real Estate · v0.6 Bow-Lock",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=quadze",
+          "version": "v0.6 Bow-Lock",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "quadze",
+          "sourceScope": "Frozen Quadze benchmark / real parser-runtime playable body",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-futarized",
+          "label": "Play · FUTARIZED · v1.2",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=futarized",
+          "version": "v1.2",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "futarized",
+          "sourceScope": "Game-of-Game / playable manual / earned convergence",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-fight-clash",
+          "label": "Play · Fight Clash Chameleon · v0.4 Open Ring",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=fight-clash",
+          "version": "v0.4 Open Ring",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "fight-clash",
+          "sourceScope": "Open-ring fighting body / SideLane line",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-aiming-run",
+          "label": "Open · Aiming Run · v0.1A",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=aiming-run",
+          "version": "v0.1A",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "aiming-run",
+          "sourceScope": "Movement-pressure aiming game / proof body",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-drag-aim",
+          "label": "Open · Drag & Aim Loop Kernel · v0.9.9",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=drag-aim",
+          "version": "v0.9.9",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "drag-aim",
+          "sourceScope": "Reusable touch / pull / release / trajectory organ",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-loopit-boundary",
+          "label": "Open · Loopit / GlyphPlay / GameForge Boundary · Eco/Estate Rejoin Node",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=loopit-boundary",
+          "version": "Eco/Estate Rejoin Node",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "loopit-boundary",
+          "sourceScope": "External-vs-creator-owned playable boundary proof",
+          "proofBoundary": "Governance proof body, not a playable game"
+        },
+        {
+          "id": "jm-gb-play-playform",
+          "label": "Open · PLAYFORM · v0.1",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=playform",
+          "version": "v0.1",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "playform",
+          "sourceScope": "Playable Expression Framework / sister system",
+          "proofBoundary": "Mounted public browser body, not independent physical gameplay proof"
+        },
+        {
+          "id": "jm-gb-play-routeos-platform",
+          "label": "Open · RouteOS · v103 → v108A.5 Recovered Package Authority",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-play=routeos-platform",
+          "version": "v103 → v108A.5 Recovered Package Authority",
+          "status": "PUBLIC MOUNT · Games&Beyond 22/24",
+          "source": "JM original Games&Beyond registry v0.5 main SHA 3b1ac3273a51600c84976eaccbcb61e417088736; public app.js CP22 route",
+          "sourceId": "routeos-platform",
+          "sourceScope": "Original v108A.5 MAX10 package physically recovered and independently revalidated. Full source remains owner-private; public room carries evidence and navigation only. Phone field contact remains a separate proof lane.",
+          "proofBoundary": "Public room; full v108A.5 source remains private"
+        },
+        {
+          "id": "jm-gb-private-jmstudios-source-rebegin",
+          "label": "Private source · JMStudios · B0.8.2 Original Source Patch Merge",
+          "kind": "hold",
+          "version": "B0.8.2 Original Source Patch Merge",
+          "status": "PRIVATE FULL-HOUSE IMPORT ONLY · HOLD",
+          "source": "Games&Beyond registry v0.5; distinct original source not bundled",
+          "sourceId": "jmstudios-source-rebegin"
+        },
+        {
+          "id": "jm-gb-private-jmstudios-actual-crown",
+          "label": "Private source · JMStudios · B0.8.3 Actual Room Link Scan Repair",
+          "kind": "hold",
+          "version": "B0.8.3 Actual Room Link Scan Repair",
+          "status": "PRIVATE FULL-HOUSE IMPORT ONLY · HOLD",
+          "source": "Games&Beyond registry v0.5; distinct original source not bundled",
+          "sourceId": "jmstudios-actual-crown"
+        },
+        {
+          "id": "jm-crewbound-321-unique-cast",
+          "label": "CREWBOUND 3+2+1 · original unique cast",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/crewbound-321/",
+          "status": "LIVE HTTP 200 · independent CP02 cast",
+          "source": "Original /games-beyond/crewbound-321/ page + CP02 source authority, independently tested 8 Nov 2026",
+          "sourceScope": "Distinct public presentation; does not replace Crewbound Arena v0.5"
+        }
+      ]
+    },
+    {
+      "id": "theories",
+      "label": "My Theories",
+      "entries": [
+        {
+          "id": "jm-theory-estate",
+          "label": "JM Theory Estate",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-theory-current",
+          "label": "JM Theory Estate · first-party door",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/theory/",
+          "status": "LIVE · 200",
+          "source": "First-party theory door; verified 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "label": "My Music",
+      "entries": [
+        {
+          "id": "jm-lyrics-music-house",
+          "label": "JM Lyrics & Music House",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/lyrics/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-lyrics-current",
+          "label": "JM Lyrics & Music · first-party door",
+          "kind": "web",
+          "url": "https://jmisjustme-estate.pages.dev/lyrics/",
+          "status": "LIVE · 200",
+          "source": "First-party lyrics door; verified 8 Nov 2026"
+        }
+      ]
+    },
+    {
+      "id": "creations",
+      "label": "My Creations",
+      "entries": [
+        {
+          "id": "jm-nongame-apps-house",
+          "label": "JM Non-Game Apps House",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "connections",
+      "label": "My Connections",
+      "entries": [
+        {
+          "id": "jm-estate-live-registry",
+          "label": "JM Estate Live Registry",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-estate-live-registry/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "label": "My Tools & Engines",
+      "entries": [
+        {
+          "id": "jm-android-forge",
+          "label": "JM Android Forge",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/jm-android-forge/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-html-apps-house",
+          "label": "JM HTML Apps House",
+          "kind": "web",
+          "url": "https://jmisjustme.github.io/JM-cading-lab/apps/",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-gameforge-original",
+          "label": "GameForge original source authority",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-glyphforge-original",
+          "label": "GlyphForge original source authority",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/games-engines/source-authorities/glyphforge-v68.2",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-liveforge-original",
+          "label": "LiveForge original app",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/liveforge-engine-v0.1",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-routeos-original",
+          "label": "RouteOS original estate shelf",
+          "kind": "web",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a",
+          "status": "SOURCE ROUTE",
+          "source": "JM Fold Ultra CP03 registry PR #708",
+          "basis": "repository-location"
+        },
+        {
+          "id": "jm-gb-edit-gameforge",
+          "label": "Edit original · GameForge",
+          "kind": "web",
+          "version": "v3.16",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=gameforge",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "gameforge"
+        },
+        {
+          "id": "jm-gb-edit-glyphplay",
+          "label": "Edit original · GlyphPlay B1",
+          "kind": "web",
+          "version": "v29.1",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=glyphplay",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "glyphplay"
+        },
+        {
+          "id": "jm-gb-edit-glyphforge",
+          "label": "Edit original · GlyphForge",
+          "kind": "web",
+          "version": "v68.2",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=glyphforge",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "glyphforge"
+        },
+        {
+          "id": "jm-gb-edit-game-native-core",
+          "label": "Edit original · JM Game Native Core",
+          "kind": "web",
+          "version": "v0.2",
+          "url": "https://jmisjustme-estate.pages.dev/games-beyond/?jm-edit=game-native-core",
+          "status": "HOST EDIT SOURCE · original Games House",
+          "source": "Games&Beyond current app.js public URL query contract (independent native editor source remains separate)",
+          "sourceId": "game-native-core"
+        }
+      ]
+    }
+  ]
+}

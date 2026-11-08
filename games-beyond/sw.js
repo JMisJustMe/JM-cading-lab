@@ -1,4 +1,4 @@
-const CACHE='games-beyond-v0-9-whole-estate-current-r4-cp31-offline-phone-contact-cp21-20261105';
+const CACHE='games-beyond-v0-9-whole-estate-current-r5-cp22-catalogue-first-20261107';
 const MODULES=['catalogue-v0-6-style.js','catalogue-v0-6-data-1.js','catalogue-v0-6-data-2a.js','catalogue-v0-6-data-2b.js','catalogue-v0-6-data-3a.js','catalogue-v0-6-data-3b.js','catalogue-v0-6-core-data-1.js','catalogue-v0-6-core-data-2.js','catalogue-v0-6-core-loader.js','routeos-achievement-hall-v0-7.js','routeos-v0-7-label.js','routeos-runtime-launch-v0-8.js','whole-estate-current-catalogue-v1.js'];
 const CORE=['./','index.html','app.js',...MODULES,'routeos/index.html','routeos/runtime/index.html','lzma-d-min.js','manifest.webmanifest','payload-manifest.json','registry.json','accessibility-report-v0-5.json','GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt','all-games.html','WHOLE_GAMES_ESTATE_RECONCILIATION_2026-09-20.md','bodies/futarized-v1-2.html','bodies/fight-clash-v0-4.html','bodies/aiming-run-v0-1a.html','bodies/drag-aim-loop-kernel-v0-9-9.html','bodies/loopit-glyphplay-gameforge-boundary-rejoin-node.html','bodies/playform-v0-1.html'];
 // Shared shell assets are already published in the original Estate home.
@@ -29,5 +29,5 @@ if(html.includes('id="view-rooms"')){
  if(!html.includes('whole-estate-current-catalogue-v1.js'))html=html.replace(/<\/body>/i,`${CURRENT_INJECTION}</body>`);
 }else if(!html.includes('routeos-achievement-hall-v0-7.js')){
  html=html.replace(/<\/body>/i,`${INJECTION}</body>`);
-}const headers=new Headers(response.headers);headers.set('content-type','text/html; charset=utf-8');headers.delete('content-length');headers.set('x-jm-games-beyond','v0.9-whole-estate-current-r4-cp31-offline');return new Response(html,{status:response.status,statusText:response.statusText,headers})}
+}const headers=new Headers(response.headers);headers.set('content-type','text/html; charset=utf-8');headers.delete('content-length');headers.set('x-jm-games-beyond','v0.9-whole-estate-current-r5-cp22-catalogue-first');return new Response(html,{status:response.status,statusText:response.statusText,headers})}
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);const houseNavigation=url.pathname.endsWith('/games-beyond/')||url.pathname.endsWith('/games-beyond/index.html');event.respondWith(houseNavigation?houseDocument(event.request):networkFirst(event.request))});

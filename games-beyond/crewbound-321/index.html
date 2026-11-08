@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061422">
-<title>CREWBOUND CP05 · Living Relay Clash</title>
+<title>CREWBOUND CP07 · Paired Orders & First-Go Practice</title>
 <style>
 :root{color-scheme:dark;--bg:#06101c;--panel:#0d2133;--line:#355369;--text:#ecfbff;--muted:#b0c6d4;--aqua:#65ecff;--gold:#ffe28c;--pink:#ff82ab}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d5160,var(--bg) 55%);color:var(--text);font-family:system-ui,Arial,sans-serif}
@@ -27,6 +27,16 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:680 / 840;touch-action:
 .formationEdit button{min-height:48px;width:100%;border:1px solid #7fe3f0;border-radius:10px;background:#184b5d;font-weight:900;font-size:.76rem}
 .formationEdit p{min-height:1.6em;font-size:.68rem;line-height:1.5;color:#cbe1ed;margin:7px 0 2px}
 .unit.formationPick{outline:4px solid #ffdb7d;outline-offset:-3px}
+.coachBox{border:1px solid #5b798c;border-radius:12px;padding:10px;margin-top:10px;background:#132b3b}
+.coachBox button{min-height:46px;width:100%;border:1px solid #8cc9ee;border-radius:10px;padding:9px 7px;background:#20425e;font-weight:950;letter-spacing:.03em}
+.coachBox button[aria-pressed="true"]{background:#45502b;border-color:#e8df86}
+.coachBox p{font-size:.7rem;color:#dbebf4;line-height:1.55;margin:8px 0 1px}
+.pairReadout{margin:8px 0;border:1px solid #526f7c;border-radius:11px;padding:8px;background:#0c2436;font-size:.7rem}
+.pairReadout .planRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0}
+.pairReadout .planRows span{display:block;min-width:0;padding:8px 6px;border-radius:9px;background:#163348;line-height:1.5;overflow-wrap:anywhere}
+.pairReadout .planRows span strong{color:#ffe7a4}
+.pairReadout .previewHint{margin:5px 0 0;font-size:.67rem;color:#b5d5e4;line-height:1.4}
+.rivalReport{border-top:1px solid #526477;padding-top:7px;margin-top:8px;line-height:1.5;color:#f5c8d1;font-size:.68rem}
 .controls{border:1px solid var(--line);background:#0a1d2c;border-radius:16px;padding:10px;margin-top:9px}
 .pairPlan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:7px 0 10px}
 .pairPlan button{min-height:48px;min-width:0;border:1px solid var(--line);background:#152d42;border-radius:9px;font-size:.67rem;font-weight:800;padding:6px 3px;line-height:1.3}
@@ -84,6 +94,10 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
     <p id="arrangeHelp" aria-live="polite">Before your first go, swap a floor fighter with a yard or flex fighter. Three on floor, two in yard, one flex.</p>
   </div>
 </section>
+<section class="coachBox" aria-label="Optional interactive first-go guidance">
+  <button id="coachToggle" type="button" aria-pressed="false">🎯 PRACTISE FIRST GO</button>
+  <p id="coachText" aria-live="polite">Optional guided practice: use your real fighters and actions. No separate game mode.</p>
+</section>
 <section class="controls" aria-label="Two-character orders">
   <div class="sectionTitle" style="margin-top:0">PLAN TWO ACTIONS <span>RIVAL PLANS TOO</span></div>
   <div class="pairPlan" role="group" aria-label="Plan both fighters together or give each fighter a separate order">
@@ -92,6 +106,12 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
     <button id="editSecond" disabled aria-pressed="false">B · PICK</button>
   </div>
   <p class="pairHint">BOTH = shared move; A / B = <strong>different actions and destinations</strong>.</p>
+  <div class="pairReadout" aria-label="Exact preview of planned commands">
+    <strong>YOUR TWO ORDERS · BEFORE COMMIT</strong>
+    <div class="planRows"><span id="planA">A · choose a fighter</span><span id="planB">B · choose a fighter</span></div>
+    <p id="previewHint" class="previewHint">Choose two fighters and select their destinations.</p>
+    <div id="rivalReadback" class="rivalReport" aria-label="Last rival response">RIVAL RESPONSE · revealed after the first paired command.</div>
+  </div>
   <div class="modes" id="modes">
     <button data-action="COMBO" aria-pressed="true">COMBO</button>
     <button data-action="ATTACK" aria-pressed="false">ATTACK</button>
@@ -112,7 +132,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
-let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0,arranging=false,formationPick=null,arrangeMessage="";
+let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0,arranging=false,formationPick=null,arrangeMessage="",coachOn=false;
 const Art=window.JM_CREWBOUND_321_ART,Combat=window.JM_CREWBOUND_321_COMBAT;
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
@@ -186,6 +206,36 @@ function updateUI(){
  $("turn").textContent="GO "+game.turn;
  $("phase").textContent=game.ended?(game.winner==="player"?"VICTORY":"RIVAL WON"):!started?(arranging?"ARRANGE CREW":"READY · PICK 2"):game.resolve>0?"LIVE "+game.resolve.toFixed(1)+"s":"CHOOSE × 2";
  $("pair").textContent=game.selected.length+" / 2 READY";
+ const preview=game.pairPreview();
+ for(let i=0;i<2;i++){
+   const planned=preview.orders[i],el=$(i===0?"planA":"planB");
+   if(!planned){el.textContent=(i===0?"A":"B")+" · choose a fighter";continue}
+   const where=planned.target?"("+Math.round(planned.target.x)+", "+Math.round(planned.target.y)+")":"tap arena";
+   el.textContent=planned.slot+" · "+planned.name+" · "+planned.action+" · "+where+
+     (planned.reason?" · "+planned.reason:" · READY");
+ }
+ $("previewHint").textContent=preview.nearPair?"PAIR IN RANGE · close fighters earn a linked bonus when striking":
+   preview.hint;
+ const rival=game.lastRivalPair();
+ $("rivalReadback").textContent=rival?
+   "RIVAL GO "+rival.turn+" · "+rival.rival.map(x=>x.name+" "+x.action+
+     " ("+Math.round(x.target.x)+", "+Math.round(x.target.y)+")").join(" / "):
+   "RIVAL RESPONSE · revealed only after you commit your two orders.";
+ $("coachToggle").setAttribute("aria-pressed",String(coachOn));
+ $("coachToggle").textContent=coachOn?"✓ TRAINING ON · TAP TO EXIT":"🎯 PRACTISE FIRST GO";
+ if(coachOn){
+   const message=game.ended?"TRAINING COMPLETE · the match ended. Review the result or rematch.":
+     game.turn>0&&game.resolve===0?"FIRST GO COMPLETE! You saw both sides act. Pick your next two fighters to keep going.":
+     game.turn>0?"YOUR ORDERS ARE LIVE · watch the rival response and the arena for the next window.":
+     arranging?"FORMATION PRACTICE · tap any two fighters with different floor/yard/flex roles, then finish arranging.":
+     game.selected.length<2?"STEP 1/3 · tap TWO fighter cards from your six below.":
+     !preview.ready?"STEP 2/3 · pick BOTH or A/B, choose attack/guard/move, then tap or flick target(s) on the arena.":
+     "STEP 3/3 · both orders are ready. Press COMMIT PAIR; the rival acts too.";
+   if($("coachText").textContent!==message)$("coachText").textContent=message;
+ }else{
+   const message="Optional guided practice with real game actions. No separate training game or artificial win.";
+   if($("coachText").textContent!==message)$("coachText").textContent=message;
+ }
  $("clock").textContent=String(Math.floor(game.time/60)).padStart(2,"0")+":"+String(Math.floor(game.time%60)).padStart(2,"0");
  $("formation").textContent="FLOOR "+game.floor("player").length+" · YARD "+game.yard("player").length+" · FLEX "+(game.flex("player")?1:0);
  $("commit").disabled=arranging||!game.canCommit();
@@ -217,6 +267,7 @@ function updateUI(){
  $("log").textContent=rec||"Planning continues while the rival moves.";
  makeRoster();
 }
+$("coachToggle").onclick=()=>{coachOn=!coachOn;updateUI()};
 $("arrange").onclick=()=>{
   if(!game.canArrange())return;
   arranging=!arranging;formationPick=null;
@@ -235,7 +286,7 @@ $("modes").addEventListener("click",e=>{
 $("dice").onclick=()=>{game.roll();updateUI()};
 $("commit").onclick=()=>{if(!arranging&&game.commit()){started=true;formationPick=null;arrangeMessage="Lineup locked after your first paired order."}updateUI()};
 $("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME":"Ⅱ PAUSE";updateUI()};
-function rematch(){game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;arranging=false;formationPick=null;arrangeMessage="";$("pause").textContent="Ⅱ PAUSE";updateUI()}
+function rematch(){game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;arranging=false;formationPick=null;arrangeMessage="";coachOn=false;$("pause").textContent="Ⅱ PAUSE";updateUI()}
 $("reset").onclick=rematch;
 $("playAgain").onclick=rematch;
 function drawFighter(u){
@@ -281,6 +332,19 @@ function paint(){
   ctx.beginPath();ctx.arc(t.x,t.y,30,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
   ctx.fillStyle=ctx.strokeStyle;ctx.font="900 18px system-ui";ctx.textAlign="center";ctx.fillText(i===0?"A":"B",t.x,t.y-35);
   ctx.restore();
+ }
+ // CP07 intent paths show exactly WHERE your selected A/B orders will go,
+ // never pretend the rival will stand at those positions.
+ for(const [i,planned] of game.pairPreview().orders.entries()){
+   if(!planned.target)continue;
+   const u=game.find(planned.id);
+   ctx.save();ctx.strokeStyle=i===0?"#81ecff8e":"#ffbd818e";ctx.lineWidth=3;
+   ctx.setLineDash([4,6]);ctx.beginPath();ctx.moveTo(u.x,u.y);
+   ctx.lineTo(planned.target.x,planned.target.y);ctx.stroke();ctx.setLineDash([]);
+   ctx.beginPath();ctx.arc(planned.target.x,planned.target.y,15,0,Math.PI*2);
+   ctx.stroke();ctx.fillStyle=i===0?"#baf9ff":"#ffe4b8";
+   ctx.font="900 14px system-ui";ctx.textAlign="center";ctx.fillText(planned.slot,planned.target.x,planned.target.y-21);
+   ctx.restore();
  }
  for(const u of game.units.filter(u=>u.alive&&u.role==="floor")){
   if(u.order){ctx.strokeStyle=u.team==="player"?"#77f6ffaf":"#ff82b2a0";ctx.setLineDash([7,7]);ctx.beginPath();ctx.moveTo(u.x,u.y);ctx.lineTo(u.order.target.x,u.order.target.y);ctx.stroke();ctx.setLineDash([])}

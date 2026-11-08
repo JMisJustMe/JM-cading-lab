@@ -497,3 +497,110 @@ test('CP07 missing-target warnings outrank conditional near-pair bonuses',async(
  await expect(page.locator('#previewHint')).toContainText('PAIR IN RANGE');
  await expect(page.locator('#commit')).toBeEnabled();
 });
+
+test('CP08 portable live match export, import and resume preserve exact paired state',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(PATH);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#editFirst').click();
+ await page.locator('[data-action=ATTACK]').click();
+ await page.locator('#arena').click({position:{x:140,y:140}});
+ await page.locator('#editSecond').click();
+ await page.locator('[data-action=GUARD]').click();
+ await page.locator('#arena').click({position:{x:205,y:190}});
+ const original=await page.evaluate(()=>game.snapshot());
+ await page.locator('details.continuity summary').click();
+ await page.locator('#exportMatch').click();
+ const code=await page.locator('#matchCode').inputValue();
+ expect(code).toContain('JM.CREWBOUND.CP08.MATCH_CAPSULE/1');
+ expect(code.length).toBeGreaterThan(500);
+ await page.locator('#reset').click();
+ await page.locator('#matchCode').fill(code);
+ await page.locator('#importMatch').click();
+ await expect(page.locator('#checkpointStatus')).toContainText('MATCH RESTORED');
+ await expect(page.locator('#pause')).toContainText('RESUME');
+ const restored=await page.evaluate(()=>game.snapshot());
+ expect(restored).toEqual(original);
+ await expect(page.locator('#commit')).toBeEnabled();
+ await page.locator('#commit').click();
+ await expect(page.locator('#rivalReadback')).toContainText('RIVAL GO 1');
+ expect(errors).toEqual([]);
+});
+
+test('CP08 browser saved match reopens paused and untrusted capsule cannot destroy current battle',async({page})=>{
+ await page.goto(PATH);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#arena').click({position:{x:155,y:150}});
+ await page.locator('#commit').click();
+ await page.locator('details.continuity summary').click();
+ await page.locator('#saveMatch').click();
+ await expect(page.locator('#checkpointStatus')).toContainText('SAVED LOCALLY');
+ // Compare to the actual saved checkpoint, not a live match that advances
+ // additional animation frames between save and inspection.
+ const before=await page.evaluate(()=>{
+   const text=localStorage.getItem('JM.CREWBOUND.CP08.MATCH_LOCAL/1');
+   return window.JM_CREWBOUND_321_CONTINUITY.unpack(text).snapshot();
+ });
+ await page.locator('#reset').click();
+ await page.locator('#loadMatch').click();
+ await expect(page.locator('#checkpointStatus')).toContainText('MATCH RESTORED');
+ expect(await page.evaluate(()=>game.snapshot())).toEqual(before);
+ const beforeId=await page.evaluate(()=>game.seed);
+ const originalCode=await page.evaluate(()=>localStorage.getItem('JM.CREWBOUND.CP08.MATCH_LOCAL/1'));
+ const tampered=JSON.parse(originalCode);
+ tampered.units[0].key='COMBOUND';
+ await page.locator('#matchCode').fill(JSON.stringify(tampered));
+ await page.locator('#importMatch').click();
+ await expect(page.locator('#checkpointStatus')).toContainText('NOT LOADED');
+ expect(await page.evaluate(()=>game.seed)).toBe(beforeId);
+});
+
+test('CP08 fair non-stat experience survives rematch and result is awarded once',async({page})=>{
+ await page.goto(PATH);
+ await page.evaluate(()=>{game.time=179.95;game.step(.05);updateUI()});
+ await expect(page.locator('#matchOverlay')).toBeVisible();
+ await expect(page.locator('#resultSummary')).toContainText('CREW PROGRESS');
+ await expect(page.locator('#careerLine')).toContainText('1 matches');
+ const earned=await page.evaluate(()=>game.career.pilots.KEPLER.xp);
+ expect(earned).toBeGreaterThan(0);
+ await page.locator('#playAgain').click();
+ await expect(page.locator('#careerLine')).toContainText('1 matches');
+ const next=await page.evaluate(()=>({xp:game.career.pilots.KEPLER.xp,turn:game.turn,
+   baseline:game.floor('player').length,experienceKeys:Object.keys(game.career.pilots).length}));
+ expect(next).toEqual({xp:earned,turn:0,baseline:3,experienceKeys:6});
+});
+
+test('CP08 leaving browser foreground pauses active play without touching the phone screen',async({page})=>{
+ await page.goto(PATH);
+ await page.locator('#roster .unit').nth(0).click();
+ await page.locator('#roster .unit').nth(1).click();
+ await page.locator('#arena').click({position:{x:153,y:140}});
+ await page.locator('#commit').click();
+ const outcome=await page.evaluate(()=>{
+   Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
+   document.dispatchEvent(new Event('visibilitychange'));
+   return {paused,started,turn:game.turn};
+ });
+ expect(outcome).toEqual({paused:true,started:true,turn:1});
+ await expect(page.locator('#pause')).toContainText('RESUME');
+ await expect(page.locator('#checkpointStatus')).toContainText('MATCH PAUSED');
+});
+
+test('CP08 single HTML offline player supports save, export, import and match restart',async({page})=>{
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+ await page.goto('./crewbound-321/deliveries/CREWBOUND_CP08_PLAY.html');
+ await expect(page.locator('#saveMatch')).toHaveCount(1);
+ expect(await page.locator('script[src]').count()).toBe(0);
+ await page.locator('details.continuity summary').click();
+ await page.locator('#exportMatch').click();
+ const code=await page.locator('#matchCode').inputValue();
+ expect(code).toContain('CP08.MATCH_CAPSULE/1');
+ await page.locator('#matchCode').fill(code);
+ await page.locator('#importMatch').click();
+ await expect(page.locator('#checkpointStatus')).toContainText('MATCH RESTORED');
+ await expect(page.locator('#pause')).toContainText('RESUME');
+ expect(errors).toEqual([]);
+ expect(requests.filter(url=>!url.includes('CREWBOUND_CP08_PLAY.html'))).toEqual([]);
+});

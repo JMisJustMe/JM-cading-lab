@@ -198,3 +198,37 @@ test('CP04 linked BOTH mode preserves original rapid two-character control',asyn
  await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
  await expect(page.locator('#commit')).toBeDisabled();
 });
+
+test('CP04 standalone source-parity HTML runs independently with real A/B touch orders',async({page})=>{
+  const errors=[];const requests=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('request',req=>requests.push(req.url()));
+  await page.goto('./crewbound-321/deliveries/CREWBOUND_CP04_PLAY.html');
+  await expect(page.locator('h1')).toContainText('3 + 2 + 1');
+  await expect(page.locator('#roster .unit')).toHaveCount(6);
+  await expect(page.locator('#phase')).toHaveText('READY · PICK 2');
+  expect(await page.locator('script[src]').count()).toBe(0);
+  expect(await page.evaluate(()=>window.JM_CREWBOUND_321_SIM.CAST_SCHEMA))
+    .toBe('JM.CREWBOUND.CP02.UNIQUE_CAST/1');
+  await page.locator('#roster .unit').nth(0).click();
+  await page.locator('#roster .unit').nth(1).click();
+  await page.locator('#editFirst').click();
+  await page.locator('[data-action=ATTACK]').click();
+  await page.locator('#arena').click({position:{x:140,y:155}});
+  await page.locator('#editSecond').click();
+  await page.locator('[data-action=GUARD]').click();
+  await page.locator('#arena').click({position:{x:215,y:195}});
+  await expect(page.locator('#commit')).toBeEnabled();
+  await page.locator('#commit').click();
+  const state=await page.evaluate(()=>{
+    const r=game.log.find(x=>x.type==='SIMULTANEOUS_PAIR_COMMIT');
+    return {turn:game.turn,actions:r.playerPlans.map(x=>x.action),
+      targets:r.playerPlans.map(x=>x.target.x),rivals:r.rival.length};
+  });
+  expect(state.turn).toBe(1);
+  expect(state.actions).toEqual(['ATTACK','GUARD']);
+  expect(state.targets[0]).not.toBe(state.targets[1]);
+  expect(state.rivals).toBe(2);
+  expect(errors).toEqual([]);
+  expect(requests.filter(u=>!u.includes('CREWBOUND_CP04_PLAY.html'))).toEqual([]);
+});

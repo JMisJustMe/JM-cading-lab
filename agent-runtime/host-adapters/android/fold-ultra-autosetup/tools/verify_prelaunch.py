@@ -22,7 +22,7 @@ require("JM.FoldUltraSetup/0.9" in src, "current export schema")
 for old in ["JM.FoldUltraSetup/0.8", "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
     require(old in src, "schema migration guard "+old)
 require("JM.FoldUltraPreflight/0.4" in diagnostics, "preflight JSON contract")
-require("versionCode 12" in gradle and "versionName '1.2.0'" in gradle, "version code/name")
+require("versionCode 13" in gradle and "versionName '1.3.0'" in gradle, "version code/name")
 require("targetSdk 35" in gradle and "compileSdk 36" in gradle, "Android SDK context")
 require('android.intent.action.SEND' in manifest and 'text/plain' in manifest, "explicit Android Share intake")
 require('android:launchMode="singleTop"' in manifest, "share handoff activity")

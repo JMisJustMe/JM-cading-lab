@@ -9,8 +9,9 @@
   const clear=document.getElementById("jmOwnerTheory97Clear");
   const status=document.getElementById("jmOwnerTheory97Status");
   const list=document.getElementById("jmOwnerTheory97Rows");
-  if(!pick || !search || !clear || !status || !list) return;
-  let entries=[];
+  const bookDoor=document.getElementById("jmOwnerTheory97BookDoor");
+  if(!pick || !search || !clear || !status || !list || !bookDoor) return;
+  let entries=[],sourcebookUrl="";
   const allowed=new Set([
     "JM.H02.Theory97.OwnerCustody/1.0",
     "JM Master Theory Register v0.3"
@@ -23,6 +24,19 @@
   }
   function assert(condition,message) {
     if(!condition) throw new Error(message);
+  }
+  // Only owner-provided authenticated Drive file links can open. No arbitrary
+  // user-supplied URI, script, data URL, onClick code or network call is used.
+  function safeDriveFileUrl(value) {
+    if(typeof value!=="string" || value.length>350) return "";
+    return /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]{12,}\/view(?:\?[A-Za-z0-9_=&-]+)?$/.test(value) ? value : "";
+  }
+  function sourceLink(caption,url) {
+    const a=text("a",caption,"jm-theory-private-source-link");
+    a.href=url;
+    a.target="_blank";
+    a.rel="noopener noreferrer";
+    return a;
   }
   function validate(data) {
     assert(data && typeof data==="object" && !Array.isArray(data),
@@ -46,7 +60,14 @@
         contact:String(r.original_source_contact || r.source_contact_class || "REGISTER_OR_SHELF_SOURCE_ONLY"),
         recovery:String(r.source_recovery_level || ""),
         anomaly:!!r.source_card_anomaly,sourceLimit:String(r.source_limit || r.known_limits || ""),
-        publication:String(r.publication_state || "UNKNOWN")
+        publication:String(r.publication_state || "UNKNOWN"),
+        cp12Candidates:Array.isArray(r.cp12_archived_candidates?.files)
+          ? r.cp12_archived_candidates.files.slice(0,12).map(f=>({
+              name:String(f?.filename || "").slice(0,180),
+              url:safeDriveFileUrl(f?.owner_drive),
+              sourceClass:"EXACT_ARCHIVED_CANDIDATE_BYTES_NOT_FULL_ORIGINAL_THEORY"
+            })).filter(x=>x.name && x.url)
+          : []
       };
     });
     const src=out.filter(x=>x.contact==="RETRIEVAL_INDEX_SOURCE_CARD").length;
@@ -54,10 +75,17 @@
       "Theory source-contact census does not match the original 58/39 register.");
     assert(allowed.has(owner ? data.schema : "JM Master Theory Register v0.3"),
       "Unexpected theory schema.");
-    return {items:out,owner};
+    const sourcebookUrl=owner
+      ? safeDriveFileUrl(data.authority?.strict51_private_body_reading?.owner_google_drive_url)
+      : "";
+    return {items:out,owner,sourcebookUrl};
   }
   function render() {
     list.replaceChildren();
+    bookDoor.replaceChildren();
+    if(sourcebookUrl){
+      bookDoor.append(sourceLink("Open existing private strict 51-seat source-union reading PDF (a separate source collection)",sourcebookUrl));
+    }
     const q=search.value.trim().toLocaleLowerCase();
     const filtered=entries.filter(r=>(r.id+" "+r.name+" "+r.family+" "+r.type+" "+r.keeper)
       .toLocaleLowerCase().includes(q));
@@ -77,6 +105,12 @@
       if(r.keeper) row.append(text("p",r.keeper));
       if(r.sourceLimit) row.append(text("p","Known boundary: "+r.sourceLimit,
         "jm-theory-private-muted"));
+      if(r.cp12Candidates.length){
+        row.append(text("p","Exact archived document candidates · NOT authenticated founding full-theory bodies","jm-theory-private-grade"));
+        for(const candidate of r.cp12Candidates){
+          row.append(sourceLink("Open archived "+(/\.pdf$/i.test(candidate.name)?"PDF":"DOCX")+" source candidate · "+candidate.name,candidate.url));
+        }
+      }
       row.append(text("small",r.publication+" · Identity listed, not a claim of public full body.",
         "jm-theory-private-muted"));
       list.append(row);
@@ -94,6 +128,7 @@
       const parsed=JSON.parse(await file.text());
       const ready=validate(parsed);
       entries=ready.items;
+      sourcebookUrl=ready.sourcebookUrl;
       search.disabled=false;
       clear.disabled=false;
       search.value="";
@@ -104,6 +139,8 @@
       status.textContent+=" "+warning;
     } catch(e) {
       entries=[];
+      sourcebookUrl="";
+      bookDoor.replaceChildren();
       search.disabled=true;
       clear.disabled=true;
       list.replaceChildren();
@@ -114,6 +151,7 @@
   search.addEventListener("input",render);
   clear.addEventListener("click",()=>{
     entries=[];
+    sourcebookUrl="";
     search.value="";
     search.disabled=true;
     clear.disabled=true;

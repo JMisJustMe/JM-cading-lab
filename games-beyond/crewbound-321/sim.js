@@ -114,6 +114,33 @@
         return !!(plan.target||this.target);
       });
     }
+    // CP07 is a READ-ONLY tactical preview, not a simulated guarantee of a hit.
+    // It shares the same action/target normalization used by commit() below.
+    pairPreview(){
+      const orders=this.selected.map((id,i)=>{
+        const u=this.find(id),plan=this.pairPlans[id]||{},action=plan.action||this.action;
+        const source=plan.target||this.target;
+        const target=source?{x:clamp(source.x+(plan.target?0:i?35:-35),30,W-30),y:source.y}:null;
+        const reason=!u?.alive?"Unavailable fighter":u.team!=="player"?"Not your crew":
+          u.role!=="floor"&&action!=="DEPLOY"&&u.supportCooldown>0?"Support cooling down":
+          !target?"Choose a target":null;
+        return {slot:i===0?"A":"B",id:u.id,name:u.name,role:u.role,action,target,
+          independent:!!(plan.action||plan.target),ready:!reason,reason};
+      });
+      const ready=this.canCommit();
+      const duo=orders.length===2?orders.map(x=>this.find(x.id)):[];
+      const nearPair=duo.length===2&&duo.every(u=>u.alive&&u.role==="floor")&&dist(duo[0],duo[1])<145;
+      const hint=this.ended?"Match ended — rematch to play":
+        this.resolve>0?"Both crews are executing their orders":
+        orders.length<2?"Select two crew members to plan the next go":
+        orders.find(x=>x.reason)?.reason||"Both plans ready — commit to reveal the rival response";
+      return {ready,orders,nearPair,hint};
+    }
+    lastRivalPair(){
+      const last=this.log.slice().reverse().find(r=>r.type==="SIMULTANEOUS_PAIR_COMMIT");
+      return last?{turn:last.turn,rival:last.rival.map(x=>({
+        name:x.name,action:x.action,target:{...x.target}}))}:null;
+    }
     roll(){if(this.resolve>0||this.ended)return 0;this.die=1+Math.floor(this.rng()*6);this.receipt("OPTIONAL_DIE",{value:this.die});return this.die}
     deploy(u){
       if(!u?.alive||u.role==="floor")return false;
@@ -171,11 +198,10 @@
       if(!this.canCommit())return false;
       const units=this.selected.map(id=>this.find(id));
       const before=this.log.length;
-      const planned=units.map((u,i)=>{
-        const proposal=this.pairPlans[u.id]||{},target=proposal.target||this.target;
-        return {u,action:proposal.action||this.action,target:{
-          x:clamp(target.x+(proposal.target?0:i?35:-35),30,W-30),y:target.y}};
-      });
+      // All committed targets originate in the same normalizer as the HUD preview.
+      const planned=this.pairPreview().orders.map(x=>({
+        u:this.find(x.id),action:x.action,target:{...x.target}
+      }));
       const issued=planned.map(p=>this.order(p.u,p.action,p.target,"player"));
       if(!issued.every(Boolean)){this.log.length=before;return false}
       if(this.turn===0)this.receipt("LINEUP_LOCKED",{
@@ -314,7 +340,9 @@
       }
     }
     snapshot(){return {time:this.time,turn:this.turn,resolve:this.resolve,selected:[...this.selected],target:this.target,
-      action:this.action,canArrange:this.canArrange(),formation:this.formationRoster(),ended:this.ended,winner:this.winner,matchReason:this.matchReason,
+      action:this.action,canArrange:this.canArrange(),formation:this.formationRoster(),
+      pairPreview:this.pairPreview(),lastRivalPair:this.lastRivalPair(),
+      ended:this.ended,winner:this.winner,matchReason:this.matchReason,
        scores:{...this.scores},stats:JSON.parse(JSON.stringify(this.stats)),
        zones:this.zones.map(z=>({...z})),units:this.units.map(u=>({...u,order:u.order?{...u.order}:null})),log:this.log.slice(-8)}}
   }

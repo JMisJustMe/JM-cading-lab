@@ -1,0 +1,21 @@
+{
+  "schema": "JM.FileGrabberVisualang.NativeCP08/1.0",
+  "parent": "JM File Grabber \u00d7 Visualang v0.4 Magic Return",
+  "parent_sha256_java": "a2c4d0cc0c39b9fb691ba2bccc3c3585e9be04caaa66ad336a3372382a898dd6",
+  "descendant_java_sha256": "92e8b23f193b142b92f1a2f09d1f33090de0fd190acac1d304b3abb4d2df96b2",
+  "helper_sha256": "1cb75d7c5f27d98d90ac2365b40d8da50c406f0aa57e094d987f45fbf7bb1f7f",
+  "app_id": "com.jmisjustme.filegrabbervisualang",
+  "scope": [
+    "trusted offline WebView bridge navigation and request guard",
+    "per-row SHA-256 verified cross-restart restore",
+    "no silent purge of recovery HOLD rows",
+    "private file receipt redaction",
+    "deduped native intake",
+    "stream temp cleanup and write readback"
+  ],
+  "android_build": "NOT_YET_COMPILED",
+  "owner_device": "HOLD",
+  "parent_mutated": false,
+  "browser_fallback": "4/4 PASS",
+  "pure_java": "34/34 PASS"
+}

@@ -98,6 +98,8 @@ export const CadenVM = {
     need(checksum === digest({ header, instructions: bytecode.instructions }), 'CADEN_BAD_CHECKSUM', 'CadenVM bytecode checksum mismatch.');
     const valid = new Set(Object.values(CADEN_OPCODES));
     bytecode.instructions.forEach((instruction, index) => need(valid.has(instruction.opcode), 'CADEN_BAD_OPCODE', `Unknown CadenVM opcode at ${index}.`));
+    need(bytecode.instructions.length > 0 && bytecode.instructions.at(-1).opcode === CADEN_OPCODES.HALT, 'CADEN_HALT_REQUIRED', 'CadenVM bytecode requires terminal HALT.');
+    need(bytecode.instructions.slice(0,-1).every(item => item.opcode !== CADEN_OPCODES.HALT), 'CADEN_EARLY_HALT', 'CadenVM cannot HALT before its last instruction.');
     return true;
   },
   execute(bytecode, initialState = {}, services = {}) {

@@ -20,6 +20,7 @@ code{background:#0a0e15;border:1px solid #2b3346;border-radius:6px;padding:1px 5
 .card{background:#0a0e15;border:1px solid #2b3346;border-radius:14px;padding:12px}
 .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#0a0e15;border:1px solid #2b3346;margin:2px 4px 2px 0;font-size:.86rem}
 .tiny{opacity:.78;font-size:.92rem}.ok{color:#8ff0a4;font-weight:900}.warn{color:#ffd479;font-weight:900}.bad{color:#ff8f8f;font-weight:900}
+.table-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}th,td{border:1px solid #2b3346;padding:8px;vertical-align:top}th{background:#0a0e15}
 </style>
 </head>
@@ -63,7 +64,7 @@ TheOnly {pre}, Theought.all.native {post}.✓</textarea>
 <button onclick="saveWS()">Save locally</button><button class="secondary" onclick="loadWS()">Load</button><button class="secondary" onclick="exportWS()">Export JSON</button><button class="danger" onclick="clearWS()">Clear</button>
 <textarea id="importBox" placeholder="Paste exported workspace JSON here"></textarea><button onclick="importWS()">Import</button><pre id="workspaceResult"></pre></section>
 
-<section><h2>7. Operator Dictionary</h2><table><thead><tr><th>Mark</th><th>Name</th><th>Spec</th><th>Code</th><th>Reality</th></tr></thead><tbody id="dictionary"></tbody></table></section>
+<section><h2>7. Operator Dictionary</h2><div class="table-scroll"><table><thead><tr><th>Mark</th><th>Name</th><th>Spec</th><th>Code</th><th>Reality</th></tr></thead><tbody id="dictionary"></tbody></table></div></section>
 <section><h2>8. v1.0 Proof Receipt</h2><button onclick="receipt()">Generate receipt</button><pre id="receiptResult"></pre></section>
 
 <script>

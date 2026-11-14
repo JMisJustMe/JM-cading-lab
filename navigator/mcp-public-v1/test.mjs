@@ -130,7 +130,7 @@ globalThis.fetch=async (input,init={}) => {
         {id:'unrelated2',title:'Unrelated source',text:'',score:0.25},
         {id:'relevant',title:'Matching result',text:'nonsense-unmatched-jm',score:15}
       ]}
-    }}}),{status:200,headers:{'content-type':'application/json'}});
+    }}),{status:200,headers:{'content-type':'application/json'}});
   }
   return fetchBeforeRegression(input,init);
 };

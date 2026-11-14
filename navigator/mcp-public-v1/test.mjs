@@ -118,4 +118,25 @@ x=await rpc(12,'tools/call',{name:'navigator_internet_search',arguments:{query:'
 if(x.res.ok||!x.json.error)throw new Error('short search accepted');
 x=await rpc(13,'tools/call',{name:'navigator_internet_search',arguments:{query:'okay',url:'https://bad.invalid'}});
 if(x.res.ok||!x.json.error)throw new Error('arbitrary search URL accepted');
+// Regression: an upstream URL/source bonus of 0.75 is not evidence of query relevance.
+const fetchBeforeRegression=globalThis.fetch;
+globalThis.fetch=async (input,init={}) => {
+  const url=typeof input==='string'?input:input.url;
+  if(url==='https://navigator-live-contact.jm-inline-contact-probe.pages.dev/mcp'){
+    const body=JSON.parse(init.body||'{}');
+    if(body.params?.name==='search')return new Response(JSON.stringify({jsonrpc:'2.0',id:1,result:{
+      structuredContent:{query:'nonsense-unmatched-jm',count:3,results:[
+        {id:'unrelated',title:'Unrelated URL',text:'',url:'https://jmisjustme.github.io/',score:0.75},
+        {id:'unrelated2',title:'Unrelated source',text:'',score:0.25},
+        {id:'relevant',title:'Matching result',text:'nonsense-unmatched-jm',score:15}
+      ]}
+    }}}),{status:200,headers:{'content-type':'application/json'}});
+  }
+  return fetchBeforeRegression(input,init);
+};
+x=await rpc(20,'tools/call',{name:'search',arguments:{query:'nonsense-unmatched-jm',limit:8}});
+if(!x.res.ok||x.json.error)throw new Error('relevance guard search failed');
+const cleaned=x.json.result.structuredContent;
+if(cleaned.count!==1||cleaned.results?.length!==1||cleaned.results[0].id!=='relevant')throw new Error('bonus-only upstream rows leaked');
+globalThis.fetch=fetchBeforeRegression;
 console.log('JM3232 CP03: five inherited tools + render + separate internet tool, negative-source refusal, write protection PASS');

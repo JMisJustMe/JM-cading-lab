@@ -1,1 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:padding="18dp" android:background="@drawable/jm_widget_background" android:layout_width="match_parent" android:layout_height="match_parent"><TextView android:id="@+id/jm_widget_open" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="JM / FOLD ULTRA" android:textStyle="bold" android:textColor="#F2E9FF" android:textSize="22sp"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ONE ENTRANCE · EXISTING CREATIONS" android:textColor="#C6A8DF" android:textSize="11sp"/><TextView android:id="@+id/jm_widget_continue" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="44dp" android:text="Continue →" android:textColor="#E9BD80" android:textSize="17sp"/><TextView android:id="@+id/jm_widget_projects" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="44dp" android:text="Projects →" android:textColor="#F2E9FF" android:textSize="17sp"/><TextView android:id="@+id/jm_widget_capture" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="44dp" android:text="Capture →" android:textColor="#F2E9FF" android:textSize="17sp"/></LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical"
+ android:padding="18dp" android:background="@drawable/jm_widget_background"
+ android:layout_width="match_parent" android:layout_height="match_parent">
+ <TextView android:id="@+id/jm_widget_open" android:layout_width="match_parent" android:layout_height="wrap_content"
+ android:text="JM / FOLD ULTRA" android:textColor="#F2E9FF" android:textSize="22sp" android:textStyle="bold"/>
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+ android:text="EXISTING CREATIONS • NATIVE CONTROLS" android:textColor="#C6A8DF" android:textSize="11sp"/>
+ <TextView android:id="@+id/jm_widget_selected" android:layout_width="match_parent" android:layout_height="0dp"
+ android:layout_weight="1" android:gravity="center_vertical" android:text="CURRENT • Galaxy (1/4)"
+ android:textColor="#E9BD80" android:textSize="18sp"/>
+ <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+  <TextView android:id="@+id/jm_widget_next" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp"
+   android:gravity="center" android:text="Next room ›" android:textColor="#FFFFFF" android:textSize="16sp"/>
+  <TextView android:id="@+id/jm_widget_refresh" android:layout_width="60dp" android:layout_height="48dp"
+   android:gravity="center" android:text="Refresh ↻" android:textColor="#E9BD80" android:textSize="14sp"/>
+ </LinearLayout>
+ <TextView android:id="@+id/jm_widget_continue" android:layout_width="match_parent" android:layout_height="52dp"
+ android:gravity="center_vertical" android:text="Continue ↗" android:textColor="#F2E9FF" android:textSize="17sp"/>
+ <TextView android:id="@+id/jm_widget_projects" android:layout_width="match_parent" android:layout_height="52dp"
+ android:gravity="center_vertical" android:text="Projects ↗" android:textColor="#F2E9FF" android:textSize="17sp"/>
+ <TextView android:id="@+id/jm_widget_capture" android:layout_width="match_parent" android:layout_height="52dp"
+ android:gravity="center_vertical" android:text="Capture ↗" android:textColor="#F2E9FF" android:textSize="17sp"/>
+</LinearLayout>

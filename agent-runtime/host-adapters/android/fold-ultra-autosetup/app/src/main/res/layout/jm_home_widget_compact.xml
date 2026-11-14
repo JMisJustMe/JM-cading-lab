@@ -1,1 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:padding="12dp" android:background="@drawable/jm_widget_background" android:layout_width="match_parent" android:layout_height="match_parent"><TextView android:id="@+id/jm_widget_open" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:gravity="center_vertical" android:text="JM / FOLD ULTRA" android:textStyle="bold" android:textColor="#F2E9FF" android:textSize="16sp"/><TextView android:id="@+id/jm_widget_continue" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="40dp" android:gravity="center_vertical" android:text="Continue →" android:textColor="#E9BD80" android:textSize="14sp"/></LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical"
+ android:padding="14dp" android:background="@drawable/jm_widget_background"
+ android:layout_width="match_parent" android:layout_height="match_parent">
+ <TextView android:id="@+id/jm_widget_open" android:layout_width="match_parent" android:layout_height="wrap_content"
+ android:text="JM / FOLD ULTRA" android:textColor="#F2E9FF" android:textSize="19sp" android:textStyle="bold"/>
+ <TextView android:id="@+id/jm_widget_selected" android:layout_width="match_parent" android:layout_height="0dp"
+ android:layout_weight="1" android:gravity="center_vertical" android:text="CURRENT • Galaxy (1/4)"
+ android:textColor="#E9BD80" android:textSize="15sp"/>
+ <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+  <TextView android:id="@+id/jm_widget_next" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp"
+   android:gravity="center" android:text="Next ›" android:textColor="#FFFFFF" android:textSize="16sp"/>
+  <TextView android:id="@+id/jm_widget_continue" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp"
+   android:gravity="center" android:text="Continue ↗" android:textColor="#FFFFFF" android:textSize="16sp"/>
+  <TextView android:id="@+id/jm_widget_refresh" android:layout_width="48dp" android:layout_height="48dp"
+   android:gravity="center" android:text="↻" android:textColor="#E9BD80" android:textSize="23sp"/>
+ </LinearLayout>
+</LinearLayout>

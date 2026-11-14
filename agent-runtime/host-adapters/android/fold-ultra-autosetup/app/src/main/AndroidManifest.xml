@@ -65,5 +65,13 @@
         <activity android:name=".launcher.LauncherLabActivity" android:exported="false" />
         <activity android:name=".workroom.WorkroomActivity" android:exported="false"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" />
+        <receiver android:name=".JMHomeWidget" android:exported="true">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/jm_widget_compact"/>
+        </receiver>
+        <receiver android:name=".JMHomeWidgetExpanded" android:exported="true">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/jm_widget_expanded"/>
+        </receiver>
     </application>
 </manifest>

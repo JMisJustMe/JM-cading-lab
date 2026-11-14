@@ -209,7 +209,12 @@ function safeRecord(r){
 function safeResultRow(row){return {id:row?.id||"",title:row?.title||"",text:row?.text||"",url:safeUrl(row?.url||""),source_kind:row?.source_kind||"",source_file:row?.source_file||"",score:row?.score,flags:Array.isArray(row?.flags)?row.flags:[],relationships:Array.isArray(row?.relationships)?row.relationships.slice(0,12):[]};}
 function safeFetch(v){return {id:v?.id||"",title:v?.title||"",text:v?.text||"",url:safeUrl(v?.url||""),metadata:keep(v?.metadata,["source_kind","source_file","aliases","relationships","tags","flags"]),record:safeRecord(v?.record)};}
 function sanitizeStructured(name,v){
-  if(name==="search") return {...keep(v,["query","count","route","boundary"]),results:Array.isArray(v?.results)?v.results.map(safeResultRow):[]};
+  if(name==="search") {
+    // The upstream v0.1 score can award 0.75 to an unrelated URL/source kind.
+    // Keep only query-relevant rows; local public lineage seats are added later.
+    const relevant=Array.isArray(v?.results)?v.results.filter(r=>Number(r?.score)>0.75).map(safeResultRow):[];
+    return {...keep(v,["query","route","boundary"]),count:relevant.length,results:relevant};
+  }
   if(name==="fetch") return safeFetch(v);
   if(name==="navigator_resolve_rootword") return {term:v?.term||"",entry:safeFetch(v?.entry),meaning_radius:keep(v?.meaning_radius,["core_use","good_stretches","bad_stretches","misuse_edges","forbidden_collapses"]),root_action:v?.root_action||"",use_law:v?.use_law||"",visual_face:keep(v?.visual_face,["text_glyph","shape_logic","route_diagram","image_family"]),wordplay_face:keep(v?.wordplay_face,["operation","source_form","sound_form","alternate_readings","mechanism","public_note"]),claim_boundary:keep(v?.claim_boundary,["claim_status","d_level","boundary"]),alternatives:Array.isArray(v?.alternatives)?v.alternatives.map(safeResultRow):[]};
   if(name==="navigator_return_lineage") return {id:v?.id||"",title:v?.title||"",source:v?.source||"",source_file:v?.source_file||"",preserved:v?.preserved||"",lineage:safeLineage(v?.lineage),connections:Array.isArray(v?.connections)?v.connections:[],authority:safeAuthority(v?.authority),boundary:v?.boundary||""};

@@ -5,73 +5,111 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.widget.RemoteViews;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-/** Owner-placed controls. Widget state is local to the QA package; no source estate is altered. */
+/** V3: independent, source-backed project shelf browser and native action controls. */
 public final class JMHomeWidget extends AppWidgetProvider {
-  static final String CYCLE = "com.jmisjustme.foldultra.WIDGET_CYCLE";
-  static final String REFRESH = "com.jmisjustme.foldultra.WIDGET_REFRESH";
-  static final String[] ROOMS = {"galaxy", "projects", "continue", "capture"};
-  static final String[] LABELS = {"Galaxy", "Projects", "Continue", "Capture"};
-
-  private static PendingIntent route(Context c, String path, int request) {
-    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("jmfoldultra://open/" + path));
-    i.setClass(c, MainActivity.class);
-    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    return PendingIntent.getActivity(c, request, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+  static final String NEXT="com.jmisjustme.foldultra.WIDGET_NEXT";
+  static final String PREV="com.jmisjustme.foldultra.WIDGET_PREV";
+  static final String FILTER="com.jmisjustme.foldultra.WIDGET_FILTER";
+  static final String REFRESH="com.jmisjustme.foldultra.WIDGET_REFRESH";
+  static final String[] GROUPS={"ALL","GAMES","BUILD","MUSIC","BOOKS","ESTATE","COMICS","CARTOONS"};
+  private static final String STORE="jm.widget.v3";
+  static SharedPreferences state(Context c){return c.getSharedPreferences(STORE,Context.MODE_PRIVATE);}
+  private static PendingIntent route(Context c,String path,int request) {
+    Intent i=new Intent(Intent.ACTION_VIEW,Uri.parse("jmfoldultra://open/"+path));
+    i.setClass(c,MainActivity.class);
+    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    return PendingIntent.getActivity(c,request,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
   }
-  private static PendingIntent action(Context c, Class<?> provider, String act, int id) {
-    Intent i = new Intent(c, provider).setAction(act).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id);
-    return PendingIntent.getBroadcast(c, id * 7 + (CYCLE.equals(act) ? 1 : 2), i,
-        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+  private static PendingIntent action(Context c,Class<?> provider,String act,int id,int slot) {
+    Intent i=new Intent(c,provider).setAction(act).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id);
+    return PendingIntent.getBroadcast(c,id*16+slot,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
   }
-  static void update(Context c, AppWidgetManager m, int[] ids) {
-    for (int id : ids) {
-      android.appwidget.AppWidgetProviderInfo info = m.getAppWidgetInfo(id);
-      boolean expanded = info != null && info.provider != null &&
-          info.provider.getClassName().endsWith("JMHomeWidgetExpanded");
-      Class<?> provider = expanded ? JMHomeWidgetExpanded.class : JMHomeWidget.class;
-      int index = c.getSharedPreferences("jm.widget.qa",Context.MODE_PRIVATE).getInt("room." + id,0);
-      index = Math.floorMod(index, ROOMS.length);
-      RemoteViews v = new RemoteViews(c.getPackageName(),
-          expanded ? R.layout.jm_home_widget_expanded : R.layout.jm_home_widget_compact);
-      v.setTextViewText(R.id.jm_widget_selected, "CURRENT  •  " + LABELS[index] + "  (" + (index+1) + "/4)");
-      v.setOnClickPendingIntent(R.id.jm_widget_open,route(c,ROOMS[index],id*7));
-      v.setOnClickPendingIntent(R.id.jm_widget_selected,route(c,ROOMS[index],id*7));
-      v.setOnClickPendingIntent(R.id.jm_widget_next,action(c,provider,CYCLE,id));
-      v.setOnClickPendingIntent(R.id.jm_widget_refresh,action(c,provider,REFRESH,id));
-      v.setOnClickPendingIntent(R.id.jm_widget_continue,route(c,"continue",id*7+3));
-      if (expanded) {
-        v.setOnClickPendingIntent(R.id.jm_widget_projects,route(c,"projects",id*7+4));
-        v.setOnClickPendingIntent(R.id.jm_widget_capture,route(c,"capture",id*7+5));
+  static JSONArray projects(Context c) throws Exception {
+    return ProjectShelf.all(c.getSharedPreferences(MainActivity.PREF,Context.MODE_PRIVATE));
+  }
+  static JSONArray filtered(JSONArray all,String group) throws Exception {
+    JSONArray result=new JSONArray();
+    for(int n=0;n<all.length();n++){
+      JSONObject item=all.getJSONObject(n);
+      if("ALL".equals(group)||group.equals(item.optString("family")))result.put(item);
+    }
+    return result;
+  }
+  static void update(Context c,AppWidgetManager m,int[] ids) {
+    for(int id:ids) {
+      android.appwidget.AppWidgetProviderInfo info=m.getAppWidgetInfo(id);
+      if(info==null||info.provider==null)continue;
+      boolean expanded=info.provider.getClassName().endsWith("JMHomeWidgetExpanded");
+      Class<?> provider=expanded?JMHomeWidgetExpanded.class:JMHomeWidget.class;
+      SharedPreferences s=state(c);
+      int groupIndex=Math.floorMod(s.getInt("group."+id,0),GROUPS.length);
+      String group=GROUPS[groupIndex];
+      int index=s.getInt("index."+id,0);
+      String title="No projects in this category",subtitle="Choose another category",count="0 projects";
+      try {
+        JSONArray items=filtered(projects(c),group);
+        count=items.length()+" project"+(items.length()==1?"":"s");
+        if(items.length()>0) {
+          index=Math.floorMod(index,items.length());
+          JSONObject project=items.getJSONObject(index);
+          title=project.optString("title","Untitled");
+          subtitle=project.optString("family","ESTATE")+"  •  "+(index+1)+"/"+items.length();
+        }
+      }catch(Exception e) {
+        title="Shelf unavailable";subtitle="Open Projects to inspect";count="No data overwritten";
+      }
+      RemoteViews v=new RemoteViews(c.getPackageName(),expanded?R.layout.jm_home_widget_expanded:R.layout.jm_home_widget_compact);
+      v.setTextViewText(R.id.jm_widget_selected,title);
+      v.setTextViewText(R.id.jm_widget_subtitle,subtitle);
+      v.setTextViewText(R.id.jm_widget_filter,group+"  ▾");
+      v.setTextViewText(R.id.jm_widget_count,count);
+      v.setOnClickPendingIntent(R.id.jm_widget_next,action(c,provider,NEXT,id,1));
+      v.setOnClickPendingIntent(R.id.jm_widget_prev,action(c,provider,PREV,id,2));
+      v.setOnClickPendingIntent(R.id.jm_widget_filter,action(c,provider,FILTER,id,3));
+      v.setOnClickPendingIntent(R.id.jm_widget_refresh,action(c,provider,REFRESH,id,4));
+      v.setOnClickPendingIntent(R.id.jm_widget_selected,route(c,"projects",id*16+5));
+      v.setOnClickPendingIntent(R.id.jm_widget_open,route(c,"projects",id*16+6));
+      v.setOnClickPendingIntent(R.id.jm_widget_continue,route(c,"continue",id*16+7));
+      if(expanded){
+        v.setOnClickPendingIntent(R.id.jm_widget_projects,route(c,"projects",id*16+8));
+        v.setOnClickPendingIntent(R.id.jm_widget_capture,route(c,"capture",id*16+9));
+        v.setOnClickPendingIntent(R.id.jm_widget_galaxy,route(c,"galaxy",id*16+10));
       }
       m.updateAppWidget(id,v);
     }
   }
-  static void receive(Context c, Intent i, Class<?> provider) {
-    if (i == null) return;
-    String a = i.getAction();
-    if (!CYCLE.equals(a) && !REFRESH.equals(a)) return;
+  static void receive(Context c,Intent i,Class<?> provider) {
+    if(i==null)return;
+    String a=i.getAction();
+    if(!NEXT.equals(a)&&!PREV.equals(a)&&!FILTER.equals(a)&&!REFRESH.equals(a))return;
     int id=i.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,AppWidgetManager.INVALID_APPWIDGET_ID);
-    if (id==AppWidgetManager.INVALID_APPWIDGET_ID) return;
+    if(id==AppWidgetManager.INVALID_APPWIDGET_ID)return;
     AppWidgetManager m=AppWidgetManager.getInstance(c);
     android.appwidget.AppWidgetProviderInfo info=m.getAppWidgetInfo(id);
-    if(info==null || !info.provider.getClassName().equals(provider.getName()))return;
-    if(CYCLE.equals(a)) {
-      android.content.SharedPreferences p=c.getSharedPreferences("jm.widget.qa",Context.MODE_PRIVATE);
-      p.edit().putInt("room."+id,(p.getInt("room."+id,0)+1)%ROOMS.length).apply();
+    if(info==null||info.provider==null||!provider.getName().equals(info.provider.getClassName()))return;
+    SharedPreferences s=state(c);
+    int groupIndex=Math.floorMod(s.getInt("group."+id,0),GROUPS.length);
+    int index=s.getInt("index."+id,0);
+    if(FILTER.equals(a)){groupIndex=(groupIndex+1)%GROUPS.length;index=0;}
+    else if(NEXT.equals(a)||PREV.equals(a)){
+      try {
+        int count=filtered(projects(c),GROUPS[groupIndex]).length();
+        if(count>0)index=Math.floorMod(index+(NEXT.equals(a)?1:-1),count);
+      }catch(Exception ignored){}
     }
+    s.edit().putInt("group."+id,groupIndex).putInt("index."+id,index).apply();
     update(c,m,new int[]{id});
   }
-  @Override public void onReceive(Context c, Intent i) {
-    super.onReceive(c,i);
-    receive(c,i,JMHomeWidget.class);
-  }
+  @Override public void onReceive(Context c,Intent i){super.onReceive(c,i);receive(c,i,JMHomeWidget.class);}
   @Override public void onUpdate(Context c,AppWidgetManager m,int[] ids){update(c,m,ids);}
-  @Override public void onDeleted(Context c,int[] ids) {
-    android.content.SharedPreferences.Editor e=c.getSharedPreferences("jm.widget.qa",Context.MODE_PRIVATE).edit();
-    for(int id:ids)e.remove("room."+id);
-    e.apply();
+  @Override public void onDeleted(Context c,int[] ids){
+    SharedPreferences.Editor e=state(c).edit();
+    for(int id:ids){e.remove("group."+id).remove("index."+id);}e.apply();
   }
 }

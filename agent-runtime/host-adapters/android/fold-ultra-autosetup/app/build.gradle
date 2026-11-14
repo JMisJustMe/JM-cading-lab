@@ -41,6 +41,17 @@ android {
             matchingFallbacks = ['debug']
         }
     }
+    // V3 source-backed widget pilot: separate from every previous installed package.
+    buildTypes {
+        widgetV3Qa {
+            initWith debug
+            applicationIdSuffix '.widgetv3qa'
+            versionNameSuffix '-widget-v3-qa'
+            debuggable true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+        }
+    }
     // Optional side-by-side QA only. assembleDebug remains original package identity.
     buildTypes {
         homeqa {

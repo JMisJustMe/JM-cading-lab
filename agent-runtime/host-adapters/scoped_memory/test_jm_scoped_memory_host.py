@@ -192,17 +192,25 @@ class RepositoryProcessContact(unittest.TestCase):
 
 
     def test_private_gh_comment_read_using_bounded_cli_fixture(self):
-        # Real repo-process execution with fixture gh CLI; no provider/device contact claim.
+        # Local gh fixture only: never call a real GitHub CLI or device.
         import stat
-        fake = Path(self.tmp.name) / "gh"
-        fake.write_text(
-            '#!/bin/sh\n'
-            'if [ "$1" != "api" ] || [ "$2" != "--method" ] || [ "$3" != "GET" ] || '
-            '[ "$4" != "repos/JMisJustMe/JM-ai-studio-surface/issues/comments/6527606601" ]; then\n'
-            '  exit 2\n'
-            'fi\n'
-            'printf "%s" "$JM_FIXTURE_GH_COMMENT"\n', encoding="utf-8")
-        fake.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        if os.name == 'nt':
+            fake = Path(self.tmp.name) / 'gh.cmd'
+            expected = 'api --method GET repos/JMisJustMe/JM-ai-studio-surface/issues/comments/6527606601'
+            code = ('import os,sys; '
+                    'sys.exit(2) if " ".join(sys.argv[1:]) != ' + repr(expected) +
+                    ' else sys.stdout.write(os.environ["JM_FIXTURE_GH_COMMENT"])')
+            fake.write_text('@echo off\n"' + sys.executable + '" -c "' + code.replace('"', '\\"') + '" %*\n', encoding='utf-8')
+        else:
+            fake = Path(self.tmp.name) / 'gh'
+            fake.write_text(
+                '#!/bin/sh\n'
+                'if [ "$1" != "api" ] || [ "$2" != "--method" ] || [ "$3" != "GET" ] || '
+                '[ "$4" != "repos/JMisJustMe/JM-ai-studio-surface/issues/comments/6527606601" ]; then\n'
+                '  exit 2\n'
+                'fi\n'
+                'printf "%s" "$JM_FIXTURE_GH_COMMENT"\n', encoding='utf-8')
+            fake.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
         self.env["PATH"] = self.tmp.name + os.pathsep + self.env["PATH"]
         url = ("https://github.com/JMisJustMe/JM-ai-studio-surface/"
                "issues/12#issuecomment-6527606601")

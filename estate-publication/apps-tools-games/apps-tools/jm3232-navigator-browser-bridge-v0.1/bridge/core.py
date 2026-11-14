@@ -139,6 +139,9 @@ class NavigatorBridge:
                 score += 4.0
         coverage = sum(1 for token in tokens if token in searchable_tokens) / max(1, len(tokens))
         score += coverage * 20.0
+        # URL and source-kind bonuses break ties only after genuine query relevance.
+        if score <= 0:
+            return 0.0
         if doc.get("url"):
             score += 0.5
         if doc.get("source_kind") in {"navigator_body", "estate_bodies", "public_bodies"}:

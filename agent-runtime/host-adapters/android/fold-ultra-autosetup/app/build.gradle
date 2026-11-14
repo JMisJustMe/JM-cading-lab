@@ -19,6 +19,17 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    // Dedicated widget proof package: never upgrades production or pre-existing Home Lab QA.
+    buildTypes {
+        widgetQa {
+            initWith debug
+            applicationIdSuffix '.widgetqa'
+            versionNameSuffix '-widget-qa'
+            debuggable true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+        }
+    }
     // Optional side-by-side QA only. assembleDebug remains original package identity.
     buildTypes {
         homeqa {

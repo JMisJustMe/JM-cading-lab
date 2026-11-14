@@ -30,6 +30,17 @@ android {
             matchingFallbacks = ['debug']
         }
     }
+    // v2 isolated interactive proof: retain the installed v1 widget package and layout.
+    buildTypes {
+        widgetV2Qa {
+            initWith debug
+            applicationIdSuffix '.widgetv2qa'
+            versionNameSuffix '-widget-v2-qa'
+            debuggable true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+        }
+    }
     // Optional side-by-side QA only. assembleDebug remains original package identity.
     buildTypes {
         homeqa {

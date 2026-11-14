@@ -34,6 +34,16 @@ jobs:
         shell: bash
         working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
         run: gradle --no-daemon :app:assembleDebug
+      - name: Build isolated interactive Widget V2 QA APK
+        working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
+        run: gradle --no-daemon :app:assembleWidgetV2Qa
+      - name: Upload interactive Widget V2 QA APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_FOLD_ULTRA_WIDGET_V2_QA
+          path: agent-runtime/host-adapters/android/fold-ultra-autosetup/app/build/outputs/apk/widgetV2Qa/app-widgetV2Qa.apk
+          if-no-files-found: error
+          retention-days: 14
       - name: Build dedicated side-by-side Widget QA APK
         working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
         run: gradle --no-daemon :app:assembleWidgetQa

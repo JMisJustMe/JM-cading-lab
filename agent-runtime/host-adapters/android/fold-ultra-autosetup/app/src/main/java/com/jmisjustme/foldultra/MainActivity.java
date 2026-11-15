@@ -24,6 +24,7 @@ public final class MainActivity extends Activity {
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205,CLOUD_RETURN_IMPORT=206;
   static final int JM_INTAKE_PICK=207,JM_INTAKE_EXPORT=208,JM_CONTACT_EXPORT=209;
+  static final int PROJECT_ONLY_EXPORT=210,PROJECT_ONLY_IMPORT=211;
   JSONObject pendingIntakeExport;
   SharedPreferences sp;
   LinearLayout page;
@@ -973,6 +974,17 @@ public final class MainActivity extends Activity {
       card("HOLD / PROJECT SHELF","Cannot read shelf",e.getMessage(),PURPLE);
     }
     btn(page,"Open active project session →",true,()->{tab=8;render();});
+    btn(page,"Export project shelf only (JSON)",false,()->projectTransferFile(true));
+    btn(page,"Import project shelf only (review first)",false,()->projectTransferFile(false));
+    if(sp.contains(ProjectShelfTransfer.ROLLBACK))
+      btn(page,"Restore previous project shelf (review first)",false,()->new AlertDialog.Builder(this)
+        .setTitle("Restore previous JM project shelf?")
+        .setMessage("Only project references and active selection will change. Current project shelf becomes the next rollback. Sessions, root and other app settings stay unchanged.")
+        .setNegativeButton("Cancel",null)
+        .setPositiveButton("Restore",(d,w)->{
+          try{ProjectShelfTransfer.restore(sp);render();}
+          catch(Exception e){new AlertDialog.Builder(this).setTitle("HOLD / Project rollback").setMessage(e.getMessage()).setPositiveButton("OK",null).show();}
+        }).show());
     btn(page,"Add a JM project reference",false,this::addProject);
     btn(page,"← JM Root",false,()->{tab=0;render();});
   }
@@ -1326,6 +1338,13 @@ public final class MainActivity extends Activity {
         .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
     }
   }
+  void projectTransferFile(boolean exporting){
+    Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
+    i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_PROJECT_SHELF_ONLY_v1.json");
+    try{startActivityForResult(i,exporting?PROJECT_ONLY_EXPORT:PROJECT_ONLY_IMPORT);}
+    catch(Exception e){Toast.makeText(this,"HOLD / No document picker",Toast.LENGTH_LONG).show();}
+  }
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
@@ -1338,7 +1357,35 @@ public final class MainActivity extends Activity {
     if(result!=RESULT_OK||data==null||data.getData()==null)return;
     Uri uri=data.getData();
     try{
-      if(req==JM_INTAKE_PICK){
+      if(req==PROJECT_ONLY_EXPORT){
+        byte[] bytes=ProjectShelfTransfer.snapshot(sp).toString(2).getBytes(StandardCharsets.UTF_8);
+        try(OutputStream out=getContentResolver().openOutputStream(uri,"w")){
+          if(out==null)throw new IOException("No project export destination");
+          out.write(bytes);
+        }
+        Toast.makeText(this,"Project-only JSON exported; no other JM data included",Toast.LENGTH_LONG).show();
+      }else if(req==PROJECT_ONLY_IMPORT){
+        ByteArrayOutputStream out=new ByteArrayOutputStream();
+        try(InputStream in=getContentResolver().openInputStream(uri)){
+          if(in==null)throw new IOException("No project import source");
+          byte[] b=new byte[2048];int n;
+          while((n=in.read(b))!=-1){
+            if(out.size()+n>65536)throw new IOException("Project transfer exceeds 64 KiB");
+            out.write(b,0,n);
+          }
+        }
+        JSONObject clean=ProjectShelfTransfer.validate(new JSONObject(out.toString("UTF-8")));
+        int count=clean.getJSONArray("project_shelf").length();
+        String active=clean.getString("active_project");
+        new AlertDialog.Builder(this).setTitle("Import JM project references only?")
+          .setMessage(count+" validated references; active: "+active+
+            ". This replaces only this app's project shelf and active project. A reversible local rollback is saved. Other JM data is unchanged.")
+          .setNegativeButton("Cancel",null)
+          .setPositiveButton("Import",(d,w)->{
+            try{ProjectShelfTransfer.apply(sp,clean);tab=6;render();}
+            catch(Exception e){new AlertDialog.Builder(this).setTitle("HOLD / No project import").setMessage(e.getMessage()).setPositiveButton("OK",null).show();}
+          }).show();
+      }else if(req==JM_INTAKE_PICK){
         JMIntakeV1.review(this,sp,uri,getContentResolver().getType(uri),()->{tab=10;render();});
       }else if(req==JM_INTAKE_EXPORT){
         JSONObject row=pendingIntakeExport;pendingIntakeExport=null;

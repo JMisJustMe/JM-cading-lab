@@ -8,5 +8,5 @@ assert '"project.shelf".equals(key)||"project.active".equals(key)' in activity
 assert 'JMHomeWidget.refreshAll(this)' in activity
 assert 'getAppWidgetIds(new android.content.ComponentName(c,JMHomeWidget.class))' in widget
 assert 'getAppWidgetIds(new android.content.ComponentName(c,JMHomeWidgetExpanded.class))' in widget
-assert '"OPEN PUBLIC HTTPS LINK"' in widget
+assert '"OPEN VERIFIED PUBLIC ROUTE"' in widget
 print("PASS: v3.4 local project shelf event refresh, both widget providers, accurate link label")

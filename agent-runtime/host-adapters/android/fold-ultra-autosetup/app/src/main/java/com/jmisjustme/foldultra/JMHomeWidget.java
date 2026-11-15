@@ -97,7 +97,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
       v.setTextViewText(R.id.jm_widget_filter,group+"  ▾");
       v.setTextViewText(R.id.jm_widget_count,count);
       v.setOnClickPendingIntent(R.id.jm_widget_activate,action(c,provider,ACTIVATE,id,14));
-      v.setTextViewText(R.id.jm_widget_link,activeUrl.isEmpty()?"UNBOUND / Open Shelf":"OPEN PUBLIC HTTPS LINK");
+      v.setTextViewText(R.id.jm_widget_link,activeUrl.isEmpty()?"UNLINKED / Open Shelf":"OPEN VERIFIED PUBLIC ROUTE");
       v.setOnClickPendingIntent(R.id.jm_widget_link,projectLaunch(c,activeUrl,id*16+13));
       boolean pinned=!activeId.isEmpty()&&activeId.equals(s.getString("pin."+id,""));
       v.setTextViewText(R.id.jm_widget_pin,pinned?"★ Pinned":"☆ Pin");

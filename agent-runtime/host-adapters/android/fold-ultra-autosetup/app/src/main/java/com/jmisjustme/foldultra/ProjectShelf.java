@@ -68,7 +68,7 @@ public final class ProjectShelf {
         a.put(entry("tideless-rebels","TIDELESS REBELS","GAMES",""));
         a.put(entry("slotborn-action","SLOTBORN ACTION","GAMES",""));
         a.put(entry("jm-beatmaker","JM Beatmaker","MUSIC",""));
-        a.put(entry("jm-lyric-home","JM Lyric Home","MUSIC",""));
+        a.put(entry("jm-lyric-home","JM Lyric Home","MUSIC","https://jmisjustme-estate.pages.dev/lyrics/"));
         a.put(entry("jm-buildcad","JM BuildCAD","BUILD",""));
         return a;
     }

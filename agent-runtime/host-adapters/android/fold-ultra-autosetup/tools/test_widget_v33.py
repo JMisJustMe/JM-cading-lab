@@ -7,7 +7,7 @@ assert 'return route(c,"projects",request);' in s
 assert "Intent.CATEGORY_BROWSABLE" in s
 assert 'projectLaunch(c,activeUrl,id*16+5)' in s
 assert 'projectLaunch(c,activeUrl,id*16+13)' in s
-assert 'activeUrl.isEmpty()?"UNBOUND / Open Shelf":"OPEN PUBLIC HTTPS LINK"' in s
+assert 'activeUrl.isEmpty()?"UNLINKED / Open Shelf":"OPEN VERIFIED PUBLIC ROUTE"' in s
 for kind in ("compact","expanded"):
     d=ET.parse(p/f"res/layout/jm_home_widget_{kind}.xml")
     ids=[v.attrib.get("{http://schemas.android.com/apk/res/android}id") for v in d.iter()]

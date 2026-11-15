@@ -28,6 +28,20 @@ public final class JMHomeWidget extends AppWidgetProvider {
     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
     return PendingIntent.getActivity(c,request,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
   }
+  // Only public HTTPS routes validated by the original JM ProjectShelf may launch externally.
+  // An unbound or invalid route stays inside the original Projects room.
+  private static PendingIntent projectLaunch(Context c,String url,int request) {
+    try {
+      String safe=ProjectShelf.safeUrl(url);
+      if(!safe.isEmpty()) {
+        Intent i=new Intent(Intent.ACTION_VIEW,Uri.parse(safe));
+        i.addCategory(Intent.CATEGORY_BROWSABLE);
+        return PendingIntent.getActivity(c,request,i,
+            PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+      }
+    }catch(Exception ignored){}
+    return route(c,"projects",request);
+  }
   private static PendingIntent action(Context c,Class<?> provider,String act,int id,int slot) {
     Intent i=new Intent(c,provider).setAction(act).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,id);
     return PendingIntent.getBroadcast(c,id*16+slot,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
@@ -54,7 +68,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
       String group=GROUPS[groupIndex];
       int index=s.getInt("index."+id,0);
       String title="No projects in this category",subtitle="Choose another category",count="0 projects";
-      String activeId="";
+      String activeId="",activeUrl="";
       try {
         JSONArray items=filtered(projects(c),group);
         count=items.length()+" project"+(items.length()==1?"":"s");
@@ -63,6 +77,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
           JSONObject project=items.getJSONObject(index);
           title=project.optString("title","Untitled");
           activeId=project.optString("id","");
+          activeUrl=project.optString("url","");
           subtitle=project.optString("family","ESTATE")+"  •  "+(index+1)+"/"+items.length();
         }
       }catch(Exception e) {
@@ -73,6 +88,8 @@ public final class JMHomeWidget extends AppWidgetProvider {
       v.setTextViewText(R.id.jm_widget_subtitle,subtitle);
       v.setTextViewText(R.id.jm_widget_filter,group+"  ▾");
       v.setTextViewText(R.id.jm_widget_count,count);
+      v.setTextViewText(R.id.jm_widget_link,activeUrl.isEmpty()?"UNBOUND / Open Shelf":"OPEN VERIFIED HTTPS ROUTE");
+      v.setOnClickPendingIntent(R.id.jm_widget_link,projectLaunch(c,activeUrl,id*16+13));
       boolean pinned=!activeId.isEmpty()&&activeId.equals(s.getString("pin."+id,""));
       v.setTextViewText(R.id.jm_widget_pin,pinned?"★ Pinned":"☆ Pin");
       v.setTextViewText(R.id.jm_widget_jump,"★ Recall");
@@ -82,7 +99,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
       v.setOnClickPendingIntent(R.id.jm_widget_prev,action(c,provider,PREV,id,2));
       v.setOnClickPendingIntent(R.id.jm_widget_filter,action(c,provider,FILTER,id,3));
       v.setOnClickPendingIntent(R.id.jm_widget_refresh,action(c,provider,REFRESH,id,4));
-      v.setOnClickPendingIntent(R.id.jm_widget_selected,route(c,"projects",id*16+5));
+      v.setOnClickPendingIntent(R.id.jm_widget_selected,projectLaunch(c,activeUrl,id*16+5));
       v.setOnClickPendingIntent(R.id.jm_widget_open,route(c,"projects",id*16+6));
       v.setOnClickPendingIntent(R.id.jm_widget_continue,route(c,"continue",id*16+7));
       if(expanded){

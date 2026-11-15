@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 import xml.etree.ElementTree as ET
 p=Path(__file__).resolve().parents[1]/"app/src/main"
 s=(p/"java/com/jmisjustme/foldultra/JMHomeWidget.java").read_text()
@@ -13,4 +13,3 @@ for kind in ("compact","expanded"):
     ids=[v.attrib.get("{http://schemas.android.com/apk/res/android}id") for v in d.iter()]
     assert "@+id/jm_widget_link" in ids
 print("PASS: v3.3 guarded HTTPS launch, safe unbound fallback and both layouts")
-

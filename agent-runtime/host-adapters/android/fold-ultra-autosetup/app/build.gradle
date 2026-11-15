@@ -52,6 +52,17 @@ android {
             matchingFallbacks = ['debug']
         }
     }
+    // JM OS HOME: separately installed, opt-in candidate. Does not touch Samsung default.
+    buildTypes {
+        jmOsHomeQa {
+            initWith debug
+            applicationIdSuffix '.jmoshomeqa'
+            versionNameSuffix '-jm-os-home-qa'
+            debuggable true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+        }
+    }
     // Optional side-by-side QA only. assembleDebug remains original package identity.
     buildTypes {
         homeqa {

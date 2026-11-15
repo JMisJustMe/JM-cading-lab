@@ -31,7 +31,7 @@ Existing JM Fold Ultra source and separate Widget v1/v2/v3 packages are preserve
 ## Custody
 Source: `app/src/jmOsHomeQa/` and additive `jmOsHomeQa` build type in `app/build.gradle`.
 Local rebuild tool: `tools/_jm_os_home_cp01_build.py` (the CP01R3 output is immutable; increment version/output path for new work).
-Read-only future gate: `tools/test_jm_os_home_cp01r3_installed.py`.
+Read-only future gate: `tools/device_smoke_jm_os_home_cp01r3_installed.py`.
 This candidate inherits Fold Ultra and does not supersede the separate widget bodies. Keep one source authority; do not silently merge or crown.
 
 Execution provenance: the CP01R3 additions were implemented through ChatGPT's authorised tool access on GroundZeroJM from JM's direction and recovered original sources. They do not retrospectively change the origin of JM's creations or certify estate-wide authorship.

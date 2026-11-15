@@ -31,8 +31,20 @@ public final class MainActivity extends Activity {
   int widthDp,tab=0,lastWidth=-1;
   boolean quickLayout;
 
+  // Refresh only this package's placed widgets when its original shelf changes.
+  // This is NOT cross-package production synchronisation.
+  private final SharedPreferences.OnSharedPreferenceChangeListener widgetShelfListener =
+    (prefs,key)->{
+      if("project.shelf".equals(key)||"project.active".equals(key))
+        JMHomeWidget.refreshAll(this);
+    };
+  @Override protected void onDestroy(){
+    if(sp!=null)sp.unregisterOnSharedPreferenceChangeListener(widgetShelfListener);
+    super.onDestroy();
+  }
   @Override public void onCreate(Bundle state){
     super.onCreate(state);sp=getSharedPreferences(PREF,MODE_PRIVATE);
+    sp.registerOnSharedPreferenceChangeListener(widgetShelfListener);
     if(!sp.contains("root"))sp.edit().putString("root",
       getPreferences(0).getString("root","JM FOLD ULTRA · Paired Root")).apply();
     if(state!=null)tab=state.getInt("tab",0);

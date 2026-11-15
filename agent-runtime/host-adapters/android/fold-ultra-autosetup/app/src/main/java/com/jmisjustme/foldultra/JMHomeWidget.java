@@ -28,7 +28,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
     return PendingIntent.getActivity(c,request,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
   }
-  // Only public HTTPS routes validated by the original JM ProjectShelf may launch externally.
+  // Only syntactically permitted HTTPS URLs may launch externally; reachability is not verified.
   // An unbound or invalid route stays inside the original Projects room.
   private static PendingIntent projectLaunch(Context c,String url,int request) {
     try {
@@ -56,6 +56,13 @@ public final class JMHomeWidget extends AppWidgetProvider {
       if("ALL".equals(group)||group.equals(item.optString("family")))result.put(item);
     }
     return result;
+  }
+  static void refreshAll(Context c){
+    AppWidgetManager m=AppWidgetManager.getInstance(c);
+    int[] compact=m.getAppWidgetIds(new android.content.ComponentName(c,JMHomeWidget.class));
+    int[] expanded=m.getAppWidgetIds(new android.content.ComponentName(c,JMHomeWidgetExpanded.class));
+    update(c,m,compact);
+    update(c,m,expanded);
   }
   static void update(Context c,AppWidgetManager m,int[] ids) {
     for(int id:ids) {
@@ -88,7 +95,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
       v.setTextViewText(R.id.jm_widget_subtitle,subtitle);
       v.setTextViewText(R.id.jm_widget_filter,group+"  ▾");
       v.setTextViewText(R.id.jm_widget_count,count);
-      v.setTextViewText(R.id.jm_widget_link,activeUrl.isEmpty()?"UNBOUND / Open Shelf":"OPEN VERIFIED HTTPS ROUTE");
+      v.setTextViewText(R.id.jm_widget_link,activeUrl.isEmpty()?"UNBOUND / Open Shelf":"OPEN PUBLIC HTTPS LINK");
       v.setOnClickPendingIntent(R.id.jm_widget_link,projectLaunch(c,activeUrl,id*16+13));
       boolean pinned=!activeId.isEmpty()&&activeId.equals(s.getString("pin."+id,""));
       v.setTextViewText(R.id.jm_widget_pin,pinned?"★ Pinned":"☆ Pin");

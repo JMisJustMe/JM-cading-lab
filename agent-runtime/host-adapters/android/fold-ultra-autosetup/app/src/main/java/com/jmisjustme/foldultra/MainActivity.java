@@ -69,7 +69,7 @@ public final class MainActivity extends Activity {
     super.onPause();
   }
   @Override public void onSaveInstanceState(Bundle out){out.putInt("tab",tab);super.onSaveInstanceState(out);}
-  @Override protected void onResume(){super.onResume();if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();
+  @Override protected void onResume(){super.onResume();JMHomeWidget.refreshAll(this);if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();
     UsbBridge.offer(this,sp,()->render());}
   @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);render();}
   @Override public void onBackPressed(){

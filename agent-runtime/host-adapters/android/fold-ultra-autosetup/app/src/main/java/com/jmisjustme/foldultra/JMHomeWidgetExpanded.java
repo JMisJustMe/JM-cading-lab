@@ -10,7 +10,7 @@ public final class JMHomeWidgetExpanded extends android.appwidget.AppWidgetProvi
       android.appwidget.AppWidgetManager m,int[] ids) { JMHomeWidget.update(c,m,ids); }
   @Override public void onDeleted(android.content.Context c,int[] ids) {
     android.content.SharedPreferences.Editor e=JMHomeWidget.state(c).edit();
-    for(int id:ids)e.remove("group."+id).remove("index."+id);
+    for(int id:ids)e.remove("group."+id).remove("index."+id).remove("pin."+id);
     e.apply();
   }
 }

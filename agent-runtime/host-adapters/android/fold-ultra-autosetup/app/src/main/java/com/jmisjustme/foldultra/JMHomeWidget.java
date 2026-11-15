@@ -16,6 +16,8 @@ public final class JMHomeWidget extends AppWidgetProvider {
   static final String NEXT="com.jmisjustme.foldultra.WIDGET_NEXT";
   static final String PREV="com.jmisjustme.foldultra.WIDGET_PREV";
   static final String FILTER="com.jmisjustme.foldultra.WIDGET_FILTER";
+  static final String PIN="com.jmisjustme.foldultra.WIDGET_PIN";
+  static final String JUMP="com.jmisjustme.foldultra.WIDGET_JUMP";
   static final String REFRESH="com.jmisjustme.foldultra.WIDGET_REFRESH";
   static final String[] GROUPS={"ALL","GAMES","BUILD","MUSIC","BOOKS","ESTATE","COMICS","CARTOONS"};
   private static final String STORE="jm.widget.v3";
@@ -52,6 +54,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
       String group=GROUPS[groupIndex];
       int index=s.getInt("index."+id,0);
       String title="No projects in this category",subtitle="Choose another category",count="0 projects";
+      String activeId="";
       try {
         JSONArray items=filtered(projects(c),group);
         count=items.length()+" project"+(items.length()==1?"":"s");
@@ -59,6 +62,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
           index=Math.floorMod(index,items.length());
           JSONObject project=items.getJSONObject(index);
           title=project.optString("title","Untitled");
+          activeId=project.optString("id","");
           subtitle=project.optString("family","ESTATE")+"  •  "+(index+1)+"/"+items.length();
         }
       }catch(Exception e) {
@@ -69,6 +73,11 @@ public final class JMHomeWidget extends AppWidgetProvider {
       v.setTextViewText(R.id.jm_widget_subtitle,subtitle);
       v.setTextViewText(R.id.jm_widget_filter,group+"  ▾");
       v.setTextViewText(R.id.jm_widget_count,count);
+      boolean pinned=!activeId.isEmpty()&&activeId.equals(s.getString("pin."+id,""));
+      v.setTextViewText(R.id.jm_widget_pin,pinned?"★ Pinned":"☆ Pin");
+      v.setTextViewText(R.id.jm_widget_jump,"★ Recall");
+      v.setOnClickPendingIntent(R.id.jm_widget_pin,action(c,provider,PIN,id,11));
+      v.setOnClickPendingIntent(R.id.jm_widget_jump,action(c,provider,JUMP,id,12));
       v.setOnClickPendingIntent(R.id.jm_widget_next,action(c,provider,NEXT,id,1));
       v.setOnClickPendingIntent(R.id.jm_widget_prev,action(c,provider,PREV,id,2));
       v.setOnClickPendingIntent(R.id.jm_widget_filter,action(c,provider,FILTER,id,3));
@@ -87,7 +96,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
   static void receive(Context c,Intent i,Class<?> provider) {
     if(i==null)return;
     String a=i.getAction();
-    if(!NEXT.equals(a)&&!PREV.equals(a)&&!FILTER.equals(a)&&!REFRESH.equals(a))return;
+    if(!NEXT.equals(a)&&!PREV.equals(a)&&!FILTER.equals(a)&&!REFRESH.equals(a)&&!PIN.equals(a)&&!JUMP.equals(a))return;
     int id=i.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,AppWidgetManager.INVALID_APPWIDGET_ID);
     if(id==AppWidgetManager.INVALID_APPWIDGET_ID)return;
     AppWidgetManager m=AppWidgetManager.getInstance(c);
@@ -96,7 +105,41 @@ public final class JMHomeWidget extends AppWidgetProvider {
     SharedPreferences s=state(c);
     int groupIndex=Math.floorMod(s.getInt("group."+id,0),GROUPS.length);
     int index=s.getInt("index."+id,0);
-    if(FILTER.equals(a)){groupIndex=(groupIndex+1)%GROUPS.length;index=0;}
+    if(FILTER.equals(a)){
+      // Skip empty families, but keep ALL as the reset destination.
+      try {
+        JSONArray all=projects(c);
+        for(int k=0;k<GROUPS.length;k++){
+          groupIndex=(groupIndex+1)%GROUPS.length;
+          if(groupIndex==0||filtered(all,GROUPS[groupIndex]).length()>0)break;
+        }
+      }catch(Exception ignored){groupIndex=(groupIndex+1)%GROUPS.length;}
+      index=0;
+    }else if(PIN.equals(a)||JUMP.equals(a)){
+      try {
+        JSONArray items=filtered(projects(c),GROUPS[groupIndex]);
+        if(PIN.equals(a)&&items.length()>0){
+          String current=items.getJSONObject(Math.floorMod(index,items.length())).optString("id","");
+          String prior=s.getString("pin."+id,"");
+          s.edit().putString("pin."+id,current.equals(prior)?"":current).apply();
+        }else if(JUMP.equals(a)){
+          String pinned=s.getString("pin."+id,"");
+          JSONArray all=projects(c);
+          for(int n=0;n<all.length();n++){
+            JSONObject item=all.getJSONObject(n);
+            if(item.optString("id","").equals(pinned)){
+              String family=item.optString("family","");
+              int target=0;
+              for(int k=1;k<GROUPS.length;k++)if(GROUPS[k].equals(family))target=k;
+              groupIndex=target;
+              JSONArray found=filtered(all,GROUPS[groupIndex]);
+              for(int j=0;j<found.length();j++)if(found.getJSONObject(j).optString("id","").equals(pinned)){index=j;break;}
+              break;
+            }
+          }
+        }
+      }catch(Exception ignored){}
+    }
     else if(NEXT.equals(a)||PREV.equals(a)){
       try {
         int count=filtered(projects(c),GROUPS[groupIndex]).length();
@@ -110,6 +153,6 @@ public final class JMHomeWidget extends AppWidgetProvider {
   @Override public void onUpdate(Context c,AppWidgetManager m,int[] ids){update(c,m,ids);}
   @Override public void onDeleted(Context c,int[] ids){
     SharedPreferences.Editor e=state(c).edit();
-    for(int id:ids){e.remove("group."+id).remove("index."+id);}e.apply();
+    for(int id:ids){e.remove("group."+id).remove("index."+id).remove("pin."+id);}e.apply();
   }
 }

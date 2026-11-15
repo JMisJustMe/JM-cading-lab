@@ -19,6 +19,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
   static final String PIN="com.jmisjustme.foldultra.WIDGET_PIN";
   static final String JUMP="com.jmisjustme.foldultra.WIDGET_JUMP";
   static final String REFRESH="com.jmisjustme.foldultra.WIDGET_REFRESH";
+  static final String ACTIVATE="com.jmisjustme.foldultra.WIDGET_ACTIVATE";
   static final String[] GROUPS={"ALL","GAMES","BUILD","MUSIC","BOOKS","ESTATE","COMICS","CARTOONS"};
   private static final String STORE="jm.widget.v3";
   static SharedPreferences state(Context c){return c.getSharedPreferences(STORE,Context.MODE_PRIVATE);}
@@ -95,6 +96,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
       v.setTextViewText(R.id.jm_widget_subtitle,subtitle);
       v.setTextViewText(R.id.jm_widget_filter,group+"  ▾");
       v.setTextViewText(R.id.jm_widget_count,count);
+      v.setOnClickPendingIntent(R.id.jm_widget_activate,action(c,provider,ACTIVATE,id,14));
       v.setTextViewText(R.id.jm_widget_link,activeUrl.isEmpty()?"UNBOUND / Open Shelf":"OPEN PUBLIC HTTPS LINK");
       v.setOnClickPendingIntent(R.id.jm_widget_link,projectLaunch(c,activeUrl,id*16+13));
       boolean pinned=!activeId.isEmpty()&&activeId.equals(s.getString("pin."+id,""));
@@ -120,7 +122,7 @@ public final class JMHomeWidget extends AppWidgetProvider {
   static void receive(Context c,Intent i,Class<?> provider) {
     if(i==null)return;
     String a=i.getAction();
-    if(!NEXT.equals(a)&&!PREV.equals(a)&&!FILTER.equals(a)&&!REFRESH.equals(a)&&!PIN.equals(a)&&!JUMP.equals(a))return;
+    if(!NEXT.equals(a)&&!PREV.equals(a)&&!FILTER.equals(a)&&!REFRESH.equals(a)&&!PIN.equals(a)&&!JUMP.equals(a)&&!ACTIVATE.equals(a))return;
     int id=i.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,AppWidgetManager.INVALID_APPWIDGET_ID);
     if(id==AppWidgetManager.INVALID_APPWIDGET_ID)return;
     AppWidgetManager m=AppWidgetManager.getInstance(c);
@@ -129,6 +131,18 @@ public final class JMHomeWidget extends AppWidgetProvider {
     SharedPreferences s=state(c);
     int groupIndex=Math.floorMod(s.getInt("group."+id,0),GROUPS.length);
     int index=s.getInt("index."+id,0);
+    if(ACTIVATE.equals(a)){
+      // Explicit owner action; never silently change the original shelf selection.
+      try{
+        JSONArray items=filtered(projects(c),GROUPS[groupIndex]);
+        if(items.length()>0){
+          String selected=items.getJSONObject(Math.floorMod(index,items.length())).getString("id");
+          ProjectShelf.choose(c.getSharedPreferences(MainActivity.PREF,Context.MODE_PRIVATE),selected);
+          refreshAll(c);
+        }
+      }catch(Exception ignored){}
+      return;
+    }
     if(FILTER.equals(a)){
       // Skip empty families, but keep ALL as the reset destination.
       try {

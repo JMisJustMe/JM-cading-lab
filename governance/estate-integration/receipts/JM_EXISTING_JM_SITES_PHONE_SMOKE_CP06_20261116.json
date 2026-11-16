@@ -1,0 +1,148 @@
+{
+  "schema": "JM.ExistingSites.PublicEntrancesPhoneSmoke/CP06",
+  "date_utc": "2026-11-16",
+  "target": "existing nine public JM-cading-lab original door routes; no replacements",
+  "environment": "GroundZeroJM headless Microsoft Edge Playwright, 390x844 touch-emulated browser, fresh isolated context",
+  "evidence_scope": "INITIAL_HTML_DOM_RENDER_AND_550MS_PAGEERROR_WINDOW_ONLY",
+  "result": {
+    "tested": 9,
+    "html_http_200": 9,
+    "zero_document_overflow": 9,
+    "zero_immediate_pageerror": 9
+  },
+  "entries": [
+    {
+      "id": "estate",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/",
+      "metrics": {
+        "title": "JMISJUSTME — The JM ECOSTATE",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 73,
+        "buttons": 465,
+        "mainText": 7727
+      },
+      "errors": []
+    },
+    {
+      "id": "access",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/access/",
+      "metrics": {
+        "title": "JM Current Access Mesh — ECOSTATE",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 104,
+        "buttons": 18,
+        "mainText": 15084
+      },
+      "errors": []
+    },
+    {
+      "id": "games",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+      "metrics": {
+        "title": "Games&Beyond — Whole-Estate House · Current Catalogue",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 21,
+        "buttons": 34,
+        "mainText": 2217
+      },
+      "errors": []
+    },
+    {
+      "id": "everybody",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/",
+      "metrics": {
+        "title": "JM EveryBody — Sovereign Coding Workbench",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 0,
+        "buttons": 9,
+        "mainText": 17620
+      },
+      "errors": []
+    },
+    {
+      "id": "theory",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+      "metrics": {
+        "title": "JM Theory Multihub v0.20.1 — Living Theory Estate",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 8,
+        "buttons": 888,
+        "mainText": 5102
+      },
+      "errors": []
+    },
+    {
+      "id": "visual-lab",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/visual-systems-lab/",
+      "metrics": {
+        "title": "JM Estate — Visual Systems Lab",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 2,
+        "buttons": 37,
+        "mainText": 231
+      },
+      "errors": []
+    },
+    {
+      "id": "books",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/books/",
+      "metrics": {
+        "title": "JM Books & Written Bodies — Public Door",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 17,
+        "buttons": 0,
+        "mainText": 5533
+      },
+      "errors": []
+    },
+    {
+      "id": "career",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/career/",
+      "metrics": {
+        "title": "JM Career & Collaboration — Estate Door",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 4,
+        "buttons": 0,
+        "mainText": 679
+      },
+      "errors": []
+    },
+    {
+      "id": "author",
+      "http": 200,
+      "url": "https://jmisjustme.github.io/JM-cading-lab/author/",
+      "metrics": {
+        "title": "Theodore Benjamin Scott / JM — About the Author",
+        "view": 390,
+        "documentWidth": 390,
+        "links": 28,
+        "buttons": 4,
+        "mainText": 7040
+      },
+      "errors": []
+    }
+  ],
+  "boundaries": [
+    "Browser emulation is not Fold8 physical owner-touch",
+    "No claim of functionality for 465 Estate controls or 888 Theory controls",
+    "No source/version identity promotion solely from HTTP 200",
+    "No deployment or redirect changes"
+  ],
+  "code_path": "governance/estate-integration/verify_public_origins_phone_cp06.py"
+}

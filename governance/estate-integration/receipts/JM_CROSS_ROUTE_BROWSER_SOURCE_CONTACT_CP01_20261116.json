@@ -1,0 +1,96 @@
+{
+  "schema": "JM.CrossRoute.BrowserSourceContact/CP01",
+  "date_utc": "2026-11-16",
+  "execution": "GroundZeroJM Windows headless Microsoft Edge, isolated fresh profiles; bounded rendered DOM title and content checks",
+  "evidence_scope": "BROWSER_RENDERED_TITLE_AND_DEPLOYED_SOURCE_LINKS_ONLY",
+  "authority_claim": "NONE; no physical Fold8 touch, source hash parity, internal workflow, or owner acceptance",
+  "records": [
+    {
+      "native_id": "independent-xo",
+      "url": "https://jmisjustme.xo.je/",
+      "rendered_title": "JMISJUSTME — Independent Website v1.5",
+      "rendered_chars": 164327,
+      "observation": "JM_NAMED_ORIGINAL_BROWSER_RENDERED",
+      "repair_status": "BOUNDARY",
+      "next_safe_action": "Compare against privately held v1.5 H1 source package and obtain physical Fold8 owner contact; no overwrite"
+    },
+    {
+      "native_id": "independent-rf",
+      "url": "https://jmisjustme.rf.gd/",
+      "rendered_title": "Welcome to your InfinityFree website",
+      "rendered_chars": 9722,
+      "observation": "GENERIC_HOST_DEFAULT_NOT_JM_BODY",
+      "repair_status": "BOUNDARY",
+      "next_safe_action": "Recover separate intended rf.gd upload/source role before any approved deployment"
+    },
+    {
+      "native_id": "rf-openbox-old-target",
+      "url": "https://jmisjustme.rf.gd/openbox/",
+      "rendered_title": "404 Not Found - InfinityFree",
+      "rendered_chars": 4603,
+      "observation": "BROWSER_RENDERS_404_TITLE",
+      "repair_status": "BOUNDARY",
+      "next_safe_action": "Do not use as a verified OPENBOX entrance; check current original source and public carrier links"
+    },
+    {
+      "native_id": "rf-coding-old-target",
+      "url": "https://jmisjustme.rf.gd/coding-estate.html",
+      "rendered_title": "404 Not Found - InfinityFree",
+      "rendered_chars": 4605,
+      "observation": "BROWSER_RENDERS_404_TITLE",
+      "repair_status": "BOUNDARY",
+      "next_safe_action": "Do not use as verified Coding Estate entrance; preserve original rf.gd origin hold"
+    },
+    {
+      "native_id": "openbox-github",
+      "url": "https://jmisjustme.github.io/JM-cading-lab/website/jm-website-001/openbox/",
+      "rendered_title_contains": "JM OPENBOX",
+      "rendered_chars": 158268,
+      "observation": "PUBLIC_EDITOR_BODY_RENDERED",
+      "repair_status": "BOUNDARY",
+      "next_safe_action": "Confirm editor interactions and original source correspondence; no owner-touch claim"
+    }
+  ],
+  "workshop_crosscheck": {
+    "published_url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/",
+    "published_http_status": 200,
+    "source_jmw_path": "coding-estate/workshop/source/workshop.jmw",
+    "compiled_html_path": "coding-estate/workshop/index.html",
+    "original_jmw_links": [
+      "https://jmisjustme.rf.gd/openbox/",
+      "https://jmisjustme.rf.gd/coding-estate.html"
+    ],
+    "compiled_and_deployed_links": [
+      "./openbox/",
+      "./coding-estate.html"
+    ],
+    "published_openbox_contact": {
+      "url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/openbox/",
+      "http_status": 200,
+      "title_contains": "JM OPENBOX"
+    },
+    "published_coding_contact": {
+      "url": "https://jmisjustme-estate.pages.dev/coding-estate/workshop/coding-estate.html",
+      "first_http_status": 308,
+      "redirect_to": "/coding-estate/workshop/coding-estate",
+      "redirect_target_status": 200,
+      "redirect_target_title": "JM Coding Estate - Real Build v0.1"
+    },
+    "finding": "Published workshop doors work; original .jmw uses older distinct rf.gd routes. Determine whether compiler adapter intentionally rewrites links before claiming source/build mismatch. Do not silently change original routes."
+  },
+  "navigator_contact": {
+    "project": "jm-navigator-live-contact",
+    "cloudflare_pages_project_exists": true,
+    "cloudflare_api_deployments_observed": 0,
+    "http_observed_error": 522,
+    "scope": "API deployment metadata + laptop public HTTP contact; root cause not independently proven"
+  },
+  "policy": [
+    "RECOVER_BEFORE_REBUILD",
+    "MESH_NOT_MERGE",
+    "ACCESS_NOT_AUTHORITY",
+    "NO_DING_NO_CLAIM",
+    "NO_ROUTE_CHANGE",
+    "NO_DEPLOYMENT"
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "JM.CrossRoute.ExistingSitesVerifiedEvidenceDelta/CP05",
+  "date": "2026-11-16",
+  "scope": "SOURCE_H1_EXACT_HASH_AND_PUBLIC_BROWSER_CONTACT_ONLY",
+  "source_authority": "OWNER_PRIVATE_JM_LIBRARY_ORIGINAL_NOT_MOVED",
+  "origin_name": "JMISJUSTME Independent Website v1.5 H1",
+  "source_archive": {
+    "name": "JMISJUSTME_INFINITYFREE_HTDOCS_FULL_v1_5_POST_GRAFT_CURRENT_H1.zip",
+    "size_bytes": 26700582,
+    "sha256": "9df5439dcec6e4aa1ddad8e835a6d12fe97f460d35d42984046fcbbd1c48a0bc",
+    "historical_reference_sha256_match": true,
+    "archive_entries": 121,
+    "root_index_sha256": "28983ccf02a3c7bb50107a8a059bc0ccd0eda0b1356ef93d48ba8203bbb418f1",
+    "root_index_historical_hash_match": true
+  },
+  "host": "https://jmisjustme.xo.je/",
+  "live_byte_parity": {
+    "method": "GroundZeroJM Edge Playwright isolated context; GET exact public bytes using JS-resolved host cookie; compare SHA256 to protected archive",
+    "six_sampled_files": 6,
+    "exact_matches": 5,
+    "different_file": "DEPLOY_MANIFEST_v1_5.json",
+    "confirmed_exact": [
+      "index.html",
+      "app.js",
+      "VERSION.txt",
+      "assets/jm-mark.svg",
+      "creations/authority/craftik-v1-9.html"
+    ],
+    "extra_exact": [
+      "creations/hosted/estate-librarian.html",
+      "creations/hosted/routeos.html",
+      "creations/hosted/jm-app-organ-library-v1.1.html",
+      "creations/payloads/estate-librarian.html.gz"
+    ],
+    "classification": "DEPLOYMENT_METADATA_OLDER_THAN_H1; APP_BODY_SAMPLES_EXACT"
+  },
+  "deployment_manifest": {
+    "source_schema": "jm.infinityfree.deploy/v1.5-post-graft-current-h1",
+    "live_schema": "jm.infinityfree.deploy/v1.5-post-graft-current",
+    "source_records": 119,
+    "live_records": 117,
+    "actual_live_sha256": "d085f32f13db94917d2fbef21f9f8724d31cee0e440381607ec942f7dd78c30a",
+    "source_bytes": 21852,
+    "live_bytes": 21217,
+    "live_entries_are_exactly_source_entries_excluding_two": true,
+    "verified_canonical_117_path_hash": "e04faa00c8ad33d877708d4ac205ee2ee99a256b0d92cf2252ba06431b22ba1e",
+    "excluded_H1_support_paths": [
+      "creations/hosted/estate-librarian-srcdoc-test.html",
+      "docs/COMPRESSED_LOADER_HOTFIX_H1.json"
+    ],
+    "excluded_support_paths_live_http_status": [
+      404,
+      404
+    ],
+    "source_and_live_census_counts_equivalent": true,
+    "action": "HOLD_NO_AUTO_DEPLOY; two H1-support files absent and live manifest predates H1"
+  },
+  "runtime_sample": {
+    "device": "GroundZeroJM Windows browser (NOT physical Fold8 owner-touch)",
+    "viewports": [
+      390,
+      1280
+    ],
+    "estate_librarian": {
+      "srcdoc_populated": true,
+      "errors": 0
+    },
+    "routeos": {
+      "srcdoc_populated": true,
+      "errors": 0
+    },
+    "jm_app_organ_library": {
+      "requires_button": "Restore and open the organ library",
+      "button_clicked": true,
+      "srcdoc_populated": true,
+      "restored_text_chars": 30283,
+      "form_controls": 6,
+      "errors": 0
+    },
+    "coverage": "BROWSER_LOAD_AND_RESTORE_NOT_FULL_BODY_FUNCTIONAL_ACCEPTANCE"
+  },
+  "navigator_routes": {
+    "existing_estate_navigator": "https://jmisjustme-estate.pages.dev/navigator/",
+    "navigator_public_mcp": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp",
+    "build_mesh_public_mcp_contact": "PASS",
+    "separate_empty_pages_project": "jm-navigator-live-contact",
+    "separate_pages_project_deployments": 0,
+    "separate_empty_host_prior_http": 522,
+    "classification": "BOUNDARY_SEPARATE_NONAUTHORITATIVE_CONTACT_PROJECT",
+    "action": "Do not recreate, point elsewhere, deploy or retire without owner source/host authority"
+  },
+  "cross_route_board": {
+    "access_scope": "OWNER_PRIVATE",
+    "unauthenticated_tinyfish_http_status": 401,
+    "live_data_ingested": false,
+    "next_safe_action": "Use existing authenticated Sites owner session/import surface; do not bypass owner-private access or duplicate the board"
+  },
+  "mobile_device": {
+    "ADB_connected": true,
+    "physical_device_model": "SM-F976B",
+    "tested_touch_interactions_on_device": false,
+    "reason": "Do not interrupt owner foreground; requires physical owner action/approval"
+  },
+  "historical_source_pull": {
+    "v1_3_flagged_identities": 652,
+    "v1_3_active_holds": 332,
+    "v1_4_active_evidence_pulls": 178,
+    "state": "HISTORICAL_SCOPE_NOT_CURRENT_SITE_DB_COUNT",
+    "note": "Do not overwrite the current Sites 14 records or re-open frozen historical source queue"
+  },
+  "protected_actions": [
+    "NO_DEPLOY",
+    "NO_MERGE",
+    "NO_DELETE",
+    "NO_MOVE_CUSTODY",
+    "NO_PRIVATE_SOURCE_UPLOAD",
+    "NO_AUTHORITY_PROMOTION_FROM_READ_ONLY_CONTACT"
+  ]
+}

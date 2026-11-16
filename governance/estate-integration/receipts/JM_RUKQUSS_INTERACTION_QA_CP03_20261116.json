@@ -1,0 +1,105 @@
+{
+  "schema": "JM.RUKQUSS.InteractionQA/CP03",
+  "date_utc": "2026-11-16",
+  "scope": "LIVE_HEADLESS_EDGE_ON_GROUNDZEROJM_NOT_PHYSICAL_FOLD8_TOUCH",
+  "site": "https://rukquss.com/",
+  "fixtures": "TWO_BROWSER_VIEWPORTS_AND_EIGHT_SEARCH_STATES",
+  "actual_results": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mobile": true,
+      "search_cases": [
+        {
+          "query": "think",
+          "visible": [
+            "Think"
+          ]
+        },
+        {
+          "query": "build",
+          "visible": [
+            "Build"
+          ]
+        },
+        {
+          "query": "zzzz-unmatch",
+          "visible": []
+        },
+        {
+          "query": "",
+          "visible": [
+            "Play",
+            "Build",
+            "Think",
+            "Create",
+            "Publish",
+            "Work",
+            "Continue"
+          ]
+        }
+      ],
+      "click_destination": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+      "click_title": "JM Theory Multihub v0.20.1 — Living Theory Estate",
+      "pageerrors": [],
+      "result": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "mobile": false,
+      "search_cases": [
+        {
+          "query": "think",
+          "visible": [
+            "Think"
+          ]
+        },
+        {
+          "query": "build",
+          "visible": [
+            "Build"
+          ]
+        },
+        {
+          "query": "zzzz-unmatch",
+          "visible": []
+        },
+        {
+          "query": "",
+          "visible": [
+            "Play",
+            "Build",
+            "Think",
+            "Create",
+            "Publish",
+            "Work",
+            "Continue"
+          ]
+        }
+      ],
+      "click_destination": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+      "click_title": "JM Theory Multihub v0.20.1 — Living Theory Estate",
+      "pageerrors": [],
+      "result": "PASS"
+    }
+  ],
+  "read_only": true,
+  "external_sources_changed": 0,
+  "production_deployments": 0,
+  "origin_custody": "Cloudflare Worker original not modified",
+  "observations": {
+    "distinct_public_destination_pages_read_through_TinyFish": 9,
+    "all_returned_named_JM_pages": true
+  },
+  "limitations": [
+    "No signed-in browser access claim",
+    "No Fold8 owner finger acceptance",
+    "No host/source parity claim for all 9 destinations",
+    "No private Sites database mutation"
+  ]
+}

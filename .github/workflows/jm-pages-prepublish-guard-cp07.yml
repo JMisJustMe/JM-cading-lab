@@ -8,6 +8,7 @@ on:
       - ".github/workflows/jm-pages-prepublish-guard-cp07.yml"
       - "governance/estate-integration/verify_pages_stage_cp07.py"
       - "governance/estate-integration/verify_pages_host_parity_cp08.py"
+      - "governance/estate-integration/verify_pages_publication_lane_cp09.py"
       - "docs/JM_GITHUB_PAGES_EXISTING_SITES_OWNER_GUIDE_CP07.md"
 
 permissions:
@@ -27,6 +28,13 @@ jobs:
 
       - name: Run offline cross-host classification fixtures
         run: python3 governance/estate-integration/verify_pages_host_parity_cp08.py --self-test
+
+      - name: Prove both existing workflows share one non-interrupting publication queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/estate-integration/verify_pages_publication_lane_cp09.py --self-test
+          python3 governance/estate-integration/verify_pages_publication_lane_cp09.py
 
       - name: Construct actual public-site stage, never deploy
         shell: bash

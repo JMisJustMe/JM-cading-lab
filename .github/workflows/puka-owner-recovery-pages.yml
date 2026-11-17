@@ -1,10 +1,8 @@
 name: PUKA Owner Recovery Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/puka-owner-recovery-pages.yml"
+  # Emergency recovery remains available to invoke manually.
+  # Main commits already trigger the canonical Estate publisher.
   workflow_dispatch:
 
 permissions:
@@ -13,7 +11,9 @@ permissions:
   id-token: write
 
 concurrency:
-  group: puka-owner-recovery-pages
+  # Join the same public-release lane as deploy-pages.yml; never race it.
+  group: jm-pages-publication
+  queue: max
   cancel-in-progress: false
 
 jobs:

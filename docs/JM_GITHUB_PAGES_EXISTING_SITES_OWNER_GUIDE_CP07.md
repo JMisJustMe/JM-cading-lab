@@ -68,7 +68,7 @@ python3 governance/estate-integration/verify_pages_publication_lane_cp09.py
 python3 governance/estate-integration/verify_public_source_admission_cp10.py --self-test
 ```
 
-The stage gate is run by `.github/workflows/deploy-pages.yml` **after** staging and **before** Pages artifact upload *if this draft change is approved and merged*. To check a constructed stage locally without publishing:
+The CP07 prepublish dry-run audits **every pull request targeting `main`** (not just PRs editing workflows), while the final stage gate is run by `.github/workflows/deploy-pages.yml` **after** staging and **before** Pages artifact upload *if this draft change is approved and merged*. To check a constructed stage locally without publishing:
 
 ```sh
 python3 governance/estate-integration/verify_pages_stage_cp07.py --stage _public_site

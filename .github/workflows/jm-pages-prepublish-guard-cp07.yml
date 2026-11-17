@@ -1,0 +1,53 @@
+name: JM Pages CP07 — prepublish scope without deployment
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/deploy-pages.yml"
+      - ".github/workflows/puka-owner-recovery-pages.yml"
+      - ".github/workflows/jm-pages-prepublish-guard-cp07.yml"
+      - "governance/estate-integration/verify_pages_stage_cp07.py"
+      - "governance/estate-integration/verify_pages_host_parity_cp08.py"
+      - "docs/JM_GITHUB_PAGES_EXISTING_SITES_OWNER_GUIDE_CP07.md"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-pages-public-scope:
+    name: No-deploy source + stage gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head (read-only)
+        uses: actions/checkout@v4
+
+      - name: Run offline stage fixture negatives, including symlinks
+        run: python3 governance/estate-integration/verify_pages_stage_cp07.py --self-test
+
+      - name: Run offline cross-host classification fixtures
+        run: python3 governance/estate-integration/verify_pages_host_parity_cp08.py --self-test
+
+      - name: Construct actual public-site stage, never deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _public_site
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='_public_site/' \
+            --exclude='family-gifts/' \
+            ./ _public_site/
+          python3 governance/estate-integration/verify_pages_stage_cp07.py \
+            --stage _public_site \
+            --report "$RUNNER_TEMP/JM_PAGES_STAGE_SCOPE_CP07.json"
+          {
+            echo '### JM Pages CP07 prepublication path/size proof'
+            echo
+            echo 'Static staging only. No Pages deployment and no private-source custody claim.'
+            echo
+            echo '~~~json'
+            cat "$RUNNER_TEMP/JM_PAGES_STAGE_SCOPE_CP07.json"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

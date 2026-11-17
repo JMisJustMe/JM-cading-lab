@@ -42,8 +42,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _public_site
-          rsync -a --exclude='.git/' --exclude='_public_site/' --exclude='family-gifts/' ./ _public_site/
+          rsync -a --exclude='.git/' --exclude='.github/' --exclude='_public_site/' --exclude='family-gifts/' ./ _public_site/
           test ! -e _public_site/family-gifts
+          test ! -e _public_site/.github
+          python3 governance/estate-integration/verify_pages_stage_cp07.py --self-test
+          python3 governance/estate-integration/verify_pages_stage_cp07.py --stage _public_site --report "$RUNNER_TEMP/JM_PAGES_STAGE_SCOPE_CP07.json"
       - name: Upload current Estate for recovery carrier
         uses: actions/upload-pages-artifact@v3
         with:

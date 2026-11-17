@@ -19,12 +19,14 @@ REQUIRED_ROUTES = (
     "api-hub/index.html",
     "estate-publication/apps-tools-games/apps-tools/jmisjustme-github-pages-v1.15.0/site/index.html",
 )
-BLOCKED_COMPONENTS = frozenset({".git", ".github", "family-gifts", "_public_site", "__pycache__"})
+BLOCKED_COMPONENTS = frozenset({".git", ".github", "family-gifts", "_public_site", "__pycache__",
+                                ".ssh", ".aws", "secrets", "credentials", "private-keys",
+                                "private-secrets"})
 BLOCKED_BASENAMES = frozenset({
     ".env", ".npmrc", ".pypirc", ".netrc", "id_rsa", "id_ed25519",
     "credentials.json", "service-account.json",
 })
-BLOCKED_SUFFIXES = (".pem", ".p12", ".pfx")
+BLOCKED_SUFFIXES = (".pem", ".p12", ".pfx", ".pkcs12", ".key")
 
 
 def audit(stage: Path, max_bytes: int = MAX_STAGE_BYTES) -> dict:
@@ -48,7 +50,7 @@ def audit(stage: Path, max_bytes: int = MAX_STAGE_BYTES) -> dict:
             failures.append("not_regular_file:" + relative)
             continue
         lower = path.name.lower()
-        if lower in BLOCKED_BASENAMES or lower.endswith(BLOCKED_SUFFIXES):
+        if lower in BLOCKED_BASENAMES or lower.startswith(".env.") or lower.endswith(BLOCKED_SUFFIXES):
             failures.append("credential_like_filename:" + relative)
         files.append((relative, path.stat().st_size))
     names = {path for path, _ in files}
@@ -107,6 +109,24 @@ class GateTests(unittest.TestCase):
 
     def test_credential_named_file_is_hold(self):
         (self.stage / "id_rsa").write_text("test only")
+        self.assertEqual("HOLD", audit(self.stage)["status"])
+
+    def test_environment_variant_is_hold(self):
+        p = self.stage / "site" / ".env.staging"
+        p.parent.mkdir()
+        p.write_text("fixture", encoding="utf-8")
+        self.assertEqual("HOLD", audit(self.stage)["status"])
+
+    def test_credentials_directory_is_hold(self):
+        p = self.stage / "docs" / "credentials" / "fixture.json"
+        p.parent.mkdir(parents=True)
+        p.write_text("fixture", encoding="utf-8")
+        self.assertEqual("HOLD", audit(self.stage)["status"])
+
+    def test_pkcs12_file_is_hold(self):
+        p = self.stage / "tls" / "site.pkcs12"
+        p.parent.mkdir()
+        p.write_text("fixture", encoding="utf-8")
         self.assertEqual("HOLD", audit(self.stage)["status"])
 
     def test_byte_ceiling_is_enforced(self):

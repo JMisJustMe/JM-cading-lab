@@ -11,8 +11,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "jm-pages"
-  cancel-in-progress: true
+  # Shared across the canonical publisher and manual PUKA recovery.
+  # Protect live deployment plus the three post-deploy proof jobs as one unit.
+  group: jm-pages-publication
+  queue: max
+  cancel-in-progress: false
 
 jobs:
   build:

@@ -1,15 +1,9 @@
 name: JM Pages CP07 — prepublish scope without deployment
 
 on:
+  # Every change proposed to the canonical public site gets a no-deploy check.
   pull_request:
-    paths:
-      - ".github/workflows/deploy-pages.yml"
-      - ".github/workflows/puka-owner-recovery-pages.yml"
-      - ".github/workflows/jm-pages-prepublish-guard-cp07.yml"
-      - "governance/estate-integration/verify_pages_stage_cp07.py"
-      - "governance/estate-integration/verify_pages_host_parity_cp08.py"
-      - "governance/estate-integration/verify_pages_publication_lane_cp09.py"
-      - "docs/JM_GITHUB_PAGES_EXISTING_SITES_OWNER_GUIDE_CP07.md"
+    branches: [main]
 
 permissions:
   contents: read

@@ -1,4 +1,4 @@
-# JM GitHub Pages — existing-site owner operating guide (CP07–CP08)
+# JM GitHub Pages — existing-site owner operating guide (CP07–CP10)
 
 **Source authority:** existing JMisJustMe/JM-cading-lab (public). No new site, migrated keeper, merged house, DNS change, public deployment or owner-device interaction is authorised by this guide.
 
@@ -34,12 +34,38 @@
 
 The three entrances already cross-link. Do not interpret similar pages as identical publication source or merge their roles. CP08 checks five paired public routes: home, Access Mesh, Games & Beyond, Coding Workshop, API House. On 17 November 2026 GroundZeroJM confirmed all 10 HTTP 200, **2 byte-identical pairs** and **3 pairs identical after removing one exact Cloudflare-only `estate-return-route.js` script**. This is not browser interaction, source-proven host synchronization or physical device proof.
 
+## CP09 · No overlapping publishers
+
+The existing full Estate workflow and original PUKA owner-recovery workflow publish to **one GitHub Pages environment**. Previously their concurrency group names differed, so they could publish in parallel or cancel competing work.
+
+This draft proposes **one shared workflow-level group**: `jm-pages-publication`, `queue: max`, `cancel-in-progress: false`. Workflows wait instead of interrupting an active release; the entire primary deploy **and its three existing downstream published-body proof jobs** hold the lane until they finish. GitHub documents an upper bound of **100 pending** with `queue: max`, and FIFO by time of joining the queue, not necessarily dispatch order. This is a real trade-off: bursts of commits can create an old-commit release backlog, so queue pressure and live-head freshness remain a production monitoring gate.
+
+The **PUKA owner-recovery workflow keeps its original separate source and steps**, but becomes `workflow_dispatch` only. Normal main-branch changes already trigger the canonical workflow, removing the redundant automatic second publisher. A human-triggered emergency recovery remains available, with the same publication guards and shared queue.
+
+Static source fixtures: `verify_pages_publication_lane_cp09.py`, 8 negative/positive tests. This is not a concurrent live deployment simulation.
+
+## CP10 · Public-source admission, separate from Pages
+
+The repository itself is public. A Pages exclusion is **not** confidentiality protection for a file still tracked by public Git. A read-only HEAD request found an existing `family-gifts/` source path reachable via public raw GitHub, though its Pages URL is 404. Its historical origin/keeper/privacy classification must be reconciled independently before any private-custody or history repair.
+
+The separate CP10 *pull-request-only, read-only* source-admission gate compares proposed PR head with base, then checks **newly added** paths for a bounded list of sensitive directory names, credential-like filenames and private-key extensions. **It does not remove or re-author historical files, inspect contents, protect branches without a required-check rule, or replace GitHub secret scanning.**
+
+```sh
+# Repository with both PR commits fetched:
+python3 governance/estate-integration/verify_public_source_admission_cp10.py --base <40-character-base-SHA> --head <40-character-PR-head-SHA>
+```
+
+Both CP09 and CP10 remain draft additions; neither is a production protection until reviewed, authorised, merged and, for CP10, required check enforcement is approved where appropriate.
+
 ## Operator checks (read-only before merging)
 
 ```sh
 python3 governance/estate-integration/verify_pages_stage_cp07.py --self-test
 python3 governance/estate-integration/verify_pages_host_parity_cp08.py --self-test
 python3 governance/estate-integration/verify_pages_host_parity_cp08.py
+python3 governance/estate-integration/verify_pages_publication_lane_cp09.py --self-test
+python3 governance/estate-integration/verify_pages_publication_lane_cp09.py
+python3 governance/estate-integration/verify_public_source_admission_cp10.py --self-test
 ```
 
 The stage gate is run by `.github/workflows/deploy-pages.yml` **after** staging and **before** Pages artifact upload *if this draft change is approved and merged*. To check a constructed stage locally without publishing:
@@ -48,8 +74,9 @@ The stage gate is run by `.github/workflows/deploy-pages.yml` **after** staging 
 python3 governance/estate-integration/verify_pages_stage_cp07.py --stage _public_site
 ```
 
-**Closeout boundary:** draft changes and offline fixture passes are not CI, merged deployment, live new-site delivery or owner acceptance. Preserve the existing [website contact draft PR #805](https://github.com/JMisJustMe/JM-cading-lab/pull/805); do not deploy/merge from this guide.
+**Closeout boundary:** CP07's earlier PR-only Linux build checked the proposed staging scope successfully; subsequent CP09–CP10 changes require their own exact-head CI verification. No draft checks constitute merged deployment, live new-site delivery, public-repository secrecy or owner device acceptance. Preserve the existing [website contact draft PR #805](https://github.com/JMisJustMe/JM-cading-lab/pull/805); do not deploy/merge from this guide.
 
 Official documentation:
 - https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
 - https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+- https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency

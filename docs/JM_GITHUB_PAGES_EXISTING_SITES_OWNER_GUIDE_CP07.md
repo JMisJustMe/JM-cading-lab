@@ -48,14 +48,14 @@ Static source fixtures: `verify_pages_publication_lane_cp09.py`, 8 negative/posi
 
 The repository itself is public. A Pages exclusion is **not** confidentiality protection for a file still tracked by public Git. A read-only HEAD request found an existing `family-gifts/` source path reachable via public raw GitHub, though its Pages URL is 404. Its historical origin/keeper/privacy classification must be reconciled independently before any private-custody or history repair.
 
-The separate CP10 *pull-request-only, read-only* source-admission gate compares proposed PR head with base, then checks **newly added** paths for a bounded list of sensitive directory names, credential-like filenames and private-key extensions. **It does not remove or re-author historical files, inspect contents, protect branches without a required-check rule, or replace GitHub secret scanning.**
+The separate CP10 *pull-request-only, read-only* source-admission gate compares proposed PR head with base, then checks **added, modified and type-changed** paths for sensitive directory names, credential-like filenames and private-key extensions. It also scans **newly added text diff lines** for a bounded set of high-confidence credential shapes and reports **categories only, never matching values**. **It does not remove or re-author historical files, search old exposures, examine binary secrets comprehensively, protect branches without a required-check rule, or replace GitHub secret scanning.**
 
 ```sh
 # Repository with both PR commits fetched:
 python3 governance/estate-integration/verify_public_source_admission_cp10.py --base <40-character-base-SHA> --head <40-character-PR-head-SHA>
 ```
 
-Both CP09 and CP10 remain draft additions; neither is a production protection until reviewed, authorised, merged and, for CP10, required check enforcement is approved where appropriate.
+CP09 and CP10 remain draft additions; neither becomes an enforceable production gate until reviewed, authorised, merged and, for CP10, required check enforcement is configured where appropriate. Existing source exposure must be separately assessed and remediated through verified private custody and owner approval.
 
 ## Operator checks (read-only before merging)
 

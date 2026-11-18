@@ -1,0 +1,143 @@
+name: JM Inline Commander CP11 Isolated Preview
+on:
+  push:
+    branches:
+      - jm-inline-commander-cp11-preview-20261118
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/managed-beta-worker-cp11-candidate.mjs'
+      - '.github/workflows/jm-inline-commander-cp11-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+    steps:
+      - name: Checkout isolated development branch
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install established MCP and Pages bundling dependencies
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund wrangler@4 esbuild
+      - name: Restore original unmodified JM game donor and regression integration
+        run: |
+          set -euo pipefail
+          mkdir -p public-bodies/generated
+          gzip -dc public-bodies/128-hand-football-v0.7.4.html.gz > public-bodies/generated/128-hand-football-v0.7.4.html
+          gzip -dc src/public-managed-beta-integration.mjs.gz > src/generated-public-managed-beta-integration.mjs
+          node --check src/managed-beta-worker-cp11-candidate.mjs
+          node --check src/generated-public-managed-beta-integration.mjs
+          echo "f788dd3ff38c965fe5b8a7cd20c7b48929fc38a5b2b8a1f552e7b7732275b3fe  public-bodies/generated/128-hand-football-v0.7.4.html" | sha256sum -c
+          test "$(wc -c < public-bodies/generated/128-hand-football-v0.7.4.html)" -eq 24693
+      - name: Verify Commander addition is bounded and old play route remains
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const s=readFileSync('src/managed-beta-worker-cp11-candidate.mjs','utf8');
+          assert(s.includes('registerAppTool(server, "jm-commander-contact-intent"'));
+          assert(s.includes('sendFollowUpMessage'));
+          assert(s.includes('play-jm-128-hand-football'));
+          assert(s.includes('jm-inline-status'));
+          assert(s.includes('openai/widgetAccessible'));
+          assert(!s.includes('C:\\Users\\theod'));
+          assert(!s.includes('GITHUB_TOKEN'));
+          console.log('PASS: original JM Inline, game and probe retained; no private laptop data bundled');
+          JS
+      - name: Bundle isolated Pages preview
+        run: |
+          set -euo pipefail
+          mkdir -p pages-cp11
+          npx esbuild src/managed-beta-worker-cp11-candidate.mjs --bundle --format=esm --platform=browser --target=es2022 --loader:.html=text --outfile=pages-cp11/_worker.js
+          printf '%s\n' '<!doctype html><meta charset="utf-8"><title>JM Inline CP11 Preview</title>' > pages-cp11/index.html
+          test -s pages-cp11/_worker.js
+      - name: Verify local Cloudflare Pages runtime and original MCP resources
+        run: |
+          set -euo pipefail
+          npx wrangler pages dev pages-cp11 --ip 127.0.0.1 --port 8796 > /tmp/jm-inline-cp11-dev.log 2>&1 &
+          PID=$!
+          trap 'kill $PID 2>/dev/null || true' EXIT
+          for ATTEMPT in $(seq 1 35); do
+            if curl -fsS http://127.0.0.1:8796/health > /tmp/jm-inline-cp11-health.json; then break; fi
+            sleep 1
+          done
+          cat /tmp/jm-inline-cp11-health.json
+          grep -q 'managed-beta' /tmp/jm-inline-cp11-health.json
+          curl -fsS http://127.0.0.1:8796/bodies/128-hand-football-v0.7.4/source.sha256 | grep -q 'f788dd3ff38c965fe5b8a7cd20c7b48929fc38a5b2b8a1f552e7b7732275b3fe'
+          JM_PUBLIC_BASE_URL=http://127.0.0.1:8796 node src/generated-public-managed-beta-integration.mjs
+          JM_PUBLIC_BASE_URL=http://127.0.0.1:8796 node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+          import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+          const base=process.env.JM_PUBLIC_BASE_URL;
+          const client=new Client({name:'jm-inline-cp11-proof',version:'0.1.0'});
+          await client.connect(new StreamableHTTPClientTransport(new URL(base+'/mcp')));
+          try {
+            const list=await client.listTools();
+            assert(list.tools.some(x=>x.name==='jm-commander-contact-intent'));
+            const receipt=await client.callTool({name:'jm-commander-contact-intent',arguments:{action:'original_jm_commander_service_contact'}});
+            assert.deepEqual(receipt.structuredContent,{schema:'JM.Inline.Commander.Intent/CP11',allowed:true,executed:false,phonesTouched:false});
+            const probe=await client.readResource({uri:'ui://jm/inline-contact-probe-v0.2.html'});
+            const html=probe.contents?.[0]?.text||'';
+            assert(html.includes('jmCommanderContact'));
+            assert(html.includes('sendFollowUpMessage'));
+            assert(html.includes('TOUCH THE FIELD'));
+            console.log('CP11 local MCP intent/tool/resource PASS - read-only, no laptop execution');
+          } finally {await client.close();}
+          JS
+      - name: Deploy preview only to the EXISTING Pages project
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          OUT=$(npx wrangler pages deploy pages-cp11 --project-name=jm-inline-contact-probe --branch=inline-commander-cp11 2>&1)
+          echo "$OUT"
+          URL=$(printf '%s\n' "$OUT" | sed -r 's/\x1B\[[0-9;]*[mK]//g' | grep -Eo 'https://[a-zA-Z0-9.-]+\.pages\.dev' | tail -1)
+          test -n "$URL"
+          echo "preview_url=$URL" >> "$GITHUB_OUTPUT"
+      - name: Independently verify DEPLOYED managed beta with original tests and CP11 action
+        env:
+          JM_PUBLIC_BASE_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: |
+          set -euo pipefail
+          node src/generated-public-managed-beta-integration.mjs
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {Client} from '@modelcontextprotocol/sdk/client/index.js';
+          import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+          const c=new Client({name:'cp11-hosted-verification',version:'0.1'});
+          await c.connect(new StreamableHTTPClientTransport(new URL(process.env.JM_PUBLIC_BASE_URL+'/mcp')));
+          try {
+            const tools=await c.listTools();
+            assert(tools.tools.some(x=>x.name==='jm-commander-contact-intent'));
+            const r=await c.callTool({name:'jm-commander-contact-intent',arguments:{action:'original_jm_commander_service_contact'}});
+            assert(r.structuredContent?.allowed===true);
+            assert(r.structuredContent?.executed===false);
+            console.log('CP11 hosted preview MCP intent PASS; no private machine action');
+          } finally {await c.close();}
+          JS
+      - name: Record bounded preview proof, no owner-device claim
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: |
+          node -e 'const fs=require("fs");fs.writeFileSync("CP11_PREVIEW_RECEIPT.json",JSON.stringify({schema:"JM.Inline.Contact.CP11/PreviewProof",source:"jm-inline-contact-v0.2-managed-beta",stableAncestor:"0.1.2",previewUrl:process.env.PREVIEW_URL,actualOwnerTouchProven:false,serverToolIsIntentOnly:true,productionReplaced:false,physicalFold8Touched:false},null,2)+"\n")'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jm-inline-cp11-preview-receipt
+          path: apps/jm-chatgpt-host-adapter-v0.1/CP11_PREVIEW_RECEIPT.json
+          if-no-files-found: error

@@ -100,6 +100,7 @@ const HOME_HTML = documentPage("JM Inline Contact", `
   <p>The proved in-chat contact route is now being managed as a reusable host instrument. The frozen v0.1.2 Third Ding body remains the rollback ancestor.</p>
   <div class="card"><strong>Regression probe</strong><p><code>render-jm-inline-probe</code> keeps a tiny touch/state body available for host reliability checks.</p></div>
   <div class="card"><strong>First real playable body</strong><p><code>play-jm-128-hand-football</code> mounts the existing 128 Hand Football v0.7.4 source through the ChatGPT carrier. Source identity remains JM-owned and hash-anchored.</p></div>
+  <div class="card"><strong>Try the actual originals here</strong><p><a href="/try-touch">Open touch/drag probe in this browser</a></p><p><a href="/play-128-hand">Play original 128 Hand Football</a></p><p>Browser interaction tests the original touch or game body. A laptop Commander action requires the separately authorised ChatGPT host bridge; no device command is issued from this webpage.</p></div>
   <p><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/support">Support</a> · <a href="/health">Health</a></p>
 `);
 
@@ -259,6 +260,8 @@ export default {
     if (request.method === "OPTIONS") return withCors(new Response(null, { status: 204 }));
 
     if (url.pathname === "/") return textResponse(HOME_HTML, "text/html; charset=utf-8");
+    if (url.pathname === "/try-touch") return textResponse(PROBE_HTML, "text/html; charset=utf-8");
+    if (url.pathname === "/play-128-hand") return textResponse(HAND_SOURCE_HTML, "text/html; charset=utf-8");
     if (url.pathname === "/privacy") return textResponse(PRIVACY_HTML, "text/html; charset=utf-8");
     if (url.pathname === "/terms") return textResponse(TERMS_HTML, "text/html; charset=utf-8");
     if (url.pathname === "/support") return textResponse(SUPPORT_HTML, "text/html; charset=utf-8");

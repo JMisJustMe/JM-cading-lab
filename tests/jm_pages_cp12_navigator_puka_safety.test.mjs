@@ -9,19 +9,19 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const navSource=fs.readFileSync(path.join(root,'navigator/index.html'),'utf8');
 const pukaSource=fs.readFileSync(path.join(root,'games-beyond/puka/puka-cards-v05.js'),'utf8');
 function navigatorFixture(savedUrl) {
- const funcs=['normalizeInput','safeWebRoute','isInternal','activateTab','openRoute'].map(n=>{
+ const funcs=['normalizeInput','safeWebRoute','isInternal','titleFor','activateTab','openRoute'].map(n=>{
   const matches=navSource.split(/\r?\n/).filter(x=>x.startsWith('function '+n+'('));
   assert.equal(matches.length,1,'original function '+n);
   return matches[0];
  });
- const calls=[],frame={src:'about:blank'},nav={activeTab:'home',tabs:[{id:'saved',url:savedUrl,title:'Saved',internal:true}]};
- const ctx={URL,location:{href:'https://jmisjustme-estate.pages.dev/navigator/',origin:'https://jmisjustme-estate.pages.dev'},nav,doors:[],
-  $:s=>s==='#previewFrame'?frame:{},toast:s=>calls.push(['toast',s]),rememberTab:s=>calls.push(['remember',s]),
+ const calls=[],frame={src:'about:blank'},note={children:[],set innerHTML(s){throw Error('Unsafe preview HTML '+s)},replaceChildren(...items){this.children=items}},document={createElement:tag=>({tagName:tag,textContent:''}),createTextNode:text=>({nodeType:3,textContent:text})},nav={activeTab:'home',tabs:[{id:'saved',url:savedUrl,title:'Saved',internal:true}],history:[],trail:[]};
+ const ctx={URL,document,location:{href:'https://jmisjustme-estate.pages.dev/navigator/',origin:'https://jmisjustme-estate.pages.dev'},nav,doors:[],
+  $:s=>s==='#previewFrame'?frame:s==='#previewNote'?note:{},toast:s=>calls.push(['toast',s]),rememberTab:s=>calls.push(['remember',s]),
   persist:()=>calls.push(['persist']),renderTabs:()=>calls.push(['renderTabs']),showView:s=>calls.push(['view',s]),
   receipt:()=>calls.push(['receipt']),renderAll:()=>calls.push(['renderAll']),
   window:{open:(url,what,features)=>{calls.push(['external',url,features]);return true;}},uid:()=> 'fixture-tab',now:()=> '2026-11-18T00:00:00Z'};
  vm.runInNewContext(funcs.join('\n'),ctx,{filename:'navigator-extracted.js',timeout:2000});
- return {ctx,calls,frame,nav};
+ return {ctx,calls,frame,nav,note};
 }
 test('Navigator accepts same-origin web links but rejects script schemes',()=>{
  const x=navigatorFixture('/access/');
@@ -45,6 +45,24 @@ test('Navigator preserves legitimate internal and external saved routes',()=>{
  const b=navigatorFixture('https://example.invalid/info');b.nav.tabs[0].internal=false;
  vm.runInNewContext("activateTab('saved')",b.ctx);
  assert.equal(b.calls.filter(x=>x[0]==='external').length,1);
+});
+test('Navigator internal preview uses text nodes for hostile route input and keeps code styling',()=>{
+ const f=navigatorFixture('/access/');
+ const url='https://jmisjustme-estate.pages.dev/games-beyond/?q=%3Csvg%20onload%3Dalert(1)%3E';
+ vm.runInNewContext('openRoute('+JSON.stringify(url)+')',f.ctx);
+ assert.equal(f.frame.src,url);
+ assert.equal(f.note.children.length,2);
+ assert.equal(f.note.children[0].nodeType,3);
+ assert.equal(f.note.children[0].textContent,'Viewing an internal Estate route: ');
+ assert.equal(f.note.children[1].tagName,'code');
+ assert.equal(f.note.children[1].textContent,url);
+ assert.equal(f.calls.some(x=>x[0]==='external'),false);
+});
+test('Navigator external URL remains external, not injected into a preview',()=>{
+ const f=navigatorFixture('/access/');
+ vm.runInNewContext("openRoute('https://example.invalid/route')",f.ctx);
+ assert.equal(f.calls.some(x=>x[0]==='external'&&x[1]==='https://example.invalid/route'),true);
+ assert.equal(f.note.children.length,0);
 });
 test('Navigator preserves bounded Stringline command',()=>{
  const x=navigatorFixture('jm://stringline');vm.runInNewContext("activateTab('saved')",x.ctx);

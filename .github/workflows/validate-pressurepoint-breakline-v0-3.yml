@@ -8,6 +8,10 @@ on:
     paths:
       - 'wave2/pressurepoint-breakline-v0-3/**'
       - '.github/workflows/validate-pressurepoint-breakline-v0-3.yml'
+# Proof-only workflow: no repository write token required.
+permissions:
+  contents: read
+
 jobs:
   prove:
     runs-on: ubuntu-latest

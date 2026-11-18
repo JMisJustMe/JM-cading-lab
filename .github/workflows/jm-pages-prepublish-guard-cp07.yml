@@ -33,6 +33,9 @@ jobs:
       - name: Test exact existing browser routes and original v1.15 dispatch
         run: node --test tests/jm_pages_cp11_security_behaviour.test.mjs
 
+      - name: Prove original Navigator saved-URL and PUKA card injection protections
+        run: node --test tests/jm_pages_cp12_navigator_puka_safety.test.mjs
+
       - name: Construct actual public-site stage, never deploy
         shell: bash
         run: |

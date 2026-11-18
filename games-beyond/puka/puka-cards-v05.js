@@ -34,6 +34,9 @@
     return `<div class="pip-field">${layout.map(([x,y],i)=>`<span class="pip-mark ${i%2?'pip-alt':''}" style="--x:${x}%;--y:${y}%">${symbol}</span>`).join('')}</div>`;
   }
 
+  // Escape DOM-derived card text before inserting it into the controlled art template.
+  function htmlText(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+
   function enrich(card){
     if(card.dataset.pukaV05==='1'||card.classList.contains('back')) return;
     const oldRank=card.querySelector('b');
@@ -45,7 +48,7 @@
     const meta=(oldMeta?.textContent||'').trim();
     if(!rank||!symbol) return;
     card.dataset.pukaV05='1';
-    card.innerHTML=`<div class="corner top-corner"><b>${rank}</b><i>${symbol}</i></div>${centre(rank,symbol)}<div class="corner bottom-corner"><b>${rank}</b><i>${symbol}</i></div><small>${meta}</small>`;
+    card.innerHTML=`<div class="corner top-corner"><b>${htmlText(rank)}</b><i>${htmlText(symbol)}</i></div>${centre(rank,htmlText(symbol))}<div class="corner bottom-corner"><b>${htmlText(rank)}</b><i>${htmlText(symbol)}</i></div><small>${htmlText(meta)}</small>`;
   }
 
   function pass(){

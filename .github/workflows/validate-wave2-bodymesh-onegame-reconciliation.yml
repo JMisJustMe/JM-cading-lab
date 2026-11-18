@@ -10,6 +10,10 @@ on:
       - 'estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/**'
       - '.github/workflows/validate-wave2-bodymesh-onegame-reconciliation.yml'
 
+# Proof-only workflow: no repository write token required.
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest

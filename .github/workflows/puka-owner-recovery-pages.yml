@@ -1,10 +1,8 @@
 name: PUKA Owner Recovery Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/puka-owner-recovery-pages.yml"
+  # Emergency recovery remains available to invoke manually.
+  # Main commits already trigger the canonical Estate publisher.
   workflow_dispatch:
 
 permissions:
@@ -13,7 +11,9 @@ permissions:
   id-token: write
 
 concurrency:
-  group: puka-owner-recovery-pages
+  # Join the same public-release lane as deploy-pages.yml; never race it.
+  group: jm-pages-publication
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -42,8 +42,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _public_site
-          rsync -a --exclude='.git/' --exclude='_public_site/' --exclude='family-gifts/' ./ _public_site/
+          rsync -a --exclude='.git/' --exclude='.github/' --exclude='_public_site/' --exclude='family-gifts/' ./ _public_site/
           test ! -e _public_site/family-gifts
+          test ! -e _public_site/.github
+          python3 governance/estate-integration/verify_pages_stage_cp07.py --self-test
+          python3 governance/estate-integration/verify_pages_stage_cp07.py --stage _public_site --report "$RUNNER_TEMP/JM_PAGES_STAGE_SCOPE_CP07.json"
       - name: Upload current Estate for recovery carrier
         uses: actions/upload-pages-artifact@v3
         with:

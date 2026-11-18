@@ -70,7 +70,8 @@
 
       let target;
       try { target = new URL(raw, location.href); } catch (_) { return; }
-      if (!/^https?:$/.test(target.protocol)) return;
+      // An explicit parsed-protocol allowlist rejects non-web schemes before assignment.
+      if (target.protocol !== 'http:' && target.protocol !== 'https:') return;
       if (target.origin !== location.origin) return;
       if (norm(target.pathname) === norm(ownOrigin.href)) return;
 

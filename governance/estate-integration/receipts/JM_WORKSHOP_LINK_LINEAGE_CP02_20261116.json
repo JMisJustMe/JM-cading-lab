@@ -1,0 +1,65 @@
+{
+  "schema": "JM.Workshop.LinkLineage/CP02",
+  "date_utc": "2026-11-16",
+  "scope": "SOURCE_RECOVERY_STATIC_ORIGIN_MATCH_AND_GROUNDZEROJM_OFFLINE_TEST; NO BUILD_REPLAY_OR_SITE_MUTATION",
+  "original_integration_commit": "0d1f74a9a8986fbe48b8a810f5d85b544e80d8fc",
+  "original_source": {
+    "path": "coding-estate/workshop/source/workshop.jmw",
+    "original_git_blob_sha1": "31b5820795edaeddfa134c33eec638d0bdca88b3",
+    "current_git_blob_sha1": "31b5820795edaeddfa134c33eec638d0bdca88b3",
+    "unchanged_since_integration": true
+  },
+  "compiled_carrier": {
+    "path": "coding-estate/workshop/index.html",
+    "original_git_blob_sha1": "aa7d11887b37a8df3e057f4808911a821645ea5a",
+    "current_git_blob_sha1": "aa7d11887b37a8df3e057f4808911a821645ea5a",
+    "unchanged_since_integration": true
+  },
+  "authored_historical_endpoints": [
+    "https://jmisjustme.rf.gd/openbox/",
+    "https://jmisjustme.rf.gd/coding-estate.html"
+  ],
+  "compiled_local_mounted_destinations": [
+    "./openbox/",
+    "./coding-estate.html"
+  ],
+  "protected_link_identifiers": 5,
+  "original_mounted_public_files_found": [
+    "coding-estate/workshop/openbox/index.html",
+    "coding-estate/workshop/coding-estate.html"
+  ],
+  "validation": {
+    "GroundZeroJM_Python_offline_mutation_fixtures": "6/6 PASS",
+    "GroundZeroJM_original_jmw_vs_committed_html_static_contract": "PASS",
+    "GitHub_source_to_origin_exact_blob_match": "2/2 PASS",
+    "actual_original_JM_WEB_compiler_replay": "NOT_PERFORMED",
+    "physical_Fold8_owner_touch": "NOT_PERFORMED",
+    "published_outbound_http_previous_pass": "OPENBOX 200; Coding Estate 308 redirect to working 200"
+  },
+  "navigator_contact": {
+    "project": "jm-navigator-live-contact",
+    "cloudflare_project_api_present": true,
+    "project_created_utc": "2026-08-29T20:19:56.316212Z",
+    "production_branch": "main",
+    "latest_deployment": null,
+    "production_deployment": null,
+    "observed_deployments": 0,
+    "prior_host_http": 522,
+    "distinct_existing_navigator": "https://jmisjustme-estate.pages.dev/navigator/",
+    "conclusion": "Contact host lacks a recorded Pages deployment; no implied permission to deploy or reroute"
+  },
+  "source_role_boundary": "Historically paired .jmw and HTML blobs are unchanged; no proof of exact compiler/adapter instruction, no full-runtime/source equivalence claim.",
+  "next_safe_actions": [
+    "Recover original JM.WEB compiler/adapter command or owner build receipt without changing source",
+    "Obtain independent host/contact authority for jm-navigator-live-contact before proposing deployment",
+    "Physical Fold8 touch review of existing working sites, separately owner accepted"
+  ],
+  "effects": [
+    "ADD_RECEIPT_ONLY_TO_DRAFT_BRANCH",
+    "NO_SOURCE_OVERWRITE",
+    "NO_HOST_CHANGE",
+    "NO_DEPLOYMENT",
+    "NO_MERGE",
+    "NO_DELETE"
+  ]
+}

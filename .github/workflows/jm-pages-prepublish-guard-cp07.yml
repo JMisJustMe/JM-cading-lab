@@ -1,0 +1,71 @@
+name: JM Pages CP07 — prepublish scope without deployment
+
+on:
+  # Every change proposed to the canonical public site gets a no-deploy check.
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-pages-public-scope:
+    name: No-deploy source + stage gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head (read-only)
+        uses: actions/checkout@v4
+
+      - name: Run offline stage fixture negatives, including symlinks
+        run: python3 governance/estate-integration/verify_pages_stage_cp07.py --self-test
+
+      - name: Run offline cross-host classification fixtures
+        run: python3 governance/estate-integration/verify_pages_host_parity_cp08.py --self-test
+
+      - name: Prove both existing workflows share one non-interrupting publication queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/estate-integration/verify_pages_publication_lane_cp09.py --self-test
+          python3 governance/estate-integration/verify_pages_publication_lane_cp09.py
+
+      - name: Test exact existing browser routes and original v1.15 dispatch
+        run: node --test tests/jm_pages_cp11_security_behaviour.test.mjs
+
+      - name: Prove original Navigator saved-URL and PUKA card injection protections
+        run: node --test tests/jm_pages_cp12_navigator_puka_safety.test.mjs
+
+      - name: Prove original proof workflows retain least-privilege GitHub token scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/estate-integration/verify_workflow_permissions_cp13.py --self-test
+          python3 governance/estate-integration/verify_workflow_permissions_cp13.py
+
+      - name: Prove two-branch browser rail cannot run npm lifecycle scripts
+        run: node --test tests/jm_legacy_browser_rail_cp19.test.mjs
+
+      - name: Construct actual public-site stage, never deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _public_site
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='_public_site/' \
+            --exclude='family-gifts/' \
+            ./ _public_site/
+          python3 governance/estate-integration/verify_pages_stage_cp07.py \
+            --stage _public_site \
+            --report "$RUNNER_TEMP/JM_PAGES_STAGE_SCOPE_CP07.json"
+          {
+            echo '### JM Pages CP07 prepublication path/size proof'
+            echo
+            echo 'Static staging only. No Pages deployment and no private-source custody claim.'
+            echo
+            echo '~~~json'
+            cat "$RUNNER_TEMP/JM_PAGES_STAGE_SCOPE_CP07.json"
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"

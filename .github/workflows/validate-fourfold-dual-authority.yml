@@ -8,6 +8,10 @@ on:
     paths:
       - 'wave2/fourfold-dual-authority/**'
       - '.github/workflows/validate-fourfold-dual-authority.yml'
+# Proof-only workflow: no repository write token required.
+permissions:
+  contents: read
+
 jobs:
   prove:
     runs-on: ubuntu-latest

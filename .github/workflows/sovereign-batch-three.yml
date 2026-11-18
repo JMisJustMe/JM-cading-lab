@@ -10,6 +10,10 @@ on:
       - 'coding-estate/sovereign-batch-three/**'
       - '.github/workflows/sovereign-batch-three.yml'
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   conformance:
     runs-on: ubuntu-latest
@@ -22,6 +26,8 @@ jobs:
         id: conformance
         continue-on-error: true
         run: node coding-estate/sovereign-batch-three/direct/native-selftest.mjs > sovereign-batch-three-receipt.json
+      - name: Security regression for quoted-declaration parser
+        run: node --test coding-estate/sovereign-batch-three/direct/security-quoted-parser-cp17.test.mjs
       - name: Upload conformance receipt
         if: always()
         uses: actions/upload-artifact@v4

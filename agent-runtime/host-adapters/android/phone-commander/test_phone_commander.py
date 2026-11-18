@@ -61,6 +61,35 @@ class Suite(unittest.TestCase):
         from unittest.mock import patch
         with patch.object(m.shutil,"which",return_value="/usr/bin/git"), patch.object(m,"run",return_value={"exit_code":128,"stdout":"","stderr":"fatal"}):
             self.assert_hold(m.safe_execute(self.job("git-status"),self.root,self.st),"GIT_STATUS_FAILED")
+    def test_subprocess_allowlist_blocks_nonoriginal_executables(self):
+        from unittest.mock import patch
+        with patch.object(m.subprocess, "run") as execute_process:
+            for argv in (["sh","-c","echo fixture"],["git","push","origin","main"],
+                         ["python","-c","print(1)"],["git","-c","core.hooksPath=.",
+                          "status"],[m.sys.executable,"agent-runtime/jm_agent_runtime.py",
+                          "--core-only","--surface","phone-termux","--query","valid","extra"]):
+                with self.assertRaises(m.Hold) as result:
+                    m.run(argv,self.root)
+                self.assertIn("PROCESS_ROUTE_NOT_ALLOWLISTED",str(result.exception))
+            execute_process.assert_not_called()
+    def test_subprocess_route_query_is_one_argument_without_shell(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        query="coding && echo PRIVATE_IGNORED | placeholder"
+        with patch.object(m.subprocess,"run",return_value=SimpleNamespace(
+             returncode=0,stdout="fixture",stderr="")) as process:
+            result=m.safe_execute(self.job("route",{"query":query}),self.root,self.st)
+            self.assertEqual(result["state"],"PASS")
+            argv=process.call_args.args[0]
+            self.assertEqual(argv[-2:],["--query",query])
+            self.assertFalse(process.call_args.kwargs["shell"])
+    def test_subprocess_git_status_still_allowed(self):
+        self.assertEqual(m.process_argv(["git","status","--porcelain=v1",
+                         "--untracked-files=no"]),["git","status","--porcelain=v1",
+                         "--untracked-files=no"])
+        self.assertEqual(m.process_argv(["git","branch","--show-current"]),
+                         ["git","branch","--show-current"])
+
     def test_route_control_chars_rejected(self):self.assert_hold(m.safe_execute(self.job("route",{"query":"bad\nquery"}),self.root,self.st),"INVALID_ROUTE")
     def test_read_and_sha(self):
         x=m.safe_execute(self.job("read-file",{"path":"agent-runtime/doc.md"}),self.root,self.st)
@@ -72,6 +101,27 @@ class Suite(unittest.TestCase):
     def test_symlink_blocked(self):
         (self.root/"agent-runtime"/"link.md").symlink_to(self.doc)
         self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/link.md"}),self.root,self.st),"SYMLINK")
+    def test_symlink_parent_does_not_bypass_protected_repo_path(self):
+        protected=self.root/".git"
+        protected.mkdir()
+        (protected/"config.md").write_text("fixture only\n")
+        alias=self.root/"agent-runtime"/"innocent-alias"
+        alias.symlink_to(protected,target_is_directory=True)
+        self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/innocent-alias/config.md"}),self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+    def test_symlink_parent_to_ordinary_file_is_rejected(self):
+        alias=self.root/"agent-runtime"/"other-alias"
+        alias.symlink_to(self.root/"agent-runtime",target_is_directory=True)
+        self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/other-alias/doc.md"}),self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+    def test_symlink_parent_edit_is_rejected_even_with_explicit_grant(self):
+        alias=self.root/"agent-runtime"/"other-alias"
+        alias.symlink_to(self.root/"agent-runtime",target_is_directory=True)
+        m.grant_edits(self.st,10)
+        job=self.job("edit-file",{"path":"agent-runtime/other-alias/doc.md",
+          "expected_sha256":m.sha(b"before\n"),
+          "new_text_b64":base64.b64encode(b"altered\n").decode(),
+          "confirmation":"OWNER_APPROVED_CODE_EDIT"})
+        self.assert_hold(m.safe_execute(job,self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+        self.assertEqual(b"before\n",self.doc.read_bytes())
     def test_sensitive_filename_blocked(self):
         (self.root/"agent-runtime"/"secrets.json").write_text("secret")
         self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/secrets.json"}),self.root,self.st),"SENSITIVE_FILENAME_BLOCKED")

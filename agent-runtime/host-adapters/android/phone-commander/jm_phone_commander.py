@@ -80,14 +80,40 @@ def resolved_file(root, name, write=False):
     path = root/rel
     if not path.exists() or not path.is_file() or path.is_symlink():
         raise Hold("FILE_MUST_EXIST_AND_NOT_BE_SYMLINK")
+    # Reject symlinked parent directories, even when they point inside the repo.
+    # A harmless-looking alias must not bypass prohibited canonical directories.
+    if any((root.joinpath(*rel.parts[:i])).is_symlink() for i in range(1, len(rel.parts))):
+        raise Hold("SYMLINKED_PARENT_NOT_ALLOWED")
     resolved = path.resolve(strict=True)
     if not resolved.is_relative_to(root):
         raise Hold("PATH_OUTSIDE_JM_WORKSPACE")
+    actual = resolved.relative_to(root)
+    if any(p in PROHIBITED or p.startswith(".") or p == ".." for p in actual.parts):
+        raise Hold("PROTECTED_CANONICAL_PATH")
     if path.stat().st_size > MAX_BODY:
         raise Hold("FILE_TOO_LARGE")
     return path
 
+def process_argv(args):
+    """Allow only original Git status or one JM core route, never shell programs."""
+    if not isinstance(args, (list, tuple)) or not all(isinstance(v, str) for v in args):
+        raise Hold("PROCESS_ROUTE_NOT_ALLOWLISTED")
+    cmd = tuple(args)
+    if cmd in (
+        ("git", "status", "--porcelain=v1", "--untracked-files=no"),
+        ("git", "branch", "--show-current"),
+    ):
+        return list(args)
+    route_prefix = (sys.executable, "agent-runtime/jm_agent_runtime.py",
+                    "--core-only", "--surface", "phone-termux", "--query")
+    if len(cmd) == 7 and cmd[:6] == route_prefix:
+        query = cmd[6]
+        if 1 <= len(query) <= 160 and not any(ord(ch) < 32 for ch in query):
+            return list(args)
+    raise Hold("PROCESS_ROUTE_NOT_ALLOWLISTED")
+
 def run(args, root, timeout=20):
+    args = process_argv(args)
     try:
         cp = subprocess.run(args, cwd=root, shell=False, text=True, capture_output=True, timeout=timeout,
                             env={**os.environ, "GIT_TERMINAL_PROMPT":"0"})

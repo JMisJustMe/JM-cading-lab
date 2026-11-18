@@ -1,0 +1,33 @@
+name: JM CP10 — public-source changed-file admission (no deployment)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  public-source-admission:
+    name: Guard changed public paths and newly added credential-shaped text
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check out proposed PR source without publishing
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Run bounded source path gate negative fixtures
+        run: python3 governance/estate-integration/verify_public_source_admission_cp10.py --self-test
+
+      - name: Check changed paths and added text for credential-shaped exposures
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/estate-integration/verify_public_source_admission_cp10.py \
+            --base "$PR_BASE_SHA" \
+            --head "$PR_HEAD_SHA"

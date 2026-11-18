@@ -12,6 +12,10 @@ on:
       - 'coding-estate/sovereign-batch-six/README.md'
       - '.github/workflows/sovereign-estate-integration.yml'
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   integration:
     runs-on: ubuntu-latest

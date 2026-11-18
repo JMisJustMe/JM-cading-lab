@@ -17,6 +17,10 @@ on:
       - 'proof/ailatheo/**'
       - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
   workflow_dispatch:
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   prove:
     runs-on: ubuntu-latest

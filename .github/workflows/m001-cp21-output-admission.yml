@@ -8,6 +8,10 @@ on:
     paths:
       - 'agent-runtime/host-adapters/storage-admission/JM_M001_OUTPUT_ADMISSION_CP21*.py'
       - '.github/workflows/m001-cp21-output-admission.yml'
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   m001-cp21:
     runs-on: ubuntu-latest

@@ -4,6 +4,7 @@ import os
 import tempfile
 import zipfile
 from pathlib import Path
+from datetime import datetime, timedelta, timezone
 
 here=Path(__file__).resolve().parent
 source=here/'JM_M001_OUTPUT_ADMISSION_CP21.py'
@@ -37,8 +38,13 @@ with tempfile.TemporaryDirectory() as td:
  t('bad_zip_hold',m.run(bad,donor)['status']=='HOLD_INVALID')
  link=d/'link.zip';os.symlink(src,link)
  t('symlink_hold',m.run(link,donor)['status']=='HOLD_INVALID')
- r=m.run(src,donor,created_at='2026-10-28T00:00:00Z')
- t('age_protection', '96H_NATIVE_RETIREMENT_HOLD' in r['reasons'])
+ # Age guard fixtures follow wall clock; the former fixed 2026-10-28 date expired.
+ young_at=(datetime.now(timezone.utc)-timedelta(hours=12)).isoformat()
+ r=m.run(src,donor,created_at=young_at)
+ t('age_protection', '96H_NATIVE_RETIREMENT_HOLD' in r['reasons'] and 10 <= r['age_hours'] < 14)
+ expired_at=(datetime.now(timezone.utc)-timedelta(hours=120)).isoformat()
+ older=m.run(src,donor,created_at=expired_at)
+ t('age_expired_without_96h_hold', '96H_NATIVE_RETIREMENT_HOLD' not in older['reasons'] and older['age_hours'] >= 96)
  t('no_retirement_ever',r['native_retirement_authorised'] is False)
  t('no_false_quota',r['quota_savings_claimed_bytes']==0)
  t('no_native_write_authority',r['native_library_write_authorised'] is False)

@@ -7,6 +7,10 @@ on:
       - "scripts/jm_ailatheo_teaching_field_conformance.py"
       - ".github/workflows/prove-ailatheo-teaching-field-v1-1.yml"
   workflow_dispatch:
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   prove:
     runs-on: ubuntu-latest

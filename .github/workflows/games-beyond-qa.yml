@@ -16,6 +16,10 @@ on:
   # touching any installed game, source, phone screen or private GitHub data.
   workflow_dispatch:
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   browser-qa:
     runs-on: ubuntu-latest
@@ -27,6 +31,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Verify historic FUTARIZED v1.2 typed-command and trace DOM safety
+        run: node --test tests/futarized-v12-safety-cp18.test.mjs
       - name: Install dependencies
         run: npm install
       - name: Install Chromium

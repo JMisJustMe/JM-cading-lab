@@ -19,6 +19,10 @@ on:
       - 'ecostate-gripcube-v5.js'
       - 'tests/ecostate-gripcube-v5.spec.mjs'
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   gripcube:
     runs-on: ubuntu-24.04

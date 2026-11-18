@@ -12,6 +12,10 @@ on:
       - '.github/workflows/validate-wave2-gameforge-glyphforge.yml'
   workflow_dispatch:
 
+# Proof-only workflow: no repository write token required.
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest

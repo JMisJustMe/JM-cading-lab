@@ -220,7 +220,7 @@ function createServer() {
     structuredContent: { schema: "jm.inline-contact/status/v0.2", adapterVersion: ADAPTER_VERSION, channel: CHANNEL, stableAncestor: STABLE_ANCESTOR, bodyCount: 2, bodyIds: [PROBE_ID, HAND_BODY_ID], contactClaim: "SERVER_STATUS_ONLY_NOT_A_NEW_DING" },
   }));
 
-  registerAppTool(server, "jm-commander-contact-intent", {
+  server.registerTool("jm-commander-contact-intent", {
     title: "Validate fixed JM Commander read-only contact request",
     description: "Admits only the intent; does not execute a laptop operation.",
     inputSchema: { action: z.literal("original_jm_commander_service_contact") },

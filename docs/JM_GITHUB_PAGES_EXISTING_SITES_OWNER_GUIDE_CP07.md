@@ -80,3 +80,18 @@ Official documentation:
 - https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
 - https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
 - https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
+
+## Native GitHub protection contact — 17 November 2026
+
+GitHub is the public source and publication rail; JM Owner Vault remains private durable custody, M001 Storage Steward governs keeper/recovery admission, and GONG governs source-change risk. These are independent organs and must not be replaced or merged by hosting security settings.
+
+- `JM-cading-lab` and `jm-cloud-contact-server-first-cloud` are the **two accessible public repositories** in this read-only snapshot; four further accessible repositories were private and were not changed.
+- GitHub provider-native **secret scanning and push protection** already enabled on both public repositories; initial public Estate secret-alert query returned zero open alerts (not proof of no undiscovered exposure).
+- **Dependabot vulnerability alerts ENABLED via authenticated owner GitHub CLI**, read back enabled on public Estate. **Automatic dependency security updates remain disabled.** Native dependency alerts are read-only notifications, not authorisation to update packages.
+- **CodeQL default setup ENABLED / INITIAL ANALYSIS STARTED** for public Estate (Actions, JavaScript/TypeScript, Python) and public Cloud Contact (Actions, JavaScript/TypeScript). Jobs being validated separately, not yet blanket CodeQL PASS. No new source workflow/repo was manufactured for this provider-native capability.
+- Source-edit and Pages artifact guards are distinct **draft PR #805** code; GitHub native secret scanning works independently even before PR #805 can merge.
+- Repository `main` had no branch protection or rulesets at the last authenticated inspection; owner-approved future governance should reconcile required-check enforcement with existing cross-AI agents, M001, GONG, Pages and canonical Cloudflare production write routes. Do not turn on rules blindly.
+- Existing protected source already reachable through public Git history is not privatized by Pages exclusion, scanners, lack of visitors or future branch rules. Exact keeper/private-custody and appropriate owner-approved remediation remain HOLD; never delete or rewrite originals by inference.
+- Public code review/data analysis and browser/CI emulation do not equal Fold8 touch acceptance. No main-branch merge, deployment, DNS change, family file manipulation, private repository write, automatic dependency update or owner-phone takeover occurred during this security contact.
+
+Useful account interfaces: [GitHub Pages](https://github.com/JMisJustMe/JM-cading-lab/settings/pages), [public Estate security](https://github.com/JMisJustMe/JM-cading-lab/security), [CodeQL validation](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/44205022318), and [Cloud Contact CodeQL validation](https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/actions/runs/44205180024).

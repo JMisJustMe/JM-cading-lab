@@ -209,7 +209,7 @@ function createServer() {
     _meta: { ui: { resourceUri: HAND_URI }, "openai/outputTemplate": HAND_URI, "jm/bodyId": HAND_BODY_ID, "jm/sourceSha256": HAND128_SOURCE_SHA256 },
   }));
 
-  registerAppTool(server, "jm-inline-status", {
+  server.registerTool("jm-inline-status", {
     title: "JM Inline Contact status",
     description: "Read the managed-beta Inline Contact adapter version, frozen ancestor and mounted body identities. Use for diagnostics; it changes nothing.",
     inputSchema: {},

@@ -171,3 +171,60 @@ test('PUKA original character suit cannot inject HTML attributes',()=>{
  assert.match(html,/spirit-spades/);
  assert.doesNotMatch(html,/onclick=/);
 });
+
+
+function storageRenderingFixture(){
+ const nodes=new Map();
+ const element=tag=>({
+  tagName:tag,className:'',id:'',dataset:{},textContent:'',value:'',children:[],
+  set innerHTML(value){throw new Error('UNSAFE_RENDER_INNERHTML:'+String(value).slice(0,30))},
+  append(...items){this.children.push(...items)},
+  replaceChildren(...items){this.children=items},
+  setAttribute(name,value){this[name]=String(value)}
+ });
+ const document={
+  createElement:element,createTextNode:text=>({nodeType:3,textContent:text}),
+  querySelectorAll:()=>[],
+ };
+ const $=id=>{if(!nodes.has(id))nodes.set(id,element('div'));return nodes.get(id)};
+ const nav={activeTab:'tab-1',tabs:[{id:'tab-1',title:'<img src=x onerror=alert(1)>'}],
+  history:[{id:'h1',title:'<svg onload=alert(2)>',url:'https://example.invalid/?q=<script>',at:'2026-11-18T00:00:00Z'}],
+  bookmarks:[{id:'b1',title:'<iframe>',url:'https://example.invalid/?q=<script>'}]};
+ const receipts=[{action:'OPEN_ROUTE',detail:'<script>bad()</script>',bodyId:'<svg>',at:'2026-11-18T00:00:00Z'}];
+ const stringline={projects:[{id:'p1',name:'<img>',status:'STANDING',headChat:'<script>',headRecord:'Original',keeper:'<svg>',bodies:[{id:'body1',name:'<iframe>',type:'Game',role:'<img>',status:'SEED',route:'/games-beyond/'}]}],lifecycle:['SEED','PROVEN']};
+ const keys=['domText','renderTabs','renderBookmarks','renderHistory','renderReceipts','renderStringline'];
+ const source=navSource;
+ const expressions=keys.map(name=>{
+  const start=source.indexOf('function '+name+'(');assert.ok(start>=0,'function '+name);
+  const next=source.indexOf('\nfunction ',start+10);
+  const rest=next<0?source.slice(start):source.slice(start,next);
+  return rest;
+ });
+ const ctx={URL,document,$,nav,receipts,stringline,
+  uid:()=> 'new',now:()=> '2026-11-18T00:00:00Z',renderTabs(){},showView(){},rememberTab(){},persist(){},openRoute(){},activateTab(){},closeTab(){},addBookmark(){}};
+ vm.runInNewContext(expressions.join('\n'),ctx,{filename:'navigator-original-safe-renderers.js',timeout:3000});
+ return {ctx,nodes,nav,receipts,stringline};
+}
+function allText(node){
+ if(!node)return'';
+ return String(node.textContent??'')+(node.children||[]).map(allText).join('');
+}
+test('Navigator saved-data renderers use text-only DOM for hostile titles, routes and receipts',()=>{
+ const {ctx,nodes}=storageRenderingFixture();
+ for(const method of ['renderTabs','renderBookmarks','renderHistory','renderReceipts','renderStringline'])
+  vm.runInNewContext(method+'()',ctx,{timeout:2000});
+ assert.match(allText(nodes.get('#tabs')),/<img src=x onerror=alert\(1\)>/);
+ assert.match(allText(nodes.get('#historyList')),/<svg onload=alert\(2\)>/);
+ assert.match(allText(nodes.get('#receiptList')),/<script>bad\(\)<\/script>/);
+ assert.match(allText(nodes.get('#stringGrid')),/<iframe>/);
+ assert.equal(nodes.get('#bodyProject').children[0].value,'p1');
+ assert.equal(nodes.get('#bodyStatus').children.length,2);
+});
+test('Navigator saved-data button handlers and element identities are retained',()=>{
+ const {ctx,nodes}=storageRenderingFixture();
+ vm.runInNewContext("renderTabs();renderBookmarks();renderHistory();renderStringline()",ctx);
+ const tab=nodes.get('#tabs').children[0],close=tab.children[1],bookmark=nodes.get('#bookmarkList').children[0];
+ assert.equal(tab.className,'tab active');assert.equal(tab.dataset.tab,'tab-1');
+ assert.equal(close.dataset.close,'tab-1');assert.equal(bookmark.children[1].children[0].dataset.bookOpen,'b1');
+ const project=nodes.get('#stringGrid').children[0];assert.equal(project.className,'card');
+});

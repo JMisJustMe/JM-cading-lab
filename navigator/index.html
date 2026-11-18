@@ -65,12 +65,93 @@ function goBack(){nav.trail=Array.isArray(nav.trail)?nav.trail:[];while(nav.trai
 function closeTab(id){const i=nav.tabs.findIndex(t=>t.id===id);if(i<0||nav.tabs.length===1)return;nav.tabs.splice(i,1);nav.trail=(nav.trail||[]).filter(x=>x!==id);if(nav.activeTab===id){nav.activeTab=nav.tabs[Math.max(0,i-1)].id;rememberTab(nav.activeTab)}persist();renderTabs();receipt('CLOSE_TAB',id,id)}
 function addBookmark(title,url){if(nav.bookmarks.some(b=>b.url===url)){toast('Already saved.');return}nav.bookmarks.unshift({id:uid('bookmark'),title:titleFor(url,title),url,createdAt:now()});persist();renderBookmarks();receipt('BOOKMARK',`${titleFor(url,title)} → ${url}`);toast('Door saved.')}
 function showView(name,reset=false){const target=$('#view-'+name);document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v===target));document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===(name==='preview'?'home':name)));if(reset&&target)target.scrollTop=0;if(name==='stringline')renderStringline();if(name==='history')renderHistory();if(name==='bookmarks')renderBookmarks();if(name==='receipts')renderReceipts()}
-function renderTabs(){$('#tabs').innerHTML=nav.tabs.map(t=>`<div class="tab ${t.id===nav.activeTab?'active':''}" data-tab="${esc(t.id)}"><span>${esc(t.title)}</span><button data-close="${esc(t.id)}" aria-label="Close ${esc(t.title)}">×</button></div>`).join('')+'<button class="newtab" id="newTab" aria-label="New tab">+</button>';document.querySelectorAll('[data-tab]').forEach(t=>t.onclick=e=>{if(!e.target.closest('[data-close]'))activateTab(t.dataset.tab)});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=e=>{e.stopPropagation();closeTab(b.dataset.close)});$('#newTab').onclick=()=>{const tab={id:uid('tab'),title:'New route',url:'jm://home',internal:true};nav.tabs.push(tab);nav.activeTab=tab.id;rememberTab(tab.id);persist();renderTabs();showView('home',true);$('#addressInput').focus()}}
+function domText(tag,value,className){const el=document.createElement(tag);if(className)el.className=className;el.textContent=String(value??'');return el}
+function renderTabs(){
+ const root=$('#tabs');
+ const items=nav.tabs.map(t=>{
+  const tab=document.createElement('div');tab.className=t.id===nav.activeTab?'tab active':'tab';tab.dataset.tab=String(t.id);
+  const label=domText('span',t.title);
+  const close=domText('button','×');close.dataset.close=String(t.id);close.setAttribute('aria-label','Close '+String(t.title??''));
+  tab.append(label,close);
+  tab.onclick=e=>{if(!e.target.closest('[data-close]'))activateTab(tab.dataset.tab)};
+  close.onclick=e=>{e.stopPropagation();closeTab(close.dataset.close)};
+  return tab;
+ });
+ const add=domText('button','+','newtab');add.id='newTab';add.setAttribute('aria-label','New tab');
+ add.onclick=()=>{const tab={id:uid('tab'),title:'New route',url:'jm://home',internal:true};nav.tabs.push(tab);nav.activeTab=tab.id;rememberTab(tab.id);persist();renderTabs();showView('home',true);$('#addressInput').focus()};
+ root.replaceChildren(...items,add);
+}
 function renderDoors(){$('#quickDoors').innerHTML=doors.map(d=>`<a class="door" href="${esc(d.route)}" data-open="${esc(d.route)}" data-title="${esc(d.name)}"><span><strong>${esc(d.name)}</strong><small>${esc(d.note)}</small></span><b>↗</b></a>`).join('');document.querySelectorAll('[data-open]').forEach(a=>a.onclick=e=>{e.preventDefault();openRoute(a.dataset.open,a.dataset.title)})}
-function renderBookmarks(){const root=$('#bookmarkList');root.innerHTML=nav.bookmarks.length?nav.bookmarks.map(b=>`<div class="row"><div class="grow"><strong>${esc(b.title)}</strong><small>${esc(b.url)}</small></div><div class="row-actions"><button class="chip" data-book-open="${esc(b.id)}">Open</button><button class="chip" data-book-delete="${esc(b.id)}">×</button></div></div>`).join(''):'<div class="empty">No saved doors yet.</div>';document.querySelectorAll('[data-book-open]').forEach(b=>b.onclick=()=>{const x=nav.bookmarks.find(v=>v.id===b.dataset.bookOpen);if(x)openRoute(x.url,x.title)});document.querySelectorAll('[data-book-delete]').forEach(b=>b.onclick=()=>{nav.bookmarks=nav.bookmarks.filter(v=>v.id!==b.dataset.bookDelete);persist();renderBookmarks()})}
-function renderHistory(){const root=$('#historyList');root.innerHTML=nav.history.length?nav.history.map(h=>`<div class="row"><div class="grow"><strong>${esc(h.title)}</strong><small>${new Date(h.at).toLocaleString()} · ${esc(h.url)}</small></div><div class="row-actions"><button class="chip" data-history-open="${esc(h.id)}">Reopen</button><button class="chip" data-history-save="${esc(h.id)}">Save</button></div></div>`).join(''):'<div class="empty">No routes opened yet.</div>';document.querySelectorAll('[data-history-open]').forEach(b=>b.onclick=()=>{const x=nav.history.find(v=>v.id===b.dataset.historyOpen);if(x)openRoute(x.url,x.title)});document.querySelectorAll('[data-history-save]').forEach(b=>b.onclick=()=>{const x=nav.history.find(v=>v.id===b.dataset.historySave);if(x)addBookmark(x.title,x.url)})}
-function renderReceipts(){const root=$('#receiptList');if(!root)return;root.innerHTML=receipts.length?receipts.map(r=>`<div class="row"><div class="grow"><strong>${esc(r.action)}</strong><small>${new Date(r.at).toLocaleString()} · ${esc(r.detail)}</small></div><span class="chip">${esc(r.bodyId)}</span></div>`).join(''):'<div class="empty">No local receipts yet. Open a route or Stringle a body.</div>'}
-function renderStringline(){const root=$('#stringGrid');root.innerHTML=stringline.projects.map(p=>`<article class="card ${p.bodies.length>2?'wide':''}"><span class="status">${esc(p.status)}</span><h3>${esc(p.name)}</h3><div class="meta"><strong>Head Chat:</strong> ${esc(p.headChat||'Unassigned')}<br><strong>Head Record:</strong> ${esc(p.headRecord||'Unassigned')}</div><p>${esc(p.keeper||'No keeper line assigned.')}</p><div class="bodylist">${p.bodies.length?p.bodies.map(b=>`<div class="bodyrow"><div class="grow"><strong>${esc(b.name)}</strong><small>${esc(b.type||'Body')} · ${esc(b.role||'Role unassigned')} · ${esc(b.status||'SEED')}</small></div>${b.route?`<button class="chip" data-body-open="${esc(b.id)}" data-project="${esc(p.id)}">Open</button>`:''}</div>`).join(''):'<div class="empty">No bodies Stringled here yet.</div>'}</div></article>`).join('')+'<article class="card full"><h3>Stringline laws</h3><p class="crown">One string. Many bodies. Mesh, not merge.</p><p class="meta">The Head Chat thinks. The Head Record remembers. Together they govern the string.</p></article>';document.querySelectorAll('[data-body-open]').forEach(btn=>btn.onclick=()=>{const p=stringline.projects.find(x=>x.id===btn.dataset.project),b=p?.bodies.find(x=>x.id===btn.dataset.bodyOpen);if(b?.route)openRoute(b.route,b.name)});$('#bodyProject').innerHTML=stringline.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#bodyStatus').innerHTML=stringline.lifecycle.map(s=>`<option>${esc(s)}</option>`).join('')}
+function renderBookmarks(){
+ const root=$('#bookmarkList');
+ const items=nav.bookmarks.map(b=>{
+  const row=document.createElement('div');row.className='row';
+  const grow=document.createElement('div');grow.className='grow';grow.append(domText('strong',b.title),domText('small',b.url));
+  const actions=document.createElement('div');actions.className='row-actions';
+  const open=domText('button','Open','chip'),remove=domText('button','×','chip');
+  open.dataset.bookOpen=String(b.id);remove.dataset.bookDelete=String(b.id);
+  open.onclick=()=>{const x=nav.bookmarks.find(v=>v.id===open.dataset.bookOpen);if(x)openRoute(x.url,x.title)};
+  remove.onclick=()=>{nav.bookmarks=nav.bookmarks.filter(v=>v.id!==remove.dataset.bookDelete);persist();renderBookmarks()};
+  actions.append(open,remove);row.append(grow,actions);return row;
+ });
+ root.replaceChildren(...(items.length?items:[domText('div','No saved doors yet.','empty')]));
+}
+function renderHistory(){
+ const root=$('#historyList');
+ const items=nav.history.map(h=>{
+  const row=document.createElement('div');row.className='row';
+  const grow=document.createElement('div');grow.className='grow';
+  grow.append(domText('strong',h.title),domText('small',new Date(h.at).toLocaleString()+' · '+String(h.url??'')));
+  const actions=document.createElement('div');actions.className='row-actions';
+  const open=domText('button','Reopen','chip'),save=domText('button','Save','chip');
+  open.dataset.historyOpen=String(h.id);save.dataset.historySave=String(h.id);
+  open.onclick=()=>{const x=nav.history.find(v=>v.id===open.dataset.historyOpen);if(x)openRoute(x.url,x.title)};
+  save.onclick=()=>{const x=nav.history.find(v=>v.id===save.dataset.historySave);if(x)addBookmark(x.title,x.url)};
+  actions.append(open,save);row.append(grow,actions);return row;
+ });
+ root.replaceChildren(...(items.length?items:[domText('div','No routes opened yet.','empty')]));
+}
+function renderReceipts(){
+ const root=$('#receiptList');if(!root)return;
+ const items=receipts.map(r=>{
+  const row=document.createElement('div');row.className='row';
+  const grow=document.createElement('div');grow.className='grow';
+  grow.append(domText('strong',r.action),domText('small',new Date(r.at).toLocaleString()+' · '+String(r.detail??'')));
+  row.append(grow,domText('span',r.bodyId,'chip'));return row;
+ });
+ root.replaceChildren(...(items.length?items:[domText('div','No local receipts yet. Open a route or Stringle a body.','empty')]));
+}
+function renderStringline(){
+ const root=$('#stringGrid');
+ const items=stringline.projects.map(p=>{
+  const article=document.createElement('article');article.className='card'+(p.bodies.length>2?' wide':'');
+  const meta=document.createElement('div');meta.className='meta';
+  meta.append(domText('strong','Head Chat:'),document.createTextNode(' '+String(p.headChat||'Unassigned')),document.createElement('br'),domText('strong','Head Record:'),document.createTextNode(' '+String(p.headRecord||'Unassigned')));
+  const list=document.createElement('div');list.className='bodylist';
+  if(!p.bodies.length)list.append(domText('div','No bodies Stringled here yet.','empty'));
+  for(const b of p.bodies){
+   const row=document.createElement('div');row.className='bodyrow';
+   const grow=document.createElement('div');grow.className='grow';
+   grow.append(domText('strong',b.name),domText('small',String(b.type||'Body')+' · '+String(b.role||'Role unassigned')+' · '+String(b.status||'SEED')));
+   row.append(grow);
+   if(b.route){
+    const open=domText('button','Open','chip');
+    open.dataset.bodyOpen=String(b.id);open.dataset.project=String(p.id);
+    open.onclick=()=>{const owner=stringline.projects.find(x=>String(x.id)===open.dataset.project),body=owner?.bodies.find(x=>String(x.id)===open.dataset.bodyOpen);if(body?.route)openRoute(body.route,body.name)};
+    row.append(open);
+   }
+   list.append(row);
+  }
+  article.append(domText('span',p.status,'status'),domText('h3',p.name),meta,domText('p',p.keeper||'No keeper line assigned.'),list);
+  return article;
+ });
+ const laws=document.createElement('article');laws.className='card full';
+ laws.append(domText('h3','Stringline laws'),domText('p','One string. Many bodies. Mesh, not merge.','crown'),domText('p','The Head Chat thinks. The Head Record remembers. Together they govern the string.','meta'));
+ root.replaceChildren(...items,laws);
+ const projects=stringline.projects.map(p=>{const option=domText('option',p.name);option.value=String(p.id);return option});
+ $('#bodyProject').replaceChildren(...projects);
+ $('#bodyStatus').replaceChildren(...stringline.lifecycle.map(s=>domText('option',s)));
+}
 function renderAll(){renderTabs();renderDoors();renderBookmarks();renderHistory();renderReceipts();renderStringline()}
 async function hydrateStringline(){const local=load(KEYS.stringline,null);try{const res=await fetch('./stringline.json',{cache:'no-store'});if(!res.ok)throw new Error('seed unavailable');const seed=await res.json(),mergeBodies=(official=[],owned=[])=>{const map=new Map(official.map(b=>[b.id,b]));owned.forEach(b=>map.set(b.id||b.name,{...(map.get(b.id)||{}),...b}));return[...map.values()]},official=seed.seed_project_strings||[],owned=local?.projects||[],ownedMap=new Map(owned.map(p=>[p.id,p]));const projects=official.map(p=>{const prior=ownedMap.get(p.id);ownedMap.delete(p.id);return prior?{...prior,...p,bodies:mergeBodies(p.bodies,prior.bodies)}:p});projects.push(...ownedMap.values());const changed=local?.seedVersion!==seed.version;stringline={projects,lifecycle:[...new Set([...(seed.lifecycle_states||[]),...(local?.lifecycle||[])])],seedVersion:seed.version};persist();renderAll();receipt(local?.projects?.length?(changed?'STRINGLINE_SEED_MERGE':'STRINGLINE_REENTRY'):'STRINGLINE_IGNITION',local?.projects?.length?(changed?`Merged ${seed.version} without erasing local bodies.`:'Restored local Stringline body.'):`Loaded ${seed.version}.`)}catch{stringline=local?.projects?.length?local:{projects:[],lifecycle:stringline.lifecycle};renderAll();toast('Stringline seed could not load; preserved local body remains available.')}}
 $('#addressForm').onsubmit=e=>{e.preventDefault();openRoute($('#addressInput').value);$('#addressInput').select()};$('#backBtn').onclick=goBack;document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view,true));$('#moreBtn').onclick=()=>$('#aboutDialog').showModal();$('#closeAbout').onclick=()=>$('#aboutDialog').close();$('#addBodyBtn').onclick=()=>{$('#bodyForm').reset();$('#bodyDialog').showModal()};

@@ -75,10 +75,10 @@ class Suite(unittest.TestCase):
     def test_symlink_parent_does_not_bypass_protected_repo_path(self):
         protected=self.root/".git"
         protected.mkdir()
-        (protected/"config").write_text("fixture only\n")
+        (protected/"config.md").write_text("fixture only\n")
         alias=self.root/"agent-runtime"/"innocent-alias"
         alias.symlink_to(protected,target_is_directory=True)
-        self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/innocent-alias/config"}),self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+        self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/innocent-alias/config.md"}),self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
     def test_symlink_parent_to_ordinary_file_is_rejected(self):
         alias=self.root/"agent-runtime"/"other-alias"
         alias.symlink_to(self.root/"agent-runtime",target_is_directory=True)

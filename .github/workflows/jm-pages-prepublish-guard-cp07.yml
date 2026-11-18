@@ -30,6 +30,9 @@ jobs:
           python3 governance/estate-integration/verify_pages_publication_lane_cp09.py --self-test
           python3 governance/estate-integration/verify_pages_publication_lane_cp09.py
 
+      - name: Test exact existing browser routes and original v1.15 dispatch
+        run: node --test tests/jm_pages_cp11_security_behaviour.test.mjs
+
       - name: Construct actual public-site stage, never deploy
         shell: bash
         run: |

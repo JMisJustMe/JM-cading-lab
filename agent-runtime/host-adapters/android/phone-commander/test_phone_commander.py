@@ -61,6 +61,35 @@ class Suite(unittest.TestCase):
         from unittest.mock import patch
         with patch.object(m.shutil,"which",return_value="/usr/bin/git"), patch.object(m,"run",return_value={"exit_code":128,"stdout":"","stderr":"fatal"}):
             self.assert_hold(m.safe_execute(self.job("git-status"),self.root,self.st),"GIT_STATUS_FAILED")
+    def test_subprocess_allowlist_blocks_nonoriginal_executables(self):
+        from unittest.mock import patch
+        with patch.object(m.subprocess, "run") as execute_process:
+            for argv in (["sh","-c","echo fixture"],["git","push","origin","main"],
+                         ["python","-c","print(1)"],["git","-c","core.hooksPath=.",
+                          "status"],[m.sys.executable,"agent-runtime/jm_agent_runtime.py",
+                          "--core-only","--surface","phone-termux","--query","valid","extra"]):
+                with self.assertRaises(m.Hold) as result:
+                    m.run(argv,self.root)
+                self.assertIn("PROCESS_ROUTE_NOT_ALLOWLISTED",str(result.exception))
+            execute_process.assert_not_called()
+    def test_subprocess_route_query_is_one_argument_without_shell(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        query="coding && echo PRIVATE_IGNORED | placeholder"
+        with patch.object(m.subprocess,"run",return_value=SimpleNamespace(
+             returncode=0,stdout="fixture",stderr="")) as process:
+            result=m.safe_execute(self.job("route",{"query":query}),self.root,self.st)
+            self.assertEqual(result["state"],"PASS")
+            argv=process.call_args.args[0]
+            self.assertEqual(argv[-2:],["--query",query])
+            self.assertFalse(process.call_args.kwargs["shell"])
+    def test_subprocess_git_status_still_allowed(self):
+        self.assertEqual(m.process_argv(["git","status","--porcelain=v1",
+                         "--untracked-files=no"]),["git","status","--porcelain=v1",
+                         "--untracked-files=no"])
+        self.assertEqual(m.process_argv(["git","branch","--show-current"]),
+                         ["git","branch","--show-current"])
+
     def test_route_control_chars_rejected(self):self.assert_hold(m.safe_execute(self.job("route",{"query":"bad\nquery"}),self.root,self.st),"INVALID_ROUTE")
     def test_read_and_sha(self):
         x=m.safe_execute(self.job("read-file",{"path":"agent-runtime/doc.md"}),self.root,self.st)

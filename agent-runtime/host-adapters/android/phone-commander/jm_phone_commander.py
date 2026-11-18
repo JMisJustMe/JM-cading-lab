@@ -94,7 +94,26 @@ def resolved_file(root, name, write=False):
         raise Hold("FILE_TOO_LARGE")
     return path
 
+def process_argv(args):
+    """Allow only original Git status or one JM core route, never shell programs."""
+    if not isinstance(args, (list, tuple)) or not all(isinstance(v, str) for v in args):
+        raise Hold("PROCESS_ROUTE_NOT_ALLOWLISTED")
+    cmd = tuple(args)
+    if cmd in (
+        ("git", "status", "--porcelain=v1", "--untracked-files=no"),
+        ("git", "branch", "--show-current"),
+    ):
+        return list(args)
+    route_prefix = (sys.executable, "agent-runtime/jm_agent_runtime.py",
+                    "--core-only", "--surface", "phone-termux", "--query")
+    if len(cmd) == 7 and cmd[:6] == route_prefix:
+        query = cmd[6]
+        if 1 <= len(query) <= 160 and not any(ord(ch) < 32 for ch in query):
+            return list(args)
+    raise Hold("PROCESS_ROUTE_NOT_ALLOWLISTED")
+
 def run(args, root, timeout=20):
+    args = process_argv(args)
     try:
         cp = subprocess.run(args, cwd=root, shell=False, text=True, capture_output=True, timeout=timeout,
                             env={**os.environ, "GIT_TERMINAL_PROMPT":"0"})

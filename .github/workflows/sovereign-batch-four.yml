@@ -10,6 +10,10 @@ on:
       - 'coding-estate/sovereign-batch-four/**'
       - '.github/workflows/sovereign-batch-four.yml'
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   conformance:
     runs-on: ubuntu-latest

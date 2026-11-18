@@ -9,6 +9,10 @@ on:
       - 'JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.2/**'
       - '.github/workflows/authority-hold-engine-v0.2.yml'
   workflow_dispatch:
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   authority-hold-v02:
     runs-on: ubuntu-latest

@@ -7,6 +7,10 @@ on:
       - "tests/ailatheo-teaching-field.spec.mjs"
       - ".github/workflows/ailatheo-teaching-field-browser-proof-v1-1.yml"
   workflow_dispatch:
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   browser-proof:
     runs-on: ubuntu-24.04

@@ -16,6 +16,10 @@ on:
   # touching any installed game, source, phone screen or private GitHub data.
   workflow_dispatch:
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   browser-qa:
     runs-on: ubuntu-latest

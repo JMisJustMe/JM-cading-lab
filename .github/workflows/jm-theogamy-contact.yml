@@ -7,6 +7,10 @@ on:
       - '.github/workflows/jm-theogamy-contact.yml'
       - 'coding-estate/integration/theogamy-private-donor-port.mjs'
   workflow_dispatch:
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   native-contact:
     runs-on: ubuntu-latest

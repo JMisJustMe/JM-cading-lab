@@ -23,6 +23,10 @@ on:
       - 'ecostate-griprail-v6.js'
       - 'tests/ecostate-griprail-v6.spec.mjs'
 
+# Proof-only original: no repository write privileges.
+permissions:
+  contents: read
+
 jobs:
   griprail:
     runs-on: ubuntu-24.04

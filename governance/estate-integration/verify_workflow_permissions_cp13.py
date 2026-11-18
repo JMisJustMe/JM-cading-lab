@@ -18,6 +18,23 @@ FILES = (
     "validate-wave-2-jm3232-navigator-browser-bridge-v0-1.yml",
     "validate-pressurepoint-breakline-v0-3.yml",
     "validate-fourfold-dual-authority.yml",
+    "sovereign-ten.yml",
+    "sovereign-estate-integration.yml",
+    "sovereign-batch-two.yml",
+    "sovereign-batch-three.yml",
+    "sovereign-batch-six.yml",
+    "sovereign-batch-four.yml",
+    "sovereign-batch-five.yml",
+    "prove-ailatheo-teaching-field-v1-1.yml",
+    "m001-cp21-output-admission.yml",
+    "jm-theogamy-contact.yml",
+    "jm-ailatheo-unified-circuit-v0-1.yml",
+    "jm-ai-rod-v0-1.yml",
+    "games-beyond-qa.yml",
+    "ecostate-griprail-v6-qa.yml",
+    "ecostate-gripcube-v5-qa.yml",
+    "authority-hold-engine-v0.2.yml",
+    "ailatheo-teaching-field-browser-proof-v1-1.yml",
 )
 DIRECTORY = Path(".github/workflows")
 PERMISSION_BLOCK = "\npermissions:\n  contents: read\n"

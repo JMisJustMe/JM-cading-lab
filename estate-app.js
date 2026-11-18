@@ -80,6 +80,7 @@ const state = {
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const escapeHTML = value => String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const safePublicHref = raw => {try{const url=new URL(String(raw),location.href);return url.protocol==='https:'||url.protocol==='http:'?String(raw):'#'}catch{return '#'}};
 const normalise = value => String(value||'').toLowerCase();
 let deferredInstallPrompt = null;
 let previewUrl = null;
@@ -207,7 +208,7 @@ function libraryEntries(){
 }
 function renderLibrary(){
   const q=normalise(state.libraryQuery);const entries=libraryEntries().filter(e=>!q||normalise([e.title,e.meta,e.text].join(' ')).includes(q)).slice(0,q?100:30);
-  $('#libraryResults').innerHTML=entries.length?entries.map(e=>`<a class="library-item" href="${e.path}"><span class="library-meta">${escapeHTML(e.meta)}</span><h3>${escapeHTML(e.title)}</h3><p>${escapeHTML(e.text)}</p></a>`).join(''):`<div class="empty-state">No registered public result matches that search.</div>`;
+  $('#libraryResults').innerHTML=entries.length?entries.map(e=>`<a class="library-item" href="${escapeHTML(safePublicHref(e.path))}"><span class="library-meta">${escapeHTML(e.meta)}</span><h3>${escapeHTML(e.title)}</h3><p>${escapeHTML(e.text)}</p></a>`).join(''):`<div class="empty-state">No registered public result matches that search.</div>`;
 }
 function renderCommand(){
   const gates=['Source','Entry','Structure','Behaviour','Delivery','Receipt'];
@@ -222,7 +223,7 @@ function saveMounted(next=state.mounted){
 }
 function renderOwner(){
   $('#mountedCount').textContent=`${state.mounted.length} ${state.mounted.length===1?'BODY':'BODIES'}`;
-  $('#mountedShelf').innerHTML=state.mounted.length?state.mounted.map(item=>`<article class="mounted-card"><div><b>${escapeHTML(item.name)}</b><small>${Math.round(item.bytes/1024)} KB · mounted ${new Date(item.at).toLocaleDateString()}</small></div><div class="mounted-actions"><button data-preview-local="${item.id}">PREVIEW</button><button class="danger" data-delete-local="${item.id}">REMOVE</button></div></article>`).join(''):`<div class="empty-state">No local HTML body mounted on this device.</div>`;
+  $('#mountedShelf').innerHTML=state.mounted.length?state.mounted.map(item=>`<article class="mounted-card"><div><b>${escapeHTML(item.name)}</b><small>${Math.round(item.bytes/1024)} KB · mounted ${new Date(item.at).toLocaleDateString()}</small></div><div class="mounted-actions"><button data-preview-local="${escapeHTML(item.id)}">PREVIEW</button><button class="danger" data-delete-local="${escapeHTML(item.id)}">REMOVE</button></div></article>`).join(''):`<div class="empty-state">No local HTML body mounted on this device.</div>`;
   $$('#mountedShelf [data-preview-local]').forEach(btn=>btn.addEventListener('click',()=>previewMounted(btn.dataset.previewLocal)));
   $$('#mountedShelf [data-delete-local]').forEach(btn=>btn.addEventListener('click',()=>{try{saveMounted(state.mounted.filter(x=>x.id!==btn.dataset.deleteLocal));toast('Local mounted copy removed.')}catch{toast('Local removal could not be saved. Original mounted copies remain intact.',true)}}));
   const favs=getAllItems().filter(i=>state.favourites.has(i.id));
@@ -231,7 +232,7 @@ function renderOwner(){
   $('#recentShelf').innerHTML=state.recent.length?state.recent.map(i=>miniItem(i)).join(''):`<div class="empty-state">Rooms you open appear here.</div>`;
   $$('#favouriteShelf [data-mini-open],#recentShelf [data-mini-open]').forEach(btn=>btn.addEventListener('click',()=>{const item=getAllItems().find(x=>x.id===btn.dataset.miniOpen)||state.recent.find(x=>x.id===btn.dataset.miniOpen);if(item)openItem(item)}));
 }
-function miniItem(item){return `<div class="mini-item"><div><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.state||item.kind||'RECENT ROUTE')}</small></div><button class="small-button" data-mini-open="${item.id}">OPEN</button></div>`}
+function miniItem(item){return `<div class="mini-item"><div><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.state||item.kind||'RECENT ROUTE')}</small></div><button class="small-button" data-mini-open="${escapeHTML(item.id)}">OPEN</button></div>`}
 function previewMounted(id){
   const item=state.mounted.find(x=>x.id===id);if(!item)return;
   if(previewUrl) URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(new Blob([item.content],{type:'text/html'}));

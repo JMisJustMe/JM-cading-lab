@@ -7,6 +7,10 @@ on:
       - '.github/workflows/validate-wave-2-jm3232-navigator-browser-bridge-v0-1.yml'
   workflow_dispatch:
 
+# Proof-only workflow: no repository write token required.
+permissions:
+  contents: read
+
 jobs:
   validate-navigator-browser-bridge:
     runs-on: ubuntu-latest

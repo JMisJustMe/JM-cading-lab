@@ -72,6 +72,27 @@ class Suite(unittest.TestCase):
     def test_symlink_blocked(self):
         (self.root/"agent-runtime"/"link.md").symlink_to(self.doc)
         self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/link.md"}),self.root,self.st),"SYMLINK")
+    def test_symlink_parent_does_not_bypass_protected_repo_path(self):
+        protected=self.root/".git"
+        protected.mkdir()
+        (protected/"config").write_text("fixture only\n")
+        alias=self.root/"agent-runtime"/"innocent-alias"
+        alias.symlink_to(protected,target_is_directory=True)
+        self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/innocent-alias/config"}),self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+    def test_symlink_parent_to_ordinary_file_is_rejected(self):
+        alias=self.root/"agent-runtime"/"other-alias"
+        alias.symlink_to(self.root/"agent-runtime",target_is_directory=True)
+        self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/other-alias/doc.md"}),self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+    def test_symlink_parent_edit_is_rejected_even_with_explicit_grant(self):
+        alias=self.root/"agent-runtime"/"other-alias"
+        alias.symlink_to(self.root/"agent-runtime",target_is_directory=True)
+        m.grant_edits(self.st,10)
+        job=self.job("edit-file",{"path":"agent-runtime/other-alias/doc.md",
+          "expected_sha256":m.sha(b"before\n"),
+          "new_text_b64":base64.b64encode(b"altered\n").decode(),
+          "confirmation":"OWNER_APPROVED_CODE_EDIT"})
+        self.assert_hold(m.safe_execute(job,self.root,self.st),"SYMLINKED_PARENT_NOT_ALLOWED")
+        self.assertEqual(b"before\n",self.doc.read_bytes())
     def test_sensitive_filename_blocked(self):
         (self.root/"agent-runtime"/"secrets.json").write_text("secret")
         self.assert_hold(m.safe_execute(self.job("read-file",{"path":"agent-runtime/secrets.json"}),self.root,self.st),"SENSITIVE_FILENAME_BLOCKED")

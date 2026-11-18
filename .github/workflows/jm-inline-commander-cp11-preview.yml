@@ -46,7 +46,7 @@ jobs:
           import assert from 'node:assert/strict';
           import { readFileSync } from 'node:fs';
           const s=readFileSync('src/managed-beta-worker-cp11-candidate.mjs','utf8');
-          assert(s.includes('registerAppTool(server, "jm-commander-contact-intent"'));
+          assert(s.includes('server.registerTool("jm-commander-contact-intent"'));
           assert(s.includes('sendFollowUpMessage'));
           assert(s.includes('play-jm-128-hand-football'));
           assert(s.includes('jm-inline-status'));

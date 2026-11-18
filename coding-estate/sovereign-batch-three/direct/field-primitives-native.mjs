@@ -45,7 +45,7 @@ export const PunctBody = {
   parse(source) {
     const puncts=[], sequences=[];
     for(const raw of String(source).split(/\r?\n/).map(line=>line.trim()).filter(Boolean)){
-      let match=raw.match(/^punct\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"])*"|'(?:\\.|[^'])*')\s+effect=([A-Za-z_][\w.-]*)$/);
+      let match=raw.match(/^punct\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')\s+effect=([A-Za-z_][\w.-]*)$/);
       if(match){ puncts.push({name:match[1],symbol:valueOf(match[2]),effect:match[3]}); continue; }
       match=raw.match(/^sequence\s+([A-Za-z_][\w.-]*)\s*=\s*\[([^\]]*)\]$/);
       if(match){ sequences.push({name:match[1],members:splitTop(match[2]).map(valueOf).map(String)}); continue; }
@@ -76,7 +76,7 @@ export const GlyphBody = {
   parse(source){
     const glyphs=[];
     for(const raw of String(source).split(/\r?\n/).map(line=>line.trim()).filter(Boolean)){
-      const match=raw.match(/^glyph\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"])*"|'(?:\\.|[^'])*')\s+pressure=([A-Za-z_][\w.-]*)\s+route=([A-Za-z_][\w.-]*)$/);
+      const match=raw.match(/^glyph\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')\s+pressure=([A-Za-z_][\w.-]*)\s+route=([A-Za-z_][\w.-]*)$/);
       need(match,'GLYPH_BAD_DECL',`Invalid GlyphBody declaration ${raw}.`);
       glyphs.push({name:match[1],symbol:valueOf(match[2]),pressure:match[3],route:match[4]});
     }

@@ -54,8 +54,8 @@ jobs:
           node-version: "22"
       - name: Install Playwright Chromium on pinned Ubuntu 24.04
         run: |
-          npm install --no-save playwright@1.54.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.54.1
+          npx --no-install playwright install --with-deps chromium
       - name: Serve original branch content over real loopback HTTP
         shell: bash
         env:

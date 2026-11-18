@@ -77,7 +77,7 @@ export const MorseMinus = {
   parse(source){
     const mappings=[];
     for(const raw of String(source).split(/\r?\n/).map(v=>v.trim()).filter(Boolean)){
-      const m=raw.match(/^morse\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"])*"|'(?:\\.|[^'])*')\s+route\s+([A-Za-z_][\w.-]*)$/);
+      const m=raw.match(/^morse\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')\s+route\s+([A-Za-z_][\w.-]*)$/);
       need(m,'MM_BAD_DECL',`Invalid MorseMinus declaration ${raw}.`);
       mappings.push({name:m[1],pattern:normalMorse(valueOf(m[2])),route:m[3]});
     }

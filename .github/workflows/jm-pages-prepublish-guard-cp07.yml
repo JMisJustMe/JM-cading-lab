@@ -43,6 +43,9 @@ jobs:
           python3 governance/estate-integration/verify_workflow_permissions_cp13.py --self-test
           python3 governance/estate-integration/verify_workflow_permissions_cp13.py
 
+      - name: Prove two-branch browser rail cannot run npm lifecycle scripts
+        run: node --test tests/jm_legacy_browser_rail_cp19.test.mjs
+
       - name: Construct actual public-site stage, never deploy
         shell: bash
         run: |

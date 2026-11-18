@@ -21,14 +21,17 @@
     return 'ready';
   }
 
+  // DOM-derived rank/symbol are text, never active HTML or attributes.
+  const safeText=value=>String(value).replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]));
   function faceMarkup(rank,symbol,suit){
+    suit=['hearts','diamonds','clubs','spades'].includes(suit)?suit:'spades';
     const court=['J','Q','K'].includes(rank);
     const royal=rank==='K'?'king':rank==='Q'?'queen':rank==='J'?'jack':'pip';
     return `<span class="card-spirit spirit-${suit} spirit-${royal}" aria-hidden="true">
       <i class="brow brow-a"></i><i class="brow brow-b"></i>
       <i class="eye eye-a"><u></u></i><i class="eye eye-b"><u></u></i>
       <i class="mouth"></i>
-      <b class="spirit-mark">${court?rank:symbol}</b>
+      <b class="spirit-mark">${safeText(court?rank:symbol)}</b>
     </span>`;
   }
 

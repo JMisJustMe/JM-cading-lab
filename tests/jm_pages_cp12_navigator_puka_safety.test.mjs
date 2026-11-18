@@ -128,3 +128,28 @@ test('Estate recent-route button IDs remain attribute-safe',()=>{
  assert.match(html,/data-mini-open="x&quot; onclick=&quot;evil\(\)"/);
  assert.doesNotMatch(html,/data-mini-open="x" onclick=/);
 });
+
+const characterSource=fs.readFileSync(path.join(root,'games-beyond/puka/puka-character-v06.js'),'utf8');
+function pukaCharacterMarkup(rank,symbol,suit){
+ const start=characterSource.indexOf('  const safeText='),end=characterSource.indexOf('  function enrichHero(',start);
+ assert.ok(start>=0&&end>start,'existing character markup source is recoverable');
+ const code=characterSource.slice(start,end);
+ const sandbox={};vm.runInNewContext(code,sandbox,{filename:'puka-original-character-v06.js',timeout:2000});
+ return vm.runInNewContext('faceMarkup('+[rank,symbol,suit].map(x=>JSON.stringify(x)).join(',')+')',sandbox);
+}
+test('PUKA original character markup safely escapes hostile card symbol',()=>{
+ const html=pukaCharacterMarkup('2','<img src=x onerror=alert(1)>','spades');
+ assert.doesNotMatch(html,/<img\b/);
+ assert.match(html,/&lt;img src=x onerror=alert\(1\)&gt;/);
+ assert.match(html,/&lt;img/);
+});
+test('PUKA original character artwork preserves suits and court glyphs',()=>{
+ const html=pukaCharacterMarkup('Q','♠','hearts');
+ assert.match(html,/spirit-hearts/);assert.match(html,/>Q</);
+ assert.doesNotMatch(html,/spirit-undefined/);
+});
+test('PUKA original character suit cannot inject HTML attributes',()=>{
+ const html=pukaCharacterMarkup('3','♥','spades" onclick="alert(1)');
+ assert.match(html,/spirit-spades/);
+ assert.doesNotMatch(html,/onclick=/);
+});

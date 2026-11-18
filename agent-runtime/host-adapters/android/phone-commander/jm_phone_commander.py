@@ -80,9 +80,16 @@ def resolved_file(root, name, write=False):
     path = root/rel
     if not path.exists() or not path.is_file() or path.is_symlink():
         raise Hold("FILE_MUST_EXIST_AND_NOT_BE_SYMLINK")
+    # Reject symlinked parent directories, even when they point inside the repo.
+    # A harmless-looking alias must not bypass prohibited canonical directories.
+    if any((root.joinpath(*rel.parts[:i])).is_symlink() for i in range(1, len(rel.parts))):
+        raise Hold("SYMLINKED_PARENT_NOT_ALLOWED")
     resolved = path.resolve(strict=True)
     if not resolved.is_relative_to(root):
         raise Hold("PATH_OUTSIDE_JM_WORKSPACE")
+    actual = resolved.relative_to(root)
+    if any(p in PROHIBITED or p.startswith(".") or p == ".." for p in actual.parts):
+        raise Hold("PROTECTED_CANONICAL_PATH")
     if path.stat().st_size > MAX_BODY:
         raise Hold("FILE_TOO_LARGE")
     return path

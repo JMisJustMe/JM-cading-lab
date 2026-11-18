@@ -9,13 +9,13 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const navSource=fs.readFileSync(path.join(root,'navigator/index.html'),'utf8');
 const pukaSource=fs.readFileSync(path.join(root,'games-beyond/puka/puka-cards-v05.js'),'utf8');
 function navigatorFixture(savedUrl) {
- const funcs=['normalizeInput','safeWebRoute','isInternal','titleFor','activateTab','openRoute'].map(n=>{
+ const funcs=['normalizeInput','safeWebRoute','isInternal','registeredPreview','titleFor','activateTab','openRoute'].map(n=>{
   const matches=navSource.split(/\r?\n/).filter(x=>x.startsWith('function '+n+'('));
   assert.equal(matches.length,1,'original function '+n);
   return matches[0];
  });
  const calls=[],frame={src:'about:blank'},note={children:[],set innerHTML(s){throw Error('Unsafe preview HTML '+s)},replaceChildren(...items){this.children=items}},document={createElement:tag=>({tagName:tag,textContent:''}),createTextNode:text=>({nodeType:3,textContent:text})},nav={activeTab:'home',tabs:[{id:'saved',url:savedUrl,title:'Saved',internal:true}],history:[],trail:[]};
- const ctx={URL,document,location:{href:'https://jmisjustme-estate.pages.dev/navigator/',origin:'https://jmisjustme-estate.pages.dev'},nav,doors:[],
+ const ctx={URL,document,location:{href:'https://jmisjustme-estate.pages.dev/navigator/',origin:'https://jmisjustme-estate.pages.dev'},nav,doors:[{name:'Non-Game Apps House',note:'Original public apps door',route:'../apps/',internal:true}],
   $:s=>s==='#previewFrame'?frame:s==='#previewNote'?note:{},toast:s=>calls.push(['toast',s]),rememberTab:s=>calls.push(['remember',s]),
   persist:()=>calls.push(['persist']),renderTabs:()=>calls.push(['renderTabs']),showView:s=>calls.push(['view',s]),
   receipt:()=>calls.push(['receipt']),renderAll:()=>calls.push(['renderAll']),
@@ -39,30 +39,48 @@ test('Navigator blocks unsafe stored tabs without opening browser or iframe',()=
  }
 });
 test('Navigator preserves legitimate internal and external saved routes',()=>{
- const a=navigatorFixture('https://jmisjustme-estate.pages.dev/access/');
+ const a=navigatorFixture('https://jmisjustme-estate.pages.dev/apps/');
  vm.runInNewContext("activateTab('saved')",a.ctx);
- assert.equal(a.frame.src,'https://jmisjustme-estate.pages.dev/access/');
+ assert.equal(a.frame.src,'https://jmisjustme-estate.pages.dev/apps/');
  const b=navigatorFixture('https://example.invalid/info');b.nav.tabs[0].internal=false;
  vm.runInNewContext("activateTab('saved')",b.ctx);
  assert.equal(b.calls.filter(x=>x[0]==='external').length,1);
 });
-test('Navigator internal preview uses text nodes for hostile route input and keeps code styling',()=>{
+test('Navigator only previews original registered Estate entrances, with text-only route label',()=>{
+ const f=navigatorFixture('/access/');
+ vm.runInNewContext("openRoute('apps')",f.ctx);
+ assert.equal(f.frame.src,'https://jmisjustme-estate.pages.dev/apps/');
+ assert.equal(f.note.children.length,2);
+ assert.equal(f.note.children[0].nodeType,3);
+ assert.equal(f.note.children[1].tagName,'code');
+ assert.equal(f.note.children[1].textContent,'../apps/');
+ assert.equal(f.calls.some(x=>x[0]==='external'),false);
+});
+test('Navigator unregistered query routes preserve full-browser access without iframe injection',()=>{
  const f=navigatorFixture('/access/');
  const url='https://jmisjustme-estate.pages.dev/games-beyond/?q=%3Csvg%20onload%3Dalert(1)%3E';
  vm.runInNewContext('openRoute('+JSON.stringify(url)+')',f.ctx);
- assert.equal(f.frame.src,url);
- assert.equal(f.note.children.length,2);
- assert.equal(f.note.children[0].nodeType,3);
- assert.equal(f.note.children[0].textContent,'Viewing an internal Estate route: ');
- assert.equal(f.note.children[1].tagName,'code');
- assert.equal(f.note.children[1].textContent,url);
- assert.equal(f.calls.some(x=>x[0]==='external'),false);
+ assert.equal(f.frame.src,'about:blank');
+ assert.equal(f.calls.some(x=>x[0]==='external'&&x[1]===url),true);
+ assert.equal(f.note.children.length,0);
 });
+test('Navigator refuses same-origin script privilege escalation in previews',()=>{
+ assert.match(navSource,/sandbox="allow-scripts allow-forms allow-popups allow-downloads"/);
+ assert.doesNotMatch(navSource,/sandbox="[^"]*allow-same-origin/);
+ assert.match(navSource,/referrerpolicy="no-referrer"/);
+});
+
 test('Navigator external URL remains external, not injected into a preview',()=>{
  const f=navigatorFixture('/access/');
  vm.runInNewContext("openRoute('https://example.invalid/route')",f.ctx);
  assert.equal(f.calls.some(x=>x[0]==='external'&&x[1]==='https://example.invalid/route'),true);
  assert.equal(f.note.children.length,0);
+});
+test('Navigator unregistered saved internal flag cannot bypass preview route allowlist',()=>{
+ const f=navigatorFixture('https://jmisjustme-estate.pages.dev/unknown/?q=<svg>');
+ vm.runInNewContext("activateTab('saved')",f.ctx);
+ assert.equal(f.frame.src,'about:blank');
+ assert.equal(f.calls.some(x=>x[0]==='external'),true);
 });
 test('Navigator preserves bounded Stringline command',()=>{
  const x=navigatorFixture('jm://stringline');vm.runInNewContext("activateTab('saved')",x.ctx);

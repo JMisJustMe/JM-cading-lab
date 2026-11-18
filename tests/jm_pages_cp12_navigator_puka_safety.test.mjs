@@ -73,3 +73,58 @@ test('PUKA escapes quotes and ampersands while preserving king card',()=>{
  assert.match(x.innerHTML,/KING/);
  assert.match(x.innerHTML,/Owner&#39;s &amp; Friends &quot;Cards&quot;/);
 });
+
+const estateSource=fs.readFileSync(path.join(root,'estate-app.js'),'utf8');
+function estateVM(entries=[]) {
+ const lines=estateSource.split(/\r?\n/);
+ const helper=(prefix)=>{
+  const found=lines.filter(x=>x.startsWith(prefix));
+  assert.equal(found.length,1,prefix);return found[0];
+ };
+ const extract=(start,end)=>{
+  const a=estateSource.indexOf(start),b=estateSource.indexOf(end,a+start.length);
+  assert.ok(a>=0&&b>a,'extract source '+start);return estateSource.slice(a,b);
+ };
+ const nodes=new Map();
+ const state={libraryQuery:'',mounted:[],favourites:new Set(),recent:[]};
+ const ctx={URL,location:{href:'https://jmisjustme-estate.pages.dev/'},state,
+  $:selector=>{if(!nodes.has(selector))nodes.set(selector,{textContent:'',innerHTML:''});return nodes.get(selector)},
+  $$:()=>[],getAllItems:()=>[],libraryEntries:()=>entries,normalise:s=>String(s||'').toLowerCase()};
+ const declarations=[
+  helper('const escapeHTML = value =>'),
+  helper('const safePublicHref ='),
+  extract('function renderLibrary(){','\nfunction renderCommand(){'),
+  extract('function renderOwner(){','\nfunction miniItem('),
+  helper('function miniItem(')
+ ];
+ vm.runInNewContext(declarations.join('\n'),ctx,{filename:'estate-app-recovered-functions.js',timeout:2500});
+ return {ctx,nodes,state};
+}
+test('Estate public library rejects javascript URL and escapes metadata',()=>{
+ const x=estateVM([{path:'javascript:alert(1)',title:'<bad>',meta:'hello',text:'sample'}]);
+ vm.runInNewContext('renderLibrary()',x.ctx);
+ const markup=x.nodes.get('#libraryResults').innerHTML;
+ assert.match(markup,/href="#"/);
+ assert.match(markup,/&lt;bad&gt;/);
+ assert.doesNotMatch(markup,/href="javascript:/);
+});
+test('Estate public library preserves legitimate relative routes',()=>{
+ const x=estateVM([{path:'./games-beyond/',title:'Games',meta:'JM',text:'route'}]);
+ vm.runInNewContext('renderLibrary()',x.ctx);
+ assert.match(x.nodes.get('#libraryResults').innerHTML,/href="\.\/games-beyond\/"/);
+});
+test('Estate Owner Room mounting escapes untrusted IDs and names',()=>{
+ const x=estateVM();
+ x.state.mounted=[{id:'q" onmouseover="alert(1)',name:'<img src=x>',bytes:256,at:'2026-11-18T00:00:00Z'}];
+ vm.runInNewContext('renderOwner()',x.ctx);
+ const html=x.nodes.get('#mountedShelf').innerHTML;
+ assert.match(html,/data-preview-local="q&quot; onmouseover=&quot;alert\(1\)"/);
+ assert.match(html,/&lt;img src=x&gt;/);
+ assert.doesNotMatch(html,/data-preview-local="q" onmouseover=/);
+});
+test('Estate recent-route button IDs remain attribute-safe',()=>{
+ const x=estateVM();
+ const html=vm.runInNewContext("miniItem({name:'Recent',id:'x\\\" onclick=\\\"evil()'})",x.ctx);
+ assert.match(html,/data-mini-open="x&quot; onclick=&quot;evil\(\)"/);
+ assert.doesNotMatch(html,/data-mini-open="x" onclick=/);
+});

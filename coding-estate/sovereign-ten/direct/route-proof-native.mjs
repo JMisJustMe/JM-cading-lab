@@ -108,7 +108,7 @@ export const RouteVM = {
       }
       instructions.push({ opcode: RVM_OPCODES.TRACE, operands: ['compiled.step', { node: node.id }] });
     }
-    const header = { schema: 'jm.routevm.bytecode/1.0', version: 1, routeName: graph.routeName };
+    const header = { schema: 'jm.routevm.bytecode/1.0', version: 1, routeName: graph.routeName, graphDigest: digest(graph) };
     const checksum = digest({ header, instructions });
     return { type: 'RVMBytecode', header: { ...header, checksum }, instructions };
   },
@@ -124,6 +124,7 @@ export const RouteVM = {
 
   execute(bytecode, graph, state = {}, services = {}) {
     this.verify(bytecode);
+    need(bytecode.header.graphDigest === digest(graph), 'RVM_GRAPH_MISMATCH', 'RouteVM graph changed since compilation.');
     need(bytecode.header.routeName === graph.routeName, 'RVM_ROUTE_MISMATCH', 'RouteVM bytecode does not match its graph.');
     const trace = new Trace('RouteVM');
     trace.emit('bytecode.verified', { route: bytecode.header.routeName, checksum: bytecode.header.checksum, instructionCount: bytecode.instructions.length });

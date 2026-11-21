@@ -92,3 +92,6 @@ console.log(JSON.stringify(out));
 
 // CP6 additive descendant: run the inherited actual native-world recipient proof.
 await import('./mission002-world-law-native-contact.mjs');
+
+// CP10 native composition must run BEFORE Playwright installation, through this proved native gate.
+await import('./mission002-cp10-multi-mechanism.mjs');

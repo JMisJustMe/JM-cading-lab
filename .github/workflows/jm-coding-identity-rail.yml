@@ -1,0 +1,33 @@
+name: JM Coding Estate Identity Rail CP01
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/current-64-identity-rail.mjs'
+      - 'coding-estate/everybody/current-64-identity-rail.test.mjs'
+      - 'coding-estate/everybody/canonical-native-v2.html'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/everybody/body-registry*.json'
+      - '.github/workflows/jm-coding-identity-rail.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/everybody/current-64-identity-rail.mjs'
+      - 'coding-estate/everybody/current-64-identity-rail.test.mjs'
+      - 'coding-estate/everybody/canonical-native-v2.html'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/everybody/body-registry*.json'
+      - '.github/workflows/jm-coding-identity-rail.yml'
+permissions:
+  contents: read
+jobs:
+  identity-rail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test coding-estate/everybody/current-64-identity-rail.test.mjs

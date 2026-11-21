@@ -28,10 +28,15 @@ function blocks(source, keyword) {
 }
 
 function integerField(body, name, fallback = null) {
-  const match = body.match(new RegExp(`\\b${name}\\s*:\\s*(-?\\d+)`, 'i'));
-  return match ? Number(match[1]) : fallback;
+  const match = body.match(new RegExp('\\b' + name + '\\s*:\\s*([^\\s,;{}]+)', 'i'));
+  if (!match) return fallback;
+  const token = match[1];
+  const value = Number(token);
+  if (!/^-?\d+$/.test(token) || !Number.isSafeInteger(value)) {
+    throw new SyntaxError(`${name} requires an exact safe integer; received ${token}.`);
+  }
+  return value;
 }
-
 function identifierField(body, name, fallback = null) {
   const match = body.match(new RegExp(`\\b${name}\\s*:\\s*([A-Za-z_][A-Za-z0-9_]*)`, 'i'));
   return match ? match[1] : fallback;

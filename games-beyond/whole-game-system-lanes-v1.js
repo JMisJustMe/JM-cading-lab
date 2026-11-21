@@ -51,13 +51,29 @@ function render(){
 var items=[],rows=originalRows();
 if(tab==='games'){
   items.push('<div class="gb26-guide"><h3>Games — existing A–Z is the game floor</h3><p>The full '+rows.length+'-record public catalogue remains directly below. Every game, descendant, family and historical hold retains its existing identity. A route only opens an actually registered carrier; private exact-source HTML stays on the owner device.</p><p><a href="#catalog">OPEN CURRENT GAME CATALOGUE</a> · <a href="./?jm-room=proof#view-proof">IMPORT EXACT ORIGINAL HTML INTO HOUSE</a></p></div>');
-  if(pack){var gameContacts=pack.records.filter(function(x){return x.kind==='game_candidate'&&match(x.name);});items.push('<p class="gb26-count">'+gameContacts.length+' owner-only game candidates from the recovered A–Z; candidates are not unique confirmed games. Switch to OWNER INDEX to inspect them and source evidence.</p>');}
+  if(pack){
+    var publicNames=new Set(rows.map(function(r){return norm(r[0]);}));
+    var groups=new Map();
+    pack.records.filter(function(r){return r.kind==='game_candidate'&&match(r.name+' '+r.evidence);}).forEach(function(r){
+      var name=norm(r.name);
+      if(!name||publicNames.has(name))return;
+      if(!groups.has(name))groups.set(name,[]);
+      groups.get(name).push(r);
+    });
+    items.push('<p class="gb26-count">'+groups.size+' additional indexed game-name display groups from the owner-local source registers. Matching titles group for navigation only: separate source identities, branches and editions are NOT merged or crowned.</p>');
+    Array.from(groups.values()).sort(function(a,b){return a[0].name.localeCompare(b[0].name);}).forEach(function(group){
+      var sources=group.map(function(x){return x.ownerIndexLayer||x.source||'owner record';});
+      var unique=Array.from(new Set(sources));
+      var proof=group.length+' separate source contact'+(group.length===1?'':'s')+' ('+unique.join(' / ')+'). Browse SOURCE / EVIDENCE for complete custody, role and version records.';
+      items.push(smallCard(group[0].name,'Indexed historical / original game-source lead. No current-head release inferred.',proof,''));
+    });
+  }
 }else if(tab==='engines'){
   ENGINES.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0],x[2],'Independent original engine family; available public edition shown when mounted; latest private head may differ.',x[1]?publicDoor(x[1]):'',x[1]?'OPEN / CREATE IN HOUSE':null));});
   if(pack){pack.engineDonors.forEach(function(x){if(match(x.name+' '+x.role+' '+x.status))items.push(smallCard(x.name,'Recovered source donor · '+x.role,'Version / donor '+x.status+'; private source not published or silently crowned.',''));});}
 }else if(tab==='loops'){
   LOOPS.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0],x[2],'A playable loop or mechanism is not automatically a whole game.',x[1]?publicDoor(x[1]):'',x[1]?'OPEN EXISTING LOOP':''));});
-  if(pack){pack.loopSources.forEach(function(x,i){var d=pack.engineDonors[x.sourceDonorIndex];var title=x.name+' · '+(d?d.name:'unresolved donor');if(match(title))items.push(smallCard(title,'Source-associated mechanism '+(i+1)+' / '+pack.loopSources.length,'Donor relationship only; no standalone playable-door claim.',''));});}
+  if(pack){pack.loopSources.forEach(function(x,i){var d=pack.engineDonors[x.sourceDonorIndex];var title=x.name+' · '+(d?d.name:(x.sourceRole||x.ownerIndexLayer||'recorded original source'));if(match(title))items.push(smallCard(title,'Source-associated mechanism '+(i+1)+' / '+pack.loopSources.length,'Donor relationship only; no standalone playable-door claim.',''));});}
 }else if(tab==='cartridges'){
   items.push('<p class="gb26-guide">These are actual separate first-party RouteOS cartridge identities. The existing Cartridge Bay is the entrance; select the cartridge there. Neither a historical version nor a source-only entry is auto-upgraded.</p>');
   CARTRIDGES.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0]+' · '+x[1],x[2],'RouteOS runtime entrance verified as source; owner physical long-play remains separate.','routeos/runtime/index.html','OPEN ROUTEOS CARTRIDGE BAY'));});
@@ -137,7 +153,7 @@ if(document.getElementById('gb26-root'))return;
 var root=document.createElement('section');root.id='gb26-root';root.setAttribute('aria-label','Full Games, Loops, Engines and owner source map');
 root.innerHTML='<style>#gb26-root{margin:14px 0;border:1px solid #5c8da7;border-radius:18px;padding:13px;background:#0a1524}#gb26-root h2{margin:0 0 7px}#gb26-root p{line-height:1.5;color:#d4e1ed}#gb26-root a{color:#8de9ff}#gb26-root button,#gb26-root select,#gb26-root input{min-height:45px;border:1px solid #52718a;border-radius:11px;background:#101f35;color:#fff;padding:8px 11px;font:inherit}#gb26-root button{cursor:pointer;font-weight:750}#gb26-root button[aria-pressed="true"]{border:2px solid #ffe08d;color:#ffe08d}#gb26-root .gb26-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}#gb26-root .gb26-search{display:flex;gap:8px;flex-wrap:wrap}#gb26-root .gb26-search input{flex:1 1 220px;min-width:0}#gb26-root .gb26-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:9px;margin-top:13px}#gb26-root .gb26-card,#gb26-root .gb26-guide{padding:13px;border:1px solid #385273;border-radius:12px;background:#101b2d}#gb26-root .gb26-card h3{margin:0;font-size:1rem}#gb26-root .gb26-card p{margin:7px 0;font-size:.8rem}#gb26-root .gb26-proof{color:#afc0d0}#gb26-root .gb26-card a{display:inline-flex;min-height:42px;align-items:center}#gb26-root .gb26-hold{font-size:.72rem;color:#ffcf95}#gb26-root .gb26-count{font-weight:700}#gb26-root .gb26-privacy{font-size:.76rem}</style>'+
 '<h2>All games · playable loops · original game engines</h2><p id="gb26-summary">Reading the existing Game House…</p><p class="gb26-privacy">One entrance, separate originals. Public rooms, owner-local sources, version cartridges and evidence stay distinguishable. Import does not send files to a server or auto-publish games.</p>'+
-'<div class="gb26-tabs" role="group" aria-label="JM game system lanes"><button type="button" data-gb26-tab="games">GAMES</button><button type="button" data-gb26-tab="loops">PLAYABLE LOOPS</button><button type="button" data-gb26-tab="engines">GAME ENGINES</button><button type="button" data-gb26-tab="cartridges">VERSIONS / CARTRIDGES</button><button type="button" data-gb26-tab="owner">OWNER SOURCE INDEX</button></div>'+
+'<div class="gb26-tabs" role="group" aria-label="JM game system lanes"><button type="button" data-gb26-tab="games">GAMES</button><button type="button" data-gb26-tab="loops">PLAYABLE LOOPS</button><button type="button" data-gb26-tab="engines">GAME ENGINES</button><button type="button" data-gb26-tab="cartridges">VERSIONS / CARTRIDGES</button><button type="button" data-gb26-tab="owner">SOURCE / EVIDENCE</button></div>'+
 '<div class="gb26-search"><input id="gb26-query" type="search" placeholder="Find a game, mechanic, engine, original, version…" aria-label="Search chosen game lane"><select id="gb26-kind" hidden aria-label="Owner index record type"><option value="all">All source records</option><option value="game_candidate">Game candidates</option><option value="loop_candidate">Loop candidates</option><option value="engine_candidate">Engine candidates</option><option value="source_evidence">Supporting source/evidence</option></select><button type="button" id="gb26-import">IMPORT OWNER SOURCE INDEX · LOCAL</button><button type="button" id="gb26-clear" title="Clears only this browser’s cached owner index, never the original source file">UNLOAD LOCAL INDEX</button><input id="gb26-file" type="file" accept=".json,application/json" hidden></div>'+
 '<p id="gb26-message" role="status" aria-live="polite" class="gb26-privacy">Your original HTML source continues to mount through the existing Games House importer.</p>'+
 '<div id="gb26-grid" class="gb26-grid" aria-live="polite"></div>';

@@ -1,0 +1,44 @@
+name: JM Guider CP05 public-safe contact
+on:
+  push:
+    branches: [feat/jm-guider-cp05-contactive-governed-source-20261027]
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths: ['jm-guider/cp05/**', '.github/workflows/jm-guider-cp05-public.yml']
+jobs:
+  verify-public-contact:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Registered-source contact cycles
+        run: |
+          python - <<'PY'
+          import importlib.util, tempfile, pathlib, json, hashlib
+          src='jm-guider/cp05/contactive_public_probe.py'
+          spec=importlib.util.spec_from_file_location('public_probe',src)
+          mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+          passed=0
+          for i in range(32):
+              with tempfile.TemporaryDirectory() as td:
+                  root=pathlib.Path(td)
+                  (root/'index.html').write_text('<script src="app.js"></script>')
+                  (root/'app.js').write_text('export const count='+str(i))
+                  data=mod.observe(root,['index.html','app.js'])
+                  assert data['state']=='BOUNDED_CONTACT'
+                  assert len(data['links'])==1 and data['links'][0]['target']=='app.js'
+                  assert data['mutation_performed'] is False
+                  assert data['registered'][0]['sha256']==hashlib.sha256((root/'index.html').read_bytes()).hexdigest()
+                  (root/'index.html').write_text('<script src="missing.js"></script>')
+                  assert mod.observe(root,['index.html','app.js'])['state']=='HOLD'
+                  try:mod.observe(root,['../index.html'])
+                  except ValueError:pass
+                  else:raise AssertionError('path escape accepted')
+                  passed+=1
+          print('JM GUIDER CP05 LIVE REMOTE',passed,'/ 32 independent registered-source cycles PASS')
+          PY

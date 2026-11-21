@@ -82,7 +82,7 @@ a{color:var(--aqua)}.footer{margin:12px 0;color:var(--muted);font-size:.67rem;li
 "use strict";
 const core=window.JM_CREWBOUND_321_SIM,{Game,ROSTER}=core,canvas=document.getElementById("arena"),ctx=canvas.getContext("2d");
 const $=id=>document.getElementById(id);
-let game=new Game(321),paused=false,last=performance.now(),startPointer=null,rerenderAt=0;
+let game=new Game(321),paused=false,started=false,last=performance.now(),startPointer=null,rerenderAt=0;
 const Art=window.JM_CREWBOUND_321_ART;
 const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
 function screenPos(ev){
@@ -129,14 +129,14 @@ function updateUI(){
  $("myhp").textContent=Math.round(my.reduce((s,u)=>s+u.hp,0))+" HP";
  $("theirhp").textContent=Math.round(rivals.reduce((s,u)=>s+u.hp,0))+" HP";
  $("turn").textContent="GO "+game.turn;
- $("phase").textContent=game.ended?(game.winner==="player"?"VICTORY":"RIVAL WON"):game.resolve>0?"LIVE "+game.resolve.toFixed(1)+"s":"CHOOSE × 2";
+ $("phase").textContent=game.ended?(game.winner==="player"?"VICTORY":"RIVAL WON"):!started?"READY · PICK 2":game.resolve>0?"LIVE "+game.resolve.toFixed(1)+"s":"CHOOSE × 2";
  $("pair").textContent=game.selected.length+" / 2 READY";
  $("clock").textContent=String(Math.floor(game.time/60)).padStart(2,"0")+":"+String(Math.floor(game.time%60)).padStart(2,"0");
  $("formation").textContent="FLOOR "+game.floor("player").length+" · YARD "+game.yard("player").length+" · FLEX "+(game.flex("player")?1:0);
  $("commit").disabled=game.ended||game.resolve>0||game.selected.length!==2||!game.target;
  $("dice").disabled=game.ended||game.resolve>0;
  $("dice").textContent=game.die?"🎲 "+game.die:"🎲 ROLL";
- $("fieldHelp").textContent=game.ended?"Battle finished · rematch to continue":game.resolve>0?"Both crews execute their plans now":game.target?"Target set · commit your two orders":"Tap two fighters, then tap or flick a target";
+ $("fieldHelp").textContent=game.ended?"Battle finished · rematch to continue":game.resolve>0?"Both crews execute their plans now":game.target?"Target set · commit your two orders":!started?"Clock starts on your first COMMIT PAIR · choose two fighters and a target":"Tap two fighters, then tap or flick a target";
  const rec=game.log.slice(-2).reverse().map(x=>x.type+" · "+(x.body||x.from||x.player?.join(" + ")||"")).join(" | ");
  $("log").textContent=rec||"Planning continues while the rival moves.";
  makeRoster();
@@ -148,9 +148,9 @@ $("modes").addEventListener("click",e=>{
  updateUI();
 });
 $("dice").onclick=()=>{game.roll();updateUI()};
-$("commit").onclick=()=>{game.commit();updateUI()};
+$("commit").onclick=()=>{if(game.commit())started=true;updateUI()};
 $("pause").onclick=()=>{paused=!paused;$("pause").textContent=paused?"▶ RESUME":"Ⅱ PAUSE";updateUI()};
-$("reset").onclick=()=>{game=new Game(Math.floor(performance.now())>>>0);paused=false;$("pause").textContent="Ⅱ PAUSE";updateUI()};
+$("reset").onclick=()=>{game=new Game(Math.floor(performance.now())>>>0);started=false;paused=false;$("pause").textContent="Ⅱ PAUSE";updateUI()};
 function drawFighter(u){
  const f=ROSTER[u.key],col=f.palette[0];
  if(u.selected){ctx.save();ctx.strokeStyle="#fff2a8";ctx.lineWidth=4;ctx.beginPath();ctx.arc(u.x,u.y,45,0,Math.PI*2);ctx.stroke();ctx.restore()}
@@ -183,7 +183,7 @@ function paint(){
 }
 function frame(ts){
  const dt=Math.min(.035,(ts-last)/1000||.016);last=ts;
- if(!paused)game.step(dt);
+ if(!paused&&started)game.step(dt);
  paint();if(ts-rerenderAt>180){updateUI();rerenderAt=ts}
  requestAnimationFrame(frame);
 }

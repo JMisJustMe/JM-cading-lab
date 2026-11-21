@@ -47,6 +47,28 @@ var r=originalRows();
 var summary=document.getElementById('gb26-summary');
 if(summary)summary.textContent=r.length+' public catalogue rows · '+ENGINES.length+' identified engine families · '+LOOPS.length+' public loop leads · '+CARTRIDGES.length+' RouteOS cartridges'+(pack?' · '+pack.records.length+' owner source records / '+pack.loopSources.length+' donor-associated loop records locally loaded':' · private source index not imported');
 }
+// CP30 typed doors are taken only from the owner-imported source register.
+function sourceDoor(r){
+ if(!r)return {url:'',edit:'',verb:'',proof:''};
+ var status=String(r.routeEvidence||r.playability||'');
+ var url=String(r.publicPlayRef||(Array.isArray(r.publicSourceRefs)?r.publicSourceRefs[0]:'')||'');
+ var edit=String(r.publicEditRef||'');
+ var allowed=function(x){return /^https:\/\/jmisjustme\.github\.io\/JM-cading-lab\//.test(x)&&!/[\u0000-\u001f<>\\"']/.test(x);};
+ if(!allowed(url))return {url:'',edit:'',verb:'',proof:'No source-confirmed public player carrier; import exact original HTML locally.'};
+ if(status==='EXACT_SOURCE_LINKED_PUBLIC_HOUSE_MOUNT')
+   return {url:url,edit:allowed(edit)&&edit.includes('?jm-edit=')?edit:'',
+    verb:'OPEN EXISTING HOUSE MOUNT',proof:'Original CP12 source-linked mounted edition. This is not a full-game or device acceptance.'};
+ if(status==='LINKED_HTTP200_HTML_NOT_GAMEPLAY_ACCEPTANCE')
+   return {url:url,edit:'',verb:'INSPECT LINKED HTML CANDIDATE',
+    proof:'Original CP12 linked HTML route; game-start, edit and present-day site status not established.'};
+ return {url:'',edit:'',verb:'',proof:'No verified playable carrier for this source seat.'};
+}
+function groupDoor(arr){
+ var exact=arr.find(function(x){return (x.routeEvidence||x.playability)==='EXACT_SOURCE_LINKED_PUBLIC_HOUSE_MOUNT'&&sourceDoor(x).url;});
+ if(exact)return sourceDoor(exact);
+ var candidate=arr.find(function(x){return (x.routeEvidence||x.playability)==='LINKED_HTTP200_HTML_NOT_GAMEPLAY_ACCEPTANCE'&&sourceDoor(x).url;});
+ return sourceDoor(candidate||null);
+}
 function match(s){return !query||norm(s).includes(norm(query));}
 function render(){
 var items=[],rows=originalRows();
@@ -66,7 +88,9 @@ if(tab==='games'){
       var sources=group.map(function(x){return x.ownerIndexLayer||x.source||'owner record';});
       var unique=Array.from(new Set(sources));
       var proof=group.length+' separate source contact'+(group.length===1?'':'s')+' ('+unique.join(' / ')+'). Browse SOURCE / EVIDENCE for complete custody, role and version records.';
-      items.push(smallCard(group[0].name,'Indexed historical / original game-source lead. No current-head release inferred.',proof,''));
+      var route=groupDoor(group);
+      items.push(smallCard(group[0].name,'Indexed historical / original game-source lead. No current-head release inferred.',
+        proof+' '+(route.proof||''),route.url,route.verb,route.edit));
     });
   }
 }else if(tab==='engines'){
@@ -74,7 +98,13 @@ if(tab==='games'){
   if(pack){pack.engineDonors.forEach(function(x){if(match(x.name+' '+x.role+' '+x.status))items.push(smallCard(x.name,'Recovered source donor · '+x.role,'Version / donor '+x.status+'; private source not published or silently crowned.',''));});}
 }else if(tab==='loops'){
   LOOPS.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0],x[2],'A playable loop or mechanism is not automatically a whole game.',x[1]?publicDoor(x[1]):'',x[1]?'PLAY EXISTING LOOP':'',x[1]?publicEditDoor(x[1]):null));});
-  if(pack){pack.loopSources.forEach(function(x,i){var d=pack.engineDonors[x.sourceDonorIndex];var title=x.name+' · '+(d?d.name:(x.sourceRole||x.ownerIndexLayer||'recorded original source'));if(match(title))items.push(smallCard(title,'Source-associated mechanism '+(i+1)+' / '+pack.loopSources.length,'Donor relationship only; no standalone playable-door claim.',''));});}
+  if(pack){pack.loopSources.forEach(function(x,i){var d=pack.engineDonors[x.sourceDonorIndex];
+    var source=x.sourceRecordId?pack.records.find(function(r){return r.id===x.sourceRecordId;}):null;
+    var door=sourceDoor(source);
+    var title=x.name+' · '+(d?d.name:(x.sourceRole||x.ownerIndexLayer||'recorded original source'));
+    if(match(title))items.push(smallCard(title,'Source-associated mechanism '+(i+1)+' / '+pack.loopSources.length,
+      'Donor relationship not a new game. '+door.proof,door.url,door.verb,door.edit));
+  });}
 }else if(tab==='cartridges'){
   items.push('<p class="gb26-guide">These are actual separate first-party RouteOS cartridge identities. The existing Cartridge Bay is the entrance; select the cartridge there. Neither a historical version nor a source-only entry is auto-upgraded.</p>');
   CARTRIDGES.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0]+' · '+x[1],x[2],'RouteOS runtime entrance verified as source; owner physical long-play remains separate.','routeos/runtime/index.html','OPEN ROUTEOS CARTRIDGE BAY'));});
@@ -87,7 +117,12 @@ if(tab==='games'){
     var names=new Set(rows.map(function(x){return norm(x[0]);}));
     var list=pack.records.filter(function(x){return (kind==='all'||x.kind===kind)&&match(x.name+' '+x.evidence);});
     items.push('<p class="gb26-count">'+list.length+' matching original source headings; '+pack.records.length+' retained. Direct catalogue matches keep their existing playable records instead of being doubled.</p>');
-    list.slice(0,500).forEach(function(x){var direct=names.has(norm(x.name));items.push(smallCard(x.name,(x.kind||'source_evidence').replace(/_/g,' ')+' · source record '+x.recordOrdinal+' · '+(x.ownerIndexLayer||'owner local'),direct?'Existing public catalogue identity matched; this is additional source context.':'Unreconciled source reference: not independently crowned as a new game.',(x.publicSourceRefs||[]).find(function(u){return /^https:\/\/(github\.com|jmisjustme\.github\.io)\//.test(u);})||'',direct?'OPEN REFERENCE':'VIEW CITED PUBLIC SOURCE'));});
+    list.slice(0,500).forEach(function(x){
+      var direct=names.has(norm(x.name)),route=sourceDoor(x);
+      items.push(smallCard(x.name,(x.kind||'source_evidence').replace(/_/g,' ')+' · source record '+x.recordOrdinal+' · '+(x.ownerIndexLayer||'owner local'),
+        (direct?'Existing public catalogue identity matched; additional source contact retained. ':'Unreconciled source record; not a newly crowned game. ')+route.proof,
+        route.url,route.verb,route.edit));
+    });
   }
 }
 var el=document.getElementById('gb26-grid');

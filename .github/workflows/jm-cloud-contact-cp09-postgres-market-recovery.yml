@@ -1,0 +1,61 @@
+name: JM CP09 Genuine Market PostgreSQL Cold Recovery
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/market-postgres-*'
+      - '.github/workflows/jm-cloud-contact-cp09-postgres-market-recovery.yml'
+      - 'docs/JM_CLOUD_CONTACT_CP09_MARKET_POSTGRES_RECOVERY.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-postgres-market-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: cp09_test_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      JM_CP09_CI_TEST_DATABASES: YES_ONLY_DISPOSABLE
+    steps:
+      - name: Read-only checkout of draft JM adapter source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22 test runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install public PostgreSQL client utilities
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          pg_dump --version
+          pg_restore --version
+      - name: Verify pure JS guard and cryptographic custody tests
+        run: |
+          node --check agent-runtime/host-adapters/jm-operated-host/market-postgres-cold.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/market-postgres-integration.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/market-postgres-cold.test.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/recipient-custody.test.mjs
+      - name: Actual PostgreSQL v16 logical dump encrypted restore on isolated disposable databases
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/market-postgres-integration.mjs \
+            "$RUNNER_TEMP/JM_CP09_REAL_POSTGRES_TEST_RECEIPT.json"
+      - name: Archive bounded test receipt only; never database data, archive, private key, or password
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP09_REAL_POSTGRES_TEST_RECEIPT
+          path: ${{ runner.temp }}/JM_CP09_REAL_POSTGRES_TEST_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 14

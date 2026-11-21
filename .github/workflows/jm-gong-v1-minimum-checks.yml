@@ -1,0 +1,64 @@
+name: JM GONG v1.0 CP06 — post-merge bounded minimum checks
+on:
+  pull_request:
+    paths:
+      - 'tools/gong/**'
+      - '.github/workflows/jm-gong-v1-minimum-checks.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/gong/**'
+      - '.github/workflows/jm-gong-v1-minimum-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+
+jobs:
+  gong-cp06-minimum:
+    name: Source-only CP06 minimum checks; owner/device proof separate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original CP03-CP06 public test suites
+        run: |
+          set -euo pipefail
+          node --test tools/gong/tests/gong_cp03.test.js
+          node --test tools/gong/tests/gong_scope_cp04.test.js
+          node --test tools/gong/tests/gong_family_cp05.test.js
+          node --test tools/gong/tests/gong_auto_checks_cp06.test.js
+      - name: Generate exact-source CP03 through CP06 bounded receipts
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p gong-cp06-output
+          node tools/gong/gong_ci_cp03.js --base "$BASE_SHA" --head "$HEAD_SHA" --json gong-cp06-output/cp03.json
+          node tools/gong/gong_scope_request_cp04.js --advisory gong-cp06-output/cp03.json --json gong-cp06-output/cp04.json
+          node tools/gong/gong_family_plan_cp05.js --input gong-cp06-output/cp04.json --json gong-cp06-output/cp05.json
+          node tools/gong/gong_auto_checks_cp06.js --cp03 gong-cp06-output/cp03.json --cp05 gong-cp06-output/cp05.json --json gong-cp06-output/cp06.json
+      - name: Declare actual bounds for post-merge main and manual runs
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "CP06_PUBLIC_SOURCE_TESTS_ONLY=PASS" >> "$GITHUB_STEP_SUMMARY"
+          echo "OWNER_DEVICE_RUN=NOT_PERFORMED" >> "$GITHUB_STEP_SUMMARY"
+          echo "OWNER_PRIVATE_EVIDENCE=NOT_IMPORTED" >> "$GITHUB_STEP_SUMMARY"
+          echo "RELEASE_AUTHORIZED=FALSE" >> "$GITHUB_STEP_SUMMARY"
+          echo "MERGE_SHA=${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve non-authoritative PR source receipts
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-gong-cp06-public-minimum-receipt
+          path: gong-cp06-output/
+          retention-days: 14
+          if-no-files-found: error

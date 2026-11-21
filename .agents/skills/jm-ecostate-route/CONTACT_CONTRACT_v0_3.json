@@ -1,0 +1,35 @@
+{
+  "schema": "JM.AgentSkillContactFace/0.3",
+  "name": "jm-ecostate-route",
+  "version": "0.3.0",
+  "authority_class": "READ_ONLY_HOST_FACE_NOT_CURRENT_HEAD_OR_CODING_RUNTIME",
+  "preexisting_instruction": "AGENTS.md",
+  "runtime_python": "agent-runtime/jm_agent_runtime.py",
+  "runtime_node": "agent-runtime/jm-agent-runtime.mjs",
+  "permissions": {
+    "read_existing_repo": true,
+    "mutate_existing_repo": false,
+    "deploy": false,
+    "merge": false,
+    "install_external": false,
+    "publish_private_documents": false
+  },
+  "proof_boundaries": {
+    "repo_carrier": "TESTABLE_IN_CI",
+    "runtime_function": "TESTABLE_IN_CI",
+    "agent_discovery": "OPEN",
+    "codex_host_contact": "OPEN",
+    "owner_device": "OPEN",
+    "target_consequence": "OPEN"
+  },
+  "status_rules": {
+    "route_candidate": "HELD",
+    "no_candidate": "HELD",
+    "mismatch": "BUGG",
+    "ding": "UNAVAILABLE_WITH_THIS_GATE"
+  },
+  "donor_inspiration": "https://github.com/virgiliojr94/book-to-skill",
+  "upstream_executable_copied": false,
+  "recovery": "Restore last-known-good main; discard unmerged draft branch.",
+  "keeper": "CHANGE THE PLUG, NOT THE BODY · NO DING, NO CLAIM"
+}

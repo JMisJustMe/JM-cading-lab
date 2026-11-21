@@ -203,3 +203,17 @@ A **real OPPO CPH2305 running Android Chrome 157** was contacted via GroundZeroJ
 - The actual-device synthetic-touch attempt was **NOT accepted**: normal Playwright tap was unavailable in the attached Chrome context, and a later low-level touch attempt hung while the OPPO was dozing. The test process was stopped; its temporary ADB reverse mapping, Chrome debugging forward and test tab were removed without touching pre-existing device bridges or the user's other tabs.
 
 **Scope:** physical OPPO Chrome layout DOM PASS, not a complete gameplay run, physical finger-touch acceptance, native installed app, Fold8 verification or public GitHub Pages proof. All original source/game files, private indexes and version ancestry were preserved.
+
+## CP32 — All games, not 24: correct the default native House view
+
+The **24** from CP30 measures *public route references only* (11 exact linked House mounts + 13 linked HTML candidates). It has never measured the whole JM collection. No games were deleted or excluded to reach 24.
+
+Existing GroundZeroJM original `GamesBeyond/EngineDoor` already draws from the 438 source-seat register; its source register has **212 distinct records tagged GAMES (165), ENGINES (33), or LOOPS (18)** without multi-tag double counting.
+
+The **actual original native Windows category/action audit** after load confirms **ALL 467**, **GAMES 178**, **ENGINES 47**, **LOOPS 24**, **BEYOND 231**, **HOLDS 196** in its role filters. These are overlapping source/native/version/hold entries, **not 467 independent playable games**. Windows CP12 audit also passed native Play/Edit route tests and rejected false Play/Edit for source-only entries.
+
+CP32 safely repaired that **same original Windows Engine Door in place**, not a parallel House: `ALL` is now the default and first selector option; the visible counter is calculated from the real native source array, and the explanatory text states that public links are only some of the doors. Source changes were hash-guarded and backed up privately to `SourceIndexSnapshots/CP32_BEFORE_ALL_DEFAULT` in the original EngineDoor. Original game HTML, engines, edition lineage and custody unchanged.
+
+Both edited PowerShell scripts parse cleanly. The same headless Windows WPF category/Play/Edit audit finished `CP12_WHOLE_CATEGORY_LANES_PASS` and `CP07_AUDIT_READY` after CP32, without opening an owner-facing duplicate window or claiming physical Fold8 use.
+
+The browser House public catalogue (currently 143 public source-array rows) remains a **public-facing subset**; the owner-only local index has 495 source/evidence rows and is not published. This preserves independent original creations and privacy rather than exposing their archive merely to claim a higher number. PR remains unmerged.

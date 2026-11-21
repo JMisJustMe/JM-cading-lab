@@ -191,3 +191,15 @@ The **single private owner import** for CP30 is already on GroundZeroJM at `Docu
 It carries forward the full CP29 495-source-record body and adds only typed public route evidence derived from CP12. CP29 and CP12 remain unchanged. Do not commit this JSON to a public repo.
 
 **Verification:** 30/30 bounded Edge mobile emulation checks PASS at 390×844, covering five lanes, actual emulated touch activation, owner-local index import and persistence, pagination/search, exact House Play/Edit link rendering, source-only candidate labelling, no fake door for a held title, and no observed JS errors or outbound browser requests. A fresh HTTP HEAD sweep returned **200 for all 21 distinct known public URLs** referenced by the 24 CP12 route records. HTTP 200 is only connectivity, **not** proof of game controls, gameplay, correct version or physical-device acceptance. The public site is not changed until the protected draft is separately approved for release.
+
+## CP31 — Physical OPPO Chrome width correction (21 November 2026)
+
+A **real OPPO CPH2305 running Android Chrome 157** was contacted via GroundZeroJM's existing approved ADB Wi-Fi and Chrome debugging access, using a disposable laptop localhost preview of this review-branch catalogue. No owner-private source index was served to the device, no new game was installed and no public release was made.
+
+- Initial actual Android viewport: **360 CSS px**, with **691px page scrollWidth**; the catalogue was horizontally overflowing. Desktop headless emulation had not caught the original flaw.
+- Existing catalogue CSS repaired in-place on the protected review branch, constraining its nested card-grid tracks and child flex/text widths, preserving independent game identities and entries.
+- Real OPPO Chrome re-inspection after repair: **360 CSS px viewport / 360px document scrollWidth**. The filter buttons remain a separate intentional horizontal scroll region.
+- Post-fix GroundZeroJM local Edge 390×844 regression: **30/30 bounded Play/Edit/source-index/navigation checks PASS**, no reported page JS errors.
+- The actual-device synthetic-touch attempt was **NOT accepted**: normal Playwright tap was unavailable in the attached Chrome context, and a later low-level touch attempt hung while the OPPO was dozing. The test process was stopped; its temporary ADB reverse mapping, Chrome debugging forward and test tab were removed without touching pre-existing device bridges or the user's other tabs.
+
+**Scope:** physical OPPO Chrome layout DOM PASS, not a complete gameplay run, physical finger-touch acceptance, native installed app, Fold8 verification or public GitHub Pages proof. All original source/game files, private indexes and version ancestry were preserved.

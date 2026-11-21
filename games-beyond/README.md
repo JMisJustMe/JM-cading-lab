@@ -147,3 +147,19 @@ The **existing** Games & Beyond House and native Windows EngineDoor remain the e
 **Proof:** Original Windows host audit-only 21 November exit code 0, showing CP12 438 roster seats and 65 new CP24 version-cartridge bindings (56 browser-booted and 9 holds; prior editions were reused). Independent bounded CP26 Microsoft Edge 390×844 headless local-loopback test: 21/21 assertions PASS, including CP12 and CP24 imports, Play/Edit link presence, local persistence, no page JavaScript errors and no external requests. Test receipt and review files remain in a disposable owner-local WorkingEditions review folder. The local browser test is **not** GitHub Pages deployment, a full campaign/playthrough, physical Fold8 acceptance, owner acceptance or source writeback.
 
 **Custody gate:** Never publish the owner-private JSON, game/engine source versions, original Windows paths or family-only creations to the public GitHub repository. The existing independent original source houses remain authoritative. No automatic merge or release.
+
+
+## CP28 — One private index, one Games House entrance (21 November 2026)
+
+The owner-local existing **GroundZeroJM GamesBeyond/EngineDoor** now has one import-ready
+\`JM.GamesBeyondOwnerSourcePack/1.0\` file compiled from the preserved CP12 and CP24
+source registers. This is **metadata**, not a new game host or copies of original HTML.
+
+- 438 CP12 historical source seats + 40 CP24 exact-version source families = **478 traceable records**; some refer to the same creative lineage, so these are **not** 478 independent games.
+- CP24 retains **81 separately hashed HTML editions** as references, without publishing them.
+- **48 engine-source references** and **23 loop-source references** include possible overlapping donor relationships. No source-only reference is labelled a playable launch.
+- The original public catalogue still displays **143** reviewed records; further source seats appear after owner-local import and are not silently uploaded to this public repository.
+
+To use it in the existing House, open **Games&Beyond → CATALOGUE → SOURCE / EVIDENCE → IMPORT OWNER SOURCE INDEX · LOCAL** and select the **CP28 all-games/loops/engines private owner-import JSON** already generated in your original EngineDoor folder. The owner index remains in that browser profile's local storage; a different browser or physical phone requires its own approved file selection. Do not upload the private JSON to public GitHub or a website.
+
+Verification: original source roster SHA-256 and owner pack SHA-256 recorded in the private CP28 receipt; **24/24 bounded Microsoft Edge mobile-emulation checks PASS** at 390×844 against the review-branch catalogue. Checked five touch-selected lanes, local import, indexed results, on-demand pagination, filtering, browser-profile reload/persistence and absence of page JavaScript errors / outbound browser requests. **Not** a full gameplay audit, CI approval, deployed-site proof or owner Fold8 acceptance. This change is in a protected draft PR and is **not** merged.

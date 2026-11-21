@@ -41,3 +41,24 @@ jobs:
         run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
       - name: Test optional scoped-memory contact against JM sovereign core
         run: python3 -m unittest discover -s agent-runtime/host-adapters/scoped_memory -p 'test_*.py' -v
+
+  scoped-memory-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Verify original JM core and cross-platform memory contact
+        shell: pwsh
+        env:
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: '1'
+        run: |
+          python -m unittest discover -s agent-runtime/host-adapters/scoped_memory -p 'test_*.py' -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

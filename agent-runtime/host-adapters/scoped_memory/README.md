@@ -45,7 +45,7 @@ JM's implementation is new Python standard-library code. Cindy code was **not co
 
 **Entrypoint:** `agent-runtime/host-adapters/scoped_memory/jm_scoped_memory_host.py`
 
-This is a **real local POSIX process route** (Linux/macOS): a CLI executable whose every operation invokes the exact, pre-existing `codex-repository-agent/jm_codex_repository_adapter.py`. That existing adapter executes `jm_agent_runtime.py` against the original JM canonical contracts. This face then mounts the v0.1 scoped-memory sidecar. It is not the live proprietary Codex or Claude Code app.
+This is a **real local repository-process route** (Linux/macOS/Windows): a CLI executable whose every operation invokes the exact, pre-existing `codex-repository-agent/jm_codex_repository_adapter.py`. That existing adapter executes `jm_agent_runtime.py` against the original JM canonical contracts. This face then mounts the v0.1 scoped-memory sidecar. It is not the live proprietary Codex or Claude Code app.
 
 From inside the JM Git repository:
 
@@ -65,7 +65,7 @@ python3 agent-runtime/host-adapters/scoped_memory/jm_scoped_memory_host.py list
 
 Responses include the **original JM adapter core SHA-256**, durable note revision/digest, proof jurisdiction, and returned state. `write` confirms a real post-commit readback before reporting success. The default store is `$XDG_STATE_HOME/jm-ecostate/scoped-memory`, or `~/.local/state/jm-ecostate/scoped-memory`, outside the repository. It is not uploaded to GitHub. Owner/workspace is derived from the runtime, **not** the `--harness` label (which is telemetry only).
 
-A POSIX `flock` across CLI processes protects read-modify-write and readback on local filesystems. This additional bound is **not** a claim about distributed locks, hostile local-user access, NFS, cross-device sync, Windows, live AI provider authentication or owner-phone use. The underlying v0.1 sidecar remains unchanged.
+A POSIX `flock` or Windows `msvcrt.locking` across CLI processes protects read-modify-write and readback on local filesystems. Windows owner scope is bound to the operating-system user SID; POSIX scope uses the UID. This additional bound is **not** a claim about distributed locks, hostile local-user access, NFS, cross-device sync, live AI provider authentication or owner-phone use. The Windows path was locally exercised on GroundZeroJM; the independent GitHub Actions Windows runner remains unverified until its workflow actually runs. The underlying v0.1 sidecar remains unchanged.
 
 Run repository-level contact and inherited conformance:
 

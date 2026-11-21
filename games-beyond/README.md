@@ -163,3 +163,17 @@ source registers. This is **metadata**, not a new game host or copies of origina
 To use it in the existing House, open **Games&Beyond → CATALOGUE → SOURCE / EVIDENCE → IMPORT OWNER SOURCE INDEX · LOCAL** and select the **CP28 all-games/loops/engines private owner-import JSON** already generated in your original EngineDoor folder. The owner index remains in that browser profile's local storage; a different browser or physical phone requires its own approved file selection. Do not upload the private JSON to public GitHub or a website.
 
 Verification: original source roster SHA-256 and owner pack SHA-256 recorded in the private CP28 receipt; **24/24 bounded Microsoft Edge mobile-emulation checks PASS** at 390×844 against the review-branch catalogue. Checked five touch-selected lanes, local import, indexed results, on-demand pagination, filtering, browser-profile reload/persistence and absence of page JavaScript errors / outbound browser requests. **Not** a full gameplay audit, CI approval, deployed-site proof or owner Fold8 acceptance. This change is in a protected draft PR and is **not** merged.
+
+
+## CP29 — Historical M002 gap reconciliation (21 November 2026)
+
+Owner-private M002 history (2,264 **registered identities, not 2,264 software files**) was cross-checked with the existing CP28 478-source-record importer. **341** historical GAME / GAME ENGINE-category entries were checked; **323** title matches were already represented, and 18 exact-title differences were preserved as follows:
+
+- **17** engine/archive title references were added as **source evidence only**, not new verified engines or release authority.
+- **One private family-related game lead remains protected in its original source register**. It is **not** included in the general House importer or published here.
+
+The resulting owner-only single-import index has **495 evidence/source rows**; it preserves the CP12 438 seats, CP24 40 version families, 81 source edition references, and their original associations. **495 is not a count of finished games or independent systems.** The earlier CP28 index and the M002 register remain intact as independent sources.
+
+GroundZeroJM private output: \`Documents\JM_ECOSTATE\GamesBeyond\EngineDoor\CP29_OWNER_ONE_IMPORT_GAMES_LOOPS_ENGINES_PRIVATE.json\`. It is an owner-local file, never a GitHub asset. Import it via existing **CATALOGUE → SOURCE / EVIDENCE → IMPORT OWNER SOURCE INDEX · LOCAL** when the reviewed House changes have been made available by the owner-approved release process.
+
+CP29 owner-only QA: **24/24 PASS** in the same bounded Edge 390×844 local mobile-emulation harness, including source import, five touch navigation lanes, search, on-demand pagination, persistence after reload, and absence of JS errors/outbound browser requests. The exact test and receipts remain privately on GroundZeroJM. Physical device, public deployment, individual full gameplay and release acceptance remain separate unpassed gates.

@@ -23,7 +23,7 @@
 .bodyitem p{font-size:.87rem;color:#b5c6d7;line-height:1.45;overflow-wrap:anywhere}
 .bodyitem small{display:block;color:#98b7d0;margin-top:8px;overflow-wrap:anywhere}
 .bodyitem a{color:#98efff;font-weight:800}.bodyitem a.owner-edit{display:inline-block;margin-top:10px;padding:6px 9px;border:1px solid #456e69;border-radius:9px;color:#a5f4c5;text-decoration:none;font-size:.8rem}.bodyitem a.owner-edit:hover{border-color:#a5f4c5}.bodyitem a.app-source-edit{display:block;margin-top:9px;padding:7px 9px;border:1px solid #47716d;border-radius:9px;color:#b4ffdf;font-size:.78rem;text-decoration:none}.bodyitem a.app-source-edit:hover{border-color:#b4ffdf}.bodyitem a.local-edit{display:block;margin-top:10px;padding:8px 9px;border:1px solid #6277a5;border-radius:9px;color:#bad4ff;text-decoration:none;font-size:.8rem}.bodyitem a.local-edit:hover{border-color:#bad4ff}
-.bodyitem .category{font-size:.73rem;color:#83eeb4;letter-spacing:.055em;text-transform:uppercase}
+.bodyitem .category{font-size:.73rem;color:#83eeb4;letter-spacing:.055em;text-transform:uppercase}.bodyitem .private-import-guide{padding:8px 10px;border-left:3px solid #efc76e;background:#171c24;color:#e3d8b5}
 .bodyitem .branch{color:#f4d28c;font-size:.76rem;line-height:1.35}
 #bodySummary{margin-top:10px;color:#b9cadd;font-size:.9rem}
 #bodyFailures{color:#f3d18a;margin:8px 0;font-size:.88rem;white-space:pre-wrap}
@@ -102,7 +102,7 @@ function remember(key,group,name,where,status,detail,origin,version,editFile,wor
   if(!name||!group)return;
   const href=localRoute(cleanPath(where));
   const id=group+':'+String(key).toLowerCase();
-  const item=rows.get(id)||{id,group,name:String(name),href,sourceFile:null,sourceNote:null,editorRoute:null,sourceContacts:[],states:[],details:[],sources:[],versions:[]};
+  const item=rows.get(id)||{id,group,name:String(name),href,sourceFile:null,sourceNote:null,editorRoute:null,privateImportContact:null,sourceContacts:[],states:[],details:[],sources:[],versions:[]};
   if(href&&!item.href)item.href=href;
   const ownSource=sourceFile(editFile);
   if(ownSource&&!item.sourceFile)item.sourceFile=ownSource;
@@ -166,7 +166,19 @@ async function consume(path){
     const data=await retrieve(path);
     if(path==='registry/estate-map.json')data.live_github_routes.forEach(x=>door(x,path));
     else if(path==='registry/estate-head-public-current.json')data.public_house_routes.forEach(x=>door(x,path));
-    else if(path==='games-beyond/registry.json')(data.registered_bodies||[]).forEach(x=>remember(x.id,'Games',x.name,'games-beyond/',x.stage,x.role,path,x.version,null,x.mounted===true&&/^[a-z0-9-]{1,80}$/.test(x.id)?'games-beyond/?jm-edit='+encodeURIComponent(x.id):null));
+    else if(path==='games-beyond/registry.json')(data.registered_bodies||[]).forEach(x=>{
+      remember(x.id,'Games',x.name,'games-beyond/',x.stage,x.role,path,x.version,null,x.mounted===true&&/^[a-z0-9-]{1,80}$/.test(x.id)?'games-beyond/?jm-edit='+encodeURIComponent(x.id):null);
+      // Exact original import-only rooms use the EXISTING private House importer.
+      // This is a post-import contact, never a publicly mounted/editor-ready claim.
+      if(x.mounted===false&&x.exactBodyInFullImport===true&&x.delivery==='ECO_ESTATE_FULL_IMPORT'&&/^jmstudios-(source-rebegin|actual-crown)$/.test(x.id)){
+        const item=rows.get('Games:'+x.id);
+        if(item)item.privateImportContact={
+          houseRoute:localRoute('games-beyond/'),
+          afterImportEditorRoute:localRoute('games-beyond/?jm-edit='+encodeURIComponent(x.id)),
+          boundary:'Requires owner-held exact two-body JSON in this browser; PROOF → IMPORT ECO/ESTATE FULL HOUSE; SHA-verified local import before editor works. No public source or GitHub writeback.'
+        };
+      }
+    });
     else if(path==='games-beyond/payload-manifest.json')publicGameExactFiles=(data.extraBodies||[]).filter(x=>/^[a-z0-9-]{1,80}$/.test(x.id)&&/^bodies\/[a-z0-9-]+\.html$/.test(x.path)).map(x=>({id:x.id,path:'games-beyond/'+x.path,sourceStatus:x.sourceStatus||null}));
     else if(path==='apps/index.html'){counts[path]=registerApps(data);return;}
     else if(path.includes('coding-estate/everybody/'))(data.bodies||[]).forEach(x=>remember(x.id,'Coding & runtimes',x.name,'coding-estate/everybody/',x.status,x.kind,path));
@@ -201,8 +213,12 @@ function render(){
     const info=document.createElement('p');info.textContent=x.details[0]||x.states[0]||'Source-registered';item.appendChild(info);
     if(x.versions.length){const ver=document.createElement('p');ver.className='branch';ver.textContent=(x.versions.length>1?'Preserved branches ('+x.versions.length+'): ':'Registered version: ')+x.versions.join(' · ');item.appendChild(ver);}
     const state=document.createElement('small');state.textContent='Recorded: '+(x.states.join(' · ')||'source reference')+' | source '+x.sources.join(' + ');item.appendChild(state);
-    if(x.href){const link=document.createElement('a');link.href=x.href;link.textContent=x.group==='Owner custody'?'Open original Owner Room':x.group==='Games'||x.group==='Apps & tools'||x.group==='Coding & runtimes'||x.group==='Music & lyrics'?'Enter authoritative House':'Open existing route';item.appendChild(link);}
+    if(x.href){const link=document.createElement('a');link.href=x.href;link.textContent=x.privateImportContact?'Go to existing House for private source import':x.group==='Owner custody'?'Open original Owner Room':x.group==='Games'||x.group==='Apps & tools'||x.group==='Coding & runtimes'||x.group==='Music & lyrics'?'Enter authoritative House':'Open existing route';item.appendChild(link);}
     if(x.editorRoute){const edit=document.createElement('a');edit.className='local-edit';edit.href=x.editorRoute;edit.textContent='Edit this game in existing Games & Beyond (device-local)';edit.setAttribute('aria-label','Edit local browser copy of '+x.name);item.appendChild(edit);}
+    if(x.privateImportContact){
+      const guide=document.createElement('p');guide.className='private-import-guide';guide.textContent='Private original, not publicly mounted. In Games & Beyond select PROOF → IMPORT ECO/ESTATE FULL HOUSE and choose the owner-held exact JMStudios two-body JSON. Import is verified and saved only in this browser.';item.appendChild(guide);
+      const contact=document.createElement('a');contact.className='local-edit private-after-import';contact.href=x.privateImportContact.afterImportEditorRoute;contact.textContent='After verified import: open this original in local editor (otherwise HOLD)';contact.setAttribute('aria-label','Open '+x.name+' '+x.versions.join(' ')+' after local exact-source import');item.appendChild(contact);
+    }
     if(x.sourceFile){const edit=document.createElement('a');edit.className='owner-edit';edit.href=ownerEditor(x.sourceFile);edit.target='_blank';edit.rel='noopener noreferrer';edit.textContent=x.group==='Integrated workrooms'?'Edit existing workroom source (GitHub)':x.sourceNote?'Edit public implementation (GitHub)':'Edit registered source (GitHub)';edit.setAttribute('aria-label','Edit public GitHub carrier for '+x.name);item.appendChild(edit);}
     for(const contact of x.sourceContacts){const edit=document.createElement('a');edit.className='app-source-edit';edit.href=ownerEditor(contact.path);edit.target='_blank';edit.rel='noopener noreferrer';edit.textContent=contact.label+' · '+contact.version;edit.setAttribute('aria-label','Edit verified public carrier for '+x.name+' version '+contact.version);item.appendChild(edit);const note=document.createElement('small');note.textContent=contact.boundary;item.appendChild(note);}
     if(x.sourceNote){const note=document.createElement('small');note.textContent=x.sourceNote;item.appendChild(note);}
@@ -234,7 +250,7 @@ Promise.all(inputs.map(consume)).then(()=>{
   byId('bodyFailures').textContent=failures.length?'Source holds — no inferred substitute:\n'+failures.join('\n'):'';
   render();
 }).catch(error=>{byId('bodyFailures').textContent='Body contact HOLD: '+String(error.message||error);});
-window.JM_ESTATE_BODY_PROJECTION={schema:'JM.Estate.BodyContactProjection/1',getRows:()=>[...rows.values()].map(x=>({id:x.id,group:x.group,name:x.name,route:x.href,editorRoute:x.editorRoute,sourceFile:x.sourceFile,sourceNote:x.sourceNote,sourceContacts:x.sourceContacts.map(c=>({...c,ownerEdit:ownerEditor(c.path)})),ownerEdit:x.sourceFile?ownerEditor(x.sourceFile):null,versions:[...x.versions],sources:[...x.sources]})),getHolds:()=>[...failures]};
+window.JM_ESTATE_BODY_PROJECTION={schema:'JM.Estate.BodyContactProjection/1',getRows:()=>[...rows.values()].map(x=>({id:x.id,group:x.group,name:x.name,route:x.href,editorRoute:x.editorRoute,privateImportContact:x.privateImportContact?{...x.privateImportContact}:null,sourceFile:x.sourceFile,sourceNote:x.sourceNote,sourceContacts:x.sourceContacts.map(c=>({...c,ownerEdit:ownerEditor(c.path)})),ownerEdit:x.sourceFile?ownerEditor(x.sourceFile):null,versions:[...x.versions],sources:[...x.sources]})),getHolds:()=>[...failures]};
 })();
 </script>
 

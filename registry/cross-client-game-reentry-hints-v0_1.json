@@ -1,0 +1,105 @@
+{
+  "schema": "JM.CrossClientGameReentryHints/0.1",
+  "date": "2026-10-25",
+  "type": "PUBLIC_SAFE_COLD_START_HINTS_NOT_CURRENT_HEAD_AUTHORITY",
+  "purpose": "Help compatible clients identify separate JM game lineages and useful bounded recovery queries without copying private bodies, crowns, or raw Library evidence.",
+  "limits": {
+    "snapshot_only": true,
+    "no_private_library_locators": true,
+    "no_raw_source_or_secrets": true,
+    "no_runtime_or_device_proof_transfer": true,
+    "no_automatic_promotion": true,
+    "hosted_build_mesh_current_registry_at_contact": "2026-10-06",
+    "subsequent_updates_may_supersede_these_hints": true
+  },
+  "resolve": [
+    "Use Build Mesh status and sync contract at live contact time.",
+    "Search exact named body and each explicit branch, never compare bare versions across branches.",
+    "Resolve stronger authenticated direct source/receipt/current pointer privately when available; public hints alone are not current authority.",
+    "For missing hosted head report SYNC_DRIFT / SNAPSHOT_ONLY / ABSENCE_NOT_PROVEN as appropriate; do not infer absence.",
+    "Return PROVEN_FROZEN_ANCHOR, FORWARD_CANDIDATE, CURRENT_AUTHORITY, HOST_PROOF and OWNER_DEVICE separately.",
+    "Do not publish raw private Library paths, content, or credentials merely to improve retrieval."
+  ],
+  "records": [
+    {
+      "id": "CB-ORIGINAL",
+      "label": "JM COMBOUND — Original PrimeBody",
+      "separate_from": [
+        "CB-THREE-FORMS",
+        "CB-STORY",
+        "CB-FLOOT"
+      ],
+      "protected_anchor": "Full original lineage FLAZ through v2.3",
+      "forward_hint": "v2.6 Atlas Impact source in preserved Floot lineage; v2.6.1 Mobile Field Clarity discovered candidate",
+      "current_authority": "PRIVATE_DIRECT_RECONTACT_REQUIRED",
+      "confidence": "LINEAGE_HINT_ONLY",
+      "query": "COMBOUND Original PrimeBody v2.6 v2.6.1 branch identity map"
+    },
+    {
+      "id": "CB-THREE-FORMS",
+      "label": "JM COMBOUND — Three Forms / Living Forms",
+      "separate_from": [
+        "CB-ORIGINAL",
+        "CB-STORY",
+        "CB-FLOOT"
+      ],
+      "protected_anchor": "Three Forms v1.1 Full 24 Body owner-authorised FLAZ",
+      "forward_hint": "v1.2 Living Forms Motion Studio working descendant, owner-device acceptance open",
+      "current_authority": "PRIVATE_DIRECT_RECONTACT_REQUIRED",
+      "confidence": "LINEAGE_HINT_ONLY",
+      "query": "JM COMBOUND THREE FORMS v1.2 Living Forms Motion Studio"
+    },
+    {
+      "id": "CLASHVERSE",
+      "label": "JM iMeYou / Clashverse",
+      "protected_anchor": "v1.9 Reactive Ground working FLAZ (browser-verified, physical owner-device acceptance open)",
+      "forward_hint": "v2.0 Embodied Momentum visual candidate; all-game recipient manifest test_status=PENDING",
+      "current_authority": "PRIVATE_DIRECT_RECONTACT_REQUIRED",
+      "confidence": "LINEAGE_HINT_ONLY",
+      "query": "JM iMeYou Clashverse Reactive Ground v1.9 Embodied Momentum v2.0"
+    },
+    {
+      "id": "RIFT-DUEL",
+      "label": "JM RIFT//DUEL — separate tactical arena game",
+      "protected_anchor": "v1.0 Mobile Contact with positive owner gameplay reaction; tune individual-device touchscreen controls",
+      "forward_hint": "v1.1 Signature Footwork candidate; all-game recipient manifest test_status=PENDING",
+      "current_authority": "PRIVATE_DIRECT_RECONTACT_REQUIRED",
+      "confidence": "LINEAGE_HINT_ONLY",
+      "query": "RIFT DUEL v1.0 Mobile Contact v1.1 Signature Footwork",
+      "not_same_as": "CP11-RIFT-TRIAL"
+    },
+    {
+      "id": "VALE-GAMEPLAY",
+      "label": "JM THE VALE REMEMBERS — expressive gameplay lineage",
+      "protected_anchor": "v0.4 owner-approved FLAZ",
+      "forward_hint": "v0.6 Kinetic Heart LIVE candidate, not FLAZ; preserve expressive two-dimensional game and saves",
+      "current_authority": "PRIVATE_DIRECT_RECONTACT_REQUIRED",
+      "confidence": "LINEAGE_HINT_ONLY",
+      "query": "JM THE VALE REMEMBERS v0.6 Kinetic Heart"
+    },
+    {
+      "id": "VALE-ENGINE",
+      "label": "JM THE VALE — native-engine and Engine Federation lineages",
+      "protected_anchor": "CP10 v0.7 software WebGL 32/32 scoped runs; distinct CP11 Fold screenshot of 3D rendering",
+      "forward_hint": "CP12 v0.1 Living Cooperation: 36/36 non-GPU assertions with JM GameCore contact; actual CP12 GPU visual acceptance OPEN",
+      "current_authority": "PRIVATE_DIRECT_RECONTACT_REQUIRED",
+      "confidence": "LINEAGE_HINT_ONLY",
+      "query": "JM THE VALE ENGINE FEDERATION CP12 Living Cooperation CP10 v0.7"
+    },
+    {
+      "id": "CP11-RIFT-TRIAL",
+      "label": "JM CP11 Living Form — Rift Trial (not RIFT//DUEL)",
+      "protected_anchor": "CP10 donor and CP11 Heartwake v0.3 separate preserved ancestors",
+      "forward_hint": "CP11 v0.4 candidate on unmerged draft PR #468; 32/32 independent real Chromium WebGL cases recorded; Fold v0.4 owner acceptance HOLD",
+      "current_authority": "PUBLIC_REPO_CANDIDATE_UNMERGED",
+      "confidence": "EXACT_GITHUB_CANDIDATE_NOT_RELEASE",
+      "query": "JM CP11 Rift Trial v0.4 PR468",
+      "public_source": {
+        "url": "https://github.com/JMisJustMe/JM-cading-lab/pull/468",
+        "ref": "60dc75159e901a208e55f80071269dd24cfc238d",
+        "path": "engine/demo/cp11-rift-trial-v0.4.html"
+      }
+    }
+  ],
+  "keeper": "PUBLIC HINT ≠ PRIVATE CURRENT HEAD · SOURCE PRECEDES CROWN · BRANCH IDENTITY SURVIVES CARRIER CHANGE"
+}

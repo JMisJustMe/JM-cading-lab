@@ -1,0 +1,55 @@
+{
+  "schema": "JM.NetworkCODEGORNIZATION.CP04.FLAZ/1",
+  "date": "2026-10-27",
+  "state": "HOST_CI_PASS_OWNER_FOLD_LAPTOP_HOLD",
+  "branch": "feat/jm-network-codegornization-cp01-20261027",
+  "pr": 506,
+  "baselineCommit": "30e39df69577676bf4d31054e5dc863c90094b7e",
+  "cp01ToCp03ProtectedCommit": "160efe6b86273365b0df30baed37474c8ad2c4e0",
+  "cp04PreexecutionCommit": "7bac61e5946d9366d870a400c71a6ea9ba0cc09e",
+  "cp04TestedCommit": "bab3b6fc2ce16327a7b00ae482c27f82551dee17",
+  "workflow": {
+    "id": 40436740776,
+    "runNumber": 33,
+    "result": "success",
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40436740776"
+  },
+  "testCounts": {
+    "cp01": 41,
+    "cp02": 30,
+    "cp03": 28,
+    "cp04": 30,
+    "total": 129
+  },
+  "files": {
+    "network-codegornization/cp04/jm-device-contact.mjs": "f4d086f1eeccc86273d9299871a036e29b624ce5",
+    "network-codegornization/cp04/cli.mjs": "4aba28063bfcbfebda1f3401e5a5566149f15f66",
+    "network-codegornization/cp04/selftest.mjs": "ec68e030102390f70d41cf18c73ccda1a32aab29",
+    "network-codegornization/cp04/README.md": "ee98967bae075015c34346fadad999a78b96b784",
+    ".github/workflows/jm-network-codegornization-cp01.yml": "522801cbb2ef1204a230bd2379c0daa8f34eb167"
+  },
+  "donors": {
+    "network-codegornization/cp01/jm-network-federation.mjs": "482ef7ed45c95616cbfacee8b74d512c25040618",
+    "network-codegornization/cp02/jm-durable-spool.mjs": "d480a3f3a87a6e453a06bd17db7caf35cc5c987a",
+    "network-codegornization/cp03/jm-private-contact.mjs": "602e9da2814a4ed560f98d99c8da92aa4e317dfb"
+  },
+  "admittedClaims": [
+    "CI-loopback TLS1.3 native HTTPS contact",
+    "explicit private IPv4 restriction",
+    "certificate SHA256 pin validation",
+    "HMAC-SHA256 packet and response",
+    "persisted nonce anti-replay through receiver restart",
+    "CP02 disk custody and CP01 ten-body original execution",
+    "separate Node receiver process in CI"
+  ],
+  "holds": [
+    "Physical owner Samsung Fold ↔ laptop LAN traffic",
+    "Actual Android Termux runtime on owner device",
+    "Interactive pairing UI",
+    "Real mail, SMTP/IMAP, DNS, external provider, internet routing",
+    "At-rest encryption or production backup",
+    "Production key rotation, revocation, quota, firewall audit",
+    "Owner acceptance",
+    "Production promotion or main merge"
+  ]
+}

@@ -1,0 +1,1463 @@
+package com.jmisjustme.foldultra;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.*;
+import android.content.res.Configuration;
+import android.content.pm.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.text.*;
+import android.view.*;
+import android.widget.*;
+import org.json.JSONObject;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public final class MainActivity extends Activity {
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.9";
+  static final String GALAXY_CONTACT_URI="jmfoldultra://open/galaxy";
+  static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
+  static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
+  static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205,CLOUD_RETURN_IMPORT=206;
+  static final int JM_INTAKE_PICK=207,JM_INTAKE_EXPORT=208,JM_CONTACT_EXPORT=209;
+  JSONObject pendingIntakeExport;
+  SharedPreferences sp;
+  LinearLayout page;
+  boolean wide;
+  int widthDp,tab=0,lastWidth=-1;
+  boolean quickLayout;
+
+  @Override public void onCreate(Bundle state){
+    super.onCreate(state);sp=getSharedPreferences(PREF,MODE_PRIVATE);
+    if(!sp.contains("root"))sp.edit().putString("root",
+      getPreferences(0).getString("root","JM FOLD ULTRA · Paired Root")).apply();
+    if(state!=null)tab=state.getInt("tab",0);
+    else if(sp.getBoolean("ready",false)){
+      // Remember the last visited JM room; never auto-launch external apps.
+      int last=sp.getInt("nav.last",0);
+      if(last>=0&&last<=13)tab=last;
+    }
+    getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
+    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    render();
+    if(!routeGalaxyIntent(getIntent())&&state==null)inspectIncoming(getIntent());
+  }
+  @Override protected void onNewIntent(Intent intent){
+    super.onNewIntent(intent);setIntent(intent);
+    if(!routeGalaxyIntent(intent))inspectIncoming(intent);
+    UsbBridge.offer(this,sp,()->render());
+  }
+  @Override protected void onPause(){
+    if(sp!=null&&sp.getBoolean("ready",false))
+      sp.edit().putInt("nav.last",tab).apply();
+    super.onPause();
+  }
+  @Override public void onSaveInstanceState(Bundle out){out.putInt("tab",tab);super.onSaveInstanceState(out);}
+  @Override protected void onResume(){super.onResume();if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();
+    UsbBridge.offer(this,sp,()->render());}
+  @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);render();}
+  @Override public void onBackPressed(){
+    if(!sp.getBoolean("ready",false) && sp.getInt("stage",0)>0){stage(sp.getInt("stage",0)-1);return;}
+    if(sp.getBoolean("ready",false)&&tab>0){tab=0;render();return;}
+    super.onBackPressed();
+  }
+  int dp(float n){return (int)(getResources().getDisplayMetrics().density*n+0.5f);}
+  GradientDrawable bg(int fill,int border,int r){
+    GradientDrawable d=new GradientDrawable();d.setColor(fill);d.setCornerRadius(dp(r));
+    if(border!=0)d.setStroke(dp(1),border);return d;
+  }
+  GradientDrawable grad(int a,int b,int r){
+    GradientDrawable d=new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{a,b});
+    d.setCornerRadius(dp(r));return d;
+  }
+  TextView t(String s,int size,int color,boolean strong){
+    TextView x=new TextView(this);x.setText(s);x.setTextSize(size);x.setTextColor(color);
+    x.setLineSpacing(dp(2),1.05f);
+    if(strong)x.setTypeface(Typeface.DEFAULT,Typeface.BOLD);
+    return x;
+  }
+  void label(LinearLayout dest,String s,int size,int col,boolean strong){dest.addView(t(s,size,col,strong));}
+  void space(LinearLayout dest,int h){View x=new View(this);dest.addView(x,new LinearLayout.LayoutParams(1,dp(h)));}
+  void title(String kicker,String head,String detail){
+    label(page,kicker,12,wide?PURPLE:BLUE,true);space(page,10);
+    label(page,head,wide?35:29,WHITE,true);space(page,9);
+    label(page,detail,15,MUTED,false);space(page,12);
+  }
+  LinearLayout card(String kicker,String head,String copy,int color){
+    LinearLayout x=new LinearLayout(this);x.setOrientation(1);x.setPadding(dp(quickLayout?12:18),dp(quickLayout?12:18),dp(quickLayout?12:18),dp(quickLayout?12:18));
+    x.setBackground(bg(PANEL,color,20));
+    LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);
+    p.setMargins(0,dp(quickLayout?5:8),0,dp(quickLayout?5:8));page.addView(x,p);
+    label(x,kicker,11,color,true);space(x,quickLayout?5:8);
+    label(x,head,20,WHITE,true);
+    if(!copy.isEmpty()){space(x,7);label(x,copy,14,MUTED,false);}
+    return x;
+  }
+  void btn(LinearLayout target,String s,boolean primary,Runnable action){
+    Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextSize(15);
+    b.setTextColor(primary?BG:WHITE);b.setElevation(0);
+    b.setBackground(primary?grad(BLUE,PURPLE,14):bg(0xff202e47,0xff304463,14));
+    LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,dp(quickLayout?47:56));p.setMargins(0,dp(6),0,dp(3));
+    target.addView(b,p);b.setOnClickListener(v->action.run());
+  }
+  void stage(int n){sp.edit().putInt("stage",Math.max(0,Math.min(4,n))).apply();render();}
+  void render(){
+    widthDp=getResources().getConfiguration().screenWidthDp;lastWidth=widthDp;wide=widthDp>=500;
+    quickLayout="QUICK".equals(SetupPlan.layout(sp,wide));
+    ScrollView scroll=new ScrollView(this);scroll.setBackgroundColor(BG);scroll.setFillViewport(true);
+    // Android 15+ enforces edge-to-edge at targetSdk 35. Without system-bar
+    // padding a scrolled action button can be visible underneath the status
+    // icons but cannot be tapped. Keep native controls in the real touch field.
+    if(android.os.Build.VERSION.SDK_INT>=35 && sp.getBoolean("ready",false) && (tab==12||tab==13)){
+      scroll.setOnApplyWindowInsetsListener((v,insets)->{
+        android.graphics.Insets safe=insets.getInsets(WindowInsets.Type.systemBars());
+        v.setPadding(0,safe.top,0,safe.bottom);
+        scroll.setClipToPadding(true);
+        return insets;
+      });
+    }
+    scroll.setVerticalScrollBarEnabled(false);
+    page=new LinearLayout(this);page.setOrientation(1);
+    page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 1.0",12,MUTED,true);space(page,14);
+    View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
+    page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
+    if(sp.getBoolean("ready",false))dashboard();else prelaunch();
+    space(page,30);label(page,"NO RESET · NO ROOT · NO SILENT PERMISSIONS · NO LAUNCHER TAKEOVER",11,MUTED,false);
+    space(page,6);label(page,"DEVICE DING: OPEN UNTIL TESTED ON THE FOLD.",11,MUTED,false);
+    setContentView(scroll);
+  }
+  void hero(int height){
+    View art=new View(this){
+      Paint p=new Paint(3);
+      @Override protected void onDraw(Canvas c){
+        float w=getWidth(),h=getHeight();
+        p.setShader(new LinearGradient(0,0,w,h,0xff123348,0xff2b1b4b,Shader.TileMode.CLAMP));
+        c.drawRoundRect(0,0,w,h,dp(22),dp(22),p);p.setShader(null);
+        for(int i=0;i<5;i++){
+          p.setColor(i%2==0?0x5586bfff:0x556c57cb);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(dp(1));
+          c.drawCircle(w*.72f,h*.50f,dp(22+i*17),p);
+        }
+        p.setColor(0xff99b8f6);p.setStrokeWidth(dp(2));
+        Path route=new Path();route.moveTo(w*.10f,h*.74f);
+        route.cubicTo(w*.29f,h*.64f,w*.36f,h*.13f,w*.53f,h*.35f);
+        route.cubicTo(w*.66f,h*.57f,w*.76f,h*.74f,w*.89f,h*.30f);
+        c.drawPath(route,p);p.setStyle(Paint.Style.FILL);
+        p.setColor(BLUE);c.drawCircle(w*.10f,h*.74f,dp(5),p);
+        p.setColor(TEAL);c.drawCircle(w*.53f,h*.35f,dp(5),p);
+        p.setColor(PURPLE);c.drawCircle(w*.89f,h*.30f,dp(6),p);
+        p.setTypeface(Typeface.create(Typeface.MONOSPACE,Typeface.BOLD));
+        p.setColor(WHITE);p.setTextSize(dp(wide?16:12));
+        c.drawText("JM / PAIRED ROOT",dp(17),dp(32),p);
+        p.setColor(0xffb6cdea);p.setTextSize(dp(11));
+        c.drawText("SOURCE  ↔  WORKFIELD",dp(17),h-dp(20),p);
+      }
+    };
+    art.setContentDescription("JM paired Source and Workfield flowing connection");
+    page.addView(art,new LinearLayout.LayoutParams(-1,dp(height)));
+  }
+  void progress(int n){
+    LinearLayout row=new LinearLayout(this);row.setOrientation(0);
+    page.addView(row,new LinearLayout.LayoutParams(-1,dp(5)));
+    for(int k=0;k<5;k++){
+      View v=new View(this);v.setBackground(bg(k<=n?BLUE:0xff273a55,0,6));
+      LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,-1,1);
+      p.setMargins(k==0?0:dp(3),0,k==4?0:dp(3),0);row.addView(v,p);
+    }
+    space(page,10);label(page,"PRELAUNCH / "+(n+1)+" OF 5",12,MUTED,true);space(page,16);
+  }
+  void prelaunch(){
+    int n=sp.getInt("stage",0);progress(n);
+    switch(n){
+      case 0:
+        title("INITIAL OPENING / ARRIVAL","Your device.\nYour working field.",
+          "An owned JM route into the phone you actually use. No generic launcher imposed.");
+        hero(wide?226:180);space(page,9);
+        LinearLayout a=card("PRESERVATION","Nothing gets erased.",
+          "Your Samsung home pages, apps, existing JM bodies and files stay where they are.",BLUE);
+        label(a,"COMPACT  /  Capture and quick access",14,WHITE,true);space(a,7);
+        label(a,"EXPANDED  /  Create, test and recover",14,WHITE,true);
+        break;
+      case 1:
+        title("YOUR PRIORITY","Decide what opens first.",
+          "This only changes JM's quick routes. Every other route remains available.");
+        pick("CREATE","Creator first","JM Ecostate, GitHub, notes");
+        pick("PLAY","Playtest first","Games, test tools and quick files");
+        pick("EVERYDAY","Everyday first","Files, notes and communication");
+        LinearLayout setups=card("OPTIONAL / WHOLE JM PRESET","Prepare the complete starting field",
+          "Make, Playtest, Research or Recovery presets also set your project and both screen densities. Every change asks permission.",TEAL);
+        btn(setups,"Explore setup plans",false,()->openSetupPlanChooser());
+        break;
+      case 2:
+        title("SAME ROOT / TWO FIELDS","A shared starting point.",
+          "We respond to available screen width, not an unverified hinge sensor.");
+        pairedPreview();
+        LinearLayout d=card("CURRENT DISPLAY",""+widthDp+" dp  /  "+(wide?"WORKFIELD":"SOURCE"),
+          "Your choice and saved root persist when Android changes screen size.",TEAL);
+        label(d,"Physically fold/unfold while this screen is open to check the adaptation.",13,WHITE,false);
+        break;
+      case 3:
+        title("GALAXY + JM","Discover, then connect.",
+          "Your Fold brings Now Nudge, Photo Assist, Multi Window and more. JM will route to them, not impersonate them.");
+        LinearLayout nativeInfo=card("NATIVE CAPABILITIES","Eight Samsung tools to explore",
+          "After entering JM, open the GALAXY tab to inspect features, launch supported apps and mark what you personally test.",PURPLE);
+        label(nativeInfo,"NOW NUDGE · NOW BRIEF · AI ASSISTANTS · PHOTO ASSIST",13,WHITE,true);
+        space(nativeInfo,7);
+        label(nativeInfo,"SCAN · MULTI WINDOW · DeX · MODES & ROUTINES",13,WHITE,true);
+        LinearLayout c=card("LOCAL APPS","Owner-device route candidates","Unavailable routes remain HOLD.",BLUE);
+        check(c,"My Files","com.sec.android.app.myfiles");
+        check(c,"Samsung Notes","com.samsung.android.app.notes");
+        check(c,"ChatGPT","com.openai.chatgpt");
+        LinearLayout links=card("JM SOURCES","Existing public estate","Open in your preferred browser.",PURPLE);
+        btn(links,"JM Ecostate  ↗",false,()->url("https://jmisjustme.github.io/JM-cading-lab/"));
+        btn(links,"JM Games  ↗",false,()->url("https://jmisjustme.github.io/JM-cading-lab/games-beyond/"));
+        break;
+      default:
+        title("READY / USER AUTHORITY","Open JM.\nKeep your Samsung.",
+          "The preparation is complete inside this app. No other part of your phone is modified.");
+        LinearLayout receipt=card("PRELAUNCH RECEIPT","Configured for "+sp.getString("focus","CREATE"),
+          "Current surface: "+(wide?"WORKFIELD":"SOURCE")+"  ·  "+widthDp+" dp",TEAL);
+        label(receipt,"✓ Stored preferences   ✓ Native launcher routes",14,WHITE,true);
+        space(receipt,8);
+        label(receipt,"✓ Manual JSON recovery   ✓ No dangerous permissions",14,WHITE,true);
+        space(receipt,12);
+        label(receipt,"Owner-device runtime and Fold contact: NOT YET VERIFIED.",13,MUTED,false);
+        space(receipt,12);
+        btn(receipt,"Run local preflight before entry",false,()->{
+          runPreflight();
+          new AlertDialog.Builder(this).setTitle("Local preflight captured")
+            .setMessage("App-level checks were saved. After entry, open CONTROL → PREFLIGHT to review or export. Physical Fold testing remains separate.")
+            .setPositiveButton("OK",null).show();
+        });
+    }
+    space(page,16);
+    if(n>0)btn(page,"←  Previous stage",false,()->stage(n-1));
+    if(n<4)btn(page,n==0?"Begin the opening  →":"Continue  →",true,()->stage(n+1));
+    else btn(page,"ENTER JM FOLD ULTRA  →",true,()->{
+      sp.edit().putBoolean("ready",true).apply();tab=0;render();
+    });
+    space(page,9);label(page,"Progress saves locally. Return or reopen without losing your selection.",12,MUTED,false);
+  }
+  void pick(String id,String head,String detail){
+    boolean chosen=id.equals(sp.getString("focus","CREATE"));
+    LinearLayout a=card(chosen?"● SELECTED / "+id:"○ OPTION / "+id,head,detail,chosen?TEAL:0xff344964);
+    a.setClickable(true);a.setFocusable(true);
+    a.setContentDescription(head+(chosen?", selected":", tap to select"));
+    a.setOnClickListener(v->{sp.edit().putString("focus",id).apply();render();});
+    space(a,7);label(a,chosen?"CURRENT FOCUS":"TAP TO SELECT →",12,chosen?TEAL:BLUE,true);
+  }
+  void pairedPreview(){
+    LinearLayout pair=new LinearLayout(this);pair.setOrientation(wide?0:1);page.addView(pair);
+    for(int i=0;i<2;i++){
+      boolean open=i==1;
+      LinearLayout item=new LinearLayout(this);item.setOrientation(1);
+      item.setPadding(dp(16),dp(18),dp(14),dp(14));
+      item.setBackground(bg(open?0xff241d3b:0xff142e44,open?PURPLE:BLUE,17));
+      LinearLayout.LayoutParams p;
+      if(wide){p=new LinearLayout.LayoutParams(0,dp(165),1f);p.setMargins(0,dp(7),open?0:dp(8),dp(6));}
+      else {p=new LinearLayout.LayoutParams(-1,dp(120));p.setMargins(0,dp(7),0,0);}
+      pair.addView(item,p);
+      label(item,open?"02 / EXPANDED":"01 / COMPACT",11,open?PURPLE:BLUE,true);space(item,9);
+      label(item,open?"WORKFIELD":"SOURCE",22,WHITE,true);space(item,6);
+      label(item,open?"Create · Playtest · Recover":"Capture · Access · Continue",13,MUTED,false);
+    }
+  }
+  boolean has(String pkg){try{return getPackageManager().getLaunchIntentForPackage(pkg)!=null;}catch(Exception x){return false;}}
+  void check(LinearLayout target,String name,String pkg){
+    boolean yes=has(pkg);
+    space(target,11);label(target,(yes?"● AVAILABLE / ":"○ HOLD / ")+name,14,yes?TEAL:MUTED,true);
+  }
+  void dashboard(){
+    title("JM PAIRED ROOT / "+(wide?"WORKFIELD":"SOURCE"),"JM FOLD ULTRA",
+      "One JM entrance; separate surface layouts; the same saved configuration.");
+    hero(wide?142:110);space(page,16);
+    LinearLayout tabs=new LinearLayout(this);tabs.setOrientation(0);page.addView(tabs);
+    String[] labels={"ROOT","GALAXY","ROUTES","CONTROL"};
+    for(int i=0;i<labels.length;i++){
+      final int value=i;Button b=new Button(this);b.setAllCaps(false);b.setText(labels[i]);
+      b.setTextSize(12);b.setTextColor(i==tab?BG:WHITE);
+      b.setBackground(bg(i==tab?BLUE:PANEL,i==tab?0:0xff334a67,12));
+      LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(50),1);
+      p.setMargins(i==0?0:dp(3),0,i==2?0:dp(3),0);tabs.addView(b,p);
+      b.setOnClickListener(v->{tab=value;render();});
+    }
+    space(page,12);
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else if(tab==7)automationRoom();else if(tab==8)sessionRoom();else if(tab==9)reentryRoom();
+    else if(tab==10)intakeRoom();else if(tab==11)contactRoom();else if(tab==12)companionRoom();
+    else JMOriginalWorkroom.render(this);
+  }
+  void root(){
+    String focus=sp.getString("focus","CREATE");
+    LinearLayout c=card("CURRENT FIELD",focus+" / "+(wide?"WORKFIELD":"SOURCE"),
+      wide?"Expanded creative and testing routes.":"One-handed fast routes and capture.",PURPLE);
+    if(focus.equals("CREATE")){
+      btn(c,"JM Ecostate  ↗",true,()->url("https://jmisjustme.github.io/JM-cading-lab/"));
+      btn(c,"GitHub source  ↗",false,()->url("https://github.com/JMisJustMe/JM-cading-lab"));
+      btn(c,"Samsung Notes",false,()->app("com.samsung.android.app.notes"));
+    }else if(focus.equals("PLAY")){
+      btn(c,"JM Games  ↗",true,()->url("https://jmisjustme.github.io/JM-cading-lab/games-beyond/"));
+      btn(c,"My Files",false,()->app("com.sec.android.app.myfiles"));
+    }else{
+      btn(c,"My Files",true,()->app("com.sec.android.app.myfiles"));
+      btn(c,"Samsung Notes",false,()->app("com.samsung.android.app.notes"));
+      btn(c,"ChatGPT",false,()->app("com.openai.chatgpt"));
+    }
+    try{
+      JSONObject activeProject=ProjectShelf.find(sp,ProjectShelf.selected(sp));
+      if(activeProject!=null){
+        String bound=activeProject.optString("url","");
+        btn(c,(bound.isEmpty()?"JM PROJECT / UNBOUND: ":"OPEN JM PROJECT / ")+activeProject.optString("title",""),false,()->{
+          if(bound.isEmpty()){tab=6;render();}
+          else ProjectShelf.open(this,activeProject);
+        });
+      }
+    }catch(Exception e){
+      Toast.makeText(this,"HOLD · Project shelf cannot be loaded",Toast.LENGTH_SHORT).show();
+    }
+    LinearLayout note=card("ONE SHARED AUTHORITY","JM root note","Saved immediately on either display.",TEAL);
+    EditText e=new EditText(this);e.setTextColor(WHITE);e.setHintTextColor(MUTED);
+    e.setTextSize(15);e.setMinLines(2);e.setHint("Your shared working note");
+    e.setInputType(1|android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+    e.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10000)});
+    e.setText(sp.getString("root","JM FOLD ULTRA · Paired Root"));
+    note.addView(e);
+    e.addTextChangedListener(new TextWatcher(){
+      public void beforeTextChanged(CharSequence x,int s,int c,int a){}
+      public void onTextChanged(CharSequence x,int s,int b,int c){sp.edit().putString("root",x.toString()).apply();}
+      public void afterTextChanged(Editable x){}
+    });
+    btn(note,"Export JM configuration",false,()->file(true));
+    LinearLayout intake=card("REAL DEVICE WORKFLOW","Share into JM",
+      "From a browser, Notes or another app use Android Share → JM Fold Ultra. Review text or a link before adding it to this root note.",BLUE);
+    label(intake,"No background reading. No clipboard spying. Shared content is never stored until you approve.",13,MUTED,false);
+    LinearLayout action=card("ONE-TOUCH SESSION","Use a session recipe",
+      "A recipe changes JM's own quick routes and offers a launch. It cannot silently create a Samsung App Pair.",PURPLE);
+    btn(action,"Make  /  JM creator routes",false,()->session("MAKE"));
+    btn(action,"Playtest  /  JM games",false,()->session("PLAYTEST"));
+    btn(action,"Research  /  apps and AI",false,()->session("RESEARCH"));
+    btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
+    btn(page,"CONTINUE / Current JM Return Point →",true,()->{tab=9;render();});
+    btn(page,"RESUME PROJECT / My working session →",false,()->{tab=8;render();});
+    btn(page,"LIVING HOME / Import cloud return →",false,()->cloudReturnImport());
+    btn(page,"LIVING HOME / Review pending return →",false,()->reviewCloudReturn());
+    btn(page,"SETUP PLANS  /  One-touch JM configuration →",false,()->{tab=7;render();});
+    btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
+    btn(page,"CREATIVE INTAKE / Owner-selected media →",false,()->{tab=10;render();});
+    btn(page,"LIVING CONTACT / Scoped receipts →",false,()->{tab=11;render();});
+    btn(page,"JM ORIGINAL STRUCTURES / Own offline workroom →",true,()->{tab=13;render();});
+    btn(page,"JM COMPANIONS / External app doors →",false,()->{tab=12;render();});
+    btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
+    btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
+  }
+
+  static final String[] NATIVE_KEYS={
+    "now_nudge","now_brief","assistants","photo_assist",
+    "scanner","multi_window","dex","routines"
+  };
+  int nativeTriedCount(){
+    int n=0;for(String key:NATIVE_KEYS)if(sp.getBoolean("tried."+key,false))n++;
+    return n;
+  }
+  void nativeGroup(String group){
+    sp.edit().putString("native.group",group).apply();render();
+  }
+  void nativeHub(){
+    title("SAMSUNG NATIVE / JM INHERITANCE","Your Fold already has tools.",
+      "Try Samsung's features directly. JM saves only which ones you choose to mark as explored.");
+    LinearLayout summary=card("NATIVE CONTACT",""+nativeTriedCount()+" / 8 owner-marked",
+      "Marks reflect your own exploration, not automatic verification, data access or integration.",TEAL);
+    label(summary,"No Galaxy AI permissions requested. No Samsung settings changed here.",13,MUTED,false);
+    space(page,6);
+    LinearLayout tabs=new LinearLayout(this);tabs.setOrientation(0);page.addView(tabs);
+    String[] groups={"ASSIST","CREATE","WORK"};
+    String selected=sp.getString("native.group","ASSIST");
+    for(String group:groups){
+      Button b=new Button(this);b.setAllCaps(false);b.setText(group);b.setTextSize(12);
+      b.setTextColor(group.equals(selected)?BG:WHITE);
+      b.setBackground(bg(group.equals(selected)?BLUE:PANEL,group.equals(selected)?0:0xff334a67,12));
+      LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(49),1);
+      p.setMargins(dp(3),0,dp(3),0);tabs.addView(b,p);
+      b.setOnClickListener(v->nativeGroup(group));
+    }
+    space(page,8);
+    if(selected.equals("ASSIST")){
+      capability("now_nudge","Now Nudge","SAMSUNG / CONTEXT",
+        "Suggestions from supported on-screen messages can lead to Calendar, Maps and split view.",
+        "Settings → Galaxy AI → Now Nudge. Requires Samsung account; supported apps and languages only.",
+        "settings");
+      capability("now_brief","Now Brief","SAMSUNG / DAILY",
+        "Briefings and cards for schedules, weather, reminders and selected interests.",
+        "Settings → Galaxy AI → Now brief (menu names vary). Review Content to include. Your home-screen widget is a separate entry.",
+        "settings");
+      capability("assistants","AI assistants","SAMSUNG / CHOICE",
+        "Bixby and other installed assistants serve different jobs. No single provider needs to own every task.",
+        "Choose your preferred assistant in Android's default-app settings, if supported. Third-party assistant capabilities and availability differ.",
+        "settings");
+    } else if(selected.equals("CREATE")){
+      capability("photo_assist","Photo Assist","GALAXY / VISUAL",
+        "Edit, remove or generate visual changes in Samsung Gallery, then compare results.",
+        "Open Gallery → select an image → Edit → Galaxy AI or Photo Assist (where available). Save or export results consciously.",
+        "gallery");
+      capability("scanner","Document scanner","GALAXY / CAPTURE",
+        "Digitise paper notes, sketches and receipts using Samsung Camera's document detection.",
+        "Open Camera and point at a document; use the scan prompt if shown. This shortcut launches Camera only; no scan is taken by JM.",
+        "camera");
+    } else {
+      capability("multi_window","Multi Window + App Pairs","GALAXY / MULTITASK",
+        "Two-way/three-way supported app layouts with resizable windows and saved app pairs.",
+        "Open Recents → tap supported app icon → Open in split screen view. Save an app pair using Samsung multi-window controls where offered.",
+        "settings");
+      capability("dex","Samsung DeX","GALAXY / DESKTOP",
+        "Desktop-like working environment when connected to supported external display and peripherals.",
+        "Open Quick settings → DeX, or search Settings for DeX. A display, keyboard or mouse may be needed.",
+        "settings");
+      capability("routines","Modes & Routines","GALAXY / AUTOMATION",
+        "Automate supported system actions using conditions and modes, without replacing One UI.",
+        "Settings → Modes and Routines. Create a safe, reversible rule and test it before treating it as working.",
+        "settings");
+    }
+    LinearLayout receipt=card("BOUNDARY","What's real right now",
+      "The launcher and settings remain Samsung-owned. Our handoffs and owner marks are real; private Galaxy AI APIs, Now Nudge events and DeX control are not claimed.",PURPLE);
+    btn(receipt,"Open Samsung Settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
+  }
+  void capability(String key,String name,String kind,String description,String pathway,String handoff){
+    boolean marked=sp.getBoolean("tried."+key,false);
+    LinearLayout card=card(kind,name,description,marked?TEAL:0xff40577a);
+    space(card,9);
+    label(card,"TRY ON YOUR FOLD",11,BLUE,true);
+    space(card,5);
+    label(card,pathway,14,WHITE,false);
+    space(card,8);
+    btn(card,handoff.equals("gallery")?"Open Samsung Gallery":handoff.equals("camera")?"Open Camera":"Open Android Settings",false,
+      ()->nativeHandoff(handoff));
+    btn(card,marked?"✓ Explored by me · Undo mark":"Mark explored (owner assertion)",false,()->{
+      sp.edit().putBoolean("tried."+key,!marked).apply();
+      render();
+    });
+  }
+  void nativeHandoff(String kind){
+    if(kind.equals("gallery")){
+      Intent intent=getPackageManager().getLaunchIntentForPackage("com.sec.android.gallery3d");
+      if(intent==null)Toast.makeText(this,"HOLD · Gallery app route not found",Toast.LENGTH_LONG).show();
+      else start(intent);
+    }else if(kind.equals("camera")){
+      start(new Intent("android.media.action.STILL_IMAGE_CAMERA"));
+    }else {
+      start(new Intent(Settings.ACTION_SETTINGS));
+    }
+  }
+
+
+  void session(String kind){
+    String focus=kind.equals("PLAYTEST")?"PLAY":kind.equals("RESEARCH")?"EVERYDAY":"CREATE";
+    String nativeGroup=kind.equals("PLAYTEST")?"WORK":kind.equals("RESEARCH")?"ASSIST":"CREATE";
+    sp.edit().putString("session",kind).putString("focus",focus)
+      .putString("native.group",nativeGroup).apply();
+    new AlertDialog.Builder(this).setTitle("JM "+kind+" / Ready")
+      .setMessage("JM quick routes are prepared. This does not change Samsung system settings or launch two applications.")
+      .setNegativeButton("Stay in JM",(d,w)->render())
+      .setPositiveButton("Open first route",(d,w)->{
+        render();
+        if(kind.equals("PLAYTEST"))url("https://jmisjustme.github.io/JM-cading-lab/games-beyond/");
+        else if(kind.equals("RECOVERY"))app("com.sec.android.app.myfiles");
+        else if(kind.equals("RESEARCH"))app("com.openai.chatgpt");
+        else url("https://jmisjustme.github.io/JM-cading-lab/");
+      }).show();
+  }
+  // A public Android deep link may originate from any app; navigation only.
+  // Never promote app-launch to authenticated Bixby, native cloud or Galaxy AI proof.
+  boolean routeGalaxyIntent(Intent intent){
+    if(intent==null||!Intent.ACTION_VIEW.equals(intent.getAction()))return false;
+    String link=intent.getDataString();
+    int target=-1;
+    if(GALAXY_CONTACT_URI.equals(link))target=1;
+    else if("jmfoldultra://open/projects".equals(link))target=6;
+    else if("jmfoldultra://open/continue".equals(link))target=9;
+    else if("jmfoldultra://open/capture".equals(link))target=10;
+    if(target<0){
+      Toast.makeText(this,"HOLD · Unknown JM navigation link",Toast.LENGTH_SHORT).show();
+      return true;
+    }
+    if(!sp.getBoolean("ready",false)){
+      Toast.makeText(this,"HOLD · Complete JM setup before external navigation",Toast.LENGTH_LONG).show();
+      return true;
+    }
+    tab=target;
+    try{JMContactV1.record(sp,"NAVIGATION","ANDROID_VIEW_DISPATCH",
+      "Unverified external caller; navigation-only JM route: "+link);}
+    catch(Exception e){Toast.makeText(this,"HOLD · Contact trace not saved",Toast.LENGTH_SHORT).show();}
+    render();
+    return true;
+  }
+  void inspectIncoming(Intent intent){
+    if(intent==null||!Intent.ACTION_SEND.equals(intent.getAction()))return;
+    if(!"text/plain".equals(intent.getType())){
+      Uri selected=intent.getParcelableExtra(Intent.EXTRA_STREAM);
+      if(selected!=null)JMIntakeV1.review(this,sp,selected,intent.getType(),()->{tab=10;render();});
+      return;
+    }
+    CharSequence supplied=intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+    if(supplied==null)return;
+    String incoming=supplied.toString().trim();
+    if(incoming.isEmpty())return;
+    // Clear delivery to prevent a replay on subsequent Activity lifecycle events.
+    intent.removeExtra(Intent.EXTRA_TEXT);
+    // Explicit Living Home typed route: never fold cloud-return JSON into a freeform note.
+    if(incoming.startsWith("{")&&incoming.contains("JM.LivingHome.CP07.CloudReturn/1.0")){
+      if(incoming.length()>24000){
+        Toast.makeText(this,"HOLD · Share smaller ledger or use native JSON import",Toast.LENGTH_LONG).show();return;
+      }
+      try{
+        JSONObject active=ProjectShelf.find(sp,ProjectShelf.selected(sp));
+        if(active==null)throw new IllegalStateException("No active native JM project");
+        int revision=SessionDeck.find(sp,active.getString("id")).getInt("revision");
+        JSONObject pending=CloudReturnBridge.select(incoming,active,revision);
+        CloudReturnBridge.stage(sp,pending);
+        reviewCloudReturn();
+      }catch(Exception e){
+        new AlertDialog.Builder(this).setTitle("HOLD · Living Home return refused")
+          .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+      }
+      return;
+    }
+    if(incoming.length()>2500){
+      Toast.makeText(this,"HOLD · Shared text exceeds 2,500 characters",Toast.LENGTH_LONG).show();
+      return;
+    }
+    String excerpt=incoming.length()>220?incoming.substring(0,220)+"…":incoming;
+    // CP04: ordinary Android Share may be drafted into the current existing JM
+    // project, but no project session is committed or source identity trusted.
+    final JMCompanionInbox.Plan intakePlan;
+    JMCompanionInbox.Plan proposedPlan=null;
+    try{proposedPlan=JMCompanionInbox.prepare(sp,incoming);}
+    catch(Exception ignored){/* Original JM root-note route remains available. */}
+    intakePlan=proposedPlan;
+    final String intakeDestination=intakePlan==null?"Project draft unavailable":
+      "Project: "+intakePlan.projectTitle+" / revision "+intakePlan.revision;
+    new AlertDialog.Builder(this).setTitle("SOURCE CONTACT / Android Share")
+      .setMessage("Another app shared UNVERIFIED text with JM:\n\n"+excerpt+
+        "\n\nOwner choice: add to JM Root or create an UNSAVED draft in your current JM project.\n"+
+        intakeDestination+"\n\nNo external provider is authenticated.")
+      .setNegativeButton("Discard",null)
+      .setPositiveButton("Add to JM",(d,w)->{
+        String previous=sp.getString("root","");
+        String proposed=previous+"\n\n[SHARED SOURCE]\n"+incoming;
+        if(proposed.length()>10000){
+          new AlertDialog.Builder(this).setTitle("HOLD · JM note is full")
+            .setMessage("No content was saved. Export or shorten the current JM root first.")
+            .setPositiveButton("OK",null).show();return;
+        }
+        sp.edit().putString("root",proposed)
+          .putInt("source.count",sp.getInt("source.count",0)+1).apply();
+        tab=0;render();
+        Toast.makeText(this,"Shared source saved locally",Toast.LENGTH_SHORT).show();
+      })
+      .setNeutralButton("Draft in JM project",(d,w)->{
+        if(intakePlan==null){
+          new AlertDialog.Builder(this).setTitle("HOLD · Project draft unavailable")
+            .setMessage("Current project or bounded draft cannot accept this source. Your existing JM root option remains independent.")
+            .setPositiveButton("OK",null).show();return;
+        }
+        try{
+          JMCompanionInbox.stage(sp,intakePlan);
+          boolean setupReady=sp.getBoolean("ready",false);
+          tab=setupReady?8:0;
+          render();
+          Toast.makeText(this,setupReady?
+            "Source added to UNSAVED JM project draft · review and save a checkpoint":
+            "JM project draft preserved · finish first-time JM setup to open the session",
+            Toast.LENGTH_LONG).show();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · JM draft unchanged")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
+      }).show();
+  }
+  void runPreflight(){
+    try{
+      JSONObject data=DevicePreflight.inspect(this,sp,widthDp,wide);
+      boolean saved=sp.edit().putString("preflight.last",data.toString(2)).commit();
+      if(!saved)throw new IOException("Local receipt save failed");
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Preflight not saved")
+        .setMessage(e.toString()).setPositiveButton("OK",null).show();
+    }
+  }
+  void preflight(){
+    title("LOCAL QA / REPEATABLE","Your preflight workbench.",
+      "One tap runs bounded checks; owner contacts remain separate. Nothing modifies Samsung settings.");
+    LinearLayout main=card("DEVICE PROBE","Check this Android installation",
+      "Inspects the package, permission list, local save/read, available width, visible app targets and shortcut-request support.",TEAL);
+    btn(main,"RUN PREFLIGHT NOW",true,()->{runPreflight();render();});
+    String receipt=sp.getString("preflight.last","");
+    if(!receipt.isEmpty()){
+      try{
+        JSONObject o=new JSONObject(receipt);
+        LinearLayout summary=card("LOCAL RECEIPT","Automatic PASS "+o.optInt("automatic_pass")+" / HOLD "+o.optInt("automatic_hold"),
+          "Owner marks "+o.optInt("owner_assertions")+"; untouched manual checks "+o.optInt("manual_open")+". Not a physical Fold certification.",BLUE);
+        label(summary,"Device: "+o.optString("device_manufacturer")+" "+o.optString("device_model")
+          +"  ·  API "+o.optInt("android_api"),13,MUTED,false);
+        space(summary,8);
+        org.json.JSONArray checks=o.getJSONArray("checks");
+        for(int i=0;i<checks.length();i++){
+          JSONObject entry=checks.getJSONObject(i);
+          String status=entry.optString("status","OPEN");
+          label(summary,status+"  /  "+entry.optString("label"),13,
+            status.equals("PASS")?TEAL:status.equals("HOLD")?PURPLE:MUTED,true);
+          space(summary,3);
+          label(summary,entry.optString("evidence"),12,MUTED,false);
+          space(summary,9);
+        }
+      }catch(Exception e){
+        card("RECEIPT","HOLD · Saved diagnostic cannot be parsed","Run the check again.",PURPLE);
+      }
+    }else card("RECEIPT","Not run yet","This screen does not pretend the checks already happened.",PURPLE);
+    LinearLayout checks=card("OWNER CONTACT / HONEST STATUS","Three tests only you can confirm",
+      "These marks are editable declarations, not readings from a hinge sensor.",PURPLE);
+    ownerMark(checks,"owner.compact_tested","I saw the compact SOURCE UI");
+    ownerMark(checks,"owner.expanded_tested","I saw the expanded WORKFIELD UI");
+    ownerMark(checks,"owner.reopen_tested","I closed and reopened; my JM note survived");
+    LinearLayout preserve=card("RECOVERY","Receipts and configuration",
+      "Reports include the device model and a SHA-256 of the root note, but not its content. Configuration export includes the full note by your choice.",BLUE);
+    btn(preserve,"Export diagnostic receipt (.json)",false,()->{
+      if(sp.getString("preflight.last","").isEmpty()){
+        Toast.makeText(this,"Run preflight first",Toast.LENGTH_LONG).show();return;
+      }
+      Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+      intent.addCategory(Intent.CATEGORY_OPENABLE);
+      intent.setType("application/json");
+      intent.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_PREFLIGHT_v0_4.json");
+      try{startActivityForResult(intent,PREFLIGHT_EXPORT);}
+      catch(Exception e){Toast.makeText(this,"HOLD · No document picker",Toast.LENGTH_LONG).show();}
+    });
+    btn(preserve,"Export complete JM configuration",false,()->file(true));
+    btn(preserve,"Import JM configuration",false,()->file(false));
+    label(page,"FINAL CLAIM BOUNDARY / SOURCE COMPILE ≠ DEVICE DING; OWNER MARK ≠ SENSOR MEASUREMENT",12,MUTED,true);
+    btn(page,"← Back to JM Root",false,()->{tab=0;render();});
+  }
+  void ownerMark(LinearLayout where,String key,String title){
+    boolean marked=sp.getBoolean(key,false);
+    btn(where,(marked?"✓ ":"○ ")+title,false,()->{
+      sp.edit().putBoolean(key,!marked).apply();
+      // Existing report is intentionally not re-stamped without a fresh diagnostic.
+      render();
+    });
+  }
+
+
+
+  void openSetupPlanChooser(){
+    tab=7;
+    if(sp.getBoolean("ready",false))render();
+    else{
+      String[] ids={"MAKE","PLAYTEST","RESEARCH","RECOVERY"};
+      new AlertDialog.Builder(this).setTitle("JM setup presets")
+        .setItems(ids,(d,which)->approvePlan(ids[which])).show();
+    }
+  }
+  void approvePlan(String id){
+    try{
+      String preview=SetupPlan.preview(sp,id);
+      new AlertDialog.Builder(this).setTitle("Apply JM "+id+" setup?")
+        .setMessage(preview)
+        .setNegativeButton("Keep current setup",null)
+        .setPositiveButton("APPLY JM ONLY",(d,w)->{
+          try{
+            SetupPlan.run(this,sp,id);
+            render();
+            Toast.makeText(this,"JM "+id+" preset applied; recovery available",Toast.LENGTH_LONG).show();
+          }catch(Exception e){
+            new AlertDialog.Builder(this).setTitle("HOLD · Setup not confirmed")
+              .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+          }
+        }).show();
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Cannot prepare plan")
+        .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+    }
+  }
+  void automationRoom(){
+    title("JM / SETUP PLANS · 0.7","One touch. Your working field.",
+      "Apply a complete, reversible JM setup. Nothing is transferred, uninstalled, or silently changed in Samsung.");
+    LinearLayout current=card("CURRENT / OWNER-GOVERNED",
+      "Compact "+SetupPlan.layout(sp,false)+" · Expanded "+SetupPlan.layout(sp,true),
+      "Available Android width selects a view. Density choices only change spacing inside JM, not the phone's display settings.",TEAL);
+    label(current,"Last JM plan: "+sp.getString("setup.last","NOT APPLIED"),13,WHITE,true);
+    for(String id:new String[]{"MAKE","PLAYTEST","RESEARCH","RECOVERY"}){
+      String detail=id.equals("MAKE")?"Creation first · JM Ecostate":
+        id.equals("PLAYTEST")?"Game first · JM Games House":
+        id.equals("RESEARCH")?"Information first · source and AI":"Recovery first · JM source";
+      LinearLayout card=card("ONE-BODY PRESET",id,detail,PURPLE);
+      btn(card,"Preview and apply "+id,true,()->approvePlan(id));
+    }
+    LinearLayout tuning=card("INDEPENDENT / WINDOW FIT","Compact and expanded layouts",
+      "Set each screen's JM spacing separately. QUICK keeps more actions in view; COMFORT increases touch spacing.",BLUE);
+    btn(tuning,"Compact: "+SetupPlan.layout(sp,false)+"  · Toggle",false,()->toggleLayout(false));
+    btn(tuning,"Expanded: "+SetupPlan.layout(sp,true)+"  · Toggle",false,()->toggleLayout(true));
+    LinearLayout systems=card("SAMSUNG / INTENTIONAL HANDOFF","Native settings",
+      "JM can open supported Android Settings screens. Samsung owns Modes & Routines, Multi Window, DeX, and their confirmation controls.",TEAL);
+    btn(systems,"Open Android display settings",false,
+      ()->start(new Intent(Settings.ACTION_DISPLAY_SETTINGS)));
+    btn(systems,"Open Samsung/Android Settings",false,
+      ()->start(new Intent(Settings.ACTION_SETTINGS)));
+    LinearLayout undo=card("TRACE / RECOVERY","Recover earlier JM configuration",
+      SetupPlan.receiptText(this),PURPLE);
+    btn(undo,SetupPlan.canRecover(this)?"Recover previous JM setup":"No previous setup to recover",false,()->{
+      if(!SetupPlan.canRecover(this)){
+        Toast.makeText(this,"HOLD · No setup snapshot yet",Toast.LENGTH_LONG).show();return;
+      }
+      new AlertDialog.Builder(this).setTitle("Recover previous JM setup?")
+        .setMessage("Restores your prior JM configuration including selected project and layout. Samsung settings and external project files stay untouched.")
+        .setNegativeButton("Cancel",null)
+        .setPositiveButton("RECOVER",(d,w)->{
+          try{SetupPlan.recover(this,sp);render();}
+          catch(Exception e){new AlertDialog.Builder(this).setTitle("HOLD · Recovery unconfirmed")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();}
+        }).show();
+    });
+    btn(undo,"Export full JM configuration",false,()->file(true));
+    btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+  void toggleLayout(boolean expanded){
+    try{
+      String next=SetupPlan.layout(sp,expanded).equals("QUICK")?"COMFORT":"QUICK";
+      SetupPlan.setLayout(sp,expanded,next);
+      render();
+    }catch(Exception e){
+      Toast.makeText(this,"HOLD · JM layout could not be changed",Toast.LENGTH_LONG).show();
+    }
+  }
+
+
+
+  void reentryRoom(){
+    String projectId=ProjectShelf.selected(sp);
+    try{
+      JSONObject project=ProjectShelf.find(sp,projectId);
+      if(project==null)throw new IllegalStateException("Active project missing");
+      JSONObject current=SessionDeck.find(sp,projectId);
+      JSONObject point=ReentryEngine.point(sp,projectId);
+      int rev=current.getInt("revision");
+      title("JM / RETURN POINT · 0.9",project.getString("title"),
+        "Resume after interruption, capture a deliberate return state, or recover without rewinding your revision history.");
+      LinearLayout now=card("CURRENT / LATEST CHECKPOINT",
+        "Revision "+rev+" · "+current.getString("phase"),
+        SessionDeck.shortStatus(sp,projectId),TEAL);
+      btn(now,"Open working session →",true,()->{tab=8;render();});
+      LinearLayout mark=card("RETURN POINT / SAVED STATE",
+        point==null?"No Return Point captured":
+          "Captured from revision "+point.getInt("source_revision"),
+        ReentryEngine.status(sp,projectId),PURPLE);
+      if(rev>0)btn(mark,"Capture current SAVED checkpoint",true,()->{
+        new AlertDialog.Builder(this).setTitle("Capture JM Return Point?")
+          .setMessage("Save checkpoint revision "+rev+" as your Return Point. This does not include unsaved draft edits. Any previous Return Point for this project is replaced. No project files change.")
+          .setNegativeButton("Cancel",null)
+          .setPositiveButton("CAPTURE",(d,w)->{
+            try{
+              ReentryEngine.capture(sp,projectId,rev);render();
+              Toast.makeText(this,"JM Return Point captured",Toast.LENGTH_LONG).show();
+            }catch(Exception e){
+              new AlertDialog.Builder(this).setTitle("HOLD · Not captured")
+                .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+            }
+          }).show();
+      });
+      if(point!=null){
+        final int from=point.getInt("source_revision");
+        label(mark,"Captured note: "+point.getString("note"),13,WHITE,false);
+        btn(mark,"RETURN → new revision (keep prior current)",true,()->{
+          new AlertDialog.Builder(this).setTitle("Return without rewriting history?")
+            .setMessage("Re-enter checkpoint saved from revision "+from+". "+
+              "Current revision "+rev+" becomes your next Return Point. "+
+              "The restored content will be saved as revision "+(rev+1)+
+              ". Any unsaved local drafts will be cleared. External project files remain untouched.")
+            .setNegativeButton("Keep current",null)
+            .setPositiveButton("RETURN",(d,w)->{
+              try{
+                ReentryEngine.restore(sp,projectId,rev,from);
+                render();
+                Toast.makeText(this,"JM Return committed as next revision",Toast.LENGTH_LONG).show();
+              }catch(Exception e){
+                new AlertDialog.Builder(this).setTitle("HOLD · Return not applied")
+                  .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+              }
+            }).show();
+        });
+      }
+      LinearLayout elsewhere=card("CROSS-DEVICE / CONSENTED RE-ENTRY",
+        "Carry your working context, not copies of your creations",
+        "Full configuration exports include checkpoints and Return Points. A trusted ADB laptop can review an owner-prepared backup or propose an approved return, with revision checks.",BLUE);
+      btn(elsewhere,"Export full JM recovery body",false,()->file(true));
+      btn(elsewhere,"Prepare protected USB recovery snapshot",false,
+        ()->UsbBridge.prepareSnapshot(this,sp));
+      label(elsewhere,"No background synchronisation, private-file scanning, project binary transfer or Samsung launcher control.",12,MUTED,false);
+      btn(page,"← Current session",false,()->{tab=8;render();});
+    }catch(Exception e){
+      card("HOLD / RETURN POINT","Cannot read recovery state",e.getMessage(),PURPLE);
+      btn(page,"← JM Root",false,()->{tab=0;render();});
+    }
+  }
+
+  void sessionRoom(){
+    String projectId=ProjectShelf.selected(sp);
+    try{
+      JSONObject project=ProjectShelf.find(sp,projectId);
+      if(project==null)throw new IllegalStateException("Active JM project is not registered");
+      JSONObject checkpoint=SessionDeck.find(sp,projectId);
+      int revision=checkpoint.getInt("revision");
+      title("JM / SESSION CONTACT · 0.8",project.getString("title"),
+        "Same project, same working checkpoint on compact and expanded JM views. One project, one active session.");
+      LinearLayout summary=card("CHECKPOINT / LOCAL","Revision "+revision+" · "+checkpoint.getString("phase"),
+        SessionDeck.shortStatus(sp,projectId),TEAL);
+      label(summary,"Last saved: "+(checkpoint.getLong("updated_epoch_ms")==0?
+        "not yet":new java.text.SimpleDateFormat("dd MMM yyyy HH:mm",java.util.Locale.UK)
+        .format(new java.util.Date(checkpoint.getLong("updated_epoch_ms")))),13,MUTED,false);
+      LinearLayout working=card("PROJECT SESSION / LIVE DRAFT","Write where you left off",
+        "Text is drafted locally while typing. CHECKPOINT is the named, revisioned save that can be safely exchanged with the laptop.",BLUE);
+      Spinner stages=new Spinner(this);
+      String[] phases={"IDEA","BUILD","TEST","POLISH"};
+      android.widget.ArrayAdapter<String> adapter=new android.widget.ArrayAdapter<>(
+        this,android.R.layout.simple_spinner_dropdown_item,phases);
+      stages.setAdapter(adapter);
+      int selected=java.util.Arrays.asList(phases).indexOf(SessionDeck.draftText(sp,checkpoint,"phase"));
+      stages.setSelection(Math.max(0,selected));
+      working.addView(stages);
+      stages.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
+        public void onItemSelected(android.widget.AdapterView<?> parent,View view,int position,long itemId){
+          SessionDeck.draft(sp,projectId,"phase",phases[position]);
+        }
+        public void onNothingSelected(android.widget.AdapterView<?> parent){}
+      });
+      label(working,"WORKING NOTE",12,MUTED,true);
+      EditText note=new EditText(this);
+      note.setTextColor(WHITE);note.setHintTextColor(MUTED);note.setTextSize(15);
+      note.setMinLines(wide?5:3);
+      note.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+      note.setFilters(new InputFilter[]{new InputFilter.LengthFilter(SessionDeck.MAX_NOTES)});
+      note.setHint("What changed? What matters now?");
+      note.setText(SessionDeck.draftText(sp,checkpoint,"note"));
+      working.addView(note);
+      label(working,"NEXT CONTACT / FIRST THING TO DO",12,MUTED,true);
+      EditText next=new EditText(this);
+      next.setTextColor(WHITE);next.setHintTextColor(MUTED);next.setTextSize(15);
+      next.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+      next.setFilters(new InputFilter[]{new InputFilter.LengthFilter(SessionDeck.MAX_NEXT)});
+      next.setHint("Where to pick up next...");
+      next.setText(SessionDeck.draftText(sp,checkpoint,"next_action"));
+      working.addView(next);
+      note.addTextChangedListener(new TextWatcher(){
+        public void beforeTextChanged(CharSequence text,int start,int count,int after){}
+        public void onTextChanged(CharSequence text,int start,int before,int count){
+          SessionDeck.draft(sp,projectId,"note",text.toString());
+        }
+        public void afterTextChanged(Editable text){}
+      });
+      next.addTextChangedListener(new TextWatcher(){
+        public void beforeTextChanged(CharSequence text,int start,int count,int after){}
+        public void onTextChanged(CharSequence text,int start,int before,int count){
+          SessionDeck.draft(sp,projectId,"next_action",text.toString());
+        }
+        public void afterTextChanged(Editable text){}
+      });
+      btn(working,"CHECKPOINT / Save JM session",true,()->{
+        try{
+          int latest=SessionDeck.commit(sp,projectId,revision,
+            phases[stages.getSelectedItemPosition()],note.getText().toString(),
+            next.getText().toString());
+          Toast.makeText(this,"JM session checkpoint "+latest+" saved",Toast.LENGTH_LONG).show();
+          render();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · Session not overwritten")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
+      });
+      btn(working,"Open active project ↗",false,()->ProjectShelf.open(this,project));
+      LinearLayout continuity=card("TWO SCREENS / ONE LOCAL STATE","Safe continuation",
+        "Folding changes JM's available-width layout; the active project and its local draft remain in shared application storage.",PURPLE);
+      label(continuity,"Actual Fold transition and battery/process recovery still require owner-device tests.",13,MUTED,false);
+      btn(continuity,"Export full JM checkpoint collection",false,()->file(true));
+      btn(continuity,"Capture or recover a JM Return Point",true,()->{tab=9;render();});
+      btn(continuity,"Prepare laptop snapshot (with sessions)",false,
+        ()->UsbBridge.prepareSnapshot(this,sp));
+      btn(page,"← JM Root",false,()->{tab=0;render();});
+    }catch(Exception error){
+      card("HOLD / SESSION CONTACT","Could not open working session",
+        error.getMessage(),PURPLE);
+      btn(page,"JM project shelf →",false,()->{tab=6;render();});
+    }
+  }
+
+  void usbRoom(){
+    title("JM / USB CONTACT · 0.5","Your phone. Your approval.",
+      "Prepare configurations on a trusted laptop, review them here, and keep a recoverable local copy.");
+    LinearLayout status=card("CURRENT CONTACT","USB bridge is owner-gated",
+      UsbBridge.status(this),TEAL);
+    label(status,"Debug APK + authorised ADB required. A staged request is NOT an applied change.",13,MUTED,false);
+    LinearLayout launch=card("INBOUND / CONTROLLED","Receive a laptop request",
+      "The laptop stages a small JSON request in this app's private files. This screen presents its requested JM-only changes for your approval.",BLUE);
+    btn(launch,"Check pending USB request",true,()->UsbBridge.offer(this,sp,()->render()));
+    LinearLayout recovery=card("RECOVERY / ONE AUTHORITY","Prepare a protected snapshot",
+      "Only after you tap PREPARE can the laptop copy the current JM configuration. The snapshot contains your root note, so protect the laptop and backup.",PURPLE);
+    btn(recovery,"Prepare USB recovery snapshot",true,()->UsbBridge.prepareSnapshot(this,sp));
+    btn(recovery,"Recover previous approved restore",false,()->UsbBridge.rollback(this,sp,()->render()));
+    btn(recovery,"Export through Android Documents instead",false,()->file(true));
+    LinearLayout explain=card("FIRST CONTACT / NO SURRENDER","What your laptop can and cannot do",
+      "The developer bridge needs a trusted USB debugging connection and a debuggable JM APK. Its profile and restore commands ALWAYS request your approval on this screen.",TEAL);
+    label(explain,"Laptop: inspect device · stage JM route · fetch owner-prepared snapshot · read decision receipt.",13,WHITE,false);
+    space(explain,10);
+    label(explain,"Not permitted by JM: silent restores · Galaxy AI extraction · Samsung home rearrangement · root or device administrator controls.",13,MUTED,false);
+    space(page,12);
+    btn(page,"My project shelf →",false,()->{tab=6;render();});
+    btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+
+
+  void projectRoom(){
+    title("JM / PROJECT CONTACT · 0.6","Actual JM bodies.\nOne connected shelf.",
+      "These are references to your projects—not project copies. Unbound projects stay visible without fabricated launch URLs.");
+    String filter=sp.getString("project.family","GAMES");
+    android.widget.HorizontalScrollView chooser=new android.widget.HorizontalScrollView(this);
+    chooser.setHorizontalScrollBarEnabled(false);
+    LinearLayout tags=new LinearLayout(this);tags.setOrientation(0);
+    chooser.addView(tags);page.addView(chooser);
+    String[] families={"GAMES","MUSIC","BUILD","ESTATE","COMICS","CARTOONS","BOOKS"};
+    String[] labels={"GAMES","MUSIC","CODING","INFRA","COMICS","CARTOONS","BOOKS"};
+    for(int pos=0;pos<families.length;pos++){
+      final String f=families[pos];Button b=new Button(this);
+      b.setAllCaps(false);b.setText(labels[pos]);b.setTextSize(11);
+      b.setTextColor(f.equals(filter)?BG:WHITE);
+      b.setBackground(bg(f.equals(filter)?BLUE:PANEL,f.equals(filter)?0:0xff334a67,12));
+      LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(dp(92),dp(48));
+      p.setMargins(dp(2),0,dp(2),0);tags.addView(b,p);
+      b.setOnClickListener(v->{sp.edit().putString("project.family",f).apply();render();});
+    }
+    space(page,12);
+    try{
+      org.json.JSONArray data=ProjectShelf.all(sp);
+      int shown=0;
+      for(int i=0;i<data.length();i++){
+        JSONObject row=data.getJSONObject(i);
+        if(!filter.equals(row.getString("family")))continue;
+        shown++;
+        projectCard(row);
+      }
+      if(shown==0)card("EMPTY FIELD","No "+filter.toLowerCase()+" projects bound",
+        "Add a new project reference or switch family. Existing files are not deleted.",PURPLE);
+      LinearLayout status=card("ONE BODY / REFERENCES",""+data.length()+" JM project routes registered",
+        "A project can exist without an active URL. Only the current owner-confirmed route is launched.",TEAL);
+      label(status,"Current: "+ProjectShelf.selected(sp),13,WHITE,true);
+    }catch(Exception e){
+      card("HOLD / PROJECT SHELF","Cannot read shelf",e.getMessage(),PURPLE);
+    }
+    btn(page,"Open active project session →",true,()->{tab=8;render();});
+    btn(page,"Add a JM project reference",false,this::addProject);
+    btn(page,"← JM Root",false,()->{tab=0;render();});
+  }
+  void projectCard(JSONObject entry){
+    String id=entry.optString("id","");
+    boolean chosen=id.equals(ProjectShelf.selected(sp));
+    String link=entry.optString("url","");
+    LinearLayout box=card(chosen?"● ACTIVE / "+entry.optString("family"):"○ JM BODY / "+entry.optString("family"),
+      entry.optString("title","Untitled"),
+      link.isEmpty()?"NO VERIFIED ROUTE · project retained as a reference":
+        "READY / "+android.net.Uri.parse(link).getHost(),chosen?TEAL:PURPLE);
+    if(!chosen)btn(box,"Set current JM project",false,()->{
+      try{ProjectShelf.choose(sp,id);render();}
+      catch(Exception e){Toast.makeText(this,"HOLD · Cannot select this project",Toast.LENGTH_LONG).show();}
+    });
+    if(link.isEmpty())btn(box,"Bind an HTTPS route",false,()->bindProject(entry));
+    else{
+      btn(box,"OPEN "+entry.optString("title","PROJECT")+" ↗",true,()->ProjectShelf.open(this,entry));
+      btn(box,"Edit route",false,()->bindProject(entry));
+    }
+  }
+  void bindProject(JSONObject source){
+    EditText url=new EditText(this);url.setTextSize(15);url.setSingleLine(false);
+    url.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+    url.setHint("https://your-published-project");
+    url.setText(source.optString("url",""));
+    url.setSelectAllOnFocus(true);
+    LinearLayout layout=new LinearLayout(this);layout.setOrientation(1);
+    layout.setPadding(dp(16),dp(7),dp(16),0);layout.addView(url);
+    new AlertDialog.Builder(this).setTitle("Bind "+source.optString("title"))
+      .setMessage("This updates JM's reference only. Use a trusted public HTTPS location, or leave it empty to mark the route unbound.")
+      .setView(layout).setNegativeButton("Cancel",null)
+      .setPositiveButton("Save route",(d,w)->{
+        try{
+          JSONObject data=new JSONObject(source.toString());
+          data.put("url",url.getText().toString().trim());
+          ProjectShelf.upsert(sp,data);
+          render();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · Route unchanged")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
+      }).show();
+  }
+  void addProject(){
+    LinearLayout layout=new LinearLayout(this);
+    layout.setOrientation(1);layout.setPadding(dp(16),dp(4),dp(16),dp(4));
+    EditText id=new EditText(this);id.setSingleLine(true);id.setHint("unique-id e.g. new-game");
+    EditText title=new EditText(this);title.setSingleLine(true);title.setHint("Project title");
+    Spinner family=new Spinner(this);
+    String[] families={"GAMES","MUSIC","BUILD","ESTATE","COMICS","CARTOONS","BOOKS"};
+    android.widget.ArrayAdapter<String> adapter=new android.widget.ArrayAdapter<>(
+      this,android.R.layout.simple_spinner_dropdown_item,families);
+    family.setAdapter(adapter);
+    layout.addView(id);layout.addView(title);layout.addView(family);
+    new AlertDialog.Builder(this).setTitle("Register an existing JM body")
+      .setMessage("Reference only. Choose the project family; bind its real route separately.")
+      .setView(layout).setNegativeButton("Cancel",null)
+      .setPositiveButton("Register",(d,w)->{
+        try{
+          JSONObject row=new JSONObject();
+          row.put("id",id.getText().toString().trim());
+          row.put("title",title.getText().toString().trim());
+          row.put("family",families[family.getSelectedItemPosition()]);
+          row.put("url","");
+          ProjectShelf.upsert(sp,row);
+          sp.edit().putString("project.family",row.getString("family")).apply();
+          render();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · Project not added")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
+      }).show();
+  }
+
+  // Independent JM intake room: owner chooses a file, explicitly accepts its
+  // private local copy, and can export or delete that specific original.
+  void chooseIntake(){
+    Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+    i.addCategory(Intent.CATEGORY_OPENABLE);
+    i.setType("*/*");
+    i.putExtra(Intent.EXTRA_MIME_TYPES,new String[]{
+      "image/png","image/jpeg","image/webp","application/pdf","text/plain"});
+    startActivityForResult(i,JM_INTAKE_PICK);
+  }
+  void intakeRoom(){
+    title("JM / CREATIVE INTAKE · v1.0","Owner-selected originals.",
+      "Images, screenshots, PDFs and text. No automated Galaxy AI extraction. Original bytes are private on THIS phone.");
+    LinearLayout choose=card("AUTHORIAL SOURCE","Preserve source before transformation",
+      "Maximum 2 MiB per original, 12 items. Local copies are NOT included in the JM configuration JSON backup.",BLUE);
+    btn(choose,"Select an original using Android Files",true,this::chooseIntake);
+    btn(choose,"Open Samsung Notes",false,()->app("com.samsung.android.app.notes"));
+    try{
+      org.json.JSONArray saved=JMIntakeV1.registry(sp);
+      for(int n=saved.length()-1;n>=0;n--){
+        final JSONObject row=saved.getJSONObject(n);
+        String id=row.getString("sha256"),mime=row.getString("mime");
+        LinearLayout body=card("JM SOURCE / "+row.getString("project"),
+          mime+" · "+row.getInt("bytes")+" bytes","SHA-256: "+id,TEAL);
+        btn(body,"Export this original",false,()->{
+          try{
+            JMIntakeV1.checked(this,row);
+            pendingIntakeExport=row;
+            Intent out=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            out.addCategory(Intent.CATEGORY_OPENABLE);
+            out.setType(mime);out.putExtra(Intent.EXTRA_TITLE,"JM_SOURCE_"+id.substring(0,12)+JMIntakeV1.type(mime));
+            startActivityForResult(out,JM_INTAKE_EXPORT);
+          }catch(Exception e){new AlertDialog.Builder(this).setTitle("HOLD · Original unavailable")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();}
+        });
+        btn(body,"Delete this local copy (confirm)",false,()->new AlertDialog.Builder(this)
+          .setTitle("Retire local JM original?")
+          .setMessage("This deletes the JM private copy, not the original in Samsung/Gallery. Export first if needed.")
+          .setNegativeButton("Keep",null)
+          .setPositiveButton("DELETE COPY",(d,w)->{
+            try{JMIntakeV1.forget(this,sp,row);render();}
+            catch(Exception e){Toast.makeText(this,"HOLD · Copy not fully retired",Toast.LENGTH_LONG).show();}
+          }).show());
+      }
+      if(saved.length()==0)card("EMPTY","No accepted originals yet",
+        "Use Android Files or Share from a supported app, then approve the private copy.",PURPLE);
+    }catch(Exception e){card("HOLD","Intake metadata invalid",e.getMessage(),PURPLE);}
+    btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+  void contactRoom(){
+    title("JM / LIVING CONTACT · v1.0","Signal is not proof.",
+      "Scoped JM device and voice route receipts, distinct from external provider or Samsung ownership claims.");
+    LinearLayout actions=card("EVIDENCE / OWNER-GOVERNED","Contact observations",
+      "Only explicitly observed events get owner marks. Automated route receipts never identify Bixby as their caller.",BLUE);
+    btn(actions,"Record owner-observed Bixby app launch",false,()->markContact("BIXBY_APP_LAUNCH"));
+    btn(actions,"Record owner-observed JM Galaxy shortcut",false,()->markContact("JM_GALAXY_SHORTCUT"));
+    btn(actions,"Export contact ledger JSON",true,()->{
+      Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+      i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
+      i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_CONTACT_RECEIPTS_v1_0.json");
+      startActivityForResult(i,JM_CONTACT_EXPORT);
+    });
+    try{
+      org.json.JSONArray receipts=JMContactV1.receipts(sp);
+      card("TRACE / NON-AUTHENTICATING",""+receipts.length()+" locally saved contact observations",
+        "Nothing here automatically proves physical Samsung execution, trusted assistant identity or cloud model responses.",PURPLE);
+      for(int i=receipts.length()-1;i>=Math.max(0,receipts.length()-8);i--){
+        JSONObject row=receipts.getJSONObject(i);
+        card(row.getString("kind"),row.getString("name"),row.getString("proof"),TEAL);
+      }
+    }catch(Exception e){card("HOLD","Contact ledger invalid",e.getMessage(),PURPLE);}
+    card("EXTERNAL PROVIDERS / HOLD","No private Samsung AI access asserted",
+      "Bixby Automation Studio and Gemini Nano ML Kit remain separately gated experiments. "+
+      "Current JM contact receipts prove only their own local scope.",PURPLE);
+    btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+  // CP01: first-party JM UI, explicit outbound handoff to independently owned providers.
+  // This does not claim their code, APIs, accounts or data as JM integrations.
+  void companionRoom(){
+    title("JM / COMPANION CONTACT · CP02","One working field. Many independent doors.",
+      "Open existing services via Android's supported HTTPS handoff. The provider or browser handles the account.");
+    LinearLayout guide=card("OWNER CONTROL / NO INVISIBLE CONNECTION","Every door asks first.",
+      "No passwords, tokens, private files, clipboard content or sessions are sent by JM. This is navigation, NOT provider API access or an unofficial modified APK.",TEAL);
+    label(guide,"Use Android Share back into JM only when you explicitly choose to.",13,MUTED,false);
+    LinearLayout returnPath=card("RECOVER / SHARE / RETURN","Bring work back into JM.",
+      "Open another provider with permission; use Android Share into our existing source intake. JM does not inspect other apps in the background.",PURPLE);
+    btn(returnPath,"Open JM source intake →",false,()->{tab=10;render();});
+    btn(returnPath,"Share saved JM checkpoint →",false,this::shareSavedJmCheckpoint);
+    btn(returnPath,"Open JM contact receipts →",false,()->{tab=11;render();});
+    try{
+      org.json.JSONArray receipts=JMContactV1.receipts(sp);
+      for(int i=receipts.length()-1;i>=0;i--){
+        JSONObject row=receipts.getJSONObject(i);
+        if(!"ANDROID_VIEW_DISPATCH".equals(row.optString("kind","")) ||
+           !row.optString("name","").startsWith("COMPANION_"))continue;
+        card("LAST REQUEST / LOCAL TRACE",row.optString("name",""),
+          row.optString("proof","")+" This is not proof that the provider opened or returned data.",TEAL);
+        break;
+      }
+    }catch(Exception ignored){
+      card("HOLD / CONTACT TRACE","Local receipt unreadable",
+        "Open Living Contact to review. No external integration is inferred.",PURPLE);
+    }
+    for(JMCompanionDoors.Door door:JMCompanionDoors.DOORS){
+      LinearLayout c=card(door.kind+" / "+door.host,door.title,door.purpose,door.kind.equals("JM SOURCE")?TEAL:BLUE);
+      btn(c,"Open "+door.title+"  ↗",false,()->confirmCompanion(door));
+    }
+    card("NEXT / NOT CLAIMED","Authenticated integration stays separate",
+      "GitHub App grants, Google OAuth, AI provider APIs and third-party clients require their own contracts and approval. No external API credentials live in this APK.",PURPLE);
+    btn(page,"← Return to JM Root",false,()->{tab=0;render();});
+  }
+  // CP03: only the owner's selected, saved native SessionDeck checkpoint.
+  // Preview first; confirm again in Android Sharesheet. Unsaved drafts and
+  // changed revisions are refused instead of being silently included.
+  void shareSavedJmCheckpoint(){
+    final JMCompanionShare.Prepared prepared;
+    try{prepared=JMCompanionShare.prepare(sp);}
+    catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Checkpoint not shareable")
+        .setMessage(e.getMessage()).setPositiveButton("Keep inside JM",null).show();
+      return;
+    }
+    new AlertDialog.Builder(this).setTitle("Share saved JM checkpoint?")
+      .setMessage("PRIVATE SOURCE LEAVES JM ONLY IF YOU APPROVE.\n"+
+        "This is the exact saved revision; it will go to whichever app you select.\n"+
+        "Recipient, account and eventual use are NOT verified by JM.\n\n"+
+        prepared.payload)
+      .setNegativeButton("Keep inside JM",null)
+      .setPositiveButton("Choose recipient",(d,w)->{
+        if(!JMCompanionShare.stillCurrent(sp,prepared)){
+          Toast.makeText(this,"HOLD · JM checkpoint changed; nothing shared",Toast.LENGTH_LONG).show();
+          return;
+        }
+        try{
+          startActivity(JMCompanionShare.chooser(prepared));
+          try{
+            JMContactV1.record(sp,"COMPANION_SHARE","ANDROID_SHARE_REQUEST",
+              "Owner approved native share of saved "+prepared.projectId+
+              " revision "+prepared.revision+"; recipient/data receipt unverified.");
+          }catch(Exception e){
+            Toast.makeText(this,"HOLD · Share chooser opened; contact trace unsaved",Toast.LENGTH_LONG).show();
+          }
+        }catch(Exception e){
+          Toast.makeText(this,"HOLD · Android share unavailable",Toast.LENGTH_LONG).show();
+        }
+      }).show();
+  }
+
+  void confirmCompanion(JMCompanionDoors.Door door){
+    new AlertDialog.Builder(this)
+      .setTitle("Open "+door.title+" outside JM?")
+      .setMessage("Destination: "+door.host+"\n\nAndroid may open an installed app or a browser. "+door.title+
+        " remains independently operated; this action sends no JM note, file or account token.")
+      .setNegativeButton("Stay in JM",null)
+      .setPositiveButton("Open external door",(d,w)->{
+        try{
+          startActivity(JMCompanionDoors.intentFor(door.id));
+          // Existing bounded JM contact body; only Android's acceptance of
+          // the owner's request is recorded, never provider authentication.
+          try{
+            JMContactV1.record(sp,"COMPANION_"+door.id.toUpperCase(java.util.Locale.ROOT),
+              "ANDROID_VIEW_DISPATCH","Owner requested "+door.host+
+              " via Android ACTION_VIEW; provider login, work and result UNVERIFIED.");
+          }catch(Exception traceError){
+            Toast.makeText(this,"HOLD · External route requested; JM trace unsaved",Toast.LENGTH_LONG).show();
+          }
+        }catch(Exception e){
+          Toast.makeText(this,"HOLD · No supported app/browser handoff",Toast.LENGTH_LONG).show();
+        }
+      }).show();
+  }
+
+  void markContact(String event){
+    new AlertDialog.Builder(this).setTitle("Record JM owner observation?")
+      .setMessage("Save only your observation of "+event+
+        ". This does not remotely authenticate Bixby, Galaxy AI or the Samsung OS.")
+      .setNegativeButton("Cancel",null)
+      .setPositiveButton("SAVE OWNER MARK",(d,w)->{
+        try{JMContactV1.record(sp,event,"OWNER_REPORTED","Physical-device scope asserted by owner; independent trace not supplied");
+          render();}
+        catch(Exception e){Toast.makeText(this,"HOLD · Observation not saved",Toast.LENGTH_LONG).show();}
+      }).show();
+  }
+
+  void routes(){
+    title("CONTACT ROUTES","Open existing bodies.","No hidden migration and no pretend connections.");
+    LinearLayout local=card("ANDROID","Device apps","Installed apps open normally. Missing ones return HOLD.",BLUE);
+    btn(local,"My Files",false,()->app("com.sec.android.app.myfiles"));
+    btn(local,"Samsung Notes",false,()->app("com.samsung.android.app.notes"));
+    btn(local,"ChatGPT",false,()->app("com.openai.chatgpt"));
+    btn(local,"Phone dialler",false,()->start(new Intent(Intent.ACTION_DIAL)));
+    LinearLayout remote=card("JM ECOSTATE","Public source houses","These destinations open in your browser.",PURPLE);
+    btn(remote,"JM Estate",false,()->url("https://jmisjustme.github.io/JM-cading-lab/"));
+    btn(remote,"JM Games",false,()->url("https://jmisjustme.github.io/JM-cading-lab/games-beyond/"));
+    btn(remote,"GitHub",false,()->url("https://github.com/JMisJustMe/JM-cading-lab"));
+    btn(page,"Browse all JM projects →",true,()->{tab=6;render();});
+  }
+  void control(){
+    title("SETTINGS / OWNER-GOVERNED","Control room.","These operations require your explicit touch or Android's approval.");
+    LinearLayout focus=card("ORDER","Change your priority","This affects your JM dashboard only.",PURPLE);
+    btn(focus,"Creator first",false,()->focus("CREATE"));
+    btn(focus,"Playtest first",false,()->focus("PLAY"));
+    btn(focus,"Everyday first",false,()->focus("EVERYDAY"));
+    LinearLayout controls=card("AUTOMATION BOUNDARY","Authorised operations","Samsung retains authority over home-screen changes.",BLUE);
+    btn(controls,"Request JM home shortcut",true,this::pin);
+    btn(controls,"Export configuration JSON",false,()->file(true));
+    btn(controls,"Import configuration JSON",false,()->file(false));
+    btn(controls,"Explore Galaxy built-ins",false,()->{tab=1;render();});
+    btn(controls,"Living Contact / Receipts",false,()->{tab=11;render();});
+    btn(controls,"Creative Intake / Saved originals",false,()->{tab=10;render();});
+    btn(controls,"Run device preflight & export receipt",true,()->{tab=4;render();});
+    btn(controls,"USB CONTACT / Owner-approved workstation",false,()->{tab=5;render();});
+    btn(controls,"My JM project shelf",false,()->{tab=6;render();});
+    btn(controls,"Apply or recover a JM setup plan",true,()->{tab=7;render();});
+    btn(controls,"Current project session",false,()->{tab=8;render();});
+    btn(controls,"JM return points / recovery",false,()->{tab=9;render();});
+    btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
+    btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
+      .setTitle("Replay the opening?")
+      .setMessage("Only prelaunch progress resets; your notes and priority stay saved.")
+      .setNegativeButton("Cancel",null)
+      .setPositiveButton("Replay",(dialog,which)->{sp.edit().putBoolean("ready",false).putInt("stage",0).apply();render();}).show());
+    card("CONTACT RECEIPT",""+widthDp+" dp / "+(wide?"WORKFIELD":"SOURCE"),
+      "Available width is measured; hinge sensing, launcher rearrangement, Oppo migration and device Ding remain OPEN.",TEAL);
+  }
+  void focus(String chosen){sp.edit().putString("focus",chosen).apply();render();}
+  void start(Intent intent){try{startActivity(intent);}catch(Exception e){Toast.makeText(this,"HOLD · Android cannot open this route",1).show();}}
+  void app(String pkg){
+    Intent i=getPackageManager().getLaunchIntentForPackage(pkg);
+    if(i==null){Toast.makeText(this,"HOLD · App unavailable: "+pkg,1).show();return;}start(i);
+  }
+  void url(String u){start(new Intent(Intent.ACTION_VIEW,Uri.parse(u)));}
+  void pin(){
+    ShortcutManager m=getSystemService(ShortcutManager.class);
+    if(m==null||!m.isRequestPinShortcutSupported()){
+      Toast.makeText(this,"HOLD · Launcher does not permit shortcut request",1).show();return;
+    }
+    ShortcutInfo s=new ShortcutInfo.Builder(this,"jm-fold-root")
+      .setShortLabel("JM Root").setLongLabel("JM Fold Ultra / Paired Root")
+      .setIcon(Icon.createWithResource(this,R.drawable.jm_root_mark))
+      .setIntent(new Intent(this,MainActivity.class).setAction(Intent.ACTION_MAIN)).build();
+    if(!m.requestPinShortcut(s,null))Toast.makeText(this,"HOLD · Shortcut not accepted",1).show();
+  }
+  void cloudReturnImport(){
+    Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+    i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
+    try{startActivityForResult(i,CLOUD_RETURN_IMPORT);}
+    catch(Exception e){Toast.makeText(this,"HOLD · JSON picker unavailable",Toast.LENGTH_LONG).show();}
+  }
+  void reviewCloudReturn(){
+    try{
+      JSONObject pending=CloudReturnBridge.pending(sp);
+      if(pending==null){Toast.makeText(this,"No staged Living Home return",Toast.LENGTH_LONG).show();return;}
+      String project=pending.getString("project_title");
+      String mission=pending.getString("mission_id");
+      String result=pending.getString("result");
+      int expected=pending.getInt("native_expected_revision");
+      String preview=result.length()>1000?result.substring(0,1000)+"…":result;
+      new AlertDialog.Builder(this).setTitle("JM / Living Home return · owner approval")
+        .setMessage("Project: "+project+"\nMission: "+mission+"\nExpected native revision: "+expected+
+          "\n\nUNVERIFIED EXTERNAL TEXT · not a proven model, server or device execution.\n\n"+
+          preview+"\n\nAppend as a NEW native session revision? No Return Point is overwritten.")
+        .setNegativeButton("Keep pending",null)
+        .setPositiveButton("Approve new JM checkpoint",(d,w)->{
+          try{
+            int revision=CloudReturnBridge.apply(sp);
+            Toast.makeText(this,"JM native checkpoint revision "+revision+" saved",Toast.LENGTH_LONG).show();
+            tab=8;render();
+          }catch(Exception e){
+            new AlertDialog.Builder(this).setTitle("HOLD · No project state changed")
+              .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+          }
+        }).show();
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Pending return invalid")
+        .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+    }
+  }
+  void file(boolean exporting){
+    Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
+    i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v1_0.json");
+    try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
+    catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
+  }
+  @Override protected void onActivityResult(int req,int result,Intent data){
+    super.onActivityResult(req,result,data);
+    if(result!=RESULT_OK||data==null||data.getData()==null)return;
+    Uri uri=data.getData();
+    try{
+      if(req==JM_INTAKE_PICK){
+        JMIntakeV1.review(this,sp,uri,getContentResolver().getType(uri),()->{tab=10;render();});
+      }else if(req==JM_INTAKE_EXPORT){
+        JSONObject row=pendingIntakeExport;pendingIntakeExport=null;
+        if(row==null)throw new IOException("Export selection expired; choose the original again");
+        File original=JMIntakeV1.checked(this,row);
+        try(InputStream in=new FileInputStream(original);
+            OutputStream out=getContentResolver().openOutputStream(uri,"w")){
+          if(out==null)throw new IOException("Export destination unavailable");
+          byte[] b=new byte[8192];int n;
+          while((n=in.read(b))!=-1)out.write(b,0,n);
+        }
+        Toast.makeText(this,"JM original exported to your selected location",Toast.LENGTH_LONG).show();
+      }else if(req==JM_CONTACT_EXPORT){
+        byte[] contactBytes=JMContactV1.exportReceipt(sp).toString(2).getBytes(StandardCharsets.UTF_8);
+        try(OutputStream out=getContentResolver().openOutputStream(uri,"w")){
+          if(out==null)throw new IOException("Contact export unavailable");
+          out.write(contactBytes);
+        }
+        Toast.makeText(this,"Scoped JM contact ledger exported",Toast.LENGTH_LONG).show();
+      }else if(req==CLOUD_RETURN_IMPORT){
+        ByteArrayOutputStream out=new ByteArrayOutputStream();
+        try(InputStream in=getContentResolver().openInputStream(uri)){
+          if(in==null)throw new IOException("Input unavailable");
+          byte[] b=new byte[2048];int n;
+          while((n=in.read(b))!=-1){
+            if(out.size()+n>CloudReturnBridge.MAX_LEDGER_BYTES)throw new IOException("Cloud return ledger exceeds 250 KB");
+            out.write(b,0,n);
+          }
+        }
+        JSONObject active=ProjectShelf.find(sp,ProjectShelf.selected(sp));
+        if(active==null)throw new IllegalStateException("No active native JM project");
+        int revision=SessionDeck.find(sp,active.getString("id")).getInt("revision");
+        JSONObject pending=CloudReturnBridge.select(out.toString("UTF-8"),active,revision);
+        CloudReturnBridge.stage(sp,pending);
+        reviewCloudReturn();
+      }else if(req==EXPORT){
+        // One prevalidated native export body; Living Home + contact metadata travel
+        // atomically with the established SessionDeck / ReturnPoint config.
+        // Private JM Intake original payload files are NOT included.
+        JSONObject j=UsbBridge.configuration(sp);
+        try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
+          if(o==null)throw new IOException("Output unavailable");
+          o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
+        }
+        Toast.makeText(this,"JM v1.0 configuration and bounded contact metadata exported (not media payloads)",Toast.LENGTH_LONG).show();
+      }else if(req==PREFLIGHT_EXPORT){
+        String receipt=sp.getString("preflight.last","");
+        if(receipt.isEmpty())throw new IOException("Run diagnostics before exporting a receipt");
+        try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
+          if(o==null)throw new IOException("Receipt output unavailable");
+          o.write(receipt.getBytes(StandardCharsets.UTF_8));
+        }
+        Toast.makeText(this,"Local preflight receipt exported",Toast.LENGTH_LONG).show();
+      }else if(req==IMPORT){
+        ByteArrayOutputStream o=new ByteArrayOutputStream();
+        try(InputStream in=getContentResolver().openInputStream(uri)){
+          if(in==null)throw new IOException("Input unavailable");
+          byte[] b=new byte[2048];int n;
+          while((n=in.read(b))!=-1){
+            if(o.size()+n>524288)throw new IOException("Import exceeds 512 KiB");o.write(b,0,n);
+          }
+        }
+        JSONObject j=new JSONObject(o.toString("UTF-8"));
+        String schema=j.optString("schema");
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.8".equals(schema)&&!"JM.FoldUltraSetup/0.7".equals(schema)&&!"JM.FoldUltraSetup/0.6".equals(schema)&&!"JM.FoldUltraSetup/0.5".equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+          throw new IllegalArgumentException("Schema not recognised");
+        String root=j.getString("root");
+        if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
+        boolean legacy=!"JM.FoldUltraRoot/0.1".equals(schema);
+        String focus=legacy?j.optString("focus","CREATE"):"CREATE";
+        if(!focus.equals("CREATE")&&!focus.equals("PLAY")&&!focus.equals("EVERYDAY"))
+          throw new IllegalArgumentException("Unknown focus");
+        boolean ready=legacy&&j.optBoolean("ready",false);
+        int step=legacy?j.optInt("stage",0):0;
+        if(step<0||step>4)throw new IllegalArgumentException("Stage invalid");
+        if(SCHEMA.equals(schema)){
+          UsbBridge.checkConfig(j);
+          ProjectShelf.validateList(j.getJSONArray("project_shelf"));
+          String active=j.getString("active_project");
+          boolean present=false;
+          org.json.JSONArray available=j.getJSONArray("project_shelf");
+          for(int n=0;n<available.length();n++){
+            if(available.getJSONObject(n).getString("id").equals(active))present=true;
+          }
+          if(!present)throw new IllegalArgumentException("Active project missing from imported shelf");
+        }
+        new AlertDialog.Builder(this).setTitle("Import JM configuration?")
+          .setMessage("Owner-approved JM configuration restore can replace root, sessions, Return Points, Living Home replay metadata and included contact receipts. A local rollback is saved first. Media original bytes are NOT inside JSON. Continue?")
+          .setNegativeButton("Cancel",null)
+          .setPositiveButton("Import",(d,w)->{
+            if(SCHEMA.equals(schema)){
+              try{
+                UsbBridge.write(this,"local_import_rollback.json",UsbBridge.configuration(sp).toString(2));
+                UsbBridge.applyConfig(sp,j);
+                tab=0;render();
+                Toast.makeText(this,"JM configuration and included extension metadata imported; rollback saved",Toast.LENGTH_LONG).show();
+              }catch(Exception problem){
+                new AlertDialog.Builder(this).setTitle("HOLD · Import not confirmed")
+                  .setMessage(problem.getMessage()).setPositiveButton("OK",null).show();
+              }
+              return;
+            }
+            sp.edit().putString("root",root).putString("focus",focus)
+              .putBoolean("ready",ready).putInt("stage",step).apply();
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
+              JSONObject marks=j.optJSONObject("native_owner_marks");
+              if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
+              String group=j.optString("native_group","ASSIST");
+              if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
+            }
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
+              String selectedSession=j.optString("session","MAKE");
+              if(selectedSession.equals("MAKE")||selectedSession.equals("PLAYTEST")||
+                 selectedSession.equals("RESEARCH")||selectedSession.equals("RECOVERY")){
+                sp.edit().putString("session",selectedSession).apply();
+              }
+              JSONObject owner=j.optJSONObject("owner_test_marks");
+              if(owner!=null){
+                sp.edit().putBoolean("owner.compact_tested",owner.optBoolean("compact",false))
+                  .putBoolean("owner.expanded_tested",owner.optBoolean("expanded",false))
+                  .putBoolean("owner.reopen_tested",owner.optBoolean("reopen",false)).apply();
+              }
+            }
+            if(SCHEMA.equals(schema)){
+              try{
+                org.json.JSONArray projects=ProjectShelf.validateList(j.getJSONArray("project_shelf"));
+                String active=j.getString("active_project");
+                ProjectShelf.install(sp,projects,active);
+              }catch(Exception failure){
+                Toast.makeText(this,"HOLD · Imported JM settings, but project shelf was not restored",Toast.LENGTH_LONG).show();
+              }
+            }
+            tab=0;render();
+          }).show();
+      }
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Nothing imported")
+        .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+    }
+  }
+}

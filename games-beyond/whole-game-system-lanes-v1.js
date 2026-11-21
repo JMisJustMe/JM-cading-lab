@@ -33,7 +33,7 @@ var CARTRIDGES=[
 ['Seed Runner','1.0','JM RouteOS first-party cartridge'],
 ['Rebound Route','0.8.5','JM RouteOS first-party cartridge']
 ];
-var body=null, tab='games', query='',kind='all',pack=null;
+var body=null, tab='games', query='',kind='all',pack=null,layers={};
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function norm(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[’]/g,"'").replace(/\s+/g,' ').trim();}
 function originalRows(){try{return typeof R!=='undefined'&&Array.isArray(R)?R:[];}catch(e){return [];}}
@@ -44,7 +44,7 @@ return '<article class="gb26-card"><h3>'+esc(title)+'</h3><p>'+esc(meta)+'</p><p
 function countSummary(){
 var r=originalRows();
 var summary=document.getElementById('gb26-summary');
-if(summary)summary.textContent=r.length+' public catalogue rows · '+ENGINES.length+' identified engine families · '+LOOPS.length+' public loop leads · '+CARTRIDGES.length+' RouteOS cartridges'+(pack?' · '+pack.records.length+' owner source headings / '+pack.loopSources.length+' donor-associated loop records locally loaded':' · private source index not imported');
+if(summary)summary.textContent=r.length+' public catalogue rows · '+ENGINES.length+' identified engine families · '+LOOPS.length+' public loop leads · '+CARTRIDGES.length+' RouteOS cartridges'+(pack?' · '+pack.records.length+' owner source records / '+pack.loopSources.length+' donor-associated loop records locally loaded':' · private source index not imported');
 }
 function match(s){return !query||norm(s).includes(norm(query));}
 function render(){
@@ -63,13 +63,14 @@ if(tab==='games'){
   CARTRIDGES.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0]+' · '+x[1],x[2],'RouteOS runtime entrance verified as source; owner physical long-play remains separate.','routeos/runtime/index.html','OPEN ROUTEOS CARTRIDGE BAY'));});
   items.push('<p class="gb26-guide">Other game versions remain independently preserved as source cartridges. Open the original game in the House, or import its verified exact HTML locally; no auto-selecting an unverified current keeper.</p>');
   rows.forEach(function(r){if(match(r[0]+' '+r[2]))items.push(smallCard(r[0],r[2]||'Version unrecorded',r[3],r[6]||'',r[6]?'OPEN LINKED EDITION':'SOURCE REFERENCE'));});
+  if(pack)pack.records.forEach(function(r){if(!Array.isArray(r.editions))return;r.editions.forEach(function(e){if(match(r.name+' '+e.file))items.push(smallCard(r.name+' · '+e.file,'Exact source edition; SHA-256 '+String(e.sha256||'').slice(0,16),'Original Windows EngineDoor CP24 version cartridge. No automatic public source publication or current-head promotion.',''));});});
 }else if(tab==='owner'){
   if(!pack){items.push('<div class="gb26-guide"><h3>Private A–Z source index not loaded</h3><p>The larger working inventory stays on your device rather than being copied into this public repository. Import the owner JSON once per browser profile to add every recovered original-source heading, donor version and associated loop to this same House view.</p></div>');}
   else{
     var names=new Set(rows.map(function(x){return norm(x[0]);}));
     var list=pack.records.filter(function(x){return (kind==='all'||x.kind===kind)&&match(x.name+' '+x.evidence);});
     items.push('<p class="gb26-count">'+list.length+' matching original source headings; '+pack.records.length+' retained. Direct catalogue matches keep their existing playable records instead of being doubled.</p>');
-    list.slice(0,500).forEach(function(x){var direct=names.has(norm(x.name));items.push(smallCard(x.name,(x.kind||'source_evidence').replace(/_/g,' ')+' · A–Z source record '+x.recordOrdinal,direct?'Existing public catalogue identity matched; this is additional source context.':'Unreconciled source reference: not independently crowned as a new game.',(x.publicSourceRefs||[]).find(function(u){return /^https:\/\/(github\.com|jmisjustme\.github\.io)\//.test(u);})||'',direct?'OPEN REFERENCE':'VIEW CITED PUBLIC SOURCE'));});
+    list.slice(0,500).forEach(function(x){var direct=names.has(norm(x.name));items.push(smallCard(x.name,(x.kind||'source_evidence').replace(/_/g,' ')+' · source record '+x.recordOrdinal+' · '+(x.ownerIndexLayer||'owner local'),direct?'Existing public catalogue identity matched; this is additional source context.':'Unreconciled source reference: not independently crowned as a new game.',(x.publicSourceRefs||[]).find(function(u){return /^https:\/\/(github\.com|jmisjustme\.github\.io)\//.test(u);})||'',direct?'OPEN REFERENCE':'VIEW CITED PUBLIC SOURCE'));});
   }
 }
 var el=document.getElementById('gb26-grid');if(el)el.innerHTML=items.length?items.join(''):'<p class="gb26-guide">No matching records in this lane.</p>';
@@ -82,7 +83,55 @@ if(x.records.length>10000||x.engineDonors.length>1000||x.loopSources.length>2000
 for(var i=0;i<x.records.length;i++)if(!x.records[i]||typeof x.records[i].name!=='string'||x.records[i].name.length>500)throw Error('Invalid record '+i);
 return x;
 }
-function load(){try{var x=localStorage.getItem(STORE);if(x)pack=validate(JSON.parse(x));}catch(err){pack=null;}render();}
+// Read-only import adapters for existing original GroundZeroJM native source registers.
+// A source-name contact never becomes a new game or a synthetic executable.
+function normalizeIncoming(raw){
+if(raw&&raw.schema==='JM.GamesBeyondOwnerSourcePack/1.0')return Object.assign({},validate(raw),{packKey:'AZ_CP26',packLabel:'Owner A–Z source context'});
+if(raw&&raw.schema==='JM.ECOSTATE.GamesBeyond.CP12.HouseRosterSeparation/1'){
+ if(!Array.isArray(raw.records)||raw.records.length!==438||!raw.source_scope||raw.source_scope.private_family_titles_excluded!==1)throw Error('Unrecognised CP12 source-census coverage.');
+ var r=raw.records.map(function(x,i){var lanes=Array.isArray(x.lanes)?x.lanes:[];var kind=lanes.includes('ENGINES')?'engine_candidate':lanes.includes('LOOPS')?'loop_candidate':lanes.includes('GAMES')?'game_candidate':'source_evidence';return {
+ id:'cp12-source-'+String(x.id||i),name:String(x.name||''),kind:kind,
+ evidence:String(x.detail||'').slice(0,500),
+ publicSourceRefs:typeof x.public_play_url==='string'&&x.public_play_url.startsWith('https://jmisjustme.github.io/JM-cading-lab/')?[x.public_play_url]:[],
+ recordOrdinal:i+1,source:'GroundZeroJM CP12 roster; role '+String(x.kind||''),
+ identityStatus:'RECORDED_SOURCE_SEAT__NOT_A_DISTINCT_COMPLETED_GAME',
+ playability:String(x.clickable||'NO_VERIFIED_EXECUTABLE_CARRIER'),version:String(x.version||''),
+ sourceRegisters:Array.isArray(x.source_registers)?x.source_registers:[],originalId:String(x.id||'')
+ };});
+ var e=r.filter(function(x){return x.kind==='engine_candidate';}).map(function(x){return {name:x.name,role:'CP12 source role',status:'not automatically latest keeper'};});
+ var l=r.filter(function(x){return x.kind==='loop_candidate';}).map(function(x){return {name:x.name,sourceDonorIndex:-1,sourceRole:'CP12 recorded loop seat'};});
+ return validate({schema:'JM.GamesBeyondOwnerSourcePack/1.0',packKey:'CP12_WINDOWS',packLabel:'Existing Windows Games Beyond CP12 (438 source seats)',records:r,engineDonors:e,loopSources:l});
+}
+if(raw&&raw.schema==='JM.ECOSTATE.CP24.TypedOriginalSourceEditionInventory/1'){
+ if(!Array.isArray(raw.families)||raw.families.length<35||raw.families.length>150)throw Error('Unrecognised CP24 source edition manifest.');
+ var n=raw.families.map(function(f,i){var editions=(Array.isArray(f.sources)?f.sources:[]).map(function(x){return {file:String(x.file||''),sha256:String(x.sha256||''),bytes:x.bytes,sourcePath:String(x.path||''),releaseAccepted:!!x.release_accepted};});
+ return {id:'cp24-family-'+String(f.canonical_id||i),name:String(f.title||''),kind:f.lane==='ENGINES'?'engine_candidate':f.lane==='LOOPS'?'loop_candidate':f.lane==='GAMES'?'game_candidate':'source_evidence',
+ evidence:editions.length+' preserved exact source editions in the existing private Windows cartridge register. Not automatically current or owner accepted.',
+ publicSourceRefs:[],recordOrdinal:i+1,source:'GroundZeroJM CP24 original source editions',identityStatus:'SOURCE_FAMILY_EDITION_NOT_NEW_GAME',playability:'SOURCE_HASH_AND_BOUNDED_BROWSER_CONTACT_ONLY',editions:editions};
+ });
+ var e=n.filter(function(x){return x.kind==='engine_candidate';}).map(function(x){return {name:x.name,role:'CP24 original source family',status:'original versions preserved'};});
+ var l=n.filter(function(x){return x.kind==='loop_candidate';}).map(function(x){return {name:x.name,sourceDonorIndex:-1,sourceRole:'CP24 original source family'};});
+ return validate({schema:'JM.GamesBeyondOwnerSourcePack/1.0',packKey:'CP24_EDITION',packLabel:'Windows CP24 original source editions',records:n,engineDonors:e,loopSources:l});
+}
+throw Error('Only the existing CP12 roster, CP24 edition manifest or CP26 owner A–Z index can be imported.');
+}
+function assembleLayers(){
+var v={schema:'JM.GamesBeyondOwnerSourcePack/1.0',records:[],engineDonors:[],loopSources:[]};
+for(var key of Object.keys(layers).sort()){var x=layers[key];if(!x||!Array.isArray(x.records))continue;
+var base=v.engineDonors.length;
+x.records.forEach(function(r){v.records.push(Object.assign({},r,{ownerIndexLayer:x.packLabel||key}));});
+x.engineDonors.forEach(function(e){v.engineDonors.push(Object.assign({},e,{ownerIndexLayer:x.packLabel||key}));});
+x.loopSources.forEach(function(l){v.loopSources.push(Object.assign({},l,{sourceDonorIndex:l.sourceDonorIndex<0?-1:l.sourceDonorIndex+base,ownerIndexLayer:x.packLabel||key}));});
+}
+return validate(v);
+}
+function load(){
+ try{var raw=localStorage.getItem(STORE);if(raw){var saved=JSON.parse(raw);
+ if(saved&&saved.schema==='JM.GamesBeyondLocalLayers/1.0'&&saved.layers&&typeof saved.layers==='object')layers=saved.layers;
+ else{var legacy=normalizeIncoming(saved);layers[legacy.packKey]=legacy;}
+ pack=assembleLayers();
+ }}catch(err){pack=null;layers={};}render();
+}
 function setup(){
 if(document.getElementById('gb26-root'))return;
 var root=document.createElement('section');root.id='gb26-root';root.setAttribute('aria-label','Full Games, Loops, Engines and owner source map');
@@ -97,8 +146,8 @@ document.querySelectorAll('[data-gb26-tab]').forEach(function(b){b.addEventListe
 document.getElementById('gb26-query').addEventListener('input',function(e){query=e.target.value.slice(0,200);render();});
 document.getElementById('gb26-kind').addEventListener('change',function(e){kind=e.target.value;render();});
 document.getElementById('gb26-import').addEventListener('click',function(){document.getElementById('gb26-file').click();});
-document.getElementById('gb26-clear').addEventListener('click',function(){if(!confirm('Unload the locally cached owner source index from this browser? Original JSON and game source files remain unchanged.'))return;try{localStorage.removeItem(STORE);}catch(e){}pack=null;document.getElementById('gb26-message').textContent='Local index unloaded. Originals were not altered.';render();});
-document.getElementById('gb26-file').addEventListener('change',async function(e){var file=e.target.files&&e.target.files[0];if(!file)return;var message=document.getElementById('gb26-message');try{if(file.size>5000000)throw Error('Index too large for this bounded importer.');var imported=validate(JSON.parse(await file.text()));var text=JSON.stringify(imported);localStorage.setItem(STORE,text);pack=imported;message.textContent='Owner source index loaded locally: '+pack.records.length+' A–Z headings, '+pack.engineDonors.length+' donor source records, '+pack.loopSources.length+' source-associated loops. No file sent to GitHub.';setTab('owner');}catch(err){message.textContent='Import held: '+err.message;}finally{e.target.value='';}});
+document.getElementById('gb26-clear').addEventListener('click',function(){if(!confirm('Unload the locally cached owner source index from this browser? Original JSON and game source files remain unchanged.'))return;try{localStorage.removeItem(STORE);}catch(e){}pack=null;layers={};document.getElementById('gb26-message').textContent='Local index unloaded. Originals were not altered.';render();});
+document.getElementById('gb26-file').addEventListener('change',async function(e){var file=e.target.files&&e.target.files[0];if(!file)return;var message=document.getElementById('gb26-message');try{if(file.size>5000000)throw Error('Index too large for this bounded importer.');var imported=normalizeIncoming(JSON.parse(await file.text()));var previous=layers[imported.packKey];if(previous&&JSON.stringify(previous)!==JSON.stringify(imported)&&!confirm('Replace only the locally cached '+imported.packLabel+' view with this revision? Original source files stay unchanged.'))return;layers[imported.packKey]=imported;var aggregate=assembleLayers();localStorage.setItem(STORE,JSON.stringify({schema:'JM.GamesBeyondLocalLayers/1.0',layers:layers}));pack=aggregate;message.textContent='Local source layer loaded: '+imported.packLabel+'. '+Object.keys(layers).length+' source layers; '+pack.records.length+' separate source records, '+pack.engineDonors.length+' engine/donor references, '+pack.loopSources.length+' loop-source records. No files sent to GitHub.';setTab('owner');}catch(err){message.textContent='Import held: '+err.message;}finally{e.target.value='';}});
 load();setTab('games');
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();

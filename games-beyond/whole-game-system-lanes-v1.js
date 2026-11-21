@@ -54,7 +54,7 @@ if(!pack){
 }
 var kinds={game_candidate:0,engine_candidate:0,loop_candidate:0,source_evidence:0};
 pack.records.forEach(function(x){if(Object.prototype.hasOwnProperty.call(kinds,x.kind))kinds[x.kind]++;});
-summary.textContent=publicPart+' · '+kinds.game_candidate+' additional recorded game-source seats · '+kinds.engine_candidate+' engine-source seats · '+kinds.loop_candidate+' loop-source seats · '+pack.records.length+' owner source records locally loaded (roles/versions overlap; not counts of finished playable games)';
+summary.textContent=publicPart+' · '+kinds.game_candidate+' recorded owner game-source seats · '+kinds.engine_candidate+' engine-source seats · '+kinds.loop_candidate+' loop-source seats · '+pack.records.length+' owner source records locally loaded (roles/versions overlap; not counts of finished playable games)';
 }
 // CP30 typed doors are taken only from the owner-imported source register.
 function sourceDoor(r){

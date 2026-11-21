@@ -93,6 +93,36 @@ async function open(path,name){
     rail:document.querySelector('.formGrid').classList.contains('griprail-form')
   }));
   if(!form.rail||!(form.sw>form.cw)) throw new Error(`earn-now: enquiry form not side-routed ${JSON.stringify(form)}`);
+
+  // Existing Earn-Now enquiry: export must reflect edits made after the preview.
+  await page.fill('#name','Before edit');
+  await page.fill('#need','Original customer brief');
+  await page.click('#buildReceipt');
+  const firstReceipt=JSON.parse(await page.locator('#receipt').textContent());
+  if(firstReceipt.enquiry.name!=='Before edit'||firstReceipt.enquiry.need!=='Original customer brief')
+    throw new Error('earn-now: baseline preview did not capture original form');
+  await page.fill('#name','After edit');
+  await page.fill('#need','Updated customer brief');
+  await page.evaluate(()=>{
+    window.__earnNowCopied=null;
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+      writeText:async value=>{window.__earnNowCopied=value}
+    }});
+  });
+  await page.click('#copyReceipt');
+  await page.waitForFunction(()=>window.__earnNowCopied!==null);
+  const fresh=await page.evaluate(()=>({
+    preview:JSON.parse(document.querySelector('#receipt').textContent),
+    saved:JSON.parse(localStorage.getItem('jm-earn-now-enquiry')),
+    copied:window.__earnNowCopied
+  }));
+  if(fresh.preview.enquiry.name!=='After edit'||fresh.preview.enquiry.need!=='Updated customer brief')
+    throw new Error('earn-now: preview is stale after visitor edits');
+  if(fresh.saved.enquiry.name!=='After edit'||fresh.saved.enquiry.need!=='Updated customer brief')
+    throw new Error('earn-now: saved draft is stale after visitor edits');
+  if(!fresh.copied.includes('After edit')||!fresh.copied.includes('Updated customer brief')||
+     fresh.copied.includes('Before edit')||fresh.copied.includes('Original customer brief'))
+    throw new Error('earn-now: copied enquiry uses old customer details');
   await page.screenshot({path:'qa/ecostate-griprail-v6/earn-now-enquiry-mobile.png',fullPage:false});
   await page.close();
 }

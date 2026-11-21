@@ -2,7 +2,7 @@
    Public shell never bundles owner-private indexes or game HTML. Owner JSON import stays local. */
 (function(){
 'use strict';
-var VERSION='2026-11-21-cp26';
+var VERSION='2026-11-21-cp38';
 var STORE='JM.GamesBeyond.ownerSourceIndex.cp26';
 var ENGINES=[
 ['GameForge','gameforge','Game-first creation, separate original engine'],
@@ -45,7 +45,16 @@ return '<article class="gb26-card"><h3>'+esc(title)+'</h3><p>'+esc(meta)+'</p><p
 function countSummary(){
 var r=originalRows();
 var summary=document.getElementById('gb26-summary');
-if(summary)summary.textContent=r.length+' public catalogue rows · '+ENGINES.length+' identified engine families · '+LOOPS.length+' public loop leads · '+CARTRIDGES.length+' RouteOS cartridges'+(pack?' · '+pack.records.length+' owner source records / '+pack.loopSources.length+' donor-associated loop records locally loaded':' · private source index not imported');
+if(!summary)return;
+var games=r.filter(function(x){return x[8]==='game';}).length;
+var publicPart=games+' game-labelled public catalogue rows · '+r.length+' total public catalogue rows';
+if(!pack){
+ summary.textContent=publicPart+' · '+ENGINES.length+' curated engine leads · '+LOOPS.length+' curated loop leads · '+CARTRIDGES.length+' RouteOS cartridges · private whole-estate owner source index not loaded (public route count is not total collection size)';
+ return;
+}
+var kinds={game_candidate:0,engine_candidate:0,loop_candidate:0,source_evidence:0};
+pack.records.forEach(function(x){if(Object.prototype.hasOwnProperty.call(kinds,x.kind))kinds[x.kind]++;});
+summary.textContent=publicPart+' · '+kinds.game_candidate+' additional recorded game-source seats · '+kinds.engine_candidate+' engine-source seats · '+kinds.loop_candidate+' loop-source seats · '+pack.records.length+' owner source records locally loaded (roles/versions overlap; not counts of finished playable games)';
 }
 // CP30 typed doors are taken only from the owner-imported source register.
 function sourceDoor(r){

@@ -56,7 +56,7 @@ if(tab==='games'){
   ENGINES.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0],x[2],'Independent original engine family; available public edition shown when mounted; latest private head may differ.',x[1]?publicDoor(x[1]):'',x[1]?'OPEN / CREATE IN HOUSE':null));});
   if(pack){pack.engineDonors.forEach(function(x){if(match(x.name+' '+x.role+' '+x.status))items.push(smallCard(x.name,'Recovered source donor · '+x.role,'Version / donor '+x.status+'; private source not published or silently crowned.',''));});}
 }else if(tab==='loops'){
-  LOOPS.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0],x[2],'A playable loop or mechanism is not automatically a whole game.',x[1]?publicDoor(x[1]):'',x[1]?'OPEN EXISTING LOOP':'');});
+  LOOPS.forEach(function(x){if(match(x.join(' ')))items.push(smallCard(x[0],x[2],'A playable loop or mechanism is not automatically a whole game.',x[1]?publicDoor(x[1]):'',x[1]?'OPEN EXISTING LOOP':''));});
   if(pack){pack.loopSources.forEach(function(x,i){var d=pack.engineDonors[x.sourceDonorIndex];var title=x.name+' · '+(d?d.name:'unresolved donor');if(match(title))items.push(smallCard(title,'Source-associated mechanism '+(i+1)+' / '+pack.loopSources.length,'Donor relationship only; no standalone playable-door claim.',''));});}
 }else if(tab==='cartridges'){
   items.push('<p class="gb26-guide">These are actual separate first-party RouteOS cartridge identities. The existing Cartridge Bay is the entrance; select the cartridge there. Neither a historical version nor a source-only entry is auto-upgraded.</p>');

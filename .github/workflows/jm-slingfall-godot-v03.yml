@@ -1,0 +1,37 @@
+name: JM SLINGFALL Godot v0.3 native acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'games/slingfall/godot-v0-3/**'
+      - '.github/workflows/jm-slingfall-godot-v03.yml'
+  push:
+    paths:
+      - 'games/slingfall/godot-v0-3/**'
+      - '.github/workflows/jm-slingfall-godot-v03.yml'
+jobs:
+  native-acceptance:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Original source and inherited gameplay safeguards
+        run: |
+          python3 games/slingfall/godot-v0-3/tests/qa_static.py
+          python3 games/slingfall/godot-v0-3/tests/test_v03_source.py
+      - name: Obtain exact Godot host
+        run: |
+          curl --fail --location --retry 3 --output /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          GODOT_BIN=$(find /tmp -maxdepth 1 -type f -name 'Godot_v4.7.2-stable_linux.x86_64' -print -quit)
+          test -n "$GODOT_BIN"
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
+      - name: Native Godot project import and GDScript parse
+        run: |
+          "$GODOT_BIN" --headless --editor --path games/slingfall/godot-v0-3 --import --quit 2>&1 | tee /tmp/jm-slingfall-import.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/jm-slingfall-import.log; then
+            echo 'Godot script import FAILED despite process exit code'; exit 1
+          fi
+      - name: Native whole gameplay contact test
+        run: |
+          timeout --signal=INT --kill-after=5s 35s "$GODOT_BIN" --headless --path games/slingfall/godot-v0-3 --script res://tests/host_logic_test.gd

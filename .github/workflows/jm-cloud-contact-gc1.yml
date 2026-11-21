@@ -1,0 +1,45 @@
+name: JM ECOSTATE CP-GC1 Google Cloud candidate (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'cloud-contact-gcp/**'
+      - 'functions/api/estate-contact.js'
+      - '.github/workflows/jm-cloud-contact-gc1.yml'
+  push:
+    paths:
+      - 'cloud-contact-gcp/**'
+      - 'functions/api/estate-contact.js'
+      - '.github/workflows/jm-cloud-contact-gc1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate-readback-and-synthetic-relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and inherited Node HTTP route tests
+        run: |
+          node --check functions/api/estate-contact.js
+          node --check cloud-contact-gcp/entrypoint.mjs
+          node --check cloud-contact-gcp/selftest.mjs
+          node --test cloud-contact-gcp/selftest.mjs
+      - name: Build candidate container, never deploy
+        run: docker build -f cloud-contact-gcp/Dockerfile -t jm-gc1-candidate .
+      - name: Actual container boot and deny test, no real provider contact
+        run: |
+          set -euo pipefail
+          docker run -d --name jm-gc1-fixture -p 127.0.0.1:18080:8080 \
+            -e JM_PUBLIC_ORIGIN=https://jm-fixture.invalid jm-gc1-candidate
+          trap 'docker rm -f jm-gc1-fixture >/dev/null 2>&1 || true' EXIT
+          for i in {1..30}; do
+            code="$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:18080/api/estate-contact?route=/not-allowed' || true)"
+            if [ "$code" = "400" ]; then echo 'Container fixed allowlist rejection PASS'; exit 0; fi
+            sleep 1
+          done
+          docker logs jm-gc1-fixture
+          exit 1

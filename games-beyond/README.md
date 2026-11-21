@@ -177,3 +177,17 @@ The resulting owner-only single-import index has **495 evidence/source rows**; i
 GroundZeroJM private output: \`Documents\JM_ECOSTATE\GamesBeyond\EngineDoor\CP29_OWNER_ONE_IMPORT_GAMES_LOOPS_ENGINES_PRIVATE.json\`. It is an owner-local file, never a GitHub asset. Import it via existing **CATALOGUE → SOURCE / EVIDENCE → IMPORT OWNER SOURCE INDEX · LOCAL** when the reviewed House changes have been made available by the owner-approved release process.
 
 CP29 owner-only QA: **24/24 PASS** in the same bounded Edge 390×844 local mobile-emulation harness, including source import, five touch navigation lanes, search, on-demand pagination, persistence after reload, and absence of JS errors/outbound browser requests. The exact test and receipts remain privately on GroundZeroJM. Physical device, public deployment, individual full gameplay and release acceptance remain separate unpassed gates.
+
+## CP30 — Typed original player doors (21 November 2026)
+
+Games, Playable Loops and Source/Evidence now expose **existing original CP12-linked Play/Edit/HTML routes** from the owner-imported metadata without publishing original game files or inventing carriers.
+
+- **11** source-linked mounted House records can show OPEN EXISTING HOUSE MOUNT and a distinct CREATE / EDIT MOUNTED SOURCE entrance when an explicit original jm-edit route is present.
+- **13** records have existing linked HTML pages without gameplay acceptance: show INSPECT LINKED HTML CANDIDATE rather than claiming a tested game launch. No invented Edit link.
+- **414** remaining CP12 source seats have no verified public executable carrier and therefore show the local import/source hold rather than a clickable fake Play button.
+- Other original CP24 version families and M002 historical leads remain independently recorded as versions/source evidence; they are not automatically published or counted as extra games.
+
+The **single private owner import** for CP30 is already on GroundZeroJM at `Documents\JM_ECOSTATE\GamesBeyond\EngineDoor\CP30_GAMES_BEYOND_ONE_OWNER_INDEX_WITH_TYPED_ROUTES_PRIVATE.json`.
+It carries forward the full CP29 495-source-record body and adds only typed public route evidence derived from CP12. CP29 and CP12 remain unchanged. Do not commit this JSON to a public repo.
+
+**Verification:** 30/30 bounded Edge mobile emulation checks PASS at 390×844, covering five lanes, actual emulated touch activation, owner-local index import and persistence, pagination/search, exact House Play/Edit link rendering, source-only candidate labelling, no fake door for a held title, and no observed JS errors or outbound browser requests. A fresh HTTP HEAD sweep returned **200 for all 21 distinct known public URLs** referenced by the 24 CP12 route records. HTTP 200 is only connectivity, **not** proof of game controls, gameplay, correct version or physical-device acceptance. The public site is not changed until the protected draft is separately approved for release.

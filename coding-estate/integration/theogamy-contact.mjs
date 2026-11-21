@@ -4,6 +4,7 @@
  * Source ancestors are untouched. Gardles-native is a distinct HOLD, not a guard alias.
  */
 import {planEstateRoute, validateRegistry} from './router-core.mjs';
+import {contactEvent} from './ftr-eight-contact.mjs';
 import {runAllAdoptionProofs} from './adoption-proofs.mjs';
 import {Parser} from '../sovereign-batch-five/direct/compiler-lab-native.mjs';
 import {GameCoding, GameCodingRuntime, JMGameCore, JMGameCoreRuntime} from '../sovereign-ten/direct/game-native.mjs';
@@ -17,6 +18,48 @@ export const THEOGAMY_AUTHORITY=Object.freeze({
  gardles:'HOLD_NATIVE_SOURCE_NOT_MOUNTED',
  scope:'repo-host executable adaptation; NOT complete Estate installation, Gardles-native execution or Android/GPU proof'
 });
+/**
+ * CP03: Existing MEETPOINT/Shared Mechanisms consumes a JM FTR KicPlay contact.
+ * Deliberately keeps the original world rules and the standalone FTR contract.
+ * A Wake is a real in-world reentry; other actions do not silently trigger it.
+ * Physical Ama-Pro / gloves / Gamepad execution remains a separate owner proof.
+ */
+export function wakeMEETPOINTFromFTR({world,contact,playerIndex=0}){
+  need(contact?.schema==='jm.ftr.contact-event/1','FTR_INPUT_SCHEMA');
+  // Re-validate at the receiving body: never trust an unproven adapter label.
+  let canonical;
+  try {
+    canonical=contactEvent({
+      source:contact.source,gesture:contact.gesture,pressure:contact.pressure,
+      sequence:contact.sequence,capabilities:contact.capabilities
+    });
+  } catch(error) {
+    throw Object.assign(new Error('FTR_INPUT_REJECTED'),{cause:error});
+  }
+  need(JSON.stringify(canonical)===JSON.stringify(contact),'FTR_INPUT_NOT_CANONICAL');
+  need(canonical.kicPlay==='Wake','FTR_CONTACT_NOT_WAKE');
+  need(Number.isSafeInteger(playerIndex)&&playerIndex>=0,'PLAYER_INDEX');
+  const actor=world?.players?.[playerIndex];
+  need(!!actor,'PLAYER_MISSING');
+  const from={island:actor.island,x:actor.x,y:actor.y,goal:actor.goal===undefined?null:COPY(actor.goal)};
+  const before=JSON.stringify(world);
+  const result=sharedReentry(world,playerIndex);
+  need(before===JSON.stringify(world),'WORLD_SOURCE_MUTATED');
+  need(JSON.stringify(result.state.islands)===JSON.stringify(world.islands),'WORLD_PROGRESS_LOST');
+  need(result.state.mode===world.mode,'WORLD_MODE_CHANGED');
+  return {
+    schema:'jm.meetpoint.ftr-wake-return/0.1',
+    originalIdentity:world.schema, inputSource:canonical.source, inputSequence:canonical.sequence,
+    route:canonical.kicPlay, player:actor.id, from,
+    to:{island:result.state.players[playerIndex].island,
+      x:result.state.players[playerIndex].x,y:result.state.players[playerIndex].y,
+      goal:result.state.players[playerIndex].goal},
+    result, trace:{stateMutated:true, originalPreserved:true, earnedIslandsPreserved:true},
+    proof:'NODE_HOST_EXISTING_MEETPOINT_RULES_ONLY',
+    physicalDevice:'NOT_TESTED',gardles:'HOLD_NATIVE_SOURCE_NOT_MOUNTED'
+  };
+}
+
 /** Source-derived adaptation of Shared Mechanisms v1.2 safeReentry(world). */
 export function sharedReentry(original,playerIndex=0){
  need(original && original.schema==='jm.meetpoint.world/0.1','WORLD_SCHEMA');

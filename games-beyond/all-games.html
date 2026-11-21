@@ -111,4 +111,4 @@ function set(f){F=f;document.querySelectorAll('[data-filter]').forEach(b=>b.clas
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>set(b.dataset.filter));document.querySelectorAll('[data-lane]').forEach(b=>b.onclick=()=>{set(b.dataset.lane);document.querySelector('#catalog').scrollIntoView()});const initialQuery=new URLSearchParams(window.location.search).get('q');if(initialQuery)q.value=initialQuery.slice(0,120);
 q.oninput=draw;
 document.querySelector('#statAll').textContent=R.length;const scopeCount=document.querySelector('#scopeCount');if(scopeCount)scopeCount.textContent=R.length+' current public catalogue records';document.querySelector('#statGames').textContent=R.filter(r=>r[8]==='game').length;document.querySelector('#statProof').textContent=R.filter(r=>r[8]==='proof').length;document.querySelector('#statDoors').textContent=R.filter(r=>!!r[6]).length;document.querySelector('#statNoDoors').textContent=R.filter(r=>!r[6]).length;draw();
-</script></body></html>
+</script><script defer src="whole-game-system-lanes-v1.js"></script></body></html>

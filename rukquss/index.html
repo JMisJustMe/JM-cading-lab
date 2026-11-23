@@ -52,6 +52,9 @@ html{scroll-padding-top:18px}
   .tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
   .search{min-width:0;width:100%;font-size:16px}
   .count{grid-column:1/-1}
+  /* Original two-column status cards had an intrinsic 304px minimum at 320px. */
+  .split{grid-template-columns:minmax(0,1fr)}
+  .pane{min-width:0;overflow-wrap:anywhere}
   .topnav a{min-width:0;overflow-wrap:break-word;padding:8px 3px}
 }
 </style>

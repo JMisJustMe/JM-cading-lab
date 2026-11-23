@@ -71,7 +71,8 @@ def candidate(live: str, html_bytes: bytes) -> tuple[str, dict]:
         "// staged candidate branch " + CHILD_BRANCH + ", blob " + CHILD_BLOB, expected_header
     ).replace("gitBlob:'" + CHILD_BLOB + "'", "gitBlob:'" + PARENT_BLOB + "'")
     require(normalized == live, "carrier changed outside HTML and intended metadata")
-    require(git_blob(json.loads(grafted[start:grafted.index(end_tag, start)]).encode("utf-8")) == CHILD_BLOB,
+    new_start = grafted.index("const HTML=") + len("const HTML=")
+    require(git_blob(json.loads(grafted[new_start:grafted.index(end_tag, new_start)]).encode("utf-8")) == CHILD_BLOB,
             "grafted HTML readback mismatch")
     receipt = {
         "schema": "JM.RUKQUSS.WorkerGraft.CP03/1",

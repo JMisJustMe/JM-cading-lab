@@ -9,6 +9,7 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'tools/owner-vault-lineage-recover.mjs'
       - 'docs/JM_OWNER_VAULT_v0_1.md'
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
@@ -21,6 +22,7 @@ on:
       - 'functions/api/owner/vault.js'
       - 'tools/apply-owner-vault-v0.1.py'
       - 'tools/test-owner-vault-v0.1.mjs'
+      - 'tools/owner-vault-lineage-recover.mjs'
       - 'docs/JM_OWNER_VAULT_v0_1.md'
       - 'registry/owner-vault-contract-v0.1.json'
       - 'sw.js'
@@ -50,25 +52,19 @@ jobs:
         run: |
           set -euo pipefail
           node --check estate-owner-vault.js
+          node --check tools/owner-vault-lineage-recover.mjs
           node --input-type=module --check < functions/api/owner/vault.js
           node tools/test-owner-vault-v0.1.mjs
           python3 -m json.tool registry/owner-vault-contract-v0.1.json >/dev/null
           grep -Fq 'ONLY_SAME_SOURCE_INSTANCE_AND_BYTES' registry/owner-vault-contract-v0.1.json
           python3 -m py_compile tools/apply-owner-vault-v0.1.py
-      - name: CP10 strict corrupted-metadata safety gate (diagnostic red until fixed)
-        id: custody
-        continue-on-error: true
+      - name: CP09 custody fail-closed hard gate (required)
         run: node tools/test-owner-vault-v0.1.mjs --require-custody-safe
-      - name: Keep actual private custody HOLD visible
-        if: always()
-        env:
-          CUSTODY_OUTCOME: ${{ steps.custody.outcome }}
+      - name: Distinguish synthetic source pass from real-owner proof
         run: |
-          if [ "$CUSTODY_OUTCOME" != 'success' ]; then
-            echo "::warning::Owner Vault corrupted-record safety is HOLD; see issue #591. This job's success is not custody proof."
-          fi
-          echo "CP10_STRICT_CUSTODY_GATE=$CUSTODY_OUTCOME"
+          echo "CP09_SYNTHETIC_CUSTODY=SOURCE_TEST_ONLY"
           echo "REAL_OWNER_PRIVATE_STORAGE=NOT_ACCESSED"
+          echo "DEPLOYED_OWNER_EDIT_ROUNDTRIP=HOLD"
 
       - name: Verify exact one-body owner-room graft and service worker preservation
         shell: bash

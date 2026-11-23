@@ -134,7 +134,16 @@ button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focu
       if(backup.schema !== 'jm.fresh-app-lab.local-backup/1' || !backup.entries || Array.isArray(backup.entries) || typeof backup.entries !== 'object') throw Error('schema');
       const keys = Object.keys(backup.entries);
       if(!keys.length || keys.some(key => !localKeys.includes(key) || typeof backup.entries[key] !== 'string')) throw Error('keys');
-      keys.forEach(key => JSON.parse(backup.entries[key]));
+      // Validate original state shapes before mutation; syntactically valid JSON alone is unsafe.
+      const valid = (key, raw) => {
+        const value = JSON.parse(raw);
+        if(key === 'jm_diy_plan') return value === null || (value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.materials) && Array.isArray(value.steps) && value.done && typeof value.done === 'object');
+        if(key === 'jm_da_state') return value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.points) && Array.isArray(value.verdicts);
+        if(!Array.isArray(value)) return false;
+        if(['jm_tp_dings','jm_fx_rules','jm_bg_loops'].includes(key)) return value.every(item => typeof item === 'string');
+        return value.every(item => item && typeof item === 'object' && !Array.isArray(item));
+      };
+      if(keys.some(key => !valid(key, backup.entries[key]))) throw Error('shape');
       // Restore only keys actually present in this file; preserve every other original key.
       if(!window.confirm('Restore '+keys.length+' saved data groups from this private backup? Matching local groups will be overwritten; other groups will remain.')) { storeMessage('Restore cancelled. Local data is unchanged.'); return; }
       const before = {}; keys.forEach(key => { before[key] = localStorage.getItem(key); });

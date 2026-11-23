@@ -73,4 +73,21 @@ function workerCarrier(source) {
   check("no external scripts added",!/<script[^>]*src\s*=/i.test(rootText));
   check("4 card targets exact",["https://rukquss.com/games","https://rukquss.com/apps","https://rukquss.com/music","https://jmisjustme-estate.pages.dev/money-menu/launch/"].every(h=>rootText.includes('href="'+h+'"')));
   console.log(JSON.stringify({schema:"JM.RUKQUSS.WorkerRuntime.CP03/1",scope:"NODE_ISOLATED_WORKER_VM_NOT_CLOUDFLARE_LIVE",checks:checks.length,pass:checks.length,fail:0,details:checks},null,2));
+  if (process.argv.includes("--serve")) {
+    // Optional loopback-only visual QA. No external hostname, no Worker deployment.
+    const http = require("node:http");
+    const server = http.createServer(async (request, response) => {
+      try {
+        const upstream = await send(request.url, request.method);
+        response.writeHead(upstream.status, Object.fromEntries(upstream.headers.entries()));
+        response.end(request.method === "HEAD" ? undefined : Buffer.from(await upstream.arrayBuffer()));
+      } catch (error) {
+        response.writeHead(500, {"content-type":"text/plain"});
+        response.end("LOCAL_WORKER_PREVIEW_ERROR");
+      }
+    });
+    server.listen(0, "127.0.0.1", () => {
+      console.log("CP03_SERVER_READY " + server.address().port);
+    });
+  }
 })().catch(err=>{console.error(err.stack);process.exitCode=1;});

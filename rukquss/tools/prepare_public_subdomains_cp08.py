@@ -52,9 +52,8 @@ def draft_candidate(current_bytes: bytes) -> tuple[bytes, dict]:
     modified = current.replace(ANCHOR, CP08_INSERTION + ANCHOR, 1)
     if modified.replace(CP08_INSERTION, "", 1) != current:
         raise ValueError("CP08 HOLD: unrelated Worker code changed")
-    for keyword in ("rombots.rukquss.com", "control.rukquss.com"):
-        if keyword in CP08_INSERTION:
-            raise ValueError("CP08 HOLD: private host incorrectly included")
+    if CP08_INSERTION.count("':'https://rukquss.com/") != 3:
+        raise ValueError("CP08 HOLD: alias table is no longer the three public doors")
     assembled = modified.encode("utf-8")
     receipt = {
         "schema": "JM.RUKQUSS.Subdomains.PublicAlias.CP08/1",

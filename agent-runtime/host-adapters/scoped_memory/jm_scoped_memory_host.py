@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Real POSIX repository-process entrypoint for the optional JM memory sidecar.
+"""Cross-platform repository-process entrypoint for the optional JM memory sidecar.
 
 Executes the EXISTING JM repository adapter and sovereign core on every operation.
 Binds scope to the operating-system user and Git working-tree root, not AI text.
-Serialises independent local processes with a POSIX advisory lock.
+Serialises independent local processes with POSIX or Windows file locking.
 This is not live Codex/Claude/MCP/device execution and not a security vault.
 """
 from __future__ import annotations
@@ -11,13 +11,20 @@ from __future__ import annotations
 import argparse
 import asyncio
 from contextlib import contextmanager
-import fcntl
 import hashlib
+import csv
+import io
+import time
 import json
 import os
+if os.name == 'nt':
+    import msvcrt
+else:
+    import fcntl
 from pathlib import Path
 import re
 import subprocess
+import shutil
 import sys
 
 from jm_scoped_memory import HostScope, ScopedMemory, MemoryIntegrity, MemoryConflict, ScopeChanged
@@ -40,9 +47,18 @@ def git_workspace():
 
 
 def local_owner():
-    if not hasattr(os, "getuid"):
-        raise RuntimeError("HOLD: POSIX owner binding unavailable")
-    return "posix-uid:" + str(os.getuid())
+    if hasattr(os, "getuid"):
+        return "posix-uid:" + str(os.getuid())
+    if os.name == "nt":
+        proc = subprocess.run(["whoami", "/user", "/fo", "csv", "/nh"],
+                              capture_output=True, text=True, check=False)
+        if proc.returncode:
+            raise RuntimeError("HOLD: Windows owner SID unavailable")
+        rows = list(csv.reader(io.StringIO(proc.stdout)))
+        if len(rows) != 1 or len(rows[0]) != 2 or not re.fullmatch(r"S-1-[0-9-]+", rows[0][1]):
+            raise RuntimeError("HOLD: invalid Windows owner SID")
+        return "windows-sid:" + rows[0][1]
+    raise RuntimeError("HOLD: OS owner binding unavailable")
 
 
 def memory_home():
@@ -72,10 +88,30 @@ def corpus_lock(home):
     try:
         if not os.path.isfile(lock_path):
             raise MemoryIntegrity("lock path not regular file")
-        fcntl.flock(fd, fcntl.LOCK_EX)
-        yield
+        if os.name == "nt":
+            if os.fstat(fd).st_size == 0:
+                os.write(fd, b"0")
+            deadline = time.monotonic() + 20
+            while True:
+                try:
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError:
+                    if time.monotonic() >= deadline:
+                        raise MemoryConflict("HOLD: Windows memory lock timed out")
+                    time.sleep(0.05)
+        else:
+            fcntl.flock(fd, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            if os.name == "nt":
+                os.lseek(fd, 0, os.SEEK_SET)
+                msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(fd, fcntl.LOCK_UN)
     finally:
-        fcntl.flock(fd, fcntl.LOCK_UN)
         os.close(fd)
 
 
@@ -158,8 +194,11 @@ def fetch_original_phone_comment(source_url):
         raise ValueError("HOLD: wrong private Phone Commander source")
     issue_id, comment_id = match.groups()
     endpoint = "repos/JMisJustMe/JM-ai-studio-surface/issues/comments/" + comment_id
+    gh_cli = shutil.which("gh")
+    if gh_cli is None:
+        raise RuntimeError("HOLD: GitHub CLI unavailable")
     try:
-        proc = subprocess.run(["gh", "api", "--method", "GET", endpoint],
+        proc = subprocess.run([gh_cli, "api", "--method", "GET", endpoint],
                               text=True, capture_output=True, timeout=20, check=False)
     except (OSError, subprocess.SubprocessError) as exc:
         raise RuntimeError("HOLD: GitHub CLI original-source contact unavailable") from exc

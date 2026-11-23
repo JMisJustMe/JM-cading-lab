@@ -116,8 +116,8 @@ button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focu
   };
   function storeMessage(message, warning = false){
     const holds = [...new Set([...unreadableKeys,...failedWriteKeys])];
-    rawRecoveryBtn.hidden = unreadableKeys.size === 0;
-    storeStatus.textContent = holds.length && !warning ? 'STORAGE HOLD ('+holds.join(', ')+'): '+message+' Do not rely on these unsaved changes.' : message;
+    rawRecoveryBtn.hidden = holds.length === 0;
+    storeStatus.textContent = holds.length && !warning ? 'STORAGE HOLD ('+holds.join(', ')+'): one or more original groups remain unreadable or unsaved. Another group may have saved, but this lab is NOT fully saved. Use private raw recovery before repairing source.' : message;
     storeStatus.classList.toggle('warn', warning || holds.length>0);
   }
   const load = (key, fallback) => {

@@ -5,7 +5,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const vm = require("node:vm");
-const EXPECTED_BLOB = "ca2a8f4e77174f0d19ac7ce35c74f708ada5d8cc";
+const EXPECTED_BLOB = "a6b26f0042fee94668365ad5859473658d498c96";
 const PARENT_BLOB = "a9630dd04c1a72431b15695bd667d126310d12ec";
 const REDIRECTS = {
   "/navigator":"https://jmisjustme-estate.pages.dev/navigator/",
@@ -72,6 +72,12 @@ function workerCarrier(source) {
   check("www redirects to apex with query",alias.status===308 && alias.headers.get("location")==="https://rukquss.com/games?origin=visitor");
   check("no external scripts added",!/<script[^>]*src\s*=/i.test(rootText));
   check("4 card targets exact",["https://rukquss.com/games","https://rukquss.com/apps","https://rukquss.com/music","https://jmisjustme-estate.pages.dev/money-menu/launch/"].every(h=>rootText.includes('href="'+h+'"')));
+  check("CP04 social metadata has real line breaks",rootText.includes('\n<meta property="og:type"') && !rootText.includes('\\n<meta property="og:type"'));
+  check("CP04 clear search button present",rootText.includes('id="clearFind"') && rootText.includes('Clear district search'));
+  check("CP04 escape reset behaviour present",rootText.includes("event.key==='Escape'"));
+  check("CP04 touch target CSS present",rootText.includes('.district a{min-height:44px'));
+  check("CP04 stale date removed",!rootText.includes('as of 4 November 2026'));
+
   console.log(JSON.stringify({schema:"JM.RUKQUSS.WorkerRuntime.CP03/1",scope:"NODE_ISOLATED_WORKER_VM_NOT_CLOUDFLARE_LIVE",checks:checks.length,pass:checks.length,fail:0,details:checks},null,2));
   if (process.argv.includes("--serve")) {
     // Optional loopback-only visual QA. No external hostname, no Worker deployment.

@@ -44,7 +44,21 @@
   const send=(p)=>{
     const rows=read();
     if(rows.length>=MAX)throw new Error('PACKET_BUS_FULL_EXPORT_BEFORE_NEW_WRITE');
-    rows.unshift(p);write(rows);
+    rows.unshift(p);
+    const before=localStorage.getItem(BUS_KEY);
+    try{
+      write(rows);
+      if(JSON.stringify(read())!==JSON.stringify(rows))
+        throw new Error('PACKET_WRITE_READBACK_HOLD');
+    }catch(error){
+      try{
+        if(before===null)localStorage.removeItem(BUS_KEY);
+        else localStorage.setItem(BUS_KEY,before);
+      }catch(rollbackError){
+        throw new Error('PACKET_WRITE_ROLLBACK_HOLD: '+rollbackError.message);
+      }
+      throw error;
+    }
     window.dispatchEvent(new CustomEvent('jm:packet',{detail:p}));
     return p;
   };

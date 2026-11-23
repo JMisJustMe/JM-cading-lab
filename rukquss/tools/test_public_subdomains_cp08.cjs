@@ -34,7 +34,10 @@ async function invoke(host,path="/",method="GET"){
   const routes={
     "games.rukquss.com":"https://rukquss.com/games",
     "apps.rukquss.com":"https://rukquss.com/apps",
-    "music.rukquss.com":"https://rukquss.com/music"
+    "music.rukquss.com":"https://rukquss.com/music",
+    "coding.rukquss.com":"https://rukquss.com/coding",
+    "theory.rukquss.com":"https://rukquss.com/theory",
+    "books.rukquss.com":"https://rukquss.com/books"
   };
   for(const [host,target] of Object.entries(routes)){
     for(const path of ["/","/index.html","/?utm=ignored"]){
@@ -72,7 +75,9 @@ async function invoke(host,path="/",method="GET"){
     "/games":"https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
     "/apps":"https://jmisjustme.github.io/JM-cading-lab/apps/",
     "/music":"https://jmisjustme.github.io/JM-cading-lab/beatbody/",
-    "/coding":"https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/"
+    "/coding":"https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/",
+    "/theory":"https://jmisjustme.github.io/JM-cading-lab/theory/",
+    "/books":"https://jmisjustme.github.io/JM-cading-lab/books/"
   };
   for(const [path,target] of Object.entries(oldRoutes)){
     const r=await invoke("rukquss.com",path);
@@ -83,5 +88,5 @@ async function invoke(host,path="/",method="GET"){
   check("existing RUKQUSS status exists",status.status,200);
   const payload=await status.json();
   check("existing RUKQUSS source blob untouched",payload.gitBlob,"3609c8027013544852a9490053bb009cf97f2993");
-  console.log(JSON.stringify({schema:"JM.RUKQUSS.Subdomains.LocalVM.CP08/1",passed,failed:0,aliases_tested:3,original_routes_preserved:11,private_subdomains_untouched:true,scope:"LOCAL_WORKER_VM_NOT_LIVE",candidate_sha256:crypto.createHash("sha256").update(source).digest("hex")}));
+  console.log(JSON.stringify({schema:"JM.RUKQUSS.Subdomains.LocalVM.CP09/1",passed,failed:0,aliases_tested:6,original_routes_preserved:11,private_subdomains_untouched:true,scope:"LOCAL_WORKER_VM_NOT_LIVE",candidate_sha256:crypto.createHash("sha256").update(source).digest("hex")}));
 })().catch(error=>{console.error(error.stack);process.exitCode=1;});

@@ -1,0 +1,66 @@
+name: JM AGI v1.4.4 Exact Windows Integration
+
+on:
+  pull_request:
+    paths:
+      - 'lab/jm-agi-dynamic/v1.4.4/**'
+      - '.github/workflows/jm-agi-v144-exact-windows.yml'
+
+jobs:
+  r4-exact:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: lab/jm-agi-dynamic/v1.4.4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Windows Edge pre-contact
+        run: |
+          $ErrorActionPreference='Stop'
+          $paths=@(@("$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe","${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe","$env:LOCALAPPDATA\Microsoft\Edge\Application\msedge.exe") | Where-Object { Test-Path $_ })
+          if($paths.Count -lt 1){throw 'Microsoft Edge not found'}
+          Write-Host "OS $([Environment]::OSVersion.VersionString)"
+          Write-Host "PowerShell $($PSVersionTable.PSVersion)"
+          Write-Host "Edge $([string]$paths[0])"
+
+      - name: Candidate carrier integrity
+        run: |
+          $ErrorActionPreference='Stop'
+          $body=Get-Content .\JM_AGI_LAB_v1_4_4_DURABILITY_SETTLE_LIVE_INTEGRATION.html -Raw
+          $runner=Get-Content .\JM_AGI_LAB_v1_4_4_PROCESS_WITNESS.ps1 -Raw
+          Write-Host "Body characters $($body.Length)"
+          if($body.Length -lt 195000){throw 'body truncated'}
+          foreach($needle in @('window.JMAGI_TEST=','PROCESS_DURABILITY_SETTLE_MS=12000','processHarnessHeartbeat','</script>','</html>')){if(-not $body.Contains($needle)){throw "missing body marker $needle"}}
+          foreach($needle in @("RunnerVersion = '1.0.4'",'Get-CdpPages','remote-debugging-port','Durability settle heartbeat','durabilitySettleSeconds = 12')){if(-not $runner.Contains($needle)){throw "missing runner marker $needle"}}
+          Write-Host 'CARRIER_INTEGRITY_PASS'
+
+      - name: Install Playwright control layer
+        run: npm install --no-save playwright-core
+
+      - name: Dynamic UI heartbeat, battery and migration
+        run: node .\heartbeat_preflight.mjs
+
+      - name: Execute exact R4 PowerShell witness
+        run: |
+          & .\JM_AGI_LAB_v1_4_4_PROCESS_WITNESS.ps1 -ArmTimeoutSeconds 45 -ZeroTimeoutSeconds 20
+          if(-not (Test-Path .\JM_AGI_PROCESS_WITNESS_LAST.json)){throw 'R4 returned without witness JSON'}
+          Write-Host 'R4_RUNNER_RETURNED'
+
+      - name: Verify returned page and process Ding
+        run: node .\r4_verify.mjs
+
+      - name: Cleanup isolated Edge profiles
+        if: always()
+        run: |
+          foreach($folder in @('JM_AGI_EDGE_TEST_PROFILE','JM_AGI_EDGE_HEARTBEAT_PROFILE')){
+            $path=Join-Path (Get-Location) $folder
+            if(Test-Path $path){
+              $needle=[Regex]::Escape($path)
+              $rows=@(Get-CimInstance Win32_Process -Filter "Name='msedge.exe'" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -and $_.CommandLine -match $needle })
+              foreach($p in $rows){Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue}
+              Write-Host "$folder remaining processes checked/cleaned"
+            }
+          }

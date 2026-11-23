@@ -1,0 +1,25 @@
+name: JM machine-receipt candidate native regression
+on:
+  push:
+    branches:
+      - jm-host-adapter-machine-receipt-v0.1-20261014
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  jm-native-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unmodified JM sovereign host conformance
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Machine-receipt regression and negative controls
+        run: python3 agent-runtime/host-adapters/test_machine_receipt.py
+      - name: Ensure no working source changes
+        run: test -z "$(git status --porcelain)"

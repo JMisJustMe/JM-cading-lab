@@ -1,0 +1,50 @@
+# JM FTR First-Person v0.5.1-R1 — Source-Linked Renderer Recovery
+
+**Owner:** JM / TB Scott · **date:** 29 October 2026 · **status:** CI-VERIFIED, branch source; **NOT merged/deployed**.
+
+This is a thin **working descendant of the existing game**, not another engine, a duplicate JM game, or an imitation of a third-party product.
+
+## CP08 — sovereign JM-native organs now execute **inside** this live R1 game
+
+**Verified live browser implementation:** `ftr-native-core-contact.mjs` imports the **exact repository-owned** `coding-estate/sovereign-ten/direct/game-native.mjs` (which imports original `native-core.mjs`) and `coding-estate/integration/ftr-eight-contact.mjs` KicPlay translation. It also imports original `coding-estate/sovereign-batch-six/direct/game-input-native-a.mjs` for `JMVisualGraft` and `JMVisualRuntime`. Those source modules are **not copied** into this game.
+
+**Earned new mechanic:** after acquiring one original Trace Core, use the **CORE PULSE** button (touch) or press **G** (keyboard). The genuine `GameCodingRuntime` checks a native precondition based on the original game's actual state. `JMGameCoreRuntime` dispatches the approved rule and checks its invariant. An approved result then invokes **original** `window.FTR.command('SCAN')` and `window.FTR.command('FIRE')`. The original game's scan counter and cooldown increase, ammunition decreases, and the actual rendered game continues; no simulated state replaces the original game world. Without a core, ammo or cooldown readiness, the action is refused without spending a shot. This is a deliberate earned combined shortcut, not replacement of ordinary Scan or Fire.
+
+**KicPlay live source contact:** `window.JMFTRNative.kicPlay({source,gesture,pressure,sequence})` calls the recovered JM KicPlay `contactEvent` and original-recipient routing plan, dispatching into the real FTR command recipient. An unsupported `Create` action remains HOLD, not aliased to unrelated mechanics. Source names Ama-Pro/GripRoute/PalmVerse here denote the **original JM contact grammar**, **not proven physical hardware**.
+
+**Actual JM visuals:** `JMVisualGraft` derives the live `JM NATIVE CONTACT: APPLIED/DENIED` expression from original native verdict state; `JMVisualRuntime` turns real input contact into a readable field and trace. The result appears in the small R1 HUD output, with exact original native receipts available through `window.JMFTRNative.last()`. The original raycast renderer remains the world renderer. This is a genuine live JM visual-state integration, not evidence of a different GPU renderer replacing FTR.
+
+**Gardles-native remains exact-source HOLD:** neither generic input validation nor the original native invariant checks are renamed Gardles. Do not claim Gardles-native execution until its original source is recovered, verified and integrated without regression.
+
+**Exact tests:** https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40920495686 — 19/19 R1 browser checks PASS, 16/16 original frozen/repair checks PASS, four CI jobs SUCCESS. Original Game-CODING and GameCore gated an earned action, KicPlay drove PHASE, native JM visuals rendered the result, and all original modules reloaded **offline**. The same **19/19** R1 browser tests also passed in Microsoft Edge 156 on the owner's connected Windows laptop using the original source and temporary test dependencies. This is real laptop browser-host execution, not owner-held phone or actual human/controller test. Publication validation, JM M001 and integration conformance independently passed on the same code head.
+
+## Original identity retained
+- Original immutable anchor: `../ftr-first-person-v0.5.1/` (FROZEN 2026-08-02).
+- Original world/core/controls/raycast sprites/input/style are **referenced by relative URL** from the preserved frozen source. They were **not copied into this folder**.
+- R1 contains the minimal playable HTML carrier, one patched renderer limb, a standard-Gamepad command bridge, one authentic JM-native contact module, a manifest, and an independent offline service worker.
+- The original game still reports `window.FTR.version = "0.5.1"`; **R1 identifies the source-linked carrier/recovery route**, not a newly authored game-engine version.
+- The only modified original-renderer statement: `ctx.scale(side<0?-1:1)` → `ctx.scale(side<0?-1:1,1)`. The ancestor remains byte-exact (Git blob `333463f73344b9af84204bea32b3cef7195388c2`).
+
+## Independent operation and editability
+1. Clone the authenticated branch `feat/ftr-eight-discovery-contact-20261029` of `JMisJustMe/JM-cading-lab` (or its future merged source).
+2. Run a normal local HTTP server at the **repository root**, for example `python -m http.server 8080` or on Windows `py -m http.server 8080`.
+3. Open `http://localhost:8080/estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1-r1/`.
+4. Start the original game; touchscreen and keyboard continue using original controls. Standard Web Gamepad can additionally use left stick MOVE, right stick LOOK, A FIRE, B PHASE, X SCAN, Y SIDE, LB FLOW, RB TRACE/INTERACT, Start START (buttons depend on the device's standard map). Unsupported nonstandard controllers report HOLD rather than invented compatibility.
+5. After a successful online load, its scoped service worker can reopen the carrier offline, using cached shared original source limbs. It does not delete or seize other JM applications' service-worker caches.
+6. Edit the R1 HTML, renderer, Gamepad bridge, manifest or service worker in GitHub/local source. Original frozen source stays recoverable and separate.
+
+## Actual execution receipts
+- **GitHub Actions:** https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40913637854
+- Existing frozen v0.5.1: original Canvas `scale` BUGG reproduced in real Chromium.
+- CP05 corrected temp test carrier: **16/16** PASS.
+- CP06 independent source-linked R1 PWA: **12/12** PASS. Real Chromium desktop/mobile emulation, touch start/fire/scan, browser Gamepad API with controlled virtual standard controller moving and firing, unsupported-controller rejection, service-worker installation, fully offline reload and actual subsequent game loop.
+- Whole PR native/JM, Godot 4.7.2, Parrot Nmap local-service contact and Kali Linux userland jobs: SUCCESS on the same head.
+- Publication validation, JM M001 admission and Estate Integration Conformance: SUCCESS.
+- Same-node/browser tool proof is not **owner-phone, actual gamepad, actual glove, Gardles-native, or deployed-domain** proof.
+
+## Next proof boundaries
+- Open the R1 carrier on the owner's actual phone and laptop. Confirm touch responsiveness, screen dimensions, sound, visual parity, full game cycle and cold offline reload.
+- Test actual standard HID gamepad including axis and button mappings. Azeron devices exposing keyboard/mouse or nonstandard HID need a separately tested mapper.
+- Complete gameplay acceptance without synthetic placement/freezing; instrument any issues as BUGG.
+- Promote via existing JM publication governance and testable deployment route. **Do not claim live public deployment merely because the GitHub branch is readable.**
+- Keep source ownership and all original lineage. No extra generated ZIP or full duplicate game package is needed.

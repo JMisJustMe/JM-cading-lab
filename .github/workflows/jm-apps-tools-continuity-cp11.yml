@@ -153,3 +153,43 @@ jobs:
           NODE
       - name: CP04 non-destructive shared packet bus restore — mobile, desktop and fault injection
         run: node estate-publication/apps-tools-convergence/test-bus-import-cp04.mjs
+      - name: CP14 exact raw recovery from corrupt state and bus — all four original workrooms
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright'),fs=require('node:fs'),assert=require('node:assert/strict');
+          const envs=['evidence-governance','creation-publication','contact-practice','route-ftr'];
+          const base='http://127.0.0.1:4178/estate-publication/apps-tools-convergence/';
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let cases=0;
+            try{
+              for(const env of envs){
+                for(const kind of ['environment','packet_bus']){
+                  const context=await browser.newContext({acceptDownloads:true,viewport:{width:390,height:844}});
+                  const page=await context.newPage();
+                  const key=kind==='environment'?'jm.apps.tools.env.'+env+'.v1':'jm.apps.tools.shared.bus.v1';
+                  const raw='{CORRUPT_ORIGINAL_BYTES_'+env+'_'+kind;
+                  await page.addInitScript(({key,raw})=>localStorage.setItem(key,raw),{key,raw});
+                  await page.goto(base+env+'/index.html');
+                  await page.locator('#continuityStatus').waitFor();
+                  assert.match(await page.locator('#continuityStatus').innerText(),/HOLD/);
+                  assert(await page.getByRole('button',{name:'EXPORT RAW RECOVERY'}).isVisible());
+                  const download=page.waitForEvent('download');
+                  await page.getByRole('button',{name:'EXPORT RAW RECOVERY'}).click();
+                  const delivered=await download;
+                  const doc=JSON.parse(fs.readFileSync(await delivered.path(),'utf8'));
+                  assert.equal(doc.schema,'jm.apps.tools.raw-recovery/1.0');
+                  assert.equal(doc.environment,env);
+                  assert.equal(doc.entries[kind].key,key);
+                  assert.equal(doc.entries[kind].raw,raw);
+                  assert.equal(doc.read_only,true);
+                  assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),raw);
+                  await context.close();cases++;
+                }
+              }
+              assert.equal(cases,8);
+              console.log('CP14 8/8 original corrupt-state/bus browser exports PASS; private JSON exact-string readback, no mutation. No deployed or physical-device claim.');
+            }finally{await browser.close()}
+          })().catch(e=>{console.error('CP14_RAW_RECOVERY_HOLD',e);process.exitCode=1});
+          NODE

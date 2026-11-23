@@ -72,7 +72,7 @@ def draft_candidate(current_bytes: bytes) -> tuple[bytes, dict]:
         "books.rukquss.com": "/books",
     }
     alias_match = re.search(
-        r"const jmCp08PublicAliases = Object\\.freeze\\((\\{.*?\\})\\);",
+        r"const jmCp08PublicAliases = Object\.freeze\((\{.*?\})\);",
         CP08_INSERTION, re.S
     )
     if alias_match is None:
@@ -83,7 +83,7 @@ def draft_candidate(current_bytes: bytes) -> tuple[bytes, dict]:
         raise ValueError("CP10 HOLD: invalid alias table") from error
     if aliases != expected:
         raise ValueError("CP10 HOLD: alias table contract differs from six exact public routes")
-    rooms_match = re.search(r"const JM_CP01_ROOMS = (\\{[^;\\n]+\\});", current)
+    rooms_match = re.search(r"const JM_CP01_ROOMS = (\{[^;\n]+\});", current)
     if rooms_match is None:
         raise ValueError("CP10 HOLD: original public routing authority missing")
     original_rooms = json.loads(rooms_match.group(1))

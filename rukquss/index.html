@@ -85,6 +85,10 @@ h1,h2,h3,.eyebrow,.smallcaps,.flow,.brand{overflow-wrap:anywhere;hyphens:auto}
   .split{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pane{min-width:0;overflow-wrap:anywhere}
 }
+/* CP07: customer-controlled two-door enquiry route; no new form or service. */
+.experience-cta-row{display:flex;flex-direction:column;gap:9px;margin-top:auto}
+.experience-card a.secondary{background:transparent;color:#e8f8f4;border-color:#98c4ca}
+.experience-card a.secondary:hover{background:#294755;color:#fff}
 </style>
 </head>
 <body>
@@ -100,7 +104,7 @@ h1,h2,h3,.eyebrow,.smallcaps,.flow,.brand{overflow-wrap:anywhere;hyphens:auto}
 <article class="experience-card"><span class="experience-kicker">01 / PLAY</span><h3>Step into a game.</h3><p>Open the existing Games &amp; Beyond House, where playable bodies and their separate histories can be explored.</p><a href="https://rukquss.com/games">Play JM games ↗</a></article>
 <article class="experience-card"><span class="experience-kicker">02 / USE</span><h3>Find a working app.</h3><p>Enter the public non-game Apps House to discover tools and original utilities rather than another catalogue of promises.</p><a href="https://rukquss.com/apps">Explore JM apps ↗</a></article>
 <article class="experience-card"><span class="experience-kicker">03 / CREATE</span><h3>Make some music.</h3><p>Try the independent JM BEATBODY Studio in your browser. Audio and device features depend on your browser and permissions.</p><a href="https://rukquss.com/music">Open BEATBODY ↗</a></article>
-<article class="experience-card"><span class="experience-kicker">04 / CONNECT</span><h3>Discuss real work.</h3><p>Explore creator-led services and potential collaborations. Enquiries and quotations need human confirmation; no live payment is implied.</p><a href="https://jmisjustme-estate.pages.dev/money-menu/launch/">See services &amp; enquiries ↗</a></article>
+<article class="experience-card"><span class="experience-kicker">04 / CONNECT</span><h3>Discuss real work.</h3><p>Choose a creator-led service or describe a collaboration. The existing enquiry form opens an email draft for you to review and send yourself; no live payment is implied.</p><div class="experience-cta-row"><a href="https://jmisjustme-estate.pages.dev/money-menu/launch/#offers">See available offers ↗</a><a class="secondary" href="https://jmisjustme-estate.pages.dev/money-menu/launch/#enquiry">Start an enquiry ↗</a></div></article>
 </div>
 <p class="experience-note">Every link leads to an existing public entrance. Availability and functionality can change; a working entrance does not prove every game, tool, sale or device interaction behind it.</p>
 </section>

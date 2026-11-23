@@ -1,0 +1,35 @@
+name: JM 128 Hand Football CP27 — Original Game Contact
+on:
+  pull_request:
+    paths:
+      - 'apps-tools-games/wave2/current-source/128_HAND_FOOTBALL_v0_8_1_REAL_INPUT_AND_IDENTITY_CP27.html'
+      - 'games-beyond/tests/jm-128hand-football-cp27.spec.mjs'
+      - '.github/workflows/jm-128hand-football-cp27.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-football-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: games-beyond
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install existing Games&Beyond test dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium for real source game
+        run: npx playwright install --with-deps chromium
+      - name: Original 128 Hand Football — touch/keyboard/gamepad in mobile and desktop browser
+        run: npx playwright test tests/jm-128hand-football-cp27.spec.mjs --project=mobile-chromium --project=desktop-chromium
+      - name: Preserve failure screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm128-cp27-original-game-browser-failure
+          path: games-beyond/test-results/
+          if-no-files-found: ignore

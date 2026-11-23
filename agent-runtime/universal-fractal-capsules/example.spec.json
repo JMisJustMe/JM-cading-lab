@@ -1,0 +1,48 @@
+{
+  "owner_id": "0d8544dd-188a-4a71-8167-53ac6ea15a4a",
+  "personal_number": 1,
+  "creation_kind": "conversation",
+  "items": [
+    {
+      "id": "3bca409b-733e-44cd-8752-c61eebef894e",
+      "kind": "conversation",
+      "source": "example/chat/chat.json",
+      "path": "chat/chat.json",
+      "parents": [],
+      "position": 0,
+      "metadata": {
+        "example": true
+      }
+    },
+    {
+      "id": "a18d4143-ab0c-4c64-9df8-924d28c8cebb",
+      "kind": "image",
+      "source": "example/media/image.png",
+      "path": "media/image.png",
+      "parents": [
+        "3bca409b-733e-44cd-8752-c61eebef894e"
+      ],
+      "position": 1,
+      "metadata": {
+        "message_index": 1,
+        "attachment_index": 0,
+        "mime": "image/png"
+      }
+    },
+    {
+      "id": "1b2c6b24-222b-44b7-a9cc-2c81563e5f8f",
+      "kind": "document",
+      "source": "example/docs/derived.docx",
+      "path": "docs/derived.docx",
+      "parents": [
+        "3bca409b-733e-44cd-8752-c61eebef894e"
+      ],
+      "position": 2,
+      "metadata": {
+        "message_index": 2,
+        "attachment_index": 0,
+        "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      }
+    }
+  ]
+}

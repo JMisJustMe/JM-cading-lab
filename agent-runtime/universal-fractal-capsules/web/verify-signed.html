@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10151e"><title>JM UFC · Verify owner signature</title>
+<style>:root{font-family:system-ui,sans-serif;color-scheme:dark;color:#edf6fa;background:#10151e}body{margin:0;padding:12px;box-sizing:border-box}main{max-width:680px;margin:auto}section{padding:18px;border-radius:16px;border:1px solid #354b5f;background:#172332}label{display:block;margin:15px 0 6px;font-weight:650}input{display:block;width:100%;max-width:100%}button{margin:20px 0;padding:12px 17px;border:0;border-radius:9px;background:#2465a2;color:white;font:inherit;font-weight:700}#result{white-space:pre-wrap;word-break:break-word;padding:13px;background:#10151e;border-radius:8px;min-height:3rem}a{color:#7fcfff}.muted{color:#b3cad6;font-size:.9rem;line-height:1.5}</style></head>
+<body><main><p><a href="./index.html">JM Universal Fractal Capsules</a> / Optional identity verification</p><h1>Verify signed custody</h1><section>
+<p class="muted">Four files are checked entirely in this browser. The archive stays encrypted; no password or upload is required. Pinned owner keys must have been trusted through an independent channel.</p>
+<label for="archive">1. Original encrypted .jmufc archive</label><input id="archive" type="file" accept=".jmufc,.bin,application/octet-stream">
+<label for="receipt">2. Original unsigned .receipt.json</label><input id="receipt" type="file" accept=".json,application/json">
+<label for="signed">3. Additional .signed.json</label><input id="signed" type="file" accept=".json,application/json">
+<label for="public">4. Independently pinned owner public key (optional)</label><input id="public" type="file" accept=".json,application/json">
+<button id="verify" type="button">Verify exact bytes and signature</button><div id="result" role="status" aria-live="polite">Not verified.</div>
+<p class="muted">A signature proves control of a key—not human authorship. Even a trusted signature does not grant permission to decrypt or share private contents. Checking a self-signed key without an independently trusted key must be reported as untrusted.</p>
+</section></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), enc=new TextEncoder();
+const ensure=(ok,msg)=>{if(!ok)throw new Error(msg)};
+const read=async id=>{const f=$(id).files[0];ensure(!!f,'Missing required file: '+id);return new Uint8Array(await f.arrayBuffer())};
+const parse=async id=>JSON.parse(new TextDecoder().decode(await read(id)));
+const b64=s=>{ensure(typeof s==='string'&&s.length<50000,'Invalid public-key encoding');const raw=atob(s),a=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a};
+function sorted(x){if(Array.isArray(x))return x.map(sorted);if(x&&typeof x==='object'){const o={};for(const k of Object.keys(x).sort())o[k]=sorted(x[k]);return o}return x}
+const hex=b=>Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,'0')).join('');
+const digest=async bytes=>hex(await crypto.subtle.digest('SHA-256',bytes));
+function cleanPublic(o){ensure(o&&o.format==='JM.UFC.OwnerPublicKey/1','Unsupported owner public record');const bytes=b64(o.public_key_ed25519);ensure(bytes.byteLength===32,'Invalid owner public key');return bytes}
+async function check(archive,receiptBytes, signed, trusted=null){
+ ensure(crypto?.subtle,'WebCrypto requires HTTPS/localhost');
+ const receipt=JSON.parse(new TextDecoder().decode(receiptBytes));
+ ensure(signed&&typeof signed==='object'&&signed.payload&&typeof signed.signature_ed25519==='string','Missing signed envelope');
+ const payload=signed.payload;
+ ensure(payload.format==='JM.UFC.SignedReceipt/1'&&payload.claim==='key-control-and-verified-encrypted-archive-only;not-human-authorship','Unsupported signed receipt claim');
+ const pubBytes=cleanPublic(payload.owner);
+ ensure(await digest(pubBytes)===payload.owner.key_fingerprint,'Owner public key fingerprint mismatch');
+ const sig=b64(signed.signature_ed25519);ensure(sig.byteLength===64,'Invalid Ed25519 signature');
+ const key=await crypto.subtle.importKey('raw',pubBytes,{name:'Ed25519'},false,['verify']);
+ ensure(await crypto.subtle.verify({name:'Ed25519'},key,sig,enc.encode(JSON.stringify(sorted(payload)))),'Invalid signed receipt signature');
+ const archiveSha=await digest(archive), receiptSha=await digest(receiptBytes);
+ ensure(archiveSha===payload.archive_sha256&&archiveSha===receipt.encrypted_archive_sha256,'Encrypted archive hash mismatch');
+ ensure(receiptSha===payload.unsigned_receipt_sha256,'Original unsigned receipt bytes do not match');
+ ensure(receipt.capsule_id===payload.capsule_id&&receipt.root_hash===payload.root_hash&&receipt.personal_number===payload.personal_number,'Capsule identity fields mismatch');
+ ensure((await digest(enc.encode(payload.owner.owner_id))).slice(0,20)===receipt.owner_fingerprint,'Owner identity and receipt mismatch');
+ let trust=false;
+ if(trusted){const trustedBytes=cleanPublic(trusted);ensure((await digest(trustedBytes))===trusted.key_fingerprint,'Trusted key fingerprint malformed');ensure(JSON.stringify(sorted(trusted))===JSON.stringify(sorted(payload.owner)),'Signer does not match pinned owner key');trust=true}
+ return {verified:true, trusted_owner_key_matched:trust,owner_id:payload.owner.owner_id,
+  capsule_id:payload.capsule_id, sha256:archiveSha};
+}
+$('verify').onclick=async()=>{
+ $('result').textContent='Verifying locally…';
+ try{const archive=await read('archive'),receipt=await read('receipt'),signed=await parse('signed');const trusted=$('public').files[0]?await parse('public'):null;
+ const result=await check(archive,receipt,signed,trusted);
+ $('result').textContent=(result.trusted_owner_key_matched?'PASS · trusted pinned owner key':'PASS · signature valid, owner NOT independently trusted')+'\nCapsule: '+result.capsule_id+'\nEncrypted SHA-256: '+result.sha256+'\nOwner UUID: '+result.owner_id+'\nNo original content was decrypted or transferred.';
+ }catch(e){$('result').textContent='HOLD · '+e.message}
+};
+if(!window.isSecureContext){$('result').textContent='HOLD · Open from localhost or HTTPS for local cryptographic verification.'}
+</script></body></html>

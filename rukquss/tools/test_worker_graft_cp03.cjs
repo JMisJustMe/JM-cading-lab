@@ -5,7 +5,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const vm = require("node:vm");
-const EXPECTED_BLOB = "151aa2c04267f3a9ded81384ceae53b2e152a212";
+const EXPECTED_BLOB = "3609c8027013544852a9490053bb009cf97f2993";
 const PARENT_BLOB = "a9630dd04c1a72431b15695bd667d126310d12ec";
 const REDIRECTS = {
   "/navigator":"https://jmisjustme-estate.pages.dev/navigator/",
@@ -71,7 +71,7 @@ function workerCarrier(source) {
   const alias=await send("/games?origin=visitor","GET","www.rukquss.com");
   check("www redirects to apex with query",alias.status===308 && alias.headers.get("location")==="https://rukquss.com/games?origin=visitor");
   check("no external scripts added",!/<script[^>]*src\s*=/i.test(rootText));
-  check("4 card targets exact",["https://rukquss.com/games","https://rukquss.com/apps","https://rukquss.com/music","https://jmisjustme-estate.pages.dev/money-menu/launch/"].every(h=>rootText.includes('href="'+h+'"')));
+  check("4 experience bodies and 5 grounded link actions exact",["https://rukquss.com/games","https://rukquss.com/apps","https://rukquss.com/music","https://jmisjustme-estate.pages.dev/money-menu/launch/#offers","https://jmisjustme-estate.pages.dev/money-menu/launch/#enquiry"].every(h=>rootText.includes('href="'+h+'"')));
   check("CP04 social metadata has real line breaks",rootText.includes('\n<meta property="og:type"') && !rootText.includes('\\n<meta property="og:type"'));
   check("CP04 clear search button present",rootText.includes('id="clearFind"') && rootText.includes('Clear district search'));
   check("CP04 escape reset behaviour present",rootText.includes("event.key==='Escape'"));
@@ -91,6 +91,11 @@ function workerCarrier(source) {
   check("CP06 embedded RQ icon has no external dependency",rootText.includes('rel="icon" type="image/svg+xml" href="data:image/svg+xml,'));
   check("CP06 seven districts and old IDs remain",['id="doors"','id="live"','id="route"'].every(x=>rootText.includes(x)));
   check("CP06 source still uses only one inline script",(rootText.match(/<script>/g)||[]).length===1);
+  check("CP07 verified original services offer anchor",rootText.includes('href="https://jmisjustme-estate.pages.dev/money-menu/launch/#offers"'));
+  check("CP07 verified customer-controlled enquiry anchor",rootText.includes('href="https://jmisjustme-estate.pages.dev/money-menu/launch/#enquiry"'));
+  check("CP07 distinct CTAs in original fourth card",(rootText.match(/class="experience-cta-row"/g)||[]).length===1);
+  check("CP07 form remains external and visitor-controlled",rootText.includes('review and send yourself') && !rootText.includes('<form'));
+
 
 
 

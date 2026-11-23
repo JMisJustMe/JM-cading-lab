@@ -127,7 +127,7 @@ check('CP12 original UI confirms destructive environment restore and room clear'
   const commitAt=ui.indexOf('spine.importEnvironment(cfg.id,obj)');
   assert(confirmAt>0 && commitAt>confirmAt);
   assert.match(ui,/Clear cancelled; saved room fields preserved/);
-  assert.match(ui,/window.confirm\\('Clear saved fields in /);
+  assert(ui.includes("window.confirm('Clear saved fields in "));
   assert.match(ui,/IMPORT_FILE_TOO_LARGE_HOLD/);
 });
 console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12 static UI guard; not owner-device proof)');

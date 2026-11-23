@@ -1,0 +1,25 @@
+name: JM Six Rails · source conformance
+on:
+  pull_request:
+    paths:
+      - 'estate-integration/six-rails/**'
+      - 'tests/jm-six-rails-current-contract.mjs'
+      - '.github/workflows/six-rails-contact-check.yml'
+  push:
+    paths:
+      - 'estate-integration/six-rails/**'
+      - 'tests/jm-six-rails-current-contract.mjs'
+      - '.github/workflows/six-rails-contact-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax-and-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert bounded six-rail source and valid JS
+        run: node tests/jm-six-rails-current-contract.mjs

@@ -27,6 +27,7 @@ button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focu
     <button class="secondary" id="copyLabReportBtn">Copy lab report</button>
     <button class="secondary" id="labBackupBtn" type="button">Export local backup</button>
     <button class="secondary" id="labRestoreBtn" type="button">Restore from backup</button>
+    <button class="secondary" id="labRawRecoveryBtn" type="button" hidden>Export raw recovery</button>
     <input type="file" id="labRestoreFile" accept="application/json,.json" aria-label="Select a JM Fresh App Lab backup" hidden>
   </section>
   <p class="storeNotice" id="labStoreStatus" role="status" aria-live="polite">Local device storage only; nothing syncs automatically. Backups contain your content, so keep them private.</p>
@@ -104,15 +105,63 @@ button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focu
   // The original 13 local keys remain authoritative for these 12 app bodies.
   const localKeys = ['jm_tp_tasks','jm_tp_dings','jm_fx_rules','jm_diy_plan','jm_ss_queue','jm_nb_places','jm_bg_loops','jm_tt_moments','jm_lr_deck','jm_da_state','jm_bm_moves','jm_sb_sports','jm_pp_works'];
   const storeStatus = $('labStoreStatus');
-  function storeMessage(message, warning = false){ storeStatus.textContent = message; storeStatus.classList.toggle('warn', warning); }
+  const unreadableKeys = new Set(), failedWriteKeys = new Set();
+  const rawRecoveryBtn = $('labRawRecoveryBtn');
+  const validLocalGroup = (key, value) => {
+    if(key === 'jm_diy_plan') return value === null || (value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.materials) && Array.isArray(value.steps) && value.done && typeof value.done === 'object' && !Array.isArray(value.done));
+    if(key === 'jm_da_state') return value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.points) && Array.isArray(value.verdicts);
+    if(!Array.isArray(value)) return false;
+    if(['jm_tp_dings','jm_fx_rules','jm_bg_loops'].includes(key)) return value.every(item => typeof item === 'string');
+    return value.every(item => item && typeof item === 'object' && !Array.isArray(item));
+  };
+  function storeMessage(message, warning = false){
+    const holds = [...new Set([...unreadableKeys,...failedWriteKeys])];
+    rawRecoveryBtn.hidden = unreadableKeys.size === 0;
+    storeStatus.textContent = holds.length && !warning ? 'STORAGE HOLD ('+holds.join(', ')+'): '+message+' Do not rely on these unsaved changes.' : message;
+    storeStatus.classList.toggle('warn', warning || holds.length>0);
+  }
   const load = (key, fallback) => {
-    try { const raw = localStorage.getItem(key); return raw === null ? fallback : (JSON.parse(raw) ?? fallback); }
-    catch(e) { storeMessage('Local data could not be read for one or more tools. Changes in this tab might not survive closing it. Existing saved data has not been cleared.', true); return fallback; }
+    try {
+      const raw = localStorage.getItem(key);
+      if(raw === null)return fallback;
+      const value = JSON.parse(raw);
+      if(!validLocalGroup(key,value))throw Error('INVALID_SAVED_SHAPE');
+      return value;
+    } catch(e) {
+      unreadableKeys.add(key);
+      storeMessage('SOURCE HOLD: saved '+key+' could not be safely read. Its original bytes are preserved; export raw recovery before attempting any replacement.', true);
+      return fallback;
+    }
   };
   const save = (key, value) => {
-    try { localStorage.setItem(key, JSON.stringify(value)); storeMessage('Saved in this browser on this device; no automatic cloud sync. Use Export local backup to carry it elsewhere.'); return true; }
-    catch(e) { storeMessage('Could not save to this browser. Your current on-screen changes may be lost on reload; use a supported browser or free storage.', true); return false; }
+    if(unreadableKeys.has(key)){
+      storeMessage('SAVE HOLD: '+key+' contains unreadable original source. New in-session data was NOT committed. Export raw recovery before deliberate repair.',true);
+      return false;
+    }
+    try {
+      const serialized=JSON.stringify(value);
+      localStorage.setItem(key,serialized);
+      if(localStorage.getItem(key)!==serialized)throw Error('SAVE_READBACK_HOLD');
+      failedWriteKeys.delete(key);
+      storeMessage('Saved and read back in this browser on this device; no automatic cloud sync. Use Export local backup to carry it elsewhere.');
+      return true;
+    }catch(e){
+      failedWriteKeys.add(key);
+      storeMessage('SAVE HOLD: '+key+' did not pass storage readback. Changes are in this tab only and may be lost on reload. '+String(e.message||e),true);
+      return false;
+    }
   };
+  rawRecoveryBtn.addEventListener('click',()=>{
+    try{
+      const entries={};
+      localKeys.forEach(key=>{entries[key]=localStorage.getItem(key)});
+      const payload={schema:'jm.fresh-app-lab.raw-recovery/1',readOnly:true,exportedAt:new Date().toISOString(),heldKeys:[...unreadableKeys],entries,warning:'PRIVATE RAW SOURCE. This may include unpublished creations or sensitive notes. It is not a normal restore file.'};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+      const link=document.createElement('a');link.href=url;link.download='JM_Fresh_App_Lab_raw_recovery_'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      storeMessage('PRIVATE RAW RECOVERY DOWNLOAD REQUESTED. Check Downloads before relying on it. Original local storage was not modified.',true);
+    }catch(e){storeMessage('RAW RECOVERY HOLD: source could not be read for export; original data was not intentionally changed.',true)}
+  });
   $('labBackupBtn').addEventListener('click', () => {
     try {
       const entries = {};
@@ -135,15 +184,7 @@ button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focu
       const keys = Object.keys(backup.entries);
       if(!keys.length || keys.some(key => !localKeys.includes(key) || typeof backup.entries[key] !== 'string')) throw Error('keys');
       // Validate original state shapes before mutation; syntactically valid JSON alone is unsafe.
-      const valid = (key, raw) => {
-        const value = JSON.parse(raw);
-        if(key === 'jm_diy_plan') return value === null || (value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.materials) && Array.isArray(value.steps) && value.done && typeof value.done === 'object');
-        if(key === 'jm_da_state') return value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.points) && Array.isArray(value.verdicts);
-        if(!Array.isArray(value)) return false;
-        if(['jm_tp_dings','jm_fx_rules','jm_bg_loops'].includes(key)) return value.every(item => typeof item === 'string');
-        return value.every(item => item && typeof item === 'object' && !Array.isArray(item));
-      };
-      if(keys.some(key => !valid(key, backup.entries[key]))) throw Error('shape');
+      if(keys.some(key => !validLocalGroup(key,JSON.parse(backup.entries[key])))) throw Error('shape');
       // Restore only keys actually present in this file; preserve every other original key.
       if(!window.confirm('Restore '+keys.length+' saved data groups from this private backup? Matching local groups will be overwritten; other groups will remain.')) { storeMessage('Restore cancelled. Local data is unchanged.'); return; }
       const before = {}; keys.forEach(key => { before[key] = localStorage.getItem(key); });

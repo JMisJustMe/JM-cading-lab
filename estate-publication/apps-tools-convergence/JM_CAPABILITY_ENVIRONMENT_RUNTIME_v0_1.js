@@ -6,6 +6,8 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const cfg=window.JM_ENV_CONFIG;if(!cfg)throw new Error('JM_ENV_CONFIG missing');
 const spine=window.JMAppsToolsSpine;if(!spine)throw new Error('JMAppsToolsSpine missing');
 let sourceHold=null;
+let busHold=null;
+let rawRecoveryButton=null;
 let state;
 let unsavedRoomInput=false;
 try{state=spine.loadState(cfg.id,{rooms:{},active:cfg.rooms[0]?.id||null})}
@@ -79,17 +81,32 @@ function renderBus(){
   try{
     const rows=spine.read().filter(p=>p?.meta?.environment===cfg.id||p?.source?.startsWith(cfg.label)).slice(0,10);
     $('#bus').innerHTML=rows.length?rows.map(p=>'<article><b>'+esc(p.kind)+'</b><span>'+esc(p.source)+'</span><small>'+esc(p.id)+' · '+esc(p.created_at)+'</small></article>').join(''):'<p class="muted">No packets in this environment yet.</p>';
+    busHold=null;
   }catch(error){
+    busHold=error;
     $('#bus').textContent='BUS HOLD: '+error.message+'. Existing stored packets were not cleared.';
-    status('BUS HOLD: '+error.message,true);
+    status('BUS HOLD: '+error.message+'. Export raw recovery before any repair.',true);
   }
+  if(rawRecoveryButton)rawRecoveryButton.hidden=!(sourceHold||busHold);
 }
 function render(){renderNav();renderRoom();renderBus();$('#envTitle').textContent=cfg.label;$('#envSub').textContent=cfg.subtitle;}
 function installPortableControls(){
   const bar=$('.toolbar');if(!bar)return;
   const statusNode=document.createElement('p');statusNode.id='continuityStatus';statusNode.setAttribute('role','status');statusNode.setAttribute('aria-live','polite');statusNode.style.cssText='width:100%;font-size:.82rem;line-height:1.45';
   bar.after(statusNode);
-  status(sourceHold?'HOLD: existing saved source unreadable ('+sourceHold.message+'). No overwrite permitted.':'Device-local source ready · export for cross-device recovery',!!sourceHold);
+  status(sourceHold?'HOLD: existing saved source unreadable ('+sourceHold.message+'). Export raw recovery before any repair.':busHold?'BUS HOLD: '+busHold.message+'. Export raw recovery before any repair.':'Device-local source ready · export for cross-device recovery',!!(sourceHold||busHold));
+  rawRecoveryButton=document.createElement('button');
+  rawRecoveryButton.type='button';
+  rawRecoveryButton.textContent='EXPORT RAW RECOVERY';
+  rawRecoveryButton.title='Read-only private export of the exact saved state and shared bus strings. Includes malformed data; NOT a normal import backup.';
+  rawRecoveryButton.hidden=!(sourceHold||busHold);
+  rawRecoveryButton.onclick=()=>{
+    try{
+      spine.download('JM_'+cfg.id.toUpperCase()+'_RAW_RECOVERY_'+Date.now()+'.json',spine.exportRawRecovery(cfg.id));
+      status('PRIVATE RAW RECOVERY EXPORT REQUESTED: verify the downloaded file. Exact source strings retained; this did not repair or overwrite local storage.',true);
+    }catch(error){status('RAW RECOVERY EXPORT HOLD: '+String(error.message||error)+'. Original stored bytes remain untouched.',true)}
+  };
+  bar.append(rawRecoveryButton);
   const exp=document.createElement('button');exp.textContent='EXPORT ENVIRONMENT';exp.title='Includes the entire shared packet bus across workrooms, which may contain private source or notes.';
   exp.onclick=()=>{try{spine.download('JM_'+cfg.id.toUpperCase()+'_PORTABLE_'+Date.now()+'.json',spine.exportEnvironment(cfg.id));status('PRIVATE EXPORT REQUESTED: check your Downloads before relying on it. JSON includes the shared bus across workrooms; keep it private.')}catch(error){status('EXPORT HOLD: '+error.message,true)}};const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{
     const f=picker.files?.[0];if(!f)return;

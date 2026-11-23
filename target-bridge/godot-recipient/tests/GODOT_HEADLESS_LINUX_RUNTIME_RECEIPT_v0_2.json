@@ -1,0 +1,52 @@
+{
+  "schema": "JM.TargetBridge.GodotHeadlessCIRuntimeReceipt/0.2",
+  "date": "2026-10-23",
+  "evidence_mode": "GitHub Actions completed job logs",
+  "source": {
+    "name": "SPINBREAK v0.8 — JM INLINE Sam.E Body",
+    "sha256": "1fde14e48737e3f7cf9331a3d774e06958c670b81c0932409e4dc2c1d7db9d4c"
+  },
+  "repository": "JMisJustMe/JM-cading-lab",
+  "draft_pr": 414,
+  "tested_commit": "4d7dc04907a2ea2808a2d6cf9d17eafc549dc074",
+  "workflow": {
+    "name": "JM Target Bridge Godot recipient CI",
+    "run_id": 39980469720,
+    "job_id": 120506126486,
+    "conclusion": "success",
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39980469720"
+  },
+  "host": {
+    "engine": "Godot",
+    "version": "4.7.2 stable",
+    "platform": "Linux x86_64",
+    "mode": "headless native runtime"
+  },
+  "checks": {
+    "offline_registered_source": 14,
+    "offline_failures": 0,
+    "godot_native": 21,
+    "godot_failures": 0,
+    "gdscript_parse": "PASS",
+    "project_import": "PASS",
+    "runtime_json_receipt": "PASS",
+    "draw_rect_warnings": 0
+  },
+  "observations": {
+    "kic_spin": "100.0 -> 95.8",
+    "wake_spin": "95.8 -> 100.0 (capped)",
+    "wake_stability": "100.0 -> 100.0 (capped)",
+    "wake_integrity": "100.0 -> 96.5",
+    "right_route": "PASS",
+    "you_rival_overlap": "PASS",
+    "nine_semantic_runtime_gate": "PASS"
+  },
+  "earned": "GODOT 4.7.2 / Linux headless / bounded SPINBREAK exact-source recipient runtime PASS",
+  "hold": [
+    "Owner Samsung Fold Android touch acceptance deferred",
+    "Native game visuals and rendering quality on owner device",
+    "Full SPINBREAK port/parity",
+    "Unrelated JM builds and other host compatibility"
+  ],
+  "governance": "This CI result is real Godot host execution, but it does not transfer to Android touch or full-game claims; draft PR remains unmerged."
+}

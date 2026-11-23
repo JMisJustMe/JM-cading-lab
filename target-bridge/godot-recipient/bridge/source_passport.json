@@ -1,0 +1,21 @@
+{
+  "body": {
+    "id": "SPINBREAK v0.8 — JM INLINE Sam.E Body",
+    "file": "SPINBREAK_v0_8_JM_INLINE_SAME_BODY.html",
+    "sha256": "1fde14e48737e3f7cf9331a3d774e06958c670b81c0932409e4dc2c1d7db9d4c",
+    "authority": "JM"
+  },
+  "checked_expressions": {
+    "kic": "p\\.spin=clamp\\(p\\.spin-4\\.2,0,100\\)",
+    "wake_stability": "p\\.stability=clamp\\(p\\.stability\\+16,0,100\\)",
+    "wake_spin": "p\\.spin=clamp\\(p\\.spin\\+7,0,100\\)",
+    "wake_integrity": "p\\.integrity=clamp\\(p\\.integrity-3\\.5,0,100\\)",
+    "initial_state": "spin:100,stability:100,integrity:100",
+    "kic_guard": "p\\.spin<8\\|\\|p\\.commitCooldown>0",
+    "wake_guard": "S\\.wakeUsed",
+    "movement": "p\\.vx\\+=n\\.x\\*flow\\*dt",
+    "contact": "function collide\\(A,B\\)"
+  },
+  "validated": true,
+  "version": "1.0"
+}

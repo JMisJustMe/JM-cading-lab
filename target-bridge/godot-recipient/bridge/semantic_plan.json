@@ -1,0 +1,95 @@
+{
+  "schema": "JM.TargetBridge.SemanticPlan/0.2",
+  "lineage": "JM TARGET BRIDGE FLAZ v1.1 -> new Godot recipient candidate v0.1; standalone Godot recipient hardening v0.2",
+  "source": {
+    "id": "SPINBREAK v0.8 — JM INLINE Sam.E Body",
+    "file": "SPINBREAK_v0_8_JM_INLINE_SAME_BODY.html",
+    "sha256": "1fde14e48737e3f7cf9331a3d774e06958c670b81c0932409e4dc2c1d7db9d4c",
+    "authority": "JM"
+  },
+  "host": "Godot 4.x GDScript (Android editor compatible)",
+  "scope": "Original SPINBREAK bounded exact-source contact slice; NOT a full port",
+  "entities": [
+    "YOU",
+    "RIVAL_A"
+  ],
+  "inputs": {
+    "route_right": [
+      "RIGHT onscreen held",
+      "Right Arrow",
+      "D"
+    ],
+    "kic": [
+      "KIC button",
+      "K",
+      "Space"
+    ],
+    "wake": [
+      "WAKE button",
+      "R"
+    ]
+  },
+  "initial": {
+    "spin": 100.0,
+    "stability": 100.0,
+    "integrity": 100.0
+  },
+  "operations": {
+    "kic": {
+      "spin_delta": -4.2,
+      "clamp": [
+        0,
+        100
+      ],
+      "guard_spin_gte": 8
+    },
+    "wake": {
+      "stability_delta": 16.0,
+      "spin_delta": 7.0,
+      "integrity_delta": -3.5,
+      "one_use": true,
+      "clamp": [
+        0,
+        100
+      ]
+    },
+    "contact": {
+      "threshold": "player/rival collider intersection",
+      "success_requires_actual_movement": true
+    }
+  },
+  "semantic_ids": [
+    "signal.route_right",
+    "move.you",
+    "signal.kic",
+    "kic.spin_cost",
+    "contact.you_rival_a",
+    "signal.wake",
+    "wake.stability",
+    "wake.spin",
+    "wake.integrity"
+  ],
+  "proof": [
+    "movement position delta",
+    "KIC -4.2",
+    "YOU/RIVAL_A overlap",
+    "WAKE +16/+7/-3.5",
+    "each mark only on observed action",
+    "no runtime Ding before all semantics"
+  ],
+  "hold": [
+    "RIVAL_B complete three-body AI",
+    "full physics / pressure / mutation / sectors / history parity",
+    "full visual or timing parity",
+    "Godot real-host runtime until owner test",
+    "cross-engine global compatibility",
+    "Godot device-owner input acceptance deferred by owner"
+  ],
+  "prior_proof": {
+    "date": "2026-09-28",
+    "original_specimen_GDevelop": "PASS",
+    "original_specimen_Unity": "PASS",
+    "SPINBREAK_GDevelop": "PASS",
+    "SPINBREAK_Unity": "PASS"
+  }
+}

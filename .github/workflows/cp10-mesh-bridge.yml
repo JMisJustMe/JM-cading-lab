@@ -1,0 +1,24 @@
+name: CP10 Mesh Bridge Native Tests
+on:
+  push:
+    paths:
+      - 'engine/**'
+      - 'tests/cp10-mesh-bridge.test.mjs'
+      - '.github/workflows/cp10-mesh-bridge.yml'
+  pull_request:
+    paths:
+      - 'engine/**'
+      - 'tests/cp10-mesh-bridge.test.mjs'
+      - '.github/workflows/cp10-mesh-bridge.yml'
+permissions:
+  contents: read
+jobs:
+  cp10-mesh-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JM CP10 parser and adapter regression tests
+        run: node --test tests/cp10-mesh-bridge.test.mjs

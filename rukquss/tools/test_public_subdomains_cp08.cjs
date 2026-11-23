@@ -32,18 +32,18 @@ async function invoke(host,path="/",method="GET"){
 }
 (async()=>{
   const routes={
-    "games.rukquss.com":"https://rukquss.com/games",
-    "apps.rukquss.com":"https://rukquss.com/apps",
-    "music.rukquss.com":"https://rukquss.com/music",
-    "coding.rukquss.com":"https://rukquss.com/coding",
-    "theory.rukquss.com":"https://rukquss.com/theory",
-    "books.rukquss.com":"https://rukquss.com/books"
+    "games.rukquss.com":"https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+    "apps.rukquss.com":"https://jmisjustme.github.io/JM-cading-lab/apps/",
+    "music.rukquss.com":"https://jmisjustme.github.io/JM-cading-lab/beatbody/",
+    "coding.rukquss.com":"https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/",
+    "theory.rukquss.com":"https://jmisjustme.github.io/JM-cading-lab/theory/",
+    "books.rukquss.com":"https://jmisjustme.github.io/JM-cading-lab/books/"
   };
   for(const [host,target] of Object.entries(routes)){
     for(const path of ["/","/index.html","/?utm=ignored"]){
       const r=await invoke(host,path);
       check(host+path+" exact 302",r.status,302);
-      check(host+path+" canonical target",r.headers.get("location"),target);
+      check(host+path+" exact final original",r.headers.get("location"),target);
       check(host+path+" no private cache",r.headers.get("cache-control"),"private, no-store, max-age=0");
       check(host+path+" no body",await r.text(),"");
     }
@@ -54,6 +54,10 @@ async function invoke(host,path="/",method="GET"){
     check(host+" POST forbidden",post.status,404);
     const nested=await invoke(host,"/private");
     check(host+" unknown path forbidden",nested.status,404);
+    const options=await invoke(host,"/","OPTIONS");
+    check(host+" OPTIONS forbidden",options.status,404);
+    const nestedIndex=await invoke(host,"/index.html/");
+    check(host+" disguised index forbidden",nestedIndex.status,404);
     const status=await invoke(host,"/__jm_status");
     check(host+" internal status hidden",status.status,404);
   }
@@ -68,6 +72,7 @@ async function invoke(host,path="/",method="GET"){
   check("original seven districts kept",(html.match(/class="district" data-terms=/g)||[]).length,7);
   check("original four experiences kept",(html.match(/class="experience-card"/g)||[]).length,4);
   check("host alias code not leaked in HTML",html.includes("jmCp08PublicAliases"),false);
+  check("single original route authority remains",source.includes("const jmResolved=JM_CP01_ROOMS[jmPublicPath]"),true);
   const ww=await invoke("www.rukquss.com","/games?x=1");
   check("www 308 canonical",ww.status,308);
   check("www path and query retained",ww.headers.get("location"),"https://rukquss.com/games?x=1");
@@ -88,5 +93,5 @@ async function invoke(host,path="/",method="GET"){
   check("existing RUKQUSS status exists",status.status,200);
   const payload=await status.json();
   check("existing RUKQUSS source blob untouched",payload.gitBlob,"3609c8027013544852a9490053bb009cf97f2993");
-  console.log(JSON.stringify({schema:"JM.RUKQUSS.Subdomains.LocalVM.CP09/1",passed,failed:0,aliases_tested:6,original_routes_preserved:11,private_subdomains_untouched:true,scope:"LOCAL_WORKER_VM_NOT_LIVE",candidate_sha256:crypto.createHash("sha256").update(source).digest("hex")}));
+  console.log(JSON.stringify({schema:"JM.RUKQUSS.Subdomains.LocalVM.CP10/1",passed,failed:0,aliases_tested:6,original_routes_preserved:11,private_subdomains_untouched:true,scope:"LOCAL_WORKER_VM_NOT_LIVE",candidate_sha256:crypto.createHash("sha256").update(source).digest("hex")}));
 })().catch(error=>{console.error(error.stack);process.exitCode=1;});

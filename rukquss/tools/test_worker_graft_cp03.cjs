@@ -5,7 +5,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const vm = require("node:vm");
-const EXPECTED_BLOB = "a6b26f0042fee94668365ad5859473658d498c96";
+const EXPECTED_BLOB = "b2115a1ff7696d3bb4a2fbbf4ef6837911800c11";
 const PARENT_BLOB = "a9630dd04c1a72431b15695bd667d126310d12ec";
 const REDIRECTS = {
   "/navigator":"https://jmisjustme-estate.pages.dev/navigator/",

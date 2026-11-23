@@ -107,9 +107,15 @@ jobs:
                 const pack=JSON.parse(bytes.toString('utf8'));
                 if(pack.environment!==env||pack.packets[0].id!==id)throw Error('Portable export lost original packet '+env);
                 const separate=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});
-                const target=await separate.newPage();target.on('dialog',d=>d.accept());
+                const target=await separate.newPage();
+                let allowRestore=false;
+                target.on('dialog',d=>allowRestore?d.accept():d.dismiss());
                 await target.goto(url,{waitUntil:'domcontentloaded'});
                 await target.locator('#continuityStatus').waitFor();
+                await target.locator('.toolbar input[type=file]').first().setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
+                await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('Import cancelled'),{timeout:12000});
+                if((await target.evaluate(()=>window.JMAppsToolsSpine.read().length))!==0)throw Error('Cancelled restore changed shared packets '+env);
+                allowRestore=true;
                 await target.locator('.toolbar input[type=file]').first().setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
                 await target.waitForFunction(id=>window.JMAppsToolsSpine.read().some(x=>x.id===id),id,{timeout:12000});
                 if((await target.locator('#room [data-field]').first().inputValue())!==value)throw Error('Fresh browser import lost creator field '+env);
@@ -120,12 +126,23 @@ jobs:
                 const before=await target.evaluate(x=>localStorage.getItem('jm.apps.tools.env.'+x+'.v1'),env);
                 await target.evaluate(x=>{
                   const old=Storage.prototype.setItem;
+                  window.__jmOriginalSetItem=old;
                   Storage.prototype.setItem=function(k,v){if(k==='jm.apps.tools.env.'+x+'.v1')throw new DOMException('Device full','QuotaExceededError');return old.call(this,k,v)};
                 },env);
                 await target.locator('#room [data-field]').first().fill('UNCOMMITTED QUOTA BODY');
                 await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('SAVE HOLD'),{timeout:12000});
                 const after=await target.evaluate(x=>localStorage.getItem('jm.apps.tools.env.'+x+'.v1'),env);
                 if(before!==after)throw Error('Quota mutated existing saved state '+env);
+                const busBefore=await target.evaluate(()=>JSON.stringify(window.JMAppsToolsSpine.read()));
+                await target.locator('#primary').click();
+                await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('RUN HOLD'),{timeout:12000});
+                const busHeld=await target.evaluate(()=>JSON.stringify(window.JMAppsToolsSpine.read()));
+                if(busBefore!==busHeld)throw Error('Unsaved field emitted false packet '+env);
+                await target.evaluate(()=>{Storage.prototype.setItem=window.__jmOriginalSetItem});
+                await target.locator('#primary').click();
+                await target.waitForFunction(()=>window.JMAppsToolsSpine.read().length===2,{timeout:12000});
+                const recovered=await target.evaluate(({field})=>window.JMAppsToolsSpine.read()[0]?.payload?.[field],{field});
+                if(recovered!=='UNCOMMITTED QUOTA BODY')throw Error('Recovered packet was not actual field content '+env);
                 if(errors.length)throw Error('Original workroom browser errors '+env+': '+errors.join('|'));
                 await context.close();await separate.close();passed++;
               }
@@ -136,3 +153,43 @@ jobs:
           NODE
       - name: CP04 non-destructive shared packet bus restore — mobile, desktop and fault injection
         run: node estate-publication/apps-tools-convergence/test-bus-import-cp04.mjs
+      - name: CP14 exact raw recovery from corrupt state and bus — all four original workrooms
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const {chromium}=require('playwright'),fs=require('node:fs'),assert=require('node:assert/strict');
+          const envs=['evidence-governance','creation-publication','contact-practice','route-ftr'];
+          const base='http://127.0.0.1:4178/estate-publication/apps-tools-convergence/';
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let cases=0;
+            try{
+              for(const env of envs){
+                for(const kind of ['environment','packet_bus']){
+                  const context=await browser.newContext({acceptDownloads:true,viewport:{width:390,height:844}});
+                  const page=await context.newPage();
+                  const key=kind==='environment'?'jm.apps.tools.env.'+env+'.v1':'jm.apps.tools.shared.bus.v1';
+                  const raw='{CORRUPT_ORIGINAL_BYTES_'+env+'_'+kind;
+                  await page.addInitScript(({key,raw})=>localStorage.setItem(key,raw),{key,raw});
+                  await page.goto(base+env+'/index.html');
+                  await page.locator('#continuityStatus').waitFor();
+                  assert.match(await page.locator('#continuityStatus').innerText(),/HOLD/);
+                  assert(await page.getByRole('button',{name:'EXPORT RAW RECOVERY'}).isVisible());
+                  const download=page.waitForEvent('download');
+                  await page.getByRole('button',{name:'EXPORT RAW RECOVERY'}).click();
+                  const delivered=await download;
+                  const doc=JSON.parse(fs.readFileSync(await delivered.path(),'utf8'));
+                  assert.equal(doc.schema,'jm.apps.tools.raw-recovery/1.0');
+                  assert.equal(doc.environment,env);
+                  assert.equal(doc.entries[kind].key,key);
+                  assert.equal(doc.entries[kind].raw,raw);
+                  assert.equal(doc.read_only,true);
+                  assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),raw);
+                  await context.close();cases++;
+                }
+              }
+              assert.equal(cases,8);
+              console.log('CP14 8/8 original corrupt-state/bus browser exports PASS; private JSON exact-string readback, no mutation. No deployed or physical-device claim.');
+            }finally{await browser.close()}
+          })().catch(e=>{console.error('CP14_RAW_RECOVERY_HOLD',e);process.exitCode=1});
+          NODE

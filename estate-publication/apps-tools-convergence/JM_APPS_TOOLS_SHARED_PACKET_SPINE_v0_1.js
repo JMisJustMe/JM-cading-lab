@@ -44,7 +44,21 @@
   const send=(p)=>{
     const rows=read();
     if(rows.length>=MAX)throw new Error('PACKET_BUS_FULL_EXPORT_BEFORE_NEW_WRITE');
-    rows.unshift(p);write(rows);
+    rows.unshift(p);
+    const before=localStorage.getItem(BUS_KEY);
+    try{
+      write(rows);
+      if(JSON.stringify(read())!==JSON.stringify(rows))
+        throw new Error('PACKET_WRITE_READBACK_HOLD');
+    }catch(error){
+      try{
+        if(before===null)localStorage.removeItem(BUS_KEY);
+        else localStorage.setItem(BUS_KEY,before);
+      }catch(rollbackError){
+        throw new Error('PACKET_WRITE_ROLLBACK_HOLD: '+rollbackError.message);
+      }
+      throw error;
+    }
     window.dispatchEvent(new CustomEvent('jm:packet',{detail:p}));
     return p;
   };
@@ -109,6 +123,20 @@
     schema:'jm.apps.tools.portable-environment/1.0',
     environment:env,exported_at:now(),state:loadState(env,{rooms:{},active:null}),packets:read()
   });
+  // CP14: read-only recovery. Store the EXACT original strings, including malformed JSON.
+  // No parsing, migration, clearing or automatic re-import. Owner exports privately.
+  const exportRawRecovery=(env)=>{
+    const ek=stateKey(env);
+    return {
+      schema:'jm.apps.tools.raw-recovery/1.0',
+      environment:env,exported_at:now(),read_only:true,
+      entries:{
+        environment:{key:ek,raw:localStorage.getItem(ek)},
+        packet_bus:{key:BUS_KEY,raw:localStorage.getItem(BUS_KEY)}
+      },
+      warning:'PRIVATE RAW LOCAL STORAGE. May contain unpublished original text and notes. Do not share or import as a normal environment backup.'
+    };
+  };
   // Browser localStorage has per-key atomicity, not an across-keys transaction.
   // Validate before writing, read back, and restore old values on failure.
   const importEnvironment=(env,obj)=>{
@@ -154,5 +182,5 @@
   };
   const readFile=async(file)=>JSON.parse(await file.text());
   const receipt=(source,action,status='ok',details={})=>emit('estate.receipt',source,{action,status,details},{class:'quiet-trace'});
-  window.JMAppsToolsSpine={BUS_KEY,read,send,packet,emit,clear,exportBus,importBus,mergeBus,download,loadState,saveState,exportEnvironment,importEnvironment,readFile,receipt,uid,now};
+  window.JMAppsToolsSpine={BUS_KEY,read,send,packet,emit,clear,exportBus,importBus,mergeBus,download,loadState,saveState,exportEnvironment,exportRawRecovery,importEnvironment,readFile,receipt,uid,now};
 })();

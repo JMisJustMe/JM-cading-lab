@@ -36,3 +36,9 @@ jobs:
           ROOT='estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure'
           python "$ROOT/reconstruct_glyphplay_v32_5.py"
           test "$(wc -c < "$ROOT/reconstructed/00_OPEN_FIRST_GLYPHPLAY_B1_v32_5_SOVEREIGN_BASELINE_LOOP_CLOSURE.html")" -eq 636271
+      - name: Protect owner-edited recovered GlyphPlay copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure'
+          python "$ROOT/owner_output_regression.py"

@@ -88,7 +88,7 @@ def classify_added_paths(
 
 
 def matching_manifest(
-    pr_number: int, changed_paths: set[str], policy: dict
+    pr_number: int, changed_paths: set[str], policy: dict, head: str = "HEAD"
 ) -> tuple[str | None, str | None]:
     """Return (authorized_manifest, unresolved_same_pr_manifest)."""
     prefix = "registry/build-routes/"
@@ -97,12 +97,11 @@ def matching_manifest(
     for path in sorted(changed_paths):
         if not (path.startswith(prefix) and path.endswith(suffix)):
             continue
-        full = ROOT / path
-        if not full.exists():
-            continue
         try:
-            data = json.loads(full.read_text())
-        except Exception:
+            # Match authority from the same revision as the classified delta,
+            # never a newer main/merge checkout or a local worktree edit.
+            data = json.loads(git("show", f"{head}:{path}"))
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
             continue
         if data.get("instantiation_mode") != policy["required_manifest_mode"]:
             continue
@@ -206,7 +205,82 @@ def self_test(policy: dict) -> None:
     ), "single-file-first new body must trigger"
 
     assert "apps" in roots and "games" in roots
+    scope_self_test(policy)
     print("JM Build Entry Gate self-test PASS: new app, descendant and single-file body trigger; governance/repair examples do not; unresolved intake cannot authorize a build.")
+
+
+def scope_self_test(policy: dict) -> None:
+    """Real diverged Git histories: main inheritance is not a PR submission."""
+    import contextlib
+    import io
+    import sys
+    import tempfile
+    from unittest.mock import patch
+
+    global ROOT
+    original_root = ROOT
+    with tempfile.TemporaryDirectory(prefix="jm-entry-scope-") as directory:
+        ROOT = Path(directory)
+        try:
+            git("init", "-q")
+            git("config", "user.name", "JM entry fixture")
+            git("config", "user.email", "fixture@example.invalid")
+
+            def write(path: str, content: str) -> None:
+                target = ROOT / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(content)
+
+            def commit(message: str) -> str:
+                git("add", ".")
+                git("commit", "-qm", message)
+                return git("rev-parse", "HEAD")
+
+            write("apps/existing/src/body.js", "// existing original\n")
+            base = commit("existing body")
+            git("checkout", "-qb", "submission")
+            write("apps/existing/src/helper.js", "// original-body repair\n")
+            repair = commit("repair")
+            write("apps/new-body/index.js", "// genuinely new body\n")
+            new_body = commit("new body without route")
+            manifest = "registry/build-routes/SCOPE_BUILD_ROUTE_MANIFEST_v0.1.json"
+            route = {"instantiation_mode": policy["required_manifest_mode"],
+                     "authority": {"work_pr": 999},
+                     "state": {"build_authorized_by_manifest": False}}
+            write(manifest, json.dumps(route))
+            unresolved = commit("unresolved route")
+            route["state"]["build_authorized_by_manifest"] = True
+            write(manifest, json.dumps(route))
+            approved = commit("resolved fixture route")
+            git("checkout", "-qb", "target", base)
+            write("apps/main-only/index.js", "// unrelated target body\n")
+            target_route = dict(route, authority={"work_pr": 1000})
+            write(manifest, json.dumps(target_route))
+            commit("target-only work and authority")
+            git("merge", "--no-ff", "-qm", "synthetic merge", repair)
+            merged = git("rev-parse", "HEAD")
+            write(manifest, json.dumps(route))  # approved local content must not leak into head reads
+
+            policy_path = ROOT / "fixture-policy.json"
+            policy_path.write_text(json.dumps(policy))
+
+            def run(head: str) -> tuple[int, str]:
+                out = io.StringIO()
+                with patch.object(sys, "argv", ["gate", "--policy", str(policy_path),
+                        "--base", base, "--head", head, "--pr-number", "999"]), contextlib.redirect_stdout(out):
+                    result = main()
+                return result, out.getvalue()
+
+            assert run(merged)[0] == 1, "old merge-head comparison must reproduce false trigger"
+            assert run(repair)[0] == 0, "explicit submitted repair must exclude target-only work"
+            assert run(new_body)[0] == 1, "genuinely new body still requires route"
+            assert run(unresolved)[0] == 1, "unresolved submitted route must fail despite approved worktree"
+            assert run(approved)[0] == 0, "resolved same-head fixture route remains eligible"
+            assert matching_manifest(999, {manifest}, policy, unresolved) == (None, manifest)
+            assert matching_manifest(1000, {manifest}, policy, approved) == (None, None)
+            print("JM Build Entry scope differential PASS: 7 real-Git merge/head/authority assertions")
+        finally:
+            ROOT = original_root
 
 
 def main() -> int:
@@ -255,7 +329,7 @@ def main() -> int:
         print("PASS: no high-confidence new/descendant executable-body boundary detected. Existing built-ins still govern the work.")
         return 0
 
-    manifest, unresolved = matching_manifest(args.pr_number, changed, policy)
+    manifest, unresolved = matching_manifest(args.pr_number, changed, policy, args.head)
     if manifest:
         print(f"PASS: serious build entry has same-PR authorized prospective manifest: {manifest}")
         return 0

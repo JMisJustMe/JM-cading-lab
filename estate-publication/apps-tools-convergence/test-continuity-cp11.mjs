@@ -117,8 +117,17 @@ check('CP13 portable export flags inherited full shared bus privacy scope',()=>{
   assert.equal(portable.packets.length,1);
   assert.equal(portable.packets[0].meta.environment,'evidence-governance');
   const ui=fs.readFileSync('estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js','utf8');
-  assert.match(ui,/PRIVATE EXPORT CREATED/);
+  assert.match(ui,/PRIVATE EXPORT REQUESTED/);
   assert.match(ui,/Includes the entire shared packet bus across workrooms/);
 });
 
-console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection; not user-device or network proof)');
+check('CP12 original UI confirms destructive environment restore and room clear',()=>{
+  const ui=fs.readFileSync('estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js','utf8');
+  const confirmAt=ui.indexOf("window.confirm('RESTORE ");
+  const commitAt=ui.indexOf('spine.importEnvironment(cfg.id,obj)');
+  assert(confirmAt>0 && commitAt>confirmAt);
+  assert.match(ui,/Clear cancelled; saved room fields preserved/);
+  assert.match(ui,/window.confirm\\('Clear saved fields in /);
+  assert.match(ui,/IMPORT_FILE_TOO_LARGE_HOLD/);
+});
+console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12 static UI guard; not owner-device proof)');

@@ -121,12 +121,12 @@ def self_test(current_bytes: bytes) -> int:
     good = CP08_INSERTION
     fixtures = [
         ("missing one public route", good.replace(
-            "  'books.rukquss.com':'/books'\\n", "")),
+            "  'books.rukquss.com':'/books'\n", "")),
         ("wrong original destination", good.replace(
             "'music.rukquss.com':'/music'", "'music.rukquss.com':'/career'")),
         ("unexpected seventh public host", good.replace(
             "  'books.rukquss.com':'/books'",
-            "  'books.rukquss.com':'/books',\\n  'extra.rukquss.com':'/career'")),
+            "  'books.rukquss.com':'/books',\n  'extra.rukquss.com':'/career'")),
         ("routing authority bypass", good.replace(
             "const jmResolved=JM_CP01_ROOMS[jmPublicPath]",
             "const jmResolved='https://example.invalid/override'")),

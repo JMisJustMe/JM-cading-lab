@@ -1,6 +1,31 @@
 import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 
+// CP18: public-safe fixture proving the host repair is selective.
+// Private JMStudios HTML and original hashes are NEVER copied into tests.
+test('@jmstudios host preserves original control wiring while suppressing orphan duplicate click listener', () => {
+  const code=readFileSync(new URL('../app.js',import.meta.url),'utf8');
+  const start=code.indexOf('function repairOriginalNestedRoomHtml(html){');
+  const end=code.indexOf('\nfunction wireOriginalEmbeddedRooms(',start);
+  expect(start).toBeGreaterThan(-1);
+  expect(end).toBeGreaterThan(start);
+  const repair=new Function(code.slice(start,end)+'; return repairOriginalNestedRoomHtml;')();
+  const orphan=`document.addEventListener('click',e=>{
+  const room=e.target.closest&&e.target.closest('[data-room]');
+  if(room){e.preventDefault();openRoom(room.getAttribute('data-room'));return}
+  const cross=e.target.closest&&e.target.closest('[data-cross]');
+  if(cross){e.preventDefault();openCrossRoute(cross.getAttribute('data-cross'));return}
+});`;
+  const synthetic='<!doctype html><script>function wireDynamicRoomButtons(){}\nfunction openRoom(id,fromPop){}\n'+orphan+'</script>';
+  const repaired=repair(synthetic);
+  expect(repaired).not.toContain(orphan);
+  expect(repaired).toContain('function wireDynamicRoomButtons()');
+  expect(repaired).toContain('function openRoom(id,fromPop)');
+  expect(repair(synthetic.replace('function wireDynamicRoomButtons()','function someOtherControl()'))).toBe(synthetic.replace('function wireDynamicRoomButtons()','function someOtherControl()'));
+  expect(repair(synthetic.replace('function openRoom(id,fromPop)','function otherRoom(id)'))).toBe(synthetic.replace('function openRoom(id,fromPop)','function otherRoom(id)'));
+  expect(repair(synthetic.replace(orphan,orphan+orphan))).toBe(synthetic.replace(orphan,orphan+orphan));
+});
+
 const BUILT_IN = 22;
 const FULL_TARGET = 24;
 const PRIORITY_EIGHT = [

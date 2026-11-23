@@ -1,14 +1,15 @@
 'use strict';
 
 (() => {
-  const V1_URL = './data/chat-graft-v1.b64?v=1200';
+  const QUARANTINED_V1_URL = './data/chat-graft-v1.b64?v=1200';
   const V2_BASE = './data/chat-graft-v2/part-';
   const V2_PARTS = 4;
   const V3_URL = './data/chat-graft-v3-memory.json?v=1200';
-  const EXPECTED_V1 = 94;
+  const EXPECTED_V1_QUARANTINED = 94;
   const EXPECTED_V2_NEW = 21;
   const EXPECTED_V3_NEW = 5;
-  const EXPECTED_TOTAL = 120;
+  const EXPECTED_HEALTHY_TOTAL = 26;
+  const QUARANTINE_ID = 'JM_THEORY_RUNTIME_QUARANTINE_Q1_V3';
   const grafts = new Map();
   let graftReady = false;
 
@@ -55,8 +56,7 @@
   }
 
   async function loadSources() {
-    const [v1Text, v2Parts, v3] = await Promise.all([
-      fetchText(V1_URL),
+    const [v2Parts, v3] = await Promise.all([
       Promise.all(Array.from({ length: V2_PARTS }, (_, index) => (
         fetchText(`${V2_BASE}${String(index + 1).padStart(2, '0')}.txt?v=1200`)
       ))),
@@ -65,17 +65,18 @@
         return response.json();
       })
     ]);
-    const [v1, v2] = await Promise.all([
-      decodePayload(v1Text),
-      decodePayload(v2Parts.map((part) => part.trim()).join(''))
-    ]);
-    if ((v1.records || []).length !== EXPECTED_V1) throw new Error(`v1 source count ${(v1.records || []).length}, expected ${EXPECTED_V1}`);
-    if ((v2.records || []).length !== EXPECTED_V2_NEW) throw new Error(`v2 delta count ${(v2.records || []).length}, expected ${EXPECTED_V2_NEW}`);
-    if ((v3.records || []).length !== EXPECTED_V3_NEW) throw new Error(`v3 memory count ${(v3.records || []).length}, expected ${EXPECTED_V3_NEW}`);
-    for (const graft of v1.records || []) grafts.set(String(graft.id), graft);
+    const v2 = await decodePayload(v2Parts.map((part) => part.trim()).join(''));
+    if ((v2.records || []).length !== EXPECTED_V2_NEW) {
+      throw new Error(`v2 healthy count ${(v2.records || []).length}, expected ${EXPECTED_V2_NEW}`);
+    }
+    if ((v3.records || []).length !== EXPECTED_V3_NEW) {
+      throw new Error(`v3 memory count ${(v3.records || []).length}, expected ${EXPECTED_V3_NEW}`);
+    }
     for (const graft of v2.records || []) grafts.set(String(graft.id), graft);
     for (const graft of v3.records || []) grafts.set(String(graft.id), graft);
-    if (grafts.size !== EXPECTED_TOTAL) throw new Error(`cumulative source count ${grafts.size}, expected ${EXPECTED_TOTAL}`);
+    if (grafts.size !== EXPECTED_HEALTHY_TOTAL) {
+      throw new Error(`healthy source count ${grafts.size}, expected ${EXPECTED_HEALTHY_TOTAL}`);
+    }
   }
 
   function mergeIntoRecords() {
@@ -100,8 +101,24 @@
 
   function updateSummary() {
     const resultHead = document.querySelector('.results-head');
-    if (!resultHead || resultHead.querySelector('.chat-graft-summary')) return;
-    resultHead.insertAdjacentHTML('beforeend', '<span class="chat-graft-summary">120 source-backed placeholders · 140 still open</span>');
+    if (!resultHead) return;
+    let summary = resultHead.querySelector('.chat-graft-summary');
+    if (!summary) {
+      summary = document.createElement('span');
+      summary.className = 'chat-graft-summary';
+      resultHead.appendChild(summary);
+    }
+    const summaryText = `${grafts.size} healthy source-backed routes · ${EXPECTED_V1_QUARANTINED} v1 records quarantined`;
+    if (summary.textContent !== summaryText) summary.textContent = summaryText;
+    let note = resultHead.querySelector('[data-q1-v3-note]');
+    if (!note) {
+      note = document.createElement('span');
+      note.dataset.q1V3Note = 'true';
+      note.className = 'source-pass-note';
+      resultHead.appendChild(note);
+    }
+    const noteText = 'Q1 preserves the damaged v1 ancestor in custody and executes only the proved 21-record v2 carrier plus five local memory records.';
+    if (note.textContent !== noteText) note.textContent = noteText;
   }
 
   function appendGraft(record) {
@@ -145,8 +162,15 @@
     });
   });
 
+  let recordsMerged = false;
   const observer = new MutationObserver(() => {
-    if (graftReady) mergeIntoRecords();
+    if (!graftReady) return;
+    if (!recordsMerged) {
+      recordsMerged = mergeIntoRecords();
+      return;
+    }
+    markRows();
+    appendSelectedGraft();
   });
   observer.observe(document.documentElement, { subtree: true, childList: true });
 
@@ -154,7 +178,18 @@
   loadSources()
     .then(() => {
       graftReady = true;
-      mergeIntoRecords();
+      recordsMerged = mergeIntoRecords();
+      window.JMTheorySourceGraftV3 = Object.freeze({
+        version: 'v0.12-Q1',
+        state: 'HEALTHY_DESCENDANT_WITH_V1_QUARANTINED',
+        sourceBacked: grafts.size,
+        healthyV2: EXPECTED_V2_NEW,
+        healthyMemory: EXPECTED_V3_NEW,
+        quarantinedV1: EXPECTED_V1_QUARANTINED,
+        quarantinedCarrier: QUARANTINED_V1_URL,
+        quarantineId: QUARANTINE_ID
+      });
+      window.dispatchEvent(new CustomEvent('jm:graft-v3-ready', { detail: window.JMTheorySourceGraftV3 }));
     })
     .catch((error) => console.error('JM theory chat-source graft v3:', error));
 })();

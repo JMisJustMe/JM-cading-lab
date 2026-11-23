@@ -35,7 +35,12 @@ $('#room').querySelectorAll('[data-field]').forEach(el=>el.oninput=()=>{
   safeCommit(next=>{next.rooms[r.id] ||= {};next.rooms[r.id][el.dataset.field]=el.value});
 });
 $('#primary').onclick=()=>runRoom(r,roomState(r.id));
-$('#clearRoom').onclick=()=>{if(safeCommit(next=>{next.rooms[r.id]={}}))renderRoom()};
+$('#clearRoom').onclick=()=>{
+  if(!window.confirm('Clear saved fields in '+r.label+'? This cannot be undone without a previous private environment export. Other rooms and packets will remain.')){
+    status('Clear cancelled; saved room fields preserved.');return;
+  }
+  if(safeCommit(next=>{next.rooms[r.id]={}}))renderRoom();
+};
 }
 function runRoom(r,rs){
   if(sourceHold){status('RUN HOLD: stored source unreadable. Existing data preserved.',true);return}
@@ -65,7 +70,25 @@ function installPortableControls(){
   bar.after(statusNode);
   status(sourceHold?'HOLD: existing saved source unreadable ('+sourceHold.message+'). No overwrite permitted.':'Device-local source ready · export for cross-device recovery',!!sourceHold);
   const exp=document.createElement('button');exp.textContent='EXPORT ENVIRONMENT';exp.title='Includes the entire shared packet bus across workrooms, which may contain private source or notes.';
-  exp.onclick=()=>{try{spine.download('JM_'+cfg.id.toUpperCase()+'_PORTABLE_'+Date.now()+'.json',spine.exportEnvironment(cfg.id));status('PRIVATE EXPORT CREATED: JSON includes all shared bus packets across workrooms. Keep it private and review before sharing.')}catch(error){status('EXPORT HOLD: '+error.message,true)}};const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{const f=picker.files?.[0];if(!f)return;try{const obj=await spine.readFile(f);const result=spine.importEnvironment(cfg.id,obj);state=result.state;sourceHold=null;render();status('Imported, saved and re-read '+result.packets+' incoming packets · '+result.mergedPackets+' shared packets preserved');alert('Environment restored · '+result.packets+' incoming packet(s), '+result.mergedPackets+' shared packets held')}catch(err){alert(`Import stopped: ${err.message||err}`)}finally{picker.value=''}};bar.append(exp,imp,picker);
+  exp.onclick=()=>{try{spine.download('JM_'+cfg.id.toUpperCase()+'_PORTABLE_'+Date.now()+'.json',spine.exportEnvironment(cfg.id));status('PRIVATE EXPORT REQUESTED: check your Downloads before relying on it. JSON includes the shared bus across workrooms; keep it private.')}catch(error){status('EXPORT HOLD: '+error.message,true)}};const imp=document.createElement('button');imp.textContent='IMPORT ENVIRONMENT';const picker=document.createElement('input');picker.type='file';picker.accept='application/json';picker.hidden=true;imp.onclick=()=>picker.click();picker.onchange=async()=>{
+    const f=picker.files?.[0];if(!f)return;
+    try{
+      if(f.size>5*1024*1024)throw new Error('IMPORT_FILE_TOO_LARGE_HOLD (5 MB maximum)');
+      const obj=await spine.readFile(f);
+      if(!obj||obj.schema!=='jm.apps.tools.portable-environment/1.0'||obj.environment!==cfg.id)
+        throw new Error('ENVIRONMENT_ID_OR_SCHEMA_HOLD');
+      if(!obj.state||!obj.state.rooms||typeof obj.state.rooms!=='object'||Array.isArray(obj.state.rooms)||!Array.isArray(obj.packets))
+        throw new Error('ENVIRONMENT_SHAPE_HOLD');
+      const roomCount=Object.keys(obj.state.rooms).length;
+      const allow=window.confirm('RESTORE '+cfg.label+' from private JSON?\\n\\nThis replaces the saved fields and active room for THIS environment ('+roomCount+' recorded rooms). It also merges '+obj.packets.length+' imported packets into the shared bus, keeping existing packet IDs unless an identity conflict blocks the operation.\\n\\nAny newer unsaved/exported room data could be lost. Keep a backup before proceeding.\\n\\nRestore now?');
+      if(!allow){status('Import cancelled. Existing environment and shared packets are unchanged.');return}
+      const result=spine.importEnvironment(cfg.id,obj);
+      state=result.state;sourceHold=null;render();
+      status('Environment restored and read back · '+result.packets+' imported packet(s); '+result.mergedPackets+' total shared packets.');
+    }catch(err){
+      status('IMPORT HOLD: '+String(err.message||err)+'. No intentional overwrite of existing source.',true);
+    }finally{picker.value=''}
+  };bar.append(exp,imp,picker);
   // CP04: the exported packet bus has its own restore path, independent of room state.
   const busImport=document.createElement('button');
   busImport.type='button';

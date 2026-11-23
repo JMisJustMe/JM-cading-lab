@@ -1,0 +1,39 @@
+name: JM OPENBOX — Two Original Doors Touch QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'coding-estate/workshop/openbox/index.html'
+      - 'website/jm-website-001/openbox/index.html'
+      - 'tests/jm_openbox_dual_door_touch_cp11.py'
+      - '.github/workflows/jm-openbox-two-door-touch-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/workshop/openbox/index.html'
+      - 'website/jm-website-001/openbox/index.html'
+      - 'tests/jm_openbox_dual_door_touch_cp11.py'
+      - '.github/workflows/jm-openbox-two-door-touch-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-dual-door-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact matching source bytes in two independent existing doors
+        run: cmp coding-estate/workshop/openbox/index.html website/jm-website-001/openbox/index.html
+      - name: Install Playwright browser proof dependencies
+        run: |
+          python -m pip install playwright==1.54.0
+          python -m playwright install --with-deps chromium
+      - name: Both existing OPENBOX doors — touch size, native sandbox, export proof
+        run: python tests/jm_openbox_dual_door_touch_cp11.py

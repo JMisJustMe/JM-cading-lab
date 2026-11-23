@@ -54,7 +54,7 @@ async function invoke(host,path="/",method="GET"){
     const status=await invoke(host,"/__jm_status");
     check(host+" internal status hidden",status.status,404);
   }
-  for(const host of ["rombots.rukquss.com","control.rukquss.com","unknown.rukquss.com"]){
+  for(const host of ["not-a-door.rukquss.com","reserved-host.rukquss.com","unknown.rukquss.com"]){
     const r=await invoke(host);
     check(host+" never receives public homepage",r.status,404);
   }

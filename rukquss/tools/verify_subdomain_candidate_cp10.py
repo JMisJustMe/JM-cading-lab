@@ -95,8 +95,8 @@ def main() -> int:
             "one_original_route_authority": b["original_path_authority"],
             "redirect_hops": b["redirect_hops_from_candidate_to_original"],
             "live_host_activation": "NOT_PERFORMED_OR_CONFIRMED_BY_THIS_SCRIPT",
-            "deployed": False,
-            "git_merged": False,
+            "deployment_performed_by_this_script": False,
+            "git_merge_performed_by_this_script": False,
         }
         if args.browser:
             command = [

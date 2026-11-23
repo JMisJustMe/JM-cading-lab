@@ -8,6 +8,7 @@
 *{box-sizing:border-box} :root{--bg:#050505;--panel:rgba(255,255,255,.08);--line:rgba(255,255,255,.18);--ink:#f8f8f8;--muted:rgba(255,255,255,.72);--hot:#8cfffb;--warm:#ffef8a;--pink:#ff6bd6;--green:#89ff75;--orange:#ffa51f;--red:#ff4f64;--purple:#b599ff}
 body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:radial-gradient(circle at 10% 0%,#1e3347 0,#050505 38%),radial-gradient(circle at 92% 14%,#3a1430 0,#050505 43%);color:var(--ink)}
 button,input,textarea,select{font:inherit} button{border:0;border-radius:14px;padding:10px 12px;background:var(--hot);color:#031015;font-weight:950;cursor:pointer}button:hover{filter:brightness(1.08)}button.secondary{background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--line)}button.danger{background:var(--red);color:#fff}input,textarea,select{width:100%;border:1px solid rgba(255,255,255,.24);background:rgba(0,0,0,.28);color:#fff;border-radius:14px;padding:10px;margin:6px 0}textarea{min-height:82px;resize:vertical}select option{color:#111}.wrap{max-width:1240px;margin:auto;padding:14px}.hero{border:1px solid var(--line);border-radius:30px;padding:20px;background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.04));box-shadow:0 28px 80px rgba(0,0,0,.35);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;right:-80px;bottom:-120px;width:310px;height:310px;background:radial-gradient(circle,var(--hot),transparent 68%);opacity:.16}.eyebrow{display:inline-flex;border:1px solid var(--hot);color:var(--hot);border-radius:999px;padding:8px 12px;font-size:13px;text-transform:uppercase;font-weight:950;letter-spacing:.04em}h1{font-size:clamp(38px,9vw,104px);line-height:.82;margin:14px 0 10px;letter-spacing:-.075em;text-transform:uppercase;max-width:1000px}h2{font-size:clamp(26px,5vw,48px);line-height:.9;letter-spacing:-.05em;margin:0 0 6px}h3{margin:0 0 8px;font-size:22px}.lede{font-size:clamp(16px,2vw,22px);color:var(--muted);line-height:1.35;max-width:900px}.pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.pill{border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:rgba(0,0,0,.24);color:var(--muted);font-weight:850}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin:16px 0}.hub{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}.card{border:1px solid var(--line);border-radius:24px;padding:16px;background:var(--panel);box-shadow:0 18px 48px rgba(0,0,0,.24)}.hub .card{min-height:230px;display:flex;flex-direction:column;justify-content:space-between}.card:hover{border-color:rgba(140,255,251,.75)}.num{font-size:34px;font-weight:1000;color:var(--warm);letter-spacing:-.08em}.kind{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}.desc{color:var(--muted);line-height:1.35}.app{display:none}.app.active{display:block}.appHead{border:1px solid var(--line);border-radius:26px;padding:16px;background:rgba(255,255,255,.10);margin:12px 0 14px}.appGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.appGrid.three{grid-template-columns:repeat(3,1fr)}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.item{padding:11px;border-radius:15px;margin:8px 0;background:rgba(0,0,0,.25);border-left:5px solid var(--hot);overflow-wrap:anywhere}.tiny{font-size:13px;color:var(--muted)}.metric{font-size:40px;font-weight:1000;color:var(--hot);line-height:1}.hidden{display:none!important}.footer{margin:14px 0 0;padding:14px;border:1px solid var(--line);border-radius:22px;background:rgba(0,0,0,.22);color:var(--muted)}hr{border:0;border-top:1px solid var(--line);margin:10px 0}.accent-red{--hot:var(--red)}.accent-cyan{--hot:#00e5ff}.accent-yellow{--hot:#f8ff00}.accent-pink{--hot:#ff7ad9}.accent-green{--hot:#79ff6b}.accent-orange{--hot:#ff9d00}.accent-purple{--hot:#a98bff}.accent-mint{--hot:#00ffb3}.accent-white{--hot:#fff}.accent-body{--hot:#ff4f9a}.accent-sport{--hot:#1cff00}.accent-gold{--hot:#ffefb0}
+button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:3px}.storeNotice{margin:0 0 16px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.26);color:var(--muted);line-height:1.5}.storeNotice.warn{border-color:var(--warm);color:#fff0b4}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
 @media(max-width:900px){.hub,.appGrid,.appGrid.three{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.wrap{padding:10px}.hero,.appHead{border-radius:22px}}
 </style>
 </head>
@@ -24,7 +25,12 @@ button,input,textarea,select{font:inherit} button{border:0;border-radius:14px;pa
     <input id="hubSearch" placeholder="Search apps: task, beat, debate, body, portfolio..." />
     <button id="showHubBtn">Show hub</button>
     <button class="secondary" id="copyLabReportBtn">Copy lab report</button>
+    <button class="secondary" id="labBackupBtn" type="button">Export local backup</button>
+    <button class="secondary" id="labRestoreBtn" type="button">Restore from backup</button>
+    <button class="secondary" id="labRawRecoveryBtn" type="button" hidden>Export raw recovery</button>
+    <input type="file" id="labRestoreFile" accept="application/json,.json" aria-label="Select a JM Fresh App Lab backup" hidden>
   </section>
+  <p class="storeNotice" id="labStoreStatus" role="status" aria-live="polite">Local device storage only; nothing syncs automatically. Backups contain your content, so keep them private.</p>
 
   <section id="hub" class="hub" aria-label="App launcher"></section>
 
@@ -96,8 +102,99 @@ button,input,textarea,select{font:inherit} button{border:0;border-radius:14px;pa
 (function(){
   'use strict';
   const $ = (id) => document.getElementById(id);
-  const load = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch(e) { return fallback; } };
-  const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  // The original 13 local keys remain authoritative for these 12 app bodies.
+  const localKeys = ['jm_tp_tasks','jm_tp_dings','jm_fx_rules','jm_diy_plan','jm_ss_queue','jm_nb_places','jm_bg_loops','jm_tt_moments','jm_lr_deck','jm_da_state','jm_bm_moves','jm_sb_sports','jm_pp_works'];
+  const storeStatus = $('labStoreStatus');
+  const unreadableKeys = new Set(), failedWriteKeys = new Set();
+  const rawRecoveryBtn = $('labRawRecoveryBtn');
+  const validLocalGroup = (key, value) => {
+    if(key === 'jm_diy_plan') return value === null || (value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.materials) && Array.isArray(value.steps) && value.done && typeof value.done === 'object' && !Array.isArray(value.done));
+    if(key === 'jm_da_state') return value && !Array.isArray(value) && typeof value === 'object' && Array.isArray(value.points) && Array.isArray(value.verdicts);
+    if(!Array.isArray(value)) return false;
+    if(['jm_tp_dings','jm_fx_rules','jm_bg_loops'].includes(key)) return value.every(item => typeof item === 'string');
+    return value.every(item => item && typeof item === 'object' && !Array.isArray(item));
+  };
+  function storeMessage(message, warning = false){
+    const holds = [...new Set([...unreadableKeys,...failedWriteKeys])];
+    rawRecoveryBtn.hidden = holds.length === 0;
+    storeStatus.textContent = holds.length && !warning ? 'STORAGE HOLD ('+holds.join(', ')+'): one or more original groups remain unreadable or unsaved. Another group may have saved, but this lab is NOT fully saved. Use private raw recovery before repairing source.' : message;
+    storeStatus.classList.toggle('warn', warning || holds.length>0);
+  }
+  const load = (key, fallback) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if(raw === null)return fallback;
+      const value = JSON.parse(raw);
+      if(!validLocalGroup(key,value))throw Error('INVALID_SAVED_SHAPE');
+      return value;
+    } catch(e) {
+      unreadableKeys.add(key);
+      storeMessage('SOURCE HOLD: saved '+key+' could not be safely read. Its original bytes are preserved; export raw recovery before attempting any replacement.', true);
+      return fallback;
+    }
+  };
+  const save = (key, value) => {
+    if(unreadableKeys.has(key)){
+      storeMessage('SAVE HOLD: '+key+' contains unreadable original source. New in-session data was NOT committed. Export raw recovery before deliberate repair.',true);
+      return false;
+    }
+    try {
+      const serialized=JSON.stringify(value);
+      localStorage.setItem(key,serialized);
+      if(localStorage.getItem(key)!==serialized)throw Error('SAVE_READBACK_HOLD');
+      failedWriteKeys.delete(key);
+      storeMessage('Saved and read back in this browser on this device; no automatic cloud sync. Use Export local backup to carry it elsewhere.');
+      return true;
+    }catch(e){
+      failedWriteKeys.add(key);
+      storeMessage('SAVE HOLD: '+key+' did not pass storage readback. Changes are in this tab only and may be lost on reload. '+String(e.message||e),true);
+      return false;
+    }
+  };
+  rawRecoveryBtn.addEventListener('click',()=>{
+    try{
+      const entries={};
+      localKeys.forEach(key=>{entries[key]=localStorage.getItem(key)});
+      const payload={schema:'jm.fresh-app-lab.raw-recovery/1',readOnly:true,exportedAt:new Date().toISOString(),heldKeys:[...unreadableKeys],entries,warning:'PRIVATE RAW SOURCE. This may include unpublished creations or sensitive notes. It is not a normal restore file.'};
+      const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+      const link=document.createElement('a');link.href=url;link.download='JM_Fresh_App_Lab_raw_recovery_'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      storeMessage('PRIVATE RAW RECOVERY DOWNLOAD REQUESTED. Check Downloads before relying on it. Original local storage was not modified.',true);
+    }catch(e){storeMessage('RAW RECOVERY HOLD: source could not be read for export; original data was not intentionally changed.',true)}
+  });
+  $('labBackupBtn').addEventListener('click', () => {
+    try {
+      const entries = {};
+      localKeys.forEach(key => { const raw = localStorage.getItem(key); if(raw !== null){ JSON.parse(raw); entries[key] = raw; } });
+      if(!Object.keys(entries).length){ storeMessage('No saved local app data to export yet. Add something in an app first.', true); return; }
+      const payload = {schema:'jm.fresh-app-lab.local-backup/1', exportedAt:new Date().toISOString(), entries};
+      const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)], {type:'application/json'}));
+      const link = document.createElement('a'); link.href=url; link.download='JM_Fresh_App_Lab_backup_'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+      storeMessage('Backup download requested. Check your downloads before relying on the file. It contains your local app content; keep it private.');
+    } catch(e){ storeMessage('Backup could not be prepared. No data was removed or uploaded.',true); }
+  });
+  $('labRestoreBtn').addEventListener('click', () => $('labRestoreFile').click());
+  $('labRestoreFile').addEventListener('change', async event => {
+    const input = event.target, file = input.files && input.files[0]; input.value=''; if(!file) return;
+    if(file.size > 5 * 1024 * 1024){ storeMessage('Backup exceeds the 5 MB import limit. Nothing was changed.',true); return; }
+    try {
+      const backup = JSON.parse(await file.text());
+      if(backup.schema !== 'jm.fresh-app-lab.local-backup/1' || !backup.entries || Array.isArray(backup.entries) || typeof backup.entries !== 'object') throw Error('schema');
+      const keys = Object.keys(backup.entries);
+      if(!keys.length || keys.some(key => !localKeys.includes(key) || typeof backup.entries[key] !== 'string')) throw Error('keys');
+      // Validate original state shapes before mutation; syntactically valid JSON alone is unsafe.
+      if(keys.some(key => !validLocalGroup(key,JSON.parse(backup.entries[key])))) throw Error('shape');
+      // Restore only keys actually present in this file; preserve every other original key.
+      if(!window.confirm('Restore '+keys.length+' saved data groups from this private backup? Matching local groups will be overwritten; other groups will remain.')) { storeMessage('Restore cancelled. Local data is unchanged.'); return; }
+      const before = {}; keys.forEach(key => { before[key] = localStorage.getItem(key); });
+      const applied = [];
+      try { keys.forEach(key => { localStorage.setItem(key, backup.entries[key]); applied.push(key); }); }
+      catch(e) { applied.forEach(key => { try{ if(before[key] === null) localStorage.removeItem(key); else localStorage.setItem(key,before[key]); }catch(rollbackError){} }); throw Error('storage'); }
+      storeMessage('Restored '+keys.length+' data groups in this browser. Reloading to refresh all 12 original tools.');
+      window.location.reload();
+    } catch(e){ storeMessage('Restore failed: invalid backup or unavailable storage. Existing data was not intentionally cleared. If storage failed mid-write, check the affected tool values.', true); }
+  });
   const esc = (value) => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const now = () => new Date().toLocaleString();
   const apps = [

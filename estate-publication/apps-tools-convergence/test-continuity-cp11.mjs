@@ -187,8 +187,8 @@ check('CP14 raw recovery cannot query a forged environment ID',()=>{
 check('CP14 public UI has raw recovery only when storage is unreadable',()=>{
   const ui=fs.readFileSync('estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js','utf8');
   assert.match(ui,/EXPORT RAW RECOVERY/);
-  assert.match(ui,/rawRecoveryButton.hidden=!\\(sourceHold\\|\\|busHold\\)/);
-  assert.match(ui,/spine.exportRawRecovery\\(cfg.id\\)/);
+  assert(ui.includes('rawRecoveryButton.hidden=!(sourceHold||busHold)'));
+  assert(ui.includes('spine.exportRawRecovery(cfg.id)'));
   assert.match(ui,/PRIVATE RAW RECOVERY EXPORT REQUESTED/);
 });
 console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12/13/14 static UI guard; not owner-device proof)');

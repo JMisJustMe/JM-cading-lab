@@ -93,9 +93,9 @@ def main() -> int:
     report = {
         "schema": "JM.RUKQUSS.PublicSubdomainContact.CP09/1",
         "scope": "PUBLIC_SHORTCUT_AND_DESTINATION_ONLY" if args.online else "OFFLINE_CONTRACT",
-        "candidate_hostnames_active": False,
-        "dns_updated": False,
-        "worker_deployed": False,
+        "candidate_hostname_activation": "NOT_CHECKED_BY_THIS_SCRIPT",
+        "dns_mutated_by_this_script": False,
+        "worker_deployed_by_this_script": False,
         "aliases": list(ROUTES),
     }
     if args.online:

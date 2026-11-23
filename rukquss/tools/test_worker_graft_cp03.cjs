@@ -5,7 +5,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const vm = require("node:vm");
-const EXPECTED_BLOB = "dfa22a89e7c8aab55a94cbe05107a68561666d84";
+const EXPECTED_BLOB = "93b7a743b9d5ca9f48906557a67a6a43fe020eb6";
 const PARENT_BLOB = "a9630dd04c1a72431b15695bd667d126310d12ec";
 const REDIRECTS = {
   "/navigator":"https://jmisjustme-estate.pages.dev/navigator/",
@@ -85,6 +85,7 @@ function workerCarrier(source) {
   check("CP05 existing search and legal source retained",rootText.includes('id="find"') && rootText.includes("RUKQUSS REALITY LTD is not yet incorporated"));
   check("CP05.1 zoom reflow rules present",rootText.includes("/* CP05.1: keep all content visible") && rootText.includes(".split{grid-template-columns:minmax(0,1fr)}"));
   check("CP05.1 mobile search placeholder compact",rootText.includes('placeholder="Search districts…"'));
+  check("CP05.2 landscape zoom grid minmax used",rootText.includes("@media(min-width:831px)") && rootText.includes(".split{grid-template-columns:repeat(2,minmax(0,1fr))}"));
 
 
   console.log(JSON.stringify({schema:"JM.RUKQUSS.WorkerRuntime.CP03/1",scope:"NODE_ISOLATED_WORKER_VM_NOT_CLOUDFLARE_LIVE",checks:checks.length,pass:checks.length,fail:0,details:checks},null,2));

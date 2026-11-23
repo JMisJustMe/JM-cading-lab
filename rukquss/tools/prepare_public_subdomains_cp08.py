@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RUKQUSS CP08 — draft-only public subdomain alias graft.
+"""RUKQUSS CP08→CP10 — draft-only public subdomain alias graft.
 
 Takes an EXACT already-reviewed CP07 Worker candidate and produces a separate
 LOCAL CP08 candidate. Does not create DNS, bind domains, deploy, merge or
@@ -104,13 +104,65 @@ def draft_candidate(current_bytes: bytes) -> tuple[bytes, dict]:
         "public_candidate_alias_count": 6,
         "original_path_authority": "JM_CP01_ROOMS",
         "redirect_hops_from_candidate_to_original": 1,
-        "private_subdomains_reserved_unchanged": True,
-        "cloudflare_dns_or_custom_domain_activated": False,
-        "deployment": False,
+        "private_subdomains_not_modified_by_this_tool": True,
+        "cloudflare_dns_or_custom_domain_changed_by_this_tool": False,
+        "live_activation_checked_by_this_tool": False,
+        "deployment_performed_by_this_tool": False,
         "release_approved": False,
         "one_graft_only": True,
     }
     return assembled, receipt
+
+
+
+def self_test(current_bytes: bytes) -> int:
+    """Mutation testing: bad aliases, bad authority and changed parent must HOLD."""
+    global CP08_INSERTION
+    good = CP08_INSERTION
+    fixtures = [
+        ("missing one public route", good.replace(
+            "  'books.rukquss.com':'/books'\\n", "")),
+        ("wrong original destination", good.replace(
+            "'music.rukquss.com':'/music'", "'music.rukquss.com':'/career'")),
+        ("unexpected seventh public host", good.replace(
+            "  'books.rukquss.com':'/books'",
+            "  'books.rukquss.com':'/books',\\n  'extra.rukquss.com':'/career'")),
+        ("routing authority bypass", good.replace(
+            "const jmResolved=JM_CP01_ROOMS[jmPublicPath]",
+            "const jmResolved='https://example.invalid/override'")),
+        ("direct redirect removed", good.replace(
+            "'Location':jmResolved", "'Location':'https://rukquss.com/games'")),
+        ("malformed alias object", good.replace(
+            "'apps.rukquss.com':'/apps'", "'apps.rukquss.com'=false")),
+    ]
+    passed = 0
+    try:
+        for title, mutant in fixtures:
+            if mutant == good:
+                raise AssertionError("CP10 HOLD: mutation test ineffective: " + title)
+            CP08_INSERTION = mutant
+            try:
+                draft_candidate(current_bytes)
+            except ValueError:
+                passed += 1
+            else:
+                raise AssertionError("CP10 HOLD: invalid modification accepted: " + title)
+    finally:
+        CP08_INSERTION = good
+    for title, altered in [
+        ("parent content drift", current_bytes + b"X"),
+        ("parent route byte drift", current_bytes.replace(
+            b'"/music":', b'"/audio":', 1)),
+    ]:
+        if altered == current_bytes:
+            raise AssertionError("CP10 HOLD: mutation test ineffective: " + title)
+        try:
+            draft_candidate(altered)
+        except ValueError:
+            passed += 1
+        else:
+            raise AssertionError("CP10 HOLD: unexpected parent source accepted: " + title)
+    return passed
 
 
 def main() -> None:
@@ -118,11 +170,16 @@ def main() -> None:
     p.add_argument("--reviewed-worker", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--receipt", type=Path, required=True)
+    p.add_argument("--self-test", action="store_true",
+                   help="reject eight deliberately invalid source changes")
     args = p.parse_args()
     paths = [x.resolve() for x in (args.reviewed_worker, args.out, args.receipt)]
     if len(set(paths)) != 3:
         raise ValueError("CP10 HOLD: refuses to overwrite the verified parent")
-    result, receipt = draft_candidate(args.reviewed_worker.read_bytes())
+    parent_bytes = args.reviewed_worker.read_bytes()
+    result, receipt = draft_candidate(parent_bytes)
+    if args.self_test:
+        receipt["negative_mutation_fixtures_passed"] = self_test(parent_bytes)
     args.out.write_bytes(result)
     args.receipt.write_bytes((json.dumps(receipt, sort_keys=True, indent=2)+"\n").encode("utf-8"))
     if sha256(args.out.read_bytes()) != receipt["candidate_worker_sha256"]:

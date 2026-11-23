@@ -20,7 +20,7 @@ PREFIX ≠ ERASURE
 MESH ≠ MERGE
 CONTACT ≠ COLLAPSE</pre></section>
 <section class="panel"><h2>Rejoin destinations</h2><div class="route"><div><b>PRIMARY</b> JM Branch 18 — Games, Play & Interactive Systems | Playable Route Lab</div><div><b>SECONDARY</b> JM32-1DA Governance Service / Command Dock</div><div><b>SECONDARY</b> JM Branch 11 — Language, Meaning & Communication | JM Syntax & FlowTalk Lab</div><div><b>ESTATE</b> Central Switchboard · RootRails · Branch Master Index · Product Receipts Register · Source Vault</div></div></section>
-<section class="panel"><h2>Exact rejoin packet</h2><pre id="packet">REJOIN PACKET — Loopit / GlyphPlay / GameForge Boundary Check
+<section class="panel"><h2>Exact rejoin packet</h2><pre id="packet" tabindex="0">REJOIN PACKET — Loopit / GlyphPlay / GameForge Boundary Check
 
 This chat is a COMPLETE ecosystem node.
 
@@ -50,8 +50,30 @@ STATUS:
 COMPLETE / GOVERNANCE BODY / RECEIPT NODE
 
 NEXT ACTION:
-Reconnect to Branch 18 Games & Playable Systems, JM32-1DA Governance Dock, and Branch 11 FlowTalk/Symbolic Syntax.</pre><button id="copy">COPY REJOIN PACKET</button><p id="result" class="receipt">Ready. Copying creates a local proof receipt.</p></section>
+Reconnect to Branch 18 Games & Playable Systems, JM32-1DA Governance Dock, and Branch 11 FlowTalk/Symbolic Syntax.</pre><button id="copy">COPY REJOIN PACKET</button><p id="result" class="receipt" role="status" aria-live="polite">Ready. A successful clipboard write confirms copying for this session; it does not store permanent proof.</p></section>
 </main><script>
-const packet=document.getElementById('packet').textContent, result=document.getElementById('result');document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(packet);result.textContent='DING · Rejoin packet copied · '+new Date().toISOString()}catch(e){result.textContent='Clipboard unavailable. The exact packet remains visible and selectable.'}};
+const packetNode=document.getElementById('packet'), packet=packetNode.textContent, result=document.getElementById('result');
+function selectPacketForManualCopy(){
+  packetNode.focus();
+  const selection=window.getSelection();
+  if(!selection)return false;
+  const range=document.createRange();
+  range.selectNodeContents(packetNode);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  return selection.rangeCount>0;
+}
+document.getElementById('copy').onclick=async()=>{
+  try{
+    if(typeof navigator.clipboard?.writeText!=='function')throw new Error('Clipboard API unavailable');
+    await navigator.clipboard.writeText(packet);
+    result.textContent='DING · Rejoin packet copied (session confirmation only) · '+new Date().toISOString();
+  }catch{
+    const selected=selectPacketForManualCopy();
+    result.textContent=selected
+      ?'Clipboard blocked. Packet selected: use your device Copy action or Ctrl/Cmd+C. No copy DING claimed.'
+      :'Clipboard blocked. Select the visible packet manually to copy it. No copy DING claimed.';
+  }
+};
 window.JMRejoinNode={status:'COMPLETE',classification:'GOVERNANCE BODY / RECEIPT NODE',build:false,marks:'PROTECTED',primary:'Branch 18',secondary:['JM32-1DA Governance Dock','Branch 11 Syntax & FlowTalk'],packet};
 </script></body></html>

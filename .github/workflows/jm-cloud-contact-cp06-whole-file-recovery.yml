@@ -1,0 +1,50 @@
+name: JM CP06 Hosted Whole File State Recovery
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/whole-state-cold*'
+      - 'agent-runtime/host-adapters/jm-operated-host/hosted-whole-recovery-v051.mjs'
+      - 'docs/JM_CLOUD_CONTACT_CP06_WHOLE_STATE_RECOVERY.md'
+      - '.github/workflows/jm-cloud-contact-cp06-whole-file-recovery.yml'
+permissions:
+  contents: read
+jobs:
+  actual-five-organs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover exact frozen hosted donor into test-only directory
+        uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: .jm-cp06-hosted-donor
+          persist-credentials: false
+      - name: Verify donor, code and install approved package dependencies without scripts
+        run: |
+          set -euo pipefail
+          test "$(git -C .jm-cp06-hosted-donor rev-parse HEAD)" = '0921217d95285bcb21cda7a995d02f7ec0725810'
+          node --check agent-runtime/host-adapters/jm-operated-host/whole-state-cold.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/hosted-whole-recovery-v051.mjs
+          npm install --prefix .jm-cp06-hosted-donor --omit=dev --ignore-scripts --no-audit --no-fund
+      - name: Adversarial file-state, cryptographic integrity and fail-closed tests
+        run: node --test agent-runtime/host-adapters/jm-operated-host/whole-state-cold.test.mjs
+      - name: Prove genuine hosted Cloud Contact + Game + Mesh + Market + Zezu encrypted restoration
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/hosted-whole-recovery-v051.mjs \
+            "$GITHUB_WORKSPACE/.jm-cp06-hosted-donor" \
+            "$RUNNER_TEMP/JM_CP06_WHOLE_STATE_RECEIPT.json"
+      - name: Upload non-secret test evidence only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP06_WHOLE_FILE_STATE_TEST_RECEIPT
+          path: ${{ runner.temp }}/JM_CP06_WHOLE_STATE_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 14

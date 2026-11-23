@@ -1,0 +1,71 @@
+name: JM CP10 Genuine Hosted Coordinated File and PostgreSQL Recovery
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/coordinated-*.mjs'
+      - '.github/workflows/jm-cloud-contact-cp10-joint-checkpoint.yml'
+      - 'docs/JM_CLOUD_CONTACT_CP10_COORDINATED_CHECKPOINT.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-file-and-postgres-checkpoint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: cp10_disposable_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      JM_CP10_CI_TEST_DATABASES: YES_DISPOSABLE_ONLY
+    steps:
+      - name: Check out additive JM CP10 source only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check out the exact original hosted donor unmodified
+        uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: .jm-cp10-donor
+          persist-credentials: false
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install PostgreSQL16 command-line client and exact donor dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          test "$(git -C .jm-cp10-donor rev-parse HEAD)" = 0921217d95285bcb21cda7a995d02f7ec0725810
+          npm install --prefix .jm-cp10-donor --omit=dev --ignore-scripts --no-audit --no-fund
+          pg_dump --version
+          pg_restore --version
+      - name: Perform defensive guard and parent tests
+        run: |
+          node --check agent-runtime/host-adapters/jm-operated-host/coordinated-checkpoint.mjs
+          node --check agent-runtime/host-adapters/jm-operated-host/coordinated-integration-v051.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/coordinated-checkpoint.test.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/market-postgres-cold.test.mjs
+      - name: Execute original v0.5.1 server with disposable PostgreSQL and full recovery
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/coordinated-integration-v051.mjs \
+            "$GITHUB_WORKSPACE/.jm-cp10-donor" \
+            "$RUNNER_TEMP/JM_CP10_COORDINATED_PROOF.json"
+      - name: Upload public bounded receipt only, no keys/data/DB archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP10_COORDINATED_RECOVERY_RECEIPT
+          path: ${{ runner.temp }}/JM_CP10_COORDINATED_PROOF.json
+          retention-days: 14
+          if-no-files-found: error

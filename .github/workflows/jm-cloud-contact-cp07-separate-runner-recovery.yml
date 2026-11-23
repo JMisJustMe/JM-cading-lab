@@ -1,0 +1,93 @@
+name: JM CP07 Genuine Cloud Contact Separate-Runner Recovery
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/jm-operated-host/cross-runner-recovery-v051*'
+      - 'docs/JM_CLOUD_CONTACT_CP07_SEPARATE_RUNNER_RECOVERY.md'
+      - '.github/workflows/jm-cloud-contact-cp07-separate-runner-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    name: seal-synthetic-whole-state-on-runner-A
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: .jm-cp07-donor
+          persist-credentials: false
+      - name: Check source SHA, syntax, safety suite and isolated dependency boundary
+        run: |
+          set -euo pipefail
+          test "$(git -C .jm-cp07-donor rev-parse HEAD)" = '0921217d95285bcb21cda7a995d02f7ec0725810'
+          node --check agent-runtime/host-adapters/jm-operated-host/cross-runner-recovery-v051.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/cross-runner-recovery-v051.test.mjs
+          node --test agent-runtime/host-adapters/jm-operated-host/whole-state-cold.test.mjs
+          npm install --prefix .jm-cp07-donor --omit=dev --ignore-scripts --no-audit --no-fund
+      - name: Contact the genuine hosted server, seal quiesced whole-state and destroy temporary runtime
+        run: |
+          node agent-runtime/host-adapters/jm-operated-host/cross-runner-recovery-v051.mjs \
+            produce "$GITHUB_WORKSPACE/.jm-cp07-donor" "$RUNNER_TEMP/JM_CP07_CIPHERTEXT_RELAY" \
+            "$RUNNER_TEMP/JM_CP07_PRODUCER_PUBLIC_RECEIPT.json"
+      - name: Transfer only disposable test ciphertext and public reference to GitHub artifact store
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP07_PUBLIC_TEST_CIPHERTEXT
+          path: ${{ runner.temp }}/JM_CP07_CIPHERTEXT_RELAY/
+          if-no-files-found: error
+          retention-days: 2
+      - name: Upload producer proof without raw state, credentials or signing keys
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP07_PRODUCER_RECEIPT
+          path: ${{ runner.temp }}/JM_CP07_PRODUCER_PUBLIC_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 2
+  restore:
+    name: recover-real-JM-service-on-independent-runner-B
+    needs: source
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: .jm-cp07-donor
+          persist-credentials: false
+      - name: Download remote artifact, not source-runner workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: JM_CP07_PUBLIC_TEST_CIPHERTEXT
+          path: ${{ runner.temp }}/JM_CP07_CIPHERTEXT_RELAY
+      - name: Verify pinned independent source, install and execute recovery
+        run: |
+          set -euo pipefail
+          test "$(git -C .jm-cp07-donor rev-parse HEAD)" = '0921217d95285bcb21cda7a995d02f7ec0725810'
+          npm install --prefix .jm-cp07-donor --omit=dev --ignore-scripts --no-audit --no-fund
+          node agent-runtime/host-adapters/jm-operated-host/cross-runner-recovery-v051.mjs \
+            recover "$GITHUB_WORKSPACE/.jm-cp07-donor" "$RUNNER_TEMP/JM_CP07_CIPHERTEXT_RELAY" \
+            "$RUNNER_TEMP/JM_CP07_RECOVERY_PUBLIC_RECEIPT.json"
+      - name: Upload independently generated final public-safe recovery proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CP07_INDEPENDENT_RUNNER_RECOVERY_RECEIPT
+          path: ${{ runner.temp }}/JM_CP07_RECOVERY_PUBLIC_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 14

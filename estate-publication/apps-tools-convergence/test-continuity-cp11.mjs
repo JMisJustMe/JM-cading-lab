@@ -156,4 +156,39 @@ check('CP13 unsaved visible input blocks outgoing packet and preserves editable 
   assert(ui.includes('unsavedRoomInput'));
 });
 
-console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12/13 static UI guard; not owner-device proof)');
+check('CP14 raw recovery reads exact corrupt state and bus without mutation',()=>{
+  const stateRaw='{corrupt state / private bytes';
+  const busRaw='{corrupt packet bus / private bytes';
+  const env='evidence-governance',sk=stateKey(env);
+  const t=runtime({[sk]:stateRaw,[key]:busRaw,unrelated:'KEEP'});
+  assert.throws(()=>t.spine.loadState(env),/UNREADABLE_HOLD/);
+  assert.throws(()=>t.spine.read(),/UNREADABLE_HOLD/);
+  const raw=t.spine.exportRawRecovery(env);
+  assert.equal(raw.schema,'jm.apps.tools.raw-recovery/1.0');
+  assert.equal(raw.read_only,true);
+  assert.equal(raw.environment,env);
+  assert.equal(raw.entries.environment.key,sk);
+  assert.equal(raw.entries.environment.raw,stateRaw);
+  assert.equal(raw.entries.packet_bus.key,key);
+  assert.equal(raw.entries.packet_bus.raw,busRaw);
+  assert.equal(t.items.get(sk),stateRaw);
+  assert.equal(t.items.get(key),busRaw);
+  assert.equal(t.items.get('unrelated'),'KEEP');
+  assert.deepEqual(t.events,[]);
+});
+check('CP14 raw recovery cannot query a forged environment ID',()=>{
+  const t=runtime();
+  assert.throws(()=>t.spine.exportRawRecovery('../other-environment'),/ENVIRONMENT_ID_HOLD/);
+  const safe=t.spine.exportRawRecovery('route-ftr');
+  assert.equal(safe.entries.environment.raw,null);
+  assert.equal(safe.entries.packet_bus.raw,null);
+  assert.equal(t.items.size,0);
+});
+check('CP14 public UI has raw recovery only when storage is unreadable',()=>{
+  const ui=fs.readFileSync('estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js','utf8');
+  assert.match(ui,/EXPORT RAW RECOVERY/);
+  assert.match(ui,/rawRecoveryButton.hidden=!\\(sourceHold\\|\\|busHold\\)/);
+  assert.match(ui,/spine.exportRawRecovery\\(cfg.id\\)/);
+  assert.match(ui,/PRIVATE RAW RECOVERY EXPORT REQUESTED/);
+});
+console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12/13/14 static UI guard; not owner-device proof)');

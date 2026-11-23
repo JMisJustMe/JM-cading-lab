@@ -13,6 +13,7 @@ import json
 import re
 from pathlib import Path
 
+LIVE_WORKER_SHA256 = "36b5ffd592ea24570fdb654e1a067e6967bf9495479196270a2bb1f1c5ad7da5"
 PARENT_BLOB = "a9630dd04c1a72431b15695bd667d126310d12ec"
 CHILD_BLOB = "ca2a8f4e77174f0d19ac7ce35c74f708ada5d8cc"
 PARENT_BRANCH = "feature/rukquss-owner-domain-web-20261024"
@@ -34,6 +35,8 @@ def git_blob(data: bytes) -> str:
 
 
 def candidate(live: str, html_bytes: bytes) -> tuple[str, dict]:
+    require(hashlib.sha256(live.encode("utf-8")).hexdigest() == LIVE_WORKER_SHA256,
+            "live Worker changed since verified snapshot; review before graft")
     require(git_blob(html_bytes) == CHILD_BLOB, "modified or unexpected RUKQUSS HTML")
     require(live.count("const HTML=") == 1, "HTML delimiter changed")
     require(live.count(MARKER) == 1, "CP01 route marker missing or ambiguous")
@@ -97,11 +100,29 @@ def main() -> None:
     p.add_argument("--html", type=Path, required=True, help="original RUKQUSS staged HTML")
     p.add_argument("--out", type=Path, required=True, help="ephemeral assembled Worker candidate")
     p.add_argument("--receipt", type=Path, required=True, help="local provenance receipt")
+    p.add_argument("--self-test", action="store_true", help="test that changed inputs fail closed")
     args = p.parse_args()
     require(args.out.resolve() not in (args.live.resolve(), args.html.resolve()), "output would overwrite donor")
     require(args.receipt.resolve() not in (args.live.resolve(), args.html.resolve(), args.out.resolve()),
             "receipt would overwrite donor")
-    grafted, receipt = candidate(args.live.read_text(encoding="utf-8"), args.html.read_bytes())
+    live = args.live.read_text(encoding="utf-8")
+    html = args.html.read_bytes()
+    grafted, receipt = candidate(live, html)
+    if args.self_test:
+        mutants = [
+            ("changed Worker script", live + "// unexpected", html),
+            ("changed Worker CP01 route", live.replace('"/apps"', '"/appz"', 1), html),
+            ("missing CP01 marker", live.replace(MARKER, "/* wrong */"), html),
+            ("changed HTML bytes", live, html + b" "),
+            ("changed Worker status", live.replace("gitBlob:'" + PARENT_BLOB + "'", "gitBlob:'bad'"), html),
+        ]
+        for name, changed_worker, changed_html in mutants:
+            try:
+                candidate(changed_worker, changed_html)
+            except ValueError:
+                continue
+            raise AssertionError("CP03 HOLD: mutation unexpectedly accepted: " + name)
+        receipt["negative_mutation_fixtures_passed"] = len(mutants)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(grafted, encoding="utf-8")
     args.receipt.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")

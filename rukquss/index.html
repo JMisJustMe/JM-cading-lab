@@ -57,6 +57,20 @@ html{scroll-padding-top:18px}
   .pane{min-width:0;overflow-wrap:anywhere}
   .topnav a{min-width:0;overflow-wrap:break-word;padding:8px 3px}
 }
+
+/* CP05: search discoverability, touch-first district shortcuts. */
+.quick-routes{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:0 0 8px}
+.quick-label{font-size:.84rem;font-weight:800;color:#d7e7f0;margin-right:3px}
+.quick-routes button{font:inherit;font-size:.88rem;font-weight:800;border-radius:999px;min-height:44px;padding:8px 15px;color:#eaf4fb;background:#18354b;border:1px solid #55758a;cursor:pointer}
+.quick-routes button:hover{border-color:var(--mint);background:#25506a}
+.quick-routes button[aria-pressed="true"]{background:var(--mint);color:#0b2631;border-color:var(--mint)}
+.quick-routes button:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.search-hint{font-size:.85rem;line-height:1.5;margin:0 0 17px}
+@media(max-width:570px){
+  .quick-routes{gap:8px}
+  .quick-label{width:100%;margin-bottom:0}
+  .quick-routes button{padding:8px 13px}
+}
 </style>
 </head>
 <body>
@@ -64,14 +78,16 @@ html{scroll-padding-top:18px}
 <header class="top"><div class="wrap topin"><a class="logo" href="#main" aria-label="RUKQUSS home"><span class="sigil" aria-hidden="true">RQ</span><span class="brand">RUKQUSS<small>REALITY / CREATOR-LED</small></span></a><nav class="topnav" aria-label="Main navigation"><a href="#doors">Explore</a><a href="#live">Try it</a><a href="#route">Our route</a><a href="https://jmisjustme.github.io/JM-cading-lab/">JM Estate ↗</a></nav></div></header>
 <main id="main"><div class="wrap"><section class="hero" aria-labelledby="hero-title"><div class="hero-grid"><div><p class="eyebrow">One owner-controlled direction · multiple independent bodies</p><h1 id="hero-title">Make it real.<br><em>Keep it yours.</em></h1><p class="lead">RUKQUSS is the live commercial gateway into the work of Theodore / JM: playable worlds, creative software, coded systems, theories, music, tools and the living JMISJUSTME ECOSTATE.</p><p class="note">Source authorship stays with JM. This website is live; RUKQUSS REALITY LTD is not yet incorporated. Existing creations, private systems and IP retain their independent authority.</p><div class="actions"><a class="action primary" href="#doors">Enter the seven districts →</a><a class="action" href="https://jmisjustme.github.io/JM-cading-lab/access/">Current Access Mesh ↗</a><a class="action" href="#live">Try a live creation →</a></div></div><div class="hero-art" aria-label="Creator to Estate to commercial gateway"><span class="flow-title">The governing relationship</span><div class="flow">JM · CREATOR / SOURCE</div><div class="arrow">↓</div><div class="flow mini">JMISJUSTME · LIVING ESTATE</div><div class="arrow">↓</div><div class="flow">RUKQUSS · COMMERCIAL GATE</div><p class="note" style="margin:0;text-align:center">Separate identities. Deliberate licences. Recoverable routes.</p></div></div></section>
 <div class="rib" aria-label="Readiness status"><span class="chip"><b>LIVE:</b> RUKQUSS domain + HTTPS</span><span class="chip"><b>PASS:</b> Seven public JM districts</span><span class="chip"><b>OPEN:</b> Existing JM public website</span><span class="chip pending"><b>HOLD:</b> Ltd incorporation</span><span class="chip pending"><b>HOLD:</b> Private runtime connections</span></div>
-<section class="section" id="doors" aria-labelledby="doors-heading"><p class="eyebrow">JM ECOSTATE · existing public routes</p><h2 id="doors-heading">Seven districts. One way in.</h2><p>These doors link to established JMISJUSTME rooms. RUKQUSS does not claim to own or merge the experiences behind them. Choose a purpose; each room keeps its own history and proof.</p><div class="tools"><input id="find" class="search" type="search" aria-label="Search the seven districts" autocomplete="off" enterkeyhint="search" placeholder="Search play, build, books, music, work…"><button class="clear-search" id="clearFind" type="button" disabled aria-label="Clear district search">Clear</button><span class="count" id="results" role="status" aria-live="polite">7 districts</span></div><div class="district-grid" id="grid">
-<article class="district" data-terms="play games fighting sport arena playable interactive"><span class="num">01 / PLAY</span><h3>Play</h3><p>Games &amp; Beyond, characters and living worlds.</p><a href="https://jmisjustme.github.io/JM-cading-lab/games-beyond/">Open Play ↗</a></article>
-<article class="district" data-terms="build code coding kocodify runtimes development forge apps"><span class="num">02 / BUILD</span><h3>Build</h3><p>JM coding bodies, tools, apps and executable construction.</p><a href="https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/">Open Build ↗</a></article>
-<article class="district" data-terms="think theory philosophy theo logic research proofs"><span class="num">03 / THINK</span><h3>Think</h3><p>Theories, examinations, contact and meaning.</p><a href="https://jmisjustme.github.io/JM-cading-lab/theory/">Open Think ↗</a></article>
-<article class="district" data-terms="create visuals cartoons comics art music studio"><span class="num">04 / CREATE</span><h3>Create</h3><p>Visual language, creative bodies and artistic experimentation.</p><a href="https://jmisjustme.github.io/JM-cading-lab/visual-systems-lab/">Open Create ↗</a></article>
-<article class="district" data-terms="publish books writing author literature lyrics release"><span class="num">05 / PUBLISH</span><h3>Publish</h3><p>Written works and the creator's publishing direction.</p><a href="https://jmisjustme.github.io/JM-cading-lab/books/">Open Publish ↗</a></article>
-<article class="district" data-terms="work career hire collaborate opportunities professional"><span class="num">06 / WORK</span><h3>Work</h3><p>Professional opportunities, collaboration and applied capabilities.</p><a href="https://jmisjustme.github.io/JM-cading-lab/career/">Open Work ↗</a></article>
-<article class="district" data-terms="continue access recovery route registry biat estate"><span class="num">07 / CONTINUE</span><h3>Continue</h3><p>Return to current routes and recover what already exists.</p><a href="https://jmisjustme.github.io/JM-cading-lab/access/">Open Continue ↗</a></article>
+<section class="section" id="doors" aria-labelledby="doors-heading"><p class="eyebrow">JM ECOSTATE · existing public routes</p><h2 id="doors-heading">Seven districts. One way in.</h2><p>These doors link to established JMISJUSTME rooms. RUKQUSS does not claim to own or merge the experiences behind them. Choose a purpose; each room keeps its own history and proof.</p><div class="tools"><input id="find" class="search" type="search" aria-label="Search the seven districts" autocomplete="off" enterkeyhint="search" aria-describedby="searchHint" placeholder="Search games, apps, beats, jobs…"><button class="clear-search" id="clearFind" type="button" disabled aria-label="Clear district search">Clear</button><span class="count" id="results" role="status" aria-live="polite">7 districts</span></div><div class="quick-routes" role="group" aria-label="Suggested district searches"><span class="quick-label">Explore:</span><button type="button" data-quick-query="games" aria-pressed="false">Games</button><button type="button" data-quick-query="apps" aria-pressed="false">Apps</button><button type="button" data-quick-query="music" aria-pressed="false">Music</button><button type="button" data-quick-query="books" aria-pressed="false">Books</button><button type="button" data-quick-query="jobs" aria-pressed="false">Work</button><button type="button" data-quick-query="coding" aria-pressed="false">Coding</button></div>
+<p class="search-hint" id="searchHint">Search one or several topics. Multiple topics show all matching districts; tap a shortcut again to show everything.</p>
+<div class="district-grid" id="grid">
+<article class="district" data-terms="play games game gaming fighting sport arena playable interactive multiplayer adventures worlds playforms"><span class="num">01 / PLAY</span><h3>Play</h3><p>Games &amp; Beyond, characters and living worlds.</p><a href="https://jmisjustme.github.io/JM-cading-lab/games-beyond/">Open Play ↗</a></article>
+<article class="district" data-terms="build code coding kocodify runtimes development forge apps app programming software websites website web javascript html js tools utilities"><span class="num">02 / BUILD</span><h3>Build</h3><p>JM coding bodies, tools, apps and executable construction.</p><a href="https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/">Open Build ↗</a></article>
+<article class="district" data-terms="think theory philosophy theo logic research proofs theories questions meaning determinism reasoning ideas"><span class="num">03 / THINK</span><h3>Think</h3><p>Theories, examinations, contact and meaning.</p><a href="https://jmisjustme.github.io/JM-cading-lab/theory/">Open Think ↗</a></article>
+<article class="district" data-terms="create visuals cartoons comics art music studio beatbody beatmaker beats audio sound lyrics"><span class="num">04 / CREATE</span><h3>Create</h3><p>Visual language, creative bodies and artistic experimentation.</p><a href="https://jmisjustme.github.io/JM-cading-lab/visual-systems-lab/">Open Create ↗</a></article>
+<article class="district" data-terms="publish books writing author literature lyrics release book reading ebooks stories publication"><span class="num">05 / PUBLISH</span><h3>Publish</h3><p>Written works and the creator's publishing direction.</p><a href="https://jmisjustme.github.io/JM-cading-lab/books/">Open Publish ↗</a></article>
+<article class="district" data-terms="work career hire collaborate opportunities professional job jobs services enquiries contact freelance commissions"><span class="num">06 / WORK</span><h3>Work</h3><p>Professional opportunities, collaboration and applied capabilities.</p><a href="https://jmisjustme.github.io/JM-cading-lab/career/">Open Work ↗</a></article>
+<article class="district" data-terms="continue access recovery route registry biat estate navigate navigator find directory routes"><span class="num">07 / CONTINUE</span><h3>Continue</h3><p>Return to current routes and recover what already exists.</p><a href="https://jmisjustme.github.io/JM-cading-lab/access/">Open Continue ↗</a></article>
 </div><p id="empty" class="empty" hidden>No matching district. Clear the search or try another word.</p></section>
 <section class="section experience-section" id="live" aria-labelledby="live-heading">
 <p class="eyebrow">REAL DOORS · REAL EXPERIENCES</p>
@@ -95,25 +111,40 @@ html{scroll-padding-top:18px}
   const box=document.getElementById('find');
   const clear=document.getElementById('clearFind');
   const nodes=[...document.querySelectorAll('#grid .district')];
+  const quick=[...document.querySelectorAll('[data-quick-query]')];
   const results=document.getElementById('results');
   const empty=document.getElementById('empty');
+  const normalize=value=>(value||'').normalize('NFKD').toLowerCase()
+    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  const index=nodes.map(node=>normalize(node.textContent+' '+node.dataset.terms));
   function update(){
-    const terms=(box.value||'').toLocaleLowerCase().trim();
+    const query=normalize(box.value);
+    const terms=query.split(/\s+/).filter(Boolean);
     let shown=0;
-    for(const node of nodes){
-      const matches=!terms||(node.textContent+' '+node.dataset.terms).toLocaleLowerCase().includes(terms);
-      node.hidden=!matches;
+    for(let i=0;i<nodes.length;i++){
+      const matches=!terms.length||terms.some(term=>index[i].includes(term));
+      nodes[i].hidden=!matches;
       if(matches)shown++;
     }
     clear.disabled=!box.value.length;
+    for(const button of quick){
+      button.setAttribute('aria-pressed',String(!!query&&query===normalize(button.dataset.quickQuery)));
+    }
     results.textContent=shown+' '+(shown===1?'district':'districts');
     empty.hidden=shown!==0;
   }
   box.addEventListener('input',update);
   clear.addEventListener('click',()=>{box.value='';update();box.focus()});
   box.addEventListener('keydown',event=>{
-    if(event.key==='Escape' && box.value){event.preventDefault();box.value='';update()}
+    if(event.key==='Escape'&&box.value){event.preventDefault();box.value='';update()}
   });
+  for(const button of quick){
+    button.addEventListener('click',()=>{
+      const query=button.dataset.quickQuery;
+      box.value=normalize(box.value)===normalize(query)?'':query;
+      update();
+    });
+  }
   update();
 })();
 </script>

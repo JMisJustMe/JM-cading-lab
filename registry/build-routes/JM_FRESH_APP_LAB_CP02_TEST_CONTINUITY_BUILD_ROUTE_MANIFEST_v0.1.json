@@ -1,0 +1,380 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Fresh App Lab CP02 — original-source continuity test: scoped companion, NOT new app",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Fresh App Lab CP02 existing-body regression test",
+    "body_type": "scoped Playwright regression probe for existing single-file app, not new application",
+    "intended_destination": "fresh-app-lab/test_continuity_cp02.py",
+    "body_path": "fresh-app-lab/test_continuity_cp02.py"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 807,
+    "head_branch": "jm/fresh-app-lab-portability-touch-cp01-20261123",
+    "intake_generated": true,
+    "authority_rule": "This intake records repository evidence; it does not elevate recovery candidates into source/donor authority.",
+    "original_source": "JMisJustMe/JM-cading-lab fresh-app-lab/index.html — original 12 apps and 13 storage keys; branch content blob 03d7bbfd3ba8d9dc523dd6b1ba44e1a6618ed0a1",
+    "new_executable_boundary": "fresh-app-lab/test_continuity_cp02.py — Playwright verification helper only",
+    "source_ordering_note": "Existing test helper was first committed before the PR's new-executable-entry gate caught it. This forward manifest resolves that HOLD for subsequent CI/promotion checks; it is not invented pre-implementation approval."
+  },
+  "foundation": {
+    "estate_recovery": {
+      "state": "PASS",
+      "query_terms": [
+        "fresh",
+        "lab",
+        "cp02",
+        "existing",
+        "regression",
+        "test",
+        "scoped",
+        "playwright",
+        "probe",
+        "single",
+        "file",
+        "not",
+        "application",
+        "continuity",
+        "localstorage",
+        "corrupt",
+        "recovery"
+      ],
+      "candidate_count": 24,
+      "route_manifest_candidates": [
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Build Laws Â· Preferences Â· Governance â€” Running Standard v1.0",
+          "score": 4,
+          "matched_terms": [
+            "lab",
+            "existing",
+            "single",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_CODING_ESTATE_CURRENT_64_RUNNING_STANDARD_v1.0_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Coding Estate â€” Current 64 Running Standard v1.0",
+          "score": 4,
+          "matched_terms": [
+            "lab",
+            "existing",
+            "test",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_CODING_BODY_ACTIVATION_TRACE_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Coding Body Activation Trace v0.1",
+          "score": 3,
+          "matched_terms": [
+            "lab",
+            "existing",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_ESTATE_CAPABILITY_ROUTER_v1.0_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Estate â€” Whole Capability Routing Standard v1.0",
+          "score": 3,
+          "matched_terms": [
+            "lab",
+            "file",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_ESTATE_LIVE_REGISTRY_APP_v0.2_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Estate Live Registry App v0.2 â€” Native Circulation",
+          "score": 3,
+          "matched_terms": [
+            "lab",
+            "existing",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_HOST_ADAPTER_CONFORMANCE_v1.0_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Host Adapter Conformance â€” Universal Plug Tester v1.0",
+          "score": 3,
+          "matched_terms": [
+            "existing",
+            "test",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_ANDROID_CODEX_HOST_ADAPTERS_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Sovereign Agent Android + Codex Host Adapters v0.1",
+          "score": 2,
+          "matched_terms": [
+            "existing",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM ChatGPT Host Adapter v0.1.1 â€” Recovery-First Graft",
+          "score": 2,
+          "matched_terms": [
+            "existing",
+            "recovery"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry\\build-routes\\JM_SOVEREIGN_AGENT_PORTABLE_RUNTIME_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+          "body": "JM Sovereign Agent Portable Runtime v0.1",
+          "score": 2,
+          "matched_terms": [
+            "existing",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        }
+      ],
+      "tracked_body_candidates": [
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "coding-estate/everybody/role-qualified-61/native/formula-route-recovery-seven.selftest.mjs",
+          "score": 2,
+          "matched_terms": [
+            "test",
+            "recovery"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "fresh-app-lab/body-return-v0.1/FORMAL_SPEC.md",
+          "score": 2,
+          "matched_terms": [
+            "fresh",
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "fresh-app-lab/body-return-v0.1/README.md",
+          "score": 2,
+          "matched_terms": [
+            "fresh",
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "fresh-app-lab/body-return-v0.1/index.html",
+          "score": 2,
+          "matched_terms": [
+            "fresh",
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "fresh-app-lab/index.html",
+          "score": 2,
+          "matched_terms": [
+            "fresh",
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/puka/puka-read-lab-v01.test.js",
+          "score": 2,
+          "matched_terms": [
+            "lab",
+            "test"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/tests/puka-canonical-continuity.spec.mjs",
+          "score": 2,
+          "matched_terms": [
+            "test",
+            "continuity"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "games-beyond/tests/puka-continuity.spec.mjs",
+          "score": 2,
+          "matched_terms": [
+            "test",
+            "continuity"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "visual-systems-lab/crown-pass/room-profiles.json",
+          "score": 2,
+          "matched_terms": [
+            "lab",
+            "file"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "visual-systems-lab/releases/v0.3/APK_BUILD_NOTE.md",
+          "score": 2,
+          "matched_terms": [
+            "lab",
+            "not"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "apps/jm-agi-lab-runtime-console-v1/FLAZ_RECEIPT_v1_0.md",
+          "score": 1,
+          "matched_terms": [
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "apps/jm-agi-lab-runtime-console-v1/PUBLICATION_GATE_v1_0.md",
+          "score": 1,
+          "matched_terms": [
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "apps/jm-agi-lab-runtime-console-v1/app.mjs",
+          "score": 1,
+          "matched_terms": [
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "apps/jm-agi-lab-runtime-console-v1/index.html",
+          "score": 1,
+          "matched_terms": [
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        },
+        {
+          "source_type": "tracked-estate-path",
+          "reference": "apps/jm-agi-lab-runtime-console-v1/manifest.json",
+          "score": 1,
+          "matched_terms": [
+            "lab"
+          ],
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        }
+      ],
+      "candidate_rule": "Candidates are evidence for recovery/search only. They are not donor, authority, reuse or crown claims until explicitly resolved."
+    },
+    "recovery_decision": "Original lab source and 13 original state keys recovered; no existing dedicated browser regression for source corruption. Reuse original lab directly and add only companion executable tests. No competing app or test platform.",
+    "selected_donors": [
+      "fresh-app-lab/index.html existing original 12-app single-file lab, blob 03d7bbfd3ba8d9dc523dd6b1ba44e1a6618ed0a1",
+      "JM Apps and Tools existing-workroom CP11 Playwright verification practice, no source-body replacement"
+    ],
+    "source_verified": "Original existing Fresh App Lab body confirmed by GitHub readback and laptop exact blob; existing workroom CP11 test discipline consulted as verification donor, not app lineage merger."
+  },
+  "exact_stack": {
+    "state": "RESOLVED",
+    "declared_stack": [
+      "Existing JM Fresh App Lab v0.2 single-file HTML and native localStorage / backup/restore",
+      "Python Playwright on GroundZeroJM and GitHub Actions Chromium, synthetic test data only",
+      "Existing GitHub Actions PR-only check plus scoped test file; no new runtime service or hosting"
+    ],
+    "rule": "Declare actual JM coding bodies, building bodies/apps/tools, runtime/host and relevant surfaces; do not fill for ceremony.",
+    "reuse_only": true,
+    "no_new_application_or_runtime": true
+  },
+  "true_gaps": {
+    "state": "RESOLVED",
+    "remaining_capability_gap": "Original lab had no persistent automated browser proof for corrupt source fail-closed, byte-exact private recovery, 12 app entrances and storage readback. Only a test helper is needed, not new application capability.",
+    "new_capability_creation_authorized": false,
+    "authorization_rule": "Build execution authorization is separate from new-capability creation authorization. New capability creation must be explicitly requested after the gap survives recovery."
+  },
+  "proof_lanes": {
+    "estate_recovery_scan": {
+      "state": "PASS",
+      "meaning": "Current tracked Estate and Build Route Manifests were searched using the recorded query terms."
+    },
+    "stack_selection": {
+      "state": "PASS"
+    },
+    "gap_test": {
+      "state": "PASS"
+    },
+    "runtime_or_contact": {
+      "state": "NOT_CLAIMED"
+    },
+    "local_chromium": {
+      "state": "PASS_BOUNDED",
+      "tests": "76/76",
+      "source": "GroundZeroJM disposable Chromium local server, 390x844 + 840x360 + 1280x800, synthetic source only; pre-fix corrupt overwrite reproduced",
+      "claim_boundary": "No physical Fold8 or public deployment"
+    },
+    "github_ci": {
+      "state": "PENDING_FINAL_HEAD_RETEST",
+      "workflow": ".github/workflows/jm-fresh-app-lab-continuity.yml",
+      "requirement": "Exact commit full CI including JM Build Entry and scoped Playwright"
+    }
+  },
+  "host_and_surfaces": {
+    "requested_surfaces": [
+      "GitHub PR CI review and GroundZeroJM Chromium surrogate, not physical Fold8"
+    ],
+    "state": "RESOLVED",
+    "owner_phone_tested": false,
+    "public_deployed": false
+  },
+  "escalation": {
+    "manual_user_contact": "Only when native built-ins/evidence are insufficient or target contact itself must be proven.",
+    "failure_route": "FAIL LOCAL -> CONTAIN -> TRACE -> RECOVER -> CORRECT RESPONSIBLE ORGAN FORWARD -> RETEST AFFECTED GATE",
+    "owner_only": "Physical Fold8 acceptance or merging/publishing requires separate owner decision; not authorized by this manifest."
+  },
+  "state": {
+    "route": "AUTHORIZED_ONLY_FOR_EXISTING_LAB_COMPANION_TEST_PROOF",
+    "build_authorized_by_manifest": true,
+    "runtime": "NOT CLAIMED",
+    "contact": "NOT CLAIMED",
+    "crown": "NOT EARNED",
+    "new_app_authorized": false,
+    "production_promotion": "HOLD"
+  },
+  "next_route": {
+    "step": "Run route-manifest validator and JM Build Entry gate on latest PR #807; run new exact Playwright CI, inspect any faults. Preserve original single-file lab and draft custody; no merge or deploy."
+  },
+  "manifest_proof": {
+    "result": "Build Intake executed against existing Estate and recorded 24 recovery candidates, whose identities were not automatically promoted. Forward route authorizes only a scope-limited test helper; all source/runtime/device claims remain independently gated."
+  }
+}

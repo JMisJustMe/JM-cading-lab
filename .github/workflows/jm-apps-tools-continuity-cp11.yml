@@ -126,12 +126,23 @@ jobs:
                 const before=await target.evaluate(x=>localStorage.getItem('jm.apps.tools.env.'+x+'.v1'),env);
                 await target.evaluate(x=>{
                   const old=Storage.prototype.setItem;
+                  window.__jmOriginalSetItem=old;
                   Storage.prototype.setItem=function(k,v){if(k==='jm.apps.tools.env.'+x+'.v1')throw new DOMException('Device full','QuotaExceededError');return old.call(this,k,v)};
                 },env);
                 await target.locator('#room [data-field]').first().fill('UNCOMMITTED QUOTA BODY');
                 await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('SAVE HOLD'),{timeout:12000});
                 const after=await target.evaluate(x=>localStorage.getItem('jm.apps.tools.env.'+x+'.v1'),env);
                 if(before!==after)throw Error('Quota mutated existing saved state '+env);
+                const busBefore=await target.evaluate(()=>JSON.stringify(window.JMAppsToolsSpine.read()));
+                await target.locator('#primary').click();
+                await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('RUN HOLD'),{timeout:12000});
+                const busHeld=await target.evaluate(()=>JSON.stringify(window.JMAppsToolsSpine.read()));
+                if(busBefore!==busHeld)throw Error('Unsaved field emitted false packet '+env);
+                await target.evaluate(()=>{Storage.prototype.setItem=window.__jmOriginalSetItem});
+                await target.locator('#primary').click();
+                await target.waitForFunction(()=>window.JMAppsToolsSpine.read().length===2,{timeout:12000});
+                const recovered=await target.evaluate(({field})=>window.JMAppsToolsSpine.read()[0]?.payload?.[field],{field});
+                if(recovered!=='UNCOMMITTED QUOTA BODY')throw Error('Recovered packet was not actual field content '+env);
                 if(errors.length)throw Error('Original workroom browser errors '+env+': '+errors.join('|'));
                 await context.close();await separate.close();passed++;
               }

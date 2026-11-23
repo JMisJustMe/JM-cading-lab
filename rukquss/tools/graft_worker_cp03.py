@@ -124,8 +124,13 @@ def main() -> None:
             raise AssertionError("CP03 HOLD: mutation unexpectedly accepted: " + name)
         receipt["negative_mutation_fixtures_passed"] = len(mutants)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(grafted, encoding="utf-8")
-    args.receipt.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    # Preserve identical LF bytes on Windows/Linux: Python text I/O may rewrite
+    # line endings, making a receipt hash describe bytes never actually written.
+    worker_bytes = grafted.encode("utf-8")
+    args.out.write_bytes(worker_bytes)
+    args.receipt.write_bytes((json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+    require(hashlib.sha256(args.out.read_bytes()).hexdigest() == receipt["candidate_worker_sha256"],
+            "on-disk candidate digest differs from exact release receipt")
     print(json.dumps(receipt, sort_keys=True))
 
 

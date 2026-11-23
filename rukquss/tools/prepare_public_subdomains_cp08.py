@@ -19,7 +19,10 @@ CP08_INSERTION = """/* CP08_PUBLIC_SUBDOMAINS_DRAFT_ONLY */
 const jmCp08PublicAliases = Object.freeze({
   'games.rukquss.com':'https://rukquss.com/games',
   'apps.rukquss.com':'https://rukquss.com/apps',
-  'music.rukquss.com':'https://rukquss.com/music'
+  'music.rukquss.com':'https://rukquss.com/music',
+  'coding.rukquss.com':'https://rukquss.com/coding',
+  'theory.rukquss.com':'https://rukquss.com/theory',
+  'books.rukquss.com':'https://rukquss.com/books'
 });
 if (Object.prototype.hasOwnProperty.call(jmCp08PublicAliases,u.hostname)) {
   if ((event.request.method==='GET'||event.request.method==='HEAD')
@@ -52,15 +55,20 @@ def draft_candidate(current_bytes: bytes) -> tuple[bytes, dict]:
     modified = current.replace(ANCHOR, CP08_INSERTION + ANCHOR, 1)
     if modified.replace(CP08_INSERTION, "", 1) != current:
         raise ValueError("CP08 HOLD: unrelated Worker code changed")
-    if CP08_INSERTION.count("':'https://rukquss.com/") != 3:
+    expected = {
+        "games.rukquss.com", "apps.rukquss.com", "music.rukquss.com",
+        "coding.rukquss.com", "theory.rukquss.com", "books.rukquss.com",
+    }
+    if (CP08_INSERTION.count("':'https://rukquss.com/") != len(expected)
+            or not all("'" + key + "':" in CP08_INSERTION for key in expected)):
         raise ValueError("CP08 HOLD: alias table is no longer the three public doors")
     assembled = modified.encode("utf-8")
     receipt = {
-        "schema": "JM.RUKQUSS.Subdomains.PublicAlias.CP08/1",
+        "schema": "JM.RUKQUSS.Subdomains.PublicAlias.CP09/1",
         "proof_scope": "SOURCE_STATIC_LOCAL_RUNTIME_ONLY",
         "input_worker_sha256": CP07_WORKER_SHA256,
         "candidate_worker_sha256": sha256(assembled),
-        "public_candidate_alias_count": 3,
+        "public_candidate_alias_count": 6,
         "private_subdomains_reserved_unchanged": True,
         "cloudflare_dns_or_custom_domain_activated": False,
         "deployment": False,

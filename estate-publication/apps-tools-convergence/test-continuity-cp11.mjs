@@ -7,16 +7,16 @@ const source=fs.readFileSync(path,'utf8');
 let checks=0;
 function check(label,fn){fn();checks++;console.log('DING '+label)}
 function runtime(seed={}){
-  const items=new Map(Object.entries(seed));let fail=null;
+  const items=new Map(Object.entries(seed));let fail=null,ignore=null;
   const storage={
     getItem(k){return items.has(k)?items.get(k):null},
-    setItem(k,v){if(fail?.(k,String(v)))throw new Error('SIMULATED_QUOTA');items.set(k,String(v))},
+    setItem(k,v){if(fail?.(k,String(v)))throw new Error('SIMULATED_QUOTA');if(ignore?.(k,String(v)))return;items.set(k,String(v))},
     removeItem(k){items.delete(k)}
   };
   const events=[];
   const window={dispatchEvent(e){events.push(e.type)}};
   vm.runInNewContext(source,{window,localStorage:storage,CustomEvent:class{constructor(type){this.type=type}},Event:class{constructor(type){this.type=type}},Date,Math,console,Blob,setTimeout,URL,document:{}},{filename:path});
-  return {spine:window.JMAppsToolsSpine,items,events,storage,failOn(f){fail=f},unfail(){fail=null}};
+  return {spine:window.JMAppsToolsSpine,items,events,storage,failOn(f){fail=f},unfail(){fail=null},ignoreOn(f){ignore=f},unignore(){ignore=null}};
 }
 const key='jm.apps.tools.shared.bus.v1';
 const stateKey=env=>'jm.apps.tools.env.'+env+'.v1';
@@ -130,4 +130,30 @@ check('CP12 original UI confirms destructive environment restore and room clear'
   assert(ui.includes("window.confirm('Clear saved fields in "));
   assert.match(ui,/IMPORT_FILE_TOO_LARGE_HOLD/);
 });
-console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12 static UI guard; not owner-device proof)');
+check('CP13 silent packet persistence failure refuses a false Ding',()=>{
+  const existing=p('original-packet','evidence-governance');
+  const t=runtime({[key]:JSON.stringify([existing])});
+  const saved=t.items.get(key);
+  t.ignoreOn(k=>k===key);
+  assert.throws(()=>t.spine.emit('test.run','JM Evidence / Gem',{source:'UNSAVED'},{}),/PACKET_WRITE_READBACK_HOLD/);
+  assert.equal(t.items.get(key),saved);
+  assert.equal(t.spine.read().length,1);
+  assert.equal(t.events.includes('jm:packet'),false);
+});
+check('CP13 quota packet persistence failure preserves existing bus without false Ding',()=>{
+  const existing=p('original-packet','route-ftr');
+  const t=runtime({[key]:JSON.stringify([existing])});
+  const saved=t.items.get(key);
+  t.failOn(k=>k===key);
+  assert.throws(()=>t.spine.emit('test.run','JM Route / FTR',{input:'UNSAVED'},{}),/SIMULATED_QUOTA/);
+  assert.equal(t.items.get(key),saved);
+  assert.equal(t.events.includes('jm:packet'),false);
+});
+check('CP13 unsaved visible input blocks outgoing packet and preserves editable form',()=>{
+  const ui=fs.readFileSync('estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js','utf8');
+  assert(ui.includes('RUN HOLD: input was not saved; no packet was created'));
+  assert(ui.includes('const visible=liveRoomFields()'));
+  assert(ui.includes('unsavedRoomInput'));
+});
+
+console.log('CP11_SHARED_SPINE '+checks+'/'+checks+' PASS (source VM fault injection plus CP12/13 static UI guard; not owner-device proof)');

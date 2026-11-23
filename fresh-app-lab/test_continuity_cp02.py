@@ -1,4 +1,6 @@
-# JM Fresh App Lab CP02 source/continuity proof. Synthetic test data only; no live/private owner stores.\n# Run after: python -m playwright install chromium, python fresh-app-lab/test_continuity_cp02.py\nfrom pathlib import Path
+# JM Fresh App Lab CP02 source/continuity proof. Synthetic test data only; no live/private owner stores.
+# Run after: python -m playwright install chromium, python fresh-app-lab/test_continuity_cp02.py
+from pathlib import Path
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread

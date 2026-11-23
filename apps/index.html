@@ -15,6 +15,8 @@
 #jmOriginalToolsCP02 .jm-original-tool a{display:flex;align-items:center;justify-content:center;min-height:48px;width:100%;text-align:center;overflow-wrap:anywhere}
 #jmOriginalToolsCP02 .jm-original-boundary{margin:12px 0 0;color:var(--muted);font-size:.82rem;line-height:1.5}
 #jmOriginalToolsCP02 .jm-original-boundary strong{display:inline;color:var(--gold);font-size:inherit}
+/* Short phone/Fold landscape: keep the filter and reset area reachable between screen edges. */
+@media(max-height:480px){.top,.controls{position:static}.controls{backdrop-filter:none}}
 </style>
 <link rel="stylesheet" href="../ecostate-visual-v1.css"><link rel="stylesheet" href="../ecostate-personality-v2.css"><link rel="stylesheet" href="../ecostate-authored-v3.css"><link rel="stylesheet" href="../ecostate-contact-v4.css"></head>
 <body data-ecostate-surface="apps">

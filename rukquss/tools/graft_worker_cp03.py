@@ -15,7 +15,7 @@ from pathlib import Path
 
 LIVE_WORKER_SHA256 = "36b5ffd592ea24570fdb654e1a067e6967bf9495479196270a2bb1f1c5ad7da5"
 PARENT_BLOB = "a9630dd04c1a72431b15695bd667d126310d12ec"
-CHILD_BLOB = "dfa22a89e7c8aab55a94cbe05107a68561666d84"
+CHILD_BLOB = "93b7a743b9d5ca9f48906557a67a6a43fe020eb6"
 PARENT_BRANCH = "feature/rukquss-owner-domain-web-20261024"
 CHILD_BRANCH = "feature/rukquss-live-experiences-cp02-20261123"
 MARKER = "/* JM_RUKQUSS_ROUTE_CP01 */"

@@ -107,9 +107,15 @@ jobs:
                 const pack=JSON.parse(bytes.toString('utf8'));
                 if(pack.environment!==env||pack.packets[0].id!==id)throw Error('Portable export lost original packet '+env);
                 const separate=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});
-                const target=await separate.newPage();target.on('dialog',d=>d.accept());
+                const target=await separate.newPage();
+                let allowRestore=false;
+                target.on('dialog',d=>allowRestore?d.accept():d.dismiss());
                 await target.goto(url,{waitUntil:'domcontentloaded'});
                 await target.locator('#continuityStatus').waitFor();
+                await target.locator('.toolbar input[type=file]').first().setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
+                await target.waitForFunction(()=>document.querySelector('#continuityStatus')?.textContent?.includes('Import cancelled'),{timeout:12000});
+                if((await target.evaluate(()=>window.JMAppsToolsSpine.read().length))!==0)throw Error('Cancelled restore changed shared packets '+env);
+                allowRestore=true;
                 await target.locator('.toolbar input[type=file]').first().setInputFiles({name:env+'.json',mimeType:'application/json',buffer:bytes});
                 await target.waitForFunction(id=>window.JMAppsToolsSpine.read().some(x=>x.id===id),id,{timeout:12000});
                 if((await target.locator('#room [data-field]').first().inputValue())!==value)throw Error('Fresh browser import lost creator field '+env);

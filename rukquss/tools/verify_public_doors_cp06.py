@@ -17,7 +17,7 @@ import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
 
-EXPECTED_HTML_BLOB = "151aa2c04267f3a9ded81384ceae53b2e152a212"
+EXPECTED_HTML_BLOB = "3609c8027013544852a9490053bb009cf97f2993"
 PUBLIC_HOSTS = frozenset((
     "rukquss.com", "jmisjustme.github.io", "jmisjustme-estate.pages.dev"
 ))
@@ -65,10 +65,28 @@ def check(url: str) -> dict:
             final = response.geturl()
             status = response.status
             media = response.headers.get("Content-Type", "")
-            response.read(300)
-            ok = status == 200 and media.lower().startswith("text/html") and permitted(final)
-            return {"url": url, "final": final, "status": status,
-                    "html": media.lower().startswith("text/html"), "pass": ok}
+            parts = urllib.parse.urlsplit(url)
+            enquiry = (
+                parts.hostname == "jmisjustme-estate.pages.dev"
+                and parts.path == "/money-menu/launch/"
+                and parts.fragment == "enquiry"
+            )
+            data = response.read(300000 if enquiry else 300)
+            form_ok = None
+            if enquiry:
+                scanner = Scan()
+                scanner.feed(data.decode("utf-8", errors="replace"))
+                form_ok = {
+                    "enquiry", "interestForm", "chosenOffer", "customerNeed",
+                    "compose", "copy",
+                }.issubset(scanner.ids)
+            ok = (status == 200 and media.lower().startswith("text/html")
+                  and permitted(final) and (not enquiry or form_ok))
+            result = {"url": url, "final": final, "status": status,
+                      "html": media.lower().startswith("text/html"), "pass": ok}
+            if enquiry:
+                result["customer_controlled_enquiry_form_present"] = form_ok
+            return result
     except (OSError, ValueError, urllib.error.URLError) as exc:
         return {"url": url, "pass": False, "error": str(exc)[:130]}
 

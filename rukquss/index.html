@@ -6,7 +6,12 @@
 <meta name="theme-color" content="#09111f">
 <meta name="description" content="RUKQUSS — creator-led commercial gateway to the JMISJUSTME living ECOSTATE. One identity, many independent creative and technical bodies.">
 <title>RUKQUSS · Reality / The Business Gateway</title>
-<link rel="canonical" href="https://rukquss.com/">\n<meta property="og:type" content="website">\n<meta property="og:title" content="RUKQUSS — Try the work of JM">\n<meta property="og:description" content="Play original games, use JM apps, make music and explore creator-led services. Independent creations, direct doors.">\n<meta property="og:url" content="https://rukquss.com/">
+<link rel="canonical" href="https://rukquss.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RUKQUSS — Try the work of JM">
+<meta property="og:description" content="Play original games, use JM apps, make music and explore creator-led services. Independent creations, direct doors.">
+<meta property="og:url" content="https://rukquss.com/">
+<meta name="twitter:card" content="summary">
 <style>
 :root{color-scheme:dark;--bg:#09111f;--ink:#f5f8fb;--muted:#b5c6d5;--line:#304a60;--panel:#13263a;--panel2:#192e45;--mint:#91edc4;--amber:#f4d69a;--focus:#fbce7a}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 82% 0%,#1a4556 0%,transparent 38%),radial-gradient(ellipse at 0% 30%,#17324d 0%,transparent 46%),var(--bg);color:var(--ink);min-height:100svh;line-height:1.45}
@@ -33,14 +38,30 @@ a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline
 .experience-note{font-size:.84rem;color:#d5e5ec;max-width:850px}
 @media(max-width:980px){.experience-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.experience-grid{grid-template-columns:1fr}.experience-card{padding:21px}.topnav{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* CP04 accessible touch and long-term front-door polish; no external dependency. */
+html{scroll-padding-top:18px}
+.topnav a{display:inline-flex;align-items:center;justify-content:center;min-height:44px}
+.district a{min-height:44px;padding:4px 0}
+.clear-search{font:inherit;font-size:.91rem;font-weight:800;min-height:46px;min-width:70px;padding:10px 14px;border:1px solid var(--mint);border-radius:12px;background:#214255;color:var(--ink);cursor:pointer}
+.clear-search:disabled{opacity:.5;cursor:default}
+.clear-search:not(:disabled):hover{background:#315767}
+.skip-experience:focus{top:60px}
+.experience-card a:focus-visible,.clear-search:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@media(max-width:570px){
+  .tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+  .search{min-width:0;width:100%;font-size:16px}
+  .count{grid-column:1/-1}
+  .topnav a{min-width:0;overflow-wrap:break-word;padding:8px 3px}
+}
 </style>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
+<a class="skip" href="#main">Skip to content</a><a class="skip skip-experience" href="#live">Skip to experiences</a>
 <header class="top"><div class="wrap topin"><a class="logo" href="#main" aria-label="RUKQUSS home"><span class="sigil" aria-hidden="true">RQ</span><span class="brand">RUKQUSS<small>REALITY / CREATOR-LED</small></span></a><nav class="topnav" aria-label="Main navigation"><a href="#doors">Explore</a><a href="#live">Try it</a><a href="#route">Our route</a><a href="https://jmisjustme.github.io/JM-cading-lab/">JM Estate ↗</a></nav></div></header>
 <main id="main"><div class="wrap"><section class="hero" aria-labelledby="hero-title"><div class="hero-grid"><div><p class="eyebrow">One owner-controlled direction · multiple independent bodies</p><h1 id="hero-title">Make it real.<br><em>Keep it yours.</em></h1><p class="lead">RUKQUSS is the live commercial gateway into the work of Theodore / JM: playable worlds, creative software, coded systems, theories, music, tools and the living JMISJUSTME ECOSTATE.</p><p class="note">Source authorship stays with JM. This website is live; RUKQUSS REALITY LTD is not yet incorporated. Existing creations, private systems and IP retain their independent authority.</p><div class="actions"><a class="action primary" href="#doors">Enter the seven districts →</a><a class="action" href="https://jmisjustme.github.io/JM-cading-lab/access/">Current Access Mesh ↗</a><a class="action" href="#live">Try a live creation →</a></div></div><div class="hero-art" aria-label="Creator to Estate to commercial gateway"><span class="flow-title">The governing relationship</span><div class="flow">JM · CREATOR / SOURCE</div><div class="arrow">↓</div><div class="flow mini">JMISJUSTME · LIVING ESTATE</div><div class="arrow">↓</div><div class="flow">RUKQUSS · COMMERCIAL GATE</div><p class="note" style="margin:0;text-align:center">Separate identities. Deliberate licences. Recoverable routes.</p></div></div></section>
 <div class="rib" aria-label="Readiness status"><span class="chip"><b>LIVE:</b> RUKQUSS domain + HTTPS</span><span class="chip"><b>PASS:</b> Seven public JM districts</span><span class="chip"><b>OPEN:</b> Existing JM public website</span><span class="chip pending"><b>HOLD:</b> Ltd incorporation</span><span class="chip pending"><b>HOLD:</b> Private runtime connections</span></div>
-<section class="section" id="doors" aria-labelledby="doors-heading"><p class="eyebrow">JM ECOSTATE · existing public routes</p><h2 id="doors-heading">Seven districts. One way in.</h2><p>These doors link to established JMISJUSTME rooms. RUKQUSS does not claim to own or merge the experiences behind them. Choose a purpose; each room keeps its own history and proof.</p><div class="tools"><input id="find" class="search" type="search" aria-label="Search the seven districts" placeholder="Search play, build, books, music, work…"><span class="count" id="results" role="status" aria-live="polite">7 districts</span></div><div class="district-grid" id="grid">
+<section class="section" id="doors" aria-labelledby="doors-heading"><p class="eyebrow">JM ECOSTATE · existing public routes</p><h2 id="doors-heading">Seven districts. One way in.</h2><p>These doors link to established JMISJUSTME rooms. RUKQUSS does not claim to own or merge the experiences behind them. Choose a purpose; each room keeps its own history and proof.</p><div class="tools"><input id="find" class="search" type="search" aria-label="Search the seven districts" autocomplete="off" enterkeyhint="search" placeholder="Search play, build, books, music, work…"><button class="clear-search" id="clearFind" type="button" disabled aria-label="Clear district search">Clear</button><span class="count" id="results" role="status" aria-live="polite">7 districts</span></div><div class="district-grid" id="grid">
 <article class="district" data-terms="play games fighting sport arena playable interactive"><span class="num">01 / PLAY</span><h3>Play</h3><p>Games &amp; Beyond, characters and living worlds.</p><a href="https://jmisjustme.github.io/JM-cading-lab/games-beyond/">Open Play ↗</a></article>
 <article class="district" data-terms="build code coding kocodify runtimes development forge apps"><span class="num">02 / BUILD</span><h3>Build</h3><p>JM coding bodies, tools, apps and executable construction.</p><a href="https://jmisjustme.github.io/JM-cading-lab/coding-estate/everybody/">Open Build ↗</a></article>
 <article class="district" data-terms="think theory philosophy theo logic research proofs"><span class="num">03 / THINK</span><h3>Think</h3><p>Theories, examinations, contact and meaning.</p><a href="https://jmisjustme.github.io/JM-cading-lab/theory/">Open Think ↗</a></article>
@@ -48,7 +69,7 @@ a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline
 <article class="district" data-terms="publish books writing author literature lyrics release"><span class="num">05 / PUBLISH</span><h3>Publish</h3><p>Written works and the creator's publishing direction.</p><a href="https://jmisjustme.github.io/JM-cading-lab/books/">Open Publish ↗</a></article>
 <article class="district" data-terms="work career hire collaborate opportunities professional"><span class="num">06 / WORK</span><h3>Work</h3><p>Professional opportunities, collaboration and applied capabilities.</p><a href="https://jmisjustme.github.io/JM-cading-lab/career/">Open Work ↗</a></article>
 <article class="district" data-terms="continue access recovery route registry biat estate"><span class="num">07 / CONTINUE</span><h3>Continue</h3><p>Return to current routes and recover what already exists.</p><a href="https://jmisjustme.github.io/JM-cading-lab/access/">Open Continue ↗</a></article>
-</div><p id="empty" class="empty" hidden>No matching district. Try another word.</p></section>
+</div><p id="empty" class="empty" hidden>No matching district. Clear the search or try another word.</p></section>
 <section class="section experience-section" id="live" aria-labelledby="live-heading">
 <p class="eyebrow">REAL DOORS · REAL EXPERIENCES</p>
 <h2 id="live-heading">Don't just read about it. Try the work.</h2>
@@ -59,14 +80,39 @@ a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline
 <article class="experience-card"><span class="experience-kicker">03 / CREATE</span><h3>Make some music.</h3><p>Try the independent JM BEATBODY Studio in your browser. Audio and device features depend on your browser and permissions.</p><a href="https://rukquss.com/music">Open BEATBODY ↗</a></article>
 <article class="experience-card"><span class="experience-kicker">04 / CONNECT</span><h3>Discuss real work.</h3><p>Explore creator-led services and potential collaborations. Enquiries and quotations need human confirmation; no live payment is implied.</p><a href="https://jmisjustme-estate.pages.dev/money-menu/launch/">See services &amp; enquiries ↗</a></article>
 </div>
-<p class="experience-note">These doors were checked as public destinations on 23 November 2026. A working entrance does not prove every game, tool, sale or device interaction beyond it.</p>
+<p class="experience-note">Every link leads to an existing public entrance. Availability and functionality can change; a working entrance does not prove every game, tool, sale or device interaction behind it.</p>
 </section>
 <section class="section" id="route" aria-labelledby="route-heading"><p class="eyebrow">Construction priorities</p><h2 id="route-heading">Website first. Company deliberately after.</h2><div class="split"><article class="pane"><span class="smallcaps">WEB / OWNERSHIP</span><h3>A live domain, with independent originals</h3><ol class="timeline"><li>Retain and connect the proven <a href="https://jmisjustme.github.io/JM-cading-lab/">JMISJUSTME web estate</a> rather than replacing it.</li><li><strong>rukquss.com</strong> is owner-registered, with verified contact, active DNS and secure HTTPS.</li><li>The original RUKQUSS site is deployed on a separate Cloudflare Worker; the GitHub source and JMISJUSTME website remain independent.</li><li class="hold">Activate and test Owner Vault or other approved private storage with authentication; never publicise private Estate material.</li><li class="hold">Connect actual JM Fold Ultra and Cloud Contact Server routes after separate source/device proof.</li></ol></article><article class="pane"><span class="smallcaps">BUSINESS / COMMERCIAL</span><h3>Real company formation, when ready</h3><ol class="timeline"><li>Use the existing <strong>RUKQUSS REALITY LTD</strong> formation and founder-IP preflight, not another fresh study.</li><li class="hold">Activate a valid registered-office/director-service-address package and complete required identity verification.</li><li class="hold">File the company; verify incorporation certificate and company number.</li><li class="hold">Execute a defined founder-to-company IP licence, not an automatic whole-Estate assignment.</li><li class="hold">Align bank, tax, Stripe, stores and customer route only with the actual incorporated entity.</li></ol></article></div><p class="announcement"><strong>Status boundary:</strong> The RUKQUSS website and purchased domain are live. RUKQUSS REALITY LTD is not incorporated; this page does not claim that the company is trading, accepting payments or operating private JM services.</p></section>
 <section class="cta"><p class="eyebrow">BIAT × CODEGORNIZATION × METAForming</p><h2>One home. Distinct capabilities. Real contact.</h2><p>The next advance is shared navigation, traceable state and recoverable information across independent JM creations—with the Fold Ultra and Brown Burrow routes admitted only when their actual connection is tested.</p><div class="actions"><a class="action primary" href="https://jmisjustme.github.io/JM-cading-lab/">Enter JMISJUSTME ↗</a><a class="action" href="https://jmisjustme.github.io/JM-cading-lab/author/">Creator / authorship ↗</a></div></section>
 </div></main>
-<footer class="footer"><div class="wrap"><p class="legal"><b>RUKQUSS / REALITY</b> · A live commercial front door to the independent JMISJUSTME creator-led Estate. RUKQUSS REALITY LTD remains <strong>not yet incorporated</strong> as of 4 November 2026. No sale, licence or registered-company status is implied.</p><p>Source ≠ company ≠ carrier · Recover before rebuild · No Ding, no claim.</p><a href="#main">Back to top ↑</a></div></footer>
+<footer class="footer"><div class="wrap"><p class="legal"><b>RUKQUSS / REALITY</b> · A live commercial front door to the independent JMISJUSTME creator-led Estate. RUKQUSS REALITY LTD remains <strong>not yet incorporated</strong>; no registered-company status is asserted. No sale, licence or registered-company status is implied.</p><p>Source ≠ company ≠ carrier · Recover before rebuild · No Ding, no claim.</p><a href="#main">Back to top ↑</a></div></footer>
 <script>
-(function(){'use strict';const box=document.getElementById('find');const nodes=[...document.querySelectorAll('.district')];const results=document.getElementById('results');const empty=document.getElementById('empty');function update(){const terms=(box.value||'').toLocaleLowerCase().trim();let shown=0;for(const node of nodes){const matches=(!terms)||((node.textContent+' '+node.dataset.terms).toLocaleLowerCase().includes(terms));node.hidden=!matches;if(matches)shown++}results.textContent=shown+' '+(shown===1?'district':'districts');empty.hidden=shown!==0}box.addEventListener('input',update);update()})();
+(function(){
+  'use strict';
+  const box=document.getElementById('find');
+  const clear=document.getElementById('clearFind');
+  const nodes=[...document.querySelectorAll('#grid .district')];
+  const results=document.getElementById('results');
+  const empty=document.getElementById('empty');
+  function update(){
+    const terms=(box.value||'').toLocaleLowerCase().trim();
+    let shown=0;
+    for(const node of nodes){
+      const matches=!terms||(node.textContent+' '+node.dataset.terms).toLocaleLowerCase().includes(terms);
+      node.hidden=!matches;
+      if(matches)shown++;
+    }
+    clear.disabled=!box.value.length;
+    results.textContent=shown+' '+(shown===1?'district':'districts');
+    empty.hidden=shown!==0;
+  }
+  box.addEventListener('input',update);
+  clear.addEventListener('click',()=>{box.value='';update();box.focus()});
+  box.addEventListener('keydown',event=>{
+    if(event.key==='Escape' && box.value){event.preventDefault();box.value='';update()}
+  });
+  update();
+})();
 </script>
 </body>
 </html>

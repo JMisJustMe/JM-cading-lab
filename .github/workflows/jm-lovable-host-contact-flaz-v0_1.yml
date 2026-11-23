@@ -1,0 +1,53 @@
+name: JM Lovable external-agent host FLAZ and live trial v0.1
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/host-trials/lovable-v0_1/**'
+      - '.github/workflows/jm-lovable-host-contact-flaz-v0_1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  frozen-source-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Independently execute the frozen Lovable-generated TypeScript mathematical and evidence logic
+        run: |
+          node --experimental-strip-types --test .agents/skills/jm-ecostate-route/host-trials/lovable-v0_1/tests/donor_contact_probe.mjs 2>&1 | tee lovable_donor_unit_log.txt
+      - name: Return source test logs and frozen donor bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-lovable-host-contact-frozen-source
+          path: |
+            lovable_donor_unit_log.txt
+            .agents/skills/jm-ecostate-route/host-trials/lovable-v0_1/**
+          if-no-files-found: warn
+          retention-days: 14
+  live-browser-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare Chromium for read-only synthetic preview journey
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Exercise real Lovable preview at mobile size; no microphone permissions or private files
+        run: python .agents/skills/jm-ecostate-route/host-trials/lovable-v0_1/tests/probe_live_preview.py
+      - name: Return browser receipt/screenshots separately; no private data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-lovable-host-contact-live-preview-receipts
+          path: lovable_live_receipts/*
+          if-no-files-found: warn
+          retention-days: 14

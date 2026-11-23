@@ -1,0 +1,156 @@
+name: JM knowledge contact and source replay v0.5
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/**'
+      - '.github/workflows/jm-agent-skill-donor-contact-v02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  governed-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate project-local skill against actual JM repository authorities
+        run: python3 .agents/skills/jm-ecostate-route/tests/verify_skill.py
+      - name: Run isolated adversarial negative controls
+        run: python3 -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_*.py' -v
+      - name: Contact the existing JM sovereign Python and Node runtimes
+        run: |
+          mkdir -p jm_skill_receipts
+          python3 .agents/skills/jm-ecostate-route/jm_skill_gate.py --query 'coding runtime' --surface 'codex-repository-agent' --receipt jm_skill_receipts/coding.json
+          python3 .agents/skills/jm-ecostate-route/jm_skill_gate.py --query 'zzzz-no-known-domain' --surface 'codex-repository-agent' --receipt jm_skill_receipts/unknown.json
+      - name: Fail closed if any receipt inflates authority or fabricates unknown route
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,pathlib
+          root=pathlib.Path('jm_skill_receipts')
+          a=json.loads((root/'coding.json').read_text())
+          b=json.loads((root/'unknown.json').read_text())
+          for x in (a,b):
+              assert x['schema']=='JM.AgentSkillReadOnlyContact/0.3'
+              assert x['scope_state']=='HELD' and x['action']=='READ_ONLY_ROUTE'
+              assert x['host_contact']=='OPEN'
+              assert x['external_agent_skill_discovery']=='NOT_TESTED'
+              assert x['owner_device_contact']=='OPEN'
+              assert x['live_current_head_resolution']=='OPEN'
+              assert x['target_consequence']=='NOT_ATTEMPTED'
+              assert x['discrepancies']==[]
+              print('HELD as intended:',x['result'],x['candidate_count'])
+          assert a['candidate_count']>0
+          assert b['candidate_count']==0 and b['selected_candidates']==[]
+          assert b['result']=='NO_MATCHING_CANDIDATE'
+          print('JM Skill Gate: actual Python/Node runtime contacts PASS, no authority inflation')
+          PY
+      - name: Compile synthetic document/transcript candidate and contact existing JM runtimes
+        run: |
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_intake.py \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --query 'coding runtime' --out jm_knowledge_candidate --verify --route-existing
+      - name: Verify no source data has gained authority
+        run: |
+          python3 - <<'PY'
+          import json,pathlib,hashlib
+          base=pathlib.Path('jm_knowledge_candidate')
+          receipt=json.loads((base/'evidence/RECEIPT.json').read_text())
+          assert receipt['schema']=='JM.KnowledgeCandidate/0.4'
+          assert receipt['state']=='HELD' and receipt['source_count']==2
+          assert receipt['suspicious_lines_quarantined']==1
+          assert receipt['query_hits']>0
+          assert receipt['query_selection']=='DETERMINISTIC_LEXICAL_NOT_TRANSFORMER_ATTENTION'
+          assert receipt['agent_skill_discovery']=='NOT_TESTED'
+          assert receipt['human_approval']=='REQUIRED_BEFORE_PROMOTION'
+          assert all(not x['possible_instruction_attack'] for x in receipt['selected_matches'])
+          gate=json.loads((base/'evidence/EXISTING_JM_ROUTE.json').read_text())
+          assert gate['scope_state']=='HELD' and gate['host_contact']=='OPEN'
+          assert gate['owner_device_contact']=='OPEN'
+          assert gate['target_consequence']=='NOT_ATTEMPTED'
+          assert gate['discrepancies']==[]
+          manifest=json.loads((base/'SHA256_MANIFEST.json').read_text())
+          for rel,h in manifest['files'].items():
+              assert hashlib.sha256((base/rel).read_bytes()).hexdigest()==h,rel
+          print('JM v0.4: CAPTURE -> EVIDENCE -> HELD SKILL CANDIDATE -> EXISTING JM ROUTE PASS')
+          print('Sources:',receipt['source_count'],'retrieval hits:',receipt['query_hits'],'quarantined:',receipt['suspicious_lines_quarantined'])
+          PY
+      - name: Replay source-to-skill against original document bytes and verify external anchor
+        run: |
+          mkdir -p jm_skill_receipts
+          sha256sum jm_knowledge_candidate/SHA256_MANIFEST.json | cut -d' ' -f1 > jm_skill_receipts/source-anchor.sha256
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_assurance.py \
+            --candidate jm_knowledge_candidate \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --expect-manifest-sha256 "$(cat jm_skill_receipts/source-anchor.sha256)" \
+            --receipt jm_skill_receipts/source-replay.json
+      - name: Re-query existing candidate with independently replayed provenance
+        run: |
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_query.py \
+            --candidate jm_knowledge_candidate \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --query 'coding runtime' \
+            --expect-manifest-sha256 "$(cat jm_skill_receipts/source-anchor.sha256)" \
+            --receipt jm_skill_receipts/retrieval-matched.json
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_query.py \
+            --candidate jm_knowledge_candidate \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --query 'zzzz-no-known-domain' \
+            --expect-manifest-sha256 "$(cat jm_skill_receipts/source-anchor.sha256)" \
+            --receipt jm_skill_receipts/retrieval-unknown.json
+      - name: Require review-only scope and reject invented knowledge
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          folder=pathlib.Path('jm_skill_receipts')
+          assurance=json.loads((folder/'source-replay.json').read_text())
+          assert assurance['schema']=='JM.KnowledgeAssurance/0.5'
+          assert assurance['result']=='PASS_SOURCE_REPLAY_ONLY'
+          assert assurance['anchor_compared'] is True
+          assert assurance['state']=='HELD' and assurance['human_approval']=='NOT_PERFORMED'
+          assert assurance['agent_skill_installed'] is False
+          assert assurance['external_agent_contact']=='NOT_TESTED'
+          known=json.loads((folder/'retrieval-matched.json').read_text())
+          unknown=json.loads((folder/'retrieval-unknown.json').read_text())
+          for r in (known,unknown):
+              assert r['schema']=='JM.KnowledgeQuery/0.5'
+              assert r['state']=='HELD' and r['promotion']=='NOT_ALLOWED'
+              assert r['source_integrity']=='PASS_REPLAY'
+              assert r['agent_executed'] is False
+              assert r['anchor_compared'] is True
+          assert known['question_matches']>0
+          assert unknown['question_matches']==0 and unknown['matches']==[]
+          print('JM v0.5: exact SOURCE REPLAY -> RE-QUERY -> BOUNDED HELD RECEIPT PASS')
+          PY
+      - name: Run JM pre-existing universal host-adapter conformance
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Return metadata-only read-only evidence artifacts (never upload source indices or quotes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-knowledge-v05-source-replay-receipts
+          path: |
+            jm_skill_receipts/coding.json
+            jm_skill_receipts/unknown.json
+            jm_skill_receipts/source-replay.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Package public-safe project-local skill source (not installed)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-knowledge-v05-public-safe-source-kit
+          path: |
+            .agents/skills/jm-ecostate-route/**
+            README_JM_AGENT_SKILL_CONTACT_v02.md
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,90 @@
+{
+  "schema": "JM.Website.ChatGPTHostControl/0.1",
+  "title": "JM Website + ChatGPT — Existing Host-Recipient Two-Way Draft Gate",
+  "date": "2026-10-13",
+  "operation_id": "JMOP-8dbd20292dcec5c633a8d68e",
+  "phase": "DRAFT_PR_OPEN_UNMERGED",
+  "target": {
+    "name": "JMISJUSTME — JM ECOSTATE",
+    "website": "https://jmisjustme-estate.pages.dev/",
+    "repository": "JMisJustMe/JM-cading-lab",
+    "default_branch": "main",
+    "candidate_branch": "jm-website-chatgpt-control-v0-1",
+    "authority": "Current website source and existing authoritative deployment workflow remain unchanged until separately reviewed"
+  },
+  "recovered_donors": [
+    {
+      "body": "JM ECOSTATE Build Mesh Native MCP",
+      "version_reported": "0.8.5",
+      "role": "read/recover/plan only",
+      "write_authority": false
+    },
+    {
+      "body": "JM Build Mesh v0.9 Recipient Operation Mesh",
+      "role": "GitHub host write/read-back; Render bounded deploy proofs already retained",
+      "proof": "services/jm-ecostate-build-mesh-mcp-v0_5/proofs/FLAZ_RECIPIENT_OPERATION_MESH_v0_9.md"
+    },
+    {
+      "body": "JM Permanent HTML Body Pipeline v0.1",
+      "role": "separate staged/committed/deployed/registered/proven gates",
+      "proof": "docs/JM_PERMANENT_BODY_PIPELINE_v0_1.md"
+    },
+    {
+      "body": "JM Owner Vault v0.1",
+      "role": "private owner-state custody, not publishing",
+      "proof": "registry/owner-vault-owner-roundtrip-receipt-v0.1.json"
+    }
+  ],
+  "operative_route": [
+    "1. READ using read-only Build Mesh or existing GitHub source tools",
+    "2. PLAN exact delta and preserve protected source identities",
+    "3. DRAFT only through authenticated GitHub connector to isolated branch",
+    "4. READ BACK exact committed content and inspect diff",
+    "5. OPEN DRAFT PR for owner review (never auto-merge)",
+    "6. OPTIONAL approved promotion through existing deployment workflow, independently verified",
+    "7. OWNER DEVICE / LIVE SITE contact is separate"
+  ],
+  "allowed_now": [
+    "read project/current-head/proof metadata",
+    "create isolated non-production GitHub branch",
+    "write review-only route contract and evidence",
+    "read back exact branch bytes",
+    "open a draft pull request"
+  ],
+  "forbidden_without_new_explicit_authorization": [
+    "edit main or merge PR",
+    "change deployment workflow or Cloudflare configuration",
+    "publish site or invoke production redeploy",
+    "expose private R2 content",
+    "add public write tools to the MCP",
+    "store credentials, access tokens or private bodies in public GitHub",
+    "claim owner-device Ding"
+  ],
+  "privacy": "Only public nonsecret operational metadata in this public repository; private data stays behind owner-controlled authenticated surfaces.",
+  "verification": {
+    "branch_write": "PASS_GITHUB_AUTHENTICATED",
+    "branch_exact_return": "PASS_EXACT_UTF8_AND_JSON",
+    "runbook_exact_return": "PASS_EXACT_UTF8",
+    "draft_pr": "OPEN_DRAFT_PR_364",
+    "site_deployment": "NOT_ATTEMPTED",
+    "owner_contact": "OPEN",
+    "public_mcp_write": "DISABLED"
+  },
+  "handoff": "This packet records a host-mediated draft route; it is not a new public MCP write capability, nor a live website change.",
+  "laws": [
+    "RECOVER BEFORE REBUILD",
+    "MESH ≠ MERGE",
+    "ACCESS ≠ AUTHORITY",
+    "NO DING, NO CLAIM",
+    "RECIPIENT A DING ≠ RECIPIENT B DING"
+  ],
+  "proof": {
+    "pull_request": "https://github.com/JMisJustMe/JM-cading-lab/pull/364",
+    "github_branch": "jm-website-chatgpt-control-v0-1",
+    "readback": "Two new files fetched from selected branch and compared exactly to intended source; JSON validated",
+    "site_mutated": false,
+    "main_mutated": false,
+    "public_mcp_modified": false,
+    "claim": "HOST_GITHUB_DRAFT_CONTACT_PASS__LIVE_WEBSITE_OPEN"
+  }
+}

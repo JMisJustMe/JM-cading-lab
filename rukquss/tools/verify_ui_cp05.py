@@ -42,9 +42,12 @@ def main() -> None:
     parser.add_argument("--runtime-test", type=Path, required=True, help="Existing Worker VM test")
     parser.add_argument("--edge", type=Path, default=None, help="Path to local Edge; uses Playwright Chromium if omitted")
     parser.add_argument("--node", default="node", help="Local Node executable")
+    parser.add_argument("--axe-js", type=Path, default=None,
+                        help="Optional local audited axe-core JavaScript for read-only WCAG checks")
     args = parser.parse_args()
     from playwright.sync_api import sync_playwright
 
+    axe_script = args.axe_js.read_text(encoding="utf-8") if args.axe_js else None
     worker_bytes = args.worker.read_bytes()
     require(b"JM_RUKQUSS_ROUTE_CP01" in worker_bytes, "wrong Worker carrier")
     server = subprocess.Popen(
@@ -81,6 +84,27 @@ def main() -> None:
                         require(response is not None and response.status == 200, f"{name} HTTP")
                         require(page.locator("#grid .district").count() == 7, f"{name} original districts")
                         require(page.locator("#live .experience-card").count() == 4, f"{name} independent experience cards")
+                        contact = page.locator("#live .experience-card:nth-child(4) .experience-cta-row a")
+                        require(contact.count() == 2, f"{name} customer-controlled two-door enquiry")
+                        require(contact.nth(0).get_attribute("href") ==
+                            "https://jmisjustme-estate.pages.dev/money-menu/launch/#offers",
+                            f"{name} offers link")
+                        require(contact.nth(1).get_attribute("href") ==
+                            "https://jmisjustme-estate.pages.dev/money-menu/launch/#enquiry",
+                            f"{name} enquiry form link")
+                        for action in contact.all():
+                            require(action.bounding_box()["height"] >= 44, f"{name} contact touch target")
+                        if axe_script:
+                            page.add_script_tag(content=axe_script)
+                            a11y = page.evaluate("""async () => {
+                                const result=await axe.run(document, {
+                                    runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','best-practice']}
+                                });
+                                return result.violations.map(item=>({
+                                    id:item.id, impact:item.impact, nodes:item.nodes.length
+                                }));
+                            }""")
+                            require(not a11y, f"{name} axe-core violations: {a11y}")
                         require(page.locator(".hero .action.primary").get_attribute("href") == "#live", f"{name} primary hero action")
                         require(page.locator("#live").evaluate("(e)=>!!(e.compareDocumentPosition(document.querySelector('#doors')) & Node.DOCUMENT_POSITION_FOLLOWING)"), f"{name} working experiences precede directory")
                         icon = page.locator('link[rel="icon"]')
@@ -136,6 +160,7 @@ def main() -> None:
             "viewports_passed": len(report),
             "multi_topic_examples_per_viewport": len(SEARCHES),
             "checks": "PASS",
+            "axe_scanned_viewports": len(report) if axe_script else 0,
             "results": report,
         }, sort_keys=True))
     finally:

@@ -1,0 +1,20 @@
+{
+  "schema": "JM.TargetBridge.HostLowering/0.1",
+  "host": "unreal",
+  "body_id": "jm.target-bridge.mini-collect-contact/v0.7",
+  "source_authority": "JM",
+  "merge_forbidden": true,
+  "unresolved": [
+    {"id":"hazard.consequence","status":"UNRESOLVED","law":"Do not invent exact Hazard consequence before source/contact earns it."},
+    {"id":"goal.after_collecting","status":"UNRESOLVED","law":"Do not invent exact Goal predicate before source/contact earns it."},
+    {"id":"starting_player_hp","status":"UNRESOLVED","law":"Do not infer a starting HP value."}
+  ],
+  "semantic_ops": [
+    {"id":"signal.move_right","kind":"SIGNAL","actor":"Player","payload":{"dx":1,"dy":0},"required_trace":["signal","before","after"],"host":"unreal"},
+    {"id":"move.player","kind":"STATE_CHANGE","actor":"Player","effect":{"position_delta":{"x":1,"y":0}},"required_trace":["before_position","after_position"],"host":"unreal"},
+    {"id":"contact.player_coin","kind":"CONTACT","left":"Player","right":"Coin","relation":"overlaps","required_trace":["left_identity","right_identity","contact_true"],"host":"unreal"},
+    {"id":"score.collect","kind":"STATE_CHANGE","target":"score","precondition":{"equals":0},"effect":{"set":1},"required_trace":["score_before","score_after"],"host":"unreal"},
+    {"id":"consume.coin","kind":"STATE_CHANGE","target":"Coin.present","precondition":{"equals":true},"effect":{"set":false},"required_trace":["coin_before","coin_after"],"host":"unreal"},
+    {"id":"ding.collect","kind":"DING","requires":["contact.player_coin","score.collect","consume.coin"],"symbol":"mini-collect-contact","host":"unreal"}
+  ]
+}

@@ -17,7 +17,7 @@ import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
 
-EXPECTED_HTML_BLOB = "3609c8027013544852a9490053bb009cf97f2993"
+EXPECTED_HTML_BLOB = "a93fc401e342ecf76de95a2121715860be125693"
 PUBLIC_HOSTS = frozenset((
     "rukquss.com", "jmisjustme.github.io", "jmisjustme-estate.pages.dev"
 ))

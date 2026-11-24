@@ -89,6 +89,9 @@ h1,h2,h3,.eyebrow,.smallcaps,.flow,.brand{overflow-wrap:anywhere;hyphens:auto}
 .experience-cta-row{display:flex;flex-direction:column;gap:9px;margin-top:auto}
 .experience-card a.secondary{background:transparent;color:#e8f8f4;border-color:#98c4ca}
 .experience-card a.secondary:hover{background:#294755;color:#fff}
+/* CP11: inline business checklist text must flow as paragraphs, not split into flex items. */
+.timeline li{display:block;position:relative;padding-left:24px;min-width:0;overflow-wrap:normal}
+.timeline li::before{position:absolute;left:0;top:.28em;margin-top:0}
 </style>
 </head>
 <body>

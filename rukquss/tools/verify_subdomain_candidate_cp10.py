@@ -81,14 +81,23 @@ def main() -> int:
         ])
         if base.get("fail") != 0 or overlay.get("failed") != 0:
             raise ValueError("CP10 HOLD: runtime failures reported")
+        rollback = run("original Worker rollback rehearsal", [
+            "node", str(HERE / "test_worker_rollback_cp11.cjs"),
+            str(args.live_worker), str(alias),
+        ])
+        if (rollback.get("checks_failed") != 0
+                or rollback.get("local_restored_snapshot_matches_original") is not True):
+            raise ValueError("CP11 HOLD: original Worker restore simulation failed")
         report = {
-            "schema": "JM.RUKQUSS.PublicSubdomains.Review.CP10/1",
+            "schema": "JM.RUKQUSS.PublicSubdomains.Review.CP11/1",
             "scope": "SOURCE_STATIC_AND_ISOLATED_WORKER_VM",
             "original_worker_sha256": sha256(args.live_worker),
             "parent_worker_sha256": sha256(parent),
             "candidate_worker_sha256": sha256(alias),
             "original_worker_tests_passed": base["pass"],
             "public_alias_tests_passed": overlay["passed"],
+            "local_rollback_checks_passed": rollback["checks_passed"],
+            "rollback_proof_scope": rollback["scope"],
             "negative_source_mutations_rejected": b["negative_mutation_fixtures_passed"],
             "original_parent_negative_mutations_rejected": a["negative_mutation_fixtures_passed"],
             "public_aliases": b["public_candidate_alias_count"],

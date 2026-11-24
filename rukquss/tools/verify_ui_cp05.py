@@ -83,6 +83,19 @@ def main() -> None:
                         response = page.goto(url, wait_until="load", timeout=20000)
                         require(response is not None and response.status == 200, f"{name} HTTP")
                         require(page.locator("#grid .district").count() == 7, f"{name} original districts")
+                        # CP11 visual regression: timeline text and inline links must
+                        # share readable paragraph flow, never become tiny flex items.
+                        timeline = page.locator("#route .timeline li")
+                        require(timeline.count() == 10, f"{name} original business checkpoints")
+                        require(timeline.first.evaluate(
+                            "(node)=>getComputedStyle(node).display") == "block",
+                            f"{name} timeline text broken into flex fragments")
+                        require(timeline.first.locator("a").evaluate(
+                            "(node)=>getComputedStyle(node).display") == "inline",
+                            f"{name} original text links not inline")
+                        require(timeline.first.evaluate(
+                            "(node)=>getComputedStyle(node,'::before').position") == "absolute",
+                            f"{name} checkpoint marker unexpectedly impacts text columns")
                         require(page.locator("#live .experience-card").count() == 4, f"{name} independent experience cards")
                         contact = page.locator("#live .experience-card:nth-child(4) .experience-cta-row a")
                         require(contact.count() == 2, f"{name} customer-controlled two-door enquiry")

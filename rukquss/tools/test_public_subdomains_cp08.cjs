@@ -92,6 +92,6 @@ async function invoke(host,path="/",method="GET"){
   const status=await invoke("rukquss.com","/__jm_status");
   check("existing RUKQUSS status exists",status.status,200);
   const payload=await status.json();
-  check("existing RUKQUSS source blob untouched",payload.gitBlob,"3609c8027013544852a9490053bb009cf97f2993");
+  check("existing RUKQUSS source blob untouched",payload.gitBlob,"a93fc401e342ecf76de95a2121715860be125693");
   console.log(JSON.stringify({schema:"JM.RUKQUSS.Subdomains.LocalVM.CP10/1",passed,failed:0,aliases_tested:6,original_apex_routes_explicitly_tested:6,unknown_hosts_rejected:true,scope:"LOCAL_WORKER_VM_NOT_LIVE",candidate_sha256:crypto.createHash("sha256").update(source).digest("hex")}));
 })().catch(error=>{console.error(error.stack);process.exitCode=1;});

@@ -15,7 +15,7 @@ import ast
 import re
 from pathlib import Path
 
-CP07_WORKER_SHA256 = "36ba49b73f92d6d38b8414f15ffc8ba453cc1a2b95c224cfa54ff247203f0c28"
+CP07_WORKER_SHA256 = "5a4087ec62e92d7d965f1c2d89380fa1a9570e080166f4e3b00f8d02fdbd1ce9"
 ANCHOR = "if(u.pathname==='/__jm_status')"
 CP08_INSERTION = """/* CP08_PUBLIC_SUBDOMAINS_DRAFT_ONLY */
 const jmCp08PublicAliases = Object.freeze({

@@ -20,7 +20,7 @@ from urllib.parse import urlsplit, parse_qs
 # Inherit the existing CP09 audited PKCE, one-use authorization codes, DCR,
 # owner consent, rotating refresh and credential RAM-only source unchanged.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "jm-unique-bodies-cp08"))
-from cp09_oauth import one, opaque, valid_pkce, digest, parse_form
+from cp09_oauth import one, opaque, valid_pkce, digest, parse_form, authorize_url
 from cp09_remote_admission import RemoteAdmission
 from cp09_oauth_broker import Handler as CP09Handler, TRUSTED
 from cp10_dual_era import CP10ProtocolError, prepare, discover, adapt_response
@@ -103,22 +103,70 @@ class RealmAdmission(RemoteAdmission):
             }
             return req,rec["client_name"],requested
     def probe_owner(self,secret):
-        if not isinstance(secret,str) or len(secret)<24:return False
+        return self.check_owner(secret)[0]
+
+    def check_owner(self,secret):
+        # Same fixed upstream, same exact original tool inventory. Never
+        # redirect a bearer or disclose any submitted credential or URL.
+        if not isinstance(secret,str) or len(secret)<24 or len(secret)>4096:
+            return False,"OWNER_TOKEN_FORMAT_HOLD"
+        if any(ord(c)<33 or ord(c)>126 for c in secret):
+            return False,"OWNER_TOKEN_FORMAT_HOLD"
         request=json.dumps({"jsonrpc":"2.0","id":401,"method":"tools/list","params":{}}).encode()
         q=urllib.request.Request(self.upstream,method="POST",data=request,headers={
-            "Authorization":"Bearer "+secret,
-            "Content-Type":"application/json",
-            "Accept":"application/json, text/event-stream"
-        })
-        try:
-            with urllib.request.urlopen(q,timeout=14) as response:
-                if response.status!=200:return False
-                result=json.loads(response.read(150000))
-            tools={x["name"] for x in result["result"]["tools"]}
-            # All, and ONLY, expected original tool names must be present.
-            return tools==set(self.config["tools"])
-        except (OSError, ValueError, KeyError,TypeError,OverflowError):
-            return False
+            "Authorization":"Bearer "+secret,"Content-Type":"application/json",
+            "Accept":"application/json, text/event-stream"})
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self,*args,**kwargs):return None
+        opener=urllib.request.build_opener(NoRedirect())
+        for attempt in range(2):
+            try:
+                with opener.open(q,timeout=20) as response:
+                    if response.status!=200:return False,"UPSTREAM_CONTACT_HOLD"
+                    raw=response.read(150001)
+                if len(raw)>150000:return False,"UPSTREAM_TOOL_CONTRACT_HOLD"
+                result=json.loads(raw)
+                if result.get("jsonrpc")!="2.0" or result.get("id")!=401 or "error" in result:
+                    return False,"UPSTREAM_TOOL_CONTRACT_HOLD"
+                items=result["result"]["tools"]
+                names=[x["name"] for x in items]
+                if len(names)!=len(set(names)) or set(names)!=set(self.config["tools"]):
+                    return False,"UPSTREAM_TOOL_CONTRACT_HOLD"
+                return True,"VERIFIED"
+            except urllib.error.HTTPError as error:
+                if error.code in (401,403):return False,"OWNER_TOKEN_NOT_ACCEPTED"
+                if attempt==0 and error.code in (429,500,502,503,504):
+                    time.sleep(1);continue
+                return False,"UPSTREAM_CONTACT_HOLD"
+            except (OSError,urllib.error.URLError):
+                if attempt==0:
+                    time.sleep(1);continue
+                return False,"UPSTREAM_CONTACT_HOLD"
+            except (ValueError,KeyError,TypeError,OverflowError,AttributeError):
+                return False,"UPSTREAM_TOOL_CONTRACT_HOLD"
+        return False,"UPSTREAM_CONTACT_HOLD"
+
+    def accept(self,request_id,owner_token):
+        # Adapt the existing Unique Bodies CP09 bounded owner check, not
+        # a new identity authority. Only trim accidental edge whitespace.
+        now=time.time()
+        with self.lock:
+            self.failed_login_at=[x for x in self.failed_login_at if x>now-60]
+            if len(self.failed_login_at)>=12:raise ValueError("RATE_LIMIT_HOLD")
+            req=self.pending.get(digest(request_id))
+            if req is None or req["until"]<=now:raise ValueError("CONSENT_EXPIRED")
+        token=owner_token.strip() if isinstance(owner_token,str) else owner_token
+        valid,reason=self.check_owner(token)
+        if not valid:
+            with self.lock:self.failed_login_at.append(time.time())
+            raise ValueError(reason)
+        with self.lock:
+            req=self.pending.pop(digest(request_id),None)
+            if req is None or req["until"]<=time.time():raise ValueError("CONSENT_ALREADY_USED")
+            code=opaque()
+            self.codes[digest(code)]={**req,"until":time.time()+120}
+            self.owner_by_code[digest(code)]=token
+            return authorize_url(req["redirect_uri"],code,req["state"])
 
 class RealmHandler(CP09Handler):
     def empty_response(self,status,headers=None):
@@ -151,6 +199,29 @@ class RealmHandler(CP09Handler):
         return super().do_GET()
     def do_POST(self):
         route=urlsplit(self.path)
+        if route.path=="/oauth/authorize":
+            try:
+                if route.query:raise ValueError("QUERY_DISABLED")
+                content=self.headers.get("Content-Type","").split(";")[0].strip().lower()
+                if content!="application/x-www-form-urlencoded":raise ValueError("FORM_REQUIRED")
+                form=parse_form(self.read())
+                if len(form.get("request_id",[]))!=1 or len(form.get("owner_access_token",[]))!=1:
+                    raise ValueError("FORM_REQUIRED")
+                return self.redirect(self.server.admission.accept(form["request_id"][0],form["owner_access_token"][0]))
+            except (ValueError,TypeError,UnicodeDecodeError) as failure:
+                causes={
+                    "CONSENT_EXPIRED":"Approval expired. Start a fresh connection.",
+                    "CONSENT_ALREADY_USED":"Approval already used or expired. Start a fresh connection.",
+                    "OWNER_TOKEN_FORMAT_HOLD":"Enter the complete original service token, without quotes.",
+                    "OWNER_TOKEN_NOT_ACCEPTED":"The original service rejected this token. Check the original service Environment value.",
+                    "UPSTREAM_CONTACT_HOLD":"The original service did not respond successfully. No permission granted.",
+                    "UPSTREAM_TOOL_CONTRACT_HOLD":"The original tool inventory did not match. No permission granted.",
+                    "RATE_LIMIT_HOLD":"Too many failed approvals. Retry later.",
+                    "FORM_REQUIRED":"Use the original approval form.",
+                }
+                reason=str(failure) if str(failure) in causes else "OAUTH_ADMISSION_HOLD"
+                detail=causes.get(reason,"Approval could not be verified. Start a fresh connection.")
+                return self.reply(400,{"error":"OAUTH_ADMISSION_HOLD","cause":reason,"recovery":detail,"permission_granted":False})
         if route.path!="/mcp":return super().do_POST()
         if route.query:return self.reply(400,{"error":"QUERY_DISABLED"})
         origin=self.headers.get("Origin")

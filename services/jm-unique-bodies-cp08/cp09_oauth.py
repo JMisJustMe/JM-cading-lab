@@ -32,6 +32,13 @@ def safe_redirect(s):
         return (r.path=='/connector_platform_oauth_redirect' or
             bool(re.fullmatch(r'/connector/oauth/[A-Za-z0-9_-]{1,180}',r.path)))
     return True
+def native_codex_loopback(s):
+    # Native public client redirect only: literal IPv4 loopback, high port,
+    # exact observed randomized callback shape. Client label is not identity.
+    # Owner bearer verification, PKCE and exact URI binding remain mandatory.
+    if not isinstance(s,str):return False
+    match=re.fullmatch(r"http://127[.]0[.]0[.]1:([1-9][0-9]{0,4})/callback/[A-Za-z0-9_-]{12}",s)
+    return bool(match and 1024<=int(match[1])<=65535)
 def valid_pkce(c):return isinstance(c,str) and bool(re.fullmatch(r'[A-Za-z0-9_-]{43}',c))
 def one(p,name,default=None):
     seq=p.get(name,[])
@@ -68,9 +75,19 @@ class Admission:
     def register(self,data):
         if not isinstance(data,dict):raise ValueError('INVALID_CLIENT')
         redirects=data.get('redirect_uris')
-        if not isinstance(redirects,list) or not 1<=len(redirects)<=5 or not all(safe_redirect(x) for x in redirects):
-            raise ValueError('REDIRECT_URI_DENIED')
         method=data.get('token_endpoint_auth_method','none')
+        native=(isinstance(redirects,list) and len(redirects)==1
+            and data.get('client_name')=='Codex' and method=='none'
+            and data.get('grant_types')==['authorization_code','refresh_token']
+            and data.get('response_types')==['code']
+            and native_codex_loopback(redirects[0]))
+        try:
+            web=(isinstance(redirects,list) and 1<=len(redirects)<=5
+                and all(safe_redirect(x) for x in redirects))
+        except ValueError:
+            web=False
+        if not (native or web):
+            raise ValueError('REDIRECT_URI_DENIED')
         if method not in ('none','client_secret_post'):raise ValueError('CLIENT_AUTH_METHOD_HOLD')
         client_id=opaque()
         record={'redirect_uris':redirects,'method':method,'created':time.time(),
